@@ -16,12 +16,12 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 
 import { StyledAccordion, AdvancedLabel } from './styles'
 import { StyledForm } from '../../../styles'
-import { StateType, OnUpdateType, OBJECT_SET_TYPE } from '../../'
+import { ObjectSetType, OnUpdateType, OBJECT_SET_TYPE } from '../../'
 
 type PropsType = {
   expanded: boolean
   toggleExpanded: () => void
-  sets: StateType['objectSets']
+  sets: ObjectSetType[]
   onUpdate: (props: OnUpdateType) => void
   onAddNew: () => void
 }
@@ -34,7 +34,7 @@ function ObjectSets({
   onUpdate
 }: PropsType) {
   // make sure there's at least one empty object set
-  const objectSets: StateType['objectSets'] = sets.length
+  const objectSets: ObjectSetType[] = sets.length
     ? sets
     : [{ type: '' as OBJECT_SET_TYPE, label: '' }]
 
@@ -96,14 +96,12 @@ function ObjectSets({
                 }}
                 fullWidth
               />
-              {index === sets.length - 1 ? (
-                <Box sx={{ alignSelf: 'flex-end', flexShrink: 0 }}>
-                  <IconButton color="primary" onClick={() => onAddNew()}>
+              <Box sx={{ alignSelf: 'flex-end', flexShrink: 0 }}>
+                {index === sets.length - 1 ? (
+                  <IconButton color="primary" onClick={onAddNew}>
                     <AddCircleIcon />
                   </IconButton>
-                </Box>
-              ) : (
-                <Box sx={{ alignSelf: 'flex-end', flexShrink: 0 }}>
+                ) : (
                   <IconButton
                     onClick={() =>
                       onUpdate({
@@ -113,8 +111,8 @@ function ObjectSets({
                   >
                     <DeleteIcon />
                   </IconButton>
-                </Box>
-              )}
+                )}
+              </Box>
             </Stack>
           ))}
         </StyledForm>

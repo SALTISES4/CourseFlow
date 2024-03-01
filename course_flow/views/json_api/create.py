@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpRequest, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.urls import reverse
 
 from course_flow.forms import CreateProject
 
@@ -451,11 +452,13 @@ def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
     # if the form is valid, save it and return a success response
     # along with the redirect URL to the newly created project
     if form.is_valid():
-        # form.save()
-        # return reverse(
-        #     "course_flow:project-update", kwargs={"pk": self.object.pk}
-        # )
-        return JsonResponse({"action": "posted"})
+        project = form.save()
+        return JsonResponse({
+            "action": "posted",
+            "redirect": reverse(
+                "course_flow:project-update", kwargs={"pk": project.pk}
+            )
+        })
 
     # otherwise, return the errors so UI can display errors accordingly
     return JsonResponse({"action": "error", "errors": form.errors})

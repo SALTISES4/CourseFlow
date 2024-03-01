@@ -55,12 +55,7 @@ function openCreateActionModal(type: 'program' | 'activity' | 'course') {
   )
 }
 
-const TopBar = ({
-  isTeacher,
-  menus,
-  notifications,
-  showNoProjectsAlert
-}: TopBarProps) => {
+const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   const { dispatch } = useDialog()
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
@@ -279,7 +274,10 @@ const TopBar = ({
       <ResetPasswordModal
         onSubmit={() => (window.location.href = menus.account.resetPasswordUrl)}
       />
-      <CreateProjectModal showNoProjectsAlert={showNoProjectsAlert} />
+      <CreateProjectModal
+        showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
+        formFields={forms.createProject.formFields}
+      />
       <CreateProgramModal />
       <CreateCourseModal />
       <CreateActivityModal />

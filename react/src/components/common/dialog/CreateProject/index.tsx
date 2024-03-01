@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import Alert from '@cfCommonComponents/components/Alert'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
@@ -8,43 +8,95 @@ import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '../'
 import { StyledDialog, StyledForm } from '../styles'
 import ObjectSets from './components/ObjectSets'
+import { TopBarProps } from '@cfModule/types/common'
+import { API_POST } from '@XMLHTTP/PostFunctions'
 
-type PropsType = {
-  showNoProjectsAlert: boolean
-}
-
+// TODO: figure out how to handle object set types and where the values come from
 export enum OBJECT_SET_TYPE {
   OUTCOME = 'outcome',
   SOMETHING = 'something',
   ELSE = 'else'
 }
 
+export type ObjectSetType = {
+  type: OBJECT_SET_TYPE
+  label: string
+}
+
 export type OnUpdateType = {
   index: number
-  newVal?: {
-    type: OBJECT_SET_TYPE
-    label: string
-  }
+  newVal?: ObjectSetType
 }
 
 export type StateType = {
-  objectSets: {
-    type: OBJECT_SET_TYPE
-    label: string
-  }[]
+  fields: {
+    [index: string]: string
+  }
+  objectSets: ObjectSetType[]
   objectSetsExpanded: boolean
 }
 
-function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
+function CreateProjectDialog({
+  showNoProjectsAlert,
+  formFields
+}: TopBarProps['forms']['createProject']) {
   const [state, setState] = useState<StateType>({
+    fields: {},
     objectSets: [],
     objectSetsExpanded: false
   })
+  const [errors, setErrors] = useState({})
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT)
 
-  // TODO: post / redirect
   function onSubmit() {
-    console.log('project created?')
+    // early exit if there are validation errors
+    if (Object.keys(errors).length) {
+      return false
+    }
+
+    API_POST<{ redirect: string }>(
+      COURSEFLOW_APP.config.json_api_paths.create_project,
+      {
+        ...state.fields,
+        objectSets: state.objectSets
+      }
+    )
+      .then((resp) => {
+        window.location.href = resp.redirect
+      })
+      .catch((error) => setErrors(error.data.errors))
+  }
+
+  function onDialogClose() {
+    // clean up the state
+    setState({
+      fields: {},
+      objectSets: [],
+      objectSetsExpanded: false
+    })
+    setErrors({})
+
+    // dispatch the close callback
+    onClose()
+  }
+
+  function onInputChange(
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: any // TODO
+  ) {
+    if (errors[field.name]) {
+      const newErrors = { ...errors }
+      delete newErrors[field.name]
+      setErrors(newErrors)
+    }
+
+    setState({
+      ...state,
+      fields: {
+        ...state.fields,
+        [e.target.name]: e.target.value
+      }
+    })
   }
 
   function onObjectSetUpdate({ index, newVal }: OnUpdateType) {
@@ -80,7 +132,7 @@ function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
   }
 
   return (
-    <StyledDialog open={show} onClose={onClose} fullWidth maxWidth="sm">
+    <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
       <DialogTitle>{window.gettext('Create project')}</DialogTitle>
       <DialogContent dividers>
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
@@ -94,17 +146,26 @@ function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
           />
         )}
         <StyledForm component="form">
-          <TextField
-            label={window.gettext('Title')}
-            variant="standard"
-            required
-          />
-          <TextField
-            label={window.gettext('Description')}
-            variant="standard"
-            multiline
-            maxRows={4}
-          />
+          {formFields.map((field, index) => {
+            if (field.type === 'text') {
+              const hasError = !!errors[field.name]
+              const errorText = hasError && errors[field.name][0]
+
+              return (
+                <TextField
+                  key={index}
+                  name={field.name}
+                  label={field.label}
+                  required={field.required}
+                  value={state.fields[field.name] ?? ''}
+                  variant="standard"
+                  error={hasError}
+                  helperText={errorText}
+                  onChange={(e) => onInputChange(e, field)}
+                />
+              )
+            }
+          })}
           <ObjectSets
             expanded={state.objectSetsExpanded}
             toggleExpanded={onObjectSetsClick}
@@ -115,10 +176,14 @@ function CreateProjectDialog({ showNoProjectsAlert }: PropsType) {
         </StyledForm>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="secondary" onClick={onClose}>
+        <Button variant="contained" color="secondary" onClick={onDialogClose}>
           {COURSEFLOW_APP.strings.cancel}
         </Button>
-        <Button variant="contained" onClick={onSubmit}>
+        <Button
+          variant="contained"
+          onClick={onSubmit}
+          disabled={!!Object.keys(errors).length}
+        >
           {window.gettext('Create project')}
         </Button>
       </DialogActions>

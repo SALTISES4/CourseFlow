@@ -38692,7 +38692,11 @@ ${latestSubscriptionCallbackError.current.stack}
     return _extends$1.apply(this, arguments);
   }
   function isPlainObject$3(item) {
-    return item !== null && typeof item === "object" && item.constructor === Object;
+    if (typeof item !== "object" || item === null) {
+      return false;
+    }
+    const prototype = Object.getPrototypeOf(item);
+    return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in item) && !(Symbol.iterator in item);
   }
   function deepClone(source) {
     if (!isPlainObject$3(source)) {
@@ -39959,11 +39963,10 @@ ${latestSubscriptionCallbackError.current.stack}
     useEnhancedEffect$1(() => {
       ref.current = fn;
     });
-    return reactExports.useCallback((...args) => (
+    return reactExports.useRef((...args) => (
       // @ts-expect-error hide `this`
-      // tslint:disable-next-line:ban-comma-operator
       (0, ref.current)(...args)
-    ), []);
+    )).current;
   }
   function useForkRef(...refs) {
     return reactExports.useMemo(() => {
@@ -39977,9 +39980,53 @@ ${latestSubscriptionCallbackError.current.stack}
       };
     }, refs);
   }
+  const UNINITIALIZED = {};
+  function useLazyRef(init2, initArg) {
+    const ref = reactExports.useRef(UNINITIALIZED);
+    if (ref.current === UNINITIALIZED) {
+      ref.current = init2(initArg);
+    }
+    return ref;
+  }
+  const EMPTY = [];
+  function useOnMount(fn) {
+    reactExports.useEffect(fn, EMPTY);
+  }
+  class Timeout {
+    constructor() {
+      this.currentId = 0;
+      this.clear = () => {
+        if (this.currentId !== 0) {
+          clearTimeout(this.currentId);
+          this.currentId = 0;
+        }
+      };
+      this.disposeEffect = () => {
+        return this.clear;
+      };
+    }
+    static create() {
+      return new Timeout();
+    }
+    /**
+     * Executes `fn` after `delay`, clearing any previously scheduled call.
+     */
+    start(delay, fn) {
+      this.clear();
+      this.currentId = setTimeout(() => {
+        this.currentId = 0;
+        fn();
+      }, delay);
+    }
+  }
+  function useTimeout() {
+    const timeout = useLazyRef(Timeout.create).current;
+    useOnMount(timeout.disposeEffect);
+    return timeout;
+  }
   let hadKeyboardEvent = true;
   let hadFocusVisibleRecently = false;
-  let hadFocusVisibleRecentlyTimeout;
+  const hadFocusVisibleRecentlyTimeout = new Timeout();
   const inputTypesWhitelist = {
     text: true,
     search: true,
@@ -40054,10 +40101,9 @@ ${latestSubscriptionCallbackError.current.stack}
     function handleBlurVisible() {
       if (isFocusVisibleRef.current) {
         hadFocusVisibleRecently = true;
-        window.clearTimeout(hadFocusVisibleRecentlyTimeout);
-        hadFocusVisibleRecentlyTimeout = window.setTimeout(() => {
+        hadFocusVisibleRecentlyTimeout.start(100, () => {
           hadFocusVisibleRecently = false;
-        }, 100);
+        });
         isFocusVisibleRef.current = false;
         return true;
       }
@@ -40201,7 +40247,7 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   const ClassNameGenerator = createClassNameGenerator();
   const ClassNameGenerator$1 = ClassNameGenerator;
-  const globalStateClassesMapping = {
+  const globalStateClasses = {
     active: "active",
     checked: "checked",
     completed: "completed",
@@ -40216,7 +40262,7 @@ ${latestSubscriptionCallbackError.current.stack}
     selected: "selected"
   };
   function generateUtilityClass(componentName, slot, globalStatePrefix = "Mui") {
-    const globalStateClass = globalStateClassesMapping[slot];
+    const globalStateClass = globalStateClasses[slot];
     return globalStateClass ? `${globalStatePrefix}-${globalStateClass}` : `${ClassNameGenerator$1.generate(componentName)}-${slot}`;
   }
   function generateUtilityClasses(componentName, slots, globalStatePrefix = "Mui") {
@@ -40225,6 +40271,9 @@ ${latestSubscriptionCallbackError.current.stack}
       result[slot] = generateUtilityClass(componentName, slot, globalStatePrefix);
     });
     return result;
+  }
+  function clamp$1(val, min2 = Number.MIN_SAFE_INTEGER, max2 = Number.MAX_SAFE_INTEGER) {
+    return Math.max(min2, Math.min(val, max2));
   }
   function _objectWithoutPropertiesLoose(source, excluded) {
     if (source == null)
@@ -40245,17 +40294,18 @@ ${latestSubscriptionCallbackError.current.stack}
     if ("string" == typeof e || "number" == typeof e)
       n += e;
     else if ("object" == typeof e)
-      if (Array.isArray(e))
-        for (t = 0; t < e.length; t++)
+      if (Array.isArray(e)) {
+        var o = e.length;
+        for (t = 0; t < o; t++)
           e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
-      else
-        for (t in e)
-          e[t] && (n && (n += " "), n += t);
+      } else
+        for (f in e)
+          e[f] && (n && (n += " "), n += f);
     return n;
   }
   function clsx() {
-    for (var e, t, f = 0, n = ""; f < arguments.length; )
-      (e = arguments[f++]) && (t = r(e)) && (n && (n += " "), n += t);
+    for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++)
+      (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
     return n;
   }
   function memoize$1(fn) {
@@ -41548,7 +41598,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   }
   var pkg = {
     name: "@emotion/react",
-    version: "11.11.1",
+    version: "11.11.3",
     main: "dist/emotion-react.cjs.js",
     module: "dist/emotion-react.esm.js",
     browser: {
@@ -41621,7 +41671,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       "@babel/runtime": "^7.18.3",
       "@emotion/babel-plugin": "^11.11.0",
       "@emotion/cache": "^11.11.0",
-      "@emotion/serialize": "^1.1.2",
+      "@emotion/serialize": "^1.1.3",
       "@emotion/use-insertion-effect-with-fallbacks": "^1.0.1",
       "@emotion/utils": "^1.2.1",
       "@emotion/weak-memoize": "^0.3.1",
@@ -41637,7 +41687,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     },
     devDependencies: {
       "@definitelytyped/dtslint": "0.0.112",
-      "@emotion/css": "11.11.0",
+      "@emotion/css": "11.11.2",
       "@emotion/css-prettifier": "1.1.3",
       "@emotion/server": "11.11.0",
       "@emotion/styled": "11.11.0",
@@ -42143,7 +42193,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   tags.forEach(function(tagName) {
     newStyled[tagName] = newStyled(tagName);
   });
-  function isEmpty$4(obj) {
+  function isEmpty$3(obj) {
     return obj === void 0 || obj === null || Object.keys(obj).length === 0;
   }
   function GlobalStyles$2(props) {
@@ -42151,7 +42201,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       styles: styles2,
       defaultTheme: defaultTheme2 = {}
     } = props;
-    const globalStyles = typeof styles2 === "function" ? (themeInput) => styles2(isEmpty$4(themeInput) ? defaultTheme2 : themeInput) : styles2;
+    const globalStyles = typeof styles2 === "function" ? (themeInput) => styles2(isEmpty$3(themeInput) ? defaultTheme2 : themeInput) : styles2;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Global, {
       styles: globalStyles
     });
@@ -42161,7 +42211,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     styles: PropTypes.oneOfType([PropTypes.array, PropTypes.string, PropTypes.object, PropTypes.func])
   } : void 0;
   /**
-   * @mui/styled-engine v5.14.14
+   * @mui/styled-engine v5.15.9
    *
    * @license MIT
    * This source code is licensed under the MIT license found in the
@@ -42637,51 +42687,25 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }
     return `${value}px solid`;
   }
-  const border = style$2({
-    prop: "border",
-    themeKey: "borders",
-    transform: borderTransform
-  });
-  const borderTop = style$2({
-    prop: "borderTop",
-    themeKey: "borders",
-    transform: borderTransform
-  });
-  const borderRight = style$2({
-    prop: "borderRight",
-    themeKey: "borders",
-    transform: borderTransform
-  });
-  const borderBottom = style$2({
-    prop: "borderBottom",
-    themeKey: "borders",
-    transform: borderTransform
-  });
-  const borderLeft = style$2({
-    prop: "borderLeft",
-    themeKey: "borders",
-    transform: borderTransform
-  });
-  const borderColor = style$2({
-    prop: "borderColor",
-    themeKey: "palette"
-  });
-  const borderTopColor = style$2({
-    prop: "borderTopColor",
-    themeKey: "palette"
-  });
-  const borderRightColor = style$2({
-    prop: "borderRightColor",
-    themeKey: "palette"
-  });
-  const borderBottomColor = style$2({
-    prop: "borderBottomColor",
-    themeKey: "palette"
-  });
-  const borderLeftColor = style$2({
-    prop: "borderLeftColor",
-    themeKey: "palette"
-  });
+  function createBorderStyle(prop, transform) {
+    return style$2({
+      prop,
+      themeKey: "borders",
+      transform
+    });
+  }
+  const border = createBorderStyle("border", borderTransform);
+  const borderTop = createBorderStyle("borderTop", borderTransform);
+  const borderRight = createBorderStyle("borderRight", borderTransform);
+  const borderBottom = createBorderStyle("borderBottom", borderTransform);
+  const borderLeft = createBorderStyle("borderLeft", borderTransform);
+  const borderColor = createBorderStyle("borderColor");
+  const borderTopColor = createBorderStyle("borderTopColor");
+  const borderRightColor = createBorderStyle("borderRightColor");
+  const borderBottomColor = createBorderStyle("borderBottomColor");
+  const borderLeftColor = createBorderStyle("borderLeftColor");
+  const outline = createBorderStyle("outline", borderTransform);
+  const outlineColor = createBorderStyle("outlineColor");
   const borderRadius = (props) => {
     if (props.borderRadius !== void 0 && props.borderRadius !== null) {
       const transformer = createUnaryUnit(props.theme, "shape.borderRadius", 4, "borderRadius");
@@ -42696,7 +42720,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     borderRadius: responsivePropType$1
   } : {};
   borderRadius.filterProps = ["borderRadius"];
-  compose$1(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius);
+  compose$1(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius, outline, outlineColor);
   const gap = (props) => {
     if (props.gap !== void 0 && props.gap !== null) {
       const transformer = createUnaryUnit(props.theme, "spacing", 8, "gap");
@@ -42886,6 +42910,13 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       themeKey: "palette"
     },
     borderLeftColor: {
+      themeKey: "palette"
+    },
+    outline: {
+      themeKey: "borders",
+      transform: borderTransform
+    },
+    outlineColor: {
       themeKey: "palette"
     },
     borderRadius: {
@@ -43240,6 +43271,19 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   const styleFunctionSx = unstable_createStyleFunctionSx();
   styleFunctionSx.filterProps = ["sx"];
   const styleFunctionSx$1 = styleFunctionSx;
+  function applyStyles(key, styles2) {
+    const theme2 = this;
+    if (theme2.vars && typeof theme2.getColorSchemeSelector === "function") {
+      const selector = theme2.getColorSchemeSelector(key).replace(/(\[[^\]]+\])/, "*:where($1)");
+      return {
+        [selector]: styles2
+      };
+    }
+    if (theme2.palette.mode === key) {
+      return styles2;
+    }
+    return {};
+  }
   const _excluded$1d = ["breakpoints", "palette", "spacing", "shape"];
   function createTheme$1(options = {}, ...args) {
     const {
@@ -43261,6 +43305,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       spacing,
       shape: _extends$1({}, shape$1, shapeInput)
     }, other);
+    muiTheme.applyStyles = applyStyles;
     muiTheme = args.reduce((acc, argument) => deepmerge(acc, argument), muiTheme);
     muiTheme.unstable_sxConfig = _extends$1({}, defaultSxConfig$1, other == null ? void 0 : other.unstable_sxConfig);
     muiTheme.unstable_sx = function sx(props) {
@@ -43294,10 +43339,10 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
   }
   process.env.NODE_ENV !== "production" ? GlobalStyles$1.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * @ignore
      */
@@ -43380,25 +43425,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return Box2;
   }
-  const _excluded$1a = ["variant"];
-  function isEmpty$3(string) {
-    return string.length === 0;
-  }
-  function propsToClassKey(props) {
-    const {
-      variant
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1a);
-    let classKey = variant || "";
-    Object.keys(other).sort().forEach((key) => {
-      if (key === "color") {
-        classKey += isEmpty$3(classKey) ? props[key] : capitalize$2(props[key]);
-      } else {
-        classKey += `${isEmpty$3(classKey) ? key : capitalize$2(key)}${capitalize$2(props[key].toString())}`;
-      }
-    });
-    return classKey;
-  }
-  const _excluded$19 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+  const _excluded$1a = ["ownerState"], _excluded2$6 = ["variants"], _excluded3$2 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
   function isEmpty$2(obj) {
     return Object.keys(obj).length === 0;
   }
@@ -43408,54 +43435,6 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     // it's a lowercase character
     tag2.charCodeAt(0) > 96;
   }
-  const getStyleOverrides = (name2, theme2) => {
-    if (theme2.components && theme2.components[name2] && theme2.components[name2].styleOverrides) {
-      return theme2.components[name2].styleOverrides;
-    }
-    return null;
-  };
-  const transformVariants = (variants) => {
-    const variantsStyles = {};
-    if (variants) {
-      variants.forEach((definition) => {
-        const key = propsToClassKey(definition.props);
-        variantsStyles[key] = definition.style;
-      });
-    }
-    return variantsStyles;
-  };
-  const getVariantStyles = (name2, theme2) => {
-    let variants = [];
-    if (theme2 && theme2.components && theme2.components[name2] && theme2.components[name2].variants) {
-      variants = theme2.components[name2].variants;
-    }
-    return transformVariants(variants);
-  };
-  const variantsResolver = (props, styles2, variants) => {
-    const {
-      ownerState = {}
-    } = props;
-    const variantsStyles = [];
-    if (variants) {
-      variants.forEach((variant) => {
-        let isMatch = true;
-        Object.keys(variant.props).forEach((key) => {
-          if (ownerState[key] !== variant.props[key] && props[key] !== variant.props[key]) {
-            isMatch = false;
-          }
-        });
-        if (isMatch) {
-          variantsStyles.push(styles2[propsToClassKey(variant.props)]);
-        }
-      });
-    }
-    return variantsStyles;
-  };
-  const themeVariantsResolver = (props, styles2, theme2, name2) => {
-    var _theme$components;
-    const themeVariants = theme2 == null || (_theme$components = theme2.components) == null || (_theme$components = _theme$components[name2]) == null ? void 0 : _theme$components.variants;
-    return variantsResolver(props, styles2, themeVariants);
-  };
   function shouldForwardProp(prop) {
     return prop !== "ownerState" && prop !== "theme" && prop !== "sx" && prop !== "as";
   }
@@ -43479,29 +43458,49 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }
     return (props, styles2) => styles2[slot];
   }
-  const muiStyledFunctionResolver = ({
-    styledArg,
-    props,
-    defaultTheme: defaultTheme2,
-    themeId
-  }) => {
-    const resolvedStyles = styledArg(_extends$1({}, props, {
-      theme: resolveTheme(_extends$1({}, props, {
-        defaultTheme: defaultTheme2,
-        themeId
-      }))
-    }));
-    let optionalVariants;
-    if (resolvedStyles && resolvedStyles.variants) {
-      optionalVariants = resolvedStyles.variants;
-      delete resolvedStyles.variants;
+  function processStyleArg(callableStyle, _ref) {
+    let {
+      ownerState
+    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$1a);
+    const resolvedStylesArg = typeof callableStyle === "function" ? callableStyle(_extends$1({
+      ownerState
+    }, props)) : callableStyle;
+    if (Array.isArray(resolvedStylesArg)) {
+      return resolvedStylesArg.flatMap((resolvedStyle) => processStyleArg(resolvedStyle, _extends$1({
+        ownerState
+      }, props)));
     }
-    if (optionalVariants) {
-      const variantsStyles = variantsResolver(props, transformVariants(optionalVariants), optionalVariants);
-      return [resolvedStyles, ...variantsStyles];
+    if (!!resolvedStylesArg && typeof resolvedStylesArg === "object" && Array.isArray(resolvedStylesArg.variants)) {
+      const {
+        variants = []
+      } = resolvedStylesArg, otherStyles = _objectWithoutPropertiesLoose(resolvedStylesArg, _excluded2$6);
+      let result = otherStyles;
+      variants.forEach((variant) => {
+        let isMatch = true;
+        if (typeof variant.props === "function") {
+          isMatch = variant.props(_extends$1({
+            ownerState
+          }, props));
+        } else {
+          Object.keys(variant.props).forEach((key) => {
+            if ((ownerState == null ? void 0 : ownerState[key]) !== variant.props[key] && props[key] !== variant.props[key]) {
+              isMatch = false;
+            }
+          });
+        }
+        if (isMatch) {
+          if (!Array.isArray(result)) {
+            result = [result];
+          }
+          result.push(typeof variant.style === "function" ? variant.style(_extends$1({
+            ownerState
+          }, props)) : variant.style);
+        }
+      });
+      return result;
     }
-    return resolvedStyles;
-  };
+    return resolvedStylesArg;
+  }
   function createStyled(input = {}) {
     const {
       themeId,
@@ -43528,7 +43527,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
         // TODO v6: remove `lowercaseFirstLetter()` in the next major release
         // For more details: https://github.com/mui/material-ui/pull/37908
         overridesResolver: overridesResolver2 = defaultOverridesResolver(lowercaseFirstLetter(componentSlot))
-      } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$19);
+      } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded3$2);
       const skipVariantsResolver = inputSkipVariantsResolver !== void 0 ? inputSkipVariantsResolver : (
         // TODO v6: remove `Root` in the next major release
         // For more details: https://github.com/mui/material-ui/pull/37908
@@ -43553,87 +43552,53 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
         shouldForwardProp: shouldForwardPropOption,
         label
       }, options));
-      const muiStyledResolver = (styleArg, ...expressions) => {
-        const expressionsWithDefaultTheme = expressions ? expressions.map((stylesArg) => {
-          if (typeof stylesArg === "function" && stylesArg.__emotion_real !== stylesArg) {
-            return (props) => muiStyledFunctionResolver({
-              styledArg: stylesArg,
-              props,
+      const transformStyleArg = (stylesArg) => {
+        if (typeof stylesArg === "function" && stylesArg.__emotion_real !== stylesArg || isPlainObject$3(stylesArg)) {
+          return (props) => processStyleArg(stylesArg, _extends$1({}, props, {
+            theme: resolveTheme({
+              theme: props.theme,
               defaultTheme: defaultTheme2,
               themeId
-            });
-          }
-          if (isPlainObject$3(stylesArg)) {
-            let transformedStylesArg = stylesArg;
-            let styledArgVariants;
-            if (stylesArg && stylesArg.variants) {
-              styledArgVariants = stylesArg.variants;
-              delete transformedStylesArg.variants;
-              transformedStylesArg = (props) => {
-                let result = stylesArg;
-                const variantStyles = variantsResolver(props, transformVariants(styledArgVariants), styledArgVariants);
-                variantStyles.forEach((variantStyle) => {
-                  result = deepmerge(result, variantStyle);
-                });
-                return result;
-              };
-            }
-            return transformedStylesArg;
-          }
-          return stylesArg;
-        }) : [];
-        let transformedStyleArg = styleArg;
-        if (isPlainObject$3(styleArg)) {
-          let styledArgVariants;
-          if (styleArg && styleArg.variants) {
-            styledArgVariants = styleArg.variants;
-            delete transformedStyleArg.variants;
-            transformedStyleArg = (props) => {
-              let result = styleArg;
-              const variantStyles = variantsResolver(props, transformVariants(styledArgVariants), styledArgVariants);
-              variantStyles.forEach((variantStyle) => {
-                result = deepmerge(result, variantStyle);
-              });
-              return result;
-            };
-          }
-        } else if (typeof styleArg === "function" && // On the server Emotion doesn't use React.forwardRef for creating components, so the created
-        // component stays as a function. This condition makes sure that we do not interpolate functions
-        // which are basically components used as a selectors.
-        styleArg.__emotion_real !== styleArg) {
-          transformedStyleArg = (props) => muiStyledFunctionResolver({
-            styledArg: styleArg,
-            props,
-            defaultTheme: defaultTheme2,
-            themeId
-          });
+            })
+          }));
         }
+        return stylesArg;
+      };
+      const muiStyledResolver = (styleArg, ...expressions) => {
+        let transformedStyleArg = transformStyleArg(styleArg);
+        const expressionsWithDefaultTheme = expressions ? expressions.map(transformStyleArg) : [];
         if (componentName && overridesResolver2) {
           expressionsWithDefaultTheme.push((props) => {
             const theme2 = resolveTheme(_extends$1({}, props, {
               defaultTheme: defaultTheme2,
               themeId
             }));
-            const styleOverrides = getStyleOverrides(componentName, theme2);
-            if (styleOverrides) {
-              const resolvedStyleOverrides = {};
-              Object.entries(styleOverrides).forEach(([slotKey, slotStyle]) => {
-                resolvedStyleOverrides[slotKey] = typeof slotStyle === "function" ? slotStyle(_extends$1({}, props, {
-                  theme: theme2
-                })) : slotStyle;
-              });
-              return overridesResolver2(props, resolvedStyleOverrides);
+            if (!theme2.components || !theme2.components[componentName] || !theme2.components[componentName].styleOverrides) {
+              return null;
             }
-            return null;
+            const styleOverrides = theme2.components[componentName].styleOverrides;
+            const resolvedStyleOverrides = {};
+            Object.entries(styleOverrides).forEach(([slotKey, slotStyle]) => {
+              resolvedStyleOverrides[slotKey] = processStyleArg(slotStyle, _extends$1({}, props, {
+                theme: theme2
+              }));
+            });
+            return overridesResolver2(props, resolvedStyleOverrides);
           });
         }
         if (componentName && !skipVariantsResolver) {
           expressionsWithDefaultTheme.push((props) => {
+            var _theme$components;
             const theme2 = resolveTheme(_extends$1({}, props, {
               defaultTheme: defaultTheme2,
               themeId
             }));
-            return themeVariantsResolver(props, getVariantStyles(componentName, theme2), theme2, componentName);
+            const themeVariants = theme2 == null || (_theme$components = theme2.components) == null || (_theme$components = _theme$components[componentName]) == null ? void 0 : _theme$components.variants;
+            return processStyleArg({
+              variants: themeVariants
+            }, _extends$1({}, props, {
+              theme: theme2
+            }));
           });
         }
         if (!skipSx) {
@@ -43680,7 +43645,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }
     return resolveProps(theme2.components[name2].defaultProps, props);
   }
-  function useThemeProps$1({
+  function useThemeProps$2({
     props,
     name: name2,
     defaultTheme: defaultTheme2,
@@ -43697,13 +43662,13 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return mergedProps;
   }
-  function clamp$1(value, min2 = 0, max2 = 1) {
+  function clampWrapper(value, min2 = 0, max2 = 1) {
     if (process.env.NODE_ENV !== "production") {
       if (value < min2 || value > max2) {
         console.error(`MUI: The value provided ${value} is out of range [${min2}, ${max2}].`);
       }
     }
-    return Math.min(Math.max(min2, value), max2);
+    return clamp$1(value, min2, max2);
   }
   function hexToRgb(color2) {
     color2 = color2.slice(1);
@@ -43811,7 +43776,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   }
   function alpha(color2, value) {
     color2 = decomposeColor(color2);
-    value = clamp$1(value);
+    value = clampWrapper(value);
     if (color2.type === "rgb" || color2.type === "hsl") {
       color2.type += "a";
     }
@@ -43824,7 +43789,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   }
   function darken(color2, coefficient) {
     color2 = decomposeColor(color2);
-    coefficient = clamp$1(coefficient);
+    coefficient = clampWrapper(coefficient);
     if (color2.type.indexOf("hsl") !== -1) {
       color2.values[2] *= 1 - coefficient;
     } else if (color2.type.indexOf("rgb") !== -1 || color2.type.indexOf("color") !== -1) {
@@ -43836,7 +43801,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   }
   function lighten(color2, coefficient) {
     color2 = decomposeColor(color2);
-    coefficient = clamp$1(coefficient);
+    coefficient = clampWrapper(coefficient);
     if (color2.type.indexOf("hsl") !== -1) {
       color2.values[2] += (100 - color2.values[2]) * coefficient;
     } else if (color2.type.indexOf("rgb") !== -1) {
@@ -43958,10 +43923,10 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     });
   }
   process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Your component tree.
      */
@@ -43978,7 +43943,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   if (process.env.NODE_ENV !== "production") {
     process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = exactProp(ThemeProvider$1.propTypes) : void 0;
   }
-  const _excluded$18 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
+  const _excluded$19 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
   const defaultTheme$3 = createTheme$1();
   const defaultCreateStyledComponent = systemStyled("div", {
     name: "MuiStack",
@@ -43986,7 +43951,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     overridesResolver: (props, styles2) => styles2.root
   });
   function useThemePropsDefault(props) {
-    return useThemeProps$1({
+    return useThemeProps$2({
       props,
       name: "MuiStack",
       defaultTheme: defaultTheme$3
@@ -44101,7 +44066,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
         children,
         className,
         useFlexGap = false
-      } = props, other = _objectWithoutPropertiesLoose(props, _excluded$18);
+      } = props, other = _objectWithoutPropertiesLoose(props, _excluded$19);
       const ownerState = {
         direction,
         spacing,
@@ -44265,7 +44230,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     A700: "#00c853"
   };
   const green$1 = green;
-  const _excluded$17 = ["mode", "contrastThreshold", "tonalOffset"];
+  const _excluded$18 = ["mode", "contrastThreshold", "tonalOffset"];
   const light = {
     // The colors used to style the text.
     text: {
@@ -44433,7 +44398,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
       mode = "light",
       contrastThreshold = 3,
       tonalOffset = 0.2
-    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$17);
+    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$18);
     const primary = palette.primary || getDefaultPrimary(mode);
     const secondary = palette.secondary || getDefaultSecondary(mode);
     const error = palette.error || getDefaultError(mode);
@@ -44552,7 +44517,7 @@ const theme2 = createTheme({ palette: {
     }, modes[mode]), other);
     return paletteOutput;
   }
-  const _excluded$16 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+  const _excluded$17 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
   function round$1(value) {
     return Math.round(value * 1e5) / 1e5;
   }
@@ -44576,7 +44541,7 @@ const theme2 = createTheme({ palette: {
       // Apply the CSS properties to all the variants.
       allVariants,
       pxToRem: pxToRem2
-    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$16);
+    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$17);
     if (process.env.NODE_ENV !== "production") {
       if (typeof fontSize !== "number") {
         console.error("MUI: `fontSize` is required to be a number.");
@@ -44641,7 +44606,7 @@ const theme2 = createTheme({ palette: {
   }
   const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
   const shadows$1 = shadows;
-  const _excluded$15 = ["duration", "easing", "delay"];
+  const _excluded$16 = ["duration", "easing", "delay"];
   const easing = {
     // This is the most common easing curve.
     easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -44684,7 +44649,7 @@ const theme2 = createTheme({ palette: {
         duration: durationOption = mergedDuration.standard,
         easing: easingOption = mergedEasing.easeInOut,
         delay = 0
-      } = options, other = _objectWithoutPropertiesLoose(options, _excluded$15);
+      } = options, other = _objectWithoutPropertiesLoose(options, _excluded$16);
       if (process.env.NODE_ENV !== "production") {
         const isString2 = (value) => typeof value === "string";
         const isNumber2 = (value) => !isNaN(parseFloat(value));
@@ -44728,14 +44693,14 @@ const theme2 = createTheme({ palette: {
     tooltip: 1500
   };
   const zIndex$1 = zIndex;
-  const _excluded$14 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+  const _excluded$15 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
   function createTheme(options = {}, ...args) {
     const {
       mixins: mixinsInput = {},
       palette: paletteInput = {},
       transitions: transitionsInput = {},
       typography: typographyInput = {}
-    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$14);
+    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$15);
     if (options.vars) {
       throw new Error(process.env.NODE_ENV !== "production" ? `MUI: \`vars\` is a private field used for CSS variables support.
 Please use another name.` : formatMuiErrorMessage(18));
@@ -44791,11 +44756,11 @@ Please use another name.` : formatMuiErrorMessage(18));
   const defaultTheme$1 = createTheme();
   const defaultTheme$2 = defaultTheme$1;
   const THEME_ID = "$$material";
-  function useThemeProps({
+  function useThemeProps$1({
     props,
     name: name2
   }) {
-    return useThemeProps$1({
+    return useThemeProps$2({
       props,
       name: name2,
       defaultTheme: defaultTheme$2,
@@ -44814,7 +44779,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiSvgIcon", slot);
   }
   generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-  const _excluded$13 = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+  const _excluded$14 = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
   const useUtilityClasses$V = (ownerState) => {
     const {
       color: color2,
@@ -44867,7 +44832,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
   });
   const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiSvgIcon"
     });
@@ -44881,7 +44846,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       inheritViewBox = false,
       titleAccess,
       viewBox = "0 0 24 24"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$13);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$14);
     const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
     const ownerState = _extends$1({}, props, {
       color: color2,
@@ -44913,10 +44878,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? SvgIcon.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Node passed into the SVG element.
      */
@@ -45058,10 +45023,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$g = Star.default = void 0;
   var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
   var _jsxRuntime$g = jsxRuntimeExports;
-  var _default$g = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
+  default_1$g = Star.default = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
     d: "M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
   }), "Star");
-  default_1$g = Star.default = _default$g;
   var StarOutline = {};
   var _interopRequireDefault$f = interopRequireDefaultExports;
   Object.defineProperty(StarOutline, "__esModule", {
@@ -45070,10 +45034,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$f = StarOutline.default = void 0;
   var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
   var _jsxRuntime$f = jsxRuntimeExports;
-  var _default$f = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
-    d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
+  default_1$f = StarOutline.default = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
+    d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28z"
   }), "StarOutline");
-  default_1$f = StarOutline.default = _default$f;
   function useTheme() {
     const theme2 = useTheme$2(defaultTheme$2);
     if (process.env.NODE_ENV !== "production") {
@@ -45081,11 +45044,11 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return theme2[THEME_ID] || theme2;
   }
-  const _excluded$12 = ["theme"];
+  const _excluded$13 = ["theme"];
   function ThemeProvider(_ref) {
     let {
       theme: themeInput
-    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$12);
+    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$13);
     const scopedTheme = themeInput[THEME_ID];
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$1({}, props, {
       themeId: scopedTheme ? THEME_ID : void 0,
@@ -45112,18 +45075,20 @@ Please use another name.` : formatMuiErrorMessage(18));
     return (alphaValue / 100).toFixed(2);
   };
   const getOverlayAlpha$1 = getOverlayAlpha;
+  const boxClasses = generateUtilityClasses("MuiBox", ["root"]);
+  const boxClasses$1 = boxClasses;
   const defaultTheme = createTheme();
   const Box = createBox({
     themeId: THEME_ID,
     defaultTheme,
-    defaultClassName: "MuiBox-root",
+    defaultClassName: boxClasses$1.root,
     generateClassName: ClassNameGenerator$1.generate
   });
   process.env.NODE_ENV !== "production" ? Box.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * @ignore
      */
@@ -45917,7 +45882,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   } : void 0;
   const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
   const touchRippleClasses$1 = touchRippleClasses;
-  const _excluded$11 = ["center", "classes", "className"];
+  const _excluded$12 = ["center", "classes", "className"];
   let _ = (t) => t, _t, _t2, _t3, _t4;
   const DURATION = 550;
   const DELAY_RIPPLE = 80;
@@ -46024,7 +45989,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     theme: theme2
   }) => theme2.transitions.easing.easeInOut);
   const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiTouchRipple"
     });
@@ -46032,7 +45997,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       center: centerProp = false,
       classes = {},
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$11);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$12);
     const [ripples, setRipples] = reactExports.useState([]);
     const nextKey = reactExports.useRef(0);
     const rippleCallback = reactExports.useRef(null);
@@ -46043,16 +46008,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     }, [ripples]);
     const ignoringMouseDown = reactExports.useRef(false);
-    const startTimer = reactExports.useRef(0);
+    const startTimer = useTimeout();
     const startTimerCommit = reactExports.useRef(null);
     const container = reactExports.useRef(null);
-    reactExports.useEffect(() => {
-      return () => {
-        if (startTimer.current) {
-          clearTimeout(startTimer.current);
-        }
-      };
-    }, []);
     const startCommit = reactExports.useCallback((params) => {
       const {
         pulsate: pulsate2,
@@ -46136,12 +46094,12 @@ Please use another name.` : formatMuiErrorMessage(18));
               cb
             });
           };
-          startTimer.current = setTimeout(() => {
+          startTimer.start(DELAY_RIPPLE, () => {
             if (startTimerCommit.current) {
               startTimerCommit.current();
               startTimerCommit.current = null;
             }
-          }, DELAY_RIPPLE);
+          });
         }
       } else {
         startCommit({
@@ -46152,18 +46110,18 @@ Please use another name.` : formatMuiErrorMessage(18));
           cb
         });
       }
-    }, [centerProp, startCommit]);
+    }, [centerProp, startCommit, startTimer]);
     const pulsate = reactExports.useCallback(() => {
       start({}, {
         pulsate: true
       });
     }, [start]);
     const stop = reactExports.useCallback((event, cb) => {
-      clearTimeout(startTimer.current);
+      startTimer.clear();
       if ((event == null ? void 0 : event.type) === "touchend" && startTimerCommit.current) {
         startTimerCommit.current();
         startTimerCommit.current = null;
-        startTimer.current = setTimeout(() => {
+        startTimer.start(0, () => {
           stop(event, cb);
         });
         return;
@@ -46176,7 +46134,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         return oldRipples;
       });
       rippleCallback.current = cb;
-    }, []);
+    }, [startTimer]);
     reactExports.useImperativeHandle(ref, () => ({
       pulsate,
       start,
@@ -46215,7 +46173,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
   const buttonBaseClasses$1 = buttonBaseClasses;
-  const _excluded$10 = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+  const _excluded$11 = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
   const useUtilityClasses$U = (ownerState) => {
     const {
       disabled,
@@ -46277,7 +46235,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   });
   const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiButtonBase"
     });
@@ -46310,7 +46268,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       TouchRippleProps,
       touchRippleRef,
       type
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$11);
     const buttonRef = reactExports.useRef(null);
     const rippleRef = reactExports.useRef(null);
     const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -46496,10 +46454,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? ButtonBase.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * A ref for imperative actions.
      * It currently only supports `focusVisible()` action.
@@ -46659,7 +46617,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const chipClasses = generateUtilityClasses("MuiChip", ["root", "sizeSmall", "sizeMedium", "colorError", "colorInfo", "colorPrimary", "colorSecondary", "colorSuccess", "colorWarning", "disabled", "clickable", "clickableColorPrimary", "clickableColorSecondary", "deletable", "deletableColorPrimary", "deletableColorSecondary", "outlined", "filled", "outlinedPrimary", "outlinedSecondary", "filledPrimary", "filledSecondary", "avatar", "avatarSmall", "avatarMedium", "avatarColorPrimary", "avatarColorSecondary", "icon", "iconSmall", "iconMedium", "iconColorPrimary", "iconColorSecondary", "label", "labelSmall", "labelMedium", "deleteIcon", "deleteIconSmall", "deleteIconMedium", "deleteIconColorPrimary", "deleteIconColorSecondary", "deleteIconOutlinedColorPrimary", "deleteIconOutlinedColorSecondary", "deleteIconFilledColorPrimary", "deleteIconFilledColorSecondary", "focusVisible"]);
   const chipClasses$1 = chipClasses;
-  const _excluded$$ = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
+  const _excluded$10 = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
   const useUtilityClasses$T = (ownerState) => {
     const {
       classes,
@@ -46918,7 +46876,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return keyboardEvent.key === "Backspace" || keyboardEvent.key === "Delete";
   }
   const Chip = /* @__PURE__ */ reactExports.forwardRef(function Chip2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiChip"
     });
@@ -46941,7 +46899,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       skipFocusWhenDisabled = false
       // TODO v6: Rename to `focusableWhenDisabled`.
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
     const chipRef = reactExports.useRef(null);
     const handleRef = useForkRef(chipRef, ref);
     const handleDeleteIconClick = (event) => {
@@ -47035,10 +46993,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Chip.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The Avatar element to display.
      */
@@ -47141,7 +47099,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiTypography", slot);
   }
   generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-  const _excluded$_ = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+  const _excluded$$ = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
   const useUtilityClasses$S = (ownerState) => {
     const {
       align,
@@ -47208,7 +47166,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return colorTransformations$1[color2] || color2;
   };
   const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(inProps, ref) {
-    const themeProps = useThemeProps({
+    const themeProps = useThemeProps$1({
       props: inProps,
       name: "MuiTypography"
     });
@@ -47225,7 +47183,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       paragraph = false,
       variant = "body1",
       variantMapping = defaultVariantMapping
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$_);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
     const ownerState = _extends$1({}, props, {
       align,
       color: color2,
@@ -47247,10 +47205,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Typography.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Set the text-align on the component.
      * @default 'inherit'
@@ -47327,7 +47285,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
   const iconButtonClasses$1 = iconButtonClasses;
-  const _excluded$Z = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+  const _excluded$_ = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
   const useUtilityClasses$R = (ownerState) => {
     const {
       classes,
@@ -47410,7 +47368,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiIconButton"
     });
@@ -47422,7 +47380,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled = false,
       disableFocusRipple = false,
       size: size2 = "medium"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$_);
     const ownerState = _extends$1({}, props, {
       edge,
       color: color2,
@@ -47443,10 +47401,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? IconButton.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The icon to display.
      */
@@ -70793,7 +70751,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiCollapse", slot);
   }
   generateUtilityClasses("MuiCollapse", ["root", "horizontal", "vertical", "entered", "hidden", "wrapper", "wrapperInner"]);
-  const _excluded$Y = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
+  const _excluded$Z = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
   const useUtilityClasses$Q = (ownerState) => {
     const {
       orientation,
@@ -70863,7 +70821,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     height: "100%"
   }));
   const Collapse$1 = /* @__PURE__ */ reactExports.forwardRef(function Collapse2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiCollapse"
     });
@@ -70886,24 +70844,19 @@ Please use another name.` : formatMuiErrorMessage(18));
       timeout = duration.standard,
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
     const ownerState = _extends$1({}, props, {
       orientation,
       collapsedSize: collapsedSizeProp
     });
     const classes = useUtilityClasses$Q(ownerState);
     const theme2 = useTheme();
-    const timer = reactExports.useRef();
+    const timer = useTimeout();
     const wrapperRef = reactExports.useRef(null);
     const autoTransitionDuration = reactExports.useRef();
     const collapsedSize = typeof collapsedSizeProp === "number" ? `${collapsedSizeProp}px` : collapsedSizeProp;
     const isHorizontal = orientation === "horizontal";
     const size2 = isHorizontal ? "width" : "height";
-    reactExports.useEffect(() => {
-      return () => {
-        clearTimeout(timer.current);
-      };
-    }, []);
     const nodeRef = reactExports.useRef(null);
     const handleRef = useForkRef(ref, nodeRef);
     const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -70994,7 +70947,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const handleAddEndListener = (next2) => {
       if (timeout === "auto") {
-        timer.current = setTimeout(next2, autoTransitionDuration.current || 0);
+        timer.start(autoTransitionDuration.current || 0, next2);
       }
       if (addEndListener) {
         addEndListener(nodeRef.current, next2);
@@ -71044,10 +70997,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Collapse$1.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Add a custom transition end trigger. Called with the transitioning DOM
      * node and a done callback. Allows for more fine grained transition end
@@ -71144,7 +71097,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiPaper", slot);
   }
   generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-  const _excluded$X = ["className", "component", "elevation", "square", "variant"];
+  const _excluded$Y = ["className", "component", "elevation", "square", "variant"];
   const useUtilityClasses$P = (ownerState) => {
     const {
       square,
@@ -71188,7 +71141,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiPaper"
     });
@@ -71198,7 +71151,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       elevation = 1,
       square = false,
       variant = "elevation"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
     const ownerState = _extends$1({}, props, {
       component,
       elevation,
@@ -71220,10 +71173,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Paper.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -71277,12 +71230,158 @@ Please use another name.` : formatMuiErrorMessage(18));
     AccordionContext.displayName = "AccordionContext";
   }
   const AccordionContext$1 = AccordionContext;
+  function isHostComponent(element) {
+    return typeof element === "string";
+  }
+  function appendOwnerState(elementType, otherProps, ownerState) {
+    if (elementType === void 0 || isHostComponent(elementType)) {
+      return otherProps;
+    }
+    return _extends$1({}, otherProps, {
+      ownerState: _extends$1({}, otherProps.ownerState, ownerState)
+    });
+  }
+  function extractEventHandlers(object, excludeKeys = []) {
+    if (object === void 0) {
+      return {};
+    }
+    const result = {};
+    Object.keys(object).filter((prop) => prop.match(/^on[A-Z]/) && typeof object[prop] === "function" && !excludeKeys.includes(prop)).forEach((prop) => {
+      result[prop] = object[prop];
+    });
+    return result;
+  }
+  function resolveComponentProps(componentProps, ownerState, slotState) {
+    if (typeof componentProps === "function") {
+      return componentProps(ownerState, slotState);
+    }
+    return componentProps;
+  }
+  function omitEventHandlers(object) {
+    if (object === void 0) {
+      return {};
+    }
+    const result = {};
+    Object.keys(object).filter((prop) => !(prop.match(/^on[A-Z]/) && typeof object[prop] === "function")).forEach((prop) => {
+      result[prop] = object[prop];
+    });
+    return result;
+  }
+  function mergeSlotProps(parameters) {
+    const {
+      getSlotProps,
+      additionalProps,
+      externalSlotProps,
+      externalForwardedProps,
+      className
+    } = parameters;
+    if (!getSlotProps) {
+      const joinedClasses2 = clsx(additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
+      const mergedStyle2 = _extends$1({}, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
+      const props2 = _extends$1({}, additionalProps, externalForwardedProps, externalSlotProps);
+      if (joinedClasses2.length > 0) {
+        props2.className = joinedClasses2;
+      }
+      if (Object.keys(mergedStyle2).length > 0) {
+        props2.style = mergedStyle2;
+      }
+      return {
+        props: props2,
+        internalRef: void 0
+      };
+    }
+    const eventHandlers = extractEventHandlers(_extends$1({}, externalForwardedProps, externalSlotProps));
+    const componentsPropsWithoutEventHandlers = omitEventHandlers(externalSlotProps);
+    const otherPropsWithoutEventHandlers = omitEventHandlers(externalForwardedProps);
+    const internalSlotProps = getSlotProps(eventHandlers);
+    const joinedClasses = clsx(internalSlotProps == null ? void 0 : internalSlotProps.className, additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
+    const mergedStyle = _extends$1({}, internalSlotProps == null ? void 0 : internalSlotProps.style, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
+    const props = _extends$1({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
+    if (joinedClasses.length > 0) {
+      props.className = joinedClasses;
+    }
+    if (Object.keys(mergedStyle).length > 0) {
+      props.style = mergedStyle;
+    }
+    return {
+      props,
+      internalRef: internalSlotProps.ref
+    };
+  }
+  const _excluded$X = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+  function useSlotProps(parameters) {
+    var _parameters$additiona;
+    const {
+      elementType,
+      externalSlotProps,
+      ownerState,
+      skipResolvingSlotProps = false
+    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$X);
+    const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
+    const {
+      props: mergedProps,
+      internalRef
+    } = mergeSlotProps(_extends$1({}, rest, {
+      externalSlotProps: resolvedComponentsProps
+    }));
+    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, (_parameters$additiona = parameters.additionalProps) == null ? void 0 : _parameters$additiona.ref);
+    const props = appendOwnerState(elementType, _extends$1({}, mergedProps, {
+      ref
+    }), ownerState);
+    return props;
+  }
+  const _excluded$W = ["className", "elementType", "ownerState", "externalForwardedProps", "getSlotOwnerState", "internalForwardedProps"], _excluded2$5 = ["component", "slots", "slotProps"], _excluded3$1 = ["component"];
+  function useSlot(name2, parameters) {
+    const {
+      className,
+      elementType: initialElementType,
+      ownerState,
+      externalForwardedProps,
+      getSlotOwnerState,
+      internalForwardedProps
+    } = parameters, useSlotPropsParams = _objectWithoutPropertiesLoose(parameters, _excluded$W);
+    const {
+      component: rootComponent,
+      slots = {
+        [name2]: void 0
+      },
+      slotProps = {
+        [name2]: void 0
+      }
+    } = externalForwardedProps, other = _objectWithoutPropertiesLoose(externalForwardedProps, _excluded2$5);
+    const elementType = slots[name2] || initialElementType;
+    const resolvedComponentsProps = resolveComponentProps(slotProps[name2], ownerState);
+    const _mergeSlotProps = mergeSlotProps(_extends$1({
+      className
+    }, useSlotPropsParams, {
+      externalForwardedProps: name2 === "root" ? other : void 0,
+      externalSlotProps: resolvedComponentsProps
+    })), {
+      props: {
+        component: slotComponent
+      },
+      internalRef
+    } = _mergeSlotProps, mergedProps = _objectWithoutPropertiesLoose(_mergeSlotProps.props, _excluded3$1);
+    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, parameters.ref);
+    const slotOwnerState = getSlotOwnerState ? getSlotOwnerState(mergedProps) : {};
+    const finalOwnerState = _extends$1({}, ownerState, slotOwnerState);
+    const LeafComponent = name2 === "root" ? slotComponent || rootComponent : slotComponent;
+    const props = appendOwnerState(elementType, _extends$1({}, name2 === "root" && !rootComponent && !slots[name2] && internalForwardedProps, name2 !== "root" && !slots[name2] && internalForwardedProps, mergedProps, LeafComponent && {
+      as: LeafComponent
+    }, {
+      ref
+    }), finalOwnerState);
+    Object.keys(slotOwnerState).forEach((propName) => {
+      delete props[propName];
+    });
+    return [elementType, props];
+  }
   function getAccordionUtilityClass(slot) {
     return generateUtilityClass("MuiAccordion", slot);
   }
   const accordionClasses = generateUtilityClasses("MuiAccordion", ["root", "rounded", "expanded", "disabled", "gutters", "region"]);
   const accordionClasses$1 = accordionClasses;
-  const _excluded$W = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
+  const _excluded$V = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "slots", "slotProps", "TransitionComponent", "TransitionProps"];
   const useUtilityClasses$O = (ownerState) => {
     const {
       classes,
@@ -71319,7 +71418,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       transition: theme2.transitions.create(["margin"], transition),
       overflowAnchor: "none",
       // Keep the same scrolling position
-      "&:before": {
+      "&::before": {
         position: "absolute",
         left: 0,
         top: -1,
@@ -71331,12 +71430,12 @@ Please use another name.` : formatMuiErrorMessage(18));
         transition: theme2.transitions.create(["opacity", "background-color"], transition)
       },
       "&:first-of-type": {
-        "&:before": {
+        "&::before": {
           display: "none"
         }
       },
       [`&.${accordionClasses$1.expanded}`]: {
-        "&:before": {
+        "&::before": {
           opacity: 0
         },
         "&:first-of-type": {
@@ -71346,7 +71445,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           marginBottom: 0
         },
         "& + &": {
-          "&:before": {
+          "&::before": {
             display: "none"
           }
         }
@@ -71379,7 +71478,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const Accordion = /* @__PURE__ */ reactExports.forwardRef(function Accordion2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiAccordion"
     });
@@ -71392,9 +71491,11 @@ Please use another name.` : formatMuiErrorMessage(18));
       expanded: expandedProp,
       onChange,
       square = false,
-      TransitionComponent = Collapse$2,
-      TransitionProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+      slots = {},
+      slotProps = {},
+      TransitionComponent: TransitionComponentProp,
+      TransitionProps: TransitionPropsProp
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
     const [expanded, setExpandedState] = useControlled({
       controlled: expandedProp,
       default: defaultExpanded,
@@ -71421,6 +71522,21 @@ Please use another name.` : formatMuiErrorMessage(18));
       expanded
     });
     const classes = useUtilityClasses$O(ownerState);
+    const backwardCompatibleSlots = _extends$1({
+      transition: TransitionComponentProp
+    }, slots);
+    const backwardCompatibleSlotProps = _extends$1({
+      transition: TransitionPropsProp
+    }, slotProps);
+    const [TransitionSlot, transitionProps] = useSlot("transition", {
+      elementType: Collapse$2,
+      externalForwardedProps: {
+        slots: backwardCompatibleSlots,
+        slotProps: backwardCompatibleSlotProps
+      },
+      ownerState
+    });
+    delete transitionProps.ownerState;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionRoot, _extends$1({
       className: clsx(classes.root, className),
       ref,
@@ -71430,10 +71546,10 @@ Please use another name.` : formatMuiErrorMessage(18));
       children: [/* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContext$1.Provider, {
         value: contextValue,
         children: summary
-      }), /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+      }), /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionSlot, _extends$1({
         in: expanded,
         timeout: "auto"
-      }, TransitionProps, {
+      }, transitionProps, {
         children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
           "aria-labelledby": summary.props.id,
           id: summary.props["aria-controls"],
@@ -71445,10 +71561,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Accordion.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -71498,6 +71614,20 @@ Please use another name.` : formatMuiErrorMessage(18));
      */
     onChange: PropTypes.func,
     /**
+     * The props used for each slot inside.
+     * @default {}
+     */
+    slotProps: PropTypes.shape({
+      transition: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
+    }),
+    /**
+     * The components used for each slot inside.
+     * @default {}
+     */
+    slots: PropTypes.shape({
+      transition: PropTypes.elementType
+    }),
+    /**
      * If `true`, rounded corners are disabled.
      * @default false
      */
@@ -71509,12 +71639,13 @@ Please use another name.` : formatMuiErrorMessage(18));
     /**
      * The component used for the transition.
      * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
-     * @default Collapse
+     * @deprecated Use `slots.transition` instead. This prop will be removed in v7. [How to migrate](/material-ui/migration/migrating-from-deprecated-apis/).
      */
     TransitionComponent: PropTypes.elementType,
     /**
      * Props applied to the transition element.
      * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
+     * @deprecated Use `slotProps.transition` instead. This prop will be removed in v7. [How to migrate](/material-ui/migration/migrating-from-deprecated-apis/).
      */
     TransitionProps: PropTypes.object
   } : void 0;
@@ -71523,7 +71654,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAccordionDetails", slot);
   }
   generateUtilityClasses("MuiAccordionDetails", ["root"]);
-  const _excluded$V = ["className"];
+  const _excluded$U = ["className"];
   const useUtilityClasses$N = (ownerState) => {
     const {
       classes
@@ -71543,13 +71674,13 @@ Please use another name.` : formatMuiErrorMessage(18));
     padding: theme2.spacing(1, 2, 2)
   }));
   const AccordionDetails = /* @__PURE__ */ reactExports.forwardRef(function AccordionDetails2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiAccordionDetails"
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
     const ownerState = props;
     const classes = useUtilityClasses$N(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionDetailsRoot, _extends$1({
@@ -71559,10 +71690,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? AccordionDetails.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -71586,7 +71717,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const accordionSummaryClasses = generateUtilityClasses("MuiAccordionSummary", ["root", "expanded", "focusVisible", "disabled", "gutters", "contentGutters", "content", "expandIconWrapper"]);
   const accordionSummaryClasses$1 = accordionSummaryClasses;
-  const _excluded$U = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
+  const _excluded$T = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
   const useUtilityClasses$M = (ownerState) => {
     const {
       classes,
@@ -71670,7 +71801,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const AccordionSummary = /* @__PURE__ */ reactExports.forwardRef(function AccordionSummary2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiAccordionSummary"
     });
@@ -71680,7 +71811,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       expandIcon,
       focusVisibleClassName,
       onClick
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
     const {
       disabled = false,
       disableGutters,
@@ -71725,10 +71856,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? AccordionSummary.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -71784,7 +71915,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ClearIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  const _excluded$T = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
+  const _excluded$S = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
   const useUtilityClasses$L = (ownerState) => {
     const {
       variant,
@@ -71893,7 +72024,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   };
   const Alert = /* @__PURE__ */ reactExports.forwardRef(function Alert2(inProps, ref) {
     var _ref, _slots$closeButton, _ref2, _slots$closeIcon, _slotProps$closeButto, _slotProps$closeIcon;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiAlert"
     });
@@ -71913,7 +72044,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps = {},
       slots = {},
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
     const ownerState = _extends$1({}, props, {
       color: color2,
       severity,
@@ -71961,10 +72092,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Alert.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The action to display. It renders after the message, at the end of the alert.
      */
@@ -72052,7 +72183,7 @@ Please use another name.` : formatMuiErrorMessage(18));
      * The severity of the alert. This defines the color and icon used.
      * @default 'success'
      */
-    severity: PropTypes.oneOf(["error", "info", "success", "warning"]),
+    severity: PropTypes.oneOfType([PropTypes.oneOf(["error", "info", "success", "warning"]), PropTypes.string]),
     /**
      * The extra props for the slot components.
      * You can override the existing props or add new ones.
@@ -72091,7 +72222,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAlertTitle", slot);
   }
   generateUtilityClasses("MuiAlertTitle", ["root"]);
-  const _excluded$S = ["className"];
+  const _excluded$R = ["className"];
   const useUtilityClasses$K = (ownerState) => {
     const {
       classes
@@ -72114,13 +72245,13 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
   });
   const AlertTitle = /* @__PURE__ */ reactExports.forwardRef(function AlertTitle2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiAlertTitle"
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$R);
     const ownerState = props;
     const classes = useUtilityClasses$K(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AlertTitleRoot, _extends$1({
@@ -72132,10 +72263,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? AlertTitle.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -72158,7 +72289,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAppBar", slot);
   }
   generateUtilityClasses("MuiAppBar", ["root", "positionFixed", "positionAbsolute", "positionSticky", "positionStatic", "positionRelative", "colorDefault", "colorPrimary", "colorSecondary", "colorInherit", "colorTransparent", "colorError", "colorInfo", "colorSuccess", "colorWarning"]);
-  const _excluded$R = ["className", "color", "enableColorOnDark", "position"];
+  const _excluded$Q = ["className", "color", "enableColorOnDark", "position"];
   const useUtilityClasses$J = (ownerState) => {
     const {
       color: color2,
@@ -72251,7 +72382,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   const AppBar = /* @__PURE__ */ reactExports.forwardRef(function AppBar2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiAppBar"
     });
@@ -72260,7 +72391,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       color: color2 = "primary",
       enableColorOnDark = false,
       position: position2 = "fixed"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$R);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Q);
     const ownerState = _extends$1({}, props, {
       color: color2,
       position: position2,
@@ -72277,10 +72408,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? AppBar.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -72318,106 +72449,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
   } : void 0;
   const AppBar$1 = AppBar;
-  function isHostComponent(element) {
-    return typeof element === "string";
-  }
-  function appendOwnerState(elementType, otherProps, ownerState) {
-    if (elementType === void 0 || isHostComponent(elementType)) {
-      return otherProps;
-    }
-    return _extends$1({}, otherProps, {
-      ownerState: _extends$1({}, otherProps.ownerState, ownerState)
-    });
-  }
-  function extractEventHandlers(object, excludeKeys = []) {
-    if (object === void 0) {
-      return {};
-    }
-    const result = {};
-    Object.keys(object).filter((prop) => prop.match(/^on[A-Z]/) && typeof object[prop] === "function" && !excludeKeys.includes(prop)).forEach((prop) => {
-      result[prop] = object[prop];
-    });
-    return result;
-  }
-  function resolveComponentProps(componentProps, ownerState, slotState) {
-    if (typeof componentProps === "function") {
-      return componentProps(ownerState, slotState);
-    }
-    return componentProps;
-  }
-  function omitEventHandlers(object) {
-    if (object === void 0) {
-      return {};
-    }
-    const result = {};
-    Object.keys(object).filter((prop) => !(prop.match(/^on[A-Z]/) && typeof object[prop] === "function")).forEach((prop) => {
-      result[prop] = object[prop];
-    });
-    return result;
-  }
-  function mergeSlotProps(parameters) {
-    const {
-      getSlotProps,
-      additionalProps,
-      externalSlotProps,
-      externalForwardedProps,
-      className
-    } = parameters;
-    if (!getSlotProps) {
-      const joinedClasses2 = clsx(externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className, className, additionalProps == null ? void 0 : additionalProps.className);
-      const mergedStyle2 = _extends$1({}, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-      const props2 = _extends$1({}, additionalProps, externalForwardedProps, externalSlotProps);
-      if (joinedClasses2.length > 0) {
-        props2.className = joinedClasses2;
-      }
-      if (Object.keys(mergedStyle2).length > 0) {
-        props2.style = mergedStyle2;
-      }
-      return {
-        props: props2,
-        internalRef: void 0
-      };
-    }
-    const eventHandlers = extractEventHandlers(_extends$1({}, externalForwardedProps, externalSlotProps));
-    const componentsPropsWithoutEventHandlers = omitEventHandlers(externalSlotProps);
-    const otherPropsWithoutEventHandlers = omitEventHandlers(externalForwardedProps);
-    const internalSlotProps = getSlotProps(eventHandlers);
-    const joinedClasses = clsx(internalSlotProps == null ? void 0 : internalSlotProps.className, additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
-    const mergedStyle = _extends$1({}, internalSlotProps == null ? void 0 : internalSlotProps.style, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-    const props = _extends$1({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
-    if (joinedClasses.length > 0) {
-      props.className = joinedClasses;
-    }
-    if (Object.keys(mergedStyle).length > 0) {
-      props.style = mergedStyle;
-    }
-    return {
-      props,
-      internalRef: internalSlotProps.ref
-    };
-  }
-  const _excluded$Q = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
-  function useSlotProps(parameters) {
-    var _parameters$additiona;
-    const {
-      elementType,
-      externalSlotProps,
-      ownerState,
-      skipResolvingSlotProps = false
-    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$Q);
-    const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
-    const {
-      props: mergedProps,
-      internalRef
-    } = mergeSlotProps(_extends$1({}, rest, {
-      externalSlotProps: resolvedComponentsProps
-    }));
-    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, (_parameters$additiona = parameters.additionalProps) == null ? void 0 : _parameters$additiona.ref);
-    const props = appendOwnerState(elementType, _extends$1({}, mergedProps, {
-      ref
-    }), ownerState);
-    return props;
-  }
   function useBadge(parameters) {
     const {
       badgeContent: badgeContentProp,
@@ -72551,10 +72582,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   }
   process.env.NODE_ENV !== "production" ? ClickAwayListener.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The wrapped element.
      */
@@ -72796,10 +72827,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   }
   process.env.NODE_ENV !== "production" ? FocusTrap.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * A single child content element.
      */
@@ -72893,10 +72924,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? Portal.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The children to render into the `container`.
      */
@@ -72904,6 +72935,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     /**
      * An HTML element or function that returns one.
      * The `container` will have the portal children appended to it.
+     *
+     * You can also provide a callback, which is called in a React layout effect.
+     * This lets you set the container from a ref, and also makes server-side rendering possible.
      *
      * By default, it uses the body of the top-level document object,
      * so it's simply `document.body` most of the time.
@@ -73183,7 +73217,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     const createHandleKeyDown = (otherHandlers) => (event) => {
       var _otherHandlers$onKeyD;
       (_otherHandlers$onKeyD = otherHandlers.onKeyDown) == null || _otherHandlers$onKeyD.call(otherHandlers, event);
-      if (event.key !== "Escape" || !isTopModal()) {
+      if (event.key !== "Escape" || event.which === 229 || // Wait until IME is settled.
+      !isTopModal()) {
         return;
       }
       if (!disableEscapeKeyDown) {
@@ -73264,7 +73299,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       open,
       resumeHideDuration
     } = parameters;
-    const timerAutoHide = reactExports.useRef();
+    const timerAutoHide = useTimeout();
     reactExports.useEffect(() => {
       if (!open) {
         return void 0;
@@ -73288,25 +73323,20 @@ Please use another name.` : formatMuiErrorMessage(18));
       if (!onClose || autoHideDurationParam == null) {
         return;
       }
-      clearTimeout(timerAutoHide.current);
-      timerAutoHide.current = setTimeout(() => {
+      timerAutoHide.start(autoHideDurationParam, () => {
         handleClose(null, "timeout");
-      }, autoHideDurationParam);
+      });
     });
     reactExports.useEffect(() => {
       if (open) {
         setAutoHideTimer(autoHideDuration);
       }
-      return () => {
-        clearTimeout(timerAutoHide.current);
-      };
-    }, [open, autoHideDuration, setAutoHideTimer]);
+      return timerAutoHide.clear;
+    }, [open, autoHideDuration, setAutoHideTimer, timerAutoHide]);
     const handleClickAway = (event) => {
       onClose == null || onClose(event, "clickaway");
     };
-    const handlePause = () => {
-      clearTimeout(timerAutoHide.current);
-    };
+    const handlePause = timerAutoHide.clear;
     const handleResume = reactExports.useCallback(() => {
       if (autoHideDuration != null) {
         setAutoHideTimer(resumeHideDuration != null ? resumeHideDuration : autoHideDuration * 0.5);
@@ -73342,7 +73372,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         };
       }
       return void 0;
-    }, [disableWindowBlurListener, handleResume, open]);
+    }, [disableWindowBlurListener, open, handleResume, handlePause]);
     const getRootProps = (externalProps = {}) => {
       const externalEventHandlers = _extends$1({}, extractEventHandlers(parameters), extractEventHandlers(externalProps));
       return _extends$1({
@@ -73543,10 +73573,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? TextareaAutosize.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * @ignore
      */
@@ -73607,10 +73637,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   }
   process.env.NODE_ENV !== "production" ? GlobalStyles.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The styles you want to apply globally.
      */
@@ -73815,7 +73845,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const InputBase = /* @__PURE__ */ reactExports.forwardRef(function InputBase2(inProps, ref) {
     var _slotProps$input;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiInputBase"
     });
@@ -74066,10 +74096,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? InputBase.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * @ignore
      */
@@ -74345,9 +74375,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       return [styles2.root, styles2[ownerState.variant], ownerState.colorDefault && styles2.colorDefault];
     }
   })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$1({
+    theme: theme2
+  }) => ({
     position: "relative",
     display: "flex",
     alignItems: "center",
@@ -74360,18 +74389,36 @@ Please use another name.` : formatMuiErrorMessage(18));
     lineHeight: 1,
     borderRadius: "50%",
     overflow: "hidden",
-    userSelect: "none"
-  }, ownerState.variant === "rounded" && {
-    borderRadius: (theme2.vars || theme2).shape.borderRadius
-  }, ownerState.variant === "square" && {
-    borderRadius: 0
-  }, ownerState.colorDefault && _extends$1({
-    color: (theme2.vars || theme2).palette.background.default
-  }, theme2.vars ? {
-    backgroundColor: theme2.vars.palette.Avatar.defaultBg
-  } : {
-    backgroundColor: theme2.palette.mode === "light" ? theme2.palette.grey[400] : theme2.palette.grey[600]
-  })));
+    userSelect: "none",
+    variants: [{
+      props: {
+        variant: "rounded"
+      },
+      style: {
+        borderRadius: (theme2.vars || theme2).shape.borderRadius
+      }
+    }, {
+      props: {
+        variant: "square"
+      },
+      style: {
+        borderRadius: 0
+      }
+    }, {
+      props: {
+        colorDefault: true
+      },
+      style: _extends$1({
+        color: (theme2.vars || theme2).palette.background.default
+      }, theme2.vars ? {
+        backgroundColor: theme2.vars.palette.Avatar.defaultBg
+      } : _extends$1({
+        backgroundColor: theme2.palette.grey[400]
+      }, theme2.applyStyles("dark", {
+        backgroundColor: theme2.palette.grey[600]
+      })))
+    }]
+  }));
   const AvatarImg = styled$1("img", {
     name: "MuiAvatar",
     slot: "Img",
@@ -74434,7 +74481,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return loaded;
   }
   const Avatar = /* @__PURE__ */ reactExports.forwardRef(function Avatar2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiAvatar"
     });
@@ -74471,7 +74518,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         ownerState,
         className: classes.img
       }, imgProps));
-    } else if (childrenProp != null) {
+    } else if (!!childrenProp || childrenProp === 0) {
       children = childrenProp;
     } else if (hasImg && alt) {
       children = alt[0];
@@ -74491,10 +74538,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Avatar.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Used in combination with `src` or `srcSet` to
      * provide an alt attribute for the rendered `img` element.
@@ -74654,10 +74701,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Fade.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Add a custom transition end trigger. Called with the transitioning DOM
      * node and a done callback. Allows for more fine grained transition end
@@ -74771,7 +74818,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const Backdrop = /* @__PURE__ */ reactExports.forwardRef(function Backdrop2(inProps, ref) {
     var _slotProps$root, _ref, _slots$root;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiBackdrop"
     });
@@ -74811,10 +74858,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Backdrop.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -74907,6 +74954,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     })])
   } : void 0;
   const Backdrop$1 = Backdrop;
+  function createUseThemeProps(name2) {
+    return useThemeProps$1;
+  }
   function getBadgeUtilityClass(slot) {
     return generateUtilityClass("MuiBadge", slot);
   }
@@ -74942,6 +74992,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const _excluded$K = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
   const RADIUS_STANDARD = 10;
   const RADIUS_DOT = 4;
+  const useThemeProps = createUseThemeProps();
   const useUtilityClasses$F = (ownerState) => {
     const {
       color: color2,
@@ -74978,109 +75029,170 @@ Please use another name.` : formatMuiErrorMessage(18));
       return [styles2.badge, styles2[ownerState.variant], styles2[`anchorOrigin${capitalize$2(ownerState.anchorOrigin.vertical)}${capitalize$2(ownerState.anchorOrigin.horizontal)}${capitalize$2(ownerState.overlap)}`], ownerState.color !== "default" && styles2[`color${capitalize$2(ownerState.color)}`], ownerState.invisible && styles2.invisible];
     }
   })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$1({
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    alignContent: "center",
-    alignItems: "center",
-    position: "absolute",
-    boxSizing: "border-box",
-    fontFamily: theme2.typography.fontFamily,
-    fontWeight: theme2.typography.fontWeightMedium,
-    fontSize: theme2.typography.pxToRem(12),
-    minWidth: RADIUS_STANDARD * 2,
-    lineHeight: 1,
-    padding: "0 6px",
-    height: RADIUS_STANDARD * 2,
-    borderRadius: RADIUS_STANDARD,
-    zIndex: 1,
-    // Render the badge on top of potential ripples.
-    transition: theme2.transitions.create("transform", {
-      easing: theme2.transitions.easing.easeInOut,
-      duration: theme2.transitions.duration.enteringScreen
-    })
-  }, ownerState.color !== "default" && {
-    backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main,
-    color: (theme2.vars || theme2).palette[ownerState.color].contrastText
-  }, ownerState.variant === "dot" && {
-    borderRadius: RADIUS_DOT,
-    height: RADIUS_DOT * 2,
-    minWidth: RADIUS_DOT * 2,
-    padding: 0
-  }, ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "rectangular" && {
-    top: 0,
-    right: 0,
-    transform: "scale(1) translate(50%, -50%)",
-    transformOrigin: "100% 0%",
-    [`&.${badgeClasses$1.invisible}`]: {
-      transform: "scale(0) translate(50%, -50%)"
-    }
-  }, ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "rectangular" && {
-    bottom: 0,
-    right: 0,
-    transform: "scale(1) translate(50%, 50%)",
-    transformOrigin: "100% 100%",
-    [`&.${badgeClasses$1.invisible}`]: {
-      transform: "scale(0) translate(50%, 50%)"
-    }
-  }, ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "rectangular" && {
-    top: 0,
-    left: 0,
-    transform: "scale(1) translate(-50%, -50%)",
-    transformOrigin: "0% 0%",
-    [`&.${badgeClasses$1.invisible}`]: {
-      transform: "scale(0) translate(-50%, -50%)"
-    }
-  }, ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "rectangular" && {
-    bottom: 0,
-    left: 0,
-    transform: "scale(1) translate(-50%, 50%)",
-    transformOrigin: "0% 100%",
-    [`&.${badgeClasses$1.invisible}`]: {
-      transform: "scale(0) translate(-50%, 50%)"
-    }
-  }, ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "circular" && {
-    top: "14%",
-    right: "14%",
-    transform: "scale(1) translate(50%, -50%)",
-    transformOrigin: "100% 0%",
-    [`&.${badgeClasses$1.invisible}`]: {
-      transform: "scale(0) translate(50%, -50%)"
-    }
-  }, ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "circular" && {
-    bottom: "14%",
-    right: "14%",
-    transform: "scale(1) translate(50%, 50%)",
-    transformOrigin: "100% 100%",
-    [`&.${badgeClasses$1.invisible}`]: {
-      transform: "scale(0) translate(50%, 50%)"
-    }
-  }, ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "circular" && {
-    top: "14%",
-    left: "14%",
-    transform: "scale(1) translate(-50%, -50%)",
-    transformOrigin: "0% 0%",
-    [`&.${badgeClasses$1.invisible}`]: {
-      transform: "scale(0) translate(-50%, -50%)"
-    }
-  }, ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "circular" && {
-    bottom: "14%",
-    left: "14%",
-    transform: "scale(1) translate(-50%, 50%)",
-    transformOrigin: "0% 100%",
-    [`&.${badgeClasses$1.invisible}`]: {
-      transform: "scale(0) translate(-50%, 50%)"
-    }
-  }, ownerState.invisible && {
-    transition: theme2.transitions.create("transform", {
-      easing: theme2.transitions.easing.easeInOut,
-      duration: theme2.transitions.duration.leavingScreen
-    })
-  }));
+    theme: theme2
+  }) => {
+    var _theme$vars;
+    return {
+      display: "flex",
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "center",
+      alignContent: "center",
+      alignItems: "center",
+      position: "absolute",
+      boxSizing: "border-box",
+      fontFamily: theme2.typography.fontFamily,
+      fontWeight: theme2.typography.fontWeightMedium,
+      fontSize: theme2.typography.pxToRem(12),
+      minWidth: RADIUS_STANDARD * 2,
+      lineHeight: 1,
+      padding: "0 6px",
+      height: RADIUS_STANDARD * 2,
+      borderRadius: RADIUS_STANDARD,
+      zIndex: 1,
+      // Render the badge on top of potential ripples.
+      transition: theme2.transitions.create("transform", {
+        easing: theme2.transitions.easing.easeInOut,
+        duration: theme2.transitions.duration.enteringScreen
+      }),
+      variants: [...Object.keys(((_theme$vars = theme2.vars) != null ? _theme$vars : theme2).palette).filter((key) => {
+        var _theme$vars2, _theme$vars3;
+        return ((_theme$vars2 = theme2.vars) != null ? _theme$vars2 : theme2).palette[key].main && ((_theme$vars3 = theme2.vars) != null ? _theme$vars3 : theme2).palette[key].contrastText;
+      }).map((color2) => ({
+        props: {
+          color: color2
+        },
+        style: {
+          backgroundColor: (theme2.vars || theme2).palette[color2].main,
+          color: (theme2.vars || theme2).palette[color2].contrastText
+        }
+      })), {
+        props: {
+          variant: "dot"
+        },
+        style: {
+          borderRadius: RADIUS_DOT,
+          height: RADIUS_DOT * 2,
+          minWidth: RADIUS_DOT * 2,
+          padding: 0
+        }
+      }, {
+        props: ({
+          ownerState
+        }) => ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "rectangular",
+        style: {
+          top: 0,
+          right: 0,
+          transform: "scale(1) translate(50%, -50%)",
+          transformOrigin: "100% 0%",
+          [`&.${badgeClasses$1.invisible}`]: {
+            transform: "scale(0) translate(50%, -50%)"
+          }
+        }
+      }, {
+        props: ({
+          ownerState
+        }) => ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "rectangular",
+        style: {
+          bottom: 0,
+          right: 0,
+          transform: "scale(1) translate(50%, 50%)",
+          transformOrigin: "100% 100%",
+          [`&.${badgeClasses$1.invisible}`]: {
+            transform: "scale(0) translate(50%, 50%)"
+          }
+        }
+      }, {
+        props: ({
+          ownerState
+        }) => ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "rectangular",
+        style: {
+          top: 0,
+          left: 0,
+          transform: "scale(1) translate(-50%, -50%)",
+          transformOrigin: "0% 0%",
+          [`&.${badgeClasses$1.invisible}`]: {
+            transform: "scale(0) translate(-50%, -50%)"
+          }
+        }
+      }, {
+        props: ({
+          ownerState
+        }) => ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "rectangular",
+        style: {
+          bottom: 0,
+          left: 0,
+          transform: "scale(1) translate(-50%, 50%)",
+          transformOrigin: "0% 100%",
+          [`&.${badgeClasses$1.invisible}`]: {
+            transform: "scale(0) translate(-50%, 50%)"
+          }
+        }
+      }, {
+        props: ({
+          ownerState
+        }) => ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "circular",
+        style: {
+          top: "14%",
+          right: "14%",
+          transform: "scale(1) translate(50%, -50%)",
+          transformOrigin: "100% 0%",
+          [`&.${badgeClasses$1.invisible}`]: {
+            transform: "scale(0) translate(50%, -50%)"
+          }
+        }
+      }, {
+        props: ({
+          ownerState
+        }) => ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "circular",
+        style: {
+          bottom: "14%",
+          right: "14%",
+          transform: "scale(1) translate(50%, 50%)",
+          transformOrigin: "100% 100%",
+          [`&.${badgeClasses$1.invisible}`]: {
+            transform: "scale(0) translate(50%, 50%)"
+          }
+        }
+      }, {
+        props: ({
+          ownerState
+        }) => ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "circular",
+        style: {
+          top: "14%",
+          left: "14%",
+          transform: "scale(1) translate(-50%, -50%)",
+          transformOrigin: "0% 0%",
+          [`&.${badgeClasses$1.invisible}`]: {
+            transform: "scale(0) translate(-50%, -50%)"
+          }
+        }
+      }, {
+        props: ({
+          ownerState
+        }) => ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "circular",
+        style: {
+          bottom: "14%",
+          left: "14%",
+          transform: "scale(1) translate(-50%, 50%)",
+          transformOrigin: "0% 100%",
+          [`&.${badgeClasses$1.invisible}`]: {
+            transform: "scale(0) translate(-50%, 50%)"
+          }
+        }
+      }, {
+        props: {
+          invisible: true
+        },
+        style: {
+          transition: theme2.transitions.create("transform", {
+            easing: theme2.transitions.easing.easeInOut,
+            duration: theme2.transitions.duration.leavingScreen
+          })
+        }
+      }]
+    };
+  });
   const Badge = /* @__PURE__ */ reactExports.forwardRef(function Badge2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$badge, _slotProps$root, _slotProps$badge;
     const props = useThemeProps({
@@ -75173,10 +75285,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Badge.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The anchor of the badge.
      * @default {
@@ -75511,7 +75623,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const contextProps = reactExports.useContext(ButtonGroupContext$1);
     const buttonGroupButtonContextPositionClassName = reactExports.useContext(ButtonGroupButtonContext$1);
     const resolvedProps = resolveProps(contextProps, inProps);
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: resolvedProps,
       name: "MuiButton"
     });
@@ -75569,10 +75681,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Button.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -75691,7 +75803,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   }, ownerState.edge === "end" && {
     marginRight: ownerState.size === "small" ? -3 : -12
   }));
-  const SwitchBaseInput = styled$1("input")({
+  const SwitchBaseInput = styled$1("input", {
+    shouldForwardProp: rootShouldForwardProp
+  })({
     cursor: "inherit",
     position: "absolute",
     opacity: 0,
@@ -75935,10 +76049,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   });
   process.env.NODE_ENV !== "production" ? {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * You can wrap a node.
      */
@@ -76001,7 +76115,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$backdrop, _slotProps$root, _slotProps$backdrop;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       name: "MuiModal",
       props: inProps
     });
@@ -76122,10 +76236,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? Modal.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * A backdrop component. This prop enables custom backdrop rendering.
      * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
@@ -76196,6 +76310,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     /**
      * An HTML element or function that returns one.
      * The `container` will have the portal children appended to it.
+     *
+     * You can also provide a callback, which is called in a React layout effect.
+     * This lets you set the container from a ref, and also makes server-side rendering possible.
      *
      * By default, it uses the body of the top-level document object,
      * so it's simply `document.body` most of the time.
@@ -76370,7 +76487,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     overflowY: "auto",
     overflowX: "hidden",
     textAlign: "center",
-    "&:after": {
+    "&::after": {
       content: '""',
       display: "inline-block",
       verticalAlign: "middle",
@@ -76439,7 +76556,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiDialog"
     });
@@ -76547,10 +76664,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The id(s) of the element(s) that describe the dialog.
      */
@@ -76713,7 +76830,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const DialogActions = /* @__PURE__ */ reactExports.forwardRef(function DialogActions2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiDialogActions"
     });
@@ -76732,10 +76849,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? DialogActions.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -76806,7 +76923,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const DialogContent = /* @__PURE__ */ reactExports.forwardRef(function DialogContent2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiDialogContent"
     });
@@ -76825,10 +76942,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? DialogContent.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -76871,7 +76988,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     flex: "0 0 auto"
   });
   const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiDialogTitle"
     });
@@ -76894,10 +77011,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -77051,7 +77168,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingBottom: `calc(${theme2.spacing(1)} * 1.2)`
   }));
   const Divider = /* @__PURE__ */ reactExports.forwardRef(function Divider2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiDivider"
     });
@@ -77094,10 +77211,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   Divider.muiSkipListHighlight = true;
   process.env.NODE_ENV !== "production" ? Divider.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Absolutely position the element.
      * @default false
@@ -77129,6 +77246,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     /**
      * If `true`, the divider will have a lighter color.
      * @default false
+     * @deprecated Use <Divider sx={{ opacity: 0.6 }} /> (or any opacity or color) instead. [How to migrate](/material-ui/migration/migrating-from-deprecated-apis/)
      */
     light: PropTypes.bool,
     /**
@@ -77269,7 +77387,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const Fab = /* @__PURE__ */ reactExports.forwardRef(function Fab2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiFab"
     });
@@ -77307,10 +77425,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Fab.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -77431,7 +77549,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.disabledBg : disabledBackground
       }
     }, !ownerState.disableUnderline && {
-      "&:after": {
+      "&::after": {
         borderBottom: `2px solid ${(_palette = (theme2.vars || theme2).palette[ownerState.color || "primary"]) == null ? void 0 : _palette.main}`,
         left: 0,
         bottom: 0,
@@ -77453,11 +77571,11 @@ Please use another name.` : formatMuiErrorMessage(18));
         transform: "scaleX(1) translateX(0)"
       },
       [`&.${filledInputClasses$1.error}`]: {
-        "&:before, &:after": {
+        "&::before, &::after": {
           borderBottomColor: (theme2.vars || theme2).palette.error.main
         }
       },
-      "&:before": {
+      "&::before": {
         borderBottom: `1px solid ${theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / ${theme2.vars.opacity.inputUnderline})` : bottomLineColor}`,
         left: 0,
         bottom: 0,
@@ -77489,6 +77607,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, ownerState.hiddenLabel && {
       paddingTop: 16,
       paddingBottom: 17
+    }, ownerState.hiddenLabel && ownerState.size === "small" && {
+      paddingTop: 8,
+      paddingBottom: 9
     }));
   });
   const FilledInputInput = styled$1(InputBaseComponent, {
@@ -77529,11 +77650,6 @@ Please use another name.` : formatMuiErrorMessage(18));
   }, ownerState.hiddenLabel && {
     paddingTop: 16,
     paddingBottom: 17
-  }, ownerState.multiline && {
-    paddingTop: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
-    paddingRight: 0
   }, ownerState.startAdornment && {
     paddingLeft: 0
   }, ownerState.endAdornment && {
@@ -77541,10 +77657,15 @@ Please use another name.` : formatMuiErrorMessage(18));
   }, ownerState.hiddenLabel && ownerState.size === "small" && {
     paddingTop: 8,
     paddingBottom: 9
+  }, ownerState.multiline && {
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingLeft: 0,
+    paddingRight: 0
   }));
   const FilledInput = /* @__PURE__ */ reactExports.forwardRef(function FilledInput2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$input;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiFilledInput"
     });
@@ -77574,7 +77695,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         ownerState
       }
     };
-    const componentsProps = (slotProps != null ? slotProps : componentsPropsProp) ? deepmerge(slotProps != null ? slotProps : componentsPropsProp, filledInputComponentsProps) : filledInputComponentsProps;
+    const componentsProps = (slotProps != null ? slotProps : componentsPropsProp) ? deepmerge(filledInputComponentsProps, slotProps != null ? slotProps : componentsPropsProp) : filledInputComponentsProps;
     const RootSlot = (_ref = (_slots$root = slots.root) != null ? _slots$root : components.Root) != null ? _ref : FilledInputRoot;
     const InputSlot = (_ref2 = (_slots$input = slots.input) != null ? _slots$input : components.Input) != null ? _ref2 : FilledInputInput;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(InputBase$1, _extends$1({
@@ -77593,10 +77714,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? FilledInput.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * This prop helps users to fill forms faster, especially on mobile devices.
      * The name can be confusing, as it's more like an autofill.
@@ -77833,7 +77954,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     width: "100%"
   }));
   const FormControl = /* @__PURE__ */ reactExports.forwardRef(function FormControl2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiFormControl"
     });
@@ -77954,10 +78075,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? FormControl.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -78040,16 +78161,16 @@ Please use another name.` : formatMuiErrorMessage(18));
       slot: "Root",
       overridesResolver: (props, styles2) => styles2.root
     }),
-    useThemeProps: (inProps) => useThemeProps({
+    useThemeProps: (inProps) => useThemeProps$1({
       props: inProps,
       name: "MuiStack"
     })
   });
   process.env.NODE_ENV !== "production" ? Stack.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -78169,7 +78290,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const FormControlLabel = /* @__PURE__ */ reactExports.forwardRef(function FormControlLabel2(inProps, ref) {
     var _ref, _slotProps$typography;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiFormControlLabel"
     });
@@ -78224,8 +78345,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       ref
     }, other, {
       children: [/* @__PURE__ */ reactExports.cloneElement(control, controlProps), required ? /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, {
-        direction: "row",
-        alignItems: "center",
+        display: "block",
         children: [label, /* @__PURE__ */ jsxRuntimeExports.jsxs(AsteriskComponent$1, {
           ownerState,
           "aria-hidden": true,
@@ -78236,10 +78356,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? FormControlLabel.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * If `true`, the component appears selected.
      */
@@ -78351,7 +78471,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     flexDirection: "row"
   }));
   const FormGroup = /* @__PURE__ */ reactExports.forwardRef(function FormGroup2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiFormGroup"
     });
@@ -78377,10 +78497,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? FormGroup.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -78460,7 +78580,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginRight: 14
   }));
   const FormHelperText = /* @__PURE__ */ reactExports.forwardRef(function FormHelperText2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiFormHelperText"
     });
@@ -78503,10 +78623,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? FormHelperText.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      *
@@ -78622,7 +78742,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const FormLabel = /* @__PURE__ */ reactExports.forwardRef(function FormLabel2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiFormLabel"
     });
@@ -78662,10 +78782,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? FormLabel.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -78748,7 +78868,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
     } = props, other = _objectWithoutPropertiesLoose(props, _excluded$u);
-    const timer = reactExports.useRef();
+    const timer = useTimeout();
     const autoTimeout = reactExports.useRef();
     const theme2 = useTheme();
     const nodeRef = reactExports.useRef(null);
@@ -78834,17 +78954,12 @@ Please use another name.` : formatMuiErrorMessage(18));
     const handleExited = normalizedTransitionCallback(onExited);
     const handleAddEndListener = (next2) => {
       if (timeout === "auto") {
-        timer.current = setTimeout(next2, autoTimeout.current || 0);
+        timer.start(autoTimeout.current || 0, next2);
       }
       if (addEndListener) {
         addEndListener(nodeRef.current, next2);
       }
     };
-    reactExports.useEffect(() => {
-      return () => {
-        clearTimeout(timer.current);
-      };
-    }, []);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
       appear,
       in: inProp,
@@ -78871,10 +78986,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Grow.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Add a custom transition end trigger. Called with the transitioning DOM
      * node and a done callback. Allows for more fine grained transition end
@@ -78985,7 +79100,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         marginTop: 16
       }
     }, !ownerState.disableUnderline && {
-      "&:after": {
+      "&::after": {
         borderBottom: `2px solid ${(theme2.vars || theme2).palette[ownerState.color].main}`,
         left: 0,
         bottom: 0,
@@ -79007,11 +79122,11 @@ Please use another name.` : formatMuiErrorMessage(18));
         transform: "scaleX(1) translateX(0)"
       },
       [`&.${inputClasses$1.error}`]: {
-        "&:before, &:after": {
+        "&::before, &::after": {
           borderBottomColor: (theme2.vars || theme2).palette.error.main
         }
       },
-      "&:before": {
+      "&::before": {
         borderBottom: `1px solid ${bottomLineColor}`,
         left: 0,
         bottom: 0,
@@ -79044,7 +79159,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   })({});
   const Input = /* @__PURE__ */ reactExports.forwardRef(function Input2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$input;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiInput"
     });
@@ -79087,10 +79202,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Input.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * This prop helps users to fill forms faster, especially on mobile devices.
      * The name can be confusing, as it's more like an autofill.
@@ -79306,7 +79421,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       } = props;
       return [{
         [`& .${formLabelClasses$1.asterisk}`]: styles2.asterisk
-      }, styles2.root, ownerState.formControl && styles2.formControl, ownerState.size === "small" && styles2.sizeSmall, ownerState.shrink && styles2.shrink, !ownerState.disableAnimation && styles2.animated, styles2[ownerState.variant]];
+      }, styles2.root, ownerState.formControl && styles2.formControl, ownerState.size === "small" && styles2.sizeSmall, ownerState.shrink && styles2.shrink, !ownerState.disableAnimation && styles2.animated, ownerState.focused && styles2.focused, styles2[ownerState.variant]];
     }
   })(({
     theme: theme2,
@@ -79371,7 +79486,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     transform: "translate(14px, -9px) scale(0.75)"
   })));
   const InputLabel = /* @__PURE__ */ reactExports.forwardRef(function InputLabel2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       name: "MuiInputLabel",
       props: inProps
     });
@@ -79388,7 +79503,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const fcs = formControlState({
       props,
       muiFormControl,
-      states: ["size", "variant", "required"]
+      states: ["size", "variant", "required", "focused"]
     });
     const ownerState = _extends$1({}, props, {
       disableAnimation,
@@ -79396,7 +79511,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       shrink,
       size: fcs.size,
       variant: fcs.variant,
-      required: fcs.required
+      required: fcs.required,
+      focused: fcs.focused
     });
     const classes = useUtilityClasses$o(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabelRoot, _extends$1({
@@ -79409,10 +79525,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? InputLabel.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -79578,7 +79694,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   const Link = /* @__PURE__ */ reactExports.forwardRef(function Link2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiLink"
     });
@@ -79643,10 +79759,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Link.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -79742,7 +79858,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingTop: 0
   }));
   const List = /* @__PURE__ */ reactExports.forwardRef(function List2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiList"
     });
@@ -79776,10 +79892,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? List.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -79915,7 +80031,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingBottom: 4
   }));
   const ListItemButton = /* @__PURE__ */ reactExports.forwardRef(function ListItemButton2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiListItemButton"
     });
@@ -79972,10 +80088,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? ListItemButton.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Defines the `align-items` style property.
      * @default 'center'
@@ -80085,7 +80201,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     right: 0
   }));
   const ListItemSecondaryAction = /* @__PURE__ */ reactExports.forwardRef(function ListItemSecondaryAction2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiListItemSecondaryAction"
     });
@@ -80104,10 +80220,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? ListItemSecondaryAction.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component, normally an `IconButton` or selection control.
      */
@@ -80236,7 +80352,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     position: "relative"
   });
   const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiListItem"
     });
@@ -80349,10 +80465,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? ListItem.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Defines the `align-items` style property.
      * @default 'center'
@@ -80540,7 +80656,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginTop: 8
   }));
   const ListItemAvatar = /* @__PURE__ */ reactExports.forwardRef(function ListItemAvatar2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiListItemAvatar"
     });
@@ -80559,10 +80675,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? ListItemAvatar.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component, normally an `Avatar`.
      */
@@ -80618,7 +80734,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginTop: 8
   }));
   const ListItemIcon = /* @__PURE__ */ reactExports.forwardRef(function ListItemIcon2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiListItemIcon"
     });
@@ -80637,10 +80753,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? ListItemIcon.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component, normally `Icon`, `SvgIcon`,
      * or a `@mui/icons-material` SVG icon element.
@@ -80708,7 +80824,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingLeft: 56
   }));
   const ListItemText = /* @__PURE__ */ reactExports.forwardRef(function ListItemText2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiListItemText"
     });
@@ -80764,10 +80880,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? ListItemText.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Alias for the `primary` prop.
      */
@@ -81008,10 +81124,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? MenuList.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * If `true`, will focus the `[role="menu"]` container and move into tab order.
      * @default false
@@ -81120,7 +81236,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProps, ref) {
     var _slotProps$paper, _slots$root, _slots$paper;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiPopover"
     });
@@ -81360,10 +81476,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Popover.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * A ref for imperative actions.
      * It currently only supports updatePosition() action.
@@ -81589,7 +81705,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const Menu$1 = /* @__PURE__ */ reactExports.forwardRef(function Menu2(inProps, ref) {
     var _slots$paper, _slotProps$paper;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiMenu"
     });
@@ -81711,10 +81827,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Menu$1.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * An HTML element, or a function that returns one.
      * It's used to set the position of the menu.
@@ -81929,7 +82045,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   })));
   const MenuItem = /* @__PURE__ */ reactExports.forwardRef(function MenuItem2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiMenuItem"
     });
@@ -81986,10 +82102,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? MenuItem.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * If `true`, the list item is focused during the first mount.
      * Focus will also be triggered if the value changes from false to true.
@@ -82270,7 +82386,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   const NativeSelectInput$1 = NativeSelectInput;
   var _span$1;
   const _excluded$e = ["children", "classes", "className", "label", "notched"];
-  const NotchedOutlineRoot$1 = styled$1("fieldset")({
+  const NotchedOutlineRoot$1 = styled$1("fieldset", {
+    shouldForwardProp: rootShouldForwardProp
+  })({
     textAlign: "left",
     position: "absolute",
     bottom: 0,
@@ -82286,7 +82404,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     overflow: "hidden",
     minWidth: "0%"
   });
-  const NotchedOutlineLegend = styled$1("legend")(({
+  const NotchedOutlineLegend = styled$1("legend", {
+    shouldForwardProp: rootShouldForwardProp
+  })(({
     ownerState,
     theme: theme2
   }) => _extends$1({
@@ -82494,7 +82614,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const OutlinedInput = /* @__PURE__ */ reactExports.forwardRef(function OutlinedInput2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$input, _React$Fragment;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiOutlinedInput"
     });
@@ -82554,10 +82674,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? OutlinedInput.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * This prop helps users to fill forms faster, especially on mobile devices.
      * The name can be confusing, as it's more like an autofill.
@@ -82840,12 +82960,12 @@ Please use another name.` : formatMuiErrorMessage(18));
   function getPaginationItemUtilityClass(slot) {
     return generateUtilityClass("MuiPaginationItem", slot);
   }
-  const paginationItemClasses = generateUtilityClasses("MuiPaginationItem", ["root", "page", "sizeSmall", "sizeLarge", "text", "textPrimary", "textSecondary", "outlined", "outlinedPrimary", "outlinedSecondary", "rounded", "ellipsis", "firstLast", "previousNext", "focusVisible", "disabled", "selected", "icon"]);
+  const paginationItemClasses = generateUtilityClasses("MuiPaginationItem", ["root", "page", "sizeSmall", "sizeLarge", "text", "textPrimary", "textSecondary", "outlined", "outlinedPrimary", "outlinedSecondary", "rounded", "ellipsis", "firstLast", "previousNext", "focusVisible", "disabled", "selected", "icon", "colorPrimary", "colorSecondary"]);
   const paginationItemClasses$1 = paginationItemClasses;
-  const FirstPageIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+  const FirstPageIconDefault = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"
   }), "FirstPage");
-  const LastPageIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+  const LastPageIconDefault = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"
   }), "LastPage");
   const NavigateBeforeIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
@@ -82873,7 +82993,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       variant
     } = ownerState;
     const slots = {
-      root: ["root", `size${capitalize$2(size2)}`, variant, shape2, color2 !== "standard" && `${variant}${capitalize$2(color2)}`, disabled && "disabled", selected && "selected", {
+      root: ["root", `size${capitalize$2(size2)}`, variant, shape2, color2 !== "standard" && `color${capitalize$2(color2)}`, color2 !== "standard" && `${variant}${capitalize$2(color2)}`, disabled && "disabled", selected && "selected", {
         page: "page",
         first: "firstLast",
         last: "firstLast",
@@ -83041,7 +83161,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     fontSize: theme2.typography.pxToRem(22)
   }));
   const PaginationItem = /* @__PURE__ */ reactExports.forwardRef(function PaginationItem2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiPaginationItem"
     });
@@ -83073,13 +83193,13 @@ Please use another name.` : formatMuiErrorMessage(18));
     const normalizedIcons = theme2.direction === "rtl" ? {
       previous: slots.next || components.next || NavigateNextIcon,
       next: slots.previous || components.previous || NavigateBeforeIcon,
-      last: slots.first || components.first || FirstPageIcon,
-      first: slots.last || components.last || LastPageIcon
+      last: slots.first || components.first || FirstPageIconDefault,
+      first: slots.last || components.last || LastPageIconDefault
     } : {
       previous: slots.previous || components.previous || NavigateBeforeIcon,
       next: slots.next || components.next || NavigateNextIcon,
-      first: slots.first || components.first || FirstPageIcon,
-      last: slots.last || components.last || LastPageIcon
+      first: slots.first || components.first || FirstPageIconDefault,
+      last: slots.last || components.last || LastPageIconDefault
     };
     const Icon = normalizedIcons[type];
     return type === "start-ellipsis" || type === "end-ellipsis" ? /* @__PURE__ */ jsxRuntimeExports.jsx(PaginationItemEllipsis, {
@@ -83102,10 +83222,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? PaginationItem.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * @ignore
      */
@@ -83238,7 +83358,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return `Go to ${type} page`;
   }
   const Pagination = /* @__PURE__ */ reactExports.forwardRef(function Pagination2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiPagination"
     });
@@ -83305,10 +83425,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Pagination.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * Number of always visible pages at the beginning and end.
      * @default 1
@@ -83425,7 +83545,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   const RadioButtonCheckedIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
   }), "RadioButtonChecked");
-  const RadioButtonIconRoot = styled$1("span")({
+  const RadioButtonIconRoot = styled$1("span", {
+    shouldForwardProp: rootShouldForwardProp
+  })({
     position: "relative",
     display: "flex"
   });
@@ -83523,7 +83645,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, styles2[`color${capitalize$2(ownerState.color)}`]];
+      return [styles2.root, ownerState.size !== "medium" && styles2[`size${capitalize$2(ownerState.size)}`], styles2[`color${capitalize$2(ownerState.color)}`]];
     }
   })(({
     theme: theme2,
@@ -83559,7 +83681,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const defaultIcon = /* @__PURE__ */ jsxRuntimeExports.jsx(RadioButtonIcon, {});
   const Radio = /* @__PURE__ */ reactExports.forwardRef(function Radio2(inProps, ref) {
     var _defaultIcon$props$fo, _defaultCheckedIcon$p;
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiRadio"
     });
@@ -83608,10 +83730,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Radio.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * If `true`, the component is checked.
      */
@@ -83747,10 +83869,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? RadioGroup.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -83819,7 +83941,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, colorSchemeStyles);
   });
   const ScopedCssBaseline = /* @__PURE__ */ reactExports.forwardRef(function ScopedCssBaseline2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiScopedCssBaseline"
     });
@@ -83839,10 +83961,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? ScopedCssBaseline.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The content of the component.
      */
@@ -84503,7 +84625,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const StyledOutlinedInput = styled$1(OutlinedInput$1, styledRootConfig)("");
   const StyledFilledInput = styled$1(FilledInput$1, styledRootConfig)("");
   const Select = /* @__PURE__ */ reactExports.forwardRef(function Select2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       name: "MuiSelect",
       props: inProps
     });
@@ -84588,7 +84710,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         }, inputProps, {
           classes: inputProps ? deepmerge(restOfClasses, inputProps.classes) : restOfClasses
         }, input ? input.props.inputProps : {})
-      }, multiple && native && variant === "outlined" ? {
+      }, (multiple && native || displayEmpty) && variant === "outlined" ? {
         notched: true
       } : {}, {
         ref: inputComponentRef,
@@ -84599,10 +84721,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? Select.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * If `true`, the width of the popover will automatically be set according to the items inside the
      * menu, otherwise it will be at least the width of the select input.
@@ -84806,7 +84928,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginRight: -8
   });
   const SnackbarContent = /* @__PURE__ */ reactExports.forwardRef(function SnackbarContent2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiSnackbarContent"
     });
@@ -84838,10 +84960,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? SnackbarContent.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The action to display. It renders after the message, at the end of the snackbar.
      */
@@ -84933,7 +85055,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   const Snackbar = /* @__PURE__ */ reactExports.forwardRef(function Snackbar2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiSnackbar"
     });
@@ -85028,10 +85150,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Snackbar.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The action to display. It renders after the message, at the end of the snackbar.
      */
@@ -85328,7 +85450,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     borderRadius: "50%"
   }));
   const Switch = /* @__PURE__ */ reactExports.forwardRef(function Switch2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiSwitch"
     });
@@ -85370,10 +85492,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? Switch.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * If `true`, the component is checked.
      */
@@ -85510,7 +85632,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     ownerState
   }) => ownerState.variant === "regular" && theme2.mixins.toolbar);
   const Toolbar = /* @__PURE__ */ reactExports.forwardRef(function Toolbar2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiToolbar"
     });
@@ -85534,10 +85656,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Toolbar.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * The Toolbar children, usually a mixture of `IconButton`, `Button` and `Typography`.
      * The Toolbar is a flex container, allowing flex item properties to be used to lay out the children.
@@ -85597,7 +85719,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     overridesResolver: (props, styles2) => styles2.root
   })({});
   const TextField = /* @__PURE__ */ reactExports.forwardRef(function TextField2(inProps, ref) {
-    const props = useThemeProps({
+    const props = useThemeProps$1({
       props: inProps,
       name: "MuiTextField"
     });
@@ -85722,10 +85844,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? TextField.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
+    // ┌────────────────────────────── Warning ──────────────────────────────┐
+    // │ These PropTypes are generated from the TypeScript type definitions. │
+    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
+    // └─────────────────────────────────────────────────────────────────────┘
     /**
      * This prop helps users to fill forms faster, especially on mobile devices.
      * The name can be confusing, as it's more like an autofill.
@@ -97693,10 +97815,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$e = MoreHoriz.default = void 0;
   var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
   var _jsxRuntime$e = jsxRuntimeExports;
-  var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
-    d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+  default_1$e = MoreHoriz.default = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
+    d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
   }), "MoreHoriz");
-  default_1$e = MoreHoriz.default = _default$e;
   function API_POST(url = "", data = {}) {
     if (!url) {
       return Promise.reject("You need to specify an URL in for API_POST to run.");
@@ -99591,10 +99712,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$d = Campaign.default = void 0;
   var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
   var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
-    d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
+  default_1$d = Campaign.default = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+    d: "M18 11v2h4v-2zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61M20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4M4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34"
   }), "Campaign");
-  default_1$d = Campaign.default = _default$d;
   /*! js-cookie v3.0.5 | MIT */
   function assign(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
@@ -99741,10 +99861,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$c = Close.default = void 0;
   var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
   var _jsxRuntime$c = jsxRuntimeExports;
-  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+  default_1$c = Close.default = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
     d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  default_1$c = Close.default = _default$c;
   const defaultState = {
     type: null
   };
@@ -102654,10 +102773,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$b = AccountCircle.default = void 0;
   var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
   var _jsxRuntime$b = jsxRuntimeExports;
-  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
+  default_1$b = AccountCircle.default = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6m0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20"
   }), "AccountCircle");
-  default_1$b = AccountCircle.default = _default$b;
   var Logout = {};
   var _interopRequireDefault$a = interopRequireDefaultExports;
   Object.defineProperty(Logout, "__esModule", {
@@ -102666,10 +102784,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$a = Logout.default = void 0;
   var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
   var _jsxRuntime$a = jsxRuntimeExports;
-  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
-    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+  default_1$a = Logout.default = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4z"
   }), "Logout");
-  default_1$a = Logout.default = _default$a;
   var Notifications = {};
   var _interopRequireDefault$9 = interopRequireDefaultExports;
   Object.defineProperty(Notifications, "__esModule", {
@@ -102678,10 +102795,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$9 = Notifications.default = void 0;
   var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
   var _jsxRuntime$9 = jsxRuntimeExports;
-  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+  default_1$9 = Notifications.default = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2m6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1z"
   }), "Notifications");
-  default_1$9 = Notifications.default = _default$9;
   var AddCircle = {};
   var _interopRequireDefault$8 = interopRequireDefaultExports;
   Object.defineProperty(AddCircle, "__esModule", {
@@ -102690,10 +102806,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$8 = AddCircle.default = void 0;
   var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
   var _jsxRuntime$8 = jsxRuntimeExports;
-  var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
+  default_1$8 = AddCircle.default = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m5 11h-4v4h-2v-4H7v-2h4V7h2v4h4z"
   }), "AddCircle");
-  default_1$8 = AddCircle.default = _default$8;
   function CreateProgramDialog() {
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROGRAM);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
@@ -102725,10 +102840,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$7 = ExpandMore.default = void 0;
   var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
   var _jsxRuntime$7 = jsxRuntimeExports;
-  var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+  default_1$7 = ExpandMore.default = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
     d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
   }), "ExpandMore");
-  default_1$7 = ExpandMore.default = _default$7;
   var Delete = {};
   var _interopRequireDefault$6 = interopRequireDefaultExports;
   Object.defineProperty(Delete, "__esModule", {
@@ -102737,10 +102851,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$6 = Delete.default = void 0;
   var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
   var _jsxRuntime$6 = jsxRuntimeExports;
-  var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
-    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+  default_1$6 = Delete.default = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"
   }), "Delete");
-  default_1$6 = Delete.default = _default$6;
   const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
     "&.MuiPaper-root": {
       boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
@@ -102840,7 +102953,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               fullWidth: true
             }
           ),
-          index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: () => onAddNew(), children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
             IconButton$1,
             {
               onClick: () => onUpdate({
@@ -102853,14 +102966,53 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] })
     ] });
   }
-  function CreateProjectDialog({ showNoProjectsAlert }) {
+  function CreateProjectDialog({
+    showNoProjectsAlert,
+    formFields
+  }) {
     const [state, setState] = reactExports.useState({
+      fields: {},
       objectSets: [],
       objectSetsExpanded: false
     });
+    const [errors, setErrors] = reactExports.useState({});
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT);
     function onSubmit() {
-      console.log("project created?");
+      if (Object.keys(errors).length) {
+        return false;
+      }
+      API_POST(
+        COURSEFLOW_APP.config.json_api_paths.create_project,
+        {
+          ...state.fields,
+          objectSets: state.objectSets
+        }
+      ).then((resp) => {
+        window.location.href = resp.redirect;
+      }).catch((error) => setErrors(error.data.errors));
+    }
+    function onDialogClose() {
+      setState({
+        fields: {},
+        objectSets: [],
+        objectSetsExpanded: false
+      });
+      setErrors({});
+      onClose();
+    }
+    function onInputChange(e, field) {
+      if (errors[field.name]) {
+        const newErrors = { ...errors };
+        delete newErrors[field.name];
+        setErrors(newErrors);
+      }
+      setState({
+        ...state,
+        fields: {
+          ...state.fields,
+          [e.target.name]: e.target.value
+        }
+      });
     }
     function onObjectSetUpdate({ index, newVal }) {
       const sets = [...state.objectSets];
@@ -102889,7 +103041,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         objectSetsExpanded: !state.objectSetsExpanded
       });
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose, fullWidth: true, maxWidth: "sm", children: [
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Create project") }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { sx: { mb: 3 }, severity: "warning", title: "TODO - Backend" }),
@@ -102904,23 +103056,26 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            TextField$1,
-            {
-              label: window.gettext("Title"),
-              variant: "standard",
-              required: true
+          formFields.map((field, index) => {
+            if (field.type === "text") {
+              const hasError = !!errors[field.name];
+              const errorText = hasError && errors[field.name][0];
+              return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                TextField$1,
+                {
+                  name: field.name,
+                  label: field.label,
+                  required: field.required,
+                  value: state.fields[field.name] ?? "",
+                  variant: "standard",
+                  error: hasError,
+                  helperText: errorText,
+                  onChange: (e) => onInputChange(e, field)
+                },
+                index
+              );
             }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            TextField$1,
-            {
-              label: window.gettext("Description"),
-              variant: "standard",
-              multiline: true,
-              maxRows: 4
-            }
-          ),
+          }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             ObjectSets,
             {
@@ -102934,8 +103089,16 @@ Please use another name.` : formatMuiErrorMessage(18));
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, children: window.gettext("Create project") })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onDialogClose, children: COURSEFLOW_APP.strings.cancel }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button$1,
+          {
+            variant: "contained",
+            onClick: onSubmit,
+            disabled: !!Object.keys(errors).length,
+            children: window.gettext("Create project")
+          }
+        )
       ] })
     ] });
   }
@@ -103027,12 +103190,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       top: "50%"
     }
   }));
-  const TopBar = ({
-    isTeacher,
-    menus,
-    notifications: notifications2,
-    showNoProjectsAlert
-  }) => {
+  const TopBar = ({ isTeacher, menus, notifications: notifications2, forms }) => {
     const { dispatch } = useDialog();
     const [anchorEl, setAnchorEl] = reactExports.useState(null);
     const isMenuOpen = Boolean(anchorEl);
@@ -103222,7 +103380,13 @@ Please use another name.` : formatMuiErrorMessage(18));
           onSubmit: () => window.location.href = menus.account.resetPasswordUrl
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProjectDialog, { showNoProjectsAlert }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        CreateProjectDialog,
+        {
+          showNoProjectsAlert: forms.createProject.showNoProjectsAlert,
+          formFields: forms.createProject.formFields
+        }
+      ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProgramDialog, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(CreateCourseDialog, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(CreateActivityDialog, {})
@@ -103236,10 +103400,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$5 = Home.default = void 0;
   var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
   var _jsxRuntime$5 = jsxRuntimeExports;
-  var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
+  default_1$5 = Home.default = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
     d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
   }), "Home");
-  default_1$5 = Home.default = _default$5;
   var FolderCopy = {};
   var _interopRequireDefault$4 = interopRequireDefaultExports;
   Object.defineProperty(FolderCopy, "__esModule", {
@@ -103248,12 +103411,11 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$4 = FolderCopy.default = void 0;
   var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
   var _jsxRuntime$4 = jsxRuntimeExports;
-  var _default$4 = (0, _createSvgIcon$4.default)([/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
-    d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
+  default_1$4 = FolderCopy.default = (0, _createSvgIcon$4.default)([/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
+    d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3z"
   }, "0"), /* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
-    d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
+    d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2"
   }, "1")], "FolderCopy");
-  default_1$4 = FolderCopy.default = _default$4;
   var Search = {};
   var _interopRequireDefault$3 = interopRequireDefaultExports;
   Object.defineProperty(Search, "__esModule", {
@@ -103262,10 +103424,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$3 = Search.default = void 0;
   var _createSvgIcon$3 = _interopRequireDefault$3(requireCreateSvgIcon());
   var _jsxRuntime$3 = jsxRuntimeExports;
-  var _default$3 = (0, _createSvgIcon$3.default)(/* @__PURE__ */ (0, _jsxRuntime$3.jsx)("path", {
-    d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+  default_1$3 = Search.default = (0, _createSvgIcon$3.default)(/* @__PURE__ */ (0, _jsxRuntime$3.jsx)("path", {
+    d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
   }), "Search");
-  default_1$3 = Search.default = _default$3;
   var HelpRounded = {};
   var _interopRequireDefault$2 = interopRequireDefaultExports;
   Object.defineProperty(HelpRounded, "__esModule", {
@@ -103274,10 +103435,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$2 = HelpRounded.default = void 0;
   var _createSvgIcon$2 = _interopRequireDefault$2(requireCreateSvgIcon());
   var _jsxRuntime$2 = jsxRuntimeExports;
-  var _default$2 = (0, _createSvgIcon$2.default)(/* @__PURE__ */ (0, _jsxRuntime$2.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"
+  default_1$2 = HelpRounded.default = (0, _createSvgIcon$2.default)(/* @__PURE__ */ (0, _jsxRuntime$2.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m1 17h-2v-2h2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4"
   }), "HelpRounded");
-  default_1$2 = HelpRounded.default = _default$2;
   var ArrowBack = {};
   var _interopRequireDefault$1 = interopRequireDefaultExports;
   Object.defineProperty(ArrowBack, "__esModule", {
@@ -103286,10 +103446,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$1 = ArrowBack.default = void 0;
   var _createSvgIcon$1 = _interopRequireDefault$1(requireCreateSvgIcon());
   var _jsxRuntime$1 = jsxRuntimeExports;
-  var _default$1 = (0, _createSvgIcon$1.default)(/* @__PURE__ */ (0, _jsxRuntime$1.jsx)("path", {
-    d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+  default_1$1 = ArrowBack.default = (0, _createSvgIcon$1.default)(/* @__PURE__ */ (0, _jsxRuntime$1.jsx)("path", {
+    d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"
   }), "ArrowBack");
-  default_1$1 = ArrowBack.default = _default$1;
   var Menu = {};
   var _interopRequireDefault = interopRequireDefaultExports;
   Object.defineProperty(Menu, "__esModule", {
@@ -103298,10 +103457,9 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1 = Menu.default = void 0;
   var _createSvgIcon = _interopRequireDefault(requireCreateSvgIcon());
   var _jsxRuntime = jsxRuntimeExports;
-  var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
-    d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
+  default_1 = Menu.default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
+    d: "M3 18h18v-2H3zm0-5h18v-2H3zm0-7v2h18V6z"
   }), "Menu");
-  default_1 = Menu.default = _default;
   const Sidebar = ({ isAnonymous, isTeacher, favourites }) => {
     const [collapsed, setCollapsed] = reactExports.useState(
       !!sessionStorage.getItem("collapsed_sidebar")

@@ -84,7 +84,7 @@ export type TopBarProps = {
   forms: {
     createProject: {
       showNoProjectsAlert: boolean
-      formFields: any // TODO
+      formFields: any // TODO: add general type declaration for FormFieldsSerializer output
     }
   }
   menus: {
