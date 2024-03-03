@@ -10,6 +10,7 @@ import { StyledDialog, StyledForm } from '../styles'
 import ObjectSets from './components/ObjectSets'
 import { TopBarProps } from '@cfModule/types/common'
 import { API_POST } from '@XMLHTTP/PostFunctions'
+import { produce } from 'immer'
 
 // TODO: figure out how to handle object set types and where the values come from
 export enum OBJECT_SET_TYPE {
@@ -85,50 +86,50 @@ function CreateProjectDialog({
     field: any // TODO
   ) {
     if (errors[field.name]) {
-      const newErrors = { ...errors }
-      delete newErrors[field.name]
-      setErrors(newErrors)
+      setErrors(
+        produce((draft) => {
+          delete draft[field.name]
+        })
+      )
     }
 
-    setState({
-      ...state,
-      fields: {
-        ...state.fields,
-        [e.target.name]: e.target.value
-      }
-    })
+    setState(
+      produce((draft) => {
+        const { fields } = draft
+        fields[e.target.name] = e.target.value
+      })
+    )
   }
 
+  // either updating existing one
+  // or deleting when no newVal is supplied
   function onObjectSetUpdate({ index, newVal }: OnUpdateType) {
-    const sets = [...state.objectSets]
-    // either updating existing one
-    // or deleting when no newVal is supplied
-    if (newVal) {
-      sets.splice(index, 1, newVal)
-    } else {
-      sets.splice(index, 1)
-    }
-    setState({
-      ...state,
-      objectSets: sets
-    })
+    setState(
+      produce((draft) => {
+        const sets = draft.objectSets
+        if (newVal) {
+          sets.splice(index, 1, newVal)
+        } else {
+          sets.splice(index, 1)
+        }
+      })
+    )
   }
 
   function onObjectSetAddNew() {
-    setState({
-      ...state,
-      objectSets: [
-        ...state.objectSets,
-        { type: '' as OBJECT_SET_TYPE, label: '' }
-      ]
-    })
+    setState(
+      produce((draft) => {
+        draft.objectSets.push({ type: '' as OBJECT_SET_TYPE, label: '' })
+      })
+    )
   }
 
   function onObjectSetsClick() {
-    setState({
-      ...state,
-      objectSetsExpanded: !state.objectSetsExpanded
-    })
+    setState(
+      produce((draft) => {
+        draft.objectSetsExpanded = !draft.objectSetsExpanded
+      })
+    )
   }
 
   return (

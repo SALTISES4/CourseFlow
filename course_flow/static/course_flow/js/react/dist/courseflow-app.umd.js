@@ -5205,14 +5205,14 @@ var __privateMethod = (obj, member, method) => {
           return null;
         }
         var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
-        var current = null;
+        var current2 = null;
         var isRendering = false;
         function getCurrentFiberOwnerNameInDevOrNull() {
           {
-            if (current === null) {
+            if (current2 === null) {
               return null;
             }
-            var owner = current._debugOwner;
+            var owner = current2._debugOwner;
             if (owner !== null && typeof owner !== "undefined") {
               return getComponentNameFromFiber(owner);
             }
@@ -5221,29 +5221,29 @@ var __privateMethod = (obj, member, method) => {
         }
         function getCurrentFiberStackInDev() {
           {
-            if (current === null) {
+            if (current2 === null) {
               return "";
             }
-            return getStackByFiberInDevAndProd(current);
+            return getStackByFiberInDevAndProd(current2);
           }
         }
         function resetCurrentFiber() {
           {
             ReactDebugCurrentFrame.getCurrentStack = null;
-            current = null;
+            current2 = null;
             isRendering = false;
           }
         }
         function setCurrentFiber(fiber) {
           {
             ReactDebugCurrentFrame.getCurrentStack = fiber === null ? null : getCurrentFiberStackInDev;
-            current = fiber;
+            current2 = fiber;
             isRendering = false;
           }
         }
         function getCurrentFiber() {
           {
-            return current;
+            return current2;
           }
         }
         function setIsRendering(rendering) {
@@ -5322,7 +5322,7 @@ var __privateMethod = (obj, member, method) => {
           if (node2.hasOwnProperty(valueField) || typeof descriptor === "undefined" || typeof descriptor.get !== "function" || typeof descriptor.set !== "function") {
             return;
           }
-          var get2 = descriptor.get, set2 = descriptor.set;
+          var get2 = descriptor.get, set3 = descriptor.set;
           Object.defineProperty(node2, valueField, {
             configurable: true,
             get: function() {
@@ -5333,7 +5333,7 @@ var __privateMethod = (obj, member, method) => {
                 checkFormFieldValueStringCoercion(value);
               }
               currentValue = "" + value;
-              set2.call(this, value);
+              set3.call(this, value);
             }
           });
           Object.defineProperty(node2, valueField, {
@@ -7244,7 +7244,7 @@ var __privateMethod = (obj, member, method) => {
         function has2(key) {
           return key._reactInternals !== void 0;
         }
-        function set(key, value) {
+        function set2(key, value) {
           key._reactInternals = value;
         }
         var NoFlags = (
@@ -7384,9 +7384,9 @@ var __privateMethod = (obj, member, method) => {
           if (fiber.tag === SuspenseComponent) {
             var suspenseState = fiber.memoizedState;
             if (suspenseState === null) {
-              var current2 = fiber.alternate;
-              if (current2 !== null) {
-                suspenseState = current2.memoizedState;
+              var current3 = fiber.alternate;
+              if (current3 !== null) {
+                suspenseState = current3.memoizedState;
               }
             }
             if (suspenseState !== null) {
@@ -8375,14 +8375,14 @@ var __privateMethod = (obj, member, method) => {
         function includesSomeLane(a, b) {
           return (a & b) !== NoLanes;
         }
-        function isSubsetOfLanes(set2, subset) {
-          return (set2 & subset) === subset;
+        function isSubsetOfLanes(set3, subset) {
+          return (set3 & subset) === subset;
         }
         function mergeLanes(a, b) {
           return a | b;
         }
-        function removeLanes(set2, subset) {
-          return set2 & ~subset;
+        function removeLanes(set3, subset) {
+          return set3 & ~subset;
         }
         function intersectLanes(a, b) {
           return a & b;
@@ -13173,9 +13173,9 @@ var __privateMethod = (obj, member, method) => {
             }
             return maybeStrictRoot;
           };
-          var setToSortedString = function(set2) {
+          var setToSortedString = function(set3) {
             var array = [];
-            set2.forEach(function(value) {
+            set3.forEach(function(value) {
               array.push(value);
             });
             return array.sort().join(", ");
@@ -13679,9 +13679,9 @@ var __privateMethod = (obj, member, method) => {
           };
           fiber.updateQueue = queue;
         }
-        function cloneUpdateQueue(current2, workInProgress2) {
+        function cloneUpdateQueue(current3, workInProgress2) {
           var queue = workInProgress2.updateQueue;
-          var currentQueue = current2.updateQueue;
+          var currentQueue = current3.updateQueue;
           if (queue === currentQueue) {
             var clone2 = {
               baseState: currentQueue.baseState,
@@ -13746,9 +13746,9 @@ var __privateMethod = (obj, member, method) => {
         }
         function enqueueCapturedUpdate(workInProgress2, capturedUpdate) {
           var queue = workInProgress2.updateQueue;
-          var current2 = workInProgress2.alternate;
-          if (current2 !== null) {
-            var currentQueue = current2.updateQueue;
+          var current3 = workInProgress2.alternate;
+          if (current3 !== null) {
+            var currentQueue = current3.updateQueue;
             if (queue === currentQueue) {
               var newFirst = null;
               var newLast = null;
@@ -13881,9 +13881,9 @@ var __privateMethod = (obj, member, method) => {
               lastBaseUpdate.next = firstPendingUpdate;
             }
             lastBaseUpdate = lastPendingUpdate;
-            var current2 = workInProgress2.alternate;
-            if (current2 !== null) {
-              var currentQueue = current2.updateQueue;
+            var current3 = workInProgress2.alternate;
+            if (current3 !== null) {
+              var currentQueue = current3.updateQueue;
               var currentLastBaseUpdate = currentQueue.lastBaseUpdate;
               if (currentLastBaseUpdate !== lastBaseUpdate) {
                 if (currentLastBaseUpdate === null) {
@@ -14259,7 +14259,7 @@ var __privateMethod = (obj, member, method) => {
         function adoptClassInstance(workInProgress2, instance) {
           instance.updater = classComponentUpdater;
           workInProgress2.stateNode = instance;
-          set(instance, workInProgress2);
+          set2(instance, workInProgress2);
           {
             instance._reactInternalInstance = fakeInternalInstance;
           }
@@ -14524,9 +14524,9 @@ var __privateMethod = (obj, member, method) => {
           instance.context = nextContext;
           return shouldUpdate;
         }
-        function updateClassInstance(current2, workInProgress2, ctor, newProps, renderLanes2) {
+        function updateClassInstance(current3, workInProgress2, ctor, newProps, renderLanes2) {
           var instance = workInProgress2.stateNode;
-          cloneUpdateQueue(current2, workInProgress2);
+          cloneUpdateQueue(current3, workInProgress2);
           var unresolvedOldProps = workInProgress2.memoizedProps;
           var oldProps = workInProgress2.type === workInProgress2.elementType ? unresolvedOldProps : resolveDefaultProps(workInProgress2.type, unresolvedOldProps);
           instance.props = oldProps;
@@ -14554,12 +14554,12 @@ var __privateMethod = (obj, member, method) => {
           newState = workInProgress2.memoizedState;
           if (unresolvedOldProps === unresolvedNewProps && oldState === newState && !hasContextChanged() && !checkHasForceUpdateAfterProcessing() && !enableLazyContextPropagation) {
             if (typeof instance.componentDidUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+              if (unresolvedOldProps !== current3.memoizedProps || oldState !== current3.memoizedState) {
                 workInProgress2.flags |= Update;
               }
             }
             if (typeof instance.getSnapshotBeforeUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+              if (unresolvedOldProps !== current3.memoizedProps || oldState !== current3.memoizedState) {
                 workInProgress2.flags |= Snapshot;
               }
             }
@@ -14591,12 +14591,12 @@ var __privateMethod = (obj, member, method) => {
             }
           } else {
             if (typeof instance.componentDidUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+              if (unresolvedOldProps !== current3.memoizedProps || oldState !== current3.memoizedState) {
                 workInProgress2.flags |= Update;
               }
             }
             if (typeof instance.getSnapshotBeforeUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+              if (unresolvedOldProps !== current3.memoizedProps || oldState !== current3.memoizedState) {
                 workInProgress2.flags |= Snapshot;
               }
             }
@@ -14640,7 +14640,7 @@ var __privateMethod = (obj, member, method) => {
             error('Each child in a list should have a unique "key" prop. See https://reactjs.org/link/warning-keys for more information.');
           };
         }
-        function coerceRef(returnFiber, current2, element) {
+        function coerceRef(returnFiber, current3, element) {
           var mixedRef = element.ref;
           if (mixedRef !== null && typeof mixedRef !== "function" && typeof mixedRef !== "object") {
             {
@@ -14675,8 +14675,8 @@ var __privateMethod = (obj, member, method) => {
                 checkPropStringCoercion(mixedRef, "ref");
               }
               var stringRef = "" + mixedRef;
-              if (current2 !== null && current2.ref !== null && typeof current2.ref === "function" && current2.ref._stringRef === stringRef) {
-                return current2.ref;
+              if (current3 !== null && current3.ref !== null && typeof current3.ref === "function" && current3.ref._stringRef === stringRef) {
+                return current3.ref;
               }
               var ref = function(value) {
                 var refs = resolvedInst.refs;
@@ -14770,9 +14770,9 @@ var __privateMethod = (obj, member, method) => {
               newFiber.flags |= Forked;
               return lastPlacedIndex;
             }
-            var current2 = newFiber.alternate;
-            if (current2 !== null) {
-              var oldIndex = current2.index;
+            var current3 = newFiber.alternate;
+            if (current3 !== null) {
+              var oldIndex = current3.index;
               if (oldIndex < lastPlacedIndex) {
                 newFiber.flags |= Placement;
                 return lastPlacedIndex;
@@ -14790,31 +14790,31 @@ var __privateMethod = (obj, member, method) => {
             }
             return newFiber;
           }
-          function updateTextNode(returnFiber, current2, textContent, lanes) {
-            if (current2 === null || current2.tag !== HostText) {
+          function updateTextNode(returnFiber, current3, textContent, lanes) {
+            if (current3 === null || current3.tag !== HostText) {
               var created = createFiberFromText(textContent, returnFiber.mode, lanes);
               created.return = returnFiber;
               return created;
             } else {
-              var existing = useFiber(current2, textContent);
+              var existing = useFiber(current3, textContent);
               existing.return = returnFiber;
               return existing;
             }
           }
-          function updateElement(returnFiber, current2, element, lanes) {
+          function updateElement(returnFiber, current3, element, lanes) {
             var elementType = element.type;
             if (elementType === REACT_FRAGMENT_TYPE) {
-              return updateFragment2(returnFiber, current2, element.props.children, lanes, element.key);
+              return updateFragment2(returnFiber, current3, element.props.children, lanes, element.key);
             }
-            if (current2 !== null) {
-              if (current2.elementType === elementType || // Keep this check inline so it only runs on the false path:
-              isCompatibleFamilyForHotReloading(current2, element) || // Lazy types should reconcile their resolved type.
+            if (current3 !== null) {
+              if (current3.elementType === elementType || // Keep this check inline so it only runs on the false path:
+              isCompatibleFamilyForHotReloading(current3, element) || // Lazy types should reconcile their resolved type.
               // We need to do this after the Hot Reloading check above,
               // because hot reloading has different semantics than prod because
               // it doesn't resuspend. So we can't let the call below suspend.
-              typeof elementType === "object" && elementType !== null && elementType.$$typeof === REACT_LAZY_TYPE && resolveLazy(elementType) === current2.type) {
-                var existing = useFiber(current2, element.props);
-                existing.ref = coerceRef(returnFiber, current2, element);
+              typeof elementType === "object" && elementType !== null && elementType.$$typeof === REACT_LAZY_TYPE && resolveLazy(elementType) === current3.type) {
+                var existing = useFiber(current3, element.props);
+                existing.ref = coerceRef(returnFiber, current3, element);
                 existing.return = returnFiber;
                 {
                   existing._debugSource = element._source;
@@ -14824,28 +14824,28 @@ var __privateMethod = (obj, member, method) => {
               }
             }
             var created = createFiberFromElement(element, returnFiber.mode, lanes);
-            created.ref = coerceRef(returnFiber, current2, element);
+            created.ref = coerceRef(returnFiber, current3, element);
             created.return = returnFiber;
             return created;
           }
-          function updatePortal(returnFiber, current2, portal, lanes) {
-            if (current2 === null || current2.tag !== HostPortal || current2.stateNode.containerInfo !== portal.containerInfo || current2.stateNode.implementation !== portal.implementation) {
+          function updatePortal(returnFiber, current3, portal, lanes) {
+            if (current3 === null || current3.tag !== HostPortal || current3.stateNode.containerInfo !== portal.containerInfo || current3.stateNode.implementation !== portal.implementation) {
               var created = createFiberFromPortal(portal, returnFiber.mode, lanes);
               created.return = returnFiber;
               return created;
             } else {
-              var existing = useFiber(current2, portal.children || []);
+              var existing = useFiber(current3, portal.children || []);
               existing.return = returnFiber;
               return existing;
             }
           }
-          function updateFragment2(returnFiber, current2, fragment, lanes, key) {
-            if (current2 === null || current2.tag !== Fragment) {
+          function updateFragment2(returnFiber, current3, fragment, lanes, key) {
+            if (current3 === null || current3.tag !== Fragment) {
               var created = createFiberFromFragment(fragment, returnFiber.mode, lanes, key);
               created.return = returnFiber;
               return created;
             } else {
-              var existing = useFiber(current2, fragment);
+              var existing = useFiber(current3, fragment);
               existing.return = returnFiber;
               return existing;
             }
@@ -15350,8 +15350,8 @@ var __privateMethod = (obj, member, method) => {
         }
         var reconcileChildFibers = ChildReconciler(true);
         var mountChildFibers = ChildReconciler(false);
-        function cloneChildFibers(current2, workInProgress2) {
-          if (current2 !== null && workInProgress2.child !== current2.child) {
+        function cloneChildFibers(current3, workInProgress2) {
+          if (current3 !== null && workInProgress2.child !== current3.child) {
             throw new Error("Resuming work not yet implemented.");
           }
           if (workInProgress2.child === null) {
@@ -15633,19 +15633,19 @@ var __privateMethod = (obj, member, method) => {
           }
           return true;
         }
-        function renderWithHooks(current2, workInProgress2, Component, props, secondArg, nextRenderLanes) {
+        function renderWithHooks(current3, workInProgress2, Component, props, secondArg, nextRenderLanes) {
           renderLanes = nextRenderLanes;
           currentlyRenderingFiber$1 = workInProgress2;
           {
-            hookTypesDev = current2 !== null ? current2._debugHookTypes : null;
+            hookTypesDev = current3 !== null ? current3._debugHookTypes : null;
             hookTypesUpdateIndexDev = -1;
-            ignorePreviousDependencies = current2 !== null && current2.type !== workInProgress2.type;
+            ignorePreviousDependencies = current3 !== null && current3.type !== workInProgress2.type;
           }
           workInProgress2.memoizedState = null;
           workInProgress2.updateQueue = null;
           workInProgress2.lanes = NoLanes;
           {
-            if (current2 !== null && current2.memoizedState !== null) {
+            if (current3 !== null && current3.memoizedState !== null) {
               ReactCurrentDispatcher$1.current = HooksDispatcherOnUpdateInDEV;
             } else if (hookTypesDev !== null) {
               ReactCurrentDispatcher$1.current = HooksDispatcherOnMountWithHookTypesInDEV;
@@ -15689,12 +15689,12 @@ var __privateMethod = (obj, member, method) => {
             currentHookNameInDev = null;
             hookTypesDev = null;
             hookTypesUpdateIndexDev = -1;
-            if (current2 !== null && (current2.flags & StaticMask) !== (workInProgress2.flags & StaticMask) && // Disable this warning in legacy mode, because legacy Suspense is weird
+            if (current3 !== null && (current3.flags & StaticMask) !== (workInProgress2.flags & StaticMask) && // Disable this warning in legacy mode, because legacy Suspense is weird
             // and creates false positives. To make this work in legacy mode, we'd
             // need to mark fibers that commit in an incomplete state, somehow. For
             // now I'll disable the warning that most of the bugs that would trigger
             // it are either exclusive to concurrent mode or exist in both.
-            (current2.mode & ConcurrentMode) !== NoMode) {
+            (current3.mode & ConcurrentMode) !== NoMode) {
               error("Internal React error: Expected static flag was missing. Please notify the React team.");
             }
           }
@@ -15709,14 +15709,14 @@ var __privateMethod = (obj, member, method) => {
           localIdCounter = 0;
           return didRenderIdHook;
         }
-        function bailoutHooks(current2, workInProgress2, lanes) {
-          workInProgress2.updateQueue = current2.updateQueue;
+        function bailoutHooks(current3, workInProgress2, lanes) {
+          workInProgress2.updateQueue = current3.updateQueue;
           if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
             workInProgress2.flags &= ~(MountPassiveDev | MountLayoutDev | Passive | Update);
           } else {
             workInProgress2.flags &= ~(Passive | Update);
           }
-          current2.lanes = removeLanes(current2.lanes, lanes);
+          current3.lanes = removeLanes(current3.lanes, lanes);
         }
         function resetHooksAfterThrow() {
           ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
@@ -15762,9 +15762,9 @@ var __privateMethod = (obj, member, method) => {
         function updateWorkInProgressHook() {
           var nextCurrentHook;
           if (currentHook === null) {
-            var current2 = currentlyRenderingFiber$1.alternate;
-            if (current2 !== null) {
-              nextCurrentHook = current2.memoizedState;
+            var current3 = currentlyRenderingFiber$1.alternate;
+            if (current3 !== null) {
+              nextCurrentHook = current3.memoizedState;
             } else {
               nextCurrentHook = null;
             }
@@ -15838,8 +15838,8 @@ var __privateMethod = (obj, member, method) => {
             throw new Error("Should have a queue. This is likely a bug in React. Please file an issue.");
           }
           queue.lastRenderedReducer = reducer2;
-          var current2 = currentHook;
-          var baseQueue = current2.baseQueue;
+          var current3 = currentHook;
+          var baseQueue = current3.baseQueue;
           var pendingQueue = queue.pending;
           if (pendingQueue !== null) {
             if (baseQueue !== null) {
@@ -15849,16 +15849,16 @@ var __privateMethod = (obj, member, method) => {
               pendingQueue.next = baseFirst;
             }
             {
-              if (current2.baseQueue !== baseQueue) {
+              if (current3.baseQueue !== baseQueue) {
                 error("Internal error: Expected work-in-progress queue to be a clone. This is a bug in React.");
               }
             }
-            current2.baseQueue = baseQueue = pendingQueue;
+            current3.baseQueue = baseQueue = pendingQueue;
             queue.pending = null;
           }
           if (baseQueue !== null) {
             var first = baseQueue.next;
-            var newState = current2.baseState;
+            var newState = current3.baseState;
             var newBaseState = null;
             var newBaseQueueFirst = null;
             var newBaseQueueLast = null;
@@ -17770,18 +17770,18 @@ var __privateMethod = (obj, member, method) => {
           didWarnAboutRevealOrder = {};
           didWarnAboutTailOptions = {};
         }
-        function reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2) {
-          if (current2 === null) {
+        function reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2) {
+          if (current3 === null) {
             workInProgress2.child = mountChildFibers(workInProgress2, null, nextChildren, renderLanes2);
           } else {
-            workInProgress2.child = reconcileChildFibers(workInProgress2, current2.child, nextChildren, renderLanes2);
+            workInProgress2.child = reconcileChildFibers(workInProgress2, current3.child, nextChildren, renderLanes2);
           }
         }
-        function forceUnmountCurrentAndReconcile(current2, workInProgress2, nextChildren, renderLanes2) {
-          workInProgress2.child = reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
+        function forceUnmountCurrentAndReconcile(current3, workInProgress2, nextChildren, renderLanes2) {
+          workInProgress2.child = reconcileChildFibers(workInProgress2, current3.child, null, renderLanes2);
           workInProgress2.child = reconcileChildFibers(workInProgress2, null, nextChildren, renderLanes2);
         }
-        function updateForwardRef(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateForwardRef(current3, workInProgress2, Component, nextProps, renderLanes2) {
           {
             if (workInProgress2.type !== workInProgress2.elementType) {
               var innerPropTypes = Component.propTypes;
@@ -17807,12 +17807,12 @@ var __privateMethod = (obj, member, method) => {
           {
             ReactCurrentOwner$1.current = workInProgress2;
             setIsRendering(true);
-            nextChildren = renderWithHooks(current2, workInProgress2, render2, nextProps, ref, renderLanes2);
+            nextChildren = renderWithHooks(current3, workInProgress2, render2, nextProps, ref, renderLanes2);
             hasId2 = checkDidRenderIdHook();
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                nextChildren = renderWithHooks(current2, workInProgress2, render2, nextProps, ref, renderLanes2);
+                nextChildren = renderWithHooks(current3, workInProgress2, render2, nextProps, ref, renderLanes2);
                 hasId2 = checkDidRenderIdHook();
               } finally {
                 setIsStrictModeForDevtools(false);
@@ -17823,19 +17823,19 @@ var __privateMethod = (obj, member, method) => {
           {
             markComponentRenderStopped();
           }
-          if (current2 !== null && !didReceiveUpdate) {
-            bailoutHooks(current2, workInProgress2, renderLanes2);
-            return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+          if (current3 !== null && !didReceiveUpdate) {
+            bailoutHooks(current3, workInProgress2, renderLanes2);
+            return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
           }
           if (getIsHydrating() && hasId2) {
             pushMaterializedTreeId(workInProgress2);
           }
           workInProgress2.flags |= PerformedWork;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
-          if (current2 === null) {
+        function updateMemoComponent(current3, workInProgress2, Component, nextProps, renderLanes2) {
+          if (current3 === null) {
             var type = Component.type;
             if (isSimpleFunctionComponent(type) && Component.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
             Component.defaultProps === void 0) {
@@ -17848,7 +17848,7 @@ var __privateMethod = (obj, member, method) => {
               {
                 validateFunctionComponentInDev(workInProgress2, type);
               }
-              return updateSimpleMemoComponent(current2, workInProgress2, resolvedType, nextProps, renderLanes2);
+              return updateSimpleMemoComponent(current3, workInProgress2, resolvedType, nextProps, renderLanes2);
             }
             {
               var innerPropTypes = type.propTypes;
@@ -17881,14 +17881,14 @@ var __privateMethod = (obj, member, method) => {
               );
             }
           }
-          var currentChild = current2.child;
-          var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current2, renderLanes2);
+          var currentChild = current3.child;
+          var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current3, renderLanes2);
           if (!hasScheduledUpdateOrContext) {
             var prevProps = currentChild.memoizedProps;
             var compare = Component.compare;
             compare = compare !== null ? compare : shallowEqual2;
-            if (compare(prevProps, nextProps) && current2.ref === workInProgress2.ref) {
-              return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+            if (compare(prevProps, nextProps) && current3.ref === workInProgress2.ref) {
+              return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
             }
           }
           workInProgress2.flags |= PerformedWork;
@@ -17898,7 +17898,7 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.child = newChild;
           return newChild;
         }
-        function updateSimpleMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateSimpleMemoComponent(current3, workInProgress2, Component, nextProps, renderLanes2) {
           {
             if (workInProgress2.type !== workInProgress2.elementType) {
               var outerMemoType = workInProgress2.elementType;
@@ -17924,26 +17924,26 @@ var __privateMethod = (obj, member, method) => {
               }
             }
           }
-          if (current2 !== null) {
-            var prevProps = current2.memoizedProps;
-            if (shallowEqual2(prevProps, nextProps) && current2.ref === workInProgress2.ref && // Prevent bailout if the implementation changed due to hot reload.
-            workInProgress2.type === current2.type) {
+          if (current3 !== null) {
+            var prevProps = current3.memoizedProps;
+            if (shallowEqual2(prevProps, nextProps) && current3.ref === workInProgress2.ref && // Prevent bailout if the implementation changed due to hot reload.
+            workInProgress2.type === current3.type) {
               didReceiveUpdate = false;
               workInProgress2.pendingProps = nextProps = prevProps;
-              if (!checkScheduledUpdateOrContext(current2, renderLanes2)) {
-                workInProgress2.lanes = current2.lanes;
-                return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
-              } else if ((current2.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
+              if (!checkScheduledUpdateOrContext(current3, renderLanes2)) {
+                workInProgress2.lanes = current3.lanes;
+                return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
+              } else if ((current3.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
                 didReceiveUpdate = true;
               }
             }
           }
-          return updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2);
+          return updateFunctionComponent(current3, workInProgress2, Component, nextProps, renderLanes2);
         }
-        function updateOffscreenComponent(current2, workInProgress2, renderLanes2) {
+        function updateOffscreenComponent(current3, workInProgress2, renderLanes2) {
           var nextProps = workInProgress2.pendingProps;
           var nextChildren = nextProps.children;
-          var prevState = current2 !== null ? current2.memoizedState : null;
+          var prevState = current3 !== null ? current3.memoizedState : null;
           if (nextProps.mode === "hidden" || enableLegacyHidden) {
             if ((workInProgress2.mode & ConcurrentMode) === NoMode) {
               var nextState = {
@@ -17992,20 +17992,20 @@ var __privateMethod = (obj, member, method) => {
             }
             pushRenderLanes(workInProgress2, _subtreeRenderLanes);
           }
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateFragment(current2, workInProgress2, renderLanes2) {
+        function updateFragment(current3, workInProgress2, renderLanes2) {
           var nextChildren = workInProgress2.pendingProps;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateMode(current2, workInProgress2, renderLanes2) {
+        function updateMode(current3, workInProgress2, renderLanes2) {
           var nextChildren = workInProgress2.pendingProps.children;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateProfiler(current2, workInProgress2, renderLanes2) {
+        function updateProfiler(current3, workInProgress2, renderLanes2) {
           {
             workInProgress2.flags |= Update;
             {
@@ -18016,19 +18016,19 @@ var __privateMethod = (obj, member, method) => {
           }
           var nextProps = workInProgress2.pendingProps;
           var nextChildren = nextProps.children;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function markRef(current2, workInProgress2) {
+        function markRef(current3, workInProgress2) {
           var ref = workInProgress2.ref;
-          if (current2 === null && ref !== null || current2 !== null && current2.ref !== ref) {
+          if (current3 === null && ref !== null || current3 !== null && current3.ref !== ref) {
             workInProgress2.flags |= Ref;
             {
               workInProgress2.flags |= RefStatic;
             }
           }
         }
-        function updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateFunctionComponent(current3, workInProgress2, Component, nextProps, renderLanes2) {
           {
             if (workInProgress2.type !== workInProgress2.elementType) {
               var innerPropTypes = Component.propTypes;
@@ -18057,12 +18057,12 @@ var __privateMethod = (obj, member, method) => {
           {
             ReactCurrentOwner$1.current = workInProgress2;
             setIsRendering(true);
-            nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
+            nextChildren = renderWithHooks(current3, workInProgress2, Component, nextProps, context, renderLanes2);
             hasId2 = checkDidRenderIdHook();
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
+                nextChildren = renderWithHooks(current3, workInProgress2, Component, nextProps, context, renderLanes2);
                 hasId2 = checkDidRenderIdHook();
               } finally {
                 setIsStrictModeForDevtools(false);
@@ -18073,18 +18073,18 @@ var __privateMethod = (obj, member, method) => {
           {
             markComponentRenderStopped();
           }
-          if (current2 !== null && !didReceiveUpdate) {
-            bailoutHooks(current2, workInProgress2, renderLanes2);
-            return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+          if (current3 !== null && !didReceiveUpdate) {
+            bailoutHooks(current3, workInProgress2, renderLanes2);
+            return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
           }
           if (getIsHydrating() && hasId2) {
             pushMaterializedTreeId(workInProgress2);
           }
           workInProgress2.flags |= PerformedWork;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateClassComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateClassComponent(current3, workInProgress2, Component, nextProps, renderLanes2) {
           {
             switch (shouldError(workInProgress2)) {
               case false: {
@@ -18130,16 +18130,16 @@ var __privateMethod = (obj, member, method) => {
           var instance = workInProgress2.stateNode;
           var shouldUpdate;
           if (instance === null) {
-            resetSuspendedCurrentOnMountInLegacyMode(current2, workInProgress2);
+            resetSuspendedCurrentOnMountInLegacyMode(current3, workInProgress2);
             constructClassInstance(workInProgress2, Component, nextProps);
             mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
             shouldUpdate = true;
-          } else if (current2 === null) {
+          } else if (current3 === null) {
             shouldUpdate = resumeMountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
           } else {
-            shouldUpdate = updateClassInstance(current2, workInProgress2, Component, nextProps, renderLanes2);
+            shouldUpdate = updateClassInstance(current3, workInProgress2, Component, nextProps, renderLanes2);
           }
-          var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2);
+          var nextUnitOfWork = finishClassComponent(current3, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2);
           {
             var inst = workInProgress2.stateNode;
             if (shouldUpdate && inst.props !== nextProps) {
@@ -18151,14 +18151,14 @@ var __privateMethod = (obj, member, method) => {
           }
           return nextUnitOfWork;
         }
-        function finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2) {
-          markRef(current2, workInProgress2);
+        function finishClassComponent(current3, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2) {
+          markRef(current3, workInProgress2);
           var didCaptureError = (workInProgress2.flags & DidCapture) !== NoFlags;
           if (!shouldUpdate && !didCaptureError) {
             if (hasContext) {
               invalidateContextProvider(workInProgress2, Component, false);
             }
-            return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+            return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
           }
           var instance = workInProgress2.stateNode;
           ReactCurrentOwner$1.current = workInProgress2;
@@ -18190,10 +18190,10 @@ var __privateMethod = (obj, member, method) => {
             }
           }
           workInProgress2.flags |= PerformedWork;
-          if (current2 !== null && didCaptureError) {
-            forceUnmountCurrentAndReconcile(current2, workInProgress2, nextChildren, renderLanes2);
+          if (current3 !== null && didCaptureError) {
+            forceUnmountCurrentAndReconcile(current3, workInProgress2, nextChildren, renderLanes2);
           } else {
-            reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+            reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           }
           workInProgress2.memoizedState = instance.state;
           if (hasContext) {
@@ -18210,15 +18210,15 @@ var __privateMethod = (obj, member, method) => {
           }
           pushHostContainer(workInProgress2, root2.containerInfo);
         }
-        function updateHostRoot(current2, workInProgress2, renderLanes2) {
+        function updateHostRoot(current3, workInProgress2, renderLanes2) {
           pushHostRootContext(workInProgress2);
-          if (current2 === null) {
+          if (current3 === null) {
             throw new Error("Should have a current fiber. This is a bug in React.");
           }
           var nextProps = workInProgress2.pendingProps;
           var prevState = workInProgress2.memoizedState;
           var prevChildren = prevState.element;
-          cloneUpdateQueue(current2, workInProgress2);
+          cloneUpdateQueue(current3, workInProgress2);
           processUpdateQueue(workInProgress2, nextProps, null, renderLanes2);
           var nextState = workInProgress2.memoizedState;
           workInProgress2.stateNode;
@@ -18236,10 +18236,10 @@ var __privateMethod = (obj, member, method) => {
             workInProgress2.memoizedState = overrideState;
             if (workInProgress2.flags & ForceClientRender) {
               var recoverableError = createCapturedValueAtFiber(new Error("There was an error while hydrating. Because the error happened outside of a Suspense boundary, the entire root will switch to client rendering."), workInProgress2);
-              return mountHostRootWithoutHydrating(current2, workInProgress2, nextChildren, renderLanes2, recoverableError);
+              return mountHostRootWithoutHydrating(current3, workInProgress2, nextChildren, renderLanes2, recoverableError);
             } else if (nextChildren !== prevChildren) {
               var _recoverableError = createCapturedValueAtFiber(new Error("This root received an early update, before anything was able hydrate. Switched the entire root to client rendering."), workInProgress2);
-              return mountHostRootWithoutHydrating(current2, workInProgress2, nextChildren, renderLanes2, _recoverableError);
+              return mountHostRootWithoutHydrating(current3, workInProgress2, nextChildren, renderLanes2, _recoverableError);
             } else {
               enterHydrationState(workInProgress2);
               var child = mountChildFibers(workInProgress2, null, nextChildren, renderLanes2);
@@ -18253,27 +18253,27 @@ var __privateMethod = (obj, member, method) => {
           } else {
             resetHydrationState();
             if (nextChildren === prevChildren) {
-              return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+              return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
             }
-            reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+            reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           }
           return workInProgress2.child;
         }
-        function mountHostRootWithoutHydrating(current2, workInProgress2, nextChildren, renderLanes2, recoverableError) {
+        function mountHostRootWithoutHydrating(current3, workInProgress2, nextChildren, renderLanes2, recoverableError) {
           resetHydrationState();
           queueHydrationError(recoverableError);
           workInProgress2.flags |= ForceClientRender;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateHostComponent(current2, workInProgress2, renderLanes2) {
+        function updateHostComponent(current3, workInProgress2, renderLanes2) {
           pushHostContext(workInProgress2);
-          if (current2 === null) {
+          if (current3 === null) {
             tryToClaimNextHydratableInstance(workInProgress2);
           }
           var type = workInProgress2.type;
           var nextProps = workInProgress2.pendingProps;
-          var prevProps = current2 !== null ? current2.memoizedProps : null;
+          var prevProps = current3 !== null ? current3.memoizedProps : null;
           var nextChildren = nextProps.children;
           var isDirectTextChild = shouldSetTextContent(type, nextProps);
           if (isDirectTextChild) {
@@ -18281,12 +18281,12 @@ var __privateMethod = (obj, member, method) => {
           } else if (prevProps !== null && shouldSetTextContent(type, prevProps)) {
             workInProgress2.flags |= ContentReset;
           }
-          markRef(current2, workInProgress2);
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          markRef(current3, workInProgress2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateHostText(current2, workInProgress2) {
-          if (current2 === null) {
+        function updateHostText(current3, workInProgress2) {
+          if (current3 === null) {
             tryToClaimNextHydratableInstance(workInProgress2);
           }
           return null;
@@ -18527,19 +18527,19 @@ var __privateMethod = (obj, member, method) => {
             transitions: prevOffscreenState.transitions
           };
         }
-        function shouldRemainOnFallback(suspenseContext, current2, workInProgress2, renderLanes2) {
-          if (current2 !== null) {
-            var suspenseState = current2.memoizedState;
+        function shouldRemainOnFallback(suspenseContext, current3, workInProgress2, renderLanes2) {
+          if (current3 !== null) {
+            var suspenseState = current3.memoizedState;
             if (suspenseState === null) {
               return false;
             }
           }
           return hasSuspenseContext(suspenseContext, ForceSuspenseFallback);
         }
-        function getRemainingWorkInPrimaryTree(current2, renderLanes2) {
-          return removeLanes(current2.childLanes, renderLanes2);
+        function getRemainingWorkInPrimaryTree(current3, renderLanes2) {
+          return removeLanes(current3.childLanes, renderLanes2);
         }
-        function updateSuspenseComponent(current2, workInProgress2, renderLanes2) {
+        function updateSuspenseComponent(current3, workInProgress2, renderLanes2) {
           var nextProps = workInProgress2.pendingProps;
           {
             if (shouldSuspend(workInProgress2)) {
@@ -18549,11 +18549,11 @@ var __privateMethod = (obj, member, method) => {
           var suspenseContext = suspenseStackCursor.current;
           var showFallback = false;
           var didSuspend = (workInProgress2.flags & DidCapture) !== NoFlags;
-          if (didSuspend || shouldRemainOnFallback(suspenseContext, current2)) {
+          if (didSuspend || shouldRemainOnFallback(suspenseContext, current3)) {
             showFallback = true;
             workInProgress2.flags &= ~DidCapture;
           } else {
-            if (current2 === null || current2.memoizedState !== null) {
+            if (current3 === null || current3.memoizedState !== null) {
               {
                 suspenseContext = addSubtreeSuspenseContext(suspenseContext, InvisibleParentSuspenseContext);
               }
@@ -18561,7 +18561,7 @@ var __privateMethod = (obj, member, method) => {
           }
           suspenseContext = setDefaultShallowSuspenseContext(suspenseContext);
           pushSuspenseContext(workInProgress2, suspenseContext);
-          if (current2 === null) {
+          if (current3 === null) {
             tryToClaimNextHydratableInstance(workInProgress2);
             var suspenseState = workInProgress2.memoizedState;
             if (suspenseState !== null) {
@@ -18582,26 +18582,26 @@ var __privateMethod = (obj, member, method) => {
               return mountSuspensePrimaryChildren(workInProgress2, nextPrimaryChildren);
             }
           } else {
-            var prevState = current2.memoizedState;
+            var prevState = current3.memoizedState;
             if (prevState !== null) {
               var _dehydrated = prevState.dehydrated;
               if (_dehydrated !== null) {
-                return updateDehydratedSuspenseComponent(current2, workInProgress2, didSuspend, nextProps, _dehydrated, prevState, renderLanes2);
+                return updateDehydratedSuspenseComponent(current3, workInProgress2, didSuspend, nextProps, _dehydrated, prevState, renderLanes2);
               }
             }
             if (showFallback) {
               var _nextFallbackChildren = nextProps.fallback;
               var _nextPrimaryChildren = nextProps.children;
-              var fallbackChildFragment = updateSuspenseFallbackChildren(current2, workInProgress2, _nextPrimaryChildren, _nextFallbackChildren, renderLanes2);
+              var fallbackChildFragment = updateSuspenseFallbackChildren(current3, workInProgress2, _nextPrimaryChildren, _nextFallbackChildren, renderLanes2);
               var _primaryChildFragment2 = workInProgress2.child;
-              var prevOffscreenState = current2.child.memoizedState;
+              var prevOffscreenState = current3.child.memoizedState;
               _primaryChildFragment2.memoizedState = prevOffscreenState === null ? mountSuspenseOffscreenState(renderLanes2) : updateSuspenseOffscreenState(prevOffscreenState, renderLanes2);
-              _primaryChildFragment2.childLanes = getRemainingWorkInPrimaryTree(current2, renderLanes2);
+              _primaryChildFragment2.childLanes = getRemainingWorkInPrimaryTree(current3, renderLanes2);
               workInProgress2.memoizedState = SUSPENDED_MARKER;
               return fallbackChildFragment;
             } else {
               var _nextPrimaryChildren2 = nextProps.children;
-              var _primaryChildFragment3 = updateSuspensePrimaryChildren(current2, workInProgress2, _nextPrimaryChildren2, renderLanes2);
+              var _primaryChildFragment3 = updateSuspensePrimaryChildren(current3, workInProgress2, _nextPrimaryChildren2, renderLanes2);
               workInProgress2.memoizedState = null;
               return _primaryChildFragment3;
             }
@@ -18651,11 +18651,11 @@ var __privateMethod = (obj, member, method) => {
         function mountWorkInProgressOffscreenFiber(offscreenProps, mode, renderLanes2) {
           return createFiberFromOffscreen(offscreenProps, mode, NoLanes, null);
         }
-        function updateWorkInProgressOffscreenFiber(current2, offscreenProps) {
-          return createWorkInProgress(current2, offscreenProps);
+        function updateWorkInProgressOffscreenFiber(current3, offscreenProps) {
+          return createWorkInProgress(current3, offscreenProps);
         }
-        function updateSuspensePrimaryChildren(current2, workInProgress2, primaryChildren, renderLanes2) {
-          var currentPrimaryChildFragment = current2.child;
+        function updateSuspensePrimaryChildren(current3, workInProgress2, primaryChildren, renderLanes2) {
+          var currentPrimaryChildFragment = current3.child;
           var currentFallbackChildFragment = currentPrimaryChildFragment.sibling;
           var primaryChildFragment = updateWorkInProgressOffscreenFiber(currentPrimaryChildFragment, {
             mode: "visible",
@@ -18678,9 +18678,9 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.child = primaryChildFragment;
           return primaryChildFragment;
         }
-        function updateSuspenseFallbackChildren(current2, workInProgress2, primaryChildren, fallbackChildren, renderLanes2) {
+        function updateSuspenseFallbackChildren(current3, workInProgress2, primaryChildren, fallbackChildren, renderLanes2) {
           var mode = workInProgress2.mode;
-          var currentPrimaryChildFragment = current2.child;
+          var currentPrimaryChildFragment = current3.child;
           var currentFallbackChildFragment = currentPrimaryChildFragment.sibling;
           var primaryChildProps = {
             mode: "hidden",
@@ -18726,11 +18726,11 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.child = primaryChildFragment;
           return fallbackChildFragment;
         }
-        function retrySuspenseComponentWithoutHydrating(current2, workInProgress2, renderLanes2, recoverableError) {
+        function retrySuspenseComponentWithoutHydrating(current3, workInProgress2, renderLanes2, recoverableError) {
           if (recoverableError !== null) {
             queueHydrationError(recoverableError);
           }
-          reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
+          reconcileChildFibers(workInProgress2, current3.child, null, renderLanes2);
           var nextProps = workInProgress2.pendingProps;
           var primaryChildren = nextProps.children;
           var primaryChildFragment = mountSuspensePrimaryChildren(workInProgress2, primaryChildren);
@@ -18738,7 +18738,7 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.memoizedState = null;
           return primaryChildFragment;
         }
-        function mountSuspenseFallbackAfterRetryWithoutHydrating(current2, workInProgress2, primaryChildren, fallbackChildren, renderLanes2) {
+        function mountSuspenseFallbackAfterRetryWithoutHydrating(current3, workInProgress2, primaryChildren, fallbackChildren, renderLanes2) {
           var fiberMode = workInProgress2.mode;
           var primaryChildProps = {
             mode: "visible",
@@ -18752,7 +18752,7 @@ var __privateMethod = (obj, member, method) => {
           primaryChildFragment.sibling = fallbackChildFragment;
           workInProgress2.child = primaryChildFragment;
           if ((workInProgress2.mode & ConcurrentMode) !== NoMode) {
-            reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
+            reconcileChildFibers(workInProgress2, current3.child, null, renderLanes2);
           }
           return fallbackChildFragment;
         }
@@ -18769,12 +18769,12 @@ var __privateMethod = (obj, member, method) => {
           }
           return null;
         }
-        function updateDehydratedSuspenseComponent(current2, workInProgress2, didSuspend, nextProps, suspenseInstance, suspenseState, renderLanes2) {
+        function updateDehydratedSuspenseComponent(current3, workInProgress2, didSuspend, nextProps, suspenseInstance, suspenseState, renderLanes2) {
           if (!didSuspend) {
             warnIfHydrating();
             if ((workInProgress2.mode & ConcurrentMode) === NoMode) {
               return retrySuspenseComponentWithoutHydrating(
-                current2,
+                current3,
                 workInProgress2,
                 renderLanes2,
                 // TODO: When we delete legacy mode, we should make this error argument
@@ -18798,9 +18798,9 @@ var __privateMethod = (obj, member, method) => {
                 error2 = new Error("The server could not finish this Suspense boundary, likely due to an error during server rendering. Switched to client rendering.");
               }
               var capturedValue = createCapturedValue(error2, digest, stack);
-              return retrySuspenseComponentWithoutHydrating(current2, workInProgress2, renderLanes2, capturedValue);
+              return retrySuspenseComponentWithoutHydrating(current3, workInProgress2, renderLanes2, capturedValue);
             }
-            var hasContextChanged2 = includesSomeLane(renderLanes2, current2.childLanes);
+            var hasContextChanged2 = includesSomeLane(renderLanes2, current3.childLanes);
             if (didReceiveUpdate || hasContextChanged2) {
               var root2 = getWorkInProgressRoot();
               if (root2 !== null) {
@@ -18808,17 +18808,17 @@ var __privateMethod = (obj, member, method) => {
                 if (attemptHydrationAtLane !== NoLane && attemptHydrationAtLane !== suspenseState.retryLane) {
                   suspenseState.retryLane = attemptHydrationAtLane;
                   var eventTime = NoTimestamp;
-                  enqueueConcurrentRenderForLane(current2, attemptHydrationAtLane);
-                  scheduleUpdateOnFiber(root2, current2, attemptHydrationAtLane, eventTime);
+                  enqueueConcurrentRenderForLane(current3, attemptHydrationAtLane);
+                  scheduleUpdateOnFiber(root2, current3, attemptHydrationAtLane, eventTime);
                 }
               }
               renderDidSuspendDelayIfPossible();
               var _capturedValue = createCapturedValue(new Error("This Suspense boundary received an update before it finished hydrating. This caused the boundary to switch to client rendering. The usual way to fix this is to wrap the original update in startTransition."));
-              return retrySuspenseComponentWithoutHydrating(current2, workInProgress2, renderLanes2, _capturedValue);
+              return retrySuspenseComponentWithoutHydrating(current3, workInProgress2, renderLanes2, _capturedValue);
             } else if (isSuspenseInstancePending(suspenseInstance)) {
               workInProgress2.flags |= DidCapture;
-              workInProgress2.child = current2.child;
-              var retry = retryDehydratedSuspenseBoundary.bind(null, current2);
+              workInProgress2.child = current3.child;
+              var retry = retryDehydratedSuspenseBoundary.bind(null, current3);
               registerSuspenseInstanceRetry(suspenseInstance, retry);
               return null;
             } else {
@@ -18832,15 +18832,15 @@ var __privateMethod = (obj, member, method) => {
             if (workInProgress2.flags & ForceClientRender) {
               workInProgress2.flags &= ~ForceClientRender;
               var _capturedValue2 = createCapturedValue(new Error("There was an error while hydrating this Suspense boundary. Switched to client rendering."));
-              return retrySuspenseComponentWithoutHydrating(current2, workInProgress2, renderLanes2, _capturedValue2);
+              return retrySuspenseComponentWithoutHydrating(current3, workInProgress2, renderLanes2, _capturedValue2);
             } else if (workInProgress2.memoizedState !== null) {
-              workInProgress2.child = current2.child;
+              workInProgress2.child = current3.child;
               workInProgress2.flags |= DidCapture;
               return null;
             } else {
               var nextPrimaryChildren = nextProps.children;
               var nextFallbackChildren = nextProps.fallback;
-              var fallbackChildFragment = mountSuspenseFallbackAfterRetryWithoutHydrating(current2, workInProgress2, nextPrimaryChildren, nextFallbackChildren, renderLanes2);
+              var fallbackChildFragment = mountSuspenseFallbackAfterRetryWithoutHydrating(current3, workInProgress2, nextPrimaryChildren, nextFallbackChildren, renderLanes2);
               var _primaryChildFragment4 = workInProgress2.child;
               _primaryChildFragment4.memoizedState = mountSuspenseOffscreenState(renderLanes2);
               workInProgress2.memoizedState = SUSPENDED_MARKER;
@@ -18998,7 +18998,7 @@ var __privateMethod = (obj, member, method) => {
             renderState.tailMode = tailMode;
           }
         }
-        function updateSuspenseListComponent(current2, workInProgress2, renderLanes2) {
+        function updateSuspenseListComponent(current3, workInProgress2, renderLanes2) {
           var nextProps = workInProgress2.pendingProps;
           var revealOrder = nextProps.revealOrder;
           var tailMode = nextProps.tail;
@@ -19006,14 +19006,14 @@ var __privateMethod = (obj, member, method) => {
           validateRevealOrder(revealOrder);
           validateTailOptions(tailMode, revealOrder);
           validateSuspenseListChildren(newChildren, revealOrder);
-          reconcileChildren(current2, workInProgress2, newChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, newChildren, renderLanes2);
           var suspenseContext = suspenseStackCursor.current;
           var shouldForceFallback = hasSuspenseContext(suspenseContext, ForceSuspenseFallback);
           if (shouldForceFallback) {
             suspenseContext = setShallowSuspenseContext(suspenseContext, ForceSuspenseFallback);
             workInProgress2.flags |= DidCapture;
           } else {
-            var didSuspendBefore = current2 !== null && (current2.flags & DidCapture) !== NoFlags;
+            var didSuspendBefore = current3 !== null && (current3.flags & DidCapture) !== NoFlags;
             if (didSuspendBefore) {
               propagateSuspenseContextChange(workInProgress2, workInProgress2.child, renderLanes2);
             }
@@ -19090,18 +19090,18 @@ var __privateMethod = (obj, member, method) => {
           }
           return workInProgress2.child;
         }
-        function updatePortalComponent(current2, workInProgress2, renderLanes2) {
+        function updatePortalComponent(current3, workInProgress2, renderLanes2) {
           pushHostContainer(workInProgress2, workInProgress2.stateNode.containerInfo);
           var nextChildren = workInProgress2.pendingProps;
-          if (current2 === null) {
+          if (current3 === null) {
             workInProgress2.child = reconcileChildFibers(workInProgress2, null, nextChildren, renderLanes2);
           } else {
-            reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+            reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           }
           return workInProgress2.child;
         }
         var hasWarnedAboutUsingNoValuePropOnContextProvider = false;
-        function updateContextProvider(current2, workInProgress2, renderLanes2) {
+        function updateContextProvider(current3, workInProgress2, renderLanes2) {
           var providerType = workInProgress2.type;
           var context = providerType._context;
           var newProps = workInProgress2.pendingProps;
@@ -19125,7 +19125,7 @@ var __privateMethod = (obj, member, method) => {
               var oldValue = oldProps.value;
               if (objectIs(oldValue, newValue)) {
                 if (oldProps.children === newProps.children && !hasContextChanged()) {
-                  return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+                  return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
                 }
               } else {
                 propagateContextChange(workInProgress2, context, renderLanes2);
@@ -19133,11 +19133,11 @@ var __privateMethod = (obj, member, method) => {
             }
           }
           var newChildren = newProps.children;
-          reconcileChildren(current2, workInProgress2, newChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, newChildren, renderLanes2);
           return workInProgress2.child;
         }
         var hasWarnedAboutUsingContextAsConsumer = false;
-        function updateContextConsumer(current2, workInProgress2, renderLanes2) {
+        function updateContextConsumer(current3, workInProgress2, renderLanes2) {
           var context = workInProgress2.type;
           {
             if (context._context === void 0) {
@@ -19174,24 +19174,24 @@ var __privateMethod = (obj, member, method) => {
             markComponentRenderStopped();
           }
           workInProgress2.flags |= PerformedWork;
-          reconcileChildren(current2, workInProgress2, newChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, newChildren, renderLanes2);
           return workInProgress2.child;
         }
         function markWorkInProgressReceivedUpdate() {
           didReceiveUpdate = true;
         }
-        function resetSuspendedCurrentOnMountInLegacyMode(current2, workInProgress2) {
+        function resetSuspendedCurrentOnMountInLegacyMode(current3, workInProgress2) {
           if ((workInProgress2.mode & ConcurrentMode) === NoMode) {
-            if (current2 !== null) {
-              current2.alternate = null;
+            if (current3 !== null) {
+              current3.alternate = null;
               workInProgress2.alternate = null;
               workInProgress2.flags |= Placement;
             }
           }
         }
-        function bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2) {
-          if (current2 !== null) {
-            workInProgress2.dependencies = current2.dependencies;
+        function bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2) {
+          if (current3 !== null) {
+            workInProgress2.dependencies = current3.dependencies;
           }
           {
             stopProfilerTimerIfRunning();
@@ -19202,16 +19202,16 @@ var __privateMethod = (obj, member, method) => {
               return null;
             }
           }
-          cloneChildFibers(current2, workInProgress2);
+          cloneChildFibers(current3, workInProgress2);
           return workInProgress2.child;
         }
-        function remountFiber(current2, oldWorkInProgress, newWorkInProgress) {
+        function remountFiber(current3, oldWorkInProgress, newWorkInProgress) {
           {
             var returnFiber = oldWorkInProgress.return;
             if (returnFiber === null) {
               throw new Error("Cannot swap the root fiber.");
             }
-            current2.alternate = null;
+            current3.alternate = null;
             oldWorkInProgress.alternate = null;
             newWorkInProgress.index = oldWorkInProgress.index;
             newWorkInProgress.sibling = oldWorkInProgress.sibling;
@@ -19234,23 +19234,23 @@ var __privateMethod = (obj, member, method) => {
             }
             var deletions = returnFiber.deletions;
             if (deletions === null) {
-              returnFiber.deletions = [current2];
+              returnFiber.deletions = [current3];
               returnFiber.flags |= ChildDeletion;
             } else {
-              deletions.push(current2);
+              deletions.push(current3);
             }
             newWorkInProgress.flags |= Placement;
             return newWorkInProgress;
           }
         }
-        function checkScheduledUpdateOrContext(current2, renderLanes2) {
-          var updateLanes = current2.lanes;
+        function checkScheduledUpdateOrContext(current3, renderLanes2) {
+          var updateLanes = current3.lanes;
           if (includesSomeLane(updateLanes, renderLanes2)) {
             return true;
           }
           return false;
         }
-        function attemptEarlyBailoutIfNoScheduledUpdate(current2, workInProgress2, renderLanes2) {
+        function attemptEarlyBailoutIfNoScheduledUpdate(current3, workInProgress2, renderLanes2) {
           switch (workInProgress2.tag) {
             case HostRoot:
               pushHostRootContext(workInProgress2);
@@ -19300,10 +19300,10 @@ var __privateMethod = (obj, member, method) => {
                 var primaryChildFragment = workInProgress2.child;
                 var primaryChildLanes = primaryChildFragment.childLanes;
                 if (includesSomeLane(renderLanes2, primaryChildLanes)) {
-                  return updateSuspenseComponent(current2, workInProgress2, renderLanes2);
+                  return updateSuspenseComponent(current3, workInProgress2, renderLanes2);
                 } else {
                   pushSuspenseContext(workInProgress2, setDefaultShallowSuspenseContext(suspenseStackCursor.current));
-                  var child = bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+                  var child = bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
                   if (child !== null) {
                     return child.sibling;
                   } else {
@@ -19316,11 +19316,11 @@ var __privateMethod = (obj, member, method) => {
               break;
             }
             case SuspenseListComponent: {
-              var didSuspendBefore = (current2.flags & DidCapture) !== NoFlags;
+              var didSuspendBefore = (current3.flags & DidCapture) !== NoFlags;
               var _hasChildWork = includesSomeLane(renderLanes2, workInProgress2.childLanes);
               if (didSuspendBefore) {
                 if (_hasChildWork) {
-                  return updateSuspenseListComponent(current2, workInProgress2, renderLanes2);
+                  return updateSuspenseListComponent(current3, workInProgress2, renderLanes2);
                 }
                 workInProgress2.flags |= DidCapture;
               }
@@ -19340,32 +19340,32 @@ var __privateMethod = (obj, member, method) => {
             case OffscreenComponent:
             case LegacyHiddenComponent: {
               workInProgress2.lanes = NoLanes;
-              return updateOffscreenComponent(current2, workInProgress2, renderLanes2);
+              return updateOffscreenComponent(current3, workInProgress2, renderLanes2);
             }
           }
-          return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+          return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
         }
-        function beginWork(current2, workInProgress2, renderLanes2) {
+        function beginWork(current3, workInProgress2, renderLanes2) {
           {
-            if (workInProgress2._debugNeedsRemount && current2 !== null) {
-              return remountFiber(current2, workInProgress2, createFiberFromTypeAndProps(workInProgress2.type, workInProgress2.key, workInProgress2.pendingProps, workInProgress2._debugOwner || null, workInProgress2.mode, workInProgress2.lanes));
+            if (workInProgress2._debugNeedsRemount && current3 !== null) {
+              return remountFiber(current3, workInProgress2, createFiberFromTypeAndProps(workInProgress2.type, workInProgress2.key, workInProgress2.pendingProps, workInProgress2._debugOwner || null, workInProgress2.mode, workInProgress2.lanes));
             }
           }
-          if (current2 !== null) {
-            var oldProps = current2.memoizedProps;
+          if (current3 !== null) {
+            var oldProps = current3.memoizedProps;
             var newProps = workInProgress2.pendingProps;
             if (oldProps !== newProps || hasContextChanged() || // Force a re-render if the implementation changed due to hot reload:
-            workInProgress2.type !== current2.type) {
+            workInProgress2.type !== current3.type) {
               didReceiveUpdate = true;
             } else {
-              var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current2, renderLanes2);
+              var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current3, renderLanes2);
               if (!hasScheduledUpdateOrContext && // If this is the second pass of an error or suspense boundary, there
               // may not be work scheduled on `current`, so we check for this flag.
               (workInProgress2.flags & DidCapture) === NoFlags) {
                 didReceiveUpdate = false;
-                return attemptEarlyBailoutIfNoScheduledUpdate(current2, workInProgress2, renderLanes2);
+                return attemptEarlyBailoutIfNoScheduledUpdate(current3, workInProgress2, renderLanes2);
               }
-              if ((current2.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
+              if ((current3.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
                 didReceiveUpdate = true;
               } else {
                 didReceiveUpdate = false;
@@ -19382,50 +19382,50 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.lanes = NoLanes;
           switch (workInProgress2.tag) {
             case IndeterminateComponent: {
-              return mountIndeterminateComponent(current2, workInProgress2, workInProgress2.type, renderLanes2);
+              return mountIndeterminateComponent(current3, workInProgress2, workInProgress2.type, renderLanes2);
             }
             case LazyComponent: {
               var elementType = workInProgress2.elementType;
-              return mountLazyComponent(current2, workInProgress2, elementType, renderLanes2);
+              return mountLazyComponent(current3, workInProgress2, elementType, renderLanes2);
             }
             case FunctionComponent: {
               var Component = workInProgress2.type;
               var unresolvedProps = workInProgress2.pendingProps;
               var resolvedProps = workInProgress2.elementType === Component ? unresolvedProps : resolveDefaultProps(Component, unresolvedProps);
-              return updateFunctionComponent(current2, workInProgress2, Component, resolvedProps, renderLanes2);
+              return updateFunctionComponent(current3, workInProgress2, Component, resolvedProps, renderLanes2);
             }
             case ClassComponent: {
               var _Component = workInProgress2.type;
               var _unresolvedProps = workInProgress2.pendingProps;
               var _resolvedProps = workInProgress2.elementType === _Component ? _unresolvedProps : resolveDefaultProps(_Component, _unresolvedProps);
-              return updateClassComponent(current2, workInProgress2, _Component, _resolvedProps, renderLanes2);
+              return updateClassComponent(current3, workInProgress2, _Component, _resolvedProps, renderLanes2);
             }
             case HostRoot:
-              return updateHostRoot(current2, workInProgress2, renderLanes2);
+              return updateHostRoot(current3, workInProgress2, renderLanes2);
             case HostComponent:
-              return updateHostComponent(current2, workInProgress2, renderLanes2);
+              return updateHostComponent(current3, workInProgress2, renderLanes2);
             case HostText:
-              return updateHostText(current2, workInProgress2);
+              return updateHostText(current3, workInProgress2);
             case SuspenseComponent:
-              return updateSuspenseComponent(current2, workInProgress2, renderLanes2);
+              return updateSuspenseComponent(current3, workInProgress2, renderLanes2);
             case HostPortal:
-              return updatePortalComponent(current2, workInProgress2, renderLanes2);
+              return updatePortalComponent(current3, workInProgress2, renderLanes2);
             case ForwardRef: {
               var type = workInProgress2.type;
               var _unresolvedProps2 = workInProgress2.pendingProps;
               var _resolvedProps2 = workInProgress2.elementType === type ? _unresolvedProps2 : resolveDefaultProps(type, _unresolvedProps2);
-              return updateForwardRef(current2, workInProgress2, type, _resolvedProps2, renderLanes2);
+              return updateForwardRef(current3, workInProgress2, type, _resolvedProps2, renderLanes2);
             }
             case Fragment:
-              return updateFragment(current2, workInProgress2, renderLanes2);
+              return updateFragment(current3, workInProgress2, renderLanes2);
             case Mode:
-              return updateMode(current2, workInProgress2, renderLanes2);
+              return updateMode(current3, workInProgress2, renderLanes2);
             case Profiler:
-              return updateProfiler(current2, workInProgress2, renderLanes2);
+              return updateProfiler(current3, workInProgress2, renderLanes2);
             case ContextProvider:
-              return updateContextProvider(current2, workInProgress2, renderLanes2);
+              return updateContextProvider(current3, workInProgress2, renderLanes2);
             case ContextConsumer:
-              return updateContextConsumer(current2, workInProgress2, renderLanes2);
+              return updateContextConsumer(current3, workInProgress2, renderLanes2);
             case MemoComponent: {
               var _type2 = workInProgress2.type;
               var _unresolvedProps3 = workInProgress2.pendingProps;
@@ -19445,25 +19445,25 @@ var __privateMethod = (obj, member, method) => {
                 }
               }
               _resolvedProps3 = resolveDefaultProps(_type2.type, _resolvedProps3);
-              return updateMemoComponent(current2, workInProgress2, _type2, _resolvedProps3, renderLanes2);
+              return updateMemoComponent(current3, workInProgress2, _type2, _resolvedProps3, renderLanes2);
             }
             case SimpleMemoComponent: {
-              return updateSimpleMemoComponent(current2, workInProgress2, workInProgress2.type, workInProgress2.pendingProps, renderLanes2);
+              return updateSimpleMemoComponent(current3, workInProgress2, workInProgress2.type, workInProgress2.pendingProps, renderLanes2);
             }
             case IncompleteClassComponent: {
               var _Component2 = workInProgress2.type;
               var _unresolvedProps4 = workInProgress2.pendingProps;
               var _resolvedProps4 = workInProgress2.elementType === _Component2 ? _unresolvedProps4 : resolveDefaultProps(_Component2, _unresolvedProps4);
-              return mountIncompleteClassComponent(current2, workInProgress2, _Component2, _resolvedProps4, renderLanes2);
+              return mountIncompleteClassComponent(current3, workInProgress2, _Component2, _resolvedProps4, renderLanes2);
             }
             case SuspenseListComponent: {
-              return updateSuspenseListComponent(current2, workInProgress2, renderLanes2);
+              return updateSuspenseListComponent(current3, workInProgress2, renderLanes2);
             }
             case ScopeComponent: {
               break;
             }
             case OffscreenComponent: {
-              return updateOffscreenComponent(current2, workInProgress2, renderLanes2);
+              return updateOffscreenComponent(current3, workInProgress2, renderLanes2);
             }
           }
           throw new Error("Unknown unit of work tag (" + workInProgress2.tag + "). This error is likely caused by a bug in React. Please file an issue.");
@@ -19507,10 +19507,10 @@ var __privateMethod = (obj, member, method) => {
               node2 = node2.sibling;
             }
           };
-          updateHostContainer = function(current2, workInProgress2) {
+          updateHostContainer = function(current3, workInProgress2) {
           };
-          updateHostComponent$1 = function(current2, workInProgress2, type, newProps, rootContainerInstance) {
-            var oldProps = current2.memoizedProps;
+          updateHostComponent$1 = function(current3, workInProgress2, type, newProps, rootContainerInstance) {
+            var oldProps = current3.memoizedProps;
             if (oldProps === newProps) {
               return;
             }
@@ -19522,7 +19522,7 @@ var __privateMethod = (obj, member, method) => {
               markUpdate(workInProgress2);
             }
           };
-          updateHostText$1 = function(current2, workInProgress2, oldText, newText) {
+          updateHostText$1 = function(current3, workInProgress2, oldText, newText) {
             if (oldText !== newText) {
               markUpdate(workInProgress2);
             }
@@ -19628,7 +19628,7 @@ var __privateMethod = (obj, member, method) => {
           completedWork.childLanes = newChildLanes;
           return didBailout;
         }
-        function completeDehydratedSuspenseBoundary(current2, workInProgress2, nextState) {
+        function completeDehydratedSuspenseBoundary(current3, workInProgress2, nextState) {
           if (hasUnhydratedTailNodes() && (workInProgress2.mode & ConcurrentMode) !== NoMode && (workInProgress2.flags & DidCapture) === NoFlags) {
             warnIfUnhydratedTailNodes(workInProgress2);
             resetHydrationState();
@@ -19637,7 +19637,7 @@ var __privateMethod = (obj, member, method) => {
           }
           var wasHydrated = popHydrationState(workInProgress2);
           if (nextState !== null && nextState.dehydrated !== null) {
-            if (current2 === null) {
+            if (current3 === null) {
               if (!wasHydrated) {
                 throw new Error("A dehydrated suspense component was completed without a hydrated node. This is probably a bug in React.");
               }
@@ -19680,7 +19680,7 @@ var __privateMethod = (obj, member, method) => {
             return true;
           }
         }
-        function completeWork(current2, workInProgress2, renderLanes2) {
+        function completeWork(current3, workInProgress2, renderLanes2) {
           var newProps = workInProgress2.pendingProps;
           popTreeContext(workInProgress2);
           switch (workInProgress2.tag) {
@@ -19713,13 +19713,13 @@ var __privateMethod = (obj, member, method) => {
                 fiberRoot.context = fiberRoot.pendingContext;
                 fiberRoot.pendingContext = null;
               }
-              if (current2 === null || current2.child === null) {
+              if (current3 === null || current3.child === null) {
                 var wasHydrated = popHydrationState(workInProgress2);
                 if (wasHydrated) {
                   markUpdate(workInProgress2);
                 } else {
-                  if (current2 !== null) {
-                    var prevState = current2.memoizedState;
+                  if (current3 !== null) {
+                    var prevState = current3.memoizedState;
                     if (
                       // Check if this is a client root
                       !prevState.isDehydrated || // Check if we reverted to client rendering (e.g. due to an error)
@@ -19731,7 +19731,7 @@ var __privateMethod = (obj, member, method) => {
                   }
                 }
               }
-              updateHostContainer(current2, workInProgress2);
+              updateHostContainer(current3, workInProgress2);
               bubbleProperties(workInProgress2);
               return null;
             }
@@ -19739,9 +19739,9 @@ var __privateMethod = (obj, member, method) => {
               popHostContext(workInProgress2);
               var rootContainerInstance = getRootHostContainer();
               var type = workInProgress2.type;
-              if (current2 !== null && workInProgress2.stateNode != null) {
-                updateHostComponent$1(current2, workInProgress2, type, newProps, rootContainerInstance);
-                if (current2.ref !== workInProgress2.ref) {
+              if (current3 !== null && workInProgress2.stateNode != null) {
+                updateHostComponent$1(current3, workInProgress2, type, newProps, rootContainerInstance);
+                if (current3.ref !== workInProgress2.ref) {
                   markRef$1(workInProgress2);
                 }
               } else {
@@ -19775,9 +19775,9 @@ var __privateMethod = (obj, member, method) => {
             }
             case HostText: {
               var newText = newProps;
-              if (current2 && workInProgress2.stateNode != null) {
-                var oldText = current2.memoizedProps;
-                updateHostText$1(current2, workInProgress2, oldText, newText);
+              if (current3 && workInProgress2.stateNode != null) {
+                var oldText = current3.memoizedProps;
+                updateHostText$1(current3, workInProgress2, oldText, newText);
               } else {
                 if (typeof newText !== "string") {
                   if (workInProgress2.stateNode === null) {
@@ -19801,8 +19801,8 @@ var __privateMethod = (obj, member, method) => {
             case SuspenseComponent: {
               popSuspenseContext(workInProgress2);
               var nextState = workInProgress2.memoizedState;
-              if (current2 === null || current2.memoizedState !== null && current2.memoizedState.dehydrated !== null) {
-                var fallthroughToNormalSuspensePath = completeDehydratedSuspenseBoundary(current2, workInProgress2, nextState);
+              if (current3 === null || current3.memoizedState !== null && current3.memoizedState.dehydrated !== null) {
+                var fallthroughToNormalSuspensePath = completeDehydratedSuspenseBoundary(current3, workInProgress2, nextState);
                 if (!fallthroughToNormalSuspensePath) {
                   if (workInProgress2.flags & ShouldCapture) {
                     return workInProgress2;
@@ -19819,13 +19819,13 @@ var __privateMethod = (obj, member, method) => {
                 return workInProgress2;
               }
               var nextDidTimeout = nextState !== null;
-              var prevDidTimeout = current2 !== null && current2.memoizedState !== null;
+              var prevDidTimeout = current3 !== null && current3.memoizedState !== null;
               if (nextDidTimeout !== prevDidTimeout) {
                 if (nextDidTimeout) {
                   var _offscreenFiber2 = workInProgress2.child;
                   _offscreenFiber2.flags |= Visibility;
                   if ((workInProgress2.mode & ConcurrentMode) !== NoMode) {
-                    var hasInvisibleChildContext = current2 === null && (workInProgress2.memoizedProps.unstable_avoidThisFallback !== true || !enableSuspenseAvoidThisFallback);
+                    var hasInvisibleChildContext = current3 === null && (workInProgress2.memoizedProps.unstable_avoidThisFallback !== true || !enableSuspenseAvoidThisFallback);
                     if (hasInvisibleChildContext || hasSuspenseContext(suspenseStackCursor.current, InvisibleParentSuspenseContext)) {
                       renderDidSuspend();
                     } else {
@@ -19853,8 +19853,8 @@ var __privateMethod = (obj, member, method) => {
             }
             case HostPortal:
               popHostContainer(workInProgress2);
-              updateHostContainer(current2, workInProgress2);
-              if (current2 === null) {
+              updateHostContainer(current3, workInProgress2);
+              if (current3 === null) {
                 preparePortalMount(workInProgress2.stateNode.containerInfo);
               }
               bubbleProperties(workInProgress2);
@@ -19883,7 +19883,7 @@ var __privateMethod = (obj, member, method) => {
               var renderedTail = renderState.rendering;
               if (renderedTail === null) {
                 if (!didSuspendAlready) {
-                  var cannotBeSuspended = renderHasNotSuspendedYet() && (current2 === null || (current2.flags & DidCapture) === NoFlags);
+                  var cannotBeSuspended = renderHasNotSuspendedYet() && (current3 === null || (current3.flags & DidCapture) === NoFlags);
                   if (!cannotBeSuspended) {
                     var row = workInProgress2.child;
                     while (row !== null) {
@@ -19981,8 +19981,8 @@ var __privateMethod = (obj, member, method) => {
               popRenderLanes(workInProgress2);
               var _nextState = workInProgress2.memoizedState;
               var nextIsHidden = _nextState !== null;
-              if (current2 !== null) {
-                var _prevState = current2.memoizedState;
+              if (current3 !== null) {
+                var _prevState = current3.memoizedState;
                 var prevIsHidden = _prevState !== null;
                 if (prevIsHidden !== nextIsHidden && // LegacyHidden doesn't do any hiding — it only pre-renders.
                 !enableLegacyHidden) {
@@ -20012,7 +20012,7 @@ var __privateMethod = (obj, member, method) => {
           }
           throw new Error("Unknown unit of work tag (" + workInProgress2.tag + "). This error is likely caused by a bug in React. Please file an issue.");
         }
-        function unwindWork(current2, workInProgress2, renderLanes2) {
+        function unwindWork(current3, workInProgress2, renderLanes2) {
           popTreeContext(workInProgress2);
           switch (workInProgress2.tag) {
             case ClassComponent: {
@@ -20086,7 +20086,7 @@ var __privateMethod = (obj, member, method) => {
               return null;
           }
         }
-        function unwindInterruptedWork(current2, interruptedWork, renderLanes2) {
+        function unwindInterruptedWork(current3, interruptedWork, renderLanes2) {
           popTreeContext(interruptedWork);
           switch (interruptedWork.tag) {
             case ClassComponent: {
@@ -20144,70 +20144,70 @@ var __privateMethod = (obj, member, method) => {
             clearCaughtError();
           }
         }
-        var callComponentWillUnmountWithTimer = function(current2, instance) {
-          instance.props = current2.memoizedProps;
-          instance.state = current2.memoizedState;
-          if (current2.mode & ProfileMode) {
+        var callComponentWillUnmountWithTimer = function(current3, instance) {
+          instance.props = current3.memoizedProps;
+          instance.state = current3.memoizedState;
+          if (current3.mode & ProfileMode) {
             try {
               startLayoutEffectTimer();
               instance.componentWillUnmount();
             } finally {
-              recordLayoutEffectDuration(current2);
+              recordLayoutEffectDuration(current3);
             }
           } else {
             instance.componentWillUnmount();
           }
         };
-        function safelyCallCommitHookLayoutEffectListMount(current2, nearestMountedAncestor) {
+        function safelyCallCommitHookLayoutEffectListMount(current3, nearestMountedAncestor) {
           try {
-            commitHookEffectListMount(Layout, current2);
+            commitHookEffectListMount(Layout, current3);
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
-        function safelyCallComponentWillUnmount(current2, nearestMountedAncestor, instance) {
+        function safelyCallComponentWillUnmount(current3, nearestMountedAncestor, instance) {
           try {
-            callComponentWillUnmountWithTimer(current2, instance);
+            callComponentWillUnmountWithTimer(current3, instance);
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
-        function safelyCallComponentDidMount(current2, nearestMountedAncestor, instance) {
+        function safelyCallComponentDidMount(current3, nearestMountedAncestor, instance) {
           try {
             instance.componentDidMount();
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
-        function safelyAttachRef(current2, nearestMountedAncestor) {
+        function safelyAttachRef(current3, nearestMountedAncestor) {
           try {
-            commitAttachRef(current2);
+            commitAttachRef(current3);
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
-        function safelyDetachRef(current2, nearestMountedAncestor) {
-          var ref = current2.ref;
+        function safelyDetachRef(current3, nearestMountedAncestor) {
+          var ref = current3.ref;
           if (ref !== null) {
             if (typeof ref === "function") {
               var retVal;
               try {
-                if (enableProfilerTimer && enableProfilerCommitHooks && current2.mode & ProfileMode) {
+                if (enableProfilerTimer && enableProfilerCommitHooks && current3.mode & ProfileMode) {
                   try {
                     startLayoutEffectTimer();
                     retVal = ref(null);
                   } finally {
-                    recordLayoutEffectDuration(current2);
+                    recordLayoutEffectDuration(current3);
                   }
                 } else {
                   retVal = ref(null);
                 }
               } catch (error2) {
-                captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+                captureCommitPhaseError(current3, nearestMountedAncestor, error2);
               }
               {
                 if (typeof retVal === "function") {
-                  error("Unexpected return value from a callback ref in %s. A callback ref should not return a function.", getComponentNameFromFiber(current2));
+                  error("Unexpected return value from a callback ref in %s. A callback ref should not return a function.", getComponentNameFromFiber(current3));
                 }
               }
             } else {
@@ -20215,11 +20215,11 @@ var __privateMethod = (obj, member, method) => {
             }
           }
         }
-        function safelyCallDestroy(current2, nearestMountedAncestor, destroy) {
+        function safelyCallDestroy(current3, nearestMountedAncestor, destroy) {
           try {
             destroy();
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
         var shouldFireAfterActiveInstanceBlur = false;
@@ -20263,7 +20263,7 @@ var __privateMethod = (obj, member, method) => {
           }
         }
         function commitBeforeMutationEffectsOnFiber(finishedWork) {
-          var current2 = finishedWork.alternate;
+          var current3 = finishedWork.alternate;
           var flags = finishedWork.flags;
           if ((flags & Snapshot) !== NoFlags) {
             setCurrentFiber(finishedWork);
@@ -20274,9 +20274,9 @@ var __privateMethod = (obj, member, method) => {
                 break;
               }
               case ClassComponent: {
-                if (current2 !== null) {
-                  var prevProps = current2.memoizedProps;
-                  var prevState = current2.memoizedState;
+                if (current3 !== null) {
+                  var prevProps = current3.memoizedProps;
+                  var prevState = current3.memoizedState;
                   var instance = finishedWork.stateNode;
                   {
                     if (finishedWork.type === finishedWork.elementType && !didWarnAboutReassigningProps) {
@@ -20460,7 +20460,7 @@ var __privateMethod = (obj, member, method) => {
             }
           }
         }
-        function commitLayoutEffectOnFiber(finishedRoot, current2, finishedWork, committedLanes) {
+        function commitLayoutEffectOnFiber(finishedRoot, current3, finishedWork, committedLanes) {
           if ((finishedWork.flags & LayoutMask) !== NoFlags) {
             switch (finishedWork.tag) {
               case FunctionComponent:
@@ -20484,7 +20484,7 @@ var __privateMethod = (obj, member, method) => {
                 var instance = finishedWork.stateNode;
                 if (finishedWork.flags & Update) {
                   if (!offscreenSubtreeWasHidden) {
-                    if (current2 === null) {
+                    if (current3 === null) {
                       {
                         if (finishedWork.type === finishedWork.elementType && !didWarnAboutReassigningProps) {
                           if (instance.props !== finishedWork.memoizedProps) {
@@ -20506,8 +20506,8 @@ var __privateMethod = (obj, member, method) => {
                         instance.componentDidMount();
                       }
                     } else {
-                      var prevProps = finishedWork.elementType === finishedWork.type ? current2.memoizedProps : resolveDefaultProps(finishedWork.type, current2.memoizedProps);
-                      var prevState = current2.memoizedState;
+                      var prevProps = finishedWork.elementType === finishedWork.type ? current3.memoizedProps : resolveDefaultProps(finishedWork.type, current3.memoizedProps);
+                      var prevState = current3.memoizedState;
                       {
                         if (finishedWork.type === finishedWork.elementType && !didWarnAboutReassigningProps) {
                           if (instance.props !== finishedWork.memoizedProps) {
@@ -20567,7 +20567,7 @@ var __privateMethod = (obj, member, method) => {
               }
               case HostComponent: {
                 var _instance2 = finishedWork.stateNode;
-                if (current2 === null && finishedWork.flags & Update) {
+                if (current3 === null && finishedWork.flags & Update) {
                   var type = finishedWork.type;
                   var props = finishedWork.memoizedProps;
                   commitMount(_instance2, type, props);
@@ -20585,7 +20585,7 @@ var __privateMethod = (obj, member, method) => {
                   var _finishedWork$memoize2 = finishedWork.memoizedProps, onCommit = _finishedWork$memoize2.onCommit, onRender = _finishedWork$memoize2.onRender;
                   var effectDuration = finishedWork.stateNode.effectDuration;
                   var commitTime2 = getCommitTime();
-                  var phase = current2 === null ? "mount" : "update";
+                  var phase = current3 === null ? "mount" : "update";
                   {
                     if (isCurrentUpdateNested()) {
                       phase = "nested-update";
@@ -21095,9 +21095,9 @@ var __privateMethod = (obj, member, method) => {
         function commitSuspenseHydrationCallbacks(finishedRoot, finishedWork) {
           var newState = finishedWork.memoizedState;
           if (newState === null) {
-            var current2 = finishedWork.alternate;
-            if (current2 !== null) {
-              var prevState = current2.memoizedState;
+            var current3 = finishedWork.alternate;
+            if (current3 !== null) {
+              var prevState = current3.memoizedState;
               if (prevState !== null) {
                 var suspenseInstance = prevState.dehydrated;
                 if (suspenseInstance !== null) {
@@ -21166,7 +21166,7 @@ var __privateMethod = (obj, member, method) => {
           setCurrentFiber(prevDebugFiber);
         }
         function commitMutationEffectsOnFiber(finishedWork, root2, lanes) {
-          var current2 = finishedWork.alternate;
+          var current3 = finishedWork.alternate;
           var flags = finishedWork.flags;
           switch (finishedWork.tag) {
             case FunctionComponent:
@@ -21204,8 +21204,8 @@ var __privateMethod = (obj, member, method) => {
               recursivelyTraverseMutationEffects(root2, finishedWork);
               commitReconciliationEffects(finishedWork);
               if (flags & Ref) {
-                if (current2 !== null) {
-                  safelyDetachRef(current2, current2.return);
+                if (current3 !== null) {
+                  safelyDetachRef(current3, current3.return);
                 }
               }
               return;
@@ -21214,8 +21214,8 @@ var __privateMethod = (obj, member, method) => {
               recursivelyTraverseMutationEffects(root2, finishedWork);
               commitReconciliationEffects(finishedWork);
               if (flags & Ref) {
-                if (current2 !== null) {
-                  safelyDetachRef(current2, current2.return);
+                if (current3 !== null) {
+                  safelyDetachRef(current3, current3.return);
                 }
               }
               {
@@ -21231,7 +21231,7 @@ var __privateMethod = (obj, member, method) => {
                   var _instance4 = finishedWork.stateNode;
                   if (_instance4 != null) {
                     var newProps = finishedWork.memoizedProps;
-                    var oldProps = current2 !== null ? current2.memoizedProps : newProps;
+                    var oldProps = current3 !== null ? current3.memoizedProps : newProps;
                     var type = finishedWork.type;
                     var updatePayload = finishedWork.updateQueue;
                     finishedWork.updateQueue = null;
@@ -21257,7 +21257,7 @@ var __privateMethod = (obj, member, method) => {
                   }
                   var textInstance = finishedWork.stateNode;
                   var newText = finishedWork.memoizedProps;
-                  var oldText = current2 !== null ? current2.memoizedProps : newText;
+                  var oldText = current3 !== null ? current3.memoizedProps : newText;
                   try {
                     commitTextUpdate(textInstance, oldText, newText);
                   } catch (error2) {
@@ -21272,8 +21272,8 @@ var __privateMethod = (obj, member, method) => {
               commitReconciliationEffects(finishedWork);
               if (flags & Update) {
                 {
-                  if (current2 !== null) {
-                    var prevRootState = current2.memoizedState;
+                  if (current3 !== null) {
+                    var prevRootState = current3.memoizedState;
                     if (prevRootState.isDehydrated) {
                       try {
                         commitHydratedContainer(root2.containerInfo);
@@ -21318,7 +21318,7 @@ var __privateMethod = (obj, member, method) => {
               return;
             }
             case OffscreenComponent: {
-              var _wasHidden = current2 !== null && current2.memoizedState !== null;
+              var _wasHidden = current3 !== null && current3.memoizedState !== null;
               if (
                 // TODO: Remove this dead flag
                 finishedWork.mode & ConcurrentMode
@@ -21410,8 +21410,8 @@ var __privateMethod = (obj, member, method) => {
                 commitLayoutMountEffects_complete(subtreeRoot, root2, committedLanes);
                 continue;
               } else {
-                var current2 = fiber.alternate;
-                var wasHidden = current2 !== null && current2.memoizedState !== null;
+                var current3 = fiber.alternate;
+                var wasHidden = current3 !== null && current3.memoizedState !== null;
                 var newOffscreenSubtreeWasHidden = wasHidden || offscreenSubtreeWasHidden;
                 var prevOffscreenSubtreeIsHidden = offscreenSubtreeIsHidden;
                 var prevOffscreenSubtreeWasHidden = offscreenSubtreeWasHidden;
@@ -21451,10 +21451,10 @@ var __privateMethod = (obj, member, method) => {
           while (nextEffect !== null) {
             var fiber = nextEffect;
             if ((fiber.flags & LayoutMask) !== NoFlags) {
-              var current2 = fiber.alternate;
+              var current3 = fiber.alternate;
               setCurrentFiber(fiber);
               try {
-                commitLayoutEffectOnFiber(root2, current2, fiber, committedLanes);
+                commitLayoutEffectOnFiber(root2, current3, fiber, committedLanes);
               } catch (error2) {
                 captureCommitPhaseError(fiber, fiber.return, error2);
               }
@@ -21750,17 +21750,17 @@ var __privateMethod = (obj, member, method) => {
             nextEffect = returnFiber;
           }
         }
-        function commitPassiveUnmountInsideDeletedTreeOnFiber(current2, nearestMountedAncestor) {
-          switch (current2.tag) {
+        function commitPassiveUnmountInsideDeletedTreeOnFiber(current3, nearestMountedAncestor) {
+          switch (current3.tag) {
             case FunctionComponent:
             case ForwardRef:
             case SimpleMemoComponent: {
-              if (current2.mode & ProfileMode) {
+              if (current3.mode & ProfileMode) {
                 startPassiveEffectTimer();
-                commitHookEffectListUnmount(Passive$1, current2, nearestMountedAncestor);
-                recordPassiveEffectDuration(current2);
+                commitHookEffectListUnmount(Passive$1, current3, nearestMountedAncestor);
+                recordPassiveEffectDuration(current3);
               } else {
-                commitHookEffectListUnmount(Passive$1, current2, nearestMountedAncestor);
+                commitHookEffectListUnmount(Passive$1, current3, nearestMountedAncestor);
               }
               break;
             }
@@ -22039,8 +22039,8 @@ var __privateMethod = (obj, member, method) => {
           }
         }
         function scheduleInitialHydrationOnRoot(root2, lane, eventTime) {
-          var current2 = root2.current;
-          current2.lanes = lane;
+          var current3 = root2.current;
+          current3.lanes = lane;
           markRootUpdated(root2, lane, eventTime);
           ensureRootIsScheduled(root2, eventTime);
         }
@@ -22214,11 +22214,11 @@ var __privateMethod = (obj, member, method) => {
           }
           return exitStatus;
         }
-        function queueRecoverableErrors(errors) {
+        function queueRecoverableErrors(errors2) {
           if (workInProgressRootRecoverableErrors === null) {
-            workInProgressRootRecoverableErrors = errors;
+            workInProgressRootRecoverableErrors = errors2;
           } else {
-            workInProgressRootRecoverableErrors.push.apply(workInProgressRootRecoverableErrors, errors);
+            workInProgressRootRecoverableErrors.push.apply(workInProgressRootRecoverableErrors, errors2);
           }
         }
         function finishConcurrentRender(root2, exitStatus, lanes) {
@@ -22453,8 +22453,8 @@ var __privateMethod = (obj, member, method) => {
           if (workInProgress !== null) {
             var interruptedWork = workInProgress.return;
             while (interruptedWork !== null) {
-              var current2 = interruptedWork.alternate;
-              unwindInterruptedWork(current2, interruptedWork);
+              var current3 = interruptedWork.alternate;
+              unwindInterruptedWork(current3, interruptedWork);
               interruptedWork = interruptedWork.return;
             }
           }
@@ -22660,15 +22660,15 @@ var __privateMethod = (obj, member, method) => {
           }
         }
         function performUnitOfWork(unitOfWork) {
-          var current2 = unitOfWork.alternate;
+          var current3 = unitOfWork.alternate;
           setCurrentFiber(unitOfWork);
           var next2;
           if ((unitOfWork.mode & ProfileMode) !== NoMode) {
             startProfilerTimer(unitOfWork);
-            next2 = beginWork$1(current2, unitOfWork, subtreeRenderLanes);
+            next2 = beginWork$1(current3, unitOfWork, subtreeRenderLanes);
             stopProfilerTimerIfRunningAndRecordDelta(unitOfWork, true);
           } else {
-            next2 = beginWork$1(current2, unitOfWork, subtreeRenderLanes);
+            next2 = beginWork$1(current3, unitOfWork, subtreeRenderLanes);
           }
           resetCurrentFiber();
           unitOfWork.memoizedProps = unitOfWork.pendingProps;
@@ -22682,16 +22682,16 @@ var __privateMethod = (obj, member, method) => {
         function completeUnitOfWork(unitOfWork) {
           var completedWork = unitOfWork;
           do {
-            var current2 = completedWork.alternate;
+            var current3 = completedWork.alternate;
             var returnFiber = completedWork.return;
             if ((completedWork.flags & Incomplete) === NoFlags) {
               setCurrentFiber(completedWork);
               var next2 = void 0;
               if ((completedWork.mode & ProfileMode) === NoMode) {
-                next2 = completeWork(current2, completedWork, subtreeRenderLanes);
+                next2 = completeWork(current3, completedWork, subtreeRenderLanes);
               } else {
                 startProfilerTimer(completedWork);
-                next2 = completeWork(current2, completedWork, subtreeRenderLanes);
+                next2 = completeWork(current3, completedWork, subtreeRenderLanes);
                 stopProfilerTimerIfRunningAndRecordDelta(completedWork, false);
               }
               resetCurrentFiber();
@@ -22700,7 +22700,7 @@ var __privateMethod = (obj, member, method) => {
                 return;
               }
             } else {
-              var _next = unwindWork(current2, completedWork);
+              var _next = unwindWork(current3, completedWork);
               if (_next !== null) {
                 _next.flags &= HostEffectMask;
                 workInProgress = _next;
@@ -23160,20 +23160,20 @@ var __privateMethod = (obj, member, method) => {
         }
         function invokeEffectsInDev(firstChild, fiberFlags, invokeEffectFn) {
           {
-            var current2 = firstChild;
+            var current3 = firstChild;
             var subtreeRoot = null;
-            while (current2 !== null) {
-              var primarySubtreeFlag = current2.subtreeFlags & fiberFlags;
-              if (current2 !== subtreeRoot && current2.child !== null && primarySubtreeFlag !== NoFlags) {
-                current2 = current2.child;
+            while (current3 !== null) {
+              var primarySubtreeFlag = current3.subtreeFlags & fiberFlags;
+              if (current3 !== subtreeRoot && current3.child !== null && primarySubtreeFlag !== NoFlags) {
+                current3 = current3.child;
               } else {
-                if ((current2.flags & fiberFlags) !== NoFlags) {
-                  invokeEffectFn(current2);
+                if ((current3.flags & fiberFlags) !== NoFlags) {
+                  invokeEffectFn(current3);
                 }
-                if (current2.sibling !== null) {
-                  current2 = current2.sibling;
+                if (current3.sibling !== null) {
+                  current3 = current3.sibling;
                 } else {
-                  current2 = subtreeRoot = current2.return;
+                  current3 = subtreeRoot = current3.return;
                 }
               }
             }
@@ -23201,7 +23201,7 @@ var __privateMethod = (obj, member, method) => {
             } else {
               didWarnStateUpdateForNotYetMountedComponent = /* @__PURE__ */ new Set([componentName]);
             }
-            var previousFiber = current;
+            var previousFiber = current2;
             try {
               setCurrentFiber(fiber);
               error("Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render function that asynchronously later calls tries to update the component. Move this work to useEffect instead.");
@@ -23217,22 +23217,22 @@ var __privateMethod = (obj, member, method) => {
         var beginWork$1;
         {
           var dummyFiber = null;
-          beginWork$1 = function(current2, unitOfWork, lanes) {
+          beginWork$1 = function(current3, unitOfWork, lanes) {
             var originalWorkInProgressCopy = assignFiberPropertiesInDEV(dummyFiber, unitOfWork);
             try {
-              return beginWork(current2, unitOfWork, lanes);
+              return beginWork(current3, unitOfWork, lanes);
             } catch (originalError) {
               if (didSuspendOrErrorWhileHydratingDEV() || originalError !== null && typeof originalError === "object" && typeof originalError.then === "function") {
                 throw originalError;
               }
               resetContextDependencies();
               resetHooksAfterThrow();
-              unwindInterruptedWork(current2, unitOfWork);
+              unwindInterruptedWork(current3, unitOfWork);
               assignFiberPropertiesInDEV(unitOfWork, originalWorkInProgressCopy);
               if (unitOfWork.mode & ProfileMode) {
                 startProfilerTimer(unitOfWork);
               }
-              invokeGuardedCallback(null, beginWork, null, current2, unitOfWork, lanes);
+              invokeGuardedCallback(null, beginWork, null, current3, unitOfWork, lanes);
               if (hasCaughtError()) {
                 var replayError = clearCaughtError();
                 if (typeof replayError === "object" && replayError !== null && replayError._suppressLogging && typeof originalError === "object" && originalError !== null && !originalError._suppressLogging) {
@@ -23324,7 +23324,7 @@ var __privateMethod = (obj, member, method) => {
               }
             }
             if (ReactCurrentActQueue$1.current === null) {
-              var previousFiber = current;
+              var previousFiber = current2;
               try {
                 setCurrentFiber(fiber);
                 error("An update to %s inside a test was not wrapped in act(...).\n\nWhen testing, code that causes React state updates should be wrapped into act(...):\n\nact(() => {\n  /* fire events that update state */\n});\n/* assert on the output */\n\nThis ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act", getComponentNameFromFiber(fiber));
@@ -23716,23 +23716,23 @@ var __privateMethod = (obj, member, method) => {
           }
           return IndeterminateComponent;
         }
-        function createWorkInProgress(current2, pendingProps) {
-          var workInProgress2 = current2.alternate;
+        function createWorkInProgress(current3, pendingProps) {
+          var workInProgress2 = current3.alternate;
           if (workInProgress2 === null) {
-            workInProgress2 = createFiber(current2.tag, pendingProps, current2.key, current2.mode);
-            workInProgress2.elementType = current2.elementType;
-            workInProgress2.type = current2.type;
-            workInProgress2.stateNode = current2.stateNode;
+            workInProgress2 = createFiber(current3.tag, pendingProps, current3.key, current3.mode);
+            workInProgress2.elementType = current3.elementType;
+            workInProgress2.type = current3.type;
+            workInProgress2.stateNode = current3.stateNode;
             {
-              workInProgress2._debugSource = current2._debugSource;
-              workInProgress2._debugOwner = current2._debugOwner;
-              workInProgress2._debugHookTypes = current2._debugHookTypes;
+              workInProgress2._debugSource = current3._debugSource;
+              workInProgress2._debugOwner = current3._debugOwner;
+              workInProgress2._debugHookTypes = current3._debugHookTypes;
             }
-            workInProgress2.alternate = current2;
-            current2.alternate = workInProgress2;
+            workInProgress2.alternate = current3;
+            current3.alternate = workInProgress2;
           } else {
             workInProgress2.pendingProps = pendingProps;
-            workInProgress2.type = current2.type;
+            workInProgress2.type = current3.type;
             workInProgress2.flags = NoFlags;
             workInProgress2.subtreeFlags = NoFlags;
             workInProgress2.deletions = null;
@@ -23741,38 +23741,38 @@ var __privateMethod = (obj, member, method) => {
               workInProgress2.actualStartTime = -1;
             }
           }
-          workInProgress2.flags = current2.flags & StaticMask;
-          workInProgress2.childLanes = current2.childLanes;
-          workInProgress2.lanes = current2.lanes;
-          workInProgress2.child = current2.child;
-          workInProgress2.memoizedProps = current2.memoizedProps;
-          workInProgress2.memoizedState = current2.memoizedState;
-          workInProgress2.updateQueue = current2.updateQueue;
-          var currentDependencies = current2.dependencies;
+          workInProgress2.flags = current3.flags & StaticMask;
+          workInProgress2.childLanes = current3.childLanes;
+          workInProgress2.lanes = current3.lanes;
+          workInProgress2.child = current3.child;
+          workInProgress2.memoizedProps = current3.memoizedProps;
+          workInProgress2.memoizedState = current3.memoizedState;
+          workInProgress2.updateQueue = current3.updateQueue;
+          var currentDependencies = current3.dependencies;
           workInProgress2.dependencies = currentDependencies === null ? null : {
             lanes: currentDependencies.lanes,
             firstContext: currentDependencies.firstContext
           };
-          workInProgress2.sibling = current2.sibling;
-          workInProgress2.index = current2.index;
-          workInProgress2.ref = current2.ref;
+          workInProgress2.sibling = current3.sibling;
+          workInProgress2.index = current3.index;
+          workInProgress2.ref = current3.ref;
           {
-            workInProgress2.selfBaseDuration = current2.selfBaseDuration;
-            workInProgress2.treeBaseDuration = current2.treeBaseDuration;
+            workInProgress2.selfBaseDuration = current3.selfBaseDuration;
+            workInProgress2.treeBaseDuration = current3.treeBaseDuration;
           }
           {
-            workInProgress2._debugNeedsRemount = current2._debugNeedsRemount;
+            workInProgress2._debugNeedsRemount = current3._debugNeedsRemount;
             switch (workInProgress2.tag) {
               case IndeterminateComponent:
               case FunctionComponent:
               case SimpleMemoComponent:
-                workInProgress2.type = resolveFunctionForHotReloading(current2.type);
+                workInProgress2.type = resolveFunctionForHotReloading(current3.type);
                 break;
               case ClassComponent:
-                workInProgress2.type = resolveClassForHotReloading(current2.type);
+                workInProgress2.type = resolveClassForHotReloading(current3.type);
                 break;
               case ForwardRef:
-                workInProgress2.type = resolveForwardRefForHotReloading(current2.type);
+                workInProgress2.type = resolveForwardRefForHotReloading(current3.type);
                 break;
             }
           }
@@ -23780,8 +23780,8 @@ var __privateMethod = (obj, member, method) => {
         }
         function resetWorkInProgress(workInProgress2, renderLanes2) {
           workInProgress2.flags &= StaticMask | Placement;
-          var current2 = workInProgress2.alternate;
-          if (current2 === null) {
+          var current3 = workInProgress2.alternate;
+          if (current3 === null) {
             workInProgress2.childLanes = NoLanes;
             workInProgress2.lanes = renderLanes2;
             workInProgress2.child = null;
@@ -23796,23 +23796,23 @@ var __privateMethod = (obj, member, method) => {
               workInProgress2.treeBaseDuration = 0;
             }
           } else {
-            workInProgress2.childLanes = current2.childLanes;
-            workInProgress2.lanes = current2.lanes;
-            workInProgress2.child = current2.child;
+            workInProgress2.childLanes = current3.childLanes;
+            workInProgress2.lanes = current3.lanes;
+            workInProgress2.child = current3.child;
             workInProgress2.subtreeFlags = NoFlags;
             workInProgress2.deletions = null;
-            workInProgress2.memoizedProps = current2.memoizedProps;
-            workInProgress2.memoizedState = current2.memoizedState;
-            workInProgress2.updateQueue = current2.updateQueue;
-            workInProgress2.type = current2.type;
-            var currentDependencies = current2.dependencies;
+            workInProgress2.memoizedProps = current3.memoizedProps;
+            workInProgress2.memoizedState = current3.memoizedState;
+            workInProgress2.updateQueue = current3.updateQueue;
+            workInProgress2.type = current3.type;
+            var currentDependencies = current3.dependencies;
             workInProgress2.dependencies = currentDependencies === null ? null : {
               lanes: currentDependencies.lanes,
               firstContext: currentDependencies.firstContext
             };
             {
-              workInProgress2.selfBaseDuration = current2.selfBaseDuration;
-              workInProgress2.treeBaseDuration = current2.treeBaseDuration;
+              workInProgress2.selfBaseDuration = current3.selfBaseDuration;
+              workInProgress2.treeBaseDuration = current3.treeBaseDuration;
             }
           }
           return workInProgress2;
@@ -24169,7 +24169,7 @@ var __privateMethod = (obj, member, method) => {
               var componentName = getComponentNameFromFiber(fiber) || "Component";
               if (!didWarnAboutFindNodeInStrictMode[componentName]) {
                 didWarnAboutFindNodeInStrictMode[componentName] = true;
-                var previousFiber = current;
+                var previousFiber = current2;
                 try {
                   setCurrentFiber(hostFiber);
                   if (fiber.mode & StrictLegacyMode) {
@@ -24198,12 +24198,12 @@ var __privateMethod = (obj, member, method) => {
           var hydrate2 = true;
           var root2 = createFiberRoot(containerInfo, tag2, hydrate2, initialChildren, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
           root2.context = getContextForSubtree(null);
-          var current2 = root2.current;
+          var current3 = root2.current;
           var eventTime = requestEventTime();
-          var lane = requestUpdateLane(current2);
+          var lane = requestUpdateLane(current3);
           var update = createUpdate(eventTime, lane);
           update.callback = callback !== void 0 && callback !== null ? callback : null;
-          enqueueUpdate(current2, update, lane);
+          enqueueUpdate(current3, update, lane);
           scheduleInitialHydrationOnRoot(root2, lane, eventTime);
           return root2;
         }
@@ -24224,9 +24224,9 @@ var __privateMethod = (obj, member, method) => {
             container.pendingContext = context;
           }
           {
-            if (isRendering && current !== null && !didWarnAboutNestedUpdates) {
+            if (isRendering && current2 !== null && !didWarnAboutNestedUpdates) {
               didWarnAboutNestedUpdates = true;
-              error("Render methods should be a pure function of props and state; triggering nested component updates from render is not allowed. If necessary, trigger nested updates in componentDidUpdate.\n\nCheck the render method of %s.", getComponentNameFromFiber(current) || "Unknown");
+              error("Render methods should be a pure function of props and state; triggering nested component updates from render is not allowed. If necessary, trigger nested updates in componentDidUpdate.\n\nCheck the render method of %s.", getComponentNameFromFiber(current2) || "Unknown");
             }
           }
           var update = createUpdate(eventTime, lane);
@@ -24517,7 +24517,7 @@ var __privateMethod = (obj, member, method) => {
           return null;
         }
         function getCurrentFiberForDevTools() {
-          return current;
+          return current2;
         }
         function injectIntoDevTools(devToolsConfig) {
           var findFiberByHostInstance = devToolsConfig.findFiberByHostInstance;
@@ -32018,7 +32018,7 @@ var __privateMethod = (obj, member, method) => {
     if (data.sets.length === 0 || !objectsets) {
       return false;
     }
-    return !objectsets.some((set) => !set.hidden && data.sets.includes(set.id));
+    return !objectsets.some((set2) => !set2.hidden && data.sets.includes(set2.id));
   }
   function unescapeCharacters(string) {
     return string.replace(/\&amp;/g, "&").replace(/\&gt;/g, ">").replace(/\&lt;/g, "<");
@@ -33108,12 +33108,12 @@ var __privateMethod = (obj, member, method) => {
   var getOwnPropertyNames = Object.getOwnPropertyNames;
   var getOwnPropertySymbols = Object.getOwnPropertySymbols;
   var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-  var getPrototypeOf = Object.getPrototypeOf;
+  var getPrototypeOf$1 = Object.getPrototypeOf;
   var objectPrototype = Object.prototype;
   function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
     if (typeof sourceComponent !== "string") {
       if (objectPrototype) {
-        var inheritedComponent = getPrototypeOf(sourceComponent);
+        var inheritedComponent = getPrototypeOf$1(sourceComponent);
         if (inheritedComponent && inheritedComponent !== objectPrototype) {
           hoistNonReactStatics(targetComponent, inheritedComponent, blacklist);
         }
@@ -33552,7 +33552,7 @@ var __privateMethod = (obj, member, method) => {
     }
     return boundActionCreators;
   }
-  function isPlainObject$4(obj) {
+  function isPlainObject$5(obj) {
     if (typeof obj !== "object" || obj === null)
       return false;
     let proto = Object.getPrototypeOf(obj);
@@ -33565,7 +33565,7 @@ var __privateMethod = (obj, member, method) => {
     return proto === baseProto;
   }
   function verifyPlainObject(value, displayName, methodName) {
-    if (!isPlainObject$4(value)) {
+    if (!isPlainObject$5(value)) {
       warning$1(`${methodName}() in ${displayName} must return a plain object. Instead received ${value}.`);
     }
   }
@@ -33763,7 +33763,7 @@ var __privateMethod = (obj, member, method) => {
   }
   const canUseDOM = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
   const useIsomorphicLayoutEffect = canUseDOM ? reactExports.useLayoutEffect : reactExports.useEffect;
-  function is(x, y) {
+  function is$1(x, y) {
     if (x === y) {
       return x !== 0 || y !== 0 || 1 / x === 1 / y;
     } else {
@@ -33771,7 +33771,7 @@ var __privateMethod = (obj, member, method) => {
     }
   }
   function shallowEqual(objA, objB) {
-    if (is(objA, objB))
+    if (is$1(objA, objB))
       return true;
     if (typeof objA !== "object" || objA === null || typeof objB !== "object" || objB === null) {
       return false;
@@ -33781,7 +33781,7 @@ var __privateMethod = (obj, member, method) => {
     if (keysA.length !== keysB.length)
       return false;
     for (let i2 = 0; i2 < keysA.length; i2++) {
-      if (!Object.prototype.hasOwnProperty.call(objB, keysA[i2]) || !is(objA[keysA[i2]], objB[keysA[i2]])) {
+      if (!Object.prototype.hasOwnProperty.call(objB, keysA[i2]) || !is$1(objA[keysA[i2]], objB[keysA[i2]])) {
         return false;
       }
     }
@@ -34474,18 +34474,18 @@ ${latestSubscriptionCallbackError.current.stack}
         if (x > y)
           return 1;
         return 0;
-      }).map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      }).map((set2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "input",
           {
             type: "checkbox",
-            id: "set" + set.id,
-            value: set.id,
-            checked: !set.hidden,
-            onChange: this.toggleHidden.bind(this, set.id, !set.hidden)
+            id: "set" + set2.id,
+            value: set2.id,
+            checked: !set2.hidden,
+            onChange: this.toggleHidden.bind(this, set2.id, !set2.hidden)
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set2.id, children: set2.title })
       ] })) });
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("View options") }),
@@ -35745,18 +35745,18 @@ ${latestSubscriptionCallbackError.current.stack}
         if (x > y)
           return 1;
         return 0;
-      }).map((set, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      }).map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "input",
           {
             type: "checkbox",
-            id: "set" + set.id,
-            value: set.id,
-            checked: !set.hidden,
-            onChange: this.toggleHidden.bind(this, set.id)
+            id: "set" + set2.id,
+            value: set2.id,
+            checked: !set2.hidden,
+            onChange: this.toggleHidden.bind(this, set2.id)
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set2.id, children: set2.title })
       ] }, index)) }));
     }
     /*******************************************************
@@ -36806,7 +36806,7 @@ ${latestSubscriptionCallbackError.current.stack}
     self2.updateValue = updateValue;
     self2.open = open;
     self2.redraw = redraw;
-    self2.set = set;
+    self2.set = set2;
     self2.setDate = setDate;
     self2.toggle = toggle;
     function setupHelperFunctions() {
@@ -37192,17 +37192,17 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       return void 0;
     }
-    function getNextAvailableDay(current, delta) {
-      var givenMonth = current.className.indexOf("Month") === -1 ? current.dateObj.getMonth() : self2.currentMonth;
+    function getNextAvailableDay(current2, delta) {
+      var givenMonth = current2.className.indexOf("Month") === -1 ? current2.dateObj.getMonth() : self2.currentMonth;
       var endMonth = delta > 0 ? self2.config.showMonths : -1;
       var loopDelta = delta > 0 ? 1 : -1;
       for (var m2 = givenMonth - self2.currentMonth; m2 != endMonth; m2 += loopDelta) {
         var month = self2.daysContainer.children[m2];
-        var startIndex = givenMonth - self2.currentMonth === m2 ? current.$i + delta : delta < 0 ? month.children.length - 1 : 0;
+        var startIndex = givenMonth - self2.currentMonth === m2 ? current2.$i + delta : delta < 0 ? month.children.length - 1 : 0;
         var numMonthDays = month.children.length;
         for (var i2 = startIndex; i2 >= 0 && i2 < numMonthDays && i2 != (delta > 0 ? numMonthDays : -1); i2 += loopDelta) {
           var c = month.children[i2];
-          if (c.className.indexOf("hidden") === -1 && isEnabled(c.dateObj) && Math.abs(current.$i - i2) >= Math.abs(delta))
+          if (c.className.indexOf("hidden") === -1 && isEnabled(c.dateObj) && Math.abs(current2.$i - i2) >= Math.abs(delta))
             return focusOnDayElem(c);
         }
       }
@@ -37210,10 +37210,10 @@ ${latestSubscriptionCallbackError.current.stack}
       focusOnDay(getFirstAvailableDay(loopDelta), 0);
       return void 0;
     }
-    function focusOnDay(current, offset) {
+    function focusOnDay(current2, offset) {
       var activeElement = getClosestActiveElement();
       var dayFocused = isInView(activeElement || document.body);
-      var startElem = current !== void 0 ? current : dayFocused ? activeElement : self2.selectedDateElem !== void 0 && isInView(self2.selectedDateElem) ? self2.selectedDateElem : self2.todayDateElem !== void 0 && isInView(self2.todayDateElem) ? self2.todayDateElem : getFirstAvailableDay(offset > 0 ? 1 : -1);
+      var startElem = current2 !== void 0 ? current2 : dayFocused ? activeElement : self2.selectedDateElem !== void 0 && isInView(self2.selectedDateElem) ? self2.selectedDateElem : self2.todayDateElem !== void 0 && isInView(self2.todayDateElem) ? self2.todayDateElem : getFirstAvailableDay(offset > 0 ? 1 : -1);
       if (startElem === void 0) {
         self2._input.focus();
       } else if (!dayFocused) {
@@ -38191,7 +38191,7 @@ ${latestSubscriptionCallbackError.current.stack}
         }
       ]
     };
-    function set(option, value) {
+    function set2(option, value) {
       if (option !== null && typeof option === "object") {
         Object.assign(self2.config, option);
         for (var key in option) {
@@ -38691,15 +38691,11 @@ ${latestSubscriptionCallbackError.current.stack}
     };
     return _extends$1.apply(this, arguments);
   }
-  function isPlainObject$3(item) {
-    if (typeof item !== "object" || item === null) {
-      return false;
-    }
-    const prototype = Object.getPrototypeOf(item);
-    return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in item) && !(Symbol.iterator in item);
+  function isPlainObject$4(item) {
+    return item !== null && typeof item === "object" && item.constructor === Object;
   }
   function deepClone(source) {
-    if (!isPlainObject$3(source)) {
+    if (!isPlainObject$4(source)) {
       return source;
     }
     const output = {};
@@ -38712,15 +38708,15 @@ ${latestSubscriptionCallbackError.current.stack}
     clone: true
   }) {
     const output = options.clone ? _extends$1({}, target) : target;
-    if (isPlainObject$3(target) && isPlainObject$3(source)) {
+    if (isPlainObject$4(target) && isPlainObject$4(source)) {
       Object.keys(source).forEach((key) => {
         if (key === "__proto__") {
           return;
         }
-        if (isPlainObject$3(source[key]) && key in target && isPlainObject$3(target[key])) {
+        if (isPlainObject$4(source[key]) && key in target && isPlainObject$4(target[key])) {
           output[key] = deepmerge(target[key], source[key], options);
         } else if (options.clone) {
-          output[key] = isPlainObject$3(source[key]) ? deepClone(source[key]) : source[key];
+          output[key] = isPlainObject$4(source[key]) ? deepClone(source[key]) : source[key];
         } else {
           output[key] = source[key];
         }
@@ -39150,14 +39146,14 @@ ${latestSubscriptionCallbackError.current.stack}
     };
     return objectAssign;
   }
-  var has;
+  var has$1;
   var hasRequiredHas;
   function requireHas() {
     if (hasRequiredHas)
-      return has;
+      return has$1;
     hasRequiredHas = 1;
-    has = Function.call.bind(Object.prototype.hasOwnProperty);
-    return has;
+    has$1 = Function.call.bind(Object.prototype.hasOwnProperty);
+    return has$1;
   }
   var checkPropTypes_1;
   var hasRequiredCheckPropTypes;
@@ -39963,10 +39959,11 @@ ${latestSubscriptionCallbackError.current.stack}
     useEnhancedEffect$1(() => {
       ref.current = fn;
     });
-    return reactExports.useRef((...args) => (
+    return reactExports.useCallback((...args) => (
       // @ts-expect-error hide `this`
+      // tslint:disable-next-line:ban-comma-operator
       (0, ref.current)(...args)
-    )).current;
+    ), []);
   }
   function useForkRef(...refs) {
     return reactExports.useMemo(() => {
@@ -39980,53 +39977,9 @@ ${latestSubscriptionCallbackError.current.stack}
       };
     }, refs);
   }
-  const UNINITIALIZED = {};
-  function useLazyRef(init2, initArg) {
-    const ref = reactExports.useRef(UNINITIALIZED);
-    if (ref.current === UNINITIALIZED) {
-      ref.current = init2(initArg);
-    }
-    return ref;
-  }
-  const EMPTY = [];
-  function useOnMount(fn) {
-    reactExports.useEffect(fn, EMPTY);
-  }
-  class Timeout {
-    constructor() {
-      this.currentId = 0;
-      this.clear = () => {
-        if (this.currentId !== 0) {
-          clearTimeout(this.currentId);
-          this.currentId = 0;
-        }
-      };
-      this.disposeEffect = () => {
-        return this.clear;
-      };
-    }
-    static create() {
-      return new Timeout();
-    }
-    /**
-     * Executes `fn` after `delay`, clearing any previously scheduled call.
-     */
-    start(delay, fn) {
-      this.clear();
-      this.currentId = setTimeout(() => {
-        this.currentId = 0;
-        fn();
-      }, delay);
-    }
-  }
-  function useTimeout() {
-    const timeout = useLazyRef(Timeout.create).current;
-    useOnMount(timeout.disposeEffect);
-    return timeout;
-  }
   let hadKeyboardEvent = true;
   let hadFocusVisibleRecently = false;
-  const hadFocusVisibleRecentlyTimeout = new Timeout();
+  let hadFocusVisibleRecentlyTimeout;
   const inputTypesWhitelist = {
     text: true,
     search: true,
@@ -40101,9 +40054,10 @@ ${latestSubscriptionCallbackError.current.stack}
     function handleBlurVisible() {
       if (isFocusVisibleRef.current) {
         hadFocusVisibleRecently = true;
-        hadFocusVisibleRecentlyTimeout.start(100, () => {
+        window.clearTimeout(hadFocusVisibleRecentlyTimeout);
+        hadFocusVisibleRecentlyTimeout = window.setTimeout(() => {
           hadFocusVisibleRecently = false;
-        });
+        }, 100);
         isFocusVisibleRef.current = false;
         return true;
       }
@@ -40247,7 +40201,7 @@ ${latestSubscriptionCallbackError.current.stack}
   };
   const ClassNameGenerator = createClassNameGenerator();
   const ClassNameGenerator$1 = ClassNameGenerator;
-  const globalStateClasses = {
+  const globalStateClassesMapping = {
     active: "active",
     checked: "checked",
     completed: "completed",
@@ -40262,7 +40216,7 @@ ${latestSubscriptionCallbackError.current.stack}
     selected: "selected"
   };
   function generateUtilityClass(componentName, slot, globalStatePrefix = "Mui") {
-    const globalStateClass = globalStateClasses[slot];
+    const globalStateClass = globalStateClassesMapping[slot];
     return globalStateClass ? `${globalStatePrefix}-${globalStateClass}` : `${ClassNameGenerator$1.generate(componentName)}-${slot}`;
   }
   function generateUtilityClasses(componentName, slots, globalStatePrefix = "Mui") {
@@ -40271,9 +40225,6 @@ ${latestSubscriptionCallbackError.current.stack}
       result[slot] = generateUtilityClass(componentName, slot, globalStatePrefix);
     });
     return result;
-  }
-  function clamp$1(val, min2 = Number.MIN_SAFE_INTEGER, max2 = Number.MAX_SAFE_INTEGER) {
-    return Math.max(min2, Math.min(val, max2));
   }
   function _objectWithoutPropertiesLoose(source, excluded) {
     if (source == null)
@@ -40294,18 +40245,17 @@ ${latestSubscriptionCallbackError.current.stack}
     if ("string" == typeof e || "number" == typeof e)
       n += e;
     else if ("object" == typeof e)
-      if (Array.isArray(e)) {
-        var o = e.length;
-        for (t = 0; t < o; t++)
+      if (Array.isArray(e))
+        for (t = 0; t < e.length; t++)
           e[t] && (f = r(e[t])) && (n && (n += " "), n += f);
-      } else
-        for (f in e)
-          e[f] && (n && (n += " "), n += f);
+      else
+        for (t in e)
+          e[t] && (n && (n += " "), n += t);
     return n;
   }
   function clsx() {
-    for (var e, t, f = 0, n = "", o = arguments.length; f < o; f++)
-      (e = arguments[f]) && (t = r(e)) && (n && (n += " "), n += t);
+    for (var e, t, f = 0, n = ""; f < arguments.length; )
+      (e = arguments[f++]) && (t = r(e)) && (n && (n += " "), n += t);
     return n;
   }
   function memoize$1(fn) {
@@ -40486,7 +40436,7 @@ ${latestSubscriptionCallbackError.current.stack}
       column$1 = 1, line++;
     return character;
   }
-  function peek() {
+  function peek$1() {
     return charat(characters, position);
   }
   function caret() {
@@ -40537,7 +40487,7 @@ ${latestSubscriptionCallbackError.current.stack}
     return trim$1(slice(position - 1, delimiter(type === 91 ? type + 2 : type === 40 ? type + 1 : type)));
   }
   function whitespace(type) {
-    while (character = peek())
+    while (character = peek$1())
       if (character < 33)
         next();
       else
@@ -40548,7 +40498,7 @@ ${latestSubscriptionCallbackError.current.stack}
     while (--count && next())
       if (character < 48 || character > 102 || character > 57 && character < 65 || character > 70 && character < 97)
         break;
-    return slice(index, caret() + (count < 6 && peek() == 32 && next() == 32));
+    return slice(index, caret() + (count < 6 && peek$1() == 32 && next() == 32));
   }
   function delimiter(type) {
     while (next())
@@ -40574,12 +40524,12 @@ ${latestSubscriptionCallbackError.current.stack}
     while (next())
       if (type + character === 47 + 10)
         break;
-      else if (type + character === 42 + 42 && peek() === 47)
+      else if (type + character === 42 + 42 && peek$1() === 47)
         break;
     return "/*" + slice(index, position - 1) + "*" + from(type === 47 ? type : next());
   }
   function identifier(index) {
-    while (!token(peek()))
+    while (!token(peek$1()))
       next();
     return slice(index, position);
   }
@@ -40625,7 +40575,7 @@ ${latestSubscriptionCallbackError.current.stack}
           characters2 += escaping(caret() - 1, 7);
           continue;
         case 47:
-          switch (peek()) {
+          switch (peek$1()) {
             case 42:
             case 47:
               append(comment(commenter(next(), caret()), root, parent), declarations);
@@ -40687,9 +40637,9 @@ ${latestSubscriptionCallbackError.current.stack}
               points[index++] = (strlen(characters2) - 1) * ampersand, ampersand = 1;
               break;
             case 64:
-              if (peek() === 45)
+              if (peek$1() === 45)
                 characters2 += delimit(next());
-              atrule = peek(), offset = length2 = strlen(type = characters2 += identifier(caret())), character2++;
+              atrule = peek$1(), offset = length2 = strlen(type = characters2 += identifier(caret())), character2++;
               break;
             case 45:
               if (previous === 45 && strlen(characters2) == 2)
@@ -40760,7 +40710,7 @@ ${latestSubscriptionCallbackError.current.stack}
     var character2 = 0;
     while (true) {
       previous = character2;
-      character2 = peek();
+      character2 = peek$1();
       if (previous === 38 && character2 === 12) {
         points[index] = 1;
       }
@@ -40777,7 +40727,7 @@ ${latestSubscriptionCallbackError.current.stack}
     do {
       switch (token(character2)) {
         case 0:
-          if (character2 === 38 && peek() === 12) {
+          if (character2 === 38 && peek$1() === 12) {
             points[index] = 1;
           }
           parsed[index] += identifierWithPointTracking(position - 1, points, index);
@@ -40787,7 +40737,7 @@ ${latestSubscriptionCallbackError.current.stack}
           break;
         case 4:
           if (character2 === 44) {
-            parsed[++index] = peek() === 58 ? "&\f" : "";
+            parsed[++index] = peek$1() === 58 ? "&\f" : "";
             points[index] = parsed[index].length;
             break;
           }
@@ -41187,11 +41137,11 @@ ${latestSubscriptionCallbackError.current.stack}
     registerStyles(cache2, serialized, isStringTag2);
     var className = cache2.key + "-" + serialized.name;
     if (cache2.inserted[serialized.name] === void 0) {
-      var current = serialized;
+      var current2 = serialized;
       do {
-        cache2.insert(serialized === current ? "." + className : "", current, cache2.sheet, true);
-        current = current.next;
-      } while (current !== void 0);
+        cache2.insert(serialized === current2 ? "." + className : "", current2, cache2.sheet, true);
+        current2 = current2.next;
+      } while (current2 !== void 0);
     }
   };
   function murmur2(str) {
@@ -41598,7 +41548,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   }
   var pkg = {
     name: "@emotion/react",
-    version: "11.11.3",
+    version: "11.11.1",
     main: "dist/emotion-react.cjs.js",
     module: "dist/emotion-react.esm.js",
     browser: {
@@ -41671,7 +41621,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       "@babel/runtime": "^7.18.3",
       "@emotion/babel-plugin": "^11.11.0",
       "@emotion/cache": "^11.11.0",
-      "@emotion/serialize": "^1.1.3",
+      "@emotion/serialize": "^1.1.2",
       "@emotion/use-insertion-effect-with-fallbacks": "^1.0.1",
       "@emotion/utils": "^1.2.1",
       "@emotion/weak-memoize": "^0.3.1",
@@ -41687,7 +41637,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     },
     devDependencies: {
       "@definitelytyped/dtslint": "0.0.112",
-      "@emotion/css": "11.11.2",
+      "@emotion/css": "11.11.0",
       "@emotion/css-prettifier": "1.1.3",
       "@emotion/server": "11.11.0",
       "@emotion/styled": "11.11.0",
@@ -42193,7 +42143,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   tags.forEach(function(tagName) {
     newStyled[tagName] = newStyled(tagName);
   });
-  function isEmpty$3(obj) {
+  function isEmpty$4(obj) {
     return obj === void 0 || obj === null || Object.keys(obj).length === 0;
   }
   function GlobalStyles$2(props) {
@@ -42201,7 +42151,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       styles: styles2,
       defaultTheme: defaultTheme2 = {}
     } = props;
-    const globalStyles = typeof styles2 === "function" ? (themeInput) => styles2(isEmpty$3(themeInput) ? defaultTheme2 : themeInput) : styles2;
+    const globalStyles = typeof styles2 === "function" ? (themeInput) => styles2(isEmpty$4(themeInput) ? defaultTheme2 : themeInput) : styles2;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(Global, {
       styles: globalStyles
     });
@@ -42211,7 +42161,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     styles: PropTypes.oneOfType([PropTypes.array, PropTypes.string, PropTypes.object, PropTypes.func])
   } : void 0;
   /**
-   * @mui/styled-engine v5.15.9
+   * @mui/styled-engine v5.14.14
    *
    * @license MIT
    * This source code is licensed under the MIT license found in the
@@ -42687,25 +42637,51 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }
     return `${value}px solid`;
   }
-  function createBorderStyle(prop, transform) {
-    return style$2({
-      prop,
-      themeKey: "borders",
-      transform
-    });
-  }
-  const border = createBorderStyle("border", borderTransform);
-  const borderTop = createBorderStyle("borderTop", borderTransform);
-  const borderRight = createBorderStyle("borderRight", borderTransform);
-  const borderBottom = createBorderStyle("borderBottom", borderTransform);
-  const borderLeft = createBorderStyle("borderLeft", borderTransform);
-  const borderColor = createBorderStyle("borderColor");
-  const borderTopColor = createBorderStyle("borderTopColor");
-  const borderRightColor = createBorderStyle("borderRightColor");
-  const borderBottomColor = createBorderStyle("borderBottomColor");
-  const borderLeftColor = createBorderStyle("borderLeftColor");
-  const outline = createBorderStyle("outline", borderTransform);
-  const outlineColor = createBorderStyle("outlineColor");
+  const border = style$2({
+    prop: "border",
+    themeKey: "borders",
+    transform: borderTransform
+  });
+  const borderTop = style$2({
+    prop: "borderTop",
+    themeKey: "borders",
+    transform: borderTransform
+  });
+  const borderRight = style$2({
+    prop: "borderRight",
+    themeKey: "borders",
+    transform: borderTransform
+  });
+  const borderBottom = style$2({
+    prop: "borderBottom",
+    themeKey: "borders",
+    transform: borderTransform
+  });
+  const borderLeft = style$2({
+    prop: "borderLeft",
+    themeKey: "borders",
+    transform: borderTransform
+  });
+  const borderColor = style$2({
+    prop: "borderColor",
+    themeKey: "palette"
+  });
+  const borderTopColor = style$2({
+    prop: "borderTopColor",
+    themeKey: "palette"
+  });
+  const borderRightColor = style$2({
+    prop: "borderRightColor",
+    themeKey: "palette"
+  });
+  const borderBottomColor = style$2({
+    prop: "borderBottomColor",
+    themeKey: "palette"
+  });
+  const borderLeftColor = style$2({
+    prop: "borderLeftColor",
+    themeKey: "palette"
+  });
   const borderRadius = (props) => {
     if (props.borderRadius !== void 0 && props.borderRadius !== null) {
       const transformer = createUnaryUnit(props.theme, "shape.borderRadius", 4, "borderRadius");
@@ -42720,7 +42696,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     borderRadius: responsivePropType$1
   } : {};
   borderRadius.filterProps = ["borderRadius"];
-  compose$1(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius, outline, outlineColor);
+  compose$1(border, borderTop, borderRight, borderBottom, borderLeft, borderColor, borderTopColor, borderRightColor, borderBottomColor, borderLeftColor, borderRadius);
   const gap = (props) => {
     if (props.gap !== void 0 && props.gap !== null) {
       const transformer = createUnaryUnit(props.theme, "spacing", 8, "gap");
@@ -42910,13 +42886,6 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       themeKey: "palette"
     },
     borderLeftColor: {
-      themeKey: "palette"
-    },
-    outline: {
-      themeKey: "borders",
-      transform: borderTransform
-    },
-    outlineColor: {
       themeKey: "palette"
     },
     borderRadius: {
@@ -43271,19 +43240,6 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   const styleFunctionSx = unstable_createStyleFunctionSx();
   styleFunctionSx.filterProps = ["sx"];
   const styleFunctionSx$1 = styleFunctionSx;
-  function applyStyles(key, styles2) {
-    const theme2 = this;
-    if (theme2.vars && typeof theme2.getColorSchemeSelector === "function") {
-      const selector = theme2.getColorSchemeSelector(key).replace(/(\[[^\]]+\])/, "*:where($1)");
-      return {
-        [selector]: styles2
-      };
-    }
-    if (theme2.palette.mode === key) {
-      return styles2;
-    }
-    return {};
-  }
   const _excluded$1d = ["breakpoints", "palette", "spacing", "shape"];
   function createTheme$1(options = {}, ...args) {
     const {
@@ -43305,7 +43261,6 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       spacing,
       shape: _extends$1({}, shape$1, shapeInput)
     }, other);
-    muiTheme.applyStyles = applyStyles;
     muiTheme = args.reduce((acc, argument) => deepmerge(acc, argument), muiTheme);
     muiTheme.unstable_sxConfig = _extends$1({}, defaultSxConfig$1, other == null ? void 0 : other.unstable_sxConfig);
     muiTheme.unstable_sx = function sx(props) {
@@ -43339,10 +43294,10 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
   }
   process.env.NODE_ENV !== "production" ? GlobalStyles$1.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
     /**
      * @ignore
      */
@@ -43387,7 +43342,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     } else if (typeof inSx === "function") {
       finalSx = (...args) => {
         const result = inSx(...args);
-        if (!isPlainObject$3(result)) {
+        if (!isPlainObject$4(result)) {
           return systemProps;
         }
         return _extends$1({}, systemProps, result);
@@ -43425,7 +43380,25 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return Box2;
   }
-  const _excluded$1a = ["ownerState"], _excluded2$6 = ["variants"], _excluded3$2 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+  const _excluded$1a = ["variant"];
+  function isEmpty$3(string) {
+    return string.length === 0;
+  }
+  function propsToClassKey(props) {
+    const {
+      variant
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1a);
+    let classKey = variant || "";
+    Object.keys(other).sort().forEach((key) => {
+      if (key === "color") {
+        classKey += isEmpty$3(classKey) ? props[key] : capitalize$2(props[key]);
+      } else {
+        classKey += `${isEmpty$3(classKey) ? key : capitalize$2(key)}${capitalize$2(props[key].toString())}`;
+      }
+    });
+    return classKey;
+  }
+  const _excluded$19 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
   function isEmpty$2(obj) {
     return Object.keys(obj).length === 0;
   }
@@ -43435,6 +43408,54 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     // it's a lowercase character
     tag2.charCodeAt(0) > 96;
   }
+  const getStyleOverrides = (name2, theme2) => {
+    if (theme2.components && theme2.components[name2] && theme2.components[name2].styleOverrides) {
+      return theme2.components[name2].styleOverrides;
+    }
+    return null;
+  };
+  const transformVariants = (variants) => {
+    const variantsStyles = {};
+    if (variants) {
+      variants.forEach((definition) => {
+        const key = propsToClassKey(definition.props);
+        variantsStyles[key] = definition.style;
+      });
+    }
+    return variantsStyles;
+  };
+  const getVariantStyles = (name2, theme2) => {
+    let variants = [];
+    if (theme2 && theme2.components && theme2.components[name2] && theme2.components[name2].variants) {
+      variants = theme2.components[name2].variants;
+    }
+    return transformVariants(variants);
+  };
+  const variantsResolver = (props, styles2, variants) => {
+    const {
+      ownerState = {}
+    } = props;
+    const variantsStyles = [];
+    if (variants) {
+      variants.forEach((variant) => {
+        let isMatch = true;
+        Object.keys(variant.props).forEach((key) => {
+          if (ownerState[key] !== variant.props[key] && props[key] !== variant.props[key]) {
+            isMatch = false;
+          }
+        });
+        if (isMatch) {
+          variantsStyles.push(styles2[propsToClassKey(variant.props)]);
+        }
+      });
+    }
+    return variantsStyles;
+  };
+  const themeVariantsResolver = (props, styles2, theme2, name2) => {
+    var _theme$components;
+    const themeVariants = theme2 == null || (_theme$components = theme2.components) == null || (_theme$components = _theme$components[name2]) == null ? void 0 : _theme$components.variants;
+    return variantsResolver(props, styles2, themeVariants);
+  };
   function shouldForwardProp(prop) {
     return prop !== "ownerState" && prop !== "theme" && prop !== "sx" && prop !== "as";
   }
@@ -43458,49 +43479,29 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }
     return (props, styles2) => styles2[slot];
   }
-  function processStyleArg(callableStyle, _ref) {
-    let {
-      ownerState
-    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$1a);
-    const resolvedStylesArg = typeof callableStyle === "function" ? callableStyle(_extends$1({
-      ownerState
-    }, props)) : callableStyle;
-    if (Array.isArray(resolvedStylesArg)) {
-      return resolvedStylesArg.flatMap((resolvedStyle) => processStyleArg(resolvedStyle, _extends$1({
-        ownerState
-      }, props)));
+  const muiStyledFunctionResolver = ({
+    styledArg,
+    props,
+    defaultTheme: defaultTheme2,
+    themeId
+  }) => {
+    const resolvedStyles = styledArg(_extends$1({}, props, {
+      theme: resolveTheme(_extends$1({}, props, {
+        defaultTheme: defaultTheme2,
+        themeId
+      }))
+    }));
+    let optionalVariants;
+    if (resolvedStyles && resolvedStyles.variants) {
+      optionalVariants = resolvedStyles.variants;
+      delete resolvedStyles.variants;
     }
-    if (!!resolvedStylesArg && typeof resolvedStylesArg === "object" && Array.isArray(resolvedStylesArg.variants)) {
-      const {
-        variants = []
-      } = resolvedStylesArg, otherStyles = _objectWithoutPropertiesLoose(resolvedStylesArg, _excluded2$6);
-      let result = otherStyles;
-      variants.forEach((variant) => {
-        let isMatch = true;
-        if (typeof variant.props === "function") {
-          isMatch = variant.props(_extends$1({
-            ownerState
-          }, props));
-        } else {
-          Object.keys(variant.props).forEach((key) => {
-            if ((ownerState == null ? void 0 : ownerState[key]) !== variant.props[key] && props[key] !== variant.props[key]) {
-              isMatch = false;
-            }
-          });
-        }
-        if (isMatch) {
-          if (!Array.isArray(result)) {
-            result = [result];
-          }
-          result.push(typeof variant.style === "function" ? variant.style(_extends$1({
-            ownerState
-          }, props)) : variant.style);
-        }
-      });
-      return result;
+    if (optionalVariants) {
+      const variantsStyles = variantsResolver(props, transformVariants(optionalVariants), optionalVariants);
+      return [resolvedStyles, ...variantsStyles];
     }
-    return resolvedStylesArg;
-  }
+    return resolvedStyles;
+  };
   function createStyled(input = {}) {
     const {
       themeId,
@@ -43527,7 +43528,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
         // TODO v6: remove `lowercaseFirstLetter()` in the next major release
         // For more details: https://github.com/mui/material-ui/pull/37908
         overridesResolver: overridesResolver2 = defaultOverridesResolver(lowercaseFirstLetter(componentSlot))
-      } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded3$2);
+      } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$19);
       const skipVariantsResolver = inputSkipVariantsResolver !== void 0 ? inputSkipVariantsResolver : (
         // TODO v6: remove `Root` in the next major release
         // For more details: https://github.com/mui/material-ui/pull/37908
@@ -43552,53 +43553,87 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
         shouldForwardProp: shouldForwardPropOption,
         label
       }, options));
-      const transformStyleArg = (stylesArg) => {
-        if (typeof stylesArg === "function" && stylesArg.__emotion_real !== stylesArg || isPlainObject$3(stylesArg)) {
-          return (props) => processStyleArg(stylesArg, _extends$1({}, props, {
-            theme: resolveTheme({
-              theme: props.theme,
+      const muiStyledResolver = (styleArg, ...expressions) => {
+        const expressionsWithDefaultTheme = expressions ? expressions.map((stylesArg) => {
+          if (typeof stylesArg === "function" && stylesArg.__emotion_real !== stylesArg) {
+            return (props) => muiStyledFunctionResolver({
+              styledArg: stylesArg,
+              props,
               defaultTheme: defaultTheme2,
               themeId
-            })
-          }));
+            });
+          }
+          if (isPlainObject$4(stylesArg)) {
+            let transformedStylesArg = stylesArg;
+            let styledArgVariants;
+            if (stylesArg && stylesArg.variants) {
+              styledArgVariants = stylesArg.variants;
+              delete transformedStylesArg.variants;
+              transformedStylesArg = (props) => {
+                let result = stylesArg;
+                const variantStyles = variantsResolver(props, transformVariants(styledArgVariants), styledArgVariants);
+                variantStyles.forEach((variantStyle) => {
+                  result = deepmerge(result, variantStyle);
+                });
+                return result;
+              };
+            }
+            return transformedStylesArg;
+          }
+          return stylesArg;
+        }) : [];
+        let transformedStyleArg = styleArg;
+        if (isPlainObject$4(styleArg)) {
+          let styledArgVariants;
+          if (styleArg && styleArg.variants) {
+            styledArgVariants = styleArg.variants;
+            delete transformedStyleArg.variants;
+            transformedStyleArg = (props) => {
+              let result = styleArg;
+              const variantStyles = variantsResolver(props, transformVariants(styledArgVariants), styledArgVariants);
+              variantStyles.forEach((variantStyle) => {
+                result = deepmerge(result, variantStyle);
+              });
+              return result;
+            };
+          }
+        } else if (typeof styleArg === "function" && // On the server Emotion doesn't use React.forwardRef for creating components, so the created
+        // component stays as a function. This condition makes sure that we do not interpolate functions
+        // which are basically components used as a selectors.
+        styleArg.__emotion_real !== styleArg) {
+          transformedStyleArg = (props) => muiStyledFunctionResolver({
+            styledArg: styleArg,
+            props,
+            defaultTheme: defaultTheme2,
+            themeId
+          });
         }
-        return stylesArg;
-      };
-      const muiStyledResolver = (styleArg, ...expressions) => {
-        let transformedStyleArg = transformStyleArg(styleArg);
-        const expressionsWithDefaultTheme = expressions ? expressions.map(transformStyleArg) : [];
         if (componentName && overridesResolver2) {
           expressionsWithDefaultTheme.push((props) => {
             const theme2 = resolveTheme(_extends$1({}, props, {
               defaultTheme: defaultTheme2,
               themeId
             }));
-            if (!theme2.components || !theme2.components[componentName] || !theme2.components[componentName].styleOverrides) {
-              return null;
+            const styleOverrides = getStyleOverrides(componentName, theme2);
+            if (styleOverrides) {
+              const resolvedStyleOverrides = {};
+              Object.entries(styleOverrides).forEach(([slotKey, slotStyle]) => {
+                resolvedStyleOverrides[slotKey] = typeof slotStyle === "function" ? slotStyle(_extends$1({}, props, {
+                  theme: theme2
+                })) : slotStyle;
+              });
+              return overridesResolver2(props, resolvedStyleOverrides);
             }
-            const styleOverrides = theme2.components[componentName].styleOverrides;
-            const resolvedStyleOverrides = {};
-            Object.entries(styleOverrides).forEach(([slotKey, slotStyle]) => {
-              resolvedStyleOverrides[slotKey] = processStyleArg(slotStyle, _extends$1({}, props, {
-                theme: theme2
-              }));
-            });
-            return overridesResolver2(props, resolvedStyleOverrides);
+            return null;
           });
         }
         if (componentName && !skipVariantsResolver) {
           expressionsWithDefaultTheme.push((props) => {
-            var _theme$components;
             const theme2 = resolveTheme(_extends$1({}, props, {
               defaultTheme: defaultTheme2,
               themeId
             }));
-            const themeVariants = theme2 == null || (_theme$components = theme2.components) == null || (_theme$components = _theme$components[componentName]) == null ? void 0 : _theme$components.variants;
-            return processStyleArg({
-              variants: themeVariants
-            }, _extends$1({}, props, {
-              theme: theme2
-            }));
+            return themeVariantsResolver(props, getVariantStyles(componentName, theme2), theme2, componentName);
           });
         }
         if (!skipSx) {
@@ -43645,7 +43680,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     }
     return resolveProps(theme2.components[name2].defaultProps, props);
   }
-  function useThemeProps$2({
+  function useThemeProps$1({
     props,
     name: name2,
     defaultTheme: defaultTheme2,
@@ -43662,13 +43697,13 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return mergedProps;
   }
-  function clampWrapper(value, min2 = 0, max2 = 1) {
+  function clamp$1(value, min2 = 0, max2 = 1) {
     if (process.env.NODE_ENV !== "production") {
       if (value < min2 || value > max2) {
         console.error(`MUI: The value provided ${value} is out of range [${min2}, ${max2}].`);
       }
     }
-    return clamp$1(value, min2, max2);
+    return Math.min(Math.max(min2, value), max2);
   }
   function hexToRgb(color2) {
     color2 = color2.slice(1);
@@ -43776,7 +43811,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   }
   function alpha(color2, value) {
     color2 = decomposeColor(color2);
-    value = clampWrapper(value);
+    value = clamp$1(value);
     if (color2.type === "rgb" || color2.type === "hsl") {
       color2.type += "a";
     }
@@ -43789,7 +43824,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   }
   function darken(color2, coefficient) {
     color2 = decomposeColor(color2);
-    coefficient = clampWrapper(coefficient);
+    coefficient = clamp$1(coefficient);
     if (color2.type.indexOf("hsl") !== -1) {
       color2.values[2] *= 1 - coefficient;
     } else if (color2.type.indexOf("rgb") !== -1 || color2.type.indexOf("color") !== -1) {
@@ -43801,7 +43836,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   }
   function lighten(color2, coefficient) {
     color2 = decomposeColor(color2);
-    coefficient = clampWrapper(coefficient);
+    coefficient = clamp$1(coefficient);
     if (color2.type.indexOf("hsl") !== -1) {
       color2.values[2] += (100 - color2.values[2]) * coefficient;
     } else if (color2.type.indexOf("rgb") !== -1) {
@@ -43923,10 +43958,10 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     });
   }
   process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Your component tree.
      */
@@ -43943,7 +43978,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   if (process.env.NODE_ENV !== "production") {
     process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = exactProp(ThemeProvider$1.propTypes) : void 0;
   }
-  const _excluded$19 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
+  const _excluded$18 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
   const defaultTheme$3 = createTheme$1();
   const defaultCreateStyledComponent = systemStyled("div", {
     name: "MuiStack",
@@ -43951,7 +43986,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     overridesResolver: (props, styles2) => styles2.root
   });
   function useThemePropsDefault(props) {
-    return useThemeProps$2({
+    return useThemeProps$1({
       props,
       name: "MuiStack",
       defaultTheme: defaultTheme$3
@@ -44066,7 +44101,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
         children,
         className,
         useFlexGap = false
-      } = props, other = _objectWithoutPropertiesLoose(props, _excluded$19);
+      } = props, other = _objectWithoutPropertiesLoose(props, _excluded$18);
       const ownerState = {
         direction,
         spacing,
@@ -44230,7 +44265,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     A700: "#00c853"
   };
   const green$1 = green;
-  const _excluded$18 = ["mode", "contrastThreshold", "tonalOffset"];
+  const _excluded$17 = ["mode", "contrastThreshold", "tonalOffset"];
   const light = {
     // The colors used to style the text.
     text: {
@@ -44398,7 +44433,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
       mode = "light",
       contrastThreshold = 3,
       tonalOffset = 0.2
-    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$18);
+    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$17);
     const primary = palette.primary || getDefaultPrimary(mode);
     const secondary = palette.secondary || getDefaultSecondary(mode);
     const error = palette.error || getDefaultError(mode);
@@ -44517,7 +44552,7 @@ const theme2 = createTheme({ palette: {
     }, modes[mode]), other);
     return paletteOutput;
   }
-  const _excluded$17 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+  const _excluded$16 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
   function round$1(value) {
     return Math.round(value * 1e5) / 1e5;
   }
@@ -44541,7 +44576,7 @@ const theme2 = createTheme({ palette: {
       // Apply the CSS properties to all the variants.
       allVariants,
       pxToRem: pxToRem2
-    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$17);
+    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$16);
     if (process.env.NODE_ENV !== "production") {
       if (typeof fontSize !== "number") {
         console.error("MUI: `fontSize` is required to be a number.");
@@ -44606,7 +44641,7 @@ const theme2 = createTheme({ palette: {
   }
   const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
   const shadows$1 = shadows;
-  const _excluded$16 = ["duration", "easing", "delay"];
+  const _excluded$15 = ["duration", "easing", "delay"];
   const easing = {
     // This is the most common easing curve.
     easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -44649,7 +44684,7 @@ const theme2 = createTheme({ palette: {
         duration: durationOption = mergedDuration.standard,
         easing: easingOption = mergedEasing.easeInOut,
         delay = 0
-      } = options, other = _objectWithoutPropertiesLoose(options, _excluded$16);
+      } = options, other = _objectWithoutPropertiesLoose(options, _excluded$15);
       if (process.env.NODE_ENV !== "production") {
         const isString2 = (value) => typeof value === "string";
         const isNumber2 = (value) => !isNaN(parseFloat(value));
@@ -44693,14 +44728,14 @@ const theme2 = createTheme({ palette: {
     tooltip: 1500
   };
   const zIndex$1 = zIndex;
-  const _excluded$15 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+  const _excluded$14 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
   function createTheme(options = {}, ...args) {
     const {
       mixins: mixinsInput = {},
       palette: paletteInput = {},
       transitions: transitionsInput = {},
       typography: typographyInput = {}
-    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$15);
+    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$14);
     if (options.vars) {
       throw new Error(process.env.NODE_ENV !== "production" ? `MUI: \`vars\` is a private field used for CSS variables support.
 Please use another name.` : formatMuiErrorMessage(18));
@@ -44756,11 +44791,11 @@ Please use another name.` : formatMuiErrorMessage(18));
   const defaultTheme$1 = createTheme();
   const defaultTheme$2 = defaultTheme$1;
   const THEME_ID = "$$material";
-  function useThemeProps$1({
+  function useThemeProps({
     props,
     name: name2
   }) {
-    return useThemeProps$2({
+    return useThemeProps$1({
       props,
       name: name2,
       defaultTheme: defaultTheme$2,
@@ -44779,7 +44814,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiSvgIcon", slot);
   }
   generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-  const _excluded$14 = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+  const _excluded$13 = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
   const useUtilityClasses$V = (ownerState) => {
     const {
       color: color2,
@@ -44832,7 +44867,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
   });
   const SvgIcon = /* @__PURE__ */ reactExports.forwardRef(function SvgIcon2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiSvgIcon"
     });
@@ -44846,7 +44881,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       inheritViewBox = false,
       titleAccess,
       viewBox = "0 0 24 24"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$14);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$13);
     const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
     const ownerState = _extends$1({}, props, {
       color: color2,
@@ -44878,10 +44913,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? SvgIcon.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Node passed into the SVG element.
      */
@@ -45023,9 +45058,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$g = Star.default = void 0;
   var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
   var _jsxRuntime$g = jsxRuntimeExports;
-  default_1$g = Star.default = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
+  var _default$g = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
     d: "M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
   }), "Star");
+  default_1$g = Star.default = _default$g;
   var StarOutline = {};
   var _interopRequireDefault$f = interopRequireDefaultExports;
   Object.defineProperty(StarOutline, "__esModule", {
@@ -45034,9 +45070,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$f = StarOutline.default = void 0;
   var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
   var _jsxRuntime$f = jsxRuntimeExports;
-  default_1$f = StarOutline.default = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
-    d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28z"
+  var _default$f = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
+    d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
   }), "StarOutline");
+  default_1$f = StarOutline.default = _default$f;
   function useTheme() {
     const theme2 = useTheme$2(defaultTheme$2);
     if (process.env.NODE_ENV !== "production") {
@@ -45044,11 +45081,11 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return theme2[THEME_ID] || theme2;
   }
-  const _excluded$13 = ["theme"];
+  const _excluded$12 = ["theme"];
   function ThemeProvider(_ref) {
     let {
       theme: themeInput
-    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$13);
+    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$12);
     const scopedTheme = themeInput[THEME_ID];
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$1({}, props, {
       themeId: scopedTheme ? THEME_ID : void 0,
@@ -45075,20 +45112,18 @@ Please use another name.` : formatMuiErrorMessage(18));
     return (alphaValue / 100).toFixed(2);
   };
   const getOverlayAlpha$1 = getOverlayAlpha;
-  const boxClasses = generateUtilityClasses("MuiBox", ["root"]);
-  const boxClasses$1 = boxClasses;
   const defaultTheme = createTheme();
   const Box = createBox({
     themeId: THEME_ID,
     defaultTheme,
-    defaultClassName: boxClasses$1.root,
+    defaultClassName: "MuiBox-root",
     generateClassName: ClassNameGenerator$1.generate
   });
   process.env.NODE_ENV !== "production" ? Box.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * @ignore
      */
@@ -45882,7 +45917,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   } : void 0;
   const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
   const touchRippleClasses$1 = touchRippleClasses;
-  const _excluded$12 = ["center", "classes", "className"];
+  const _excluded$11 = ["center", "classes", "className"];
   let _ = (t) => t, _t, _t2, _t3, _t4;
   const DURATION = 550;
   const DELAY_RIPPLE = 80;
@@ -45989,7 +46024,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     theme: theme2
   }) => theme2.transitions.easing.easeInOut);
   const TouchRipple = /* @__PURE__ */ reactExports.forwardRef(function TouchRipple2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiTouchRipple"
     });
@@ -45997,7 +46032,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       center: centerProp = false,
       classes = {},
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$12);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$11);
     const [ripples, setRipples] = reactExports.useState([]);
     const nextKey = reactExports.useRef(0);
     const rippleCallback = reactExports.useRef(null);
@@ -46008,9 +46043,16 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     }, [ripples]);
     const ignoringMouseDown = reactExports.useRef(false);
-    const startTimer = useTimeout();
+    const startTimer = reactExports.useRef(0);
     const startTimerCommit = reactExports.useRef(null);
     const container = reactExports.useRef(null);
+    reactExports.useEffect(() => {
+      return () => {
+        if (startTimer.current) {
+          clearTimeout(startTimer.current);
+        }
+      };
+    }, []);
     const startCommit = reactExports.useCallback((params) => {
       const {
         pulsate: pulsate2,
@@ -46094,12 +46136,12 @@ Please use another name.` : formatMuiErrorMessage(18));
               cb
             });
           };
-          startTimer.start(DELAY_RIPPLE, () => {
+          startTimer.current = setTimeout(() => {
             if (startTimerCommit.current) {
               startTimerCommit.current();
               startTimerCommit.current = null;
             }
-          });
+          }, DELAY_RIPPLE);
         }
       } else {
         startCommit({
@@ -46110,18 +46152,18 @@ Please use another name.` : formatMuiErrorMessage(18));
           cb
         });
       }
-    }, [centerProp, startCommit, startTimer]);
+    }, [centerProp, startCommit]);
     const pulsate = reactExports.useCallback(() => {
       start({}, {
         pulsate: true
       });
     }, [start]);
     const stop = reactExports.useCallback((event, cb) => {
-      startTimer.clear();
+      clearTimeout(startTimer.current);
       if ((event == null ? void 0 : event.type) === "touchend" && startTimerCommit.current) {
         startTimerCommit.current();
         startTimerCommit.current = null;
-        startTimer.start(0, () => {
+        startTimer.current = setTimeout(() => {
           stop(event, cb);
         });
         return;
@@ -46134,7 +46176,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         return oldRipples;
       });
       rippleCallback.current = cb;
-    }, [startTimer]);
+    }, []);
     reactExports.useImperativeHandle(ref, () => ({
       pulsate,
       start,
@@ -46173,7 +46215,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
   const buttonBaseClasses$1 = buttonBaseClasses;
-  const _excluded$11 = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+  const _excluded$10 = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
   const useUtilityClasses$U = (ownerState) => {
     const {
       disabled,
@@ -46235,7 +46277,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   });
   const ButtonBase = /* @__PURE__ */ reactExports.forwardRef(function ButtonBase2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiButtonBase"
     });
@@ -46268,7 +46310,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       TouchRippleProps,
       touchRippleRef,
       type
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$11);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
     const buttonRef = reactExports.useRef(null);
     const rippleRef = reactExports.useRef(null);
     const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -46454,10 +46496,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? ButtonBase.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * A ref for imperative actions.
      * It currently only supports `focusVisible()` action.
@@ -46617,7 +46659,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const chipClasses = generateUtilityClasses("MuiChip", ["root", "sizeSmall", "sizeMedium", "colorError", "colorInfo", "colorPrimary", "colorSecondary", "colorSuccess", "colorWarning", "disabled", "clickable", "clickableColorPrimary", "clickableColorSecondary", "deletable", "deletableColorPrimary", "deletableColorSecondary", "outlined", "filled", "outlinedPrimary", "outlinedSecondary", "filledPrimary", "filledSecondary", "avatar", "avatarSmall", "avatarMedium", "avatarColorPrimary", "avatarColorSecondary", "icon", "iconSmall", "iconMedium", "iconColorPrimary", "iconColorSecondary", "label", "labelSmall", "labelMedium", "deleteIcon", "deleteIconSmall", "deleteIconMedium", "deleteIconColorPrimary", "deleteIconColorSecondary", "deleteIconOutlinedColorPrimary", "deleteIconOutlinedColorSecondary", "deleteIconFilledColorPrimary", "deleteIconFilledColorSecondary", "focusVisible"]);
   const chipClasses$1 = chipClasses;
-  const _excluded$10 = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
+  const _excluded$$ = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
   const useUtilityClasses$T = (ownerState) => {
     const {
       classes,
@@ -46876,7 +46918,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return keyboardEvent.key === "Backspace" || keyboardEvent.key === "Delete";
   }
   const Chip = /* @__PURE__ */ reactExports.forwardRef(function Chip2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiChip"
     });
@@ -46899,7 +46941,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       skipFocusWhenDisabled = false
       // TODO v6: Rename to `focusableWhenDisabled`.
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
     const chipRef = reactExports.useRef(null);
     const handleRef = useForkRef(chipRef, ref);
     const handleDeleteIconClick = (event) => {
@@ -46993,10 +47035,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Chip.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The Avatar element to display.
      */
@@ -47099,7 +47141,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiTypography", slot);
   }
   generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-  const _excluded$$ = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+  const _excluded$_ = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
   const useUtilityClasses$S = (ownerState) => {
     const {
       align,
@@ -47166,7 +47208,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return colorTransformations$1[color2] || color2;
   };
   const Typography = /* @__PURE__ */ reactExports.forwardRef(function Typography2(inProps, ref) {
-    const themeProps = useThemeProps$1({
+    const themeProps = useThemeProps({
       props: inProps,
       name: "MuiTypography"
     });
@@ -47183,7 +47225,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       paragraph = false,
       variant = "body1",
       variantMapping = defaultVariantMapping
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$_);
     const ownerState = _extends$1({}, props, {
       align,
       color: color2,
@@ -47205,10 +47247,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Typography.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Set the text-align on the component.
      * @default 'inherit'
@@ -47285,7 +47327,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
   const iconButtonClasses$1 = iconButtonClasses;
-  const _excluded$_ = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+  const _excluded$Z = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
   const useUtilityClasses$R = (ownerState) => {
     const {
       classes,
@@ -47368,7 +47410,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   const IconButton = /* @__PURE__ */ reactExports.forwardRef(function IconButton2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiIconButton"
     });
@@ -47380,7 +47422,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled = false,
       disableFocusRipple = false,
       size: size2 = "medium"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$_);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
     const ownerState = _extends$1({}, props, {
       edge,
       color: color2,
@@ -47401,10 +47443,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? IconButton.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The icon to display.
      */
@@ -48688,7 +48730,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return "@@redux/PROBE_UNKNOWN_ACTION" + randomString();
     }
   };
-  function isPlainObject$2(obj) {
+  function isPlainObject$3(obj) {
     if (typeof obj !== "object" || obj === null)
       return false;
     var proto = obj;
@@ -48807,7 +48849,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       };
     }
     function dispatch(action) {
-      if (!isPlainObject$2(action)) {
+      if (!isPlainObject$3(action)) {
         throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(7) : "Actions must be plain objects. Instead, the actual type was: '" + kindOf(action) + "'. You may need to add middleware to your store setup to handle dispatching other values, such as 'redux-thunk' to handle dispatching functions. See https://redux.js.org/tutorials/fundamentals/part-4-store#middleware and https://redux.js.org/tutorials/fundamentals/part-6-async-logic#using-the-redux-thunk-middleware for examples.");
       }
       if (typeof action.type === "undefined") {
@@ -48894,7 +48936,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     if (reducerKeys.length === 0) {
       return "Store does not have a valid reducer. Make sure the argument passed to combineReducers is an object whose values are reducers.";
     }
-    if (!isPlainObject$2(inputState)) {
+    if (!isPlainObject$3(inputState)) {
       return "The " + argumentName + ' has unexpected type of "' + kindOf(inputState) + '". Expected argument to be an object with the following ' + ('keys: "' + reducerKeys.join('", "') + '"');
     }
     var unexpectedKeys = Object.keys(inputState).filter(function(key) {
@@ -50830,22 +50872,22 @@ Please use another name.` : formatMuiErrorMessage(18));
         if (this.props.object_sets && ["node", "outcome"].indexOf(type) >= 0) {
           const term_type = type == "node" ? node_type_keys[data.node_type] : data.type;
           const allowed_sets = this.props.object_sets.filter(
-            (set) => set.term == term_type
+            (set2) => set2.term == term_type
           );
           if (allowed_sets.length >= 0) {
             const disable_sets = data.depth || read_only ? true : false;
-            const set_options = allowed_sets.map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            const set_options = allowed_sets.map((set2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "input",
                 {
                   disabled: disable_sets,
                   type: "checkbox",
-                  name: set.id,
-                  checked: data.sets.indexOf(set.id) >= 0,
-                  onChange: this.setChanged.bind(this, set.id)
+                  name: set2.id,
+                  checked: data.sets.indexOf(set2.id) >= 0,
+                  onChange: this.setChanged.bind(this, set2.id)
                 }
               ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set.id, children: set.title })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set2.id, children: set2.title })
             ] }));
             sets = [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Sets") }), set_options];
           }
@@ -55002,7 +55044,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return dependency && dependency[0] === "?" ? dependency.slice(1) : dependency;
   }
   function getSafeProperty(object, prop) {
-    if (isPlainObject$1(object) && isSafeProperty(object, prop)) {
+    if (isPlainObject$2(object) && isSafeProperty(object, prop)) {
       return object[prop];
     }
     if (typeof object[prop] === "function" && isSafeMethod(object, prop)) {
@@ -55011,7 +55053,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     throw new Error('No access to property "' + prop + '"');
   }
   function setSafeProperty(object, prop, value) {
-    if (isPlainObject$1(object) && isSafeProperty(object, prop)) {
+    if (isPlainObject$2(object) && isSafeProperty(object, prop)) {
       object[prop] = value;
       return value;
     }
@@ -55053,7 +55095,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return true;
   }
-  function isPlainObject$1(object) {
+  function isPlainObject$2(object) {
     return typeof object === "object" && object && object.constructor === Object;
   }
   var safeNativeProperties = {
@@ -55083,7 +55125,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return hasSafeProperty(this.wrappedObject, key);
     }
   }
-  function isMap(object) {
+  function isMap$1(object) {
     if (!object) {
       return false;
     }
@@ -55262,7 +55304,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       },
       {
         name: "Map",
-        test: isMap
+        test: isMap$1
       },
       {
         name: "Object",
@@ -70751,7 +70793,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiCollapse", slot);
   }
   generateUtilityClasses("MuiCollapse", ["root", "horizontal", "vertical", "entered", "hidden", "wrapper", "wrapperInner"]);
-  const _excluded$Z = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
+  const _excluded$Y = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
   const useUtilityClasses$Q = (ownerState) => {
     const {
       orientation,
@@ -70821,7 +70863,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     height: "100%"
   }));
   const Collapse$1 = /* @__PURE__ */ reactExports.forwardRef(function Collapse2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiCollapse"
     });
@@ -70844,19 +70886,24 @@ Please use another name.` : formatMuiErrorMessage(18));
       timeout = duration.standard,
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
     const ownerState = _extends$1({}, props, {
       orientation,
       collapsedSize: collapsedSizeProp
     });
     const classes = useUtilityClasses$Q(ownerState);
     const theme2 = useTheme();
-    const timer = useTimeout();
+    const timer = reactExports.useRef();
     const wrapperRef = reactExports.useRef(null);
     const autoTransitionDuration = reactExports.useRef();
     const collapsedSize = typeof collapsedSizeProp === "number" ? `${collapsedSizeProp}px` : collapsedSizeProp;
     const isHorizontal = orientation === "horizontal";
     const size2 = isHorizontal ? "width" : "height";
+    reactExports.useEffect(() => {
+      return () => {
+        clearTimeout(timer.current);
+      };
+    }, []);
     const nodeRef = reactExports.useRef(null);
     const handleRef = useForkRef(ref, nodeRef);
     const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -70947,7 +70994,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const handleAddEndListener = (next2) => {
       if (timeout === "auto") {
-        timer.start(autoTransitionDuration.current || 0, next2);
+        timer.current = setTimeout(next2, autoTransitionDuration.current || 0);
       }
       if (addEndListener) {
         addEndListener(nodeRef.current, next2);
@@ -70997,10 +71044,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Collapse$1.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Add a custom transition end trigger. Called with the transitioning DOM
      * node and a done callback. Allows for more fine grained transition end
@@ -71097,7 +71144,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiPaper", slot);
   }
   generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-  const _excluded$Y = ["className", "component", "elevation", "square", "variant"];
+  const _excluded$X = ["className", "component", "elevation", "square", "variant"];
   const useUtilityClasses$P = (ownerState) => {
     const {
       square,
@@ -71141,7 +71188,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiPaper"
     });
@@ -71151,7 +71198,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       elevation = 1,
       square = false,
       variant = "elevation"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
     const ownerState = _extends$1({}, props, {
       component,
       elevation,
@@ -71173,10 +71220,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Paper.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -71230,158 +71277,12 @@ Please use another name.` : formatMuiErrorMessage(18));
     AccordionContext.displayName = "AccordionContext";
   }
   const AccordionContext$1 = AccordionContext;
-  function isHostComponent(element) {
-    return typeof element === "string";
-  }
-  function appendOwnerState(elementType, otherProps, ownerState) {
-    if (elementType === void 0 || isHostComponent(elementType)) {
-      return otherProps;
-    }
-    return _extends$1({}, otherProps, {
-      ownerState: _extends$1({}, otherProps.ownerState, ownerState)
-    });
-  }
-  function extractEventHandlers(object, excludeKeys = []) {
-    if (object === void 0) {
-      return {};
-    }
-    const result = {};
-    Object.keys(object).filter((prop) => prop.match(/^on[A-Z]/) && typeof object[prop] === "function" && !excludeKeys.includes(prop)).forEach((prop) => {
-      result[prop] = object[prop];
-    });
-    return result;
-  }
-  function resolveComponentProps(componentProps, ownerState, slotState) {
-    if (typeof componentProps === "function") {
-      return componentProps(ownerState, slotState);
-    }
-    return componentProps;
-  }
-  function omitEventHandlers(object) {
-    if (object === void 0) {
-      return {};
-    }
-    const result = {};
-    Object.keys(object).filter((prop) => !(prop.match(/^on[A-Z]/) && typeof object[prop] === "function")).forEach((prop) => {
-      result[prop] = object[prop];
-    });
-    return result;
-  }
-  function mergeSlotProps(parameters) {
-    const {
-      getSlotProps,
-      additionalProps,
-      externalSlotProps,
-      externalForwardedProps,
-      className
-    } = parameters;
-    if (!getSlotProps) {
-      const joinedClasses2 = clsx(additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
-      const mergedStyle2 = _extends$1({}, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-      const props2 = _extends$1({}, additionalProps, externalForwardedProps, externalSlotProps);
-      if (joinedClasses2.length > 0) {
-        props2.className = joinedClasses2;
-      }
-      if (Object.keys(mergedStyle2).length > 0) {
-        props2.style = mergedStyle2;
-      }
-      return {
-        props: props2,
-        internalRef: void 0
-      };
-    }
-    const eventHandlers = extractEventHandlers(_extends$1({}, externalForwardedProps, externalSlotProps));
-    const componentsPropsWithoutEventHandlers = omitEventHandlers(externalSlotProps);
-    const otherPropsWithoutEventHandlers = omitEventHandlers(externalForwardedProps);
-    const internalSlotProps = getSlotProps(eventHandlers);
-    const joinedClasses = clsx(internalSlotProps == null ? void 0 : internalSlotProps.className, additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
-    const mergedStyle = _extends$1({}, internalSlotProps == null ? void 0 : internalSlotProps.style, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-    const props = _extends$1({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
-    if (joinedClasses.length > 0) {
-      props.className = joinedClasses;
-    }
-    if (Object.keys(mergedStyle).length > 0) {
-      props.style = mergedStyle;
-    }
-    return {
-      props,
-      internalRef: internalSlotProps.ref
-    };
-  }
-  const _excluded$X = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
-  function useSlotProps(parameters) {
-    var _parameters$additiona;
-    const {
-      elementType,
-      externalSlotProps,
-      ownerState,
-      skipResolvingSlotProps = false
-    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$X);
-    const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
-    const {
-      props: mergedProps,
-      internalRef
-    } = mergeSlotProps(_extends$1({}, rest, {
-      externalSlotProps: resolvedComponentsProps
-    }));
-    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, (_parameters$additiona = parameters.additionalProps) == null ? void 0 : _parameters$additiona.ref);
-    const props = appendOwnerState(elementType, _extends$1({}, mergedProps, {
-      ref
-    }), ownerState);
-    return props;
-  }
-  const _excluded$W = ["className", "elementType", "ownerState", "externalForwardedProps", "getSlotOwnerState", "internalForwardedProps"], _excluded2$5 = ["component", "slots", "slotProps"], _excluded3$1 = ["component"];
-  function useSlot(name2, parameters) {
-    const {
-      className,
-      elementType: initialElementType,
-      ownerState,
-      externalForwardedProps,
-      getSlotOwnerState,
-      internalForwardedProps
-    } = parameters, useSlotPropsParams = _objectWithoutPropertiesLoose(parameters, _excluded$W);
-    const {
-      component: rootComponent,
-      slots = {
-        [name2]: void 0
-      },
-      slotProps = {
-        [name2]: void 0
-      }
-    } = externalForwardedProps, other = _objectWithoutPropertiesLoose(externalForwardedProps, _excluded2$5);
-    const elementType = slots[name2] || initialElementType;
-    const resolvedComponentsProps = resolveComponentProps(slotProps[name2], ownerState);
-    const _mergeSlotProps = mergeSlotProps(_extends$1({
-      className
-    }, useSlotPropsParams, {
-      externalForwardedProps: name2 === "root" ? other : void 0,
-      externalSlotProps: resolvedComponentsProps
-    })), {
-      props: {
-        component: slotComponent
-      },
-      internalRef
-    } = _mergeSlotProps, mergedProps = _objectWithoutPropertiesLoose(_mergeSlotProps.props, _excluded3$1);
-    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, parameters.ref);
-    const slotOwnerState = getSlotOwnerState ? getSlotOwnerState(mergedProps) : {};
-    const finalOwnerState = _extends$1({}, ownerState, slotOwnerState);
-    const LeafComponent = name2 === "root" ? slotComponent || rootComponent : slotComponent;
-    const props = appendOwnerState(elementType, _extends$1({}, name2 === "root" && !rootComponent && !slots[name2] && internalForwardedProps, name2 !== "root" && !slots[name2] && internalForwardedProps, mergedProps, LeafComponent && {
-      as: LeafComponent
-    }, {
-      ref
-    }), finalOwnerState);
-    Object.keys(slotOwnerState).forEach((propName) => {
-      delete props[propName];
-    });
-    return [elementType, props];
-  }
   function getAccordionUtilityClass(slot) {
     return generateUtilityClass("MuiAccordion", slot);
   }
   const accordionClasses = generateUtilityClasses("MuiAccordion", ["root", "rounded", "expanded", "disabled", "gutters", "region"]);
   const accordionClasses$1 = accordionClasses;
-  const _excluded$V = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "slots", "slotProps", "TransitionComponent", "TransitionProps"];
+  const _excluded$W = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
   const useUtilityClasses$O = (ownerState) => {
     const {
       classes,
@@ -71418,7 +71319,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       transition: theme2.transitions.create(["margin"], transition),
       overflowAnchor: "none",
       // Keep the same scrolling position
-      "&::before": {
+      "&:before": {
         position: "absolute",
         left: 0,
         top: -1,
@@ -71430,12 +71331,12 @@ Please use another name.` : formatMuiErrorMessage(18));
         transition: theme2.transitions.create(["opacity", "background-color"], transition)
       },
       "&:first-of-type": {
-        "&::before": {
+        "&:before": {
           display: "none"
         }
       },
       [`&.${accordionClasses$1.expanded}`]: {
-        "&::before": {
+        "&:before": {
           opacity: 0
         },
         "&:first-of-type": {
@@ -71445,7 +71346,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           marginBottom: 0
         },
         "& + &": {
-          "&::before": {
+          "&:before": {
             display: "none"
           }
         }
@@ -71478,7 +71379,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const Accordion = /* @__PURE__ */ reactExports.forwardRef(function Accordion2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiAccordion"
     });
@@ -71491,11 +71392,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       expanded: expandedProp,
       onChange,
       square = false,
-      slots = {},
-      slotProps = {},
-      TransitionComponent: TransitionComponentProp,
-      TransitionProps: TransitionPropsProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+      TransitionComponent = Collapse$2,
+      TransitionProps
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
     const [expanded, setExpandedState] = useControlled({
       controlled: expandedProp,
       default: defaultExpanded,
@@ -71522,21 +71421,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       expanded
     });
     const classes = useUtilityClasses$O(ownerState);
-    const backwardCompatibleSlots = _extends$1({
-      transition: TransitionComponentProp
-    }, slots);
-    const backwardCompatibleSlotProps = _extends$1({
-      transition: TransitionPropsProp
-    }, slotProps);
-    const [TransitionSlot, transitionProps] = useSlot("transition", {
-      elementType: Collapse$2,
-      externalForwardedProps: {
-        slots: backwardCompatibleSlots,
-        slotProps: backwardCompatibleSlotProps
-      },
-      ownerState
-    });
-    delete transitionProps.ownerState;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionRoot, _extends$1({
       className: clsx(classes.root, className),
       ref,
@@ -71546,10 +71430,10 @@ Please use another name.` : formatMuiErrorMessage(18));
       children: [/* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContext$1.Provider, {
         value: contextValue,
         children: summary
-      }), /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionSlot, _extends$1({
+      }), /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
         in: expanded,
         timeout: "auto"
-      }, transitionProps, {
+      }, TransitionProps, {
         children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
           "aria-labelledby": summary.props.id,
           id: summary.props["aria-controls"],
@@ -71561,10 +71445,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Accordion.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -71614,20 +71498,6 @@ Please use another name.` : formatMuiErrorMessage(18));
      */
     onChange: PropTypes.func,
     /**
-     * The props used for each slot inside.
-     * @default {}
-     */
-    slotProps: PropTypes.shape({
-      transition: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
-    }),
-    /**
-     * The components used for each slot inside.
-     * @default {}
-     */
-    slots: PropTypes.shape({
-      transition: PropTypes.elementType
-    }),
-    /**
      * If `true`, rounded corners are disabled.
      * @default false
      */
@@ -71639,13 +71509,12 @@ Please use another name.` : formatMuiErrorMessage(18));
     /**
      * The component used for the transition.
      * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
-     * @deprecated Use `slots.transition` instead. This prop will be removed in v7. [How to migrate](/material-ui/migration/migrating-from-deprecated-apis/).
+     * @default Collapse
      */
     TransitionComponent: PropTypes.elementType,
     /**
      * Props applied to the transition element.
      * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
-     * @deprecated Use `slotProps.transition` instead. This prop will be removed in v7. [How to migrate](/material-ui/migration/migrating-from-deprecated-apis/).
      */
     TransitionProps: PropTypes.object
   } : void 0;
@@ -71654,7 +71523,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAccordionDetails", slot);
   }
   generateUtilityClasses("MuiAccordionDetails", ["root"]);
-  const _excluded$U = ["className"];
+  const _excluded$V = ["className"];
   const useUtilityClasses$N = (ownerState) => {
     const {
       classes
@@ -71674,13 +71543,13 @@ Please use another name.` : formatMuiErrorMessage(18));
     padding: theme2.spacing(1, 2, 2)
   }));
   const AccordionDetails = /* @__PURE__ */ reactExports.forwardRef(function AccordionDetails2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiAccordionDetails"
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
     const ownerState = props;
     const classes = useUtilityClasses$N(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionDetailsRoot, _extends$1({
@@ -71690,10 +71559,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? AccordionDetails.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -71717,7 +71586,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const accordionSummaryClasses = generateUtilityClasses("MuiAccordionSummary", ["root", "expanded", "focusVisible", "disabled", "gutters", "contentGutters", "content", "expandIconWrapper"]);
   const accordionSummaryClasses$1 = accordionSummaryClasses;
-  const _excluded$T = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
+  const _excluded$U = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
   const useUtilityClasses$M = (ownerState) => {
     const {
       classes,
@@ -71801,7 +71670,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const AccordionSummary = /* @__PURE__ */ reactExports.forwardRef(function AccordionSummary2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiAccordionSummary"
     });
@@ -71811,7 +71680,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       expandIcon,
       focusVisibleClassName,
       onClick
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
     const {
       disabled = false,
       disableGutters,
@@ -71856,10 +71725,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? AccordionSummary.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -71915,7 +71784,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ClearIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  const _excluded$S = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
+  const _excluded$T = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
   const useUtilityClasses$L = (ownerState) => {
     const {
       variant,
@@ -72024,7 +71893,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   };
   const Alert = /* @__PURE__ */ reactExports.forwardRef(function Alert2(inProps, ref) {
     var _ref, _slots$closeButton, _ref2, _slots$closeIcon, _slotProps$closeButto, _slotProps$closeIcon;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiAlert"
     });
@@ -72044,7 +71913,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps = {},
       slots = {},
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
     const ownerState = _extends$1({}, props, {
       color: color2,
       severity,
@@ -72092,10 +71961,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Alert.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The action to display. It renders after the message, at the end of the alert.
      */
@@ -72183,7 +72052,7 @@ Please use another name.` : formatMuiErrorMessage(18));
      * The severity of the alert. This defines the color and icon used.
      * @default 'success'
      */
-    severity: PropTypes.oneOfType([PropTypes.oneOf(["error", "info", "success", "warning"]), PropTypes.string]),
+    severity: PropTypes.oneOf(["error", "info", "success", "warning"]),
     /**
      * The extra props for the slot components.
      * You can override the existing props or add new ones.
@@ -72222,7 +72091,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAlertTitle", slot);
   }
   generateUtilityClasses("MuiAlertTitle", ["root"]);
-  const _excluded$R = ["className"];
+  const _excluded$S = ["className"];
   const useUtilityClasses$K = (ownerState) => {
     const {
       classes
@@ -72245,13 +72114,13 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
   });
   const AlertTitle = /* @__PURE__ */ reactExports.forwardRef(function AlertTitle2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiAlertTitle"
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$R);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
     const ownerState = props;
     const classes = useUtilityClasses$K(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AlertTitleRoot, _extends$1({
@@ -72263,10 +72132,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? AlertTitle.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -72289,7 +72158,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAppBar", slot);
   }
   generateUtilityClasses("MuiAppBar", ["root", "positionFixed", "positionAbsolute", "positionSticky", "positionStatic", "positionRelative", "colorDefault", "colorPrimary", "colorSecondary", "colorInherit", "colorTransparent", "colorError", "colorInfo", "colorSuccess", "colorWarning"]);
-  const _excluded$Q = ["className", "color", "enableColorOnDark", "position"];
+  const _excluded$R = ["className", "color", "enableColorOnDark", "position"];
   const useUtilityClasses$J = (ownerState) => {
     const {
       color: color2,
@@ -72382,7 +72251,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   const AppBar = /* @__PURE__ */ reactExports.forwardRef(function AppBar2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiAppBar"
     });
@@ -72391,7 +72260,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       color: color2 = "primary",
       enableColorOnDark = false,
       position: position2 = "fixed"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Q);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$R);
     const ownerState = _extends$1({}, props, {
       color: color2,
       position: position2,
@@ -72408,10 +72277,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? AppBar.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -72449,6 +72318,106 @@ Please use another name.` : formatMuiErrorMessage(18));
     sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
   } : void 0;
   const AppBar$1 = AppBar;
+  function isHostComponent(element) {
+    return typeof element === "string";
+  }
+  function appendOwnerState(elementType, otherProps, ownerState) {
+    if (elementType === void 0 || isHostComponent(elementType)) {
+      return otherProps;
+    }
+    return _extends$1({}, otherProps, {
+      ownerState: _extends$1({}, otherProps.ownerState, ownerState)
+    });
+  }
+  function extractEventHandlers(object, excludeKeys = []) {
+    if (object === void 0) {
+      return {};
+    }
+    const result = {};
+    Object.keys(object).filter((prop) => prop.match(/^on[A-Z]/) && typeof object[prop] === "function" && !excludeKeys.includes(prop)).forEach((prop) => {
+      result[prop] = object[prop];
+    });
+    return result;
+  }
+  function resolveComponentProps(componentProps, ownerState, slotState) {
+    if (typeof componentProps === "function") {
+      return componentProps(ownerState, slotState);
+    }
+    return componentProps;
+  }
+  function omitEventHandlers(object) {
+    if (object === void 0) {
+      return {};
+    }
+    const result = {};
+    Object.keys(object).filter((prop) => !(prop.match(/^on[A-Z]/) && typeof object[prop] === "function")).forEach((prop) => {
+      result[prop] = object[prop];
+    });
+    return result;
+  }
+  function mergeSlotProps(parameters) {
+    const {
+      getSlotProps,
+      additionalProps,
+      externalSlotProps,
+      externalForwardedProps,
+      className
+    } = parameters;
+    if (!getSlotProps) {
+      const joinedClasses2 = clsx(externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className, className, additionalProps == null ? void 0 : additionalProps.className);
+      const mergedStyle2 = _extends$1({}, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
+      const props2 = _extends$1({}, additionalProps, externalForwardedProps, externalSlotProps);
+      if (joinedClasses2.length > 0) {
+        props2.className = joinedClasses2;
+      }
+      if (Object.keys(mergedStyle2).length > 0) {
+        props2.style = mergedStyle2;
+      }
+      return {
+        props: props2,
+        internalRef: void 0
+      };
+    }
+    const eventHandlers = extractEventHandlers(_extends$1({}, externalForwardedProps, externalSlotProps));
+    const componentsPropsWithoutEventHandlers = omitEventHandlers(externalSlotProps);
+    const otherPropsWithoutEventHandlers = omitEventHandlers(externalForwardedProps);
+    const internalSlotProps = getSlotProps(eventHandlers);
+    const joinedClasses = clsx(internalSlotProps == null ? void 0 : internalSlotProps.className, additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
+    const mergedStyle = _extends$1({}, internalSlotProps == null ? void 0 : internalSlotProps.style, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
+    const props = _extends$1({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
+    if (joinedClasses.length > 0) {
+      props.className = joinedClasses;
+    }
+    if (Object.keys(mergedStyle).length > 0) {
+      props.style = mergedStyle;
+    }
+    return {
+      props,
+      internalRef: internalSlotProps.ref
+    };
+  }
+  const _excluded$Q = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+  function useSlotProps(parameters) {
+    var _parameters$additiona;
+    const {
+      elementType,
+      externalSlotProps,
+      ownerState,
+      skipResolvingSlotProps = false
+    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$Q);
+    const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
+    const {
+      props: mergedProps,
+      internalRef
+    } = mergeSlotProps(_extends$1({}, rest, {
+      externalSlotProps: resolvedComponentsProps
+    }));
+    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, (_parameters$additiona = parameters.additionalProps) == null ? void 0 : _parameters$additiona.ref);
+    const props = appendOwnerState(elementType, _extends$1({}, mergedProps, {
+      ref
+    }), ownerState);
+    return props;
+  }
   function useBadge(parameters) {
     const {
       badgeContent: badgeContentProp,
@@ -72582,10 +72551,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   }
   process.env.NODE_ENV !== "production" ? ClickAwayListener.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
     /**
      * The wrapped element.
      */
@@ -72827,10 +72796,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   }
   process.env.NODE_ENV !== "production" ? FocusTrap.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
     /**
      * A single child content element.
      */
@@ -72924,10 +72893,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? Portal.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
     /**
      * The children to render into the `container`.
      */
@@ -72935,9 +72904,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     /**
      * An HTML element or function that returns one.
      * The `container` will have the portal children appended to it.
-     *
-     * You can also provide a callback, which is called in a React layout effect.
-     * This lets you set the container from a ref, and also makes server-side rendering possible.
      *
      * By default, it uses the body of the top-level document object,
      * so it's simply `document.body` most of the time.
@@ -73217,8 +73183,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const createHandleKeyDown = (otherHandlers) => (event) => {
       var _otherHandlers$onKeyD;
       (_otherHandlers$onKeyD = otherHandlers.onKeyDown) == null || _otherHandlers$onKeyD.call(otherHandlers, event);
-      if (event.key !== "Escape" || event.which === 229 || // Wait until IME is settled.
-      !isTopModal()) {
+      if (event.key !== "Escape" || !isTopModal()) {
         return;
       }
       if (!disableEscapeKeyDown) {
@@ -73299,7 +73264,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       open,
       resumeHideDuration
     } = parameters;
-    const timerAutoHide = useTimeout();
+    const timerAutoHide = reactExports.useRef();
     reactExports.useEffect(() => {
       if (!open) {
         return void 0;
@@ -73323,20 +73288,25 @@ Please use another name.` : formatMuiErrorMessage(18));
       if (!onClose || autoHideDurationParam == null) {
         return;
       }
-      timerAutoHide.start(autoHideDurationParam, () => {
+      clearTimeout(timerAutoHide.current);
+      timerAutoHide.current = setTimeout(() => {
         handleClose(null, "timeout");
-      });
+      }, autoHideDurationParam);
     });
     reactExports.useEffect(() => {
       if (open) {
         setAutoHideTimer(autoHideDuration);
       }
-      return timerAutoHide.clear;
-    }, [open, autoHideDuration, setAutoHideTimer, timerAutoHide]);
+      return () => {
+        clearTimeout(timerAutoHide.current);
+      };
+    }, [open, autoHideDuration, setAutoHideTimer]);
     const handleClickAway = (event) => {
       onClose == null || onClose(event, "clickaway");
     };
-    const handlePause = timerAutoHide.clear;
+    const handlePause = () => {
+      clearTimeout(timerAutoHide.current);
+    };
     const handleResume = reactExports.useCallback(() => {
       if (autoHideDuration != null) {
         setAutoHideTimer(resumeHideDuration != null ? resumeHideDuration : autoHideDuration * 0.5);
@@ -73372,7 +73342,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         };
       }
       return void 0;
-    }, [disableWindowBlurListener, open, handleResume, handlePause]);
+    }, [disableWindowBlurListener, handleResume, open]);
     const getRootProps = (externalProps = {}) => {
       const externalEventHandlers = _extends$1({}, extractEventHandlers(parameters), extractEventHandlers(externalProps));
       return _extends$1({
@@ -73573,10 +73543,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? TextareaAutosize.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │ To update them, edit the TypeScript types and run `pnpm proptypes`. │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
     /**
      * @ignore
      */
@@ -73637,10 +73607,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   }
   process.env.NODE_ENV !== "production" ? GlobalStyles.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The styles you want to apply globally.
      */
@@ -73845,7 +73815,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const InputBase = /* @__PURE__ */ reactExports.forwardRef(function InputBase2(inProps, ref) {
     var _slotProps$input;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiInputBase"
     });
@@ -74096,10 +74066,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? InputBase.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * @ignore
      */
@@ -74375,8 +74345,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       return [styles2.root, styles2[ownerState.variant], ownerState.colorDefault && styles2.colorDefault];
     }
   })(({
-    theme: theme2
-  }) => ({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
     position: "relative",
     display: "flex",
     alignItems: "center",
@@ -74389,36 +74360,18 @@ Please use another name.` : formatMuiErrorMessage(18));
     lineHeight: 1,
     borderRadius: "50%",
     overflow: "hidden",
-    userSelect: "none",
-    variants: [{
-      props: {
-        variant: "rounded"
-      },
-      style: {
-        borderRadius: (theme2.vars || theme2).shape.borderRadius
-      }
-    }, {
-      props: {
-        variant: "square"
-      },
-      style: {
-        borderRadius: 0
-      }
-    }, {
-      props: {
-        colorDefault: true
-      },
-      style: _extends$1({
-        color: (theme2.vars || theme2).palette.background.default
-      }, theme2.vars ? {
-        backgroundColor: theme2.vars.palette.Avatar.defaultBg
-      } : _extends$1({
-        backgroundColor: theme2.palette.grey[400]
-      }, theme2.applyStyles("dark", {
-        backgroundColor: theme2.palette.grey[600]
-      })))
-    }]
-  }));
+    userSelect: "none"
+  }, ownerState.variant === "rounded" && {
+    borderRadius: (theme2.vars || theme2).shape.borderRadius
+  }, ownerState.variant === "square" && {
+    borderRadius: 0
+  }, ownerState.colorDefault && _extends$1({
+    color: (theme2.vars || theme2).palette.background.default
+  }, theme2.vars ? {
+    backgroundColor: theme2.vars.palette.Avatar.defaultBg
+  } : {
+    backgroundColor: theme2.palette.mode === "light" ? theme2.palette.grey[400] : theme2.palette.grey[600]
+  })));
   const AvatarImg = styled$1("img", {
     name: "MuiAvatar",
     slot: "Img",
@@ -74481,7 +74434,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return loaded;
   }
   const Avatar = /* @__PURE__ */ reactExports.forwardRef(function Avatar2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiAvatar"
     });
@@ -74518,7 +74471,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         ownerState,
         className: classes.img
       }, imgProps));
-    } else if (!!childrenProp || childrenProp === 0) {
+    } else if (childrenProp != null) {
       children = childrenProp;
     } else if (hasImg && alt) {
       children = alt[0];
@@ -74538,10 +74491,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Avatar.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Used in combination with `src` or `srcSet` to
      * provide an alt attribute for the rendered `img` element.
@@ -74701,10 +74654,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Fade.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Add a custom transition end trigger. Called with the transitioning DOM
      * node and a done callback. Allows for more fine grained transition end
@@ -74818,7 +74771,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const Backdrop = /* @__PURE__ */ reactExports.forwardRef(function Backdrop2(inProps, ref) {
     var _slotProps$root, _ref, _slots$root;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiBackdrop"
     });
@@ -74858,10 +74811,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Backdrop.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -74954,9 +74907,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     })])
   } : void 0;
   const Backdrop$1 = Backdrop;
-  function createUseThemeProps(name2) {
-    return useThemeProps$1;
-  }
   function getBadgeUtilityClass(slot) {
     return generateUtilityClass("MuiBadge", slot);
   }
@@ -74992,7 +74942,6 @@ Please use another name.` : formatMuiErrorMessage(18));
   const _excluded$K = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
   const RADIUS_STANDARD = 10;
   const RADIUS_DOT = 4;
-  const useThemeProps = createUseThemeProps();
   const useUtilityClasses$F = (ownerState) => {
     const {
       color: color2,
@@ -75029,170 +74978,109 @@ Please use another name.` : formatMuiErrorMessage(18));
       return [styles2.badge, styles2[ownerState.variant], styles2[`anchorOrigin${capitalize$2(ownerState.anchorOrigin.vertical)}${capitalize$2(ownerState.anchorOrigin.horizontal)}${capitalize$2(ownerState.overlap)}`], ownerState.color !== "default" && styles2[`color${capitalize$2(ownerState.color)}`], ownerState.invisible && styles2.invisible];
     }
   })(({
-    theme: theme2
-  }) => {
-    var _theme$vars;
-    return {
-      display: "flex",
-      flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "center",
-      alignContent: "center",
-      alignItems: "center",
-      position: "absolute",
-      boxSizing: "border-box",
-      fontFamily: theme2.typography.fontFamily,
-      fontWeight: theme2.typography.fontWeightMedium,
-      fontSize: theme2.typography.pxToRem(12),
-      minWidth: RADIUS_STANDARD * 2,
-      lineHeight: 1,
-      padding: "0 6px",
-      height: RADIUS_STANDARD * 2,
-      borderRadius: RADIUS_STANDARD,
-      zIndex: 1,
-      // Render the badge on top of potential ripples.
-      transition: theme2.transitions.create("transform", {
-        easing: theme2.transitions.easing.easeInOut,
-        duration: theme2.transitions.duration.enteringScreen
-      }),
-      variants: [...Object.keys(((_theme$vars = theme2.vars) != null ? _theme$vars : theme2).palette).filter((key) => {
-        var _theme$vars2, _theme$vars3;
-        return ((_theme$vars2 = theme2.vars) != null ? _theme$vars2 : theme2).palette[key].main && ((_theme$vars3 = theme2.vars) != null ? _theme$vars3 : theme2).palette[key].contrastText;
-      }).map((color2) => ({
-        props: {
-          color: color2
-        },
-        style: {
-          backgroundColor: (theme2.vars || theme2).palette[color2].main,
-          color: (theme2.vars || theme2).palette[color2].contrastText
-        }
-      })), {
-        props: {
-          variant: "dot"
-        },
-        style: {
-          borderRadius: RADIUS_DOT,
-          height: RADIUS_DOT * 2,
-          minWidth: RADIUS_DOT * 2,
-          padding: 0
-        }
-      }, {
-        props: ({
-          ownerState
-        }) => ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "rectangular",
-        style: {
-          top: 0,
-          right: 0,
-          transform: "scale(1) translate(50%, -50%)",
-          transformOrigin: "100% 0%",
-          [`&.${badgeClasses$1.invisible}`]: {
-            transform: "scale(0) translate(50%, -50%)"
-          }
-        }
-      }, {
-        props: ({
-          ownerState
-        }) => ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "rectangular",
-        style: {
-          bottom: 0,
-          right: 0,
-          transform: "scale(1) translate(50%, 50%)",
-          transformOrigin: "100% 100%",
-          [`&.${badgeClasses$1.invisible}`]: {
-            transform: "scale(0) translate(50%, 50%)"
-          }
-        }
-      }, {
-        props: ({
-          ownerState
-        }) => ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "rectangular",
-        style: {
-          top: 0,
-          left: 0,
-          transform: "scale(1) translate(-50%, -50%)",
-          transformOrigin: "0% 0%",
-          [`&.${badgeClasses$1.invisible}`]: {
-            transform: "scale(0) translate(-50%, -50%)"
-          }
-        }
-      }, {
-        props: ({
-          ownerState
-        }) => ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "rectangular",
-        style: {
-          bottom: 0,
-          left: 0,
-          transform: "scale(1) translate(-50%, 50%)",
-          transformOrigin: "0% 100%",
-          [`&.${badgeClasses$1.invisible}`]: {
-            transform: "scale(0) translate(-50%, 50%)"
-          }
-        }
-      }, {
-        props: ({
-          ownerState
-        }) => ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "circular",
-        style: {
-          top: "14%",
-          right: "14%",
-          transform: "scale(1) translate(50%, -50%)",
-          transformOrigin: "100% 0%",
-          [`&.${badgeClasses$1.invisible}`]: {
-            transform: "scale(0) translate(50%, -50%)"
-          }
-        }
-      }, {
-        props: ({
-          ownerState
-        }) => ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "circular",
-        style: {
-          bottom: "14%",
-          right: "14%",
-          transform: "scale(1) translate(50%, 50%)",
-          transformOrigin: "100% 100%",
-          [`&.${badgeClasses$1.invisible}`]: {
-            transform: "scale(0) translate(50%, 50%)"
-          }
-        }
-      }, {
-        props: ({
-          ownerState
-        }) => ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "circular",
-        style: {
-          top: "14%",
-          left: "14%",
-          transform: "scale(1) translate(-50%, -50%)",
-          transformOrigin: "0% 0%",
-          [`&.${badgeClasses$1.invisible}`]: {
-            transform: "scale(0) translate(-50%, -50%)"
-          }
-        }
-      }, {
-        props: ({
-          ownerState
-        }) => ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "circular",
-        style: {
-          bottom: "14%",
-          left: "14%",
-          transform: "scale(1) translate(-50%, 50%)",
-          transformOrigin: "0% 100%",
-          [`&.${badgeClasses$1.invisible}`]: {
-            transform: "scale(0) translate(-50%, 50%)"
-          }
-        }
-      }, {
-        props: {
-          invisible: true
-        },
-        style: {
-          transition: theme2.transitions.create("transform", {
-            easing: theme2.transitions.easing.easeInOut,
-            duration: theme2.transitions.duration.leavingScreen
-          })
-        }
-      }]
-    };
-  });
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    boxSizing: "border-box",
+    fontFamily: theme2.typography.fontFamily,
+    fontWeight: theme2.typography.fontWeightMedium,
+    fontSize: theme2.typography.pxToRem(12),
+    minWidth: RADIUS_STANDARD * 2,
+    lineHeight: 1,
+    padding: "0 6px",
+    height: RADIUS_STANDARD * 2,
+    borderRadius: RADIUS_STANDARD,
+    zIndex: 1,
+    // Render the badge on top of potential ripples.
+    transition: theme2.transitions.create("transform", {
+      easing: theme2.transitions.easing.easeInOut,
+      duration: theme2.transitions.duration.enteringScreen
+    })
+  }, ownerState.color !== "default" && {
+    backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main,
+    color: (theme2.vars || theme2).palette[ownerState.color].contrastText
+  }, ownerState.variant === "dot" && {
+    borderRadius: RADIUS_DOT,
+    height: RADIUS_DOT * 2,
+    minWidth: RADIUS_DOT * 2,
+    padding: 0
+  }, ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "rectangular" && {
+    top: 0,
+    right: 0,
+    transform: "scale(1) translate(50%, -50%)",
+    transformOrigin: "100% 0%",
+    [`&.${badgeClasses$1.invisible}`]: {
+      transform: "scale(0) translate(50%, -50%)"
+    }
+  }, ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "rectangular" && {
+    bottom: 0,
+    right: 0,
+    transform: "scale(1) translate(50%, 50%)",
+    transformOrigin: "100% 100%",
+    [`&.${badgeClasses$1.invisible}`]: {
+      transform: "scale(0) translate(50%, 50%)"
+    }
+  }, ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "rectangular" && {
+    top: 0,
+    left: 0,
+    transform: "scale(1) translate(-50%, -50%)",
+    transformOrigin: "0% 0%",
+    [`&.${badgeClasses$1.invisible}`]: {
+      transform: "scale(0) translate(-50%, -50%)"
+    }
+  }, ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "rectangular" && {
+    bottom: 0,
+    left: 0,
+    transform: "scale(1) translate(-50%, 50%)",
+    transformOrigin: "0% 100%",
+    [`&.${badgeClasses$1.invisible}`]: {
+      transform: "scale(0) translate(-50%, 50%)"
+    }
+  }, ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "circular" && {
+    top: "14%",
+    right: "14%",
+    transform: "scale(1) translate(50%, -50%)",
+    transformOrigin: "100% 0%",
+    [`&.${badgeClasses$1.invisible}`]: {
+      transform: "scale(0) translate(50%, -50%)"
+    }
+  }, ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "right" && ownerState.overlap === "circular" && {
+    bottom: "14%",
+    right: "14%",
+    transform: "scale(1) translate(50%, 50%)",
+    transformOrigin: "100% 100%",
+    [`&.${badgeClasses$1.invisible}`]: {
+      transform: "scale(0) translate(50%, 50%)"
+    }
+  }, ownerState.anchorOrigin.vertical === "top" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "circular" && {
+    top: "14%",
+    left: "14%",
+    transform: "scale(1) translate(-50%, -50%)",
+    transformOrigin: "0% 0%",
+    [`&.${badgeClasses$1.invisible}`]: {
+      transform: "scale(0) translate(-50%, -50%)"
+    }
+  }, ownerState.anchorOrigin.vertical === "bottom" && ownerState.anchorOrigin.horizontal === "left" && ownerState.overlap === "circular" && {
+    bottom: "14%",
+    left: "14%",
+    transform: "scale(1) translate(-50%, 50%)",
+    transformOrigin: "0% 100%",
+    [`&.${badgeClasses$1.invisible}`]: {
+      transform: "scale(0) translate(-50%, 50%)"
+    }
+  }, ownerState.invisible && {
+    transition: theme2.transitions.create("transform", {
+      easing: theme2.transitions.easing.easeInOut,
+      duration: theme2.transitions.duration.leavingScreen
+    })
+  }));
   const Badge = /* @__PURE__ */ reactExports.forwardRef(function Badge2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$badge, _slotProps$root, _slotProps$badge;
     const props = useThemeProps({
@@ -75285,10 +75173,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Badge.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The anchor of the badge.
      * @default {
@@ -75623,7 +75511,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const contextProps = reactExports.useContext(ButtonGroupContext$1);
     const buttonGroupButtonContextPositionClassName = reactExports.useContext(ButtonGroupButtonContext$1);
     const resolvedProps = resolveProps(contextProps, inProps);
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: resolvedProps,
       name: "MuiButton"
     });
@@ -75681,10 +75569,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Button.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -75803,9 +75691,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }, ownerState.edge === "end" && {
     marginRight: ownerState.size === "small" ? -3 : -12
   }));
-  const SwitchBaseInput = styled$1("input", {
-    shouldForwardProp: rootShouldForwardProp
-  })({
+  const SwitchBaseInput = styled$1("input")({
     cursor: "inherit",
     position: "absolute",
     opacity: 0,
@@ -76049,10 +75935,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   });
   process.env.NODE_ENV !== "production" ? {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * You can wrap a node.
      */
@@ -76115,7 +76001,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$backdrop, _slotProps$root, _slotProps$backdrop;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       name: "MuiModal",
       props: inProps
     });
@@ -76236,10 +76122,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? Modal.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * A backdrop component. This prop enables custom backdrop rendering.
      * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
@@ -76310,9 +76196,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     /**
      * An HTML element or function that returns one.
      * The `container` will have the portal children appended to it.
-     *
-     * You can also provide a callback, which is called in a React layout effect.
-     * This lets you set the container from a ref, and also makes server-side rendering possible.
      *
      * By default, it uses the body of the top-level document object,
      * so it's simply `document.body` most of the time.
@@ -76487,7 +76370,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     overflowY: "auto",
     overflowX: "hidden",
     textAlign: "center",
-    "&::after": {
+    "&:after": {
       content: '""',
       display: "inline-block",
       verticalAlign: "middle",
@@ -76556,7 +76439,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiDialog"
     });
@@ -76664,10 +76547,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The id(s) of the element(s) that describe the dialog.
      */
@@ -76830,7 +76713,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const DialogActions = /* @__PURE__ */ reactExports.forwardRef(function DialogActions2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiDialogActions"
     });
@@ -76849,10 +76732,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? DialogActions.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -76923,7 +76806,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const DialogContent = /* @__PURE__ */ reactExports.forwardRef(function DialogContent2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiDialogContent"
     });
@@ -76942,10 +76825,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? DialogContent.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -76988,7 +76871,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     flex: "0 0 auto"
   });
   const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiDialogTitle"
     });
@@ -77011,10 +76894,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -77168,7 +77051,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingBottom: `calc(${theme2.spacing(1)} * 1.2)`
   }));
   const Divider = /* @__PURE__ */ reactExports.forwardRef(function Divider2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiDivider"
     });
@@ -77211,10 +77094,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   Divider.muiSkipListHighlight = true;
   process.env.NODE_ENV !== "production" ? Divider.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Absolutely position the element.
      * @default false
@@ -77246,7 +77129,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     /**
      * If `true`, the divider will have a lighter color.
      * @default false
-     * @deprecated Use <Divider sx={{ opacity: 0.6 }} /> (or any opacity or color) instead. [How to migrate](/material-ui/migration/migrating-from-deprecated-apis/)
      */
     light: PropTypes.bool,
     /**
@@ -77387,7 +77269,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const Fab = /* @__PURE__ */ reactExports.forwardRef(function Fab2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiFab"
     });
@@ -77425,10 +77307,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Fab.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -77549,7 +77431,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         backgroundColor: theme2.vars ? theme2.vars.palette.FilledInput.disabledBg : disabledBackground
       }
     }, !ownerState.disableUnderline && {
-      "&::after": {
+      "&:after": {
         borderBottom: `2px solid ${(_palette = (theme2.vars || theme2).palette[ownerState.color || "primary"]) == null ? void 0 : _palette.main}`,
         left: 0,
         bottom: 0,
@@ -77571,11 +77453,11 @@ Please use another name.` : formatMuiErrorMessage(18));
         transform: "scaleX(1) translateX(0)"
       },
       [`&.${filledInputClasses$1.error}`]: {
-        "&::before, &::after": {
+        "&:before, &:after": {
           borderBottomColor: (theme2.vars || theme2).palette.error.main
         }
       },
-      "&::before": {
+      "&:before": {
         borderBottom: `1px solid ${theme2.vars ? `rgba(${theme2.vars.palette.common.onBackgroundChannel} / ${theme2.vars.opacity.inputUnderline})` : bottomLineColor}`,
         left: 0,
         bottom: 0,
@@ -77607,9 +77489,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, ownerState.hiddenLabel && {
       paddingTop: 16,
       paddingBottom: 17
-    }, ownerState.hiddenLabel && ownerState.size === "small" && {
-      paddingTop: 8,
-      paddingBottom: 9
     }));
   });
   const FilledInputInput = styled$1(InputBaseComponent, {
@@ -77650,6 +77529,11 @@ Please use another name.` : formatMuiErrorMessage(18));
   }, ownerState.hiddenLabel && {
     paddingTop: 16,
     paddingBottom: 17
+  }, ownerState.multiline && {
+    paddingTop: 0,
+    paddingBottom: 0,
+    paddingLeft: 0,
+    paddingRight: 0
   }, ownerState.startAdornment && {
     paddingLeft: 0
   }, ownerState.endAdornment && {
@@ -77657,15 +77541,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   }, ownerState.hiddenLabel && ownerState.size === "small" && {
     paddingTop: 8,
     paddingBottom: 9
-  }, ownerState.multiline && {
-    paddingTop: 0,
-    paddingBottom: 0,
-    paddingLeft: 0,
-    paddingRight: 0
   }));
   const FilledInput = /* @__PURE__ */ reactExports.forwardRef(function FilledInput2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$input;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiFilledInput"
     });
@@ -77695,7 +77574,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         ownerState
       }
     };
-    const componentsProps = (slotProps != null ? slotProps : componentsPropsProp) ? deepmerge(filledInputComponentsProps, slotProps != null ? slotProps : componentsPropsProp) : filledInputComponentsProps;
+    const componentsProps = (slotProps != null ? slotProps : componentsPropsProp) ? deepmerge(slotProps != null ? slotProps : componentsPropsProp, filledInputComponentsProps) : filledInputComponentsProps;
     const RootSlot = (_ref = (_slots$root = slots.root) != null ? _slots$root : components.Root) != null ? _ref : FilledInputRoot;
     const InputSlot = (_ref2 = (_slots$input = slots.input) != null ? _slots$input : components.Input) != null ? _ref2 : FilledInputInput;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(InputBase$1, _extends$1({
@@ -77714,10 +77593,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? FilledInput.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * This prop helps users to fill forms faster, especially on mobile devices.
      * The name can be confusing, as it's more like an autofill.
@@ -77954,7 +77833,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     width: "100%"
   }));
   const FormControl = /* @__PURE__ */ reactExports.forwardRef(function FormControl2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiFormControl"
     });
@@ -78075,10 +77954,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? FormControl.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -78161,16 +78040,16 @@ Please use another name.` : formatMuiErrorMessage(18));
       slot: "Root",
       overridesResolver: (props, styles2) => styles2.root
     }),
-    useThemeProps: (inProps) => useThemeProps$1({
+    useThemeProps: (inProps) => useThemeProps({
       props: inProps,
       name: "MuiStack"
     })
   });
   process.env.NODE_ENV !== "production" ? Stack.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -78290,7 +78169,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const FormControlLabel = /* @__PURE__ */ reactExports.forwardRef(function FormControlLabel2(inProps, ref) {
     var _ref, _slotProps$typography;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiFormControlLabel"
     });
@@ -78345,7 +78224,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       ref
     }, other, {
       children: [/* @__PURE__ */ reactExports.cloneElement(control, controlProps), required ? /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, {
-        display: "block",
+        direction: "row",
+        alignItems: "center",
         children: [label, /* @__PURE__ */ jsxRuntimeExports.jsxs(AsteriskComponent$1, {
           ownerState,
           "aria-hidden": true,
@@ -78356,10 +78236,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? FormControlLabel.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * If `true`, the component appears selected.
      */
@@ -78471,7 +78351,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     flexDirection: "row"
   }));
   const FormGroup = /* @__PURE__ */ reactExports.forwardRef(function FormGroup2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiFormGroup"
     });
@@ -78497,10 +78377,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? FormGroup.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -78580,7 +78460,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginRight: 14
   }));
   const FormHelperText = /* @__PURE__ */ reactExports.forwardRef(function FormHelperText2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiFormHelperText"
     });
@@ -78623,10 +78503,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? FormHelperText.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      *
@@ -78742,7 +78622,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   const FormLabel = /* @__PURE__ */ reactExports.forwardRef(function FormLabel2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiFormLabel"
     });
@@ -78782,10 +78662,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? FormLabel.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -78868,7 +78748,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
     } = props, other = _objectWithoutPropertiesLoose(props, _excluded$u);
-    const timer = useTimeout();
+    const timer = reactExports.useRef();
     const autoTimeout = reactExports.useRef();
     const theme2 = useTheme();
     const nodeRef = reactExports.useRef(null);
@@ -78954,12 +78834,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     const handleExited = normalizedTransitionCallback(onExited);
     const handleAddEndListener = (next2) => {
       if (timeout === "auto") {
-        timer.start(autoTimeout.current || 0, next2);
+        timer.current = setTimeout(next2, autoTimeout.current || 0);
       }
       if (addEndListener) {
         addEndListener(nodeRef.current, next2);
       }
     };
+    reactExports.useEffect(() => {
+      return () => {
+        clearTimeout(timer.current);
+      };
+    }, []);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
       appear,
       in: inProp,
@@ -78986,10 +78871,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Grow.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Add a custom transition end trigger. Called with the transitioning DOM
      * node and a done callback. Allows for more fine grained transition end
@@ -79100,7 +78985,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         marginTop: 16
       }
     }, !ownerState.disableUnderline && {
-      "&::after": {
+      "&:after": {
         borderBottom: `2px solid ${(theme2.vars || theme2).palette[ownerState.color].main}`,
         left: 0,
         bottom: 0,
@@ -79122,11 +79007,11 @@ Please use another name.` : formatMuiErrorMessage(18));
         transform: "scaleX(1) translateX(0)"
       },
       [`&.${inputClasses$1.error}`]: {
-        "&::before, &::after": {
+        "&:before, &:after": {
           borderBottomColor: (theme2.vars || theme2).palette.error.main
         }
       },
-      "&::before": {
+      "&:before": {
         borderBottom: `1px solid ${bottomLineColor}`,
         left: 0,
         bottom: 0,
@@ -79159,7 +79044,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   })({});
   const Input = /* @__PURE__ */ reactExports.forwardRef(function Input2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$input;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiInput"
     });
@@ -79202,10 +79087,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Input.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * This prop helps users to fill forms faster, especially on mobile devices.
      * The name can be confusing, as it's more like an autofill.
@@ -79421,7 +79306,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       } = props;
       return [{
         [`& .${formLabelClasses$1.asterisk}`]: styles2.asterisk
-      }, styles2.root, ownerState.formControl && styles2.formControl, ownerState.size === "small" && styles2.sizeSmall, ownerState.shrink && styles2.shrink, !ownerState.disableAnimation && styles2.animated, ownerState.focused && styles2.focused, styles2[ownerState.variant]];
+      }, styles2.root, ownerState.formControl && styles2.formControl, ownerState.size === "small" && styles2.sizeSmall, ownerState.shrink && styles2.shrink, !ownerState.disableAnimation && styles2.animated, styles2[ownerState.variant]];
     }
   })(({
     theme: theme2,
@@ -79486,7 +79371,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     transform: "translate(14px, -9px) scale(0.75)"
   })));
   const InputLabel = /* @__PURE__ */ reactExports.forwardRef(function InputLabel2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       name: "MuiInputLabel",
       props: inProps
     });
@@ -79503,7 +79388,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const fcs = formControlState({
       props,
       muiFormControl,
-      states: ["size", "variant", "required", "focused"]
+      states: ["size", "variant", "required"]
     });
     const ownerState = _extends$1({}, props, {
       disableAnimation,
@@ -79511,8 +79396,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       shrink,
       size: fcs.size,
       variant: fcs.variant,
-      required: fcs.required,
-      focused: fcs.focused
+      required: fcs.required
     });
     const classes = useUtilityClasses$o(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabelRoot, _extends$1({
@@ -79525,10 +79409,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? InputLabel.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -79694,7 +79578,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   const Link = /* @__PURE__ */ reactExports.forwardRef(function Link2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiLink"
     });
@@ -79759,10 +79643,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Link.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -79858,7 +79742,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingTop: 0
   }));
   const List = /* @__PURE__ */ reactExports.forwardRef(function List2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiList"
     });
@@ -79892,10 +79776,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? List.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -80031,7 +79915,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingBottom: 4
   }));
   const ListItemButton = /* @__PURE__ */ reactExports.forwardRef(function ListItemButton2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiListItemButton"
     });
@@ -80088,10 +79972,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? ListItemButton.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Defines the `align-items` style property.
      * @default 'center'
@@ -80201,7 +80085,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     right: 0
   }));
   const ListItemSecondaryAction = /* @__PURE__ */ reactExports.forwardRef(function ListItemSecondaryAction2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiListItemSecondaryAction"
     });
@@ -80220,10 +80104,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? ListItemSecondaryAction.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component, normally an `IconButton` or selection control.
      */
@@ -80352,7 +80236,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     position: "relative"
   });
   const ListItem = /* @__PURE__ */ reactExports.forwardRef(function ListItem2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiListItem"
     });
@@ -80465,10 +80349,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? ListItem.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Defines the `align-items` style property.
      * @default 'center'
@@ -80656,7 +80540,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginTop: 8
   }));
   const ListItemAvatar = /* @__PURE__ */ reactExports.forwardRef(function ListItemAvatar2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiListItemAvatar"
     });
@@ -80675,10 +80559,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? ListItemAvatar.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component, normally an `Avatar`.
      */
@@ -80734,7 +80618,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginTop: 8
   }));
   const ListItemIcon = /* @__PURE__ */ reactExports.forwardRef(function ListItemIcon2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiListItemIcon"
     });
@@ -80753,10 +80637,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? ListItemIcon.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component, normally `Icon`, `SvgIcon`,
      * or a `@mui/icons-material` SVG icon element.
@@ -80824,7 +80708,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingLeft: 56
   }));
   const ListItemText = /* @__PURE__ */ reactExports.forwardRef(function ListItemText2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiListItemText"
     });
@@ -80880,10 +80764,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? ListItemText.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Alias for the `primary` prop.
      */
@@ -81124,10 +81008,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? MenuList.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * If `true`, will focus the `[role="menu"]` container and move into tab order.
      * @default false
@@ -81236,7 +81120,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const Popover = /* @__PURE__ */ reactExports.forwardRef(function Popover2(inProps, ref) {
     var _slotProps$paper, _slots$root, _slots$paper;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiPopover"
     });
@@ -81476,10 +81360,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Popover.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * A ref for imperative actions.
      * It currently only supports updatePosition() action.
@@ -81705,7 +81589,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const Menu$1 = /* @__PURE__ */ reactExports.forwardRef(function Menu2(inProps, ref) {
     var _slots$paper, _slotProps$paper;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiMenu"
     });
@@ -81827,10 +81711,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Menu$1.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * An HTML element, or a function that returns one.
      * It's used to set the position of the menu.
@@ -82045,7 +81929,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   })));
   const MenuItem = /* @__PURE__ */ reactExports.forwardRef(function MenuItem2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiMenuItem"
     });
@@ -82102,10 +81986,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? MenuItem.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * If `true`, the list item is focused during the first mount.
      * Focus will also be triggered if the value changes from false to true.
@@ -82386,9 +82270,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const NativeSelectInput$1 = NativeSelectInput;
   var _span$1;
   const _excluded$e = ["children", "classes", "className", "label", "notched"];
-  const NotchedOutlineRoot$1 = styled$1("fieldset", {
-    shouldForwardProp: rootShouldForwardProp
-  })({
+  const NotchedOutlineRoot$1 = styled$1("fieldset")({
     textAlign: "left",
     position: "absolute",
     bottom: 0,
@@ -82404,9 +82286,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     overflow: "hidden",
     minWidth: "0%"
   });
-  const NotchedOutlineLegend = styled$1("legend", {
-    shouldForwardProp: rootShouldForwardProp
-  })(({
+  const NotchedOutlineLegend = styled$1("legend")(({
     ownerState,
     theme: theme2
   }) => _extends$1({
@@ -82614,7 +82494,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }));
   const OutlinedInput = /* @__PURE__ */ reactExports.forwardRef(function OutlinedInput2(inProps, ref) {
     var _ref, _slots$root, _ref2, _slots$input, _React$Fragment;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiOutlinedInput"
     });
@@ -82674,10 +82554,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? OutlinedInput.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * This prop helps users to fill forms faster, especially on mobile devices.
      * The name can be confusing, as it's more like an autofill.
@@ -82960,12 +82840,12 @@ Please use another name.` : formatMuiErrorMessage(18));
   function getPaginationItemUtilityClass(slot) {
     return generateUtilityClass("MuiPaginationItem", slot);
   }
-  const paginationItemClasses = generateUtilityClasses("MuiPaginationItem", ["root", "page", "sizeSmall", "sizeLarge", "text", "textPrimary", "textSecondary", "outlined", "outlinedPrimary", "outlinedSecondary", "rounded", "ellipsis", "firstLast", "previousNext", "focusVisible", "disabled", "selected", "icon", "colorPrimary", "colorSecondary"]);
+  const paginationItemClasses = generateUtilityClasses("MuiPaginationItem", ["root", "page", "sizeSmall", "sizeLarge", "text", "textPrimary", "textSecondary", "outlined", "outlinedPrimary", "outlinedSecondary", "rounded", "ellipsis", "firstLast", "previousNext", "focusVisible", "disabled", "selected", "icon"]);
   const paginationItemClasses$1 = paginationItemClasses;
-  const FirstPageIconDefault = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+  const FirstPageIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M18.41 16.59L13.82 12l4.59-4.59L17 6l-6 6 6 6zM6 6h2v12H6z"
   }), "FirstPage");
-  const LastPageIconDefault = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+  const LastPageIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M5.59 7.41L10.18 12l-4.59 4.59L7 18l6-6-6-6zM16 6h2v12h-2z"
   }), "LastPage");
   const NavigateBeforeIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
@@ -82993,7 +82873,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       variant
     } = ownerState;
     const slots = {
-      root: ["root", `size${capitalize$2(size2)}`, variant, shape2, color2 !== "standard" && `color${capitalize$2(color2)}`, color2 !== "standard" && `${variant}${capitalize$2(color2)}`, disabled && "disabled", selected && "selected", {
+      root: ["root", `size${capitalize$2(size2)}`, variant, shape2, color2 !== "standard" && `${variant}${capitalize$2(color2)}`, disabled && "disabled", selected && "selected", {
         page: "page",
         first: "firstLast",
         last: "firstLast",
@@ -83161,7 +83041,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     fontSize: theme2.typography.pxToRem(22)
   }));
   const PaginationItem = /* @__PURE__ */ reactExports.forwardRef(function PaginationItem2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiPaginationItem"
     });
@@ -83193,13 +83073,13 @@ Please use another name.` : formatMuiErrorMessage(18));
     const normalizedIcons = theme2.direction === "rtl" ? {
       previous: slots.next || components.next || NavigateNextIcon,
       next: slots.previous || components.previous || NavigateBeforeIcon,
-      last: slots.first || components.first || FirstPageIconDefault,
-      first: slots.last || components.last || LastPageIconDefault
+      last: slots.first || components.first || FirstPageIcon,
+      first: slots.last || components.last || LastPageIcon
     } : {
       previous: slots.previous || components.previous || NavigateBeforeIcon,
       next: slots.next || components.next || NavigateNextIcon,
-      first: slots.first || components.first || FirstPageIconDefault,
-      last: slots.last || components.last || LastPageIconDefault
+      first: slots.first || components.first || FirstPageIcon,
+      last: slots.last || components.last || LastPageIcon
     };
     const Icon = normalizedIcons[type];
     return type === "start-ellipsis" || type === "end-ellipsis" ? /* @__PURE__ */ jsxRuntimeExports.jsx(PaginationItemEllipsis, {
@@ -83222,10 +83102,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? PaginationItem.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * @ignore
      */
@@ -83358,7 +83238,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return `Go to ${type} page`;
   }
   const Pagination = /* @__PURE__ */ reactExports.forwardRef(function Pagination2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiPagination"
     });
@@ -83425,10 +83305,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Pagination.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * Number of always visible pages at the beginning and end.
      * @default 1
@@ -83545,9 +83425,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const RadioButtonCheckedIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
   }), "RadioButtonChecked");
-  const RadioButtonIconRoot = styled$1("span", {
-    shouldForwardProp: rootShouldForwardProp
-  })({
+  const RadioButtonIconRoot = styled$1("span")({
     position: "relative",
     display: "flex"
   });
@@ -83645,7 +83523,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const {
         ownerState
       } = props;
-      return [styles2.root, ownerState.size !== "medium" && styles2[`size${capitalize$2(ownerState.size)}`], styles2[`color${capitalize$2(ownerState.color)}`]];
+      return [styles2.root, styles2[`color${capitalize$2(ownerState.color)}`]];
     }
   })(({
     theme: theme2,
@@ -83681,7 +83559,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const defaultIcon = /* @__PURE__ */ jsxRuntimeExports.jsx(RadioButtonIcon, {});
   const Radio = /* @__PURE__ */ reactExports.forwardRef(function Radio2(inProps, ref) {
     var _defaultIcon$props$fo, _defaultCheckedIcon$p;
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiRadio"
     });
@@ -83730,10 +83608,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Radio.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * If `true`, the component is checked.
      */
@@ -83869,10 +83747,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? RadioGroup.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -83941,7 +83819,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, colorSchemeStyles);
   });
   const ScopedCssBaseline = /* @__PURE__ */ reactExports.forwardRef(function ScopedCssBaseline2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiScopedCssBaseline"
     });
@@ -83961,10 +83839,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? ScopedCssBaseline.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The content of the component.
      */
@@ -84625,7 +84503,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   const StyledOutlinedInput = styled$1(OutlinedInput$1, styledRootConfig)("");
   const StyledFilledInput = styled$1(FilledInput$1, styledRootConfig)("");
   const Select = /* @__PURE__ */ reactExports.forwardRef(function Select2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       name: "MuiSelect",
       props: inProps
     });
@@ -84710,7 +84588,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         }, inputProps, {
           classes: inputProps ? deepmerge(restOfClasses, inputProps.classes) : restOfClasses
         }, input ? input.props.inputProps : {})
-      }, (multiple && native || displayEmpty) && variant === "outlined" ? {
+      }, multiple && native && variant === "outlined" ? {
         notched: true
       } : {}, {
         ref: inputComponentRef,
@@ -84721,10 +84599,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? Select.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * If `true`, the width of the popover will automatically be set according to the items inside the
      * menu, otherwise it will be at least the width of the select input.
@@ -84928,7 +84806,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     marginRight: -8
   });
   const SnackbarContent = /* @__PURE__ */ reactExports.forwardRef(function SnackbarContent2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiSnackbarContent"
     });
@@ -84960,10 +84838,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? SnackbarContent.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The action to display. It renders after the message, at the end of the snackbar.
      */
@@ -85055,7 +84933,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   const Snackbar = /* @__PURE__ */ reactExports.forwardRef(function Snackbar2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiSnackbar"
     });
@@ -85150,10 +85028,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? Snackbar.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The action to display. It renders after the message, at the end of the snackbar.
      */
@@ -85450,7 +85328,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     borderRadius: "50%"
   }));
   const Switch = /* @__PURE__ */ reactExports.forwardRef(function Switch2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiSwitch"
     });
@@ -85492,10 +85370,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
   });
   process.env.NODE_ENV !== "production" ? Switch.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * If `true`, the component is checked.
      */
@@ -85632,7 +85510,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     ownerState
   }) => ownerState.variant === "regular" && theme2.mixins.toolbar);
   const Toolbar = /* @__PURE__ */ reactExports.forwardRef(function Toolbar2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiToolbar"
     });
@@ -85656,10 +85534,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }, other));
   });
   process.env.NODE_ENV !== "production" ? Toolbar.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * The Toolbar children, usually a mixture of `IconButton`, `Button` and `Typography`.
      * The Toolbar is a flex container, allowing flex item properties to be used to lay out the children.
@@ -85719,7 +85597,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     overridesResolver: (props, styles2) => styles2.root
   })({});
   const TextField = /* @__PURE__ */ reactExports.forwardRef(function TextField2(inProps, ref) {
-    const props = useThemeProps$1({
+    const props = useThemeProps({
       props: inProps,
       name: "MuiTextField"
     });
@@ -85844,10 +85722,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }));
   });
   process.env.NODE_ENV !== "production" ? TextField.propTypes = {
-    // ┌────────────────────────────── Warning ──────────────────────────────┐
-    // │ These PropTypes are generated from the TypeScript type definitions. │
-    // │    To update them, edit the d.ts file and run `pnpm proptypes`.     │
-    // └─────────────────────────────────────────────────────────────────────┘
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
     /**
      * This prop helps users to fill forms faster, especially on mobile devices.
      * The name can be confusing, as it's more like an autofill.
@@ -91342,37 +91220,37 @@ Please use another name.` : formatMuiErrorMessage(18));
         }
       }
       function ajaxConvert(s, response, jqXHR, isSuccess) {
-        var conv2, current, conv, tmp, prev2, converters = {}, dataTypes = s.dataTypes.slice();
+        var conv2, current2, conv, tmp, prev2, converters = {}, dataTypes = s.dataTypes.slice();
         if (dataTypes[1]) {
           for (conv in s.converters) {
             converters[conv.toLowerCase()] = s.converters[conv];
           }
         }
-        current = dataTypes.shift();
-        while (current) {
-          if (s.responseFields[current]) {
-            jqXHR[s.responseFields[current]] = response;
+        current2 = dataTypes.shift();
+        while (current2) {
+          if (s.responseFields[current2]) {
+            jqXHR[s.responseFields[current2]] = response;
           }
           if (!prev2 && isSuccess && s.dataFilter) {
             response = s.dataFilter(response, s.dataType);
           }
-          prev2 = current;
-          current = dataTypes.shift();
-          if (current) {
-            if (current === "*") {
-              current = prev2;
-            } else if (prev2 !== "*" && prev2 !== current) {
-              conv = converters[prev2 + " " + current] || converters["* " + current];
+          prev2 = current2;
+          current2 = dataTypes.shift();
+          if (current2) {
+            if (current2 === "*") {
+              current2 = prev2;
+            } else if (prev2 !== "*" && prev2 !== current2) {
+              conv = converters[prev2 + " " + current2] || converters["* " + current2];
               if (!conv) {
                 for (conv2 in converters) {
                   tmp = conv2.split(" ");
-                  if (tmp[1] === current) {
+                  if (tmp[1] === current2) {
                     conv = converters[prev2 + " " + tmp[0]] || converters["* " + tmp[0]];
                     if (conv) {
                       if (conv === true) {
                         conv = converters[conv2];
                       } else if (converters[conv2] !== true) {
-                        current = tmp[0];
+                        current2 = tmp[0];
                         dataTypes.unshift(tmp[1]);
                       }
                       break;
@@ -91389,7 +91267,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                   } catch (e) {
                     return {
                       state: "parsererror",
-                      error: conv ? e : "No conversion from " + prev2 + " to " + current
+                      error: conv ? e : "No conversion from " + prev2 + " to " + current2
                     };
                   }
                 }
@@ -96231,7 +96109,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   function hashKey(queryKey) {
     return JSON.stringify(
       queryKey,
-      (_2, val) => isPlainObject(val) ? Object.keys(val).sort().reduce((result, key) => {
+      (_2, val) => isPlainObject$1(val) ? Object.keys(val).sort().reduce((result, key) => {
         result[key] = val[key];
         return result;
       }, {}) : val
@@ -96254,7 +96132,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return a;
     }
     const array = isPlainArray(a) && isPlainArray(b);
-    if (array || isPlainObject(a) && isPlainObject(b)) {
+    if (array || isPlainObject$1(a) && isPlainObject$1(b)) {
       const aItems = array ? a : Object.keys(a);
       const aSize = aItems.length;
       const bItems = array ? b : Object.keys(b);
@@ -96280,7 +96158,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   function isPlainArray(value) {
     return Array.isArray(value) && value.length === Object.keys(value).length;
   }
-  function isPlainObject(o) {
+  function isPlainObject$1(o) {
     if (!hasObjectPrototype(o)) {
       return false;
     }
@@ -97815,9 +97693,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$e = MoreHoriz.default = void 0;
   var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
   var _jsxRuntime$e = jsxRuntimeExports;
-  default_1$e = MoreHoriz.default = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
-    d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2m-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2"
+  var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
+    d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
   }), "MoreHoriz");
+  default_1$e = MoreHoriz.default = _default$e;
   function API_POST(url = "", data = {}) {
     if (!url) {
       return Promise.reject("You need to specify an URL in for API_POST to run.");
@@ -98148,7 +98027,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const ProfileSettingsPage = ({ formData }) => {
     const [state, setState] = reactExports.useState(formData);
-    const [errors, setErrors] = reactExports.useState({});
+    const [errors2, setErrors] = reactExports.useState({});
     const [showSnackbar, setShowSnackbar] = reactExports.useState(false);
     function onFormSubmit() {
       const formData2 = {};
@@ -98159,8 +98038,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       setShowSnackbar(false);
     }
     const inputFields = state.map((field, idx) => {
-      const hasError = errors[field.name];
-      const errorText = hasError && errors[field.name][0];
+      const hasError = errors2[field.name];
+      const errorText = hasError && errors2[field.name][0];
       switch (field.type) {
         case "text":
           return /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { mb: 4 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(FormControl$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -98176,7 +98055,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               onChange: (e) => {
                 const newFieldsState = [...state];
                 newFieldsState[idx].value = e.target.value;
-                const newErrors = { ...errors };
+                const newErrors = { ...errors2 };
                 delete newErrors[field.name];
                 setErrors(newErrors);
                 setState(newFieldsState);
@@ -98195,7 +98074,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 onChange: (e) => {
                   const newFieldsState = [...state];
                   newFieldsState[idx].value = e.target.value;
-                  const newErrors = { ...errors };
+                  const newErrors = { ...errors2 };
                   delete newErrors[field.name];
                   setErrors(newErrors);
                   setState(newFieldsState);
@@ -98225,7 +98104,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           {
             variant: "contained",
             onClick: onFormSubmit,
-            disabled: showSnackbar || Object.keys(errors).length > 0,
+            disabled: showSnackbar || Object.keys(errors2).length > 0,
             children: COURSEFLOW_APP.strings.update_profile
           }
         ) })
@@ -99712,9 +99591,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$d = Campaign.default = void 0;
   var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
   var _jsxRuntime$d = jsxRuntimeExports;
-  default_1$d = Campaign.default = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
-    d: "M18 11v2h4v-2zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61M20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4M4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34"
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+    d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
   }), "Campaign");
+  default_1$d = Campaign.default = _default$d;
   /*! js-cookie v3.0.5 | MIT */
   function assign(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
@@ -99740,7 +99620,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   };
   function init(converter, defaultAttributes) {
-    function set(name2, value, attributes) {
+    function set2(name2, value, attributes) {
       if (typeof document === "undefined") {
         return;
       }
@@ -99787,10 +99667,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return Object.create(
       {
-        set,
+        set: set2,
         get,
         remove: function(name2, attributes) {
-          set(
+          set2(
             name2,
             "",
             assign({}, attributes, {
@@ -99861,9 +99741,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$c = Close.default = void 0;
   var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
   var _jsxRuntime$c = jsxRuntimeExports;
-  default_1$c = Close.default = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
     d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
+  default_1$c = Close.default = _default$c;
   const defaultState = {
     type: null
   };
@@ -101287,7 +101168,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       parent = null;
     }
     var domNodes = [];
-    var current;
+    var current2;
     var index = 0;
     var nodesLength = nodes.length;
     for (; index < nodesLength; index++) {
@@ -101295,37 +101176,37 @@ Please use another name.` : formatMuiErrorMessage(18));
       switch (node2.nodeType) {
         case 1: {
           var tagName = formatTagName(node2.nodeName);
-          current = new domhandler_1.Element(tagName, formatAttributes(node2.attributes));
-          current.children = formatDOM(
+          current2 = new domhandler_1.Element(tagName, formatAttributes(node2.attributes));
+          current2.children = formatDOM(
             // template children are on content
             tagName === "template" ? node2.content.childNodes : node2.childNodes,
-            current
+            current2
           );
           break;
         }
         case 3:
-          current = new domhandler_1.Text(node2.nodeValue);
+          current2 = new domhandler_1.Text(node2.nodeValue);
           break;
         case 8:
-          current = new domhandler_1.Comment(node2.nodeValue);
+          current2 = new domhandler_1.Comment(node2.nodeValue);
           break;
         default:
           continue;
       }
       var prev2 = domNodes[index - 1] || null;
       if (prev2) {
-        prev2.next = current;
+        prev2.next = current2;
       }
-      current.parent = parent;
-      current.prev = prev2;
-      current.next = null;
-      domNodes.push(current);
+      current2.parent = parent;
+      current2.prev = prev2;
+      current2.next = null;
+      domNodes.push(current2);
     }
     if (directive) {
-      current = new domhandler_1.ProcessingInstruction(directive.substring(0, directive.indexOf(" ")).toLowerCase(), directive);
-      current.next = domNodes[0] || null;
-      current.parent = parent;
-      domNodes.unshift(current);
+      current2 = new domhandler_1.ProcessingInstruction(directive.substring(0, directive.indexOf(" ")).toLowerCase(), directive);
+      current2.next = domNodes[0] || null;
+      current2.parent = parent;
+      domNodes.unshift(current2);
       if (domNodes[1]) {
         domNodes[1].prev = domNodes[0];
       }
@@ -102773,9 +102654,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$b = AccountCircle.default = void 0;
   var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
   var _jsxRuntime$b = jsxRuntimeExports;
-  default_1$b = AccountCircle.default = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6m0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20"
+  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
   }), "AccountCircle");
+  default_1$b = AccountCircle.default = _default$b;
   var Logout = {};
   var _interopRequireDefault$a = interopRequireDefaultExports;
   Object.defineProperty(Logout, "__esModule", {
@@ -102784,9 +102666,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$a = Logout.default = void 0;
   var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
   var _jsxRuntime$a = jsxRuntimeExports;
-  default_1$a = Logout.default = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
-    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4z"
+  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
   }), "Logout");
+  default_1$a = Logout.default = _default$a;
   var Notifications = {};
   var _interopRequireDefault$9 = interopRequireDefaultExports;
   Object.defineProperty(Notifications, "__esModule", {
@@ -102795,9 +102678,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$9 = Notifications.default = void 0;
   var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
   var _jsxRuntime$9 = jsxRuntimeExports;
-  default_1$9 = Notifications.default = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2m6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1z"
+  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
   }), "Notifications");
+  default_1$9 = Notifications.default = _default$9;
   var AddCircle = {};
   var _interopRequireDefault$8 = interopRequireDefaultExports;
   Object.defineProperty(AddCircle, "__esModule", {
@@ -102806,9 +102690,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$8 = AddCircle.default = void 0;
   var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
   var _jsxRuntime$8 = jsxRuntimeExports;
-  default_1$8 = AddCircle.default = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m5 11h-4v4h-2v-4H7v-2h4V7h2v4h4z"
+  var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
   }), "AddCircle");
+  default_1$8 = AddCircle.default = _default$8;
   function CreateProgramDialog() {
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROGRAM);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
@@ -102840,9 +102725,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$7 = ExpandMore.default = void 0;
   var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
   var _jsxRuntime$7 = jsxRuntimeExports;
-  default_1$7 = ExpandMore.default = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+  var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
     d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
   }), "ExpandMore");
+  default_1$7 = ExpandMore.default = _default$7;
   var Delete = {};
   var _interopRequireDefault$6 = interopRequireDefaultExports;
   Object.defineProperty(Delete, "__esModule", {
@@ -102851,9 +102737,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$6 = Delete.default = void 0;
   var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
   var _jsxRuntime$6 = jsxRuntimeExports;
-  default_1$6 = Delete.default = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
-    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"
+  var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
   }), "Delete");
+  default_1$6 = Delete.default = _default$6;
   const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
     "&.MuiPaper-root": {
       boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
@@ -102912,18 +102799,18 @@ Please use another name.` : formatMuiErrorMessage(18));
         /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "body2", sx: { mb: 2, color: "text.secondary" }, children: window.gettext(
           "Define categories for types outcomes or streams of nodes for your project."
         ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(StyledForm, { children: objectSets.map((set, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(StyledForm, { children: objectSets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               Select$1,
               {
-                value: set.type,
+                value: set2.type,
                 onChange: (event) => onUpdate({
                   index,
                   newVal: {
                     type: event.target.value,
-                    label: set.label
+                    label: set2.label
                   }
                 }),
                 label: "Type",
@@ -102939,13 +102826,13 @@ Please use another name.` : formatMuiErrorMessage(18));
             TextField$1,
             {
               label: window.gettext("Label"),
-              value: set.label,
+              value: set2.label,
               variant: "standard",
               onChange: (event) => {
                 onUpdate({
                   index,
                   newVal: {
-                    type: set.type,
+                    type: set2.type,
                     label: event.target.value
                   }
                 });
@@ -102966,6 +102853,672 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] })
     ] });
   }
+  var NOTHING = Symbol.for("immer-nothing");
+  var DRAFTABLE = Symbol.for("immer-draftable");
+  var DRAFT_STATE = Symbol.for("immer-state");
+  var errors = process.env.NODE_ENV !== "production" ? [
+    // All error codes, starting by 0:
+    function(plugin) {
+      return `The plugin for '${plugin}' has not been loaded into Immer. To enable the plugin, import and call \`enable${plugin}()\` when initializing your application.`;
+    },
+    function(thing) {
+      return `produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'. Got '${thing}'`;
+    },
+    "This object has been frozen and should not be mutated",
+    function(data) {
+      return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + data;
+    },
+    "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.",
+    "Immer forbids circular references",
+    "The first or second argument to `produce` must be a function",
+    "The third argument to `produce` must be a function or undefined",
+    "First argument to `createDraft` must be a plain object, an array, or an immerable object",
+    "First argument to `finishDraft` must be a draft returned by `createDraft`",
+    function(thing) {
+      return `'current' expects a draft, got: ${thing}`;
+    },
+    "Object.defineProperty() cannot be used on an Immer draft",
+    "Object.setPrototypeOf() cannot be used on an Immer draft",
+    "Immer only supports deleting array indices",
+    "Immer only supports setting array indices and the 'length' property",
+    function(thing) {
+      return `'original' expects a draft, got: ${thing}`;
+    }
+    // Note: if more errors are added, the errorOffset in Patches.ts should be increased
+    // See Patches.ts for additional errors
+  ] : [];
+  function die(error, ...args) {
+    if (process.env.NODE_ENV !== "production") {
+      const e = errors[error];
+      const msg = typeof e === "function" ? e.apply(null, args) : e;
+      throw new Error(`[Immer] ${msg}`);
+    }
+    throw new Error(
+      `[Immer] minified error nr: ${error}. Full error at: https://bit.ly/3cXEKWf`
+    );
+  }
+  var getPrototypeOf = Object.getPrototypeOf;
+  function isDraft(value) {
+    return !!value && !!value[DRAFT_STATE];
+  }
+  function isDraftable(value) {
+    var _a2;
+    if (!value)
+      return false;
+    return isPlainObject(value) || Array.isArray(value) || !!value[DRAFTABLE] || !!((_a2 = value.constructor) == null ? void 0 : _a2[DRAFTABLE]) || isMap(value) || isSet(value);
+  }
+  var objectCtorString = Object.prototype.constructor.toString();
+  function isPlainObject(value) {
+    if (!value || typeof value !== "object")
+      return false;
+    const proto = getPrototypeOf(value);
+    if (proto === null) {
+      return true;
+    }
+    const Ctor = Object.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+    if (Ctor === Object)
+      return true;
+    return typeof Ctor == "function" && Function.toString.call(Ctor) === objectCtorString;
+  }
+  function each(obj, iter) {
+    if (getArchtype(obj) === 0) {
+      Object.entries(obj).forEach(([key, value]) => {
+        iter(key, value, obj);
+      });
+    } else {
+      obj.forEach((entry, index) => iter(index, entry, obj));
+    }
+  }
+  function getArchtype(thing) {
+    const state = thing[DRAFT_STATE];
+    return state ? state.type_ : Array.isArray(thing) ? 1 : isMap(thing) ? 2 : isSet(thing) ? 3 : 0;
+  }
+  function has(thing, prop) {
+    return getArchtype(thing) === 2 ? thing.has(prop) : Object.prototype.hasOwnProperty.call(thing, prop);
+  }
+  function set(thing, propOrOldValue, value) {
+    const t = getArchtype(thing);
+    if (t === 2)
+      thing.set(propOrOldValue, value);
+    else if (t === 3) {
+      thing.add(value);
+    } else
+      thing[propOrOldValue] = value;
+  }
+  function is(x, y) {
+    if (x === y) {
+      return x !== 0 || 1 / x === 1 / y;
+    } else {
+      return x !== x && y !== y;
+    }
+  }
+  function isMap(target) {
+    return target instanceof Map;
+  }
+  function isSet(target) {
+    return target instanceof Set;
+  }
+  function latest(state) {
+    return state.copy_ || state.base_;
+  }
+  function shallowCopy(base, strict) {
+    if (isMap(base)) {
+      return new Map(base);
+    }
+    if (isSet(base)) {
+      return new Set(base);
+    }
+    if (Array.isArray(base))
+      return Array.prototype.slice.call(base);
+    if (!strict && isPlainObject(base)) {
+      if (!getPrototypeOf(base)) {
+        const obj = /* @__PURE__ */ Object.create(null);
+        return Object.assign(obj, base);
+      }
+      return { ...base };
+    }
+    const descriptors = Object.getOwnPropertyDescriptors(base);
+    delete descriptors[DRAFT_STATE];
+    let keys = Reflect.ownKeys(descriptors);
+    for (let i2 = 0; i2 < keys.length; i2++) {
+      const key = keys[i2];
+      const desc = descriptors[key];
+      if (desc.writable === false) {
+        desc.writable = true;
+        desc.configurable = true;
+      }
+      if (desc.get || desc.set)
+        descriptors[key] = {
+          configurable: true,
+          writable: true,
+          // could live with !!desc.set as well here...
+          enumerable: desc.enumerable,
+          value: base[key]
+        };
+    }
+    return Object.create(getPrototypeOf(base), descriptors);
+  }
+  function freeze(obj, deep = false) {
+    if (isFrozen(obj) || isDraft(obj) || !isDraftable(obj))
+      return obj;
+    if (getArchtype(obj) > 1) {
+      obj.set = obj.add = obj.clear = obj.delete = dontMutateFrozenCollections;
+    }
+    Object.freeze(obj);
+    if (deep)
+      each(obj, (_key, value) => freeze(value, true));
+    return obj;
+  }
+  function dontMutateFrozenCollections() {
+    die(2);
+  }
+  function isFrozen(obj) {
+    return Object.isFrozen(obj);
+  }
+  var plugins = {};
+  function getPlugin(pluginKey) {
+    const plugin = plugins[pluginKey];
+    if (!plugin) {
+      die(0, pluginKey);
+    }
+    return plugin;
+  }
+  var currentScope;
+  function getCurrentScope() {
+    return currentScope;
+  }
+  function createScope(parent_, immer_) {
+    return {
+      drafts_: [],
+      parent_,
+      immer_,
+      // Whenever the modified draft contains a draft from another scope, we
+      // need to prevent auto-freezing so the unowned draft can be finalized.
+      canAutoFreeze_: true,
+      unfinalizedDrafts_: 0
+    };
+  }
+  function usePatchesInScope(scope, patchListener) {
+    if (patchListener) {
+      getPlugin("Patches");
+      scope.patches_ = [];
+      scope.inversePatches_ = [];
+      scope.patchListener_ = patchListener;
+    }
+  }
+  function revokeScope(scope) {
+    leaveScope(scope);
+    scope.drafts_.forEach(revokeDraft);
+    scope.drafts_ = null;
+  }
+  function leaveScope(scope) {
+    if (scope === currentScope) {
+      currentScope = scope.parent_;
+    }
+  }
+  function enterScope(immer2) {
+    return currentScope = createScope(currentScope, immer2);
+  }
+  function revokeDraft(draft) {
+    const state = draft[DRAFT_STATE];
+    if (state.type_ === 0 || state.type_ === 1)
+      state.revoke_();
+    else
+      state.revoked_ = true;
+  }
+  function processResult(result, scope) {
+    scope.unfinalizedDrafts_ = scope.drafts_.length;
+    const baseDraft = scope.drafts_[0];
+    const isReplaced = result !== void 0 && result !== baseDraft;
+    if (isReplaced) {
+      if (baseDraft[DRAFT_STATE].modified_) {
+        revokeScope(scope);
+        die(4);
+      }
+      if (isDraftable(result)) {
+        result = finalize(scope, result);
+        if (!scope.parent_)
+          maybeFreeze(scope, result);
+      }
+      if (scope.patches_) {
+        getPlugin("Patches").generateReplacementPatches_(
+          baseDraft[DRAFT_STATE].base_,
+          result,
+          scope.patches_,
+          scope.inversePatches_
+        );
+      }
+    } else {
+      result = finalize(scope, baseDraft, []);
+    }
+    revokeScope(scope);
+    if (scope.patches_) {
+      scope.patchListener_(scope.patches_, scope.inversePatches_);
+    }
+    return result !== NOTHING ? result : void 0;
+  }
+  function finalize(rootScope, value, path) {
+    if (isFrozen(value))
+      return value;
+    const state = value[DRAFT_STATE];
+    if (!state) {
+      each(
+        value,
+        (key, childValue) => finalizeProperty(rootScope, state, value, key, childValue, path)
+      );
+      return value;
+    }
+    if (state.scope_ !== rootScope)
+      return value;
+    if (!state.modified_) {
+      maybeFreeze(rootScope, state.base_, true);
+      return state.base_;
+    }
+    if (!state.finalized_) {
+      state.finalized_ = true;
+      state.scope_.unfinalizedDrafts_--;
+      const result = state.copy_;
+      let resultEach = result;
+      let isSet2 = false;
+      if (state.type_ === 3) {
+        resultEach = new Set(result);
+        result.clear();
+        isSet2 = true;
+      }
+      each(
+        resultEach,
+        (key, childValue) => finalizeProperty(rootScope, state, result, key, childValue, path, isSet2)
+      );
+      maybeFreeze(rootScope, result, false);
+      if (path && rootScope.patches_) {
+        getPlugin("Patches").generatePatches_(
+          state,
+          path,
+          rootScope.patches_,
+          rootScope.inversePatches_
+        );
+      }
+    }
+    return state.copy_;
+  }
+  function finalizeProperty(rootScope, parentState, targetObject, prop, childValue, rootPath, targetIsSet) {
+    if (process.env.NODE_ENV !== "production" && childValue === targetObject)
+      die(5);
+    if (isDraft(childValue)) {
+      const path = rootPath && parentState && parentState.type_ !== 3 && // Set objects are atomic since they have no keys.
+      !has(parentState.assigned_, prop) ? rootPath.concat(prop) : void 0;
+      const res = finalize(rootScope, childValue, path);
+      set(targetObject, prop, res);
+      if (isDraft(res)) {
+        rootScope.canAutoFreeze_ = false;
+      } else
+        return;
+    } else if (targetIsSet) {
+      targetObject.add(childValue);
+    }
+    if (isDraftable(childValue) && !isFrozen(childValue)) {
+      if (!rootScope.immer_.autoFreeze_ && rootScope.unfinalizedDrafts_ < 1) {
+        return;
+      }
+      finalize(rootScope, childValue);
+      if (!parentState || !parentState.scope_.parent_)
+        maybeFreeze(rootScope, childValue);
+    }
+  }
+  function maybeFreeze(scope, value, deep = false) {
+    if (!scope.parent_ && scope.immer_.autoFreeze_ && scope.canAutoFreeze_) {
+      freeze(value, deep);
+    }
+  }
+  function createProxyProxy(base, parent) {
+    const isArray2 = Array.isArray(base);
+    const state = {
+      type_: isArray2 ? 1 : 0,
+      // Track which produce call this is associated with.
+      scope_: parent ? parent.scope_ : getCurrentScope(),
+      // True for both shallow and deep changes.
+      modified_: false,
+      // Used during finalization.
+      finalized_: false,
+      // Track which properties have been assigned (true) or deleted (false).
+      assigned_: {},
+      // The parent draft state.
+      parent_: parent,
+      // The base state.
+      base_: base,
+      // The base proxy.
+      draft_: null,
+      // set below
+      // The base copy with any updated values.
+      copy_: null,
+      // Called by the `produce` function.
+      revoke_: null,
+      isManual_: false
+    };
+    let target = state;
+    let traps = objectTraps;
+    if (isArray2) {
+      target = [state];
+      traps = arrayTraps;
+    }
+    const { revoke, proxy } = Proxy.revocable(target, traps);
+    state.draft_ = proxy;
+    state.revoke_ = revoke;
+    return proxy;
+  }
+  var objectTraps = {
+    get(state, prop) {
+      if (prop === DRAFT_STATE)
+        return state;
+      const source = latest(state);
+      if (!has(source, prop)) {
+        return readPropFromProto(state, source, prop);
+      }
+      const value = source[prop];
+      if (state.finalized_ || !isDraftable(value)) {
+        return value;
+      }
+      if (value === peek(state.base_, prop)) {
+        prepareCopy(state);
+        return state.copy_[prop] = createProxy(value, state);
+      }
+      return value;
+    },
+    has(state, prop) {
+      return prop in latest(state);
+    },
+    ownKeys(state) {
+      return Reflect.ownKeys(latest(state));
+    },
+    set(state, prop, value) {
+      const desc = getDescriptorFromProto(latest(state), prop);
+      if (desc == null ? void 0 : desc.set) {
+        desc.set.call(state.draft_, value);
+        return true;
+      }
+      if (!state.modified_) {
+        const current2 = peek(latest(state), prop);
+        const currentState = current2 == null ? void 0 : current2[DRAFT_STATE];
+        if (currentState && currentState.base_ === value) {
+          state.copy_[prop] = value;
+          state.assigned_[prop] = false;
+          return true;
+        }
+        if (is(value, current2) && (value !== void 0 || has(state.base_, prop)))
+          return true;
+        prepareCopy(state);
+        markChanged(state);
+      }
+      if (state.copy_[prop] === value && // special case: handle new props with value 'undefined'
+      (value !== void 0 || prop in state.copy_) || // special case: NaN
+      Number.isNaN(value) && Number.isNaN(state.copy_[prop]))
+        return true;
+      state.copy_[prop] = value;
+      state.assigned_[prop] = true;
+      return true;
+    },
+    deleteProperty(state, prop) {
+      if (peek(state.base_, prop) !== void 0 || prop in state.base_) {
+        state.assigned_[prop] = false;
+        prepareCopy(state);
+        markChanged(state);
+      } else {
+        delete state.assigned_[prop];
+      }
+      if (state.copy_) {
+        delete state.copy_[prop];
+      }
+      return true;
+    },
+    // Note: We never coerce `desc.value` into an Immer draft, because we can't make
+    // the same guarantee in ES5 mode.
+    getOwnPropertyDescriptor(state, prop) {
+      const owner = latest(state);
+      const desc = Reflect.getOwnPropertyDescriptor(owner, prop);
+      if (!desc)
+        return desc;
+      return {
+        writable: true,
+        configurable: state.type_ !== 1 || prop !== "length",
+        enumerable: desc.enumerable,
+        value: owner[prop]
+      };
+    },
+    defineProperty() {
+      die(11);
+    },
+    getPrototypeOf(state) {
+      return getPrototypeOf(state.base_);
+    },
+    setPrototypeOf() {
+      die(12);
+    }
+  };
+  var arrayTraps = {};
+  each(objectTraps, (key, fn) => {
+    arrayTraps[key] = function() {
+      arguments[0] = arguments[0][0];
+      return fn.apply(this, arguments);
+    };
+  });
+  arrayTraps.deleteProperty = function(state, prop) {
+    if (process.env.NODE_ENV !== "production" && isNaN(parseInt(prop)))
+      die(13);
+    return arrayTraps.set.call(this, state, prop, void 0);
+  };
+  arrayTraps.set = function(state, prop, value) {
+    if (process.env.NODE_ENV !== "production" && prop !== "length" && isNaN(parseInt(prop)))
+      die(14);
+    return objectTraps.set.call(this, state[0], prop, value, state[0]);
+  };
+  function peek(draft, prop) {
+    const state = draft[DRAFT_STATE];
+    const source = state ? latest(state) : draft;
+    return source[prop];
+  }
+  function readPropFromProto(state, source, prop) {
+    var _a2;
+    const desc = getDescriptorFromProto(source, prop);
+    return desc ? `value` in desc ? desc.value : (
+      // This is a very special case, if the prop is a getter defined by the
+      // prototype, we should invoke it with the draft as context!
+      (_a2 = desc.get) == null ? void 0 : _a2.call(state.draft_)
+    ) : void 0;
+  }
+  function getDescriptorFromProto(source, prop) {
+    if (!(prop in source))
+      return void 0;
+    let proto = getPrototypeOf(source);
+    while (proto) {
+      const desc = Object.getOwnPropertyDescriptor(proto, prop);
+      if (desc)
+        return desc;
+      proto = getPrototypeOf(proto);
+    }
+    return void 0;
+  }
+  function markChanged(state) {
+    if (!state.modified_) {
+      state.modified_ = true;
+      if (state.parent_) {
+        markChanged(state.parent_);
+      }
+    }
+  }
+  function prepareCopy(state) {
+    if (!state.copy_) {
+      state.copy_ = shallowCopy(
+        state.base_,
+        state.scope_.immer_.useStrictShallowCopy_
+      );
+    }
+  }
+  var Immer2 = class {
+    constructor(config2) {
+      this.autoFreeze_ = true;
+      this.useStrictShallowCopy_ = false;
+      this.produce = (base, recipe, patchListener) => {
+        if (typeof base === "function" && typeof recipe !== "function") {
+          const defaultBase = recipe;
+          recipe = base;
+          const self2 = this;
+          return function curriedProduce(base2 = defaultBase, ...args) {
+            return self2.produce(base2, (draft) => recipe.call(this, draft, ...args));
+          };
+        }
+        if (typeof recipe !== "function")
+          die(6);
+        if (patchListener !== void 0 && typeof patchListener !== "function")
+          die(7);
+        let result;
+        if (isDraftable(base)) {
+          const scope = enterScope(this);
+          const proxy = createProxy(base, void 0);
+          let hasError = true;
+          try {
+            result = recipe(proxy);
+            hasError = false;
+          } finally {
+            if (hasError)
+              revokeScope(scope);
+            else
+              leaveScope(scope);
+          }
+          usePatchesInScope(scope, patchListener);
+          return processResult(result, scope);
+        } else if (!base || typeof base !== "object") {
+          result = recipe(base);
+          if (result === void 0)
+            result = base;
+          if (result === NOTHING)
+            result = void 0;
+          if (this.autoFreeze_)
+            freeze(result, true);
+          if (patchListener) {
+            const p = [];
+            const ip = [];
+            getPlugin("Patches").generateReplacementPatches_(base, result, p, ip);
+            patchListener(p, ip);
+          }
+          return result;
+        } else
+          die(1, base);
+      };
+      this.produceWithPatches = (base, recipe) => {
+        if (typeof base === "function") {
+          return (state, ...args) => this.produceWithPatches(state, (draft) => base(draft, ...args));
+        }
+        let patches, inversePatches;
+        const result = this.produce(base, recipe, (p, ip) => {
+          patches = p;
+          inversePatches = ip;
+        });
+        return [result, patches, inversePatches];
+      };
+      if (typeof (config2 == null ? void 0 : config2.autoFreeze) === "boolean")
+        this.setAutoFreeze(config2.autoFreeze);
+      if (typeof (config2 == null ? void 0 : config2.useStrictShallowCopy) === "boolean")
+        this.setUseStrictShallowCopy(config2.useStrictShallowCopy);
+    }
+    createDraft(base) {
+      if (!isDraftable(base))
+        die(8);
+      if (isDraft(base))
+        base = current(base);
+      const scope = enterScope(this);
+      const proxy = createProxy(base, void 0);
+      proxy[DRAFT_STATE].isManual_ = true;
+      leaveScope(scope);
+      return proxy;
+    }
+    finishDraft(draft, patchListener) {
+      const state = draft && draft[DRAFT_STATE];
+      if (!state || !state.isManual_)
+        die(9);
+      const { scope_: scope } = state;
+      usePatchesInScope(scope, patchListener);
+      return processResult(void 0, scope);
+    }
+    /**
+     * Pass true to automatically freeze all copies created by Immer.
+     *
+     * By default, auto-freezing is enabled.
+     */
+    setAutoFreeze(value) {
+      this.autoFreeze_ = value;
+    }
+    /**
+     * Pass true to enable strict shallow copy.
+     *
+     * By default, immer does not copy the object descriptors such as getter, setter and non-enumrable properties.
+     */
+    setUseStrictShallowCopy(value) {
+      this.useStrictShallowCopy_ = value;
+    }
+    applyPatches(base, patches) {
+      let i2;
+      for (i2 = patches.length - 1; i2 >= 0; i2--) {
+        const patch = patches[i2];
+        if (patch.path.length === 0 && patch.op === "replace") {
+          base = patch.value;
+          break;
+        }
+      }
+      if (i2 > -1) {
+        patches = patches.slice(i2 + 1);
+      }
+      const applyPatchesImpl = getPlugin("Patches").applyPatches_;
+      if (isDraft(base)) {
+        return applyPatchesImpl(base, patches);
+      }
+      return this.produce(
+        base,
+        (draft) => applyPatchesImpl(draft, patches)
+      );
+    }
+  };
+  function createProxy(value, parent) {
+    const draft = isMap(value) ? getPlugin("MapSet").proxyMap_(value, parent) : isSet(value) ? getPlugin("MapSet").proxySet_(value, parent) : createProxyProxy(value, parent);
+    const scope = parent ? parent.scope_ : getCurrentScope();
+    scope.drafts_.push(draft);
+    return draft;
+  }
+  function current(value) {
+    if (!isDraft(value))
+      die(10, value);
+    return currentImpl(value);
+  }
+  function currentImpl(value) {
+    if (!isDraftable(value) || isFrozen(value))
+      return value;
+    const state = value[DRAFT_STATE];
+    let copy2;
+    if (state) {
+      if (!state.modified_)
+        return state.base_;
+      state.finalized_ = true;
+      copy2 = shallowCopy(value, state.scope_.immer_.useStrictShallowCopy_);
+    } else {
+      copy2 = shallowCopy(value, true);
+    }
+    each(copy2, (key, childValue) => {
+      set(copy2, key, currentImpl(childValue));
+    });
+    if (state) {
+      state.finalized_ = false;
+    }
+    return copy2;
+  }
+  var immer = new Immer2();
+  var produce = immer.produce;
+  immer.produceWithPatches.bind(
+    immer
+  );
+  immer.setAutoFreeze.bind(immer);
+  immer.setUseStrictShallowCopy.bind(immer);
+  immer.applyPatches.bind(immer);
+  immer.createDraft.bind(immer);
+  immer.finishDraft.bind(immer);
   function CreateProjectDialog({
     showNoProjectsAlert,
     formFields
@@ -102975,10 +103528,10 @@ Please use another name.` : formatMuiErrorMessage(18));
       objectSets: [],
       objectSetsExpanded: false
     });
-    const [errors, setErrors] = reactExports.useState({});
+    const [errors2, setErrors] = reactExports.useState({});
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT);
     function onSubmit() {
-      if (Object.keys(errors).length) {
+      if (Object.keys(errors2).length) {
         return false;
       }
       API_POST(
@@ -103001,45 +103554,45 @@ Please use another name.` : formatMuiErrorMessage(18));
       onClose();
     }
     function onInputChange(e, field) {
-      if (errors[field.name]) {
-        const newErrors = { ...errors };
-        delete newErrors[field.name];
-        setErrors(newErrors);
+      if (errors2[field.name]) {
+        setErrors(
+          produce((draft) => {
+            delete draft[field.name];
+          })
+        );
       }
-      setState({
-        ...state,
-        fields: {
-          ...state.fields,
-          [e.target.name]: e.target.value
-        }
-      });
+      setState(
+        produce((draft) => {
+          const { fields } = draft;
+          fields[e.target.name] = e.target.value;
+        })
+      );
     }
     function onObjectSetUpdate({ index, newVal }) {
-      const sets = [...state.objectSets];
-      if (newVal) {
-        sets.splice(index, 1, newVal);
-      } else {
-        sets.splice(index, 1);
-      }
-      setState({
-        ...state,
-        objectSets: sets
-      });
+      setState(
+        produce((draft) => {
+          const sets = draft.objectSets;
+          if (newVal) {
+            sets.splice(index, 1, newVal);
+          } else {
+            sets.splice(index, 1);
+          }
+        })
+      );
     }
     function onObjectSetAddNew() {
-      setState({
-        ...state,
-        objectSets: [
-          ...state.objectSets,
-          { type: "", label: "" }
-        ]
-      });
+      setState(
+        produce((draft) => {
+          draft.objectSets.push({ type: "", label: "" });
+        })
+      );
     }
     function onObjectSetsClick() {
-      setState({
-        ...state,
-        objectSetsExpanded: !state.objectSetsExpanded
-      });
+      setState(
+        produce((draft) => {
+          draft.objectSetsExpanded = !draft.objectSetsExpanded;
+        })
+      );
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Create project") }),
@@ -103058,8 +103611,8 @@ Please use another name.` : formatMuiErrorMessage(18));
         /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
           formFields.map((field, index) => {
             if (field.type === "text") {
-              const hasError = !!errors[field.name];
-              const errorText = hasError && errors[field.name][0];
+              const hasError = !!errors2[field.name];
+              const errorText = hasError && errors2[field.name][0];
               return /* @__PURE__ */ jsxRuntimeExports.jsx(
                 TextField$1,
                 {
@@ -103095,7 +103648,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           {
             variant: "contained",
             onClick: onSubmit,
-            disabled: !!Object.keys(errors).length,
+            disabled: !!Object.keys(errors2).length,
             children: window.gettext("Create project")
           }
         )
@@ -103400,9 +103953,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$5 = Home.default = void 0;
   var _createSvgIcon$5 = _interopRequireDefault$5(requireCreateSvgIcon());
   var _jsxRuntime$5 = jsxRuntimeExports;
-  default_1$5 = Home.default = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
+  var _default$5 = (0, _createSvgIcon$5.default)(/* @__PURE__ */ (0, _jsxRuntime$5.jsx)("path", {
     d: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
   }), "Home");
+  default_1$5 = Home.default = _default$5;
   var FolderCopy = {};
   var _interopRequireDefault$4 = interopRequireDefaultExports;
   Object.defineProperty(FolderCopy, "__esModule", {
@@ -103411,11 +103965,12 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$4 = FolderCopy.default = void 0;
   var _createSvgIcon$4 = _interopRequireDefault$4(requireCreateSvgIcon());
   var _jsxRuntime$4 = jsxRuntimeExports;
-  default_1$4 = FolderCopy.default = (0, _createSvgIcon$4.default)([/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
-    d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3z"
+  var _default$4 = (0, _createSvgIcon$4.default)([/* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
+    d: "M3 6H1v13c0 1.1.9 2 2 2h17v-2H3V6z"
   }, "0"), /* @__PURE__ */ (0, _jsxRuntime$4.jsx)("path", {
-    d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2"
+    d: "M21 4h-7l-2-2H7c-1.1 0-1.99.9-1.99 2L5 15c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"
   }, "1")], "FolderCopy");
+  default_1$4 = FolderCopy.default = _default$4;
   var Search = {};
   var _interopRequireDefault$3 = interopRequireDefaultExports;
   Object.defineProperty(Search, "__esModule", {
@@ -103424,9 +103979,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$3 = Search.default = void 0;
   var _createSvgIcon$3 = _interopRequireDefault$3(requireCreateSvgIcon());
   var _jsxRuntime$3 = jsxRuntimeExports;
-  default_1$3 = Search.default = (0, _createSvgIcon$3.default)(/* @__PURE__ */ (0, _jsxRuntime$3.jsx)("path", {
-    d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14"
+  var _default$3 = (0, _createSvgIcon$3.default)(/* @__PURE__ */ (0, _jsxRuntime$3.jsx)("path", {
+    d: "M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
   }), "Search");
+  default_1$3 = Search.default = _default$3;
   var HelpRounded = {};
   var _interopRequireDefault$2 = interopRequireDefaultExports;
   Object.defineProperty(HelpRounded, "__esModule", {
@@ -103435,9 +103991,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$2 = HelpRounded.default = void 0;
   var _createSvgIcon$2 = _interopRequireDefault$2(requireCreateSvgIcon());
   var _jsxRuntime$2 = jsxRuntimeExports;
-  default_1$2 = HelpRounded.default = (0, _createSvgIcon$2.default)(/* @__PURE__ */ (0, _jsxRuntime$2.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m1 17h-2v-2h2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4"
+  var _default$2 = (0, _createSvgIcon$2.default)(/* @__PURE__ */ (0, _jsxRuntime$2.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92c-.5.51-.86.97-1.04 1.69-.08.32-.13.68-.13 1.14h-2v-.5c0-.46.08-.9.22-1.31.2-.58.53-1.1.95-1.52l1.24-1.26c.46-.44.68-1.1.55-1.8-.13-.72-.69-1.33-1.39-1.53-1.11-.31-2.14.32-2.47 1.27-.12.37-.43.65-.82.65h-.3C8.4 9 8 8.44 8.16 7.88c.43-1.47 1.68-2.59 3.23-2.83 1.52-.24 2.97.55 3.87 1.8 1.18 1.63.83 3.38-.19 4.4z"
   }), "HelpRounded");
+  default_1$2 = HelpRounded.default = _default$2;
   var ArrowBack = {};
   var _interopRequireDefault$1 = interopRequireDefaultExports;
   Object.defineProperty(ArrowBack, "__esModule", {
@@ -103446,9 +104003,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1$1 = ArrowBack.default = void 0;
   var _createSvgIcon$1 = _interopRequireDefault$1(requireCreateSvgIcon());
   var _jsxRuntime$1 = jsxRuntimeExports;
-  default_1$1 = ArrowBack.default = (0, _createSvgIcon$1.default)(/* @__PURE__ */ (0, _jsxRuntime$1.jsx)("path", {
-    d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20z"
+  var _default$1 = (0, _createSvgIcon$1.default)(/* @__PURE__ */ (0, _jsxRuntime$1.jsx)("path", {
+    d: "M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
   }), "ArrowBack");
+  default_1$1 = ArrowBack.default = _default$1;
   var Menu = {};
   var _interopRequireDefault = interopRequireDefaultExports;
   Object.defineProperty(Menu, "__esModule", {
@@ -103457,9 +104015,10 @@ Please use another name.` : formatMuiErrorMessage(18));
   var default_1 = Menu.default = void 0;
   var _createSvgIcon = _interopRequireDefault(requireCreateSvgIcon());
   var _jsxRuntime = jsxRuntimeExports;
-  default_1 = Menu.default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
-    d: "M3 18h18v-2H3zm0-5h18v-2H3zm0-7v2h18V6z"
+  var _default = (0, _createSvgIcon.default)(/* @__PURE__ */ (0, _jsxRuntime.jsx)("path", {
+    d: "M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"
   }), "Menu");
+  default_1 = Menu.default = _default;
   const Sidebar = ({ isAnonymous, isTeacher, favourites }) => {
     const [collapsed, setCollapsed] = reactExports.useState(
       !!sessionStorage.getItem("collapsed_sidebar")
