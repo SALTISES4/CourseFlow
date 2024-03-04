@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { produce } from 'immer'
 // @local
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
 import { ProjectMenuProps } from '@cfPages/Library/ProjectDetail/types'
@@ -15,7 +16,8 @@ import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
 import { EProject } from '@XMLHTTP/types/entity'
-import { produce } from 'immer'
+import ArchiveProjectModal from '@cfModule/components/common/dialog/ArchiveProject'
+import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 // import $ from 'jquery'
 
 /*******************************************************
@@ -51,6 +53,9 @@ function ProjectMenu({
     openExportDialog: false
   })
 
+  // to be able to show appropriate modals
+  const { dispatch } = useDialog()
+
   const createDiv = useRef<HTMLDivElement>()
 
   // TODO: this is wrapped because it is called by openShareMenu
@@ -79,19 +84,13 @@ function ProjectMenu({
   }, [data.id, createDiv, getUserData])
 
   function deleteProject() {
-    if (
-      window.confirm(
-        window.gettext('Are you sure you want to delete this project?')
+    deleteSelfQuery(data.id, 'project', true, () => {
+      setState(
+        produce((draft) => {
+          draft.data.deleted = true
+        })
       )
-    ) {
-      deleteSelfQuery(data.id, 'project', true, () => {
-        setState(
-          produce((draft) => {
-            draft.data.deleted = true
-          })
-        )
-      })
-    }
+    })
   }
 
   function deleteProjectHard() {
@@ -182,7 +181,10 @@ function ProjectMenu({
   const DeleteProjectButton = () => {
     if (!state.data.deleted) {
       return (
-        <div className="hover-shade" onClick={deleteProject}>
+        <div
+          className="hover-shade"
+          onClick={() => dispatch(DIALOG_TYPE.ARCHIVE_PROJECT)}
+        >
           <div>{window.gettext('Archive project')}</div>
         </div>
       )
@@ -434,6 +436,7 @@ function ProjectMenu({
       <EditDialog />
       <ShareDialog />
       <ExportDialog />
+      <ArchiveProjectModal onSubmit={deleteProject} />
     </div>
   )
 }

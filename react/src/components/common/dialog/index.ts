@@ -6,7 +6,8 @@ export enum DIALOG_TYPE {
   CREATE_PROJECT = 'create_project',
   CREATE_ACTIVITY = 'create_activity',
   CREATE_COURSE = 'create_course',
-  RESET_PASSWORD = 'reset_password'
+  RESET_PASSWORD = 'reset_password',
+  ARCHIVE_PROJECT = 'archive_project'
 }
 
 /**
