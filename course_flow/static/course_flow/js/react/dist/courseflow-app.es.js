@@ -99014,395 +99014,1022 @@ class ProjectEditDialog extends reactExports.Component {
     ] }) });
   }
 }
-class ProjectMenu extends reactExports.Component {
-  constructor(props) {
-    super(props);
-    __publicField(this, "createDiv");
-    __publicField(this, "viewButtons");
-    /*******************************************************
-     * COMPONENTS
-     *******************************************************/
-    /*******************************************************
-     * OVERFLOW LINKS
-     *******************************************************/
-    __publicField(this, "DeleteProjectButton", () => {
-      if (!this.state.data.deleted) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.restoreProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "hover-shade",
-            onClick: this.deleteProjectHard.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") })
-          }
-        )
-      ] });
+var NOTHING = Symbol.for("immer-nothing");
+var DRAFTABLE = Symbol.for("immer-draftable");
+var DRAFT_STATE = Symbol.for("immer-state");
+var errors = process.env.NODE_ENV !== "production" ? [
+  // All error codes, starting by 0:
+  function(plugin) {
+    return `The plugin for '${plugin}' has not been loaded into Immer. To enable the plugin, import and call \`enable${plugin}()\` when initializing your application.`;
+  },
+  function(thing) {
+    return `produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'. Got '${thing}'`;
+  },
+  "This object has been frozen and should not be mutated",
+  function(data) {
+    return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + data;
+  },
+  "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.",
+  "Immer forbids circular references",
+  "The first or second argument to `produce` must be a function",
+  "The third argument to `produce` must be a function or undefined",
+  "First argument to `createDraft` must be a plain object, an array, or an immerable object",
+  "First argument to `finishDraft` must be a draft returned by `createDraft`",
+  function(thing) {
+    return `'current' expects a draft, got: ${thing}`;
+  },
+  "Object.defineProperty() cannot be used on an Immer draft",
+  "Object.setPrototypeOf() cannot be used on an Immer draft",
+  "Immer only supports deleting array indices",
+  "Immer only supports setting array indices and the 'length' property",
+  function(thing) {
+    return `'original' expects a draft, got: ${thing}`;
+  }
+  // Note: if more errors are added, the errorOffset in Patches.ts should be increased
+  // See Patches.ts for additional errors
+] : [];
+function die(error, ...args) {
+  if (process.env.NODE_ENV !== "production") {
+    const e = errors[error];
+    const msg = typeof e === "function" ? e.apply(null, args) : e;
+    throw new Error(`[Immer] ${msg}`);
+  }
+  throw new Error(
+    `[Immer] minified error nr: ${error}. Full error at: https://bit.ly/3cXEKWf`
+  );
+}
+var getPrototypeOf = Object.getPrototypeOf;
+function isDraft(value) {
+  return !!value && !!value[DRAFT_STATE];
+}
+function isDraftable(value) {
+  var _a2;
+  if (!value)
+    return false;
+  return isPlainObject(value) || Array.isArray(value) || !!value[DRAFTABLE] || !!((_a2 = value.constructor) == null ? void 0 : _a2[DRAFTABLE]) || isMap(value) || isSet(value);
+}
+var objectCtorString = Object.prototype.constructor.toString();
+function isPlainObject(value) {
+  if (!value || typeof value !== "object")
+    return false;
+  const proto = getPrototypeOf(value);
+  if (proto === null) {
+    return true;
+  }
+  const Ctor = Object.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+  if (Ctor === Object)
+    return true;
+  return typeof Ctor == "function" && Function.toString.call(Ctor) === objectCtorString;
+}
+function each(obj, iter) {
+  if (getArchtype(obj) === 0) {
+    Object.entries(obj).forEach(([key, value]) => {
+      iter(key, value, obj);
     });
-    __publicField(this, "ExportButton", () => {
-      if (this.props.userId) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            id: "export-button",
-            className: "hover-shade",
-            onClick: () => {
-              this.openExportDialog.bind(this);
-            },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
-          }
-        );
-      }
-      return null;
-    });
-    __publicField(this, "CopyButton", () => {
-      if (this.props.userId) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            id: "copy-button",
-            className: "hover-shade",
-            onClick: () => {
-              const loader = COURSEFLOW_APP.tinyLoader;
-              loader.startLoad();
-              duplicateBaseItemQuery(
-                this.props.data.id,
-                this.props.data.type,
-                null,
-                (response_data) => {
-                  loader.endLoad();
-                  window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
-                }
-              );
-            },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
-          }
-        );
-      }
-      return null;
-    });
-    __publicField(this, "OverflowLinks", () => {
-      const data = this.state.data;
-      const overflow_links = [];
-      overflow_links.push(
-        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
+  } else {
+    obj.forEach((entry, index) => iter(index, entry, obj));
+  }
+}
+function getArchtype(thing) {
+  const state = thing[DRAFT_STATE];
+  return state ? state.type_ : Array.isArray(thing) ? 1 : isMap(thing) ? 2 : isSet(thing) ? 3 : 0;
+}
+function has(thing, prop) {
+  return getArchtype(thing) === 2 ? thing.has(prop) : Object.prototype.hasOwnProperty.call(thing, prop);
+}
+function set(thing, propOrOldValue, value) {
+  const t = getArchtype(thing);
+  if (t === 2)
+    thing.set(propOrOldValue, value);
+  else if (t === 3) {
+    thing.add(value);
+  } else
+    thing[propOrOldValue] = value;
+}
+function is(x, y) {
+  if (x === y) {
+    return x !== 0 || 1 / x === 1 / y;
+  } else {
+    return x !== x && y !== y;
+  }
+}
+function isMap(target) {
+  return target instanceof Map;
+}
+function isSet(target) {
+  return target instanceof Set;
+}
+function latest(state) {
+  return state.copy_ || state.base_;
+}
+function shallowCopy(base, strict) {
+  if (isMap(base)) {
+    return new Map(base);
+  }
+  if (isSet(base)) {
+    return new Set(base);
+  }
+  if (Array.isArray(base))
+    return Array.prototype.slice.call(base);
+  if (!strict && isPlainObject(base)) {
+    if (!getPrototypeOf(base)) {
+      const obj = /* @__PURE__ */ Object.create(null);
+      return Object.assign(obj, base);
+    }
+    return { ...base };
+  }
+  const descriptors = Object.getOwnPropertyDescriptors(base);
+  delete descriptors[DRAFT_STATE];
+  let keys = Reflect.ownKeys(descriptors);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const desc = descriptors[key];
+    if (desc.writable === false) {
+      desc.writable = true;
+      desc.configurable = true;
+    }
+    if (desc.get || desc.set)
+      descriptors[key] = {
+        configurable: true,
+        writable: true,
+        // could live with !!desc.set as well here...
+        enumerable: desc.enumerable,
+        value: base[key]
+      };
+  }
+  return Object.create(getPrototypeOf(base), descriptors);
+}
+function freeze(obj, deep = false) {
+  if (isFrozen(obj) || isDraft(obj) || !isDraftable(obj))
+    return obj;
+  if (getArchtype(obj) > 1) {
+    obj.set = obj.add = obj.clear = obj.delete = dontMutateFrozenCollections;
+  }
+  Object.freeze(obj);
+  if (deep)
+    each(obj, (_key, value) => freeze(value, true));
+  return obj;
+}
+function dontMutateFrozenCollections() {
+  die(2);
+}
+function isFrozen(obj) {
+  return Object.isFrozen(obj);
+}
+var plugins = {};
+function getPlugin(pluginKey) {
+  const plugin = plugins[pluginKey];
+  if (!plugin) {
+    die(0, pluginKey);
+  }
+  return plugin;
+}
+var currentScope;
+function getCurrentScope() {
+  return currentScope;
+}
+function createScope(parent_, immer_) {
+  return {
+    drafts_: [],
+    parent_,
+    immer_,
+    // Whenever the modified draft contains a draft from another scope, we
+    // need to prevent auto-freezing so the unowned draft can be finalized.
+    canAutoFreeze_: true,
+    unfinalizedDrafts_: 0
+  };
+}
+function usePatchesInScope(scope, patchListener) {
+  if (patchListener) {
+    getPlugin("Patches");
+    scope.patches_ = [];
+    scope.inversePatches_ = [];
+    scope.patchListener_ = patchListener;
+  }
+}
+function revokeScope(scope) {
+  leaveScope(scope);
+  scope.drafts_.forEach(revokeDraft);
+  scope.drafts_ = null;
+}
+function leaveScope(scope) {
+  if (scope === currentScope) {
+    currentScope = scope.parent_;
+  }
+}
+function enterScope(immer2) {
+  return currentScope = createScope(currentScope, immer2);
+}
+function revokeDraft(draft) {
+  const state = draft[DRAFT_STATE];
+  if (state.type_ === 0 || state.type_ === 1)
+    state.revoke_();
+  else
+    state.revoked_ = true;
+}
+function processResult(result, scope) {
+  scope.unfinalizedDrafts_ = scope.drafts_.length;
+  const baseDraft = scope.drafts_[0];
+  const isReplaced = result !== void 0 && result !== baseDraft;
+  if (isReplaced) {
+    if (baseDraft[DRAFT_STATE].modified_) {
+      revokeScope(scope);
+      die(4);
+    }
+    if (isDraftable(result)) {
+      result = finalize(scope, result);
+      if (!scope.parent_)
+        maybeFreeze(scope, result);
+    }
+    if (scope.patches_) {
+      getPlugin("Patches").generateReplacementPatches_(
+        baseDraft[DRAFT_STATE].base_,
+        result,
+        scope.patches_,
+        scope.inversePatches_
       );
-      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}));
-      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}));
-      if (data.author_id === this.props.userId) {
-        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProjectButton, {}));
-      }
-      return overflow_links;
-    });
-    /*******************************************************
-     * VISIBLE BUTTONS
-     *******************************************************/
-    __publicField(this, "Edit", () => {
-      if (!this.props.readOnly) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "hover-shade",
-            id: "edit-project-button",
-            title: window.gettext("Edit Project"),
-            onClick: this.openEditDialog.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
-          }
-        );
-      }
-      return null;
-    });
-    __publicField(this, "Create", () => {
-      if (!this.props.readOnly) {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            className: "hover-shade",
-            id: "create-project-button",
-            title: window.gettext("Create workflow"),
-            ref: this.createDiv,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "a",
-                  {
-                    id: "activity-create-project",
-                    href: this.props.projectPaths.activity,
-                    className: "hover-shade",
-                    children: window.gettext("New activity")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "a",
-                  {
-                    id: "course-create-project",
-                    href: this.props.projectPaths.course,
-                    className: "hover-shade",
-                    children: window.gettext("New course")
-                  }
-                ),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  "a",
-                  {
-                    id: "program-create-project",
-                    href: this.props.projectPaths.program,
-                    className: "hover-shade",
-                    children: window.gettext("New program")
-                  }
-                )
-              ] })
-            ]
-          }
-        );
-      }
-      return null;
-    });
-    __publicField(this, "Share", () => {
-      if (!this.props.readOnly)
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "hover-shade",
-            id: "share-button",
-            title: window.gettext("Sharing"),
-            onClick: this.openShareDialog.bind(this),
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
-          }
-        );
-      return null;
-    });
-    __publicField(this, "VisibleButtons", () => {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Edit, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Create, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Share, {})
-      ] });
-    });
-    /*******************************************************
-     *
-     *******************************************************/
-    __publicField(this, "Content", () => {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowFilter,
-        {
-          read_only: this.props.readOnly,
-          project_data: this.state.data,
-          workflows: this.state.workflow_data,
-          updateWorkflow: this.updateWorkflow.bind(this),
-          context: "project"
-        }
+    }
+  } else {
+    result = finalize(scope, baseDraft, []);
+  }
+  revokeScope(scope);
+  if (scope.patches_) {
+    scope.patchListener_(scope.patches_, scope.inversePatches_);
+  }
+  return result !== NOTHING ? result : void 0;
+}
+function finalize(rootScope, value, path) {
+  if (isFrozen(value))
+    return value;
+  const state = value[DRAFT_STATE];
+  if (!state) {
+    each(
+      value,
+      (key, childValue) => finalizeProperty(rootScope, state, value, key, childValue, path)
+    );
+    return value;
+  }
+  if (state.scope_ !== rootScope)
+    return value;
+  if (!state.modified_) {
+    maybeFreeze(rootScope, state.base_, true);
+    return state.base_;
+  }
+  if (!state.finalized_) {
+    state.finalized_ = true;
+    state.scope_.unfinalizedDrafts_--;
+    const result = state.copy_;
+    let resultEach = result;
+    let isSet2 = false;
+    if (state.type_ === 3) {
+      resultEach = new Set(result);
+      result.clear();
+      isSet2 = true;
+    }
+    each(
+      resultEach,
+      (key, childValue) => finalizeProperty(rootScope, state, result, key, childValue, path, isSet2)
+    );
+    maybeFreeze(rootScope, result, false);
+    if (path && rootScope.patches_) {
+      getPlugin("Patches").generatePatches_(
+        state,
+        path,
+        rootScope.patches_,
+        rootScope.inversePatches_
       );
-    });
-    __publicField(this, "ShareDialog", () => {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openShareDialog, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Share project") }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ShareMenu,
-          {
-            data: this.state.data,
-            actionFunction: () => {
-              this.setState({
-                ...this.state,
-                openShareDialog: false
-              });
-              this.getUserData();
-            }
-          }
-        )
-      ] });
-    });
-    __publicField(this, "EditDialog", () => {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { open: this.state.openEditDialog, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        ProjectEditDialog,
-        {
-          type: "project_edit_menu",
-          data: {
-            ...this.state.data,
-            all_disciplines: this.props.allDisciplines
-            // renderer: this.props.renderer
-          },
-          actionFunction: this.updateFunction,
-          closeAction: () => this.closeModals()
-        }
-      ) });
-    });
-    __publicField(this, "ExportDialog", () => {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openExportDialog, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export project") }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ExportMenu, { data: this.state.data, actionFunction: this.closeModals })
-      ] });
-    });
-    this.viewButtons = [
-      { type: "workflows", name: window.gettext("Workflows") },
-      { type: "overview", name: window.gettext("Classroom Overview") },
-      { type: "students", name: window.gettext("Students") },
-      { type: "assignments", name: window.gettext("Assignments") },
-      { type: "completion_table", name: window.gettext("Completion Table") }
-    ];
-    this.state = {
-      data: this.props.data,
-      view_type: "workflows",
-      users: null,
-      workflow_data: [],
-      openEditDialog: false,
-      openShareDialog: false,
-      openExportDialog: false
+    }
+  }
+  return state.copy_;
+}
+function finalizeProperty(rootScope, parentState, targetObject, prop, childValue, rootPath, targetIsSet) {
+  if (process.env.NODE_ENV !== "production" && childValue === targetObject)
+    die(5);
+  if (isDraft(childValue)) {
+    const path = rootPath && parentState && parentState.type_ !== 3 && // Set objects are atomic since they have no keys.
+    !has(parentState.assigned_, prop) ? rootPath.concat(prop) : void 0;
+    const res = finalize(rootScope, childValue, path);
+    set(targetObject, prop, res);
+    if (isDraft(res)) {
+      rootScope.canAutoFreeze_ = false;
+    } else
+      return;
+  } else if (targetIsSet) {
+    targetObject.add(childValue);
+  }
+  if (isDraftable(childValue) && !isFrozen(childValue)) {
+    if (!rootScope.immer_.autoFreeze_ && rootScope.unfinalizedDrafts_ < 1) {
+      return;
+    }
+    finalize(rootScope, childValue);
+    if (!parentState || !parentState.scope_.parent_)
+      maybeFreeze(rootScope, childValue);
+  }
+}
+function maybeFreeze(scope, value, deep = false) {
+  if (!scope.parent_ && scope.immer_.autoFreeze_ && scope.canAutoFreeze_) {
+    freeze(value, deep);
+  }
+}
+function createProxyProxy(base, parent) {
+  const isArray2 = Array.isArray(base);
+  const state = {
+    type_: isArray2 ? 1 : 0,
+    // Track which produce call this is associated with.
+    scope_: parent ? parent.scope_ : getCurrentScope(),
+    // True for both shallow and deep changes.
+    modified_: false,
+    // Used during finalization.
+    finalized_: false,
+    // Track which properties have been assigned (true) or deleted (false).
+    assigned_: {},
+    // The parent draft state.
+    parent_: parent,
+    // The base state.
+    base_: base,
+    // The base proxy.
+    draft_: null,
+    // set below
+    // The base copy with any updated values.
+    copy_: null,
+    // Called by the `produce` function.
+    revoke_: null,
+    isManual_: false
+  };
+  let target = state;
+  let traps = objectTraps;
+  if (isArray2) {
+    target = [state];
+    traps = arrayTraps;
+  }
+  const { revoke, proxy } = Proxy.revocable(target, traps);
+  state.draft_ = proxy;
+  state.revoke_ = revoke;
+  return proxy;
+}
+var objectTraps = {
+  get(state, prop) {
+    if (prop === DRAFT_STATE)
+      return state;
+    const source = latest(state);
+    if (!has(source, prop)) {
+      return readPropFromProto(state, source, prop);
+    }
+    const value = source[prop];
+    if (state.finalized_ || !isDraftable(value)) {
+      return value;
+    }
+    if (value === peek(state.base_, prop)) {
+      prepareCopy(state);
+      return state.copy_[prop] = createProxy(value, state);
+    }
+    return value;
+  },
+  has(state, prop) {
+    return prop in latest(state);
+  },
+  ownKeys(state) {
+    return Reflect.ownKeys(latest(state));
+  },
+  set(state, prop, value) {
+    const desc = getDescriptorFromProto(latest(state), prop);
+    if (desc == null ? void 0 : desc.set) {
+      desc.set.call(state.draft_, value);
+      return true;
+    }
+    if (!state.modified_) {
+      const current2 = peek(latest(state), prop);
+      const currentState = current2 == null ? void 0 : current2[DRAFT_STATE];
+      if (currentState && currentState.base_ === value) {
+        state.copy_[prop] = value;
+        state.assigned_[prop] = false;
+        return true;
+      }
+      if (is(value, current2) && (value !== void 0 || has(state.base_, prop)))
+        return true;
+      prepareCopy(state);
+      markChanged(state);
+    }
+    if (state.copy_[prop] === value && // special case: handle new props with value 'undefined'
+    (value !== void 0 || prop in state.copy_) || // special case: NaN
+    Number.isNaN(value) && Number.isNaN(state.copy_[prop]))
+      return true;
+    state.copy_[prop] = value;
+    state.assigned_[prop] = true;
+    return true;
+  },
+  deleteProperty(state, prop) {
+    if (peek(state.base_, prop) !== void 0 || prop in state.base_) {
+      state.assigned_[prop] = false;
+      prepareCopy(state);
+      markChanged(state);
+    } else {
+      delete state.assigned_[prop];
+    }
+    if (state.copy_) {
+      delete state.copy_[prop];
+    }
+    return true;
+  },
+  // Note: We never coerce `desc.value` into an Immer draft, because we can't make
+  // the same guarantee in ES5 mode.
+  getOwnPropertyDescriptor(state, prop) {
+    const owner = latest(state);
+    const desc = Reflect.getOwnPropertyDescriptor(owner, prop);
+    if (!desc)
+      return desc;
+    return {
+      writable: true,
+      configurable: state.type_ !== 1 || prop !== "length",
+      enumerable: desc.enumerable,
+      value: owner[prop]
     };
-    this.createDiv = reactExports.createRef();
+  },
+  defineProperty() {
+    die(11);
+  },
+  getPrototypeOf(state) {
+    return getPrototypeOf(state.base_);
+  },
+  setPrototypeOf() {
+    die(12);
   }
-  /*******************************************************
-   * LIFECYCLE HOOKS
-   *******************************************************/
-  componentDidMount() {
-    const component = this;
-    console.log("jquery ");
-    console.log($);
-    getWorkflowsForProjectQuery(this.props.data.id, (data) => {
-      component.setState({
-        workflow_data: data.data_package
+};
+var arrayTraps = {};
+each(objectTraps, (key, fn) => {
+  arrayTraps[key] = function() {
+    arguments[0] = arguments[0][0];
+    return fn.apply(this, arguments);
+  };
+});
+arrayTraps.deleteProperty = function(state, prop) {
+  if (process.env.NODE_ENV !== "production" && isNaN(parseInt(prop)))
+    die(13);
+  return arrayTraps.set.call(this, state, prop, void 0);
+};
+arrayTraps.set = function(state, prop, value) {
+  if (process.env.NODE_ENV !== "production" && prop !== "length" && isNaN(parseInt(prop)))
+    die(14);
+  return objectTraps.set.call(this, state[0], prop, value, state[0]);
+};
+function peek(draft, prop) {
+  const state = draft[DRAFT_STATE];
+  const source = state ? latest(state) : draft;
+  return source[prop];
+}
+function readPropFromProto(state, source, prop) {
+  var _a2;
+  const desc = getDescriptorFromProto(source, prop);
+  return desc ? `value` in desc ? desc.value : (
+    // This is a very special case, if the prop is a getter defined by the
+    // prototype, we should invoke it with the draft as context!
+    (_a2 = desc.get) == null ? void 0 : _a2.call(state.draft_)
+  ) : void 0;
+}
+function getDescriptorFromProto(source, prop) {
+  if (!(prop in source))
+    return void 0;
+  let proto = getPrototypeOf(source);
+  while (proto) {
+    const desc = Object.getOwnPropertyDescriptor(proto, prop);
+    if (desc)
+      return desc;
+    proto = getPrototypeOf(proto);
+  }
+  return void 0;
+}
+function markChanged(state) {
+  if (!state.modified_) {
+    state.modified_ = true;
+    if (state.parent_) {
+      markChanged(state.parent_);
+    }
+  }
+}
+function prepareCopy(state) {
+  if (!state.copy_) {
+    state.copy_ = shallowCopy(
+      state.base_,
+      state.scope_.immer_.useStrictShallowCopy_
+    );
+  }
+}
+var Immer2 = class {
+  constructor(config3) {
+    this.autoFreeze_ = true;
+    this.useStrictShallowCopy_ = false;
+    this.produce = (base, recipe, patchListener) => {
+      if (typeof base === "function" && typeof recipe !== "function") {
+        const defaultBase = recipe;
+        recipe = base;
+        const self2 = this;
+        return function curriedProduce(base2 = defaultBase, ...args) {
+          return self2.produce(base2, (draft) => recipe.call(this, draft, ...args));
+        };
+      }
+      if (typeof recipe !== "function")
+        die(6);
+      if (patchListener !== void 0 && typeof patchListener !== "function")
+        die(7);
+      let result;
+      if (isDraftable(base)) {
+        const scope = enterScope(this);
+        const proxy = createProxy(base, void 0);
+        let hasError = true;
+        try {
+          result = recipe(proxy);
+          hasError = false;
+        } finally {
+          if (hasError)
+            revokeScope(scope);
+          else
+            leaveScope(scope);
+        }
+        usePatchesInScope(scope, patchListener);
+        return processResult(result, scope);
+      } else if (!base || typeof base !== "object") {
+        result = recipe(base);
+        if (result === void 0)
+          result = base;
+        if (result === NOTHING)
+          result = void 0;
+        if (this.autoFreeze_)
+          freeze(result, true);
+        if (patchListener) {
+          const p = [];
+          const ip = [];
+          getPlugin("Patches").generateReplacementPatches_(base, result, p, ip);
+          patchListener(p, ip);
+        }
+        return result;
+      } else
+        die(1, base);
+    };
+    this.produceWithPatches = (base, recipe) => {
+      if (typeof base === "function") {
+        return (state, ...args) => this.produceWithPatches(state, (draft) => base(draft, ...args));
+      }
+      let patches, inversePatches;
+      const result = this.produce(base, recipe, (p, ip) => {
+        patches = p;
+        inversePatches = ip;
       });
+      return [result, patches, inversePatches];
+    };
+    if (typeof (config3 == null ? void 0 : config3.autoFreeze) === "boolean")
+      this.setAutoFreeze(config3.autoFreeze);
+    if (typeof (config3 == null ? void 0 : config3.useStrictShallowCopy) === "boolean")
+      this.setUseStrictShallowCopy(config3.useStrictShallowCopy);
+  }
+  createDraft(base) {
+    if (!isDraftable(base))
+      die(8);
+    if (isDraft(base))
+      base = current(base);
+    const scope = enterScope(this);
+    const proxy = createProxy(base, void 0);
+    proxy[DRAFT_STATE].isManual_ = true;
+    leaveScope(scope);
+    return proxy;
+  }
+  finishDraft(draft, patchListener) {
+    const state = draft && draft[DRAFT_STATE];
+    if (!state || !state.isManual_)
+      die(9);
+    const { scope_: scope } = state;
+    usePatchesInScope(scope, patchListener);
+    return processResult(void 0, scope);
+  }
+  /**
+   * Pass true to automatically freeze all copies created by Immer.
+   *
+   * By default, auto-freezing is enabled.
+   */
+  setAutoFreeze(value) {
+    this.autoFreeze_ = value;
+  }
+  /**
+   * Pass true to enable strict shallow copy.
+   *
+   * By default, immer does not copy the object descriptors such as getter, setter and non-enumrable properties.
+   */
+  setUseStrictShallowCopy(value) {
+    this.useStrictShallowCopy_ = value;
+  }
+  applyPatches(base, patches) {
+    let i;
+    for (i = patches.length - 1; i >= 0; i--) {
+      const patch = patches[i];
+      if (patch.path.length === 0 && patch.op === "replace") {
+        base = patch.value;
+        break;
+      }
+    }
+    if (i > -1) {
+      patches = patches.slice(i + 1);
+    }
+    const applyPatchesImpl = getPlugin("Patches").applyPatches_;
+    if (isDraft(base)) {
+      return applyPatchesImpl(base, patches);
+    }
+    return this.produce(
+      base,
+      (draft) => applyPatchesImpl(draft, patches)
+    );
+  }
+};
+function createProxy(value, parent) {
+  const draft = isMap(value) ? getPlugin("MapSet").proxyMap_(value, parent) : isSet(value) ? getPlugin("MapSet").proxySet_(value, parent) : createProxyProxy(value, parent);
+  const scope = parent ? parent.scope_ : getCurrentScope();
+  scope.drafts_.push(draft);
+  return draft;
+}
+function current(value) {
+  if (!isDraft(value))
+    die(10, value);
+  return currentImpl(value);
+}
+function currentImpl(value) {
+  if (!isDraftable(value) || isFrozen(value))
+    return value;
+  const state = value[DRAFT_STATE];
+  let copy2;
+  if (state) {
+    if (!state.modified_)
+      return state.base_;
+    state.finalized_ = true;
+    copy2 = shallowCopy(value, state.scope_.immer_.useStrictShallowCopy_);
+  } else {
+    copy2 = shallowCopy(value, true);
+  }
+  each(copy2, (key, childValue) => {
+    set(copy2, key, currentImpl(childValue));
+  });
+  if (state) {
+    state.finalized_ = false;
+  }
+  return copy2;
+}
+var immer = new Immer2();
+var produce = immer.produce;
+immer.produceWithPatches.bind(
+  immer
+);
+immer.setAutoFreeze.bind(immer);
+immer.setUseStrictShallowCopy.bind(immer);
+immer.applyPatches.bind(immer);
+immer.createDraft.bind(immer);
+immer.finishDraft.bind(immer);
+function ProjectMenu({
+  data,
+  userId,
+  projectPaths,
+  allDisciplines,
+  readOnly
+}) {
+  const [state, setState] = reactExports.useState({
+    data,
+    view_type: "workflows",
+    users: null,
+    workflow_data: [],
+    openEditDialog: false,
+    openShareDialog: false,
+    openExportDialog: false
+  });
+  const createDiv = reactExports.useRef();
+  const getUserData = reactExports.useCallback(() => {
+    getUsersForObjectQuery(data.id, data.type, (data2) => {
+      setState(
+        produce((draft) => {
+          draft.users = data2;
+        })
+      );
     });
-    this.getUserData();
-    COURSEFLOW_APP.makeDropdown($(this.createDiv.current));
-  }
-  // @todo this is wrapped because it is called by openShareMenu
-  // so do not unwrap until the renderMessageBox is sorted out
-  getUserData() {
-    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
-      this.setState({ users: data });
+  }, [data.id, data.type]);
+  reactExports.useEffect(() => {
+    getWorkflowsForProjectQuery(data.id, (data2) => {
+      setState(
+        produce((draft) => {
+          draft.workflow_data = data2.data_package;
+        })
+      );
     });
-  }
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  changeView(view_type) {
-    this.setState({ view_type });
-  }
-  // @todo, candidate to remove
-  getRole() {
-    return "teacher";
-  }
-  /*******************************************************
-   * ACTION HANDLERS
-   *******************************************************/
-  deleteProject() {
+    getUserData();
+    COURSEFLOW_APP.makeDropdown($(createDiv.current));
+  }, [data.id, createDiv, getUserData]);
+  function deleteProject() {
     if (window.confirm(
       window.gettext("Are you sure you want to delete this project?")
     )) {
-      deleteSelfQuery(this.props.data.id, "project", true, () => {
-        this.setState({ data: { ...this.props.data, deleted: true } });
+      deleteSelfQuery(data.id, "project", true, () => {
+        setState(
+          produce((draft) => {
+            draft.data.deleted = true;
+          })
+        );
       });
     }
   }
-  deleteProjectHard() {
+  function deleteProjectHard() {
     if (window.confirm(
       window.gettext(
         "Are you sure you want to permanently delete this project?"
       )
     )) {
-      deleteSelfQuery(this.props.data.id, "project", false, () => {
+      deleteSelfQuery(data.id, "project", false, () => {
         window.location.href = COURSEFLOW_APP.config.home_path;
       });
     }
   }
-  restoreProject() {
-    restoreSelfQuery(this.props.data.id, "project", () => {
-      this.setState({ data: { ...this.props.data, deleted: false } });
+  function restoreProject() {
+    restoreSelfQuery(data.id, "project", () => {
+      setState(
+        produce((draft) => {
+          draft.data.deleted = false;
+        })
+      );
     });
   }
-  /*******************************************************
-   * MODAL HANDLERS
-   *******************************************************/
-  updateWorkflow(id, new_values) {
-    for (let i = 0; i < this.state.workflow_data.length; i++) {
-      if (this.state.workflow_data[i].id === id) {
-        const new_state = { ...this.state };
-        new_state.workflow_data = [...this.state.workflow_data];
+  function updateWorkflow(id, new_values) {
+    for (let i = 0; i < state.workflow_data.length; i++) {
+      if (state.workflow_data[i].id === id) {
+        const new_state = { ...state };
+        new_state.workflow_data = [...state.workflow_data];
         new_state.workflow_data[i] = {
-          ...this.state.workflow_data[i],
+          ...state.workflow_data[i],
           ...new_values
         };
-        this.setState(new_state);
+        setState(new_state);
         break;
       }
     }
   }
-  /*******************************************************
-   * MODALS
-   *******************************************************/
-  openEditDialog() {
-    this.setState({
-      ...this.state,
-      openEditDialog: true
-    });
+  function openEditDialog() {
+    setState(
+      produce((draft) => {
+        draft.openEditDialog = true;
+      })
+    );
   }
-  openShareDialog() {
-    this.setState({
-      ...this.state,
-      openShareDialog: true
-    });
+  function openShareDialog() {
+    setState(
+      produce((draft) => {
+        draft.openShareDialog = true;
+      })
+    );
   }
-  openExportDialog() {
-    this.setState({
-      ...this.state,
-      openExportDialog: true
-    });
+  function openExportDialog() {
+    setState(
+      produce((draft) => {
+        draft.openExportDialog = true;
+      })
+    );
   }
-  closeModals() {
-    this.setState({
-      ...this.state,
-      openExportDialog: false,
-      openShareDialog: false,
-      openEditDialog: false
-    });
+  function closeModals() {
+    setState(
+      produce((draft) => {
+        draft.openExportDialog = false;
+        draft.openShareDialog = false;
+        draft.openEditDialog = false;
+      })
+    );
   }
-  updateFunction(new_data) {
-    this.setState({
-      ...this.state,
-      data: {
-        ...this.state.data,
-        ...new_data
-      },
-      openEditDialog: false
-    });
+  function updateFunction(new_data) {
+    setState(
+      produce((draft) => {
+        draft.data = {
+          ...draft.data,
+          ...new_data
+        };
+        draft.openEditDialog = false;
+      })
+    );
   }
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        MenuBar,
+  const DeleteProjectButton = () => {
+    if (!state.data.deleted) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: deleteProject, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: restoreProject, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: deleteProjectHard, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") }) })
+    ] });
+  };
+  const ExportButton = () => {
+    if (userId) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
         {
-          overflowLinks: () => /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, {}),
-          visibleButtons: () => /* @__PURE__ */ jsxRuntimeExports.jsx(this.VisibleButtons, {})
+          id: "export-button",
+          className: "hover-shade",
+          onClick: openExportDialog,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
+        }
+      );
+    }
+    return null;
+  };
+  const CopyButton = () => {
+    if (userId) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          id: "copy-button",
+          className: "hover-shade",
+          onClick: () => {
+            const loader = COURSEFLOW_APP.tinyLoader;
+            loader.startLoad();
+            duplicateBaseItemQuery(
+              data.id,
+              data.type,
+              null,
+              (response_data) => {
+                loader.endLoad();
+                window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
+              }
+            );
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
+        }
+      );
+    }
+    return null;
+  };
+  const OverflowLinks = () => {
+    const { data: data2 } = state;
+    const overflow_links = [];
+    overflow_links.push(
+      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
+    );
+    overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+    overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(ExportButton, {}));
+    overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(CopyButton, {}));
+    if (data2.author_id === userId) {
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(DeleteProjectButton, {}));
+    }
+    return overflow_links;
+  };
+  const Edit = () => {
+    if (!readOnly) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "hover-shade",
+          id: "edit-project-button",
+          title: window.gettext("Edit Project"),
+          onClick: openEditDialog,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
+        }
+      );
+    }
+    return null;
+  };
+  const Create = () => {
+    if (!readOnly) {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: "hover-shade",
+          id: "create-project-button",
+          title: window.gettext("Create workflow"),
+          ref: createDiv,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "a",
+                {
+                  id: "activity-create-project",
+                  href: projectPaths.activity,
+                  className: "hover-shade",
+                  children: window.gettext("New activity")
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "a",
+                {
+                  id: "course-create-project",
+                  href: projectPaths.course,
+                  className: "hover-shade",
+                  children: window.gettext("New course")
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "a",
+                {
+                  id: "program-create-project",
+                  href: projectPaths.program,
+                  className: "hover-shade",
+                  children: window.gettext("New program")
+                }
+              )
+            ] })
+          ]
+        }
+      );
+    }
+    return null;
+  };
+  const Share = () => {
+    if (!readOnly)
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "hover-shade",
+          id: "share-button",
+          title: window.gettext("Sharing"),
+          onClick: openShareDialog,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
+        }
+      );
+    return null;
+  };
+  const VisibleButtons = () => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Edit, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Create, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Share, {})
+    ] });
+  };
+  const Content = () => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowFilter,
+      {
+        read_only: readOnly,
+        project_data: state.data,
+        workflows: state.workflow_data,
+        updateWorkflow,
+        context: "project"
+      }
+    );
+  };
+  const ShareDialog = () => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: state.openShareDialog, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Share project") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ShareMenu,
+        {
+          data: state.data,
+          actionFunction: () => {
+            setState(
+              produce((draft) => {
+                draft.openShareDialog = false;
+              })
+            );
+            getUserData();
+          }
+        }
+      )
+    ] });
+  };
+  const EditDialog = () => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { open: state.openEditDialog, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+      ProjectEditDialog,
+      {
+        type: "project_edit_menu",
+        data: {
+          ...state.data,
+          all_disciplines: allDisciplines
+          // renderer: renderer
+        },
+        actionFunction: updateFunction,
+        closeAction: closeModals
+      }
+    ) });
+  };
+  const ExportDialog = () => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: state.openExportDialog, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export project") }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ExportMenu, { data: state.data, actionFunction: closeModals })
+    ] });
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      MenuBar,
+      {
+        overflowLinks: () => /* @__PURE__ */ jsxRuntimeExports.jsx(OverflowLinks, {}),
+        visibleButtons: () => /* @__PURE__ */ jsxRuntimeExports.jsx(VisibleButtons, {})
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Header,
+        {
+          disciplines: state.data.disciplines,
+          description: state.data.description,
+          allDisciplines,
+          data: state.data,
+          users: state.users,
+          openShareDialog,
+          readOnly
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Header,
-          {
-            disciplines: this.state.data.disciplines,
-            description: this.state.data.description,
-            allDisciplines: this.props.allDisciplines,
-            data: this.state.data,
-            users: this.state.users,
-            openShareDialog: () => this.openShareDialog(),
-            readOnly: this.props.readOnly
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {})
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(this.EditDialog, {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {})
-    ] }) });
-  }
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Content, {})
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(EditDialog, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ShareDialog, {}),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ExportDialog, {})
+  ] });
 }
 class ProjectPage extends reactExports.Component {
   constructor(props) {
@@ -102849,672 +103476,6 @@ function ObjectSets({
     ] })
   ] });
 }
-var NOTHING = Symbol.for("immer-nothing");
-var DRAFTABLE = Symbol.for("immer-draftable");
-var DRAFT_STATE = Symbol.for("immer-state");
-var errors = process.env.NODE_ENV !== "production" ? [
-  // All error codes, starting by 0:
-  function(plugin) {
-    return `The plugin for '${plugin}' has not been loaded into Immer. To enable the plugin, import and call \`enable${plugin}()\` when initializing your application.`;
-  },
-  function(thing) {
-    return `produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'. Got '${thing}'`;
-  },
-  "This object has been frozen and should not be mutated",
-  function(data) {
-    return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + data;
-  },
-  "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.",
-  "Immer forbids circular references",
-  "The first or second argument to `produce` must be a function",
-  "The third argument to `produce` must be a function or undefined",
-  "First argument to `createDraft` must be a plain object, an array, or an immerable object",
-  "First argument to `finishDraft` must be a draft returned by `createDraft`",
-  function(thing) {
-    return `'current' expects a draft, got: ${thing}`;
-  },
-  "Object.defineProperty() cannot be used on an Immer draft",
-  "Object.setPrototypeOf() cannot be used on an Immer draft",
-  "Immer only supports deleting array indices",
-  "Immer only supports setting array indices and the 'length' property",
-  function(thing) {
-    return `'original' expects a draft, got: ${thing}`;
-  }
-  // Note: if more errors are added, the errorOffset in Patches.ts should be increased
-  // See Patches.ts for additional errors
-] : [];
-function die(error, ...args) {
-  if (process.env.NODE_ENV !== "production") {
-    const e = errors[error];
-    const msg = typeof e === "function" ? e.apply(null, args) : e;
-    throw new Error(`[Immer] ${msg}`);
-  }
-  throw new Error(
-    `[Immer] minified error nr: ${error}. Full error at: https://bit.ly/3cXEKWf`
-  );
-}
-var getPrototypeOf = Object.getPrototypeOf;
-function isDraft(value) {
-  return !!value && !!value[DRAFT_STATE];
-}
-function isDraftable(value) {
-  var _a2;
-  if (!value)
-    return false;
-  return isPlainObject(value) || Array.isArray(value) || !!value[DRAFTABLE] || !!((_a2 = value.constructor) == null ? void 0 : _a2[DRAFTABLE]) || isMap(value) || isSet(value);
-}
-var objectCtorString = Object.prototype.constructor.toString();
-function isPlainObject(value) {
-  if (!value || typeof value !== "object")
-    return false;
-  const proto = getPrototypeOf(value);
-  if (proto === null) {
-    return true;
-  }
-  const Ctor = Object.hasOwnProperty.call(proto, "constructor") && proto.constructor;
-  if (Ctor === Object)
-    return true;
-  return typeof Ctor == "function" && Function.toString.call(Ctor) === objectCtorString;
-}
-function each(obj, iter) {
-  if (getArchtype(obj) === 0) {
-    Object.entries(obj).forEach(([key, value]) => {
-      iter(key, value, obj);
-    });
-  } else {
-    obj.forEach((entry, index) => iter(index, entry, obj));
-  }
-}
-function getArchtype(thing) {
-  const state = thing[DRAFT_STATE];
-  return state ? state.type_ : Array.isArray(thing) ? 1 : isMap(thing) ? 2 : isSet(thing) ? 3 : 0;
-}
-function has(thing, prop) {
-  return getArchtype(thing) === 2 ? thing.has(prop) : Object.prototype.hasOwnProperty.call(thing, prop);
-}
-function set(thing, propOrOldValue, value) {
-  const t = getArchtype(thing);
-  if (t === 2)
-    thing.set(propOrOldValue, value);
-  else if (t === 3) {
-    thing.add(value);
-  } else
-    thing[propOrOldValue] = value;
-}
-function is(x, y) {
-  if (x === y) {
-    return x !== 0 || 1 / x === 1 / y;
-  } else {
-    return x !== x && y !== y;
-  }
-}
-function isMap(target) {
-  return target instanceof Map;
-}
-function isSet(target) {
-  return target instanceof Set;
-}
-function latest(state) {
-  return state.copy_ || state.base_;
-}
-function shallowCopy(base, strict) {
-  if (isMap(base)) {
-    return new Map(base);
-  }
-  if (isSet(base)) {
-    return new Set(base);
-  }
-  if (Array.isArray(base))
-    return Array.prototype.slice.call(base);
-  if (!strict && isPlainObject(base)) {
-    if (!getPrototypeOf(base)) {
-      const obj = /* @__PURE__ */ Object.create(null);
-      return Object.assign(obj, base);
-    }
-    return { ...base };
-  }
-  const descriptors = Object.getOwnPropertyDescriptors(base);
-  delete descriptors[DRAFT_STATE];
-  let keys = Reflect.ownKeys(descriptors);
-  for (let i = 0; i < keys.length; i++) {
-    const key = keys[i];
-    const desc = descriptors[key];
-    if (desc.writable === false) {
-      desc.writable = true;
-      desc.configurable = true;
-    }
-    if (desc.get || desc.set)
-      descriptors[key] = {
-        configurable: true,
-        writable: true,
-        // could live with !!desc.set as well here...
-        enumerable: desc.enumerable,
-        value: base[key]
-      };
-  }
-  return Object.create(getPrototypeOf(base), descriptors);
-}
-function freeze(obj, deep = false) {
-  if (isFrozen(obj) || isDraft(obj) || !isDraftable(obj))
-    return obj;
-  if (getArchtype(obj) > 1) {
-    obj.set = obj.add = obj.clear = obj.delete = dontMutateFrozenCollections;
-  }
-  Object.freeze(obj);
-  if (deep)
-    each(obj, (_key, value) => freeze(value, true));
-  return obj;
-}
-function dontMutateFrozenCollections() {
-  die(2);
-}
-function isFrozen(obj) {
-  return Object.isFrozen(obj);
-}
-var plugins = {};
-function getPlugin(pluginKey) {
-  const plugin = plugins[pluginKey];
-  if (!plugin) {
-    die(0, pluginKey);
-  }
-  return plugin;
-}
-var currentScope;
-function getCurrentScope() {
-  return currentScope;
-}
-function createScope(parent_, immer_) {
-  return {
-    drafts_: [],
-    parent_,
-    immer_,
-    // Whenever the modified draft contains a draft from another scope, we
-    // need to prevent auto-freezing so the unowned draft can be finalized.
-    canAutoFreeze_: true,
-    unfinalizedDrafts_: 0
-  };
-}
-function usePatchesInScope(scope, patchListener) {
-  if (patchListener) {
-    getPlugin("Patches");
-    scope.patches_ = [];
-    scope.inversePatches_ = [];
-    scope.patchListener_ = patchListener;
-  }
-}
-function revokeScope(scope) {
-  leaveScope(scope);
-  scope.drafts_.forEach(revokeDraft);
-  scope.drafts_ = null;
-}
-function leaveScope(scope) {
-  if (scope === currentScope) {
-    currentScope = scope.parent_;
-  }
-}
-function enterScope(immer2) {
-  return currentScope = createScope(currentScope, immer2);
-}
-function revokeDraft(draft) {
-  const state = draft[DRAFT_STATE];
-  if (state.type_ === 0 || state.type_ === 1)
-    state.revoke_();
-  else
-    state.revoked_ = true;
-}
-function processResult(result, scope) {
-  scope.unfinalizedDrafts_ = scope.drafts_.length;
-  const baseDraft = scope.drafts_[0];
-  const isReplaced = result !== void 0 && result !== baseDraft;
-  if (isReplaced) {
-    if (baseDraft[DRAFT_STATE].modified_) {
-      revokeScope(scope);
-      die(4);
-    }
-    if (isDraftable(result)) {
-      result = finalize(scope, result);
-      if (!scope.parent_)
-        maybeFreeze(scope, result);
-    }
-    if (scope.patches_) {
-      getPlugin("Patches").generateReplacementPatches_(
-        baseDraft[DRAFT_STATE].base_,
-        result,
-        scope.patches_,
-        scope.inversePatches_
-      );
-    }
-  } else {
-    result = finalize(scope, baseDraft, []);
-  }
-  revokeScope(scope);
-  if (scope.patches_) {
-    scope.patchListener_(scope.patches_, scope.inversePatches_);
-  }
-  return result !== NOTHING ? result : void 0;
-}
-function finalize(rootScope, value, path) {
-  if (isFrozen(value))
-    return value;
-  const state = value[DRAFT_STATE];
-  if (!state) {
-    each(
-      value,
-      (key, childValue) => finalizeProperty(rootScope, state, value, key, childValue, path)
-    );
-    return value;
-  }
-  if (state.scope_ !== rootScope)
-    return value;
-  if (!state.modified_) {
-    maybeFreeze(rootScope, state.base_, true);
-    return state.base_;
-  }
-  if (!state.finalized_) {
-    state.finalized_ = true;
-    state.scope_.unfinalizedDrafts_--;
-    const result = state.copy_;
-    let resultEach = result;
-    let isSet2 = false;
-    if (state.type_ === 3) {
-      resultEach = new Set(result);
-      result.clear();
-      isSet2 = true;
-    }
-    each(
-      resultEach,
-      (key, childValue) => finalizeProperty(rootScope, state, result, key, childValue, path, isSet2)
-    );
-    maybeFreeze(rootScope, result, false);
-    if (path && rootScope.patches_) {
-      getPlugin("Patches").generatePatches_(
-        state,
-        path,
-        rootScope.patches_,
-        rootScope.inversePatches_
-      );
-    }
-  }
-  return state.copy_;
-}
-function finalizeProperty(rootScope, parentState, targetObject, prop, childValue, rootPath, targetIsSet) {
-  if (process.env.NODE_ENV !== "production" && childValue === targetObject)
-    die(5);
-  if (isDraft(childValue)) {
-    const path = rootPath && parentState && parentState.type_ !== 3 && // Set objects are atomic since they have no keys.
-    !has(parentState.assigned_, prop) ? rootPath.concat(prop) : void 0;
-    const res = finalize(rootScope, childValue, path);
-    set(targetObject, prop, res);
-    if (isDraft(res)) {
-      rootScope.canAutoFreeze_ = false;
-    } else
-      return;
-  } else if (targetIsSet) {
-    targetObject.add(childValue);
-  }
-  if (isDraftable(childValue) && !isFrozen(childValue)) {
-    if (!rootScope.immer_.autoFreeze_ && rootScope.unfinalizedDrafts_ < 1) {
-      return;
-    }
-    finalize(rootScope, childValue);
-    if (!parentState || !parentState.scope_.parent_)
-      maybeFreeze(rootScope, childValue);
-  }
-}
-function maybeFreeze(scope, value, deep = false) {
-  if (!scope.parent_ && scope.immer_.autoFreeze_ && scope.canAutoFreeze_) {
-    freeze(value, deep);
-  }
-}
-function createProxyProxy(base, parent) {
-  const isArray2 = Array.isArray(base);
-  const state = {
-    type_: isArray2 ? 1 : 0,
-    // Track which produce call this is associated with.
-    scope_: parent ? parent.scope_ : getCurrentScope(),
-    // True for both shallow and deep changes.
-    modified_: false,
-    // Used during finalization.
-    finalized_: false,
-    // Track which properties have been assigned (true) or deleted (false).
-    assigned_: {},
-    // The parent draft state.
-    parent_: parent,
-    // The base state.
-    base_: base,
-    // The base proxy.
-    draft_: null,
-    // set below
-    // The base copy with any updated values.
-    copy_: null,
-    // Called by the `produce` function.
-    revoke_: null,
-    isManual_: false
-  };
-  let target = state;
-  let traps = objectTraps;
-  if (isArray2) {
-    target = [state];
-    traps = arrayTraps;
-  }
-  const { revoke, proxy } = Proxy.revocable(target, traps);
-  state.draft_ = proxy;
-  state.revoke_ = revoke;
-  return proxy;
-}
-var objectTraps = {
-  get(state, prop) {
-    if (prop === DRAFT_STATE)
-      return state;
-    const source = latest(state);
-    if (!has(source, prop)) {
-      return readPropFromProto(state, source, prop);
-    }
-    const value = source[prop];
-    if (state.finalized_ || !isDraftable(value)) {
-      return value;
-    }
-    if (value === peek(state.base_, prop)) {
-      prepareCopy(state);
-      return state.copy_[prop] = createProxy(value, state);
-    }
-    return value;
-  },
-  has(state, prop) {
-    return prop in latest(state);
-  },
-  ownKeys(state) {
-    return Reflect.ownKeys(latest(state));
-  },
-  set(state, prop, value) {
-    const desc = getDescriptorFromProto(latest(state), prop);
-    if (desc == null ? void 0 : desc.set) {
-      desc.set.call(state.draft_, value);
-      return true;
-    }
-    if (!state.modified_) {
-      const current2 = peek(latest(state), prop);
-      const currentState = current2 == null ? void 0 : current2[DRAFT_STATE];
-      if (currentState && currentState.base_ === value) {
-        state.copy_[prop] = value;
-        state.assigned_[prop] = false;
-        return true;
-      }
-      if (is(value, current2) && (value !== void 0 || has(state.base_, prop)))
-        return true;
-      prepareCopy(state);
-      markChanged(state);
-    }
-    if (state.copy_[prop] === value && // special case: handle new props with value 'undefined'
-    (value !== void 0 || prop in state.copy_) || // special case: NaN
-    Number.isNaN(value) && Number.isNaN(state.copy_[prop]))
-      return true;
-    state.copy_[prop] = value;
-    state.assigned_[prop] = true;
-    return true;
-  },
-  deleteProperty(state, prop) {
-    if (peek(state.base_, prop) !== void 0 || prop in state.base_) {
-      state.assigned_[prop] = false;
-      prepareCopy(state);
-      markChanged(state);
-    } else {
-      delete state.assigned_[prop];
-    }
-    if (state.copy_) {
-      delete state.copy_[prop];
-    }
-    return true;
-  },
-  // Note: We never coerce `desc.value` into an Immer draft, because we can't make
-  // the same guarantee in ES5 mode.
-  getOwnPropertyDescriptor(state, prop) {
-    const owner = latest(state);
-    const desc = Reflect.getOwnPropertyDescriptor(owner, prop);
-    if (!desc)
-      return desc;
-    return {
-      writable: true,
-      configurable: state.type_ !== 1 || prop !== "length",
-      enumerable: desc.enumerable,
-      value: owner[prop]
-    };
-  },
-  defineProperty() {
-    die(11);
-  },
-  getPrototypeOf(state) {
-    return getPrototypeOf(state.base_);
-  },
-  setPrototypeOf() {
-    die(12);
-  }
-};
-var arrayTraps = {};
-each(objectTraps, (key, fn) => {
-  arrayTraps[key] = function() {
-    arguments[0] = arguments[0][0];
-    return fn.apply(this, arguments);
-  };
-});
-arrayTraps.deleteProperty = function(state, prop) {
-  if (process.env.NODE_ENV !== "production" && isNaN(parseInt(prop)))
-    die(13);
-  return arrayTraps.set.call(this, state, prop, void 0);
-};
-arrayTraps.set = function(state, prop, value) {
-  if (process.env.NODE_ENV !== "production" && prop !== "length" && isNaN(parseInt(prop)))
-    die(14);
-  return objectTraps.set.call(this, state[0], prop, value, state[0]);
-};
-function peek(draft, prop) {
-  const state = draft[DRAFT_STATE];
-  const source = state ? latest(state) : draft;
-  return source[prop];
-}
-function readPropFromProto(state, source, prop) {
-  var _a2;
-  const desc = getDescriptorFromProto(source, prop);
-  return desc ? `value` in desc ? desc.value : (
-    // This is a very special case, if the prop is a getter defined by the
-    // prototype, we should invoke it with the draft as context!
-    (_a2 = desc.get) == null ? void 0 : _a2.call(state.draft_)
-  ) : void 0;
-}
-function getDescriptorFromProto(source, prop) {
-  if (!(prop in source))
-    return void 0;
-  let proto = getPrototypeOf(source);
-  while (proto) {
-    const desc = Object.getOwnPropertyDescriptor(proto, prop);
-    if (desc)
-      return desc;
-    proto = getPrototypeOf(proto);
-  }
-  return void 0;
-}
-function markChanged(state) {
-  if (!state.modified_) {
-    state.modified_ = true;
-    if (state.parent_) {
-      markChanged(state.parent_);
-    }
-  }
-}
-function prepareCopy(state) {
-  if (!state.copy_) {
-    state.copy_ = shallowCopy(
-      state.base_,
-      state.scope_.immer_.useStrictShallowCopy_
-    );
-  }
-}
-var Immer2 = class {
-  constructor(config3) {
-    this.autoFreeze_ = true;
-    this.useStrictShallowCopy_ = false;
-    this.produce = (base, recipe, patchListener) => {
-      if (typeof base === "function" && typeof recipe !== "function") {
-        const defaultBase = recipe;
-        recipe = base;
-        const self2 = this;
-        return function curriedProduce(base2 = defaultBase, ...args) {
-          return self2.produce(base2, (draft) => recipe.call(this, draft, ...args));
-        };
-      }
-      if (typeof recipe !== "function")
-        die(6);
-      if (patchListener !== void 0 && typeof patchListener !== "function")
-        die(7);
-      let result;
-      if (isDraftable(base)) {
-        const scope = enterScope(this);
-        const proxy = createProxy(base, void 0);
-        let hasError = true;
-        try {
-          result = recipe(proxy);
-          hasError = false;
-        } finally {
-          if (hasError)
-            revokeScope(scope);
-          else
-            leaveScope(scope);
-        }
-        usePatchesInScope(scope, patchListener);
-        return processResult(result, scope);
-      } else if (!base || typeof base !== "object") {
-        result = recipe(base);
-        if (result === void 0)
-          result = base;
-        if (result === NOTHING)
-          result = void 0;
-        if (this.autoFreeze_)
-          freeze(result, true);
-        if (patchListener) {
-          const p = [];
-          const ip = [];
-          getPlugin("Patches").generateReplacementPatches_(base, result, p, ip);
-          patchListener(p, ip);
-        }
-        return result;
-      } else
-        die(1, base);
-    };
-    this.produceWithPatches = (base, recipe) => {
-      if (typeof base === "function") {
-        return (state, ...args) => this.produceWithPatches(state, (draft) => base(draft, ...args));
-      }
-      let patches, inversePatches;
-      const result = this.produce(base, recipe, (p, ip) => {
-        patches = p;
-        inversePatches = ip;
-      });
-      return [result, patches, inversePatches];
-    };
-    if (typeof (config3 == null ? void 0 : config3.autoFreeze) === "boolean")
-      this.setAutoFreeze(config3.autoFreeze);
-    if (typeof (config3 == null ? void 0 : config3.useStrictShallowCopy) === "boolean")
-      this.setUseStrictShallowCopy(config3.useStrictShallowCopy);
-  }
-  createDraft(base) {
-    if (!isDraftable(base))
-      die(8);
-    if (isDraft(base))
-      base = current(base);
-    const scope = enterScope(this);
-    const proxy = createProxy(base, void 0);
-    proxy[DRAFT_STATE].isManual_ = true;
-    leaveScope(scope);
-    return proxy;
-  }
-  finishDraft(draft, patchListener) {
-    const state = draft && draft[DRAFT_STATE];
-    if (!state || !state.isManual_)
-      die(9);
-    const { scope_: scope } = state;
-    usePatchesInScope(scope, patchListener);
-    return processResult(void 0, scope);
-  }
-  /**
-   * Pass true to automatically freeze all copies created by Immer.
-   *
-   * By default, auto-freezing is enabled.
-   */
-  setAutoFreeze(value) {
-    this.autoFreeze_ = value;
-  }
-  /**
-   * Pass true to enable strict shallow copy.
-   *
-   * By default, immer does not copy the object descriptors such as getter, setter and non-enumrable properties.
-   */
-  setUseStrictShallowCopy(value) {
-    this.useStrictShallowCopy_ = value;
-  }
-  applyPatches(base, patches) {
-    let i;
-    for (i = patches.length - 1; i >= 0; i--) {
-      const patch = patches[i];
-      if (patch.path.length === 0 && patch.op === "replace") {
-        base = patch.value;
-        break;
-      }
-    }
-    if (i > -1) {
-      patches = patches.slice(i + 1);
-    }
-    const applyPatchesImpl = getPlugin("Patches").applyPatches_;
-    if (isDraft(base)) {
-      return applyPatchesImpl(base, patches);
-    }
-    return this.produce(
-      base,
-      (draft) => applyPatchesImpl(draft, patches)
-    );
-  }
-};
-function createProxy(value, parent) {
-  const draft = isMap(value) ? getPlugin("MapSet").proxyMap_(value, parent) : isSet(value) ? getPlugin("MapSet").proxySet_(value, parent) : createProxyProxy(value, parent);
-  const scope = parent ? parent.scope_ : getCurrentScope();
-  scope.drafts_.push(draft);
-  return draft;
-}
-function current(value) {
-  if (!isDraft(value))
-    die(10, value);
-  return currentImpl(value);
-}
-function currentImpl(value) {
-  if (!isDraftable(value) || isFrozen(value))
-    return value;
-  const state = value[DRAFT_STATE];
-  let copy2;
-  if (state) {
-    if (!state.modified_)
-      return state.base_;
-    state.finalized_ = true;
-    copy2 = shallowCopy(value, state.scope_.immer_.useStrictShallowCopy_);
-  } else {
-    copy2 = shallowCopy(value, true);
-  }
-  each(copy2, (key, childValue) => {
-    set(copy2, key, currentImpl(childValue));
-  });
-  if (state) {
-    state.finalized_ = false;
-  }
-  return copy2;
-}
-var immer = new Immer2();
-var produce = immer.produce;
-immer.produceWithPatches.bind(
-  immer
-);
-immer.setAutoFreeze.bind(immer);
-immer.setUseStrictShallowCopy.bind(immer);
-immer.applyPatches.bind(immer);
-immer.createDraft.bind(immer);
-immer.finishDraft.bind(immer);
 function CreateProjectDialog({
   showNoProjectsAlert,
   formFields

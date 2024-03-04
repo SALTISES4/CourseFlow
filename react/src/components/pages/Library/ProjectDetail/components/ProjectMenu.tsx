@@ -1,5 +1,4 @@
-import * as React from 'react'
-import * as Constants from '@cfConstants'
+import { useCallback, useEffect, useRef, useState } from 'react'
 // @local
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
 import { ProjectMenuProps } from '@cfPages/Library/ProjectDetail/types'
@@ -16,6 +15,7 @@ import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
 import { EProject } from '@XMLHTTP/types/entity'
+import { produce } from 'immer'
 // import $ from 'jquery'
 
 /*******************************************************
@@ -34,88 +34,67 @@ interface StateType {
   openExportDialog?: boolean
 }
 
-class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
-  private readonly createDiv: React.RefObject<HTMLDivElement>
-  private readonly viewButtons: { name: string; type: string }[]
+function ProjectMenu({
+  data,
+  userId,
+  projectPaths,
+  allDisciplines,
+  readOnly
+}: ProjectMenuProps) {
+  const [state, setState] = useState<StateType>({
+    data,
+    view_type: 'workflows',
+    users: null,
+    workflow_data: [],
+    openEditDialog: false,
+    openShareDialog: false,
+    openExportDialog: false
+  })
 
-  constructor(props: ProjectMenuProps) {
-    super(props)
-    this.viewButtons = [
-      { type: 'workflows', name: window.gettext('Workflows') },
-      { type: 'overview', name: window.gettext('Classroom Overview') },
-      { type: 'students', name: window.gettext('Students') },
-      { type: 'assignments', name: window.gettext('Assignments') },
-      { type: 'completion_table', name: window.gettext('Completion Table') }
-    ]
+  const createDiv = useRef<HTMLDivElement>()
 
-
-    this.state = {
-      data: this.props.data,
-      view_type: 'workflows',
-      users: null,
-      workflow_data: [],
-      openEditDialog: false,
-      openShareDialog: false,
-      openExportDialog: false
-    }
-
-    this.createDiv = React.createRef()
-  }
-
-  /*******************************************************
-   * LIFECYCLE HOOKS
-   *******************************************************/
-  componentDidMount() {
-
-    const component = this
-
-    console.log('jquery ')
-    console.log($)
-    getWorkflowsForProjectQuery(this.props.data.id, (data) => {
-      component.setState({
-        workflow_data: data.data_package
-      })
-    })
-    this.getUserData()
-    COURSEFLOW_APP.makeDropdown($(this.createDiv.current))
-  }
-
-  // @todo this is wrapped because it is called by openShareMenu
+  // TODO: this is wrapped because it is called by openShareMenu
   // so do not unwrap until the renderMessageBox is sorted out
-  getUserData() {
-    getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
-      this.setState({ users: data })
+  const getUserData = useCallback(() => {
+    getUsersForObjectQuery(data.id, data.type, (data) => {
+      setState(
+        produce((draft) => {
+          draft.users = data
+        })
+      )
     })
-  }
+  }, [data.id, data.type])
 
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  changeView(view_type) {
-    this.setState({ view_type: view_type })
-  }
+  useEffect(() => {
+    getWorkflowsForProjectQuery(data.id, (data) => {
+      setState(
+        produce((draft) => {
+          draft.workflow_data = data.data_package
+        })
+      )
+    })
 
-  // @todo, candidate to remove
-  getRole() {
-    return 'teacher'
-  }
+    getUserData()
+    COURSEFLOW_APP.makeDropdown($(createDiv.current))
+  }, [data.id, createDiv, getUserData])
 
-  /*******************************************************
-   * ACTION HANDLERS
-   *******************************************************/
-  deleteProject() {
+  function deleteProject() {
     if (
       window.confirm(
         window.gettext('Are you sure you want to delete this project?')
       )
     ) {
-      deleteSelfQuery(this.props.data.id, 'project', true, () => {
-        this.setState({ data: { ...this.props.data, deleted: true } })
+      deleteSelfQuery(data.id, 'project', true, () => {
+        setState(
+          produce((draft) => {
+            draft.data.deleted = true
+          })
+        )
       })
     }
   }
 
-  deleteProjectHard() {
+  function deleteProjectHard() {
     if (
       window.confirm(
         window.gettext(
@@ -123,76 +102,110 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         )
       )
     ) {
-      deleteSelfQuery(this.props.data.id, 'project', false, () => {
+      deleteSelfQuery(data.id, 'project', false, () => {
         window.location.href = COURSEFLOW_APP.config.home_path
       })
     }
   }
 
-  restoreProject() {
-    restoreSelfQuery(this.props.data.id, 'project', () => {
-      this.setState({ data: { ...this.props.data, deleted: false } })
+  function restoreProject() {
+    restoreSelfQuery(data.id, 'project', () => {
+      setState(
+        produce((draft) => {
+          draft.data.deleted = false
+        })
+      )
     })
   }
 
-  /*******************************************************
-   * MODAL HANDLERS
-   *******************************************************/
-
-  updateWorkflow(id, new_values) {
-    for (let i = 0; i < this.state.workflow_data.length; i++) {
-      if (this.state.workflow_data[i].id === id) {
-        const new_state = { ...this.state }
-        new_state.workflow_data = [...this.state.workflow_data]
+  function updateWorkflow(id, new_values) {
+    for (let i = 0; i < state.workflow_data.length; i++) {
+      if (state.workflow_data[i].id === id) {
+        const new_state = { ...state }
+        new_state.workflow_data = [...state.workflow_data]
         new_state.workflow_data[i] = {
-          ...this.state.workflow_data[i],
+          ...state.workflow_data[i],
           ...new_values
         }
-        this.setState(new_state)
+        setState(new_state)
         break
       }
     }
   }
 
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
+  function openEditDialog() {
+    setState(
+      produce((draft) => {
+        draft.openEditDialog = true
+      })
+    )
+  }
 
-  /*******************************************************
-   * OVERFLOW LINKS
-   *******************************************************/
-  DeleteProjectButton = () => {
-    if (!this.state.data.deleted) {
+  function openShareDialog() {
+    setState(
+      produce((draft) => {
+        draft.openShareDialog = true
+      })
+    )
+  }
+
+  function openExportDialog() {
+    setState(
+      produce((draft) => {
+        draft.openExportDialog = true
+      })
+    )
+  }
+
+  function closeModals() {
+    setState(
+      produce((draft) => {
+        draft.openExportDialog = false
+        draft.openShareDialog = false
+        draft.openEditDialog = false
+      })
+    )
+  }
+
+  function updateFunction(new_data) {
+    setState(
+      produce((draft) => {
+        draft.data = {
+          ...draft.data,
+          ...new_data
+        }
+        draft.openEditDialog = false
+      })
+    )
+  }
+
+  const DeleteProjectButton = () => {
+    if (!state.data.deleted) {
       return (
-        <div className="hover-shade" onClick={this.deleteProject.bind(this)}>
+        <div className="hover-shade" onClick={deleteProject}>
           <div>{window.gettext('Archive project')}</div>
         </div>
       )
     }
     return (
       <>
-        <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
+        <div className="hover-shade" onClick={restoreProject}>
           <div>{window.gettext('Restore project')}</div>
         </div>
-        <div
-          className="hover-shade"
-          onClick={this.deleteProjectHard.bind(this)}
-        >
+        <div className="hover-shade" onClick={deleteProjectHard}>
           <div>{window.gettext('Permanently delete project')}</div>
         </div>
       </>
     )
   }
 
-  ExportButton = () => {
-    if (this.props.userId) {
+  const ExportButton = () => {
+    if (userId) {
       return (
         <div
           id="export-button"
           className="hover-shade"
-          onClick={() => {
-            this.openExportDialog.bind(this)
-          }}
+          onClick={openExportDialog}
         >
           <div>{window.gettext('Export')}</div>
         </div>
@@ -201,8 +214,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
-  CopyButton = () => {
-    if (this.props.userId) {
+  const CopyButton = () => {
+    if (userId) {
       return (
         <div
           id="copy-button"
@@ -211,8 +224,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
             const loader = COURSEFLOW_APP.tinyLoader
             loader.startLoad()
             duplicateBaseItemQuery(
-              this.props.data.id,
-              this.props.data.type,
+              data.id,
+              data.type,
               null,
               (response_data) => {
                 loader.endLoad()
@@ -230,8 +243,8 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
-  OverflowLinks = () => {
-    const data = this.state.data
+  const OverflowLinks = () => {
+    const { data } = state
 
     const overflow_links = []
 
@@ -240,27 +253,30 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
         {window.gettext('Workflow comparison tool')}
       </a>
     )
+
     overflow_links.push(<hr />)
-    overflow_links.push(<this.ExportButton />)
-    overflow_links.push(<this.CopyButton />)
-    if (data.author_id === this.props.userId) {
+    overflow_links.push(<ExportButton />)
+    overflow_links.push(<CopyButton />)
+
+    if (data.author_id === userId) {
       overflow_links.push(<hr />)
-      overflow_links.push(<this.DeleteProjectButton />)
+      overflow_links.push(<DeleteProjectButton />)
     }
+
     return overflow_links
   }
 
   /*******************************************************
    * VISIBLE BUTTONS
    *******************************************************/
-  Edit = () => {
-    if (!this.props.readOnly) {
+  const Edit = () => {
+    if (!readOnly) {
       return (
         <div
           className="hover-shade"
           id="edit-project-button"
           title={window.gettext('Edit Project')}
-          onClick={this.openEditDialog.bind(this)}
+          onClick={openEditDialog}
         >
           <span className="material-symbols-rounded filled">edit</span>
         </div>
@@ -269,34 +285,34 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
-  Create = () => {
-    if (!this.props.readOnly) {
+  const Create = () => {
+    if (!readOnly) {
       return (
         <div
           className="hover-shade"
           id="create-project-button"
           title={window.gettext('Create workflow')}
-          ref={this.createDiv}
+          ref={createDiv}
         >
           <span className="material-symbols-rounded filled">add_circle</span>
           <div id="create-links-project" className="create-dropdown">
             <a
               id="activity-create-project"
-              href={this.props.projectPaths.activity}
+              href={projectPaths.activity}
               className="hover-shade"
             >
               {window.gettext('New activity')}
             </a>
             <a
               id="course-create-project"
-              href={this.props.projectPaths.course}
+              href={projectPaths.course}
               className="hover-shade"
             >
               {window.gettext('New course')}
             </a>
             <a
               id="program-create-project"
-              href={this.props.projectPaths.program}
+              href={projectPaths.program}
               className="hover-shade"
             >
               {window.gettext('New program')}
@@ -308,14 +324,14 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
-  Share = () => {
-    if (!this.props.readOnly)
+  const Share = () => {
+    if (!readOnly)
       return (
         <div
           className="hover-shade"
           id="share-button"
           title={window.gettext('Sharing')}
-          onClick={this.openShareDialog.bind(this)}
+          onClick={openShareDialog}
         >
           <span className="material-symbols-rounded filled">person_add</span>
         </div>
@@ -323,154 +339,103 @@ class ProjectMenu extends React.Component<ProjectMenuProps, StateType> {
     return null
   }
 
-  VisibleButtons = () => {
+  const VisibleButtons = () => {
     return (
       <>
-        <this.Edit />
-        <this.Create />
-        <this.Share />
+        <Edit />
+        <Create />
+        <Share />
       </>
     )
   }
   /*******************************************************
    *
    *******************************************************/
-  Content = () => {
+  const Content = () => {
     return (
       <WorkflowFilter
-        read_only={this.props.readOnly}
-        project_data={this.state.data}
-        workflows={this.state.workflow_data}
-        updateWorkflow={this.updateWorkflow.bind(this)}
+        read_only={readOnly}
+        project_data={state.data}
+        workflows={state.workflow_data}
+        updateWorkflow={updateWorkflow}
         context="project"
       />
     )
   }
 
-  /*******************************************************
-   * MODALS
-   *******************************************************/
-
-  openEditDialog() {
-    this.setState({
-      ...this.state,
-      openEditDialog: true
-    })
-  }
-
-  openShareDialog() {
-    this.setState({
-      ...this.state,
-      openShareDialog: true
-    })
-  }
-
-  openExportDialog() {
-    this.setState({
-      ...this.state,
-      openExportDialog: true
-    })
-  }
-
-  closeModals() {
-    this.setState({
-      ...this.state,
-      openExportDialog: false,
-      openShareDialog: false,
-      openEditDialog: false
-    })
-  }
-
-  updateFunction(new_data) {
-    this.setState({
-      ...this.state,
-      data: {
-        ...this.state.data,
-        ...new_data
-      },
-      openEditDialog: false
-    })
-  }
-
-  ShareDialog = () => {
+  const ShareDialog = () => {
     return (
-      <Dialog open={this.state.openShareDialog}>
+      <Dialog open={state.openShareDialog}>
         <DialogTitle>
           <h2>{window.gettext('Share project')}</h2>
         </DialogTitle>
         <ShareMenu
-          data={this.state.data}
+          data={state.data}
           actionFunction={() => {
-            this.setState({
-              ...this.state,
-              openShareDialog: false
-            })
-            this.getUserData()
+            setState(
+              produce((draft) => {
+                draft.openShareDialog = false
+              })
+            )
+            getUserData()
           }}
         />
       </Dialog>
     )
   }
 
-  EditDialog = () => {
+  const EditDialog = () => {
     return (
-      <Dialog open={this.state.openEditDialog}>
+      <Dialog open={state.openEditDialog}>
         <ProjectEditDialog
           type={'project_edit_menu'}
           data={{
-            ...this.state.data,
-            all_disciplines: this.props.allDisciplines
-            // renderer: this.props.renderer
+            ...state.data,
+            all_disciplines: allDisciplines
+            // renderer: renderer
           }}
-          actionFunction={this.updateFunction}
-          closeAction={() => this.closeModals()}
+          actionFunction={updateFunction}
+          closeAction={closeModals}
         />
       </Dialog>
     )
   }
 
-  ExportDialog = () => {
+  const ExportDialog = () => {
     return (
-      <Dialog open={this.state.openExportDialog}>
+      <Dialog open={state.openExportDialog}>
         <DialogTitle>
           <h2>{window.gettext('Export project')}</h2>
         </DialogTitle>
-        <ExportMenu data={this.state.data} actionFunction={this.closeModals} />
+        <ExportMenu data={state.data} actionFunction={closeModals} />
       </Dialog>
     )
   }
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    return (
-      <>
-        <div className="main-block">
-          <MenuBar
-            overflowLinks={() => <this.OverflowLinks />}
-            visibleButtons={() => <this.VisibleButtons />}
-          />
+  return (
+    <div className="main-block">
+      <MenuBar
+        overflowLinks={() => <OverflowLinks />}
+        visibleButtons={() => <VisibleButtons />}
+      />
 
-          <div className="project-menu">
-            <Header
-              disciplines={this.state.data.disciplines}
-              description={this.state.data.description}
-              allDisciplines={this.props.allDisciplines}
-              data={this.state.data} // @todo this needs to be unpacked
-              users={this.state.users}
-              openShareDialog={() => this.openShareDialog()}
-              readOnly={this.props.readOnly}
-            />
-            <this.Content />
-          </div>
-          <this.EditDialog />
-          <this.ShareDialog />
-          <this.ExportDialog />
-        </div>
-      </>
-    )
-  }
+      <div className="project-menu">
+        <Header
+          disciplines={state.data.disciplines}
+          description={state.data.description}
+          allDisciplines={allDisciplines}
+          data={state.data} // @todo this needs to be unpacked
+          users={state.users}
+          openShareDialog={openShareDialog}
+          readOnly={readOnly}
+        />
+        <Content />
+      </div>
+      <EditDialog />
+      <ShareDialog />
+      <ExportDialog />
+    </div>
+  )
 }
 
 export default ProjectMenu
