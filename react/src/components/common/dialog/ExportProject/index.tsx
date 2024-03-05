@@ -1,4 +1,4 @@
-import { MouseEvent, useRef, useState } from 'react'
+import { MouseEvent, useState } from 'react'
 import Alert from '@cfCommonComponents/components/Alert'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
@@ -16,8 +16,27 @@ import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
 
 type PropsType = {
-  data: any
-  onSubmit: () => any
+  data: {
+    id: number
+    title: string
+    description: string
+    type: 'project' | 'program' | 'course' | 'activity'
+    author: string
+    author_id: number
+    workflowproject_set: number[]
+    disciplines: any[]
+    object_sets: { id: number; title: string }[]
+    object_permission: {
+      permission_type: number
+      last_viewed: string
+    }
+    deleted: boolean
+    published: boolean
+    favourite: boolean
+    created_on: string
+    deleted_on: string
+    last_modified: string
+  }
 }
 
 enum EXPORT_TYPE {
@@ -59,7 +78,7 @@ const fields = {
   ]
 }
 
-function ExportProjectDialog({ data, onSubmit }: PropsType) {
+function ExportProjectDialog({ data }: PropsType) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
@@ -73,25 +92,46 @@ function ExportProjectDialog({ data, onSubmit }: PropsType) {
   ) {
     setState(
       produce((draft) => {
-        let obj = draft[field]
-        if (obj) {
-          obj = value
+        draft[field as any] = value
+      })
+    )
+  }
+
+  function onSetChange(value: string) {
+    setState(
+      produce((draft) => {
+        const found = draft.sets.indexOf(value)
+        if (found === -1) {
+          draft.sets.push(value)
+        } else {
+          draft.sets.splice(found, 1)
         }
       })
     )
   }
 
-  function onExportBtnClick(e: MouseEvent<HTMLButtonElement>) {
+  function onSubmit(e: MouseEvent<HTMLButtonElement>) {
+    const postData = {
+      objectID: data.id,
+      objectType: data.type,
+      exportType: state.type,
+      exportFormat: state.format,
+      objectSets: state.sets
+    }
+
     console.log(
-      'export submit with state',
-      state,
+      'export submit',
+      postData,
       'posting to',
-      e.ctrlKey
-        ? COURSEFLOW_APP.config.post_paths.get_export_download
-        : COURSEFLOW_APP.config.post_paths.get_export
+      COURSEFLOW_APP.config.post_paths.get_export
     )
 
-    onSubmit()
+    // TODO: handle success/failure appropriately
+    // API_POST(COURSEFLOW_APP.config.post_paths.get_export, postData)
+    //   .then((resp) => {
+    //     console.log('response', resp)
+    //   })
+    //   .catch((error) => console.log('errors', error))
   }
 
   function onDialogClose() {
@@ -111,6 +151,7 @@ function ExportProjectDialog({ data, onSubmit }: PropsType) {
       <DialogTitle>{window.gettext(`Export ${projectType}`)}</DialogTitle>
       <DialogContent dividers>
         <StyledForm component="form">
+          <Alert severity="warning" title="TODO" />
           <FormControl>
             <FormLabel id="export-type-group-label">
               {window.gettext('Export type')}
@@ -158,25 +199,32 @@ function ExportProjectDialog({ data, onSubmit }: PropsType) {
             </RadioGroup>
           </FormControl>
 
-          <Alert severity="warning" title="TODO" />
-          {/* TODO: generate object sets from data prop */}
-          <FormControl>
-            <FormLabel id="export-sets-group-label">
-              {window.gettext('Object set visibility')}
-            </FormLabel>
-            <FormGroup>
-              <FormControlLabel control={<Checkbox />} label="Object set 1" />
-              <FormControlLabel control={<Checkbox />} label="Object set 2" />
-              <FormControlLabel control={<Checkbox />} label="Object set 3" />
-            </FormGroup>
-          </FormControl>
+          {data.object_sets.length > 0 && (
+            <FormControl>
+              <FormLabel id="export-sets-group-label">
+                {window.gettext('Object set visibility')}
+              </FormLabel>
+              <FormGroup>
+                {data.object_sets.map((set, index) => (
+                  <FormControlLabel
+                    key={index}
+                    value={set.id}
+                    control={<Checkbox />}
+                    label={set.title}
+                    checked={state.sets.includes(set.id)}
+                    onChange={() => onSetChange(set.id.toString())}
+                  />
+                ))}
+              </FormGroup>
+            </FormControl>
+          )}
         </StyledForm>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onDialogClose}>
           {window.gettext('Cancel')}
         </Button>
-        <Button variant="contained" onClick={onExportBtnClick}>
+        <Button variant="contained" onClick={onSubmit}>
           {window.gettext('Export')}
         </Button>
       </DialogActions>

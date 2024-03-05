@@ -414,7 +414,7 @@ function ProjectMenu({
       </div>
       <EditDialog />
       <ShareDialog />
-      <ExportProjectModal data={state.data} onSubmit={closeModals} />
+      <ExportProjectModal data={state.data} />
       <ArchiveProjectModal onSubmit={deleteProject} />
     </div>
   )

@@ -100115,7 +100115,7 @@ const fields = {
     { value: "csv", label: "CSV" }
   ]
 };
-function ExportProjectDialog({ data, onSubmit }) {
+function ExportProjectDialog({ data }) {
   const [state, setState] = reactExports.useState({
     type: "outcome",
     format: "excel",
@@ -100125,18 +100125,36 @@ function ExportProjectDialog({ data, onSubmit }) {
   function onRadioChange(field, value) {
     setState(
       produce((draft) => {
-        draft[field];
+        draft[field] = value;
       })
     );
   }
-  function onExportBtnClick(e) {
-    console.log(
-      "export submit with state",
-      state,
-      "posting to",
-      e.ctrlKey ? COURSEFLOW_APP.config.post_paths.get_export_download : COURSEFLOW_APP.config.post_paths.get_export
+  function onSetChange(value) {
+    setState(
+      produce((draft) => {
+        const found = draft.sets.indexOf(value);
+        if (found === -1) {
+          draft.sets.push(value);
+        } else {
+          draft.sets.splice(found, 1);
+        }
+      })
     );
-    onSubmit();
+  }
+  function onSubmit(e) {
+    const postData = {
+      objectID: data.id,
+      objectType: data.type,
+      exportType: state.type,
+      exportFormat: state.format,
+      objectSets: state.sets
+    };
+    console.log(
+      "export submit",
+      postData,
+      "posting to",
+      COURSEFLOW_APP.config.post_paths.get_export
+    );
   }
   function onDialogClose() {
     setState(
@@ -100151,6 +100169,7 @@ function ExportProjectDialog({ data, onSubmit }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext(`Export ${projectType}`) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { severity: "warning", title: "TODO" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-type-group-label", children: window.gettext("Export type") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -100195,19 +100214,24 @@ function ExportProjectDialog({ data, onSubmit }) {
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { severity: "warning", title: "TODO" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
+      data.object_sets.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-sets-group-label", children: window.gettext("Object set visibility") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(FormGroup$1, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(FormControlLabel$1, { control: /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox$1, {}), label: "Object set 1" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(FormControlLabel$1, { control: /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox$1, {}), label: "Object set 2" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(FormControlLabel$1, { control: /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox$1, {}), label: "Object set 3" })
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(FormGroup$1, { children: data.object_sets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          FormControlLabel$1,
+          {
+            value: set2.id,
+            control: /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox$1, {}),
+            label: set2.title,
+            checked: state.sets.includes(set2.id),
+            onChange: () => onSetChange(set2.id.toString())
+          },
+          index
+        )) })
       ] })
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onDialogClose, children: window.gettext("Cancel") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onExportBtnClick, children: window.gettext("Export") })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, children: window.gettext("Export") })
     ] })
   ] });
 }
@@ -100571,7 +100595,7 @@ function ProjectMenu({
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(EditDialog, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ShareDialog, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ExportProjectDialog, { data: state.data, onSubmit: closeModals }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ExportProjectDialog, { data: state.data }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ArchiveProjectModal, { onSubmit: deleteProject })
   ] });
 }
