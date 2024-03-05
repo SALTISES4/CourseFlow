@@ -33467,7 +33467,7 @@ var __privateMethod = (obj, member, method) => {
     verify(mapDispatchToProps, "mapDispatchToProps");
     verify(mergeProps, "mergeProps");
   }
-  const _excluded$1g = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
+  const _excluded$1h = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
   function pureFinalPropsSelectorFactory(mapStateToProps2, mapDispatchToProps, mergeProps, dispatch, {
     areStatesEqual,
     areOwnPropsEqual,
@@ -33533,7 +33533,7 @@ var __privateMethod = (obj, member, method) => {
       initMapStateToProps,
       initMapDispatchToProps,
       initMergeProps
-    } = _ref, options = _objectWithoutPropertiesLoose$1(_ref, _excluded$1g);
+    } = _ref, options = _objectWithoutPropertiesLoose$1(_ref, _excluded$1h);
     const mapStateToProps2 = initMapStateToProps(dispatch, options);
     const mapDispatchToProps = initMapDispatchToProps(dispatch, options);
     const mergeProps = initMergeProps(dispatch, options);
@@ -33787,7 +33787,7 @@ var __privateMethod = (obj, member, method) => {
     }
     return true;
   }
-  const _excluded$1f = ["reactReduxForwardedRef"];
+  const _excluded$1g = ["reactReduxForwardedRef"];
   let useSyncExternalStore = notInitialized;
   const initializeConnect = (fn) => {
     useSyncExternalStore = fn;
@@ -33909,7 +33909,7 @@ var __privateMethod = (obj, member, method) => {
         const [propsContext, reactReduxForwardedRef, wrapperProps] = reactExports.useMemo(() => {
           const {
             reactReduxForwardedRef: reactReduxForwardedRef2
-          } = props, wrapperProps2 = _objectWithoutPropertiesLoose$1(props, _excluded$1f);
+          } = props, wrapperProps2 = _objectWithoutPropertiesLoose$1(props, _excluded$1g);
           return [props.context, reactReduxForwardedRef2, wrapperProps2];
         }, [props]);
         const ContextToUse = reactExports.useMemo(() => {
@@ -42187,7 +42187,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       tag2.__emotion_styles = processor(tag2.__emotion_styles);
     }
   };
-  const _excluded$1e = ["values", "unit", "step"];
+  const _excluded$1f = ["values", "unit", "step"];
   const sortBreakpointsValues = (values2) => {
     const breakpointsAsArray = Object.keys(values2).map((key) => ({
       key,
@@ -42218,7 +42218,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       },
       unit = "px",
       step = 5
-    } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1e);
+    } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1f);
     const sortedValues = sortBreakpointsValues(values2);
     const keys = Object.keys(sortedValues);
     function up(key) {
@@ -43240,14 +43240,14 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   const styleFunctionSx = unstable_createStyleFunctionSx();
   styleFunctionSx.filterProps = ["sx"];
   const styleFunctionSx$1 = styleFunctionSx;
-  const _excluded$1d = ["breakpoints", "palette", "spacing", "shape"];
+  const _excluded$1e = ["breakpoints", "palette", "spacing", "shape"];
   function createTheme$1(options = {}, ...args) {
     const {
       breakpoints: breakpointsInput = {},
       palette: paletteInput = {},
       spacing: spacingInput,
       shape: shapeInput = {}
-    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$1d);
+    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$1e);
     const breakpoints = createBreakpoints(breakpointsInput);
     const spacing = createSpacing(spacingInput);
     let muiTheme = deepmerge({
@@ -43311,7 +43311,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
      */
     themeId: PropTypes.string
   } : void 0;
-  const _excluded$1c = ["sx"];
+  const _excluded$1d = ["sx"];
   const splitProps = (props) => {
     var _props$theme$unstable, _props$theme;
     const result = {
@@ -43331,7 +43331,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   function extendSxProp(props) {
     const {
       sx: inSx
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1c);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1d);
     const {
       systemProps,
       otherProps
@@ -43354,7 +43354,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       sx: finalSx
     });
   }
-  const _excluded$1b = ["className", "component"];
+  const _excluded$1c = ["className", "component"];
   function createBox(options = {}) {
     const {
       themeId,
@@ -43370,7 +43370,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       const _extendSxProp = extendSxProp(inProps), {
         className,
         component = "div"
-      } = _extendSxProp, other = _objectWithoutPropertiesLoose(_extendSxProp, _excluded$1b);
+      } = _extendSxProp, other = _objectWithoutPropertiesLoose(_extendSxProp, _excluded$1c);
       return /* @__PURE__ */ jsxRuntimeExports.jsx(BoxRoot, _extends$1({
         as: component,
         ref,
@@ -43380,14 +43380,14 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return Box2;
   }
-  const _excluded$1a = ["variant"];
+  const _excluded$1b = ["variant"];
   function isEmpty$3(string) {
     return string.length === 0;
   }
   function propsToClassKey(props) {
     const {
       variant
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1a);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1b);
     let classKey = variant || "";
     Object.keys(other).sort().forEach((key) => {
       if (key === "color") {
@@ -43398,7 +43398,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return classKey;
   }
-  const _excluded$19 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+  const _excluded$1a = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
   function isEmpty$2(obj) {
     return Object.keys(obj).length === 0;
   }
@@ -43528,7 +43528,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
         // TODO v6: remove `lowercaseFirstLetter()` in the next major release
         // For more details: https://github.com/mui/material-ui/pull/37908
         overridesResolver: overridesResolver2 = defaultOverridesResolver(lowercaseFirstLetter(componentSlot))
-      } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$19);
+      } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$1a);
       const skipVariantsResolver = inputSkipVariantsResolver !== void 0 ? inputSkipVariantsResolver : (
         // TODO v6: remove `Root` in the next major release
         // For more details: https://github.com/mui/material-ui/pull/37908
@@ -43978,7 +43978,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   if (process.env.NODE_ENV !== "production") {
     process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = exactProp(ThemeProvider$1.propTypes) : void 0;
   }
-  const _excluded$18 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
+  const _excluded$19 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
   const defaultTheme$3 = createTheme$1();
   const defaultCreateStyledComponent = systemStyled("div", {
     name: "MuiStack",
@@ -44101,7 +44101,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
         children,
         className,
         useFlexGap = false
-      } = props, other = _objectWithoutPropertiesLoose(props, _excluded$18);
+      } = props, other = _objectWithoutPropertiesLoose(props, _excluded$19);
       const ownerState = {
         direction,
         spacing,
@@ -44265,7 +44265,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     A700: "#00c853"
   };
   const green$1 = green;
-  const _excluded$17 = ["mode", "contrastThreshold", "tonalOffset"];
+  const _excluded$18 = ["mode", "contrastThreshold", "tonalOffset"];
   const light = {
     // The colors used to style the text.
     text: {
@@ -44433,7 +44433,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
       mode = "light",
       contrastThreshold = 3,
       tonalOffset = 0.2
-    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$17);
+    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$18);
     const primary = palette.primary || getDefaultPrimary(mode);
     const secondary = palette.secondary || getDefaultSecondary(mode);
     const error = palette.error || getDefaultError(mode);
@@ -44552,7 +44552,7 @@ const theme2 = createTheme({ palette: {
     }, modes[mode]), other);
     return paletteOutput;
   }
-  const _excluded$16 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+  const _excluded$17 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
   function round$1(value) {
     return Math.round(value * 1e5) / 1e5;
   }
@@ -44576,7 +44576,7 @@ const theme2 = createTheme({ palette: {
       // Apply the CSS properties to all the variants.
       allVariants,
       pxToRem: pxToRem2
-    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$16);
+    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$17);
     if (process.env.NODE_ENV !== "production") {
       if (typeof fontSize !== "number") {
         console.error("MUI: `fontSize` is required to be a number.");
@@ -44641,7 +44641,7 @@ const theme2 = createTheme({ palette: {
   }
   const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
   const shadows$1 = shadows;
-  const _excluded$15 = ["duration", "easing", "delay"];
+  const _excluded$16 = ["duration", "easing", "delay"];
   const easing = {
     // This is the most common easing curve.
     easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -44684,7 +44684,7 @@ const theme2 = createTheme({ palette: {
         duration: durationOption = mergedDuration.standard,
         easing: easingOption = mergedEasing.easeInOut,
         delay = 0
-      } = options, other = _objectWithoutPropertiesLoose(options, _excluded$15);
+      } = options, other = _objectWithoutPropertiesLoose(options, _excluded$16);
       if (process.env.NODE_ENV !== "production") {
         const isString2 = (value) => typeof value === "string";
         const isNumber2 = (value) => !isNaN(parseFloat(value));
@@ -44728,14 +44728,14 @@ const theme2 = createTheme({ palette: {
     tooltip: 1500
   };
   const zIndex$1 = zIndex;
-  const _excluded$14 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+  const _excluded$15 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
   function createTheme(options = {}, ...args) {
     const {
       mixins: mixinsInput = {},
       palette: paletteInput = {},
       transitions: transitionsInput = {},
       typography: typographyInput = {}
-    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$14);
+    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$15);
     if (options.vars) {
       throw new Error(process.env.NODE_ENV !== "production" ? `MUI: \`vars\` is a private field used for CSS variables support.
 Please use another name.` : formatMuiErrorMessage(18));
@@ -44814,8 +44814,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiSvgIcon", slot);
   }
   generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-  const _excluded$13 = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
-  const useUtilityClasses$V = (ownerState) => {
+  const _excluded$14 = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+  const useUtilityClasses$W = (ownerState) => {
     const {
       color: color2,
       fontSize,
@@ -44881,7 +44881,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       inheritViewBox = false,
       titleAccess,
       viewBox = "0 0 24 24"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$13);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$14);
     const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
     const ownerState = _extends$1({}, props, {
       color: color2,
@@ -44896,7 +44896,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     if (!inheritViewBox) {
       more.viewBox = viewBox;
     }
-    const classes = useUtilityClasses$V(ownerState);
+    const classes = useUtilityClasses$W(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SvgIconRoot, _extends$1({
       as: component,
       className: clsx(classes.root, className),
@@ -45081,11 +45081,11 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return theme2[THEME_ID] || theme2;
   }
-  const _excluded$12 = ["theme"];
+  const _excluded$13 = ["theme"];
   function ThemeProvider(_ref) {
     let {
       theme: themeInput
-    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$12);
+    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$13);
     const scopedTheme = themeInput[THEME_ID];
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$1({}, props, {
       themeId: scopedTheme ? THEME_ID : void 0,
@@ -45917,7 +45917,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   } : void 0;
   const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
   const touchRippleClasses$1 = touchRippleClasses;
-  const _excluded$11 = ["center", "classes", "className"];
+  const _excluded$12 = ["center", "classes", "className"];
   let _ = (t) => t, _t, _t2, _t3, _t4;
   const DURATION = 550;
   const DELAY_RIPPLE = 80;
@@ -46032,7 +46032,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       center: centerProp = false,
       classes = {},
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$11);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$12);
     const [ripples, setRipples] = reactExports.useState([]);
     const nextKey = reactExports.useRef(0);
     const rippleCallback = reactExports.useRef(null);
@@ -46215,8 +46215,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
   const buttonBaseClasses$1 = buttonBaseClasses;
-  const _excluded$10 = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
-  const useUtilityClasses$U = (ownerState) => {
+  const _excluded$11 = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+  const useUtilityClasses$V = (ownerState) => {
     const {
       disabled,
       focusVisible,
@@ -46310,7 +46310,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       TouchRippleProps,
       touchRippleRef,
       type
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$11);
     const buttonRef = reactExports.useRef(null);
     const rippleRef = reactExports.useRef(null);
     const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -46464,7 +46464,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       focusVisible
     });
-    const classes = useUtilityClasses$U(ownerState);
+    const classes = useUtilityClasses$V(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonBaseRoot, _extends$1({
       as: ComponentProp,
       className: clsx(classes.root, className),
@@ -46659,8 +46659,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const chipClasses = generateUtilityClasses("MuiChip", ["root", "sizeSmall", "sizeMedium", "colorError", "colorInfo", "colorPrimary", "colorSecondary", "colorSuccess", "colorWarning", "disabled", "clickable", "clickableColorPrimary", "clickableColorSecondary", "deletable", "deletableColorPrimary", "deletableColorSecondary", "outlined", "filled", "outlinedPrimary", "outlinedSecondary", "filledPrimary", "filledSecondary", "avatar", "avatarSmall", "avatarMedium", "avatarColorPrimary", "avatarColorSecondary", "icon", "iconSmall", "iconMedium", "iconColorPrimary", "iconColorSecondary", "label", "labelSmall", "labelMedium", "deleteIcon", "deleteIconSmall", "deleteIconMedium", "deleteIconColorPrimary", "deleteIconColorSecondary", "deleteIconOutlinedColorPrimary", "deleteIconOutlinedColorSecondary", "deleteIconFilledColorPrimary", "deleteIconFilledColorSecondary", "focusVisible"]);
   const chipClasses$1 = chipClasses;
-  const _excluded$$ = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
-  const useUtilityClasses$T = (ownerState) => {
+  const _excluded$10 = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
+  const useUtilityClasses$U = (ownerState) => {
     const {
       classes,
       disabled,
@@ -46941,7 +46941,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       skipFocusWhenDisabled = false
       // TODO v6: Rename to `focusableWhenDisabled`.
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
     const chipRef = reactExports.useRef(null);
     const handleRef = useForkRef(chipRef, ref);
     const handleDeleteIconClick = (event) => {
@@ -46982,7 +46982,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       clickable,
       variant
     });
-    const classes = useUtilityClasses$T(ownerState);
+    const classes = useUtilityClasses$U(ownerState);
     const moreProps = component === ButtonBase$1 ? _extends$1({
       component: ComponentProp || "div",
       focusVisibleClassName: classes.focusVisible
@@ -47141,8 +47141,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiTypography", slot);
   }
   generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-  const _excluded$_ = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
-  const useUtilityClasses$S = (ownerState) => {
+  const _excluded$$ = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+  const useUtilityClasses$T = (ownerState) => {
     const {
       align,
       gutterBottom,
@@ -47225,7 +47225,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       paragraph = false,
       variant = "body1",
       variantMapping = defaultVariantMapping
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$_);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
     const ownerState = _extends$1({}, props, {
       align,
       color: color2,
@@ -47238,7 +47238,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       variantMapping
     });
     const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
-    const classes = useUtilityClasses$S(ownerState);
+    const classes = useUtilityClasses$T(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$1({
       as: Component,
       ref,
@@ -47327,8 +47327,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
   const iconButtonClasses$1 = iconButtonClasses;
-  const _excluded$Z = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
-  const useUtilityClasses$R = (ownerState) => {
+  const _excluded$_ = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+  const useUtilityClasses$S = (ownerState) => {
     const {
       classes,
       disabled,
@@ -47422,7 +47422,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled = false,
       disableFocusRipple = false,
       size: size2 = "medium"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$_);
     const ownerState = _extends$1({}, props, {
       edge,
       color: color2,
@@ -47430,7 +47430,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableFocusRipple,
       size: size2
     });
-    const classes = useUtilityClasses$R(ownerState);
+    const classes = useUtilityClasses$S(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(IconButtonRoot, _extends$1({
       className: clsx(classes.root, className),
       centerRipple: true,
@@ -70793,8 +70793,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiCollapse", slot);
   }
   generateUtilityClasses("MuiCollapse", ["root", "horizontal", "vertical", "entered", "hidden", "wrapper", "wrapperInner"]);
-  const _excluded$Y = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
-  const useUtilityClasses$Q = (ownerState) => {
+  const _excluded$Z = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
+  const useUtilityClasses$R = (ownerState) => {
     const {
       orientation,
       classes
@@ -70886,12 +70886,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       timeout = duration.standard,
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
     const ownerState = _extends$1({}, props, {
       orientation,
       collapsedSize: collapsedSizeProp
     });
-    const classes = useUtilityClasses$Q(ownerState);
+    const classes = useUtilityClasses$R(ownerState);
     const theme2 = useTheme();
     const timer = reactExports.useRef();
     const wrapperRef = reactExports.useRef(null);
@@ -71144,8 +71144,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiPaper", slot);
   }
   generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-  const _excluded$X = ["className", "component", "elevation", "square", "variant"];
-  const useUtilityClasses$P = (ownerState) => {
+  const _excluded$Y = ["className", "component", "elevation", "square", "variant"];
+  const useUtilityClasses$Q = (ownerState) => {
     const {
       square,
       elevation,
@@ -71198,14 +71198,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       elevation = 1,
       square = false,
       variant = "elevation"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
     const ownerState = _extends$1({}, props, {
       component,
       elevation,
       square,
       variant
     });
-    const classes = useUtilityClasses$P(ownerState);
+    const classes = useUtilityClasses$Q(ownerState);
     if (process.env.NODE_ENV !== "production") {
       const theme2 = useTheme();
       if (theme2.shadows[elevation] === void 0) {
@@ -71282,8 +71282,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const accordionClasses = generateUtilityClasses("MuiAccordion", ["root", "rounded", "expanded", "disabled", "gutters", "region"]);
   const accordionClasses$1 = accordionClasses;
-  const _excluded$W = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
-  const useUtilityClasses$O = (ownerState) => {
+  const _excluded$X = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
+  const useUtilityClasses$P = (ownerState) => {
     const {
       classes,
       square,
@@ -71394,7 +71394,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       square = false,
       TransitionComponent = Collapse$2,
       TransitionProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
     const [expanded, setExpandedState] = useControlled({
       controlled: expandedProp,
       default: defaultExpanded,
@@ -71420,7 +71420,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableGutters,
       expanded
     });
-    const classes = useUtilityClasses$O(ownerState);
+    const classes = useUtilityClasses$P(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionRoot, _extends$1({
       className: clsx(classes.root, className),
       ref,
@@ -71523,8 +71523,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAccordionDetails", slot);
   }
   generateUtilityClasses("MuiAccordionDetails", ["root"]);
-  const _excluded$V = ["className"];
-  const useUtilityClasses$N = (ownerState) => {
+  const _excluded$W = ["className"];
+  const useUtilityClasses$O = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -71549,9 +71549,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
     const ownerState = props;
-    const classes = useUtilityClasses$N(ownerState);
+    const classes = useUtilityClasses$O(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionDetailsRoot, _extends$1({
       className: clsx(classes.root, className),
       ref,
@@ -71586,8 +71586,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const accordionSummaryClasses = generateUtilityClasses("MuiAccordionSummary", ["root", "expanded", "focusVisible", "disabled", "gutters", "contentGutters", "content", "expandIconWrapper"]);
   const accordionSummaryClasses$1 = accordionSummaryClasses;
-  const _excluded$U = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
-  const useUtilityClasses$M = (ownerState) => {
+  const _excluded$V = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
+  const useUtilityClasses$N = (ownerState) => {
     const {
       classes,
       expanded,
@@ -71680,7 +71680,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       expandIcon,
       focusVisibleClassName,
       onClick
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
     const {
       disabled = false,
       disableGutters,
@@ -71700,7 +71700,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled,
       disableGutters
     });
-    const classes = useUtilityClasses$M(ownerState);
+    const classes = useUtilityClasses$N(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionSummaryRoot, _extends$1({
       focusRipple: false,
       disableRipple: true,
@@ -71784,8 +71784,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ClearIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  const _excluded$T = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
-  const useUtilityClasses$L = (ownerState) => {
+  const _excluded$U = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
+  const useUtilityClasses$M = (ownerState) => {
     const {
       variant,
       color: color2,
@@ -71913,13 +71913,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps = {},
       slots = {},
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
     const ownerState = _extends$1({}, props, {
       color: color2,
       severity,
       variant
     });
-    const classes = useUtilityClasses$L(ownerState);
+    const classes = useUtilityClasses$M(ownerState);
     const AlertCloseButton = (_ref = (_slots$closeButton = slots.closeButton) != null ? _slots$closeButton : components.CloseButton) != null ? _ref : IconButton$1;
     const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : ClearIcon;
     const closeButtonProps = (_slotProps$closeButto = slotProps.closeButton) != null ? _slotProps$closeButto : componentsProps.closeButton;
@@ -72091,8 +72091,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAlertTitle", slot);
   }
   generateUtilityClasses("MuiAlertTitle", ["root"]);
-  const _excluded$S = ["className"];
-  const useUtilityClasses$K = (ownerState) => {
+  const _excluded$T = ["className"];
+  const useUtilityClasses$L = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -72120,9 +72120,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
     const ownerState = props;
-    const classes = useUtilityClasses$K(ownerState);
+    const classes = useUtilityClasses$L(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AlertTitleRoot, _extends$1({
       gutterBottom: true,
       component: "div",
@@ -72158,8 +72158,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAppBar", slot);
   }
   generateUtilityClasses("MuiAppBar", ["root", "positionFixed", "positionAbsolute", "positionSticky", "positionStatic", "positionRelative", "colorDefault", "colorPrimary", "colorSecondary", "colorInherit", "colorTransparent", "colorError", "colorInfo", "colorSuccess", "colorWarning"]);
-  const _excluded$R = ["className", "color", "enableColorOnDark", "position"];
-  const useUtilityClasses$J = (ownerState) => {
+  const _excluded$S = ["className", "color", "enableColorOnDark", "position"];
+  const useUtilityClasses$K = (ownerState) => {
     const {
       color: color2,
       position: position2,
@@ -72260,13 +72260,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       color: color2 = "primary",
       enableColorOnDark = false,
       position: position2 = "fixed"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$R);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
     const ownerState = _extends$1({}, props, {
       color: color2,
       position: position2,
       enableColorOnDark
     });
-    const classes = useUtilityClasses$J(ownerState);
+    const classes = useUtilityClasses$K(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AppBarRoot, _extends$1({
       square: true,
       component: "header",
@@ -72396,7 +72396,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       internalRef: internalSlotProps.ref
     };
   }
-  const _excluded$Q = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+  const _excluded$R = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
   function useSlotProps(parameters) {
     var _parameters$additiona;
     const {
@@ -72404,7 +72404,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       externalSlotProps,
       ownerState,
       skipResolvingSlotProps = false
-    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$Q);
+    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$R);
     const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
     const {
       props: mergedProps,
@@ -73361,7 +73361,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       onClickAway: handleClickAway
     };
   }
-  const _excluded$P = ["onChange", "maxRows", "minRows", "style", "value"];
+  const _excluded$Q = ["onChange", "maxRows", "minRows", "style", "value"];
   function getStyleValue(value) {
     return parseInt(value, 10) || 0;
   }
@@ -73390,7 +73390,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       minRows = 1,
       style: style2,
       value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$P);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Q);
     const {
       current: isControlled
     } = reactExports.useRef(value != null);
@@ -73630,7 +73630,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const inputBaseClasses = generateUtilityClasses("MuiInputBase", ["root", "formControl", "focused", "disabled", "adornedStart", "adornedEnd", "error", "sizeSmall", "multiline", "colorSecondary", "fullWidth", "hiddenLabel", "readOnly", "input", "inputSizeSmall", "inputMultiline", "inputTypeSearch", "inputAdornedStart", "inputAdornedEnd", "inputHiddenLabel"]);
   const inputBaseClasses$1 = inputBaseClasses;
-  const _excluded$O = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
+  const _excluded$P = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
   const rootOverridesResolver = (props, styles2) => {
     const {
       ownerState
@@ -73643,7 +73643,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     } = props;
     return [styles2.input, ownerState.size === "small" && styles2.inputSizeSmall, ownerState.multiline && styles2.inputMultiline, ownerState.type === "search" && styles2.inputTypeSearch, ownerState.startAdornment && styles2.inputAdornedStart, ownerState.endAdornment && styles2.inputAdornedEnd, ownerState.hiddenLabel && styles2.inputHiddenLabel];
   };
-  const useUtilityClasses$I = (ownerState) => {
+  const useUtilityClasses$J = (ownerState) => {
     const {
       classes,
       color: color2,
@@ -73854,7 +73854,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startAdornment,
       type = "text",
       value: valueProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$O);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$P);
     const value = inputPropsProp.value != null ? inputPropsProp.value : valueProp;
     const {
       current: isControlled
@@ -74015,7 +74015,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startAdornment,
       type
     });
-    const classes = useUtilityClasses$I(ownerState);
+    const classes = useUtilityClasses$J(ownerState);
     const Root = slots.root || components.Root || InputBaseRoot;
     const rootProps = slotProps.root || componentsProps.root || {};
     const Input2 = slots.input || components.Input || InputBaseComponent;
@@ -74321,8 +74321,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAvatar", slot);
   }
   generateUtilityClasses("MuiAvatar", ["root", "colorDefault", "circular", "rounded", "square", "img", "fallback"]);
-  const _excluded$N = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
-  const useUtilityClasses$H = (ownerState) => {
+  const _excluded$O = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
+  const useUtilityClasses$I = (ownerState) => {
     const {
       classes,
       variant,
@@ -74448,7 +74448,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       src,
       srcSet,
       variant = "circular"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$N);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$O);
     let children = null;
     const loaded = useLoaded(_extends$1({}, imgProps, {
       src,
@@ -74461,7 +74461,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       component,
       variant
     });
-    const classes = useUtilityClasses$H(ownerState);
+    const classes = useUtilityClasses$I(ownerState);
     if (hasImgNotFailing) {
       children = /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImg, _extends$1({
         alt,
@@ -74547,7 +74547,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: PropTypes.oneOfType([PropTypes.oneOf(["circular", "rounded", "square"]), PropTypes.string])
   } : void 0;
   const Avatar$1 = Avatar;
-  const _excluded$M = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+  const _excluded$N = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
   const styles$1 = {
     entering: {
       opacity: 1
@@ -74578,7 +74578,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       timeout = defaultTimeout,
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$M);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$N);
     const nodeRef = reactExports.useRef(null);
     const handleRef = useForkRef(nodeRef, children.ref, ref);
     const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -74733,8 +74733,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiBackdrop", slot);
   }
   generateUtilityClasses("MuiBackdrop", ["root", "invisible"]);
-  const _excluded$L = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
-  const useUtilityClasses$G = (ownerState) => {
+  const _excluded$M = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
+  const useUtilityClasses$H = (ownerState) => {
     const {
       classes,
       invisible
@@ -74787,12 +74787,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       slots = {},
       TransitionComponent = Fade$1,
       transitionDuration
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$L);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$M);
     const ownerState = _extends$1({}, props, {
       component,
       invisible
     });
-    const classes = useUtilityClasses$G(ownerState);
+    const classes = useUtilityClasses$H(ownerState);
     const rootSlotProps = (_slotProps$root = slotProps.root) != null ? _slotProps$root : componentsProps.root;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
       in: open,
@@ -74939,10 +74939,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     "anchorOriginBottomRightRectangular"
   ]);
   const badgeClasses$1 = badgeClasses;
-  const _excluded$K = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
+  const _excluded$L = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
   const RADIUS_STANDARD = 10;
   const RADIUS_DOT = 4;
-  const useUtilityClasses$F = (ownerState) => {
+  const useUtilityClasses$G = (ownerState) => {
     const {
       color: color2,
       anchorOrigin,
@@ -75106,7 +75106,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps,
       showZero = false,
       variant: variantProp = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$K);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$L);
     const {
       badgeContent,
       invisible: invisibleFromHook,
@@ -75144,7 +75144,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       overlap,
       variant
     });
-    const classes = useUtilityClasses$F(ownerState);
+    const classes = useUtilityClasses$G(ownerState);
     const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : BadgeRoot;
     const BadgeSlot = (_ref2 = (_slots$badge = slots == null ? void 0 : slots.badge) != null ? _slots$badge : components.Badge) != null ? _ref2 : BadgeBadge;
     const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
@@ -75304,8 +75304,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     ButtonGroupButtonContext.displayName = "ButtonGroupButtonContext";
   }
   const ButtonGroupButtonContext$1 = ButtonGroupButtonContext;
-  const _excluded$J = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
-  const useUtilityClasses$E = (ownerState) => {
+  const _excluded$K = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
+  const useUtilityClasses$F = (ownerState) => {
     const {
       color: color2,
       disableElevation,
@@ -75530,7 +75530,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startIcon: startIconProp,
       type,
       variant = "text"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$J);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$K);
     const ownerState = _extends$1({}, props, {
       color: color2,
       component,
@@ -75542,7 +75542,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       type,
       variant
     });
-    const classes = useUtilityClasses$E(ownerState);
+    const classes = useUtilityClasses$F(ownerState);
     const startIcon = startIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonStartIcon, {
       className: classes.startIcon,
       ownerState,
@@ -75667,8 +75667,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("PrivateSwitchBase", slot);
   }
   generateUtilityClasses("PrivateSwitchBase", ["root", "checked", "disabled", "input", "edgeStart", "edgeEnd"]);
-  const _excluded$I = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
-  const useUtilityClasses$D = (ownerState) => {
+  const _excluded$J = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
+  const useUtilityClasses$E = (ownerState) => {
     const {
       classes,
       checked,
@@ -75726,7 +75726,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       type,
       value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$I);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$J);
     const [checked, setCheckedState] = useControlled({
       controlled: checkedProp,
       default: Boolean(defaultChecked),
@@ -75773,7 +75773,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableFocusRipple,
       edge
     });
-    const classes = useUtilityClasses$D(ownerState);
+    const classes = useUtilityClasses$E(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SwitchBaseRoot, _extends$1({
       component: "span",
       className: clsx(classes.root, className),
@@ -75912,6 +75912,212 @@ Please use another name.` : formatMuiErrorMessage(18));
     value: PropTypes.any
   } : void 0;
   const SwitchBase$1 = SwitchBase;
+  const CheckBoxOutlineBlankIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+    d: "M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+  }), "CheckBoxOutlineBlank");
+  const CheckBoxIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+    d: "M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+  }), "CheckBox");
+  const IndeterminateCheckBoxIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+    d: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"
+  }), "IndeterminateCheckBox");
+  function getCheckboxUtilityClass(slot) {
+    return generateUtilityClass("MuiCheckbox", slot);
+  }
+  const checkboxClasses = generateUtilityClasses("MuiCheckbox", ["root", "checked", "disabled", "indeterminate", "colorPrimary", "colorSecondary", "sizeSmall", "sizeMedium"]);
+  const checkboxClasses$1 = checkboxClasses;
+  const _excluded$I = ["checkedIcon", "color", "icon", "indeterminate", "indeterminateIcon", "inputProps", "size", "className"];
+  const useUtilityClasses$D = (ownerState) => {
+    const {
+      classes,
+      indeterminate,
+      color: color2,
+      size: size2
+    } = ownerState;
+    const slots = {
+      root: ["root", indeterminate && "indeterminate", `color${capitalize$2(color2)}`, `size${capitalize$2(size2)}`]
+    };
+    const composedClasses = composeClasses(slots, getCheckboxUtilityClass, classes);
+    return _extends$1({}, classes, composedClasses);
+  };
+  const CheckboxRoot = styled$1(SwitchBase$1, {
+    shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
+    name: "MuiCheckbox",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, ownerState.indeterminate && styles2.indeterminate, ownerState.color !== "default" && styles2[`color${capitalize$2(ownerState.color)}`]];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    color: (theme2.vars || theme2).palette.text.secondary
+  }, !ownerState.disableRipple && {
+    "&:hover": {
+      backgroundColor: theme2.vars ? `rgba(${ownerState.color === "default" ? theme2.vars.palette.action.activeChannel : theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(ownerState.color === "default" ? theme2.palette.action.active : theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
+      // Reset on touch devices, it doesn't add specificity
+      "@media (hover: none)": {
+        backgroundColor: "transparent"
+      }
+    }
+  }, ownerState.color !== "default" && {
+    [`&.${checkboxClasses$1.checked}, &.${checkboxClasses$1.indeterminate}`]: {
+      color: (theme2.vars || theme2).palette[ownerState.color].main
+    },
+    [`&.${checkboxClasses$1.disabled}`]: {
+      color: (theme2.vars || theme2).palette.action.disabled
+    }
+  }));
+  const defaultCheckedIcon$1 = /* @__PURE__ */ jsxRuntimeExports.jsx(CheckBoxIcon, {});
+  const defaultIcon$1 = /* @__PURE__ */ jsxRuntimeExports.jsx(CheckBoxOutlineBlankIcon, {});
+  const defaultIndeterminateIcon = /* @__PURE__ */ jsxRuntimeExports.jsx(IndeterminateCheckBoxIcon, {});
+  const Checkbox = /* @__PURE__ */ reactExports.forwardRef(function Checkbox2(inProps, ref) {
+    var _icon$props$fontSize, _indeterminateIcon$pr;
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiCheckbox"
+    });
+    const {
+      checkedIcon = defaultCheckedIcon$1,
+      color: color2 = "primary",
+      icon: iconProp = defaultIcon$1,
+      indeterminate = false,
+      indeterminateIcon: indeterminateIconProp = defaultIndeterminateIcon,
+      inputProps,
+      size: size2 = "medium",
+      className
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$I);
+    const icon = indeterminate ? indeterminateIconProp : iconProp;
+    const indeterminateIcon = indeterminate ? indeterminateIconProp : checkedIcon;
+    const ownerState = _extends$1({}, props, {
+      color: color2,
+      indeterminate,
+      size: size2
+    });
+    const classes = useUtilityClasses$D(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(CheckboxRoot, _extends$1({
+      type: "checkbox",
+      inputProps: _extends$1({
+        "data-indeterminate": indeterminate
+      }, inputProps),
+      icon: /* @__PURE__ */ reactExports.cloneElement(icon, {
+        fontSize: (_icon$props$fontSize = icon.props.fontSize) != null ? _icon$props$fontSize : size2
+      }),
+      checkedIcon: /* @__PURE__ */ reactExports.cloneElement(indeterminateIcon, {
+        fontSize: (_indeterminateIcon$pr = indeterminateIcon.props.fontSize) != null ? _indeterminateIcon$pr : size2
+      }),
+      ownerState,
+      ref,
+      className: clsx(classes.root, className)
+    }, other, {
+      classes
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Checkbox.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * If `true`, the component is checked.
+     */
+    checked: PropTypes.bool,
+    /**
+     * The icon to display when the component is checked.
+     * @default <CheckBoxIcon />
+     */
+    checkedIcon: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The color of the component.
+     * It supports both default and custom theme colors, which can be added as shown in the
+     * [palette customization guide](https://mui.com/material-ui/customization/palette/#custom-colors).
+     * @default 'primary'
+     */
+    color: PropTypes.oneOfType([PropTypes.oneOf(["default", "primary", "secondary", "error", "info", "success", "warning"]), PropTypes.string]),
+    /**
+     * The default checked state. Use when the component is not controlled.
+     */
+    defaultChecked: PropTypes.bool,
+    /**
+     * If `true`, the component is disabled.
+     * @default false
+     */
+    disabled: PropTypes.bool,
+    /**
+     * If `true`, the ripple effect is disabled.
+     * @default false
+     */
+    disableRipple: PropTypes.bool,
+    /**
+     * The icon to display when the component is unchecked.
+     * @default <CheckBoxOutlineBlankIcon />
+     */
+    icon: PropTypes.node,
+    /**
+     * The id of the `input` element.
+     */
+    id: PropTypes.string,
+    /**
+     * If `true`, the component appears indeterminate.
+     * This does not set the native input element to indeterminate due
+     * to inconsistent behavior across browsers.
+     * However, we set a `data-indeterminate` attribute on the `input`.
+     * @default false
+     */
+    indeterminate: PropTypes.bool,
+    /**
+     * The icon to display when the component is indeterminate.
+     * @default <IndeterminateCheckBoxIcon />
+     */
+    indeterminateIcon: PropTypes.node,
+    /**
+     * [Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes) applied to the `input` element.
+     */
+    inputProps: PropTypes.object,
+    /**
+     * Pass a ref to the `input` element.
+     */
+    inputRef: refType$1,
+    /**
+     * Callback fired when the state is changed.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} event The event source of the callback.
+     * You can pull out the new checked state by accessing `event.target.checked` (boolean).
+     */
+    onChange: PropTypes.func,
+    /**
+     * If `true`, the `input` element is required.
+     * @default false
+     */
+    required: PropTypes.bool,
+    /**
+     * The size of the component.
+     * `small` is equivalent to the dense checkbox styling.
+     * @default 'medium'
+     */
+    size: PropTypes.oneOfType([PropTypes.oneOf(["medium", "small"]), PropTypes.string]),
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The value of the component. The DOM API casts this to a string.
+     * The browser uses "on" as the default value.
+     */
+    value: PropTypes.any
+  } : void 0;
+  const Checkbox$1 = Checkbox;
   const html = (theme2, enableColorScheme) => _extends$1({
     WebkitFontSmoothing: "antialiased",
     // Antialiasing.
@@ -99684,6 +99890,156 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] }) });
     }
   }
+  var Campaign = {};
+  var _interopRequireDefault$d = interopRequireDefaultExports;
+  Object.defineProperty(Campaign, "__esModule", {
+    value: true
+  });
+  var default_1$d = Campaign.default = void 0;
+  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+  var _jsxRuntime$d = jsxRuntimeExports;
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+    d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
+  }), "Campaign");
+  default_1$d = Campaign.default = _default$d;
+  /*! js-cookie v3.0.5 | MIT */
+  function assign(target) {
+    for (var i2 = 1; i2 < arguments.length; i2++) {
+      var source = arguments[i2];
+      for (var key in source) {
+        target[key] = source[key];
+      }
+    }
+    return target;
+  }
+  var defaultConverter = {
+    read: function(value) {
+      if (value[0] === '"') {
+        value = value.slice(1, -1);
+      }
+      return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
+    },
+    write: function(value) {
+      return encodeURIComponent(value).replace(
+        /%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g,
+        decodeURIComponent
+      );
+    }
+  };
+  function init(converter, defaultAttributes) {
+    function set2(name2, value, attributes) {
+      if (typeof document === "undefined") {
+        return;
+      }
+      attributes = assign({}, defaultAttributes, attributes);
+      if (typeof attributes.expires === "number") {
+        attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
+      }
+      if (attributes.expires) {
+        attributes.expires = attributes.expires.toUTCString();
+      }
+      name2 = encodeURIComponent(name2).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
+      var stringifiedAttributes = "";
+      for (var attributeName in attributes) {
+        if (!attributes[attributeName]) {
+          continue;
+        }
+        stringifiedAttributes += "; " + attributeName;
+        if (attributes[attributeName] === true) {
+          continue;
+        }
+        stringifiedAttributes += "=" + attributes[attributeName].split(";")[0];
+      }
+      return document.cookie = name2 + "=" + converter.write(value, name2) + stringifiedAttributes;
+    }
+    function get(name2) {
+      if (typeof document === "undefined" || arguments.length && !name2) {
+        return;
+      }
+      var cookies = document.cookie ? document.cookie.split("; ") : [];
+      var jar = {};
+      for (var i2 = 0; i2 < cookies.length; i2++) {
+        var parts = cookies[i2].split("=");
+        var value = parts.slice(1).join("=");
+        try {
+          var found = decodeURIComponent(parts[0]);
+          jar[found] = converter.read(value, found);
+          if (name2 === found) {
+            break;
+          }
+        } catch (e) {
+        }
+      }
+      return name2 ? jar[name2] : jar;
+    }
+    return Object.create(
+      {
+        set: set2,
+        get,
+        remove: function(name2, attributes) {
+          set2(
+            name2,
+            "",
+            assign({}, attributes, {
+              expires: -1
+            })
+          );
+        },
+        withAttributes: function(attributes) {
+          return init(this.converter, assign({}, this.attributes, attributes));
+        },
+        withConverter: function(converter2) {
+          return init(assign({}, this.converter, converter2), this.attributes);
+        }
+      },
+      {
+        attributes: { value: Object.freeze(defaultAttributes) },
+        converter: { value: Object.freeze(converter) }
+      }
+    );
+  }
+  var api = init(defaultConverter, { path: "/" });
+  const StyledTitle = styled$1(AlertTitle$1)({
+    fontWeight: 600,
+    "&:last-child": {
+      marginBottom: 0
+    }
+  });
+  const StyledSubtitle = styled$1(Typography$1)({});
+  const CFAlert = ({
+    severity = "info",
+    title,
+    subtitle,
+    onClose,
+    hideIfCookie,
+    sx
+  }) => {
+    const [hide, setHide] = reactExports.useState(
+      hideIfCookie ? !!api.get(hideIfCookie) : false
+    );
+    function handleClose() {
+      onClose && onClose();
+      api.set(hideIfCookie, "true", { expires: 7 });
+      setHide(true);
+    }
+    if (hide) {
+      return null;
+    }
+    const isUpdateAnnouncement = severity === "update";
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      Alert$1,
+      {
+        severity: isUpdateAnnouncement ? "info" : severity,
+        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : null,
+        sx,
+        onClose: hideIfCookie && handleClose,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
+          subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
+        ]
+      }
+    );
+  };
   const defaultState = {
     type: null
   };
@@ -99704,6 +100060,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
     DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
     DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
+    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
     DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
     return DIALOG_TYPE2;
   })(DIALOG_TYPE || {});
@@ -99737,6 +100094,127 @@ Please use another name.` : formatMuiErrorMessage(18));
       flexGrow: 1
     }
   }));
+  const fields = {
+    type: [
+      { value: "outcome", label: "Outcomes" },
+      { value: "node", label: "Nodes" },
+      {
+        value: "framework",
+        label: "Course framework",
+        showForType: ["project", "course"]
+      },
+      {
+        value: "matrix",
+        label: "Competency matrix",
+        showForType: ["project", "program"]
+      },
+      {
+        value: "sobec",
+        label: "SOBEC validation",
+        showForType: ["project", "program"]
+      }
+    ],
+    format: [
+      { value: "excel", label: "Excel" },
+      { value: "csv", label: "CSV" }
+    ]
+  };
+  function ExportProjectDialog({ data, onSubmit }) {
+    const [state, setState] = reactExports.useState({
+      type: "outcome",
+      format: "excel",
+      sets: []
+    });
+    const { show, onClose } = useDialog(DIALOG_TYPE.EXPORT_PROJECT);
+    function onRadioChange(field, value) {
+      setState(
+        produce((draft) => {
+          draft[field];
+        })
+      );
+    }
+    function onExportBtnClick(e) {
+      console.log(
+        "export submit with state",
+        state,
+        "posting to",
+        e.ctrlKey ? COURSEFLOW_APP.config.post_paths.get_export_download : COURSEFLOW_APP.config.post_paths.get_export
+      );
+      onSubmit();
+    }
+    function onDialogClose() {
+      setState(
+        produce((draft) => {
+          draft.type = "outcome";
+          draft.format = "excel";
+        })
+      );
+      onClose();
+    }
+    const projectType = data.type;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext(`Export ${projectType}`) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-type-group-label", children: window.gettext("Export type") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            RadioGroup$1,
+            {
+              "aria-labelledby": "export-type-group-label",
+              value: state.type,
+              children: fields.type.map((type, index) => {
+                return !type.showForType || type.showForType && type.showForType.indexOf(projectType) !== -1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  FormControlLabel$1,
+                  {
+                    value: type.value,
+                    control: /* @__PURE__ */ jsxRuntimeExports.jsx(Radio$1, {}),
+                    label: window.gettext(type.label),
+                    onChange: () => onRadioChange("type", type.value),
+                    checked: type.value === state.type
+                  },
+                  index
+                ) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+              })
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-format-group-label", children: window.gettext("Export format") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            RadioGroup$1,
+            {
+              "aria-labelledby": "export-format-group-label",
+              value: state.format,
+              children: fields.format.map((format2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                FormControlLabel$1,
+                {
+                  value: format2.value,
+                  control: /* @__PURE__ */ jsxRuntimeExports.jsx(Radio$1, {}),
+                  label: window.gettext(format2.label),
+                  onChange: () => onRadioChange("format", format2.value),
+                  checked: format2.value === state.format
+                },
+                index
+              ))
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { severity: "warning", title: "TODO" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-sets-group-label", children: window.gettext("Object set visibility") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(FormGroup$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(FormControlLabel$1, { control: /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox$1, {}), label: "Object set 1" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(FormControlLabel$1, { control: /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox$1, {}), label: "Object set 2" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(FormControlLabel$1, { control: /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox$1, {}), label: "Object set 3" })
+          ] })
+        ] })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onDialogClose, children: window.gettext("Cancel") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onExportBtnClick, children: window.gettext("Export") })
+      ] })
+    ] });
+  }
   const ArchiveProjectModal = ({ onSubmit }) => {
     const { show, onClose } = useDialog(DIALOG_TYPE.ARCHIVE_PROJECT);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -99773,8 +100251,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       users: null,
       workflow_data: [],
       openEditDialog: false,
-      openShareDialog: false,
-      openExportDialog: false
+      openShareDialog: false
     });
     const { dispatch } = useDialog();
     const createDiv = reactExports.useRef();
@@ -99855,17 +100332,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         })
       );
     }
-    function openExportDialog() {
-      setState(
-        produce((draft) => {
-          draft.openExportDialog = true;
-        })
-      );
-    }
     function closeModals() {
       setState(
         produce((draft) => {
-          draft.openExportDialog = false;
           draft.openShareDialog = false;
           draft.openEditDialog = false;
         })
@@ -99905,7 +100374,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           {
             id: "export-button",
             className: "hover-shade",
-            onClick: openExportDialog,
+            onClick: () => dispatch(DIALOG_TYPE.EXPORT_PROJECT),
             children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
           }
         );
@@ -100081,12 +100550,6 @@ Please use another name.` : formatMuiErrorMessage(18));
         }
       ) });
     };
-    const ExportDialog = () => {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: state.openExportDialog, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export project") }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ExportMenu, { data: state.data, actionFunction: closeModals })
-      ] });
-    };
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         MenuBar,
@@ -100112,7 +100575,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(EditDialog, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(ShareDialog, {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ExportDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ExportProjectDialog, { data: state.data, onSubmit: closeModals }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(ArchiveProjectModal, { onSubmit: deleteProject })
     ] });
   }
@@ -100291,156 +100754,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       ) });
     }
   }
-  var Campaign = {};
-  var _interopRequireDefault$d = interopRequireDefaultExports;
-  Object.defineProperty(Campaign, "__esModule", {
-    value: true
-  });
-  var default_1$d = Campaign.default = void 0;
-  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-  var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
-    d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
-  }), "Campaign");
-  default_1$d = Campaign.default = _default$d;
-  /*! js-cookie v3.0.5 | MIT */
-  function assign(target) {
-    for (var i2 = 1; i2 < arguments.length; i2++) {
-      var source = arguments[i2];
-      for (var key in source) {
-        target[key] = source[key];
-      }
-    }
-    return target;
-  }
-  var defaultConverter = {
-    read: function(value) {
-      if (value[0] === '"') {
-        value = value.slice(1, -1);
-      }
-      return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
-    },
-    write: function(value) {
-      return encodeURIComponent(value).replace(
-        /%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g,
-        decodeURIComponent
-      );
-    }
-  };
-  function init(converter, defaultAttributes) {
-    function set2(name2, value, attributes) {
-      if (typeof document === "undefined") {
-        return;
-      }
-      attributes = assign({}, defaultAttributes, attributes);
-      if (typeof attributes.expires === "number") {
-        attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
-      }
-      if (attributes.expires) {
-        attributes.expires = attributes.expires.toUTCString();
-      }
-      name2 = encodeURIComponent(name2).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
-      var stringifiedAttributes = "";
-      for (var attributeName in attributes) {
-        if (!attributes[attributeName]) {
-          continue;
-        }
-        stringifiedAttributes += "; " + attributeName;
-        if (attributes[attributeName] === true) {
-          continue;
-        }
-        stringifiedAttributes += "=" + attributes[attributeName].split(";")[0];
-      }
-      return document.cookie = name2 + "=" + converter.write(value, name2) + stringifiedAttributes;
-    }
-    function get(name2) {
-      if (typeof document === "undefined" || arguments.length && !name2) {
-        return;
-      }
-      var cookies = document.cookie ? document.cookie.split("; ") : [];
-      var jar = {};
-      for (var i2 = 0; i2 < cookies.length; i2++) {
-        var parts = cookies[i2].split("=");
-        var value = parts.slice(1).join("=");
-        try {
-          var found = decodeURIComponent(parts[0]);
-          jar[found] = converter.read(value, found);
-          if (name2 === found) {
-            break;
-          }
-        } catch (e) {
-        }
-      }
-      return name2 ? jar[name2] : jar;
-    }
-    return Object.create(
-      {
-        set: set2,
-        get,
-        remove: function(name2, attributes) {
-          set2(
-            name2,
-            "",
-            assign({}, attributes, {
-              expires: -1
-            })
-          );
-        },
-        withAttributes: function(attributes) {
-          return init(this.converter, assign({}, this.attributes, attributes));
-        },
-        withConverter: function(converter2) {
-          return init(assign({}, this.converter, converter2), this.attributes);
-        }
-      },
-      {
-        attributes: { value: Object.freeze(defaultAttributes) },
-        converter: { value: Object.freeze(converter) }
-      }
-    );
-  }
-  var api = init(defaultConverter, { path: "/" });
-  const StyledTitle = styled$1(AlertTitle$1)({
-    fontWeight: 600,
-    "&:last-child": {
-      marginBottom: 0
-    }
-  });
-  const StyledSubtitle = styled$1(Typography$1)({});
-  const CFAlert = ({
-    severity = "info",
-    title,
-    subtitle,
-    onClose,
-    hideIfCookie,
-    sx
-  }) => {
-    const [hide, setHide] = reactExports.useState(
-      hideIfCookie ? !!api.get(hideIfCookie) : false
-    );
-    function handleClose() {
-      onClose && onClose();
-      api.set(hideIfCookie, "true", { expires: 7 });
-      setHide(true);
-    }
-    if (hide) {
-      return null;
-    }
-    const isUpdateAnnouncement = severity === "update";
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      Alert$1,
-      {
-        severity: isUpdateAnnouncement ? "info" : severity,
-        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : null,
-        sx,
-        onClose: hideIfCookie && handleClose,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
-          subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
-        ]
-      }
-    );
-  };
   var Close = {};
   var _interopRequireDefault$c = interopRequireDefaultExports;
   Object.defineProperty(Close, "__esModule", {
@@ -103553,8 +103866,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
       setState(
         produce((draft) => {
-          const { fields } = draft;
-          fields[e.target.name] = e.target.value;
+          const { fields: fields2 } = draft;
+          fields2[e.target.name] = e.target.value;
         })
       );
     }

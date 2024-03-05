@@ -9,13 +9,13 @@ import { Dialog, DialogTitle } from '@mui/material'
 import Header from '@cfPages/Library/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
-import ExportMenu from '@cfCommonComponents/dialog/ExportMenu'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
 import { EProject } from '@XMLHTTP/types/entity'
+import ExportProjectModal from '@cfModule/components/common/dialog/ExportProject'
 import ArchiveProjectModal from '@cfModule/components/common/dialog/ArchiveProject'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 // import $ from 'jquery'
@@ -33,7 +33,6 @@ interface StateType {
   workflow_data?: Workflow[]
   openEditDialog?: boolean
   openShareDialog?: boolean
-  openExportDialog?: boolean
 }
 
 function ProjectMenu({
@@ -49,8 +48,7 @@ function ProjectMenu({
     users: null,
     workflow_data: [],
     openEditDialog: false,
-    openShareDialog: false,
-    openExportDialog: false
+    openShareDialog: false
   })
 
   // to be able to show appropriate modals
@@ -148,18 +146,9 @@ function ProjectMenu({
     )
   }
 
-  function openExportDialog() {
-    setState(
-      produce((draft) => {
-        draft.openExportDialog = true
-      })
-    )
-  }
-
   function closeModals() {
     setState(
       produce((draft) => {
-        draft.openExportDialog = false
         draft.openShareDialog = false
         draft.openEditDialog = false
       })
@@ -207,7 +196,8 @@ function ProjectMenu({
         <div
           id="export-button"
           className="hover-shade"
-          onClick={openExportDialog}
+          onClick={() => dispatch(DIALOG_TYPE.EXPORT_PROJECT)}
+          // onClick={openExportDialog}
         >
           <div>{window.gettext('Export')}</div>
         </div>
@@ -403,17 +393,6 @@ function ProjectMenu({
     )
   }
 
-  const ExportDialog = () => {
-    return (
-      <Dialog open={state.openExportDialog}>
-        <DialogTitle>
-          <h2>{window.gettext('Export project')}</h2>
-        </DialogTitle>
-        <ExportMenu data={state.data} actionFunction={closeModals} />
-      </Dialog>
-    )
-  }
-
   return (
     <div className="main-block">
       <MenuBar
@@ -435,7 +414,7 @@ function ProjectMenu({
       </div>
       <EditDialog />
       <ShareDialog />
-      <ExportDialog />
+      <ExportProjectModal data={state.data} onSubmit={closeModals} />
       <ArchiveProjectModal onSubmit={deleteProject} />
     </div>
   )
