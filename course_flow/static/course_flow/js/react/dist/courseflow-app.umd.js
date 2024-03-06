@@ -2265,18 +2265,17 @@ var __privateMethod = (obj, member, method) => {
     react_production_min.version = "18.2.0";
     return react_production_min;
   }
-  var hasRequiredReact;
-  function requireReact() {
-    if (hasRequiredReact)
-      return react.exports;
-    hasRequiredReact = 1;
-    if (process.env.NODE_ENV === "production") {
-      react.exports = requireReact_production_min();
-    } else {
-      react.exports = requireReact_development();
-    }
-    return react.exports;
+  if (process.env.NODE_ENV === "production") {
+    react.exports = requireReact_production_min();
+  } else {
+    react.exports = requireReact_development();
   }
+  var reactExports = react.exports;
+  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
+  const React$2 = /* @__PURE__ */ _mergeNamespaces({
+    __proto__: null,
+    default: React$1
+  }, [reactExports]);
   /**
    * @license React
    * react-jsx-runtime.development.js
@@ -2293,7 +2292,7 @@ var __privateMethod = (obj, member, method) => {
     hasRequiredReactJsxRuntime_development = 1;
     if (process.env.NODE_ENV !== "production") {
       (function() {
-        var React2 = requireReact();
+        var React2 = reactExports;
         var REACT_ELEMENT_TYPE = Symbol.for("react.element");
         var REACT_PORTAL_TYPE = Symbol.for("react.portal");
         var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
@@ -3178,7 +3177,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactJsxRuntime_production_min)
       return reactJsxRuntime_production_min;
     hasRequiredReactJsxRuntime_production_min = 1;
-    var f = requireReact(), k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
+    var f = reactExports, k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
     function q(c, a, g) {
       var b, d = {}, e = null, h = null;
       void 0 !== g && (e = "" + g);
@@ -3953,7 +3952,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var Scheduler = requireScheduler();
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         var suppressWarning = false;
@@ -5206,14 +5205,14 @@ var __privateMethod = (obj, member, method) => {
           return null;
         }
         var ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
-        var current = null;
+        var current2 = null;
         var isRendering = false;
         function getCurrentFiberOwnerNameInDevOrNull() {
           {
-            if (current === null) {
+            if (current2 === null) {
               return null;
             }
-            var owner = current._debugOwner;
+            var owner = current2._debugOwner;
             if (owner !== null && typeof owner !== "undefined") {
               return getComponentNameFromFiber(owner);
             }
@@ -5222,29 +5221,29 @@ var __privateMethod = (obj, member, method) => {
         }
         function getCurrentFiberStackInDev() {
           {
-            if (current === null) {
+            if (current2 === null) {
               return "";
             }
-            return getStackByFiberInDevAndProd(current);
+            return getStackByFiberInDevAndProd(current2);
           }
         }
         function resetCurrentFiber() {
           {
             ReactDebugCurrentFrame.getCurrentStack = null;
-            current = null;
+            current2 = null;
             isRendering = false;
           }
         }
         function setCurrentFiber(fiber) {
           {
             ReactDebugCurrentFrame.getCurrentStack = fiber === null ? null : getCurrentFiberStackInDev;
-            current = fiber;
+            current2 = fiber;
             isRendering = false;
           }
         }
         function getCurrentFiber() {
           {
-            return current;
+            return current2;
           }
         }
         function setIsRendering(rendering) {
@@ -5323,7 +5322,7 @@ var __privateMethod = (obj, member, method) => {
           if (node2.hasOwnProperty(valueField) || typeof descriptor === "undefined" || typeof descriptor.get !== "function" || typeof descriptor.set !== "function") {
             return;
           }
-          var get2 = descriptor.get, set2 = descriptor.set;
+          var get2 = descriptor.get, set3 = descriptor.set;
           Object.defineProperty(node2, valueField, {
             configurable: true,
             get: function() {
@@ -5334,7 +5333,7 @@ var __privateMethod = (obj, member, method) => {
                 checkFormFieldValueStringCoercion(value);
               }
               currentValue = "" + value;
-              set2.call(this, value);
+              set3.call(this, value);
             }
           });
           Object.defineProperty(node2, valueField, {
@@ -7245,7 +7244,7 @@ var __privateMethod = (obj, member, method) => {
         function has2(key) {
           return key._reactInternals !== void 0;
         }
-        function set(key, value) {
+        function set2(key, value) {
           key._reactInternals = value;
         }
         var NoFlags = (
@@ -7385,9 +7384,9 @@ var __privateMethod = (obj, member, method) => {
           if (fiber.tag === SuspenseComponent) {
             var suspenseState = fiber.memoizedState;
             if (suspenseState === null) {
-              var current2 = fiber.alternate;
-              if (current2 !== null) {
-                suspenseState = current2.memoizedState;
+              var current3 = fiber.alternate;
+              if (current3 !== null) {
+                suspenseState = current3.memoizedState;
               }
             }
             if (suspenseState !== null) {
@@ -8376,14 +8375,14 @@ var __privateMethod = (obj, member, method) => {
         function includesSomeLane(a, b) {
           return (a & b) !== NoLanes;
         }
-        function isSubsetOfLanes(set2, subset) {
-          return (set2 & subset) === subset;
+        function isSubsetOfLanes(set3, subset) {
+          return (set3 & subset) === subset;
         }
         function mergeLanes(a, b) {
           return a | b;
         }
-        function removeLanes(set2, subset) {
-          return set2 & ~subset;
+        function removeLanes(set3, subset) {
+          return set3 & ~subset;
         }
         function intersectLanes(a, b) {
           return a & b;
@@ -13174,9 +13173,9 @@ var __privateMethod = (obj, member, method) => {
             }
             return maybeStrictRoot;
           };
-          var setToSortedString = function(set2) {
+          var setToSortedString = function(set3) {
             var array = [];
-            set2.forEach(function(value) {
+            set3.forEach(function(value) {
               array.push(value);
             });
             return array.sort().join(", ");
@@ -13680,9 +13679,9 @@ var __privateMethod = (obj, member, method) => {
           };
           fiber.updateQueue = queue;
         }
-        function cloneUpdateQueue(current2, workInProgress2) {
+        function cloneUpdateQueue(current3, workInProgress2) {
           var queue = workInProgress2.updateQueue;
-          var currentQueue = current2.updateQueue;
+          var currentQueue = current3.updateQueue;
           if (queue === currentQueue) {
             var clone2 = {
               baseState: currentQueue.baseState,
@@ -13747,9 +13746,9 @@ var __privateMethod = (obj, member, method) => {
         }
         function enqueueCapturedUpdate(workInProgress2, capturedUpdate) {
           var queue = workInProgress2.updateQueue;
-          var current2 = workInProgress2.alternate;
-          if (current2 !== null) {
-            var currentQueue = current2.updateQueue;
+          var current3 = workInProgress2.alternate;
+          if (current3 !== null) {
+            var currentQueue = current3.updateQueue;
             if (queue === currentQueue) {
               var newFirst = null;
               var newLast = null;
@@ -13882,9 +13881,9 @@ var __privateMethod = (obj, member, method) => {
               lastBaseUpdate.next = firstPendingUpdate;
             }
             lastBaseUpdate = lastPendingUpdate;
-            var current2 = workInProgress2.alternate;
-            if (current2 !== null) {
-              var currentQueue = current2.updateQueue;
+            var current3 = workInProgress2.alternate;
+            if (current3 !== null) {
+              var currentQueue = current3.updateQueue;
               var currentLastBaseUpdate = currentQueue.lastBaseUpdate;
               if (currentLastBaseUpdate !== lastBaseUpdate) {
                 if (currentLastBaseUpdate === null) {
@@ -14260,7 +14259,7 @@ var __privateMethod = (obj, member, method) => {
         function adoptClassInstance(workInProgress2, instance) {
           instance.updater = classComponentUpdater;
           workInProgress2.stateNode = instance;
-          set(instance, workInProgress2);
+          set2(instance, workInProgress2);
           {
             instance._reactInternalInstance = fakeInternalInstance;
           }
@@ -14525,9 +14524,9 @@ var __privateMethod = (obj, member, method) => {
           instance.context = nextContext;
           return shouldUpdate;
         }
-        function updateClassInstance(current2, workInProgress2, ctor, newProps, renderLanes2) {
+        function updateClassInstance(current3, workInProgress2, ctor, newProps, renderLanes2) {
           var instance = workInProgress2.stateNode;
-          cloneUpdateQueue(current2, workInProgress2);
+          cloneUpdateQueue(current3, workInProgress2);
           var unresolvedOldProps = workInProgress2.memoizedProps;
           var oldProps = workInProgress2.type === workInProgress2.elementType ? unresolvedOldProps : resolveDefaultProps(workInProgress2.type, unresolvedOldProps);
           instance.props = oldProps;
@@ -14555,12 +14554,12 @@ var __privateMethod = (obj, member, method) => {
           newState = workInProgress2.memoizedState;
           if (unresolvedOldProps === unresolvedNewProps && oldState === newState && !hasContextChanged() && !checkHasForceUpdateAfterProcessing() && !enableLazyContextPropagation) {
             if (typeof instance.componentDidUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+              if (unresolvedOldProps !== current3.memoizedProps || oldState !== current3.memoizedState) {
                 workInProgress2.flags |= Update;
               }
             }
             if (typeof instance.getSnapshotBeforeUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+              if (unresolvedOldProps !== current3.memoizedProps || oldState !== current3.memoizedState) {
                 workInProgress2.flags |= Snapshot;
               }
             }
@@ -14592,12 +14591,12 @@ var __privateMethod = (obj, member, method) => {
             }
           } else {
             if (typeof instance.componentDidUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+              if (unresolvedOldProps !== current3.memoizedProps || oldState !== current3.memoizedState) {
                 workInProgress2.flags |= Update;
               }
             }
             if (typeof instance.getSnapshotBeforeUpdate === "function") {
-              if (unresolvedOldProps !== current2.memoizedProps || oldState !== current2.memoizedState) {
+              if (unresolvedOldProps !== current3.memoizedProps || oldState !== current3.memoizedState) {
                 workInProgress2.flags |= Snapshot;
               }
             }
@@ -14641,7 +14640,7 @@ var __privateMethod = (obj, member, method) => {
             error('Each child in a list should have a unique "key" prop. See https://reactjs.org/link/warning-keys for more information.');
           };
         }
-        function coerceRef(returnFiber, current2, element) {
+        function coerceRef(returnFiber, current3, element) {
           var mixedRef = element.ref;
           if (mixedRef !== null && typeof mixedRef !== "function" && typeof mixedRef !== "object") {
             {
@@ -14676,8 +14675,8 @@ var __privateMethod = (obj, member, method) => {
                 checkPropStringCoercion(mixedRef, "ref");
               }
               var stringRef = "" + mixedRef;
-              if (current2 !== null && current2.ref !== null && typeof current2.ref === "function" && current2.ref._stringRef === stringRef) {
-                return current2.ref;
+              if (current3 !== null && current3.ref !== null && typeof current3.ref === "function" && current3.ref._stringRef === stringRef) {
+                return current3.ref;
               }
               var ref = function(value) {
                 var refs = resolvedInst.refs;
@@ -14771,9 +14770,9 @@ var __privateMethod = (obj, member, method) => {
               newFiber.flags |= Forked;
               return lastPlacedIndex;
             }
-            var current2 = newFiber.alternate;
-            if (current2 !== null) {
-              var oldIndex = current2.index;
+            var current3 = newFiber.alternate;
+            if (current3 !== null) {
+              var oldIndex = current3.index;
               if (oldIndex < lastPlacedIndex) {
                 newFiber.flags |= Placement;
                 return lastPlacedIndex;
@@ -14791,31 +14790,31 @@ var __privateMethod = (obj, member, method) => {
             }
             return newFiber;
           }
-          function updateTextNode(returnFiber, current2, textContent, lanes) {
-            if (current2 === null || current2.tag !== HostText) {
+          function updateTextNode(returnFiber, current3, textContent, lanes) {
+            if (current3 === null || current3.tag !== HostText) {
               var created = createFiberFromText(textContent, returnFiber.mode, lanes);
               created.return = returnFiber;
               return created;
             } else {
-              var existing = useFiber(current2, textContent);
+              var existing = useFiber(current3, textContent);
               existing.return = returnFiber;
               return existing;
             }
           }
-          function updateElement(returnFiber, current2, element, lanes) {
+          function updateElement(returnFiber, current3, element, lanes) {
             var elementType = element.type;
             if (elementType === REACT_FRAGMENT_TYPE) {
-              return updateFragment2(returnFiber, current2, element.props.children, lanes, element.key);
+              return updateFragment2(returnFiber, current3, element.props.children, lanes, element.key);
             }
-            if (current2 !== null) {
-              if (current2.elementType === elementType || // Keep this check inline so it only runs on the false path:
-              isCompatibleFamilyForHotReloading(current2, element) || // Lazy types should reconcile their resolved type.
+            if (current3 !== null) {
+              if (current3.elementType === elementType || // Keep this check inline so it only runs on the false path:
+              isCompatibleFamilyForHotReloading(current3, element) || // Lazy types should reconcile their resolved type.
               // We need to do this after the Hot Reloading check above,
               // because hot reloading has different semantics than prod because
               // it doesn't resuspend. So we can't let the call below suspend.
-              typeof elementType === "object" && elementType !== null && elementType.$$typeof === REACT_LAZY_TYPE && resolveLazy(elementType) === current2.type) {
-                var existing = useFiber(current2, element.props);
-                existing.ref = coerceRef(returnFiber, current2, element);
+              typeof elementType === "object" && elementType !== null && elementType.$$typeof === REACT_LAZY_TYPE && resolveLazy(elementType) === current3.type) {
+                var existing = useFiber(current3, element.props);
+                existing.ref = coerceRef(returnFiber, current3, element);
                 existing.return = returnFiber;
                 {
                   existing._debugSource = element._source;
@@ -14825,28 +14824,28 @@ var __privateMethod = (obj, member, method) => {
               }
             }
             var created = createFiberFromElement(element, returnFiber.mode, lanes);
-            created.ref = coerceRef(returnFiber, current2, element);
+            created.ref = coerceRef(returnFiber, current3, element);
             created.return = returnFiber;
             return created;
           }
-          function updatePortal(returnFiber, current2, portal, lanes) {
-            if (current2 === null || current2.tag !== HostPortal || current2.stateNode.containerInfo !== portal.containerInfo || current2.stateNode.implementation !== portal.implementation) {
+          function updatePortal(returnFiber, current3, portal, lanes) {
+            if (current3 === null || current3.tag !== HostPortal || current3.stateNode.containerInfo !== portal.containerInfo || current3.stateNode.implementation !== portal.implementation) {
               var created = createFiberFromPortal(portal, returnFiber.mode, lanes);
               created.return = returnFiber;
               return created;
             } else {
-              var existing = useFiber(current2, portal.children || []);
+              var existing = useFiber(current3, portal.children || []);
               existing.return = returnFiber;
               return existing;
             }
           }
-          function updateFragment2(returnFiber, current2, fragment, lanes, key) {
-            if (current2 === null || current2.tag !== Fragment) {
+          function updateFragment2(returnFiber, current3, fragment, lanes, key) {
+            if (current3 === null || current3.tag !== Fragment) {
               var created = createFiberFromFragment(fragment, returnFiber.mode, lanes, key);
               created.return = returnFiber;
               return created;
             } else {
-              var existing = useFiber(current2, fragment);
+              var existing = useFiber(current3, fragment);
               existing.return = returnFiber;
               return existing;
             }
@@ -15351,8 +15350,8 @@ var __privateMethod = (obj, member, method) => {
         }
         var reconcileChildFibers = ChildReconciler(true);
         var mountChildFibers = ChildReconciler(false);
-        function cloneChildFibers(current2, workInProgress2) {
-          if (current2 !== null && workInProgress2.child !== current2.child) {
+        function cloneChildFibers(current3, workInProgress2) {
+          if (current3 !== null && workInProgress2.child !== current3.child) {
             throw new Error("Resuming work not yet implemented.");
           }
           if (workInProgress2.child === null) {
@@ -15634,19 +15633,19 @@ var __privateMethod = (obj, member, method) => {
           }
           return true;
         }
-        function renderWithHooks(current2, workInProgress2, Component, props, secondArg, nextRenderLanes) {
+        function renderWithHooks(current3, workInProgress2, Component, props, secondArg, nextRenderLanes) {
           renderLanes = nextRenderLanes;
           currentlyRenderingFiber$1 = workInProgress2;
           {
-            hookTypesDev = current2 !== null ? current2._debugHookTypes : null;
+            hookTypesDev = current3 !== null ? current3._debugHookTypes : null;
             hookTypesUpdateIndexDev = -1;
-            ignorePreviousDependencies = current2 !== null && current2.type !== workInProgress2.type;
+            ignorePreviousDependencies = current3 !== null && current3.type !== workInProgress2.type;
           }
           workInProgress2.memoizedState = null;
           workInProgress2.updateQueue = null;
           workInProgress2.lanes = NoLanes;
           {
-            if (current2 !== null && current2.memoizedState !== null) {
+            if (current3 !== null && current3.memoizedState !== null) {
               ReactCurrentDispatcher$1.current = HooksDispatcherOnUpdateInDEV;
             } else if (hookTypesDev !== null) {
               ReactCurrentDispatcher$1.current = HooksDispatcherOnMountWithHookTypesInDEV;
@@ -15690,12 +15689,12 @@ var __privateMethod = (obj, member, method) => {
             currentHookNameInDev = null;
             hookTypesDev = null;
             hookTypesUpdateIndexDev = -1;
-            if (current2 !== null && (current2.flags & StaticMask) !== (workInProgress2.flags & StaticMask) && // Disable this warning in legacy mode, because legacy Suspense is weird
+            if (current3 !== null && (current3.flags & StaticMask) !== (workInProgress2.flags & StaticMask) && // Disable this warning in legacy mode, because legacy Suspense is weird
             // and creates false positives. To make this work in legacy mode, we'd
             // need to mark fibers that commit in an incomplete state, somehow. For
             // now I'll disable the warning that most of the bugs that would trigger
             // it are either exclusive to concurrent mode or exist in both.
-            (current2.mode & ConcurrentMode) !== NoMode) {
+            (current3.mode & ConcurrentMode) !== NoMode) {
               error("Internal React error: Expected static flag was missing. Please notify the React team.");
             }
           }
@@ -15710,14 +15709,14 @@ var __privateMethod = (obj, member, method) => {
           localIdCounter = 0;
           return didRenderIdHook;
         }
-        function bailoutHooks(current2, workInProgress2, lanes) {
-          workInProgress2.updateQueue = current2.updateQueue;
+        function bailoutHooks(current3, workInProgress2, lanes) {
+          workInProgress2.updateQueue = current3.updateQueue;
           if ((workInProgress2.mode & StrictEffectsMode) !== NoMode) {
             workInProgress2.flags &= ~(MountPassiveDev | MountLayoutDev | Passive | Update);
           } else {
             workInProgress2.flags &= ~(Passive | Update);
           }
-          current2.lanes = removeLanes(current2.lanes, lanes);
+          current3.lanes = removeLanes(current3.lanes, lanes);
         }
         function resetHooksAfterThrow() {
           ReactCurrentDispatcher$1.current = ContextOnlyDispatcher;
@@ -15763,9 +15762,9 @@ var __privateMethod = (obj, member, method) => {
         function updateWorkInProgressHook() {
           var nextCurrentHook;
           if (currentHook === null) {
-            var current2 = currentlyRenderingFiber$1.alternate;
-            if (current2 !== null) {
-              nextCurrentHook = current2.memoizedState;
+            var current3 = currentlyRenderingFiber$1.alternate;
+            if (current3 !== null) {
+              nextCurrentHook = current3.memoizedState;
             } else {
               nextCurrentHook = null;
             }
@@ -15839,8 +15838,8 @@ var __privateMethod = (obj, member, method) => {
             throw new Error("Should have a queue. This is likely a bug in React. Please file an issue.");
           }
           queue.lastRenderedReducer = reducer2;
-          var current2 = currentHook;
-          var baseQueue = current2.baseQueue;
+          var current3 = currentHook;
+          var baseQueue = current3.baseQueue;
           var pendingQueue = queue.pending;
           if (pendingQueue !== null) {
             if (baseQueue !== null) {
@@ -15850,16 +15849,16 @@ var __privateMethod = (obj, member, method) => {
               pendingQueue.next = baseFirst;
             }
             {
-              if (current2.baseQueue !== baseQueue) {
+              if (current3.baseQueue !== baseQueue) {
                 error("Internal error: Expected work-in-progress queue to be a clone. This is a bug in React.");
               }
             }
-            current2.baseQueue = baseQueue = pendingQueue;
+            current3.baseQueue = baseQueue = pendingQueue;
             queue.pending = null;
           }
           if (baseQueue !== null) {
             var first = baseQueue.next;
-            var newState = current2.baseState;
+            var newState = current3.baseState;
             var newBaseState = null;
             var newBaseQueueFirst = null;
             var newBaseQueueLast = null;
@@ -17771,18 +17770,18 @@ var __privateMethod = (obj, member, method) => {
           didWarnAboutRevealOrder = {};
           didWarnAboutTailOptions = {};
         }
-        function reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2) {
-          if (current2 === null) {
+        function reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2) {
+          if (current3 === null) {
             workInProgress2.child = mountChildFibers(workInProgress2, null, nextChildren, renderLanes2);
           } else {
-            workInProgress2.child = reconcileChildFibers(workInProgress2, current2.child, nextChildren, renderLanes2);
+            workInProgress2.child = reconcileChildFibers(workInProgress2, current3.child, nextChildren, renderLanes2);
           }
         }
-        function forceUnmountCurrentAndReconcile(current2, workInProgress2, nextChildren, renderLanes2) {
-          workInProgress2.child = reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
+        function forceUnmountCurrentAndReconcile(current3, workInProgress2, nextChildren, renderLanes2) {
+          workInProgress2.child = reconcileChildFibers(workInProgress2, current3.child, null, renderLanes2);
           workInProgress2.child = reconcileChildFibers(workInProgress2, null, nextChildren, renderLanes2);
         }
-        function updateForwardRef(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateForwardRef(current3, workInProgress2, Component, nextProps, renderLanes2) {
           {
             if (workInProgress2.type !== workInProgress2.elementType) {
               var innerPropTypes = Component.propTypes;
@@ -17808,12 +17807,12 @@ var __privateMethod = (obj, member, method) => {
           {
             ReactCurrentOwner$1.current = workInProgress2;
             setIsRendering(true);
-            nextChildren = renderWithHooks(current2, workInProgress2, render2, nextProps, ref, renderLanes2);
+            nextChildren = renderWithHooks(current3, workInProgress2, render2, nextProps, ref, renderLanes2);
             hasId2 = checkDidRenderIdHook();
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                nextChildren = renderWithHooks(current2, workInProgress2, render2, nextProps, ref, renderLanes2);
+                nextChildren = renderWithHooks(current3, workInProgress2, render2, nextProps, ref, renderLanes2);
                 hasId2 = checkDidRenderIdHook();
               } finally {
                 setIsStrictModeForDevtools(false);
@@ -17824,19 +17823,19 @@ var __privateMethod = (obj, member, method) => {
           {
             markComponentRenderStopped();
           }
-          if (current2 !== null && !didReceiveUpdate) {
-            bailoutHooks(current2, workInProgress2, renderLanes2);
-            return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+          if (current3 !== null && !didReceiveUpdate) {
+            bailoutHooks(current3, workInProgress2, renderLanes2);
+            return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
           }
           if (getIsHydrating() && hasId2) {
             pushMaterializedTreeId(workInProgress2);
           }
           workInProgress2.flags |= PerformedWork;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
-          if (current2 === null) {
+        function updateMemoComponent(current3, workInProgress2, Component, nextProps, renderLanes2) {
+          if (current3 === null) {
             var type = Component.type;
             if (isSimpleFunctionComponent(type) && Component.compare === null && // SimpleMemoComponent codepath doesn't resolve outer props either.
             Component.defaultProps === void 0) {
@@ -17849,7 +17848,7 @@ var __privateMethod = (obj, member, method) => {
               {
                 validateFunctionComponentInDev(workInProgress2, type);
               }
-              return updateSimpleMemoComponent(current2, workInProgress2, resolvedType, nextProps, renderLanes2);
+              return updateSimpleMemoComponent(current3, workInProgress2, resolvedType, nextProps, renderLanes2);
             }
             {
               var innerPropTypes = type.propTypes;
@@ -17882,14 +17881,14 @@ var __privateMethod = (obj, member, method) => {
               );
             }
           }
-          var currentChild = current2.child;
-          var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current2, renderLanes2);
+          var currentChild = current3.child;
+          var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current3, renderLanes2);
           if (!hasScheduledUpdateOrContext) {
             var prevProps = currentChild.memoizedProps;
             var compare = Component.compare;
             compare = compare !== null ? compare : shallowEqual2;
-            if (compare(prevProps, nextProps) && current2.ref === workInProgress2.ref) {
-              return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+            if (compare(prevProps, nextProps) && current3.ref === workInProgress2.ref) {
+              return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
             }
           }
           workInProgress2.flags |= PerformedWork;
@@ -17899,7 +17898,7 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.child = newChild;
           return newChild;
         }
-        function updateSimpleMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateSimpleMemoComponent(current3, workInProgress2, Component, nextProps, renderLanes2) {
           {
             if (workInProgress2.type !== workInProgress2.elementType) {
               var outerMemoType = workInProgress2.elementType;
@@ -17925,26 +17924,26 @@ var __privateMethod = (obj, member, method) => {
               }
             }
           }
-          if (current2 !== null) {
-            var prevProps = current2.memoizedProps;
-            if (shallowEqual2(prevProps, nextProps) && current2.ref === workInProgress2.ref && // Prevent bailout if the implementation changed due to hot reload.
-            workInProgress2.type === current2.type) {
+          if (current3 !== null) {
+            var prevProps = current3.memoizedProps;
+            if (shallowEqual2(prevProps, nextProps) && current3.ref === workInProgress2.ref && // Prevent bailout if the implementation changed due to hot reload.
+            workInProgress2.type === current3.type) {
               didReceiveUpdate = false;
               workInProgress2.pendingProps = nextProps = prevProps;
-              if (!checkScheduledUpdateOrContext(current2, renderLanes2)) {
-                workInProgress2.lanes = current2.lanes;
-                return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
-              } else if ((current2.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
+              if (!checkScheduledUpdateOrContext(current3, renderLanes2)) {
+                workInProgress2.lanes = current3.lanes;
+                return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
+              } else if ((current3.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
                 didReceiveUpdate = true;
               }
             }
           }
-          return updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2);
+          return updateFunctionComponent(current3, workInProgress2, Component, nextProps, renderLanes2);
         }
-        function updateOffscreenComponent(current2, workInProgress2, renderLanes2) {
+        function updateOffscreenComponent(current3, workInProgress2, renderLanes2) {
           var nextProps = workInProgress2.pendingProps;
           var nextChildren = nextProps.children;
-          var prevState = current2 !== null ? current2.memoizedState : null;
+          var prevState = current3 !== null ? current3.memoizedState : null;
           if (nextProps.mode === "hidden" || enableLegacyHidden) {
             if ((workInProgress2.mode & ConcurrentMode) === NoMode) {
               var nextState = {
@@ -17993,20 +17992,20 @@ var __privateMethod = (obj, member, method) => {
             }
             pushRenderLanes(workInProgress2, _subtreeRenderLanes);
           }
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateFragment(current2, workInProgress2, renderLanes2) {
+        function updateFragment(current3, workInProgress2, renderLanes2) {
           var nextChildren = workInProgress2.pendingProps;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateMode(current2, workInProgress2, renderLanes2) {
+        function updateMode(current3, workInProgress2, renderLanes2) {
           var nextChildren = workInProgress2.pendingProps.children;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateProfiler(current2, workInProgress2, renderLanes2) {
+        function updateProfiler(current3, workInProgress2, renderLanes2) {
           {
             workInProgress2.flags |= Update;
             {
@@ -18017,19 +18016,19 @@ var __privateMethod = (obj, member, method) => {
           }
           var nextProps = workInProgress2.pendingProps;
           var nextChildren = nextProps.children;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function markRef(current2, workInProgress2) {
+        function markRef(current3, workInProgress2) {
           var ref = workInProgress2.ref;
-          if (current2 === null && ref !== null || current2 !== null && current2.ref !== ref) {
+          if (current3 === null && ref !== null || current3 !== null && current3.ref !== ref) {
             workInProgress2.flags |= Ref;
             {
               workInProgress2.flags |= RefStatic;
             }
           }
         }
-        function updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateFunctionComponent(current3, workInProgress2, Component, nextProps, renderLanes2) {
           {
             if (workInProgress2.type !== workInProgress2.elementType) {
               var innerPropTypes = Component.propTypes;
@@ -18058,12 +18057,12 @@ var __privateMethod = (obj, member, method) => {
           {
             ReactCurrentOwner$1.current = workInProgress2;
             setIsRendering(true);
-            nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
+            nextChildren = renderWithHooks(current3, workInProgress2, Component, nextProps, context, renderLanes2);
             hasId2 = checkDidRenderIdHook();
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                nextChildren = renderWithHooks(current2, workInProgress2, Component, nextProps, context, renderLanes2);
+                nextChildren = renderWithHooks(current3, workInProgress2, Component, nextProps, context, renderLanes2);
                 hasId2 = checkDidRenderIdHook();
               } finally {
                 setIsStrictModeForDevtools(false);
@@ -18074,18 +18073,18 @@ var __privateMethod = (obj, member, method) => {
           {
             markComponentRenderStopped();
           }
-          if (current2 !== null && !didReceiveUpdate) {
-            bailoutHooks(current2, workInProgress2, renderLanes2);
-            return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+          if (current3 !== null && !didReceiveUpdate) {
+            bailoutHooks(current3, workInProgress2, renderLanes2);
+            return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
           }
           if (getIsHydrating() && hasId2) {
             pushMaterializedTreeId(workInProgress2);
           }
           workInProgress2.flags |= PerformedWork;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateClassComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateClassComponent(current3, workInProgress2, Component, nextProps, renderLanes2) {
           {
             switch (shouldError(workInProgress2)) {
               case false: {
@@ -18131,16 +18130,16 @@ var __privateMethod = (obj, member, method) => {
           var instance = workInProgress2.stateNode;
           var shouldUpdate;
           if (instance === null) {
-            resetSuspendedCurrentOnMountInLegacyMode(current2, workInProgress2);
+            resetSuspendedCurrentOnMountInLegacyMode(current3, workInProgress2);
             constructClassInstance(workInProgress2, Component, nextProps);
             mountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
             shouldUpdate = true;
-          } else if (current2 === null) {
+          } else if (current3 === null) {
             shouldUpdate = resumeMountClassInstance(workInProgress2, Component, nextProps, renderLanes2);
           } else {
-            shouldUpdate = updateClassInstance(current2, workInProgress2, Component, nextProps, renderLanes2);
+            shouldUpdate = updateClassInstance(current3, workInProgress2, Component, nextProps, renderLanes2);
           }
-          var nextUnitOfWork = finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2);
+          var nextUnitOfWork = finishClassComponent(current3, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2);
           {
             var inst = workInProgress2.stateNode;
             if (shouldUpdate && inst.props !== nextProps) {
@@ -18152,14 +18151,14 @@ var __privateMethod = (obj, member, method) => {
           }
           return nextUnitOfWork;
         }
-        function finishClassComponent(current2, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2) {
-          markRef(current2, workInProgress2);
+        function finishClassComponent(current3, workInProgress2, Component, shouldUpdate, hasContext, renderLanes2) {
+          markRef(current3, workInProgress2);
           var didCaptureError = (workInProgress2.flags & DidCapture) !== NoFlags;
           if (!shouldUpdate && !didCaptureError) {
             if (hasContext) {
               invalidateContextProvider(workInProgress2, Component, false);
             }
-            return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+            return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
           }
           var instance = workInProgress2.stateNode;
           ReactCurrentOwner$1.current = workInProgress2;
@@ -18191,10 +18190,10 @@ var __privateMethod = (obj, member, method) => {
             }
           }
           workInProgress2.flags |= PerformedWork;
-          if (current2 !== null && didCaptureError) {
-            forceUnmountCurrentAndReconcile(current2, workInProgress2, nextChildren, renderLanes2);
+          if (current3 !== null && didCaptureError) {
+            forceUnmountCurrentAndReconcile(current3, workInProgress2, nextChildren, renderLanes2);
           } else {
-            reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+            reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           }
           workInProgress2.memoizedState = instance.state;
           if (hasContext) {
@@ -18211,15 +18210,15 @@ var __privateMethod = (obj, member, method) => {
           }
           pushHostContainer(workInProgress2, root2.containerInfo);
         }
-        function updateHostRoot(current2, workInProgress2, renderLanes2) {
+        function updateHostRoot(current3, workInProgress2, renderLanes2) {
           pushHostRootContext(workInProgress2);
-          if (current2 === null) {
+          if (current3 === null) {
             throw new Error("Should have a current fiber. This is a bug in React.");
           }
           var nextProps = workInProgress2.pendingProps;
           var prevState = workInProgress2.memoizedState;
           var prevChildren = prevState.element;
-          cloneUpdateQueue(current2, workInProgress2);
+          cloneUpdateQueue(current3, workInProgress2);
           processUpdateQueue(workInProgress2, nextProps, null, renderLanes2);
           var nextState = workInProgress2.memoizedState;
           workInProgress2.stateNode;
@@ -18237,10 +18236,10 @@ var __privateMethod = (obj, member, method) => {
             workInProgress2.memoizedState = overrideState;
             if (workInProgress2.flags & ForceClientRender) {
               var recoverableError = createCapturedValueAtFiber(new Error("There was an error while hydrating. Because the error happened outside of a Suspense boundary, the entire root will switch to client rendering."), workInProgress2);
-              return mountHostRootWithoutHydrating(current2, workInProgress2, nextChildren, renderLanes2, recoverableError);
+              return mountHostRootWithoutHydrating(current3, workInProgress2, nextChildren, renderLanes2, recoverableError);
             } else if (nextChildren !== prevChildren) {
               var _recoverableError = createCapturedValueAtFiber(new Error("This root received an early update, before anything was able hydrate. Switched the entire root to client rendering."), workInProgress2);
-              return mountHostRootWithoutHydrating(current2, workInProgress2, nextChildren, renderLanes2, _recoverableError);
+              return mountHostRootWithoutHydrating(current3, workInProgress2, nextChildren, renderLanes2, _recoverableError);
             } else {
               enterHydrationState(workInProgress2);
               var child = mountChildFibers(workInProgress2, null, nextChildren, renderLanes2);
@@ -18254,27 +18253,27 @@ var __privateMethod = (obj, member, method) => {
           } else {
             resetHydrationState();
             if (nextChildren === prevChildren) {
-              return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+              return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
             }
-            reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+            reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           }
           return workInProgress2.child;
         }
-        function mountHostRootWithoutHydrating(current2, workInProgress2, nextChildren, renderLanes2, recoverableError) {
+        function mountHostRootWithoutHydrating(current3, workInProgress2, nextChildren, renderLanes2, recoverableError) {
           resetHydrationState();
           queueHydrationError(recoverableError);
           workInProgress2.flags |= ForceClientRender;
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateHostComponent(current2, workInProgress2, renderLanes2) {
+        function updateHostComponent(current3, workInProgress2, renderLanes2) {
           pushHostContext(workInProgress2);
-          if (current2 === null) {
+          if (current3 === null) {
             tryToClaimNextHydratableInstance(workInProgress2);
           }
           var type = workInProgress2.type;
           var nextProps = workInProgress2.pendingProps;
-          var prevProps = current2 !== null ? current2.memoizedProps : null;
+          var prevProps = current3 !== null ? current3.memoizedProps : null;
           var nextChildren = nextProps.children;
           var isDirectTextChild = shouldSetTextContent(type, nextProps);
           if (isDirectTextChild) {
@@ -18282,12 +18281,12 @@ var __privateMethod = (obj, member, method) => {
           } else if (prevProps !== null && shouldSetTextContent(type, prevProps)) {
             workInProgress2.flags |= ContentReset;
           }
-          markRef(current2, workInProgress2);
-          reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+          markRef(current3, workInProgress2);
+          reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function updateHostText(current2, workInProgress2) {
-          if (current2 === null) {
+        function updateHostText(current3, workInProgress2) {
+          if (current3 === null) {
             tryToClaimNextHydratableInstance(workInProgress2);
           }
           return null;
@@ -18528,19 +18527,19 @@ var __privateMethod = (obj, member, method) => {
             transitions: prevOffscreenState.transitions
           };
         }
-        function shouldRemainOnFallback(suspenseContext, current2, workInProgress2, renderLanes2) {
-          if (current2 !== null) {
-            var suspenseState = current2.memoizedState;
+        function shouldRemainOnFallback(suspenseContext, current3, workInProgress2, renderLanes2) {
+          if (current3 !== null) {
+            var suspenseState = current3.memoizedState;
             if (suspenseState === null) {
               return false;
             }
           }
           return hasSuspenseContext(suspenseContext, ForceSuspenseFallback);
         }
-        function getRemainingWorkInPrimaryTree(current2, renderLanes2) {
-          return removeLanes(current2.childLanes, renderLanes2);
+        function getRemainingWorkInPrimaryTree(current3, renderLanes2) {
+          return removeLanes(current3.childLanes, renderLanes2);
         }
-        function updateSuspenseComponent(current2, workInProgress2, renderLanes2) {
+        function updateSuspenseComponent(current3, workInProgress2, renderLanes2) {
           var nextProps = workInProgress2.pendingProps;
           {
             if (shouldSuspend(workInProgress2)) {
@@ -18550,11 +18549,11 @@ var __privateMethod = (obj, member, method) => {
           var suspenseContext = suspenseStackCursor.current;
           var showFallback = false;
           var didSuspend = (workInProgress2.flags & DidCapture) !== NoFlags;
-          if (didSuspend || shouldRemainOnFallback(suspenseContext, current2)) {
+          if (didSuspend || shouldRemainOnFallback(suspenseContext, current3)) {
             showFallback = true;
             workInProgress2.flags &= ~DidCapture;
           } else {
-            if (current2 === null || current2.memoizedState !== null) {
+            if (current3 === null || current3.memoizedState !== null) {
               {
                 suspenseContext = addSubtreeSuspenseContext(suspenseContext, InvisibleParentSuspenseContext);
               }
@@ -18562,7 +18561,7 @@ var __privateMethod = (obj, member, method) => {
           }
           suspenseContext = setDefaultShallowSuspenseContext(suspenseContext);
           pushSuspenseContext(workInProgress2, suspenseContext);
-          if (current2 === null) {
+          if (current3 === null) {
             tryToClaimNextHydratableInstance(workInProgress2);
             var suspenseState = workInProgress2.memoizedState;
             if (suspenseState !== null) {
@@ -18583,26 +18582,26 @@ var __privateMethod = (obj, member, method) => {
               return mountSuspensePrimaryChildren(workInProgress2, nextPrimaryChildren);
             }
           } else {
-            var prevState = current2.memoizedState;
+            var prevState = current3.memoizedState;
             if (prevState !== null) {
               var _dehydrated = prevState.dehydrated;
               if (_dehydrated !== null) {
-                return updateDehydratedSuspenseComponent(current2, workInProgress2, didSuspend, nextProps, _dehydrated, prevState, renderLanes2);
+                return updateDehydratedSuspenseComponent(current3, workInProgress2, didSuspend, nextProps, _dehydrated, prevState, renderLanes2);
               }
             }
             if (showFallback) {
               var _nextFallbackChildren = nextProps.fallback;
               var _nextPrimaryChildren = nextProps.children;
-              var fallbackChildFragment = updateSuspenseFallbackChildren(current2, workInProgress2, _nextPrimaryChildren, _nextFallbackChildren, renderLanes2);
+              var fallbackChildFragment = updateSuspenseFallbackChildren(current3, workInProgress2, _nextPrimaryChildren, _nextFallbackChildren, renderLanes2);
               var _primaryChildFragment2 = workInProgress2.child;
-              var prevOffscreenState = current2.child.memoizedState;
+              var prevOffscreenState = current3.child.memoizedState;
               _primaryChildFragment2.memoizedState = prevOffscreenState === null ? mountSuspenseOffscreenState(renderLanes2) : updateSuspenseOffscreenState(prevOffscreenState, renderLanes2);
-              _primaryChildFragment2.childLanes = getRemainingWorkInPrimaryTree(current2, renderLanes2);
+              _primaryChildFragment2.childLanes = getRemainingWorkInPrimaryTree(current3, renderLanes2);
               workInProgress2.memoizedState = SUSPENDED_MARKER;
               return fallbackChildFragment;
             } else {
               var _nextPrimaryChildren2 = nextProps.children;
-              var _primaryChildFragment3 = updateSuspensePrimaryChildren(current2, workInProgress2, _nextPrimaryChildren2, renderLanes2);
+              var _primaryChildFragment3 = updateSuspensePrimaryChildren(current3, workInProgress2, _nextPrimaryChildren2, renderLanes2);
               workInProgress2.memoizedState = null;
               return _primaryChildFragment3;
             }
@@ -18652,11 +18651,11 @@ var __privateMethod = (obj, member, method) => {
         function mountWorkInProgressOffscreenFiber(offscreenProps, mode, renderLanes2) {
           return createFiberFromOffscreen(offscreenProps, mode, NoLanes, null);
         }
-        function updateWorkInProgressOffscreenFiber(current2, offscreenProps) {
-          return createWorkInProgress(current2, offscreenProps);
+        function updateWorkInProgressOffscreenFiber(current3, offscreenProps) {
+          return createWorkInProgress(current3, offscreenProps);
         }
-        function updateSuspensePrimaryChildren(current2, workInProgress2, primaryChildren, renderLanes2) {
-          var currentPrimaryChildFragment = current2.child;
+        function updateSuspensePrimaryChildren(current3, workInProgress2, primaryChildren, renderLanes2) {
+          var currentPrimaryChildFragment = current3.child;
           var currentFallbackChildFragment = currentPrimaryChildFragment.sibling;
           var primaryChildFragment = updateWorkInProgressOffscreenFiber(currentPrimaryChildFragment, {
             mode: "visible",
@@ -18679,9 +18678,9 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.child = primaryChildFragment;
           return primaryChildFragment;
         }
-        function updateSuspenseFallbackChildren(current2, workInProgress2, primaryChildren, fallbackChildren, renderLanes2) {
+        function updateSuspenseFallbackChildren(current3, workInProgress2, primaryChildren, fallbackChildren, renderLanes2) {
           var mode = workInProgress2.mode;
-          var currentPrimaryChildFragment = current2.child;
+          var currentPrimaryChildFragment = current3.child;
           var currentFallbackChildFragment = currentPrimaryChildFragment.sibling;
           var primaryChildProps = {
             mode: "hidden",
@@ -18727,11 +18726,11 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.child = primaryChildFragment;
           return fallbackChildFragment;
         }
-        function retrySuspenseComponentWithoutHydrating(current2, workInProgress2, renderLanes2, recoverableError) {
+        function retrySuspenseComponentWithoutHydrating(current3, workInProgress2, renderLanes2, recoverableError) {
           if (recoverableError !== null) {
             queueHydrationError(recoverableError);
           }
-          reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
+          reconcileChildFibers(workInProgress2, current3.child, null, renderLanes2);
           var nextProps = workInProgress2.pendingProps;
           var primaryChildren = nextProps.children;
           var primaryChildFragment = mountSuspensePrimaryChildren(workInProgress2, primaryChildren);
@@ -18739,7 +18738,7 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.memoizedState = null;
           return primaryChildFragment;
         }
-        function mountSuspenseFallbackAfterRetryWithoutHydrating(current2, workInProgress2, primaryChildren, fallbackChildren, renderLanes2) {
+        function mountSuspenseFallbackAfterRetryWithoutHydrating(current3, workInProgress2, primaryChildren, fallbackChildren, renderLanes2) {
           var fiberMode = workInProgress2.mode;
           var primaryChildProps = {
             mode: "visible",
@@ -18753,7 +18752,7 @@ var __privateMethod = (obj, member, method) => {
           primaryChildFragment.sibling = fallbackChildFragment;
           workInProgress2.child = primaryChildFragment;
           if ((workInProgress2.mode & ConcurrentMode) !== NoMode) {
-            reconcileChildFibers(workInProgress2, current2.child, null, renderLanes2);
+            reconcileChildFibers(workInProgress2, current3.child, null, renderLanes2);
           }
           return fallbackChildFragment;
         }
@@ -18770,12 +18769,12 @@ var __privateMethod = (obj, member, method) => {
           }
           return null;
         }
-        function updateDehydratedSuspenseComponent(current2, workInProgress2, didSuspend, nextProps, suspenseInstance, suspenseState, renderLanes2) {
+        function updateDehydratedSuspenseComponent(current3, workInProgress2, didSuspend, nextProps, suspenseInstance, suspenseState, renderLanes2) {
           if (!didSuspend) {
             warnIfHydrating();
             if ((workInProgress2.mode & ConcurrentMode) === NoMode) {
               return retrySuspenseComponentWithoutHydrating(
-                current2,
+                current3,
                 workInProgress2,
                 renderLanes2,
                 // TODO: When we delete legacy mode, we should make this error argument
@@ -18799,9 +18798,9 @@ var __privateMethod = (obj, member, method) => {
                 error2 = new Error("The server could not finish this Suspense boundary, likely due to an error during server rendering. Switched to client rendering.");
               }
               var capturedValue = createCapturedValue(error2, digest, stack);
-              return retrySuspenseComponentWithoutHydrating(current2, workInProgress2, renderLanes2, capturedValue);
+              return retrySuspenseComponentWithoutHydrating(current3, workInProgress2, renderLanes2, capturedValue);
             }
-            var hasContextChanged2 = includesSomeLane(renderLanes2, current2.childLanes);
+            var hasContextChanged2 = includesSomeLane(renderLanes2, current3.childLanes);
             if (didReceiveUpdate || hasContextChanged2) {
               var root2 = getWorkInProgressRoot();
               if (root2 !== null) {
@@ -18809,17 +18808,17 @@ var __privateMethod = (obj, member, method) => {
                 if (attemptHydrationAtLane !== NoLane && attemptHydrationAtLane !== suspenseState.retryLane) {
                   suspenseState.retryLane = attemptHydrationAtLane;
                   var eventTime = NoTimestamp;
-                  enqueueConcurrentRenderForLane(current2, attemptHydrationAtLane);
-                  scheduleUpdateOnFiber(root2, current2, attemptHydrationAtLane, eventTime);
+                  enqueueConcurrentRenderForLane(current3, attemptHydrationAtLane);
+                  scheduleUpdateOnFiber(root2, current3, attemptHydrationAtLane, eventTime);
                 }
               }
               renderDidSuspendDelayIfPossible();
               var _capturedValue = createCapturedValue(new Error("This Suspense boundary received an update before it finished hydrating. This caused the boundary to switch to client rendering. The usual way to fix this is to wrap the original update in startTransition."));
-              return retrySuspenseComponentWithoutHydrating(current2, workInProgress2, renderLanes2, _capturedValue);
+              return retrySuspenseComponentWithoutHydrating(current3, workInProgress2, renderLanes2, _capturedValue);
             } else if (isSuspenseInstancePending(suspenseInstance)) {
               workInProgress2.flags |= DidCapture;
-              workInProgress2.child = current2.child;
-              var retry = retryDehydratedSuspenseBoundary.bind(null, current2);
+              workInProgress2.child = current3.child;
+              var retry = retryDehydratedSuspenseBoundary.bind(null, current3);
               registerSuspenseInstanceRetry(suspenseInstance, retry);
               return null;
             } else {
@@ -18833,15 +18832,15 @@ var __privateMethod = (obj, member, method) => {
             if (workInProgress2.flags & ForceClientRender) {
               workInProgress2.flags &= ~ForceClientRender;
               var _capturedValue2 = createCapturedValue(new Error("There was an error while hydrating this Suspense boundary. Switched to client rendering."));
-              return retrySuspenseComponentWithoutHydrating(current2, workInProgress2, renderLanes2, _capturedValue2);
+              return retrySuspenseComponentWithoutHydrating(current3, workInProgress2, renderLanes2, _capturedValue2);
             } else if (workInProgress2.memoizedState !== null) {
-              workInProgress2.child = current2.child;
+              workInProgress2.child = current3.child;
               workInProgress2.flags |= DidCapture;
               return null;
             } else {
               var nextPrimaryChildren = nextProps.children;
               var nextFallbackChildren = nextProps.fallback;
-              var fallbackChildFragment = mountSuspenseFallbackAfterRetryWithoutHydrating(current2, workInProgress2, nextPrimaryChildren, nextFallbackChildren, renderLanes2);
+              var fallbackChildFragment = mountSuspenseFallbackAfterRetryWithoutHydrating(current3, workInProgress2, nextPrimaryChildren, nextFallbackChildren, renderLanes2);
               var _primaryChildFragment4 = workInProgress2.child;
               _primaryChildFragment4.memoizedState = mountSuspenseOffscreenState(renderLanes2);
               workInProgress2.memoizedState = SUSPENDED_MARKER;
@@ -18999,7 +18998,7 @@ var __privateMethod = (obj, member, method) => {
             renderState.tailMode = tailMode;
           }
         }
-        function updateSuspenseListComponent(current2, workInProgress2, renderLanes2) {
+        function updateSuspenseListComponent(current3, workInProgress2, renderLanes2) {
           var nextProps = workInProgress2.pendingProps;
           var revealOrder = nextProps.revealOrder;
           var tailMode = nextProps.tail;
@@ -19007,14 +19006,14 @@ var __privateMethod = (obj, member, method) => {
           validateRevealOrder(revealOrder);
           validateTailOptions(tailMode, revealOrder);
           validateSuspenseListChildren(newChildren, revealOrder);
-          reconcileChildren(current2, workInProgress2, newChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, newChildren, renderLanes2);
           var suspenseContext = suspenseStackCursor.current;
           var shouldForceFallback = hasSuspenseContext(suspenseContext, ForceSuspenseFallback);
           if (shouldForceFallback) {
             suspenseContext = setShallowSuspenseContext(suspenseContext, ForceSuspenseFallback);
             workInProgress2.flags |= DidCapture;
           } else {
-            var didSuspendBefore = current2 !== null && (current2.flags & DidCapture) !== NoFlags;
+            var didSuspendBefore = current3 !== null && (current3.flags & DidCapture) !== NoFlags;
             if (didSuspendBefore) {
               propagateSuspenseContextChange(workInProgress2, workInProgress2.child, renderLanes2);
             }
@@ -19091,18 +19090,18 @@ var __privateMethod = (obj, member, method) => {
           }
           return workInProgress2.child;
         }
-        function updatePortalComponent(current2, workInProgress2, renderLanes2) {
+        function updatePortalComponent(current3, workInProgress2, renderLanes2) {
           pushHostContainer(workInProgress2, workInProgress2.stateNode.containerInfo);
           var nextChildren = workInProgress2.pendingProps;
-          if (current2 === null) {
+          if (current3 === null) {
             workInProgress2.child = reconcileChildFibers(workInProgress2, null, nextChildren, renderLanes2);
           } else {
-            reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
+            reconcileChildren(current3, workInProgress2, nextChildren, renderLanes2);
           }
           return workInProgress2.child;
         }
         var hasWarnedAboutUsingNoValuePropOnContextProvider = false;
-        function updateContextProvider(current2, workInProgress2, renderLanes2) {
+        function updateContextProvider(current3, workInProgress2, renderLanes2) {
           var providerType = workInProgress2.type;
           var context = providerType._context;
           var newProps = workInProgress2.pendingProps;
@@ -19126,7 +19125,7 @@ var __privateMethod = (obj, member, method) => {
               var oldValue = oldProps.value;
               if (objectIs(oldValue, newValue)) {
                 if (oldProps.children === newProps.children && !hasContextChanged()) {
-                  return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+                  return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
                 }
               } else {
                 propagateContextChange(workInProgress2, context, renderLanes2);
@@ -19134,11 +19133,11 @@ var __privateMethod = (obj, member, method) => {
             }
           }
           var newChildren = newProps.children;
-          reconcileChildren(current2, workInProgress2, newChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, newChildren, renderLanes2);
           return workInProgress2.child;
         }
         var hasWarnedAboutUsingContextAsConsumer = false;
-        function updateContextConsumer(current2, workInProgress2, renderLanes2) {
+        function updateContextConsumer(current3, workInProgress2, renderLanes2) {
           var context = workInProgress2.type;
           {
             if (context._context === void 0) {
@@ -19175,24 +19174,24 @@ var __privateMethod = (obj, member, method) => {
             markComponentRenderStopped();
           }
           workInProgress2.flags |= PerformedWork;
-          reconcileChildren(current2, workInProgress2, newChildren, renderLanes2);
+          reconcileChildren(current3, workInProgress2, newChildren, renderLanes2);
           return workInProgress2.child;
         }
         function markWorkInProgressReceivedUpdate() {
           didReceiveUpdate = true;
         }
-        function resetSuspendedCurrentOnMountInLegacyMode(current2, workInProgress2) {
+        function resetSuspendedCurrentOnMountInLegacyMode(current3, workInProgress2) {
           if ((workInProgress2.mode & ConcurrentMode) === NoMode) {
-            if (current2 !== null) {
-              current2.alternate = null;
+            if (current3 !== null) {
+              current3.alternate = null;
               workInProgress2.alternate = null;
               workInProgress2.flags |= Placement;
             }
           }
         }
-        function bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2) {
-          if (current2 !== null) {
-            workInProgress2.dependencies = current2.dependencies;
+        function bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2) {
+          if (current3 !== null) {
+            workInProgress2.dependencies = current3.dependencies;
           }
           {
             stopProfilerTimerIfRunning();
@@ -19203,16 +19202,16 @@ var __privateMethod = (obj, member, method) => {
               return null;
             }
           }
-          cloneChildFibers(current2, workInProgress2);
+          cloneChildFibers(current3, workInProgress2);
           return workInProgress2.child;
         }
-        function remountFiber(current2, oldWorkInProgress, newWorkInProgress) {
+        function remountFiber(current3, oldWorkInProgress, newWorkInProgress) {
           {
             var returnFiber = oldWorkInProgress.return;
             if (returnFiber === null) {
               throw new Error("Cannot swap the root fiber.");
             }
-            current2.alternate = null;
+            current3.alternate = null;
             oldWorkInProgress.alternate = null;
             newWorkInProgress.index = oldWorkInProgress.index;
             newWorkInProgress.sibling = oldWorkInProgress.sibling;
@@ -19235,23 +19234,23 @@ var __privateMethod = (obj, member, method) => {
             }
             var deletions = returnFiber.deletions;
             if (deletions === null) {
-              returnFiber.deletions = [current2];
+              returnFiber.deletions = [current3];
               returnFiber.flags |= ChildDeletion;
             } else {
-              deletions.push(current2);
+              deletions.push(current3);
             }
             newWorkInProgress.flags |= Placement;
             return newWorkInProgress;
           }
         }
-        function checkScheduledUpdateOrContext(current2, renderLanes2) {
-          var updateLanes = current2.lanes;
+        function checkScheduledUpdateOrContext(current3, renderLanes2) {
+          var updateLanes = current3.lanes;
           if (includesSomeLane(updateLanes, renderLanes2)) {
             return true;
           }
           return false;
         }
-        function attemptEarlyBailoutIfNoScheduledUpdate(current2, workInProgress2, renderLanes2) {
+        function attemptEarlyBailoutIfNoScheduledUpdate(current3, workInProgress2, renderLanes2) {
           switch (workInProgress2.tag) {
             case HostRoot:
               pushHostRootContext(workInProgress2);
@@ -19301,10 +19300,10 @@ var __privateMethod = (obj, member, method) => {
                 var primaryChildFragment = workInProgress2.child;
                 var primaryChildLanes = primaryChildFragment.childLanes;
                 if (includesSomeLane(renderLanes2, primaryChildLanes)) {
-                  return updateSuspenseComponent(current2, workInProgress2, renderLanes2);
+                  return updateSuspenseComponent(current3, workInProgress2, renderLanes2);
                 } else {
                   pushSuspenseContext(workInProgress2, setDefaultShallowSuspenseContext(suspenseStackCursor.current));
-                  var child = bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+                  var child = bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
                   if (child !== null) {
                     return child.sibling;
                   } else {
@@ -19317,11 +19316,11 @@ var __privateMethod = (obj, member, method) => {
               break;
             }
             case SuspenseListComponent: {
-              var didSuspendBefore = (current2.flags & DidCapture) !== NoFlags;
+              var didSuspendBefore = (current3.flags & DidCapture) !== NoFlags;
               var _hasChildWork = includesSomeLane(renderLanes2, workInProgress2.childLanes);
               if (didSuspendBefore) {
                 if (_hasChildWork) {
-                  return updateSuspenseListComponent(current2, workInProgress2, renderLanes2);
+                  return updateSuspenseListComponent(current3, workInProgress2, renderLanes2);
                 }
                 workInProgress2.flags |= DidCapture;
               }
@@ -19341,32 +19340,32 @@ var __privateMethod = (obj, member, method) => {
             case OffscreenComponent:
             case LegacyHiddenComponent: {
               workInProgress2.lanes = NoLanes;
-              return updateOffscreenComponent(current2, workInProgress2, renderLanes2);
+              return updateOffscreenComponent(current3, workInProgress2, renderLanes2);
             }
           }
-          return bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
+          return bailoutOnAlreadyFinishedWork(current3, workInProgress2, renderLanes2);
         }
-        function beginWork(current2, workInProgress2, renderLanes2) {
+        function beginWork(current3, workInProgress2, renderLanes2) {
           {
-            if (workInProgress2._debugNeedsRemount && current2 !== null) {
-              return remountFiber(current2, workInProgress2, createFiberFromTypeAndProps(workInProgress2.type, workInProgress2.key, workInProgress2.pendingProps, workInProgress2._debugOwner || null, workInProgress2.mode, workInProgress2.lanes));
+            if (workInProgress2._debugNeedsRemount && current3 !== null) {
+              return remountFiber(current3, workInProgress2, createFiberFromTypeAndProps(workInProgress2.type, workInProgress2.key, workInProgress2.pendingProps, workInProgress2._debugOwner || null, workInProgress2.mode, workInProgress2.lanes));
             }
           }
-          if (current2 !== null) {
-            var oldProps = current2.memoizedProps;
+          if (current3 !== null) {
+            var oldProps = current3.memoizedProps;
             var newProps = workInProgress2.pendingProps;
             if (oldProps !== newProps || hasContextChanged() || // Force a re-render if the implementation changed due to hot reload:
-            workInProgress2.type !== current2.type) {
+            workInProgress2.type !== current3.type) {
               didReceiveUpdate = true;
             } else {
-              var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current2, renderLanes2);
+              var hasScheduledUpdateOrContext = checkScheduledUpdateOrContext(current3, renderLanes2);
               if (!hasScheduledUpdateOrContext && // If this is the second pass of an error or suspense boundary, there
               // may not be work scheduled on `current`, so we check for this flag.
               (workInProgress2.flags & DidCapture) === NoFlags) {
                 didReceiveUpdate = false;
-                return attemptEarlyBailoutIfNoScheduledUpdate(current2, workInProgress2, renderLanes2);
+                return attemptEarlyBailoutIfNoScheduledUpdate(current3, workInProgress2, renderLanes2);
               }
-              if ((current2.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
+              if ((current3.flags & ForceUpdateForLegacySuspense) !== NoFlags) {
                 didReceiveUpdate = true;
               } else {
                 didReceiveUpdate = false;
@@ -19383,50 +19382,50 @@ var __privateMethod = (obj, member, method) => {
           workInProgress2.lanes = NoLanes;
           switch (workInProgress2.tag) {
             case IndeterminateComponent: {
-              return mountIndeterminateComponent(current2, workInProgress2, workInProgress2.type, renderLanes2);
+              return mountIndeterminateComponent(current3, workInProgress2, workInProgress2.type, renderLanes2);
             }
             case LazyComponent: {
               var elementType = workInProgress2.elementType;
-              return mountLazyComponent(current2, workInProgress2, elementType, renderLanes2);
+              return mountLazyComponent(current3, workInProgress2, elementType, renderLanes2);
             }
             case FunctionComponent: {
               var Component = workInProgress2.type;
               var unresolvedProps = workInProgress2.pendingProps;
               var resolvedProps = workInProgress2.elementType === Component ? unresolvedProps : resolveDefaultProps(Component, unresolvedProps);
-              return updateFunctionComponent(current2, workInProgress2, Component, resolvedProps, renderLanes2);
+              return updateFunctionComponent(current3, workInProgress2, Component, resolvedProps, renderLanes2);
             }
             case ClassComponent: {
               var _Component = workInProgress2.type;
               var _unresolvedProps = workInProgress2.pendingProps;
               var _resolvedProps = workInProgress2.elementType === _Component ? _unresolvedProps : resolveDefaultProps(_Component, _unresolvedProps);
-              return updateClassComponent(current2, workInProgress2, _Component, _resolvedProps, renderLanes2);
+              return updateClassComponent(current3, workInProgress2, _Component, _resolvedProps, renderLanes2);
             }
             case HostRoot:
-              return updateHostRoot(current2, workInProgress2, renderLanes2);
+              return updateHostRoot(current3, workInProgress2, renderLanes2);
             case HostComponent:
-              return updateHostComponent(current2, workInProgress2, renderLanes2);
+              return updateHostComponent(current3, workInProgress2, renderLanes2);
             case HostText:
-              return updateHostText(current2, workInProgress2);
+              return updateHostText(current3, workInProgress2);
             case SuspenseComponent:
-              return updateSuspenseComponent(current2, workInProgress2, renderLanes2);
+              return updateSuspenseComponent(current3, workInProgress2, renderLanes2);
             case HostPortal:
-              return updatePortalComponent(current2, workInProgress2, renderLanes2);
+              return updatePortalComponent(current3, workInProgress2, renderLanes2);
             case ForwardRef: {
               var type = workInProgress2.type;
               var _unresolvedProps2 = workInProgress2.pendingProps;
               var _resolvedProps2 = workInProgress2.elementType === type ? _unresolvedProps2 : resolveDefaultProps(type, _unresolvedProps2);
-              return updateForwardRef(current2, workInProgress2, type, _resolvedProps2, renderLanes2);
+              return updateForwardRef(current3, workInProgress2, type, _resolvedProps2, renderLanes2);
             }
             case Fragment:
-              return updateFragment(current2, workInProgress2, renderLanes2);
+              return updateFragment(current3, workInProgress2, renderLanes2);
             case Mode:
-              return updateMode(current2, workInProgress2, renderLanes2);
+              return updateMode(current3, workInProgress2, renderLanes2);
             case Profiler:
-              return updateProfiler(current2, workInProgress2, renderLanes2);
+              return updateProfiler(current3, workInProgress2, renderLanes2);
             case ContextProvider:
-              return updateContextProvider(current2, workInProgress2, renderLanes2);
+              return updateContextProvider(current3, workInProgress2, renderLanes2);
             case ContextConsumer:
-              return updateContextConsumer(current2, workInProgress2, renderLanes2);
+              return updateContextConsumer(current3, workInProgress2, renderLanes2);
             case MemoComponent: {
               var _type2 = workInProgress2.type;
               var _unresolvedProps3 = workInProgress2.pendingProps;
@@ -19446,25 +19445,25 @@ var __privateMethod = (obj, member, method) => {
                 }
               }
               _resolvedProps3 = resolveDefaultProps(_type2.type, _resolvedProps3);
-              return updateMemoComponent(current2, workInProgress2, _type2, _resolvedProps3, renderLanes2);
+              return updateMemoComponent(current3, workInProgress2, _type2, _resolvedProps3, renderLanes2);
             }
             case SimpleMemoComponent: {
-              return updateSimpleMemoComponent(current2, workInProgress2, workInProgress2.type, workInProgress2.pendingProps, renderLanes2);
+              return updateSimpleMemoComponent(current3, workInProgress2, workInProgress2.type, workInProgress2.pendingProps, renderLanes2);
             }
             case IncompleteClassComponent: {
               var _Component2 = workInProgress2.type;
               var _unresolvedProps4 = workInProgress2.pendingProps;
               var _resolvedProps4 = workInProgress2.elementType === _Component2 ? _unresolvedProps4 : resolveDefaultProps(_Component2, _unresolvedProps4);
-              return mountIncompleteClassComponent(current2, workInProgress2, _Component2, _resolvedProps4, renderLanes2);
+              return mountIncompleteClassComponent(current3, workInProgress2, _Component2, _resolvedProps4, renderLanes2);
             }
             case SuspenseListComponent: {
-              return updateSuspenseListComponent(current2, workInProgress2, renderLanes2);
+              return updateSuspenseListComponent(current3, workInProgress2, renderLanes2);
             }
             case ScopeComponent: {
               break;
             }
             case OffscreenComponent: {
-              return updateOffscreenComponent(current2, workInProgress2, renderLanes2);
+              return updateOffscreenComponent(current3, workInProgress2, renderLanes2);
             }
           }
           throw new Error("Unknown unit of work tag (" + workInProgress2.tag + "). This error is likely caused by a bug in React. Please file an issue.");
@@ -19508,10 +19507,10 @@ var __privateMethod = (obj, member, method) => {
               node2 = node2.sibling;
             }
           };
-          updateHostContainer = function(current2, workInProgress2) {
+          updateHostContainer = function(current3, workInProgress2) {
           };
-          updateHostComponent$1 = function(current2, workInProgress2, type, newProps, rootContainerInstance) {
-            var oldProps = current2.memoizedProps;
+          updateHostComponent$1 = function(current3, workInProgress2, type, newProps, rootContainerInstance) {
+            var oldProps = current3.memoizedProps;
             if (oldProps === newProps) {
               return;
             }
@@ -19523,7 +19522,7 @@ var __privateMethod = (obj, member, method) => {
               markUpdate(workInProgress2);
             }
           };
-          updateHostText$1 = function(current2, workInProgress2, oldText, newText) {
+          updateHostText$1 = function(current3, workInProgress2, oldText, newText) {
             if (oldText !== newText) {
               markUpdate(workInProgress2);
             }
@@ -19629,7 +19628,7 @@ var __privateMethod = (obj, member, method) => {
           completedWork.childLanes = newChildLanes;
           return didBailout;
         }
-        function completeDehydratedSuspenseBoundary(current2, workInProgress2, nextState) {
+        function completeDehydratedSuspenseBoundary(current3, workInProgress2, nextState) {
           if (hasUnhydratedTailNodes() && (workInProgress2.mode & ConcurrentMode) !== NoMode && (workInProgress2.flags & DidCapture) === NoFlags) {
             warnIfUnhydratedTailNodes(workInProgress2);
             resetHydrationState();
@@ -19638,7 +19637,7 @@ var __privateMethod = (obj, member, method) => {
           }
           var wasHydrated = popHydrationState(workInProgress2);
           if (nextState !== null && nextState.dehydrated !== null) {
-            if (current2 === null) {
+            if (current3 === null) {
               if (!wasHydrated) {
                 throw new Error("A dehydrated suspense component was completed without a hydrated node. This is probably a bug in React.");
               }
@@ -19681,7 +19680,7 @@ var __privateMethod = (obj, member, method) => {
             return true;
           }
         }
-        function completeWork(current2, workInProgress2, renderLanes2) {
+        function completeWork(current3, workInProgress2, renderLanes2) {
           var newProps = workInProgress2.pendingProps;
           popTreeContext(workInProgress2);
           switch (workInProgress2.tag) {
@@ -19714,13 +19713,13 @@ var __privateMethod = (obj, member, method) => {
                 fiberRoot.context = fiberRoot.pendingContext;
                 fiberRoot.pendingContext = null;
               }
-              if (current2 === null || current2.child === null) {
+              if (current3 === null || current3.child === null) {
                 var wasHydrated = popHydrationState(workInProgress2);
                 if (wasHydrated) {
                   markUpdate(workInProgress2);
                 } else {
-                  if (current2 !== null) {
-                    var prevState = current2.memoizedState;
+                  if (current3 !== null) {
+                    var prevState = current3.memoizedState;
                     if (
                       // Check if this is a client root
                       !prevState.isDehydrated || // Check if we reverted to client rendering (e.g. due to an error)
@@ -19732,7 +19731,7 @@ var __privateMethod = (obj, member, method) => {
                   }
                 }
               }
-              updateHostContainer(current2, workInProgress2);
+              updateHostContainer(current3, workInProgress2);
               bubbleProperties(workInProgress2);
               return null;
             }
@@ -19740,9 +19739,9 @@ var __privateMethod = (obj, member, method) => {
               popHostContext(workInProgress2);
               var rootContainerInstance = getRootHostContainer();
               var type = workInProgress2.type;
-              if (current2 !== null && workInProgress2.stateNode != null) {
-                updateHostComponent$1(current2, workInProgress2, type, newProps, rootContainerInstance);
-                if (current2.ref !== workInProgress2.ref) {
+              if (current3 !== null && workInProgress2.stateNode != null) {
+                updateHostComponent$1(current3, workInProgress2, type, newProps, rootContainerInstance);
+                if (current3.ref !== workInProgress2.ref) {
                   markRef$1(workInProgress2);
                 }
               } else {
@@ -19776,9 +19775,9 @@ var __privateMethod = (obj, member, method) => {
             }
             case HostText: {
               var newText = newProps;
-              if (current2 && workInProgress2.stateNode != null) {
-                var oldText = current2.memoizedProps;
-                updateHostText$1(current2, workInProgress2, oldText, newText);
+              if (current3 && workInProgress2.stateNode != null) {
+                var oldText = current3.memoizedProps;
+                updateHostText$1(current3, workInProgress2, oldText, newText);
               } else {
                 if (typeof newText !== "string") {
                   if (workInProgress2.stateNode === null) {
@@ -19802,8 +19801,8 @@ var __privateMethod = (obj, member, method) => {
             case SuspenseComponent: {
               popSuspenseContext(workInProgress2);
               var nextState = workInProgress2.memoizedState;
-              if (current2 === null || current2.memoizedState !== null && current2.memoizedState.dehydrated !== null) {
-                var fallthroughToNormalSuspensePath = completeDehydratedSuspenseBoundary(current2, workInProgress2, nextState);
+              if (current3 === null || current3.memoizedState !== null && current3.memoizedState.dehydrated !== null) {
+                var fallthroughToNormalSuspensePath = completeDehydratedSuspenseBoundary(current3, workInProgress2, nextState);
                 if (!fallthroughToNormalSuspensePath) {
                   if (workInProgress2.flags & ShouldCapture) {
                     return workInProgress2;
@@ -19820,13 +19819,13 @@ var __privateMethod = (obj, member, method) => {
                 return workInProgress2;
               }
               var nextDidTimeout = nextState !== null;
-              var prevDidTimeout = current2 !== null && current2.memoizedState !== null;
+              var prevDidTimeout = current3 !== null && current3.memoizedState !== null;
               if (nextDidTimeout !== prevDidTimeout) {
                 if (nextDidTimeout) {
                   var _offscreenFiber2 = workInProgress2.child;
                   _offscreenFiber2.flags |= Visibility;
                   if ((workInProgress2.mode & ConcurrentMode) !== NoMode) {
-                    var hasInvisibleChildContext = current2 === null && (workInProgress2.memoizedProps.unstable_avoidThisFallback !== true || !enableSuspenseAvoidThisFallback);
+                    var hasInvisibleChildContext = current3 === null && (workInProgress2.memoizedProps.unstable_avoidThisFallback !== true || !enableSuspenseAvoidThisFallback);
                     if (hasInvisibleChildContext || hasSuspenseContext(suspenseStackCursor.current, InvisibleParentSuspenseContext)) {
                       renderDidSuspend();
                     } else {
@@ -19854,8 +19853,8 @@ var __privateMethod = (obj, member, method) => {
             }
             case HostPortal:
               popHostContainer(workInProgress2);
-              updateHostContainer(current2, workInProgress2);
-              if (current2 === null) {
+              updateHostContainer(current3, workInProgress2);
+              if (current3 === null) {
                 preparePortalMount(workInProgress2.stateNode.containerInfo);
               }
               bubbleProperties(workInProgress2);
@@ -19884,7 +19883,7 @@ var __privateMethod = (obj, member, method) => {
               var renderedTail = renderState.rendering;
               if (renderedTail === null) {
                 if (!didSuspendAlready) {
-                  var cannotBeSuspended = renderHasNotSuspendedYet() && (current2 === null || (current2.flags & DidCapture) === NoFlags);
+                  var cannotBeSuspended = renderHasNotSuspendedYet() && (current3 === null || (current3.flags & DidCapture) === NoFlags);
                   if (!cannotBeSuspended) {
                     var row = workInProgress2.child;
                     while (row !== null) {
@@ -19982,8 +19981,8 @@ var __privateMethod = (obj, member, method) => {
               popRenderLanes(workInProgress2);
               var _nextState = workInProgress2.memoizedState;
               var nextIsHidden = _nextState !== null;
-              if (current2 !== null) {
-                var _prevState = current2.memoizedState;
+              if (current3 !== null) {
+                var _prevState = current3.memoizedState;
                 var prevIsHidden = _prevState !== null;
                 if (prevIsHidden !== nextIsHidden && // LegacyHidden doesn't do any hiding — it only pre-renders.
                 !enableLegacyHidden) {
@@ -20013,7 +20012,7 @@ var __privateMethod = (obj, member, method) => {
           }
           throw new Error("Unknown unit of work tag (" + workInProgress2.tag + "). This error is likely caused by a bug in React. Please file an issue.");
         }
-        function unwindWork(current2, workInProgress2, renderLanes2) {
+        function unwindWork(current3, workInProgress2, renderLanes2) {
           popTreeContext(workInProgress2);
           switch (workInProgress2.tag) {
             case ClassComponent: {
@@ -20087,7 +20086,7 @@ var __privateMethod = (obj, member, method) => {
               return null;
           }
         }
-        function unwindInterruptedWork(current2, interruptedWork, renderLanes2) {
+        function unwindInterruptedWork(current3, interruptedWork, renderLanes2) {
           popTreeContext(interruptedWork);
           switch (interruptedWork.tag) {
             case ClassComponent: {
@@ -20145,70 +20144,70 @@ var __privateMethod = (obj, member, method) => {
             clearCaughtError();
           }
         }
-        var callComponentWillUnmountWithTimer = function(current2, instance) {
-          instance.props = current2.memoizedProps;
-          instance.state = current2.memoizedState;
-          if (current2.mode & ProfileMode) {
+        var callComponentWillUnmountWithTimer = function(current3, instance) {
+          instance.props = current3.memoizedProps;
+          instance.state = current3.memoizedState;
+          if (current3.mode & ProfileMode) {
             try {
               startLayoutEffectTimer();
               instance.componentWillUnmount();
             } finally {
-              recordLayoutEffectDuration(current2);
+              recordLayoutEffectDuration(current3);
             }
           } else {
             instance.componentWillUnmount();
           }
         };
-        function safelyCallCommitHookLayoutEffectListMount(current2, nearestMountedAncestor) {
+        function safelyCallCommitHookLayoutEffectListMount(current3, nearestMountedAncestor) {
           try {
-            commitHookEffectListMount(Layout, current2);
+            commitHookEffectListMount(Layout, current3);
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
-        function safelyCallComponentWillUnmount(current2, nearestMountedAncestor, instance) {
+        function safelyCallComponentWillUnmount(current3, nearestMountedAncestor, instance) {
           try {
-            callComponentWillUnmountWithTimer(current2, instance);
+            callComponentWillUnmountWithTimer(current3, instance);
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
-        function safelyCallComponentDidMount(current2, nearestMountedAncestor, instance) {
+        function safelyCallComponentDidMount(current3, nearestMountedAncestor, instance) {
           try {
             instance.componentDidMount();
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
-        function safelyAttachRef(current2, nearestMountedAncestor) {
+        function safelyAttachRef(current3, nearestMountedAncestor) {
           try {
-            commitAttachRef(current2);
+            commitAttachRef(current3);
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
-        function safelyDetachRef(current2, nearestMountedAncestor) {
-          var ref = current2.ref;
+        function safelyDetachRef(current3, nearestMountedAncestor) {
+          var ref = current3.ref;
           if (ref !== null) {
             if (typeof ref === "function") {
               var retVal;
               try {
-                if (enableProfilerTimer && enableProfilerCommitHooks && current2.mode & ProfileMode) {
+                if (enableProfilerTimer && enableProfilerCommitHooks && current3.mode & ProfileMode) {
                   try {
                     startLayoutEffectTimer();
                     retVal = ref(null);
                   } finally {
-                    recordLayoutEffectDuration(current2);
+                    recordLayoutEffectDuration(current3);
                   }
                 } else {
                   retVal = ref(null);
                 }
               } catch (error2) {
-                captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+                captureCommitPhaseError(current3, nearestMountedAncestor, error2);
               }
               {
                 if (typeof retVal === "function") {
-                  error("Unexpected return value from a callback ref in %s. A callback ref should not return a function.", getComponentNameFromFiber(current2));
+                  error("Unexpected return value from a callback ref in %s. A callback ref should not return a function.", getComponentNameFromFiber(current3));
                 }
               }
             } else {
@@ -20216,11 +20215,11 @@ var __privateMethod = (obj, member, method) => {
             }
           }
         }
-        function safelyCallDestroy(current2, nearestMountedAncestor, destroy) {
+        function safelyCallDestroy(current3, nearestMountedAncestor, destroy) {
           try {
             destroy();
           } catch (error2) {
-            captureCommitPhaseError(current2, nearestMountedAncestor, error2);
+            captureCommitPhaseError(current3, nearestMountedAncestor, error2);
           }
         }
         var shouldFireAfterActiveInstanceBlur = false;
@@ -20264,7 +20263,7 @@ var __privateMethod = (obj, member, method) => {
           }
         }
         function commitBeforeMutationEffectsOnFiber(finishedWork) {
-          var current2 = finishedWork.alternate;
+          var current3 = finishedWork.alternate;
           var flags = finishedWork.flags;
           if ((flags & Snapshot) !== NoFlags) {
             setCurrentFiber(finishedWork);
@@ -20275,9 +20274,9 @@ var __privateMethod = (obj, member, method) => {
                 break;
               }
               case ClassComponent: {
-                if (current2 !== null) {
-                  var prevProps = current2.memoizedProps;
-                  var prevState = current2.memoizedState;
+                if (current3 !== null) {
+                  var prevProps = current3.memoizedProps;
+                  var prevState = current3.memoizedState;
                   var instance = finishedWork.stateNode;
                   {
                     if (finishedWork.type === finishedWork.elementType && !didWarnAboutReassigningProps) {
@@ -20461,7 +20460,7 @@ var __privateMethod = (obj, member, method) => {
             }
           }
         }
-        function commitLayoutEffectOnFiber(finishedRoot, current2, finishedWork, committedLanes) {
+        function commitLayoutEffectOnFiber(finishedRoot, current3, finishedWork, committedLanes) {
           if ((finishedWork.flags & LayoutMask) !== NoFlags) {
             switch (finishedWork.tag) {
               case FunctionComponent:
@@ -20485,7 +20484,7 @@ var __privateMethod = (obj, member, method) => {
                 var instance = finishedWork.stateNode;
                 if (finishedWork.flags & Update) {
                   if (!offscreenSubtreeWasHidden) {
-                    if (current2 === null) {
+                    if (current3 === null) {
                       {
                         if (finishedWork.type === finishedWork.elementType && !didWarnAboutReassigningProps) {
                           if (instance.props !== finishedWork.memoizedProps) {
@@ -20507,8 +20506,8 @@ var __privateMethod = (obj, member, method) => {
                         instance.componentDidMount();
                       }
                     } else {
-                      var prevProps = finishedWork.elementType === finishedWork.type ? current2.memoizedProps : resolveDefaultProps(finishedWork.type, current2.memoizedProps);
-                      var prevState = current2.memoizedState;
+                      var prevProps = finishedWork.elementType === finishedWork.type ? current3.memoizedProps : resolveDefaultProps(finishedWork.type, current3.memoizedProps);
+                      var prevState = current3.memoizedState;
                       {
                         if (finishedWork.type === finishedWork.elementType && !didWarnAboutReassigningProps) {
                           if (instance.props !== finishedWork.memoizedProps) {
@@ -20568,7 +20567,7 @@ var __privateMethod = (obj, member, method) => {
               }
               case HostComponent: {
                 var _instance2 = finishedWork.stateNode;
-                if (current2 === null && finishedWork.flags & Update) {
+                if (current3 === null && finishedWork.flags & Update) {
                   var type = finishedWork.type;
                   var props = finishedWork.memoizedProps;
                   commitMount(_instance2, type, props);
@@ -20586,7 +20585,7 @@ var __privateMethod = (obj, member, method) => {
                   var _finishedWork$memoize2 = finishedWork.memoizedProps, onCommit = _finishedWork$memoize2.onCommit, onRender = _finishedWork$memoize2.onRender;
                   var effectDuration = finishedWork.stateNode.effectDuration;
                   var commitTime2 = getCommitTime();
-                  var phase = current2 === null ? "mount" : "update";
+                  var phase = current3 === null ? "mount" : "update";
                   {
                     if (isCurrentUpdateNested()) {
                       phase = "nested-update";
@@ -21096,9 +21095,9 @@ var __privateMethod = (obj, member, method) => {
         function commitSuspenseHydrationCallbacks(finishedRoot, finishedWork) {
           var newState = finishedWork.memoizedState;
           if (newState === null) {
-            var current2 = finishedWork.alternate;
-            if (current2 !== null) {
-              var prevState = current2.memoizedState;
+            var current3 = finishedWork.alternate;
+            if (current3 !== null) {
+              var prevState = current3.memoizedState;
               if (prevState !== null) {
                 var suspenseInstance = prevState.dehydrated;
                 if (suspenseInstance !== null) {
@@ -21167,7 +21166,7 @@ var __privateMethod = (obj, member, method) => {
           setCurrentFiber(prevDebugFiber);
         }
         function commitMutationEffectsOnFiber(finishedWork, root2, lanes) {
-          var current2 = finishedWork.alternate;
+          var current3 = finishedWork.alternate;
           var flags = finishedWork.flags;
           switch (finishedWork.tag) {
             case FunctionComponent:
@@ -21205,8 +21204,8 @@ var __privateMethod = (obj, member, method) => {
               recursivelyTraverseMutationEffects(root2, finishedWork);
               commitReconciliationEffects(finishedWork);
               if (flags & Ref) {
-                if (current2 !== null) {
-                  safelyDetachRef(current2, current2.return);
+                if (current3 !== null) {
+                  safelyDetachRef(current3, current3.return);
                 }
               }
               return;
@@ -21215,8 +21214,8 @@ var __privateMethod = (obj, member, method) => {
               recursivelyTraverseMutationEffects(root2, finishedWork);
               commitReconciliationEffects(finishedWork);
               if (flags & Ref) {
-                if (current2 !== null) {
-                  safelyDetachRef(current2, current2.return);
+                if (current3 !== null) {
+                  safelyDetachRef(current3, current3.return);
                 }
               }
               {
@@ -21232,7 +21231,7 @@ var __privateMethod = (obj, member, method) => {
                   var _instance4 = finishedWork.stateNode;
                   if (_instance4 != null) {
                     var newProps = finishedWork.memoizedProps;
-                    var oldProps = current2 !== null ? current2.memoizedProps : newProps;
+                    var oldProps = current3 !== null ? current3.memoizedProps : newProps;
                     var type = finishedWork.type;
                     var updatePayload = finishedWork.updateQueue;
                     finishedWork.updateQueue = null;
@@ -21258,7 +21257,7 @@ var __privateMethod = (obj, member, method) => {
                   }
                   var textInstance = finishedWork.stateNode;
                   var newText = finishedWork.memoizedProps;
-                  var oldText = current2 !== null ? current2.memoizedProps : newText;
+                  var oldText = current3 !== null ? current3.memoizedProps : newText;
                   try {
                     commitTextUpdate(textInstance, oldText, newText);
                   } catch (error2) {
@@ -21273,8 +21272,8 @@ var __privateMethod = (obj, member, method) => {
               commitReconciliationEffects(finishedWork);
               if (flags & Update) {
                 {
-                  if (current2 !== null) {
-                    var prevRootState = current2.memoizedState;
+                  if (current3 !== null) {
+                    var prevRootState = current3.memoizedState;
                     if (prevRootState.isDehydrated) {
                       try {
                         commitHydratedContainer(root2.containerInfo);
@@ -21319,7 +21318,7 @@ var __privateMethod = (obj, member, method) => {
               return;
             }
             case OffscreenComponent: {
-              var _wasHidden = current2 !== null && current2.memoizedState !== null;
+              var _wasHidden = current3 !== null && current3.memoizedState !== null;
               if (
                 // TODO: Remove this dead flag
                 finishedWork.mode & ConcurrentMode
@@ -21411,8 +21410,8 @@ var __privateMethod = (obj, member, method) => {
                 commitLayoutMountEffects_complete(subtreeRoot, root2, committedLanes);
                 continue;
               } else {
-                var current2 = fiber.alternate;
-                var wasHidden = current2 !== null && current2.memoizedState !== null;
+                var current3 = fiber.alternate;
+                var wasHidden = current3 !== null && current3.memoizedState !== null;
                 var newOffscreenSubtreeWasHidden = wasHidden || offscreenSubtreeWasHidden;
                 var prevOffscreenSubtreeIsHidden = offscreenSubtreeIsHidden;
                 var prevOffscreenSubtreeWasHidden = offscreenSubtreeWasHidden;
@@ -21452,10 +21451,10 @@ var __privateMethod = (obj, member, method) => {
           while (nextEffect !== null) {
             var fiber = nextEffect;
             if ((fiber.flags & LayoutMask) !== NoFlags) {
-              var current2 = fiber.alternate;
+              var current3 = fiber.alternate;
               setCurrentFiber(fiber);
               try {
-                commitLayoutEffectOnFiber(root2, current2, fiber, committedLanes);
+                commitLayoutEffectOnFiber(root2, current3, fiber, committedLanes);
               } catch (error2) {
                 captureCommitPhaseError(fiber, fiber.return, error2);
               }
@@ -21751,17 +21750,17 @@ var __privateMethod = (obj, member, method) => {
             nextEffect = returnFiber;
           }
         }
-        function commitPassiveUnmountInsideDeletedTreeOnFiber(current2, nearestMountedAncestor) {
-          switch (current2.tag) {
+        function commitPassiveUnmountInsideDeletedTreeOnFiber(current3, nearestMountedAncestor) {
+          switch (current3.tag) {
             case FunctionComponent:
             case ForwardRef:
             case SimpleMemoComponent: {
-              if (current2.mode & ProfileMode) {
+              if (current3.mode & ProfileMode) {
                 startPassiveEffectTimer();
-                commitHookEffectListUnmount(Passive$1, current2, nearestMountedAncestor);
-                recordPassiveEffectDuration(current2);
+                commitHookEffectListUnmount(Passive$1, current3, nearestMountedAncestor);
+                recordPassiveEffectDuration(current3);
               } else {
-                commitHookEffectListUnmount(Passive$1, current2, nearestMountedAncestor);
+                commitHookEffectListUnmount(Passive$1, current3, nearestMountedAncestor);
               }
               break;
             }
@@ -22040,8 +22039,8 @@ var __privateMethod = (obj, member, method) => {
           }
         }
         function scheduleInitialHydrationOnRoot(root2, lane, eventTime) {
-          var current2 = root2.current;
-          current2.lanes = lane;
+          var current3 = root2.current;
+          current3.lanes = lane;
           markRootUpdated(root2, lane, eventTime);
           ensureRootIsScheduled(root2, eventTime);
         }
@@ -22215,11 +22214,11 @@ var __privateMethod = (obj, member, method) => {
           }
           return exitStatus;
         }
-        function queueRecoverableErrors(errors) {
+        function queueRecoverableErrors(errors2) {
           if (workInProgressRootRecoverableErrors === null) {
-            workInProgressRootRecoverableErrors = errors;
+            workInProgressRootRecoverableErrors = errors2;
           } else {
-            workInProgressRootRecoverableErrors.push.apply(workInProgressRootRecoverableErrors, errors);
+            workInProgressRootRecoverableErrors.push.apply(workInProgressRootRecoverableErrors, errors2);
           }
         }
         function finishConcurrentRender(root2, exitStatus, lanes) {
@@ -22454,8 +22453,8 @@ var __privateMethod = (obj, member, method) => {
           if (workInProgress !== null) {
             var interruptedWork = workInProgress.return;
             while (interruptedWork !== null) {
-              var current2 = interruptedWork.alternate;
-              unwindInterruptedWork(current2, interruptedWork);
+              var current3 = interruptedWork.alternate;
+              unwindInterruptedWork(current3, interruptedWork);
               interruptedWork = interruptedWork.return;
             }
           }
@@ -22661,15 +22660,15 @@ var __privateMethod = (obj, member, method) => {
           }
         }
         function performUnitOfWork(unitOfWork) {
-          var current2 = unitOfWork.alternate;
+          var current3 = unitOfWork.alternate;
           setCurrentFiber(unitOfWork);
           var next2;
           if ((unitOfWork.mode & ProfileMode) !== NoMode) {
             startProfilerTimer(unitOfWork);
-            next2 = beginWork$1(current2, unitOfWork, subtreeRenderLanes);
+            next2 = beginWork$1(current3, unitOfWork, subtreeRenderLanes);
             stopProfilerTimerIfRunningAndRecordDelta(unitOfWork, true);
           } else {
-            next2 = beginWork$1(current2, unitOfWork, subtreeRenderLanes);
+            next2 = beginWork$1(current3, unitOfWork, subtreeRenderLanes);
           }
           resetCurrentFiber();
           unitOfWork.memoizedProps = unitOfWork.pendingProps;
@@ -22683,16 +22682,16 @@ var __privateMethod = (obj, member, method) => {
         function completeUnitOfWork(unitOfWork) {
           var completedWork = unitOfWork;
           do {
-            var current2 = completedWork.alternate;
+            var current3 = completedWork.alternate;
             var returnFiber = completedWork.return;
             if ((completedWork.flags & Incomplete) === NoFlags) {
               setCurrentFiber(completedWork);
               var next2 = void 0;
               if ((completedWork.mode & ProfileMode) === NoMode) {
-                next2 = completeWork(current2, completedWork, subtreeRenderLanes);
+                next2 = completeWork(current3, completedWork, subtreeRenderLanes);
               } else {
                 startProfilerTimer(completedWork);
-                next2 = completeWork(current2, completedWork, subtreeRenderLanes);
+                next2 = completeWork(current3, completedWork, subtreeRenderLanes);
                 stopProfilerTimerIfRunningAndRecordDelta(completedWork, false);
               }
               resetCurrentFiber();
@@ -22701,7 +22700,7 @@ var __privateMethod = (obj, member, method) => {
                 return;
               }
             } else {
-              var _next = unwindWork(current2, completedWork);
+              var _next = unwindWork(current3, completedWork);
               if (_next !== null) {
                 _next.flags &= HostEffectMask;
                 workInProgress = _next;
@@ -23161,20 +23160,20 @@ var __privateMethod = (obj, member, method) => {
         }
         function invokeEffectsInDev(firstChild, fiberFlags, invokeEffectFn) {
           {
-            var current2 = firstChild;
+            var current3 = firstChild;
             var subtreeRoot = null;
-            while (current2 !== null) {
-              var primarySubtreeFlag = current2.subtreeFlags & fiberFlags;
-              if (current2 !== subtreeRoot && current2.child !== null && primarySubtreeFlag !== NoFlags) {
-                current2 = current2.child;
+            while (current3 !== null) {
+              var primarySubtreeFlag = current3.subtreeFlags & fiberFlags;
+              if (current3 !== subtreeRoot && current3.child !== null && primarySubtreeFlag !== NoFlags) {
+                current3 = current3.child;
               } else {
-                if ((current2.flags & fiberFlags) !== NoFlags) {
-                  invokeEffectFn(current2);
+                if ((current3.flags & fiberFlags) !== NoFlags) {
+                  invokeEffectFn(current3);
                 }
-                if (current2.sibling !== null) {
-                  current2 = current2.sibling;
+                if (current3.sibling !== null) {
+                  current3 = current3.sibling;
                 } else {
-                  current2 = subtreeRoot = current2.return;
+                  current3 = subtreeRoot = current3.return;
                 }
               }
             }
@@ -23202,7 +23201,7 @@ var __privateMethod = (obj, member, method) => {
             } else {
               didWarnStateUpdateForNotYetMountedComponent = /* @__PURE__ */ new Set([componentName]);
             }
-            var previousFiber = current;
+            var previousFiber = current2;
             try {
               setCurrentFiber(fiber);
               error("Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render function that asynchronously later calls tries to update the component. Move this work to useEffect instead.");
@@ -23218,22 +23217,22 @@ var __privateMethod = (obj, member, method) => {
         var beginWork$1;
         {
           var dummyFiber = null;
-          beginWork$1 = function(current2, unitOfWork, lanes) {
+          beginWork$1 = function(current3, unitOfWork, lanes) {
             var originalWorkInProgressCopy = assignFiberPropertiesInDEV(dummyFiber, unitOfWork);
             try {
-              return beginWork(current2, unitOfWork, lanes);
+              return beginWork(current3, unitOfWork, lanes);
             } catch (originalError) {
               if (didSuspendOrErrorWhileHydratingDEV() || originalError !== null && typeof originalError === "object" && typeof originalError.then === "function") {
                 throw originalError;
               }
               resetContextDependencies();
               resetHooksAfterThrow();
-              unwindInterruptedWork(current2, unitOfWork);
+              unwindInterruptedWork(current3, unitOfWork);
               assignFiberPropertiesInDEV(unitOfWork, originalWorkInProgressCopy);
               if (unitOfWork.mode & ProfileMode) {
                 startProfilerTimer(unitOfWork);
               }
-              invokeGuardedCallback(null, beginWork, null, current2, unitOfWork, lanes);
+              invokeGuardedCallback(null, beginWork, null, current3, unitOfWork, lanes);
               if (hasCaughtError()) {
                 var replayError = clearCaughtError();
                 if (typeof replayError === "object" && replayError !== null && replayError._suppressLogging && typeof originalError === "object" && originalError !== null && !originalError._suppressLogging) {
@@ -23325,7 +23324,7 @@ var __privateMethod = (obj, member, method) => {
               }
             }
             if (ReactCurrentActQueue$1.current === null) {
-              var previousFiber = current;
+              var previousFiber = current2;
               try {
                 setCurrentFiber(fiber);
                 error("An update to %s inside a test was not wrapped in act(...).\n\nWhen testing, code that causes React state updates should be wrapped into act(...):\n\nact(() => {\n  /* fire events that update state */\n});\n/* assert on the output */\n\nThis ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act", getComponentNameFromFiber(fiber));
@@ -23717,23 +23716,23 @@ var __privateMethod = (obj, member, method) => {
           }
           return IndeterminateComponent;
         }
-        function createWorkInProgress(current2, pendingProps) {
-          var workInProgress2 = current2.alternate;
+        function createWorkInProgress(current3, pendingProps) {
+          var workInProgress2 = current3.alternate;
           if (workInProgress2 === null) {
-            workInProgress2 = createFiber(current2.tag, pendingProps, current2.key, current2.mode);
-            workInProgress2.elementType = current2.elementType;
-            workInProgress2.type = current2.type;
-            workInProgress2.stateNode = current2.stateNode;
+            workInProgress2 = createFiber(current3.tag, pendingProps, current3.key, current3.mode);
+            workInProgress2.elementType = current3.elementType;
+            workInProgress2.type = current3.type;
+            workInProgress2.stateNode = current3.stateNode;
             {
-              workInProgress2._debugSource = current2._debugSource;
-              workInProgress2._debugOwner = current2._debugOwner;
-              workInProgress2._debugHookTypes = current2._debugHookTypes;
+              workInProgress2._debugSource = current3._debugSource;
+              workInProgress2._debugOwner = current3._debugOwner;
+              workInProgress2._debugHookTypes = current3._debugHookTypes;
             }
-            workInProgress2.alternate = current2;
-            current2.alternate = workInProgress2;
+            workInProgress2.alternate = current3;
+            current3.alternate = workInProgress2;
           } else {
             workInProgress2.pendingProps = pendingProps;
-            workInProgress2.type = current2.type;
+            workInProgress2.type = current3.type;
             workInProgress2.flags = NoFlags;
             workInProgress2.subtreeFlags = NoFlags;
             workInProgress2.deletions = null;
@@ -23742,38 +23741,38 @@ var __privateMethod = (obj, member, method) => {
               workInProgress2.actualStartTime = -1;
             }
           }
-          workInProgress2.flags = current2.flags & StaticMask;
-          workInProgress2.childLanes = current2.childLanes;
-          workInProgress2.lanes = current2.lanes;
-          workInProgress2.child = current2.child;
-          workInProgress2.memoizedProps = current2.memoizedProps;
-          workInProgress2.memoizedState = current2.memoizedState;
-          workInProgress2.updateQueue = current2.updateQueue;
-          var currentDependencies = current2.dependencies;
+          workInProgress2.flags = current3.flags & StaticMask;
+          workInProgress2.childLanes = current3.childLanes;
+          workInProgress2.lanes = current3.lanes;
+          workInProgress2.child = current3.child;
+          workInProgress2.memoizedProps = current3.memoizedProps;
+          workInProgress2.memoizedState = current3.memoizedState;
+          workInProgress2.updateQueue = current3.updateQueue;
+          var currentDependencies = current3.dependencies;
           workInProgress2.dependencies = currentDependencies === null ? null : {
             lanes: currentDependencies.lanes,
             firstContext: currentDependencies.firstContext
           };
-          workInProgress2.sibling = current2.sibling;
-          workInProgress2.index = current2.index;
-          workInProgress2.ref = current2.ref;
+          workInProgress2.sibling = current3.sibling;
+          workInProgress2.index = current3.index;
+          workInProgress2.ref = current3.ref;
           {
-            workInProgress2.selfBaseDuration = current2.selfBaseDuration;
-            workInProgress2.treeBaseDuration = current2.treeBaseDuration;
+            workInProgress2.selfBaseDuration = current3.selfBaseDuration;
+            workInProgress2.treeBaseDuration = current3.treeBaseDuration;
           }
           {
-            workInProgress2._debugNeedsRemount = current2._debugNeedsRemount;
+            workInProgress2._debugNeedsRemount = current3._debugNeedsRemount;
             switch (workInProgress2.tag) {
               case IndeterminateComponent:
               case FunctionComponent:
               case SimpleMemoComponent:
-                workInProgress2.type = resolveFunctionForHotReloading(current2.type);
+                workInProgress2.type = resolveFunctionForHotReloading(current3.type);
                 break;
               case ClassComponent:
-                workInProgress2.type = resolveClassForHotReloading(current2.type);
+                workInProgress2.type = resolveClassForHotReloading(current3.type);
                 break;
               case ForwardRef:
-                workInProgress2.type = resolveForwardRefForHotReloading(current2.type);
+                workInProgress2.type = resolveForwardRefForHotReloading(current3.type);
                 break;
             }
           }
@@ -23781,8 +23780,8 @@ var __privateMethod = (obj, member, method) => {
         }
         function resetWorkInProgress(workInProgress2, renderLanes2) {
           workInProgress2.flags &= StaticMask | Placement;
-          var current2 = workInProgress2.alternate;
-          if (current2 === null) {
+          var current3 = workInProgress2.alternate;
+          if (current3 === null) {
             workInProgress2.childLanes = NoLanes;
             workInProgress2.lanes = renderLanes2;
             workInProgress2.child = null;
@@ -23797,23 +23796,23 @@ var __privateMethod = (obj, member, method) => {
               workInProgress2.treeBaseDuration = 0;
             }
           } else {
-            workInProgress2.childLanes = current2.childLanes;
-            workInProgress2.lanes = current2.lanes;
-            workInProgress2.child = current2.child;
+            workInProgress2.childLanes = current3.childLanes;
+            workInProgress2.lanes = current3.lanes;
+            workInProgress2.child = current3.child;
             workInProgress2.subtreeFlags = NoFlags;
             workInProgress2.deletions = null;
-            workInProgress2.memoizedProps = current2.memoizedProps;
-            workInProgress2.memoizedState = current2.memoizedState;
-            workInProgress2.updateQueue = current2.updateQueue;
-            workInProgress2.type = current2.type;
-            var currentDependencies = current2.dependencies;
+            workInProgress2.memoizedProps = current3.memoizedProps;
+            workInProgress2.memoizedState = current3.memoizedState;
+            workInProgress2.updateQueue = current3.updateQueue;
+            workInProgress2.type = current3.type;
+            var currentDependencies = current3.dependencies;
             workInProgress2.dependencies = currentDependencies === null ? null : {
               lanes: currentDependencies.lanes,
               firstContext: currentDependencies.firstContext
             };
             {
-              workInProgress2.selfBaseDuration = current2.selfBaseDuration;
-              workInProgress2.treeBaseDuration = current2.treeBaseDuration;
+              workInProgress2.selfBaseDuration = current3.selfBaseDuration;
+              workInProgress2.treeBaseDuration = current3.treeBaseDuration;
             }
           }
           return workInProgress2;
@@ -24170,7 +24169,7 @@ var __privateMethod = (obj, member, method) => {
               var componentName = getComponentNameFromFiber(fiber) || "Component";
               if (!didWarnAboutFindNodeInStrictMode[componentName]) {
                 didWarnAboutFindNodeInStrictMode[componentName] = true;
-                var previousFiber = current;
+                var previousFiber = current2;
                 try {
                   setCurrentFiber(hostFiber);
                   if (fiber.mode & StrictLegacyMode) {
@@ -24199,12 +24198,12 @@ var __privateMethod = (obj, member, method) => {
           var hydrate2 = true;
           var root2 = createFiberRoot(containerInfo, tag2, hydrate2, initialChildren, hydrationCallbacks, isStrictMode, concurrentUpdatesByDefaultOverride, identifierPrefix, onRecoverableError);
           root2.context = getContextForSubtree(null);
-          var current2 = root2.current;
+          var current3 = root2.current;
           var eventTime = requestEventTime();
-          var lane = requestUpdateLane(current2);
+          var lane = requestUpdateLane(current3);
           var update = createUpdate(eventTime, lane);
           update.callback = callback !== void 0 && callback !== null ? callback : null;
-          enqueueUpdate(current2, update, lane);
+          enqueueUpdate(current3, update, lane);
           scheduleInitialHydrationOnRoot(root2, lane, eventTime);
           return root2;
         }
@@ -24225,9 +24224,9 @@ var __privateMethod = (obj, member, method) => {
             container.pendingContext = context;
           }
           {
-            if (isRendering && current !== null && !didWarnAboutNestedUpdates) {
+            if (isRendering && current2 !== null && !didWarnAboutNestedUpdates) {
               didWarnAboutNestedUpdates = true;
-              error("Render methods should be a pure function of props and state; triggering nested component updates from render is not allowed. If necessary, trigger nested updates in componentDidUpdate.\n\nCheck the render method of %s.", getComponentNameFromFiber(current) || "Unknown");
+              error("Render methods should be a pure function of props and state; triggering nested component updates from render is not allowed. If necessary, trigger nested updates in componentDidUpdate.\n\nCheck the render method of %s.", getComponentNameFromFiber(current2) || "Unknown");
             }
           }
           var update = createUpdate(eventTime, lane);
@@ -24518,7 +24517,7 @@ var __privateMethod = (obj, member, method) => {
           return null;
         }
         function getCurrentFiberForDevTools() {
-          return current;
+          return current2;
         }
         function injectIntoDevTools(devToolsConfig) {
           var findFiberByHostInstance = devToolsConfig.findFiberByHostInstance;
@@ -25046,7 +25045,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactDom_production_min)
       return reactDom_production_min;
     hasRequiredReactDom_production_min = 1;
-    var aa = requireReact(), ca = requireScheduler();
+    var aa = reactExports, ca = requireScheduler();
     function p(a) {
       for (var b = "https://reactjs.org/docs/error-decoder.html?invariant=" + a, c = 1; c < arguments.length; c++)
         b += "&args[]=" + encodeURIComponent(arguments[c]);
@@ -32019,7 +32018,7 @@ var __privateMethod = (obj, member, method) => {
     if (data.sets.length === 0 || !objectsets) {
       return false;
     }
-    return !objectsets.some((set) => !set.hidden && data.sets.includes(set.id));
+    return !objectsets.some((set2) => !set2.hidden && data.sets.includes(set2.id));
   }
   function unescapeCharacters(string) {
     return string.replace(/\&amp;/g, "&").replace(/\&gt;/g, ">").replace(/\&lt;/g, "<");
@@ -32365,12 +32364,6 @@ var __privateMethod = (obj, member, method) => {
     VERB2["ERROR"] = "error";
     return VERB2;
   })(VERB || {});
-  var reactExports = requireReact();
-  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
-  const React$2 = /* @__PURE__ */ _mergeNamespaces({
-    __proto__: null,
-    default: React$1
-  }, [reactExports]);
   var shim = { exports: {} };
   var useSyncExternalStoreShim_development = {};
   /**
@@ -32392,7 +32385,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         function error(format2) {
           {
@@ -32518,7 +32511,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredUseSyncExternalStoreShim_production_min)
       return useSyncExternalStoreShim_production_min;
     hasRequiredUseSyncExternalStoreShim_production_min = 1;
-    var e = requireReact();
+    var e = reactExports;
     function h(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -32582,7 +32575,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var shim2 = shimExports;
         function is2(x, y) {
           return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
@@ -32676,7 +32669,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredWithSelector_production_min)
       return withSelector_production_min;
     hasRequiredWithSelector_production_min = 1;
-    var h = requireReact(), n = shimExports;
+    var h = reactExports, n = shimExports;
     function p(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -33115,12 +33108,12 @@ var __privateMethod = (obj, member, method) => {
   var getOwnPropertyNames = Object.getOwnPropertyNames;
   var getOwnPropertySymbols = Object.getOwnPropertySymbols;
   var getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-  var getPrototypeOf = Object.getPrototypeOf;
+  var getPrototypeOf$1 = Object.getPrototypeOf;
   var objectPrototype = Object.prototype;
   function hoistNonReactStatics(targetComponent, sourceComponent, blacklist) {
     if (typeof sourceComponent !== "string") {
       if (objectPrototype) {
-        var inheritedComponent = getPrototypeOf(sourceComponent);
+        var inheritedComponent = getPrototypeOf$1(sourceComponent);
         if (inheritedComponent && inheritedComponent !== objectPrototype) {
           hoistNonReactStatics(targetComponent, inheritedComponent, blacklist);
         }
@@ -33474,7 +33467,7 @@ var __privateMethod = (obj, member, method) => {
     verify(mapDispatchToProps, "mapDispatchToProps");
     verify(mergeProps, "mergeProps");
   }
-  const _excluded$1c = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
+  const _excluded$1h = ["initMapStateToProps", "initMapDispatchToProps", "initMergeProps"];
   function pureFinalPropsSelectorFactory(mapStateToProps2, mapDispatchToProps, mergeProps, dispatch, {
     areStatesEqual,
     areOwnPropsEqual,
@@ -33540,7 +33533,7 @@ var __privateMethod = (obj, member, method) => {
       initMapStateToProps,
       initMapDispatchToProps,
       initMergeProps
-    } = _ref, options = _objectWithoutPropertiesLoose$1(_ref, _excluded$1c);
+    } = _ref, options = _objectWithoutPropertiesLoose$1(_ref, _excluded$1h);
     const mapStateToProps2 = initMapStateToProps(dispatch, options);
     const mapDispatchToProps = initMapDispatchToProps(dispatch, options);
     const mergeProps = initMergeProps(dispatch, options);
@@ -33559,7 +33552,7 @@ var __privateMethod = (obj, member, method) => {
     }
     return boundActionCreators;
   }
-  function isPlainObject$4(obj) {
+  function isPlainObject$5(obj) {
     if (typeof obj !== "object" || obj === null)
       return false;
     let proto = Object.getPrototypeOf(obj);
@@ -33572,7 +33565,7 @@ var __privateMethod = (obj, member, method) => {
     return proto === baseProto;
   }
   function verifyPlainObject(value, displayName, methodName) {
-    if (!isPlainObject$4(value)) {
+    if (!isPlainObject$5(value)) {
       warning$1(`${methodName}() in ${displayName} must return a plain object. Instead received ${value}.`);
     }
   }
@@ -33770,7 +33763,7 @@ var __privateMethod = (obj, member, method) => {
   }
   const canUseDOM = !!(typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined");
   const useIsomorphicLayoutEffect = canUseDOM ? reactExports.useLayoutEffect : reactExports.useEffect;
-  function is(x, y) {
+  function is$1(x, y) {
     if (x === y) {
       return x !== 0 || y !== 0 || 1 / x === 1 / y;
     } else {
@@ -33778,7 +33771,7 @@ var __privateMethod = (obj, member, method) => {
     }
   }
   function shallowEqual(objA, objB) {
-    if (is(objA, objB))
+    if (is$1(objA, objB))
       return true;
     if (typeof objA !== "object" || objA === null || typeof objB !== "object" || objB === null) {
       return false;
@@ -33788,13 +33781,13 @@ var __privateMethod = (obj, member, method) => {
     if (keysA.length !== keysB.length)
       return false;
     for (let i2 = 0; i2 < keysA.length; i2++) {
-      if (!Object.prototype.hasOwnProperty.call(objB, keysA[i2]) || !is(objA[keysA[i2]], objB[keysA[i2]])) {
+      if (!Object.prototype.hasOwnProperty.call(objB, keysA[i2]) || !is$1(objA[keysA[i2]], objB[keysA[i2]])) {
         return false;
       }
     }
     return true;
   }
-  const _excluded$1b = ["reactReduxForwardedRef"];
+  const _excluded$1g = ["reactReduxForwardedRef"];
   let useSyncExternalStore = notInitialized;
   const initializeConnect = (fn) => {
     useSyncExternalStore = fn;
@@ -33916,7 +33909,7 @@ var __privateMethod = (obj, member, method) => {
         const [propsContext, reactReduxForwardedRef, wrapperProps] = reactExports.useMemo(() => {
           const {
             reactReduxForwardedRef: reactReduxForwardedRef2
-          } = props, wrapperProps2 = _objectWithoutPropertiesLoose$1(props, _excluded$1b);
+          } = props, wrapperProps2 = _objectWithoutPropertiesLoose$1(props, _excluded$1g);
           return [props.context, reactReduxForwardedRef2, wrapperProps2];
         }, [props]);
         const ContextToUse = reactExports.useMemo(() => {
@@ -34481,18 +34474,18 @@ ${latestSubscriptionCallbackError.current.stack}
         if (x > y)
           return 1;
         return 0;
-      }).map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      }).map((set2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "input",
           {
             type: "checkbox",
-            id: "set" + set.id,
-            value: set.id,
-            checked: !set.hidden,
-            onChange: this.toggleHidden.bind(this, set.id, !set.hidden)
+            id: "set" + set2.id,
+            value: set2.id,
+            checked: !set2.hidden,
+            onChange: this.toggleHidden.bind(this, set2.id, !set2.hidden)
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set2.id, children: set2.title })
       ] })) });
       return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "node-bar-workflow", className: "right-panel-inner", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: window.gettext("View options") }),
@@ -35752,18 +35745,18 @@ ${latestSubscriptionCallbackError.current.stack}
         if (x > y)
           return 1;
         return 0;
-      }).map((set, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+      }).map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           "input",
           {
             type: "checkbox",
-            id: "set" + set.id,
-            value: set.id,
-            checked: !set.hidden,
-            onChange: this.toggleHidden.bind(this, set.id)
+            id: "set" + set2.id,
+            value: set2.id,
+            checked: !set2.hidden,
+            onChange: this.toggleHidden.bind(this, set2.id)
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set.id, children: set.title })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "set" + set2.id, children: set2.title })
       ] }, index)) }));
     }
     /*******************************************************
@@ -36813,7 +36806,7 @@ ${latestSubscriptionCallbackError.current.stack}
     self2.updateValue = updateValue;
     self2.open = open;
     self2.redraw = redraw;
-    self2.set = set;
+    self2.set = set2;
     self2.setDate = setDate;
     self2.toggle = toggle;
     function setupHelperFunctions() {
@@ -37199,17 +37192,17 @@ ${latestSubscriptionCallbackError.current.stack}
       }
       return void 0;
     }
-    function getNextAvailableDay(current, delta) {
-      var givenMonth = current.className.indexOf("Month") === -1 ? current.dateObj.getMonth() : self2.currentMonth;
+    function getNextAvailableDay(current2, delta) {
+      var givenMonth = current2.className.indexOf("Month") === -1 ? current2.dateObj.getMonth() : self2.currentMonth;
       var endMonth = delta > 0 ? self2.config.showMonths : -1;
       var loopDelta = delta > 0 ? 1 : -1;
       for (var m2 = givenMonth - self2.currentMonth; m2 != endMonth; m2 += loopDelta) {
         var month = self2.daysContainer.children[m2];
-        var startIndex = givenMonth - self2.currentMonth === m2 ? current.$i + delta : delta < 0 ? month.children.length - 1 : 0;
+        var startIndex = givenMonth - self2.currentMonth === m2 ? current2.$i + delta : delta < 0 ? month.children.length - 1 : 0;
         var numMonthDays = month.children.length;
         for (var i2 = startIndex; i2 >= 0 && i2 < numMonthDays && i2 != (delta > 0 ? numMonthDays : -1); i2 += loopDelta) {
           var c = month.children[i2];
-          if (c.className.indexOf("hidden") === -1 && isEnabled(c.dateObj) && Math.abs(current.$i - i2) >= Math.abs(delta))
+          if (c.className.indexOf("hidden") === -1 && isEnabled(c.dateObj) && Math.abs(current2.$i - i2) >= Math.abs(delta))
             return focusOnDayElem(c);
         }
       }
@@ -37217,10 +37210,10 @@ ${latestSubscriptionCallbackError.current.stack}
       focusOnDay(getFirstAvailableDay(loopDelta), 0);
       return void 0;
     }
-    function focusOnDay(current, offset) {
+    function focusOnDay(current2, offset) {
       var activeElement = getClosestActiveElement();
       var dayFocused = isInView(activeElement || document.body);
-      var startElem = current !== void 0 ? current : dayFocused ? activeElement : self2.selectedDateElem !== void 0 && isInView(self2.selectedDateElem) ? self2.selectedDateElem : self2.todayDateElem !== void 0 && isInView(self2.todayDateElem) ? self2.todayDateElem : getFirstAvailableDay(offset > 0 ? 1 : -1);
+      var startElem = current2 !== void 0 ? current2 : dayFocused ? activeElement : self2.selectedDateElem !== void 0 && isInView(self2.selectedDateElem) ? self2.selectedDateElem : self2.todayDateElem !== void 0 && isInView(self2.todayDateElem) ? self2.todayDateElem : getFirstAvailableDay(offset > 0 ? 1 : -1);
       if (startElem === void 0) {
         self2._input.focus();
       } else if (!dayFocused) {
@@ -38198,7 +38191,7 @@ ${latestSubscriptionCallbackError.current.stack}
         }
       ]
     };
-    function set(option, value) {
+    function set2(option, value) {
       if (option !== null && typeof option === "object") {
         Object.assign(self2.config, option);
         for (var key in option) {
@@ -38698,11 +38691,11 @@ ${latestSubscriptionCallbackError.current.stack}
     };
     return _extends$1.apply(this, arguments);
   }
-  function isPlainObject$3(item) {
+  function isPlainObject$4(item) {
     return item !== null && typeof item === "object" && item.constructor === Object;
   }
   function deepClone(source) {
-    if (!isPlainObject$3(source)) {
+    if (!isPlainObject$4(source)) {
       return source;
     }
     const output = {};
@@ -38715,15 +38708,15 @@ ${latestSubscriptionCallbackError.current.stack}
     clone: true
   }) {
     const output = options.clone ? _extends$1({}, target) : target;
-    if (isPlainObject$3(target) && isPlainObject$3(source)) {
+    if (isPlainObject$4(target) && isPlainObject$4(source)) {
       Object.keys(source).forEach((key) => {
         if (key === "__proto__") {
           return;
         }
-        if (isPlainObject$3(source[key]) && key in target && isPlainObject$3(target[key])) {
+        if (isPlainObject$4(source[key]) && key in target && isPlainObject$4(target[key])) {
           output[key] = deepmerge(target[key], source[key], options);
         } else if (options.clone) {
-          output[key] = isPlainObject$3(source[key]) ? deepClone(source[key]) : source[key];
+          output[key] = isPlainObject$4(source[key]) ? deepClone(source[key]) : source[key];
         } else {
           output[key] = source[key];
         }
@@ -39153,14 +39146,14 @@ ${latestSubscriptionCallbackError.current.stack}
     };
     return objectAssign;
   }
-  var has;
+  var has$1;
   var hasRequiredHas;
   function requireHas() {
     if (hasRequiredHas)
-      return has;
+      return has$1;
     hasRequiredHas = 1;
-    has = Function.call.bind(Object.prototype.hasOwnProperty);
-    return has;
+    has$1 = Function.call.bind(Object.prototype.hasOwnProperty);
+    return has$1;
   }
   var checkPropTypes_1;
   var hasRequiredCheckPropTypes;
@@ -40443,7 +40436,7 @@ ${latestSubscriptionCallbackError.current.stack}
       column$1 = 1, line++;
     return character;
   }
-  function peek() {
+  function peek$1() {
     return charat(characters, position);
   }
   function caret() {
@@ -40494,7 +40487,7 @@ ${latestSubscriptionCallbackError.current.stack}
     return trim$1(slice(position - 1, delimiter(type === 91 ? type + 2 : type === 40 ? type + 1 : type)));
   }
   function whitespace(type) {
-    while (character = peek())
+    while (character = peek$1())
       if (character < 33)
         next();
       else
@@ -40505,7 +40498,7 @@ ${latestSubscriptionCallbackError.current.stack}
     while (--count && next())
       if (character < 48 || character > 102 || character > 57 && character < 65 || character > 70 && character < 97)
         break;
-    return slice(index, caret() + (count < 6 && peek() == 32 && next() == 32));
+    return slice(index, caret() + (count < 6 && peek$1() == 32 && next() == 32));
   }
   function delimiter(type) {
     while (next())
@@ -40531,12 +40524,12 @@ ${latestSubscriptionCallbackError.current.stack}
     while (next())
       if (type + character === 47 + 10)
         break;
-      else if (type + character === 42 + 42 && peek() === 47)
+      else if (type + character === 42 + 42 && peek$1() === 47)
         break;
     return "/*" + slice(index, position - 1) + "*" + from(type === 47 ? type : next());
   }
   function identifier(index) {
-    while (!token(peek()))
+    while (!token(peek$1()))
       next();
     return slice(index, position);
   }
@@ -40582,7 +40575,7 @@ ${latestSubscriptionCallbackError.current.stack}
           characters2 += escaping(caret() - 1, 7);
           continue;
         case 47:
-          switch (peek()) {
+          switch (peek$1()) {
             case 42:
             case 47:
               append(comment(commenter(next(), caret()), root, parent), declarations);
@@ -40644,9 +40637,9 @@ ${latestSubscriptionCallbackError.current.stack}
               points[index++] = (strlen(characters2) - 1) * ampersand, ampersand = 1;
               break;
             case 64:
-              if (peek() === 45)
+              if (peek$1() === 45)
                 characters2 += delimit(next());
-              atrule = peek(), offset = length2 = strlen(type = characters2 += identifier(caret())), character2++;
+              atrule = peek$1(), offset = length2 = strlen(type = characters2 += identifier(caret())), character2++;
               break;
             case 45:
               if (previous === 45 && strlen(characters2) == 2)
@@ -40717,7 +40710,7 @@ ${latestSubscriptionCallbackError.current.stack}
     var character2 = 0;
     while (true) {
       previous = character2;
-      character2 = peek();
+      character2 = peek$1();
       if (previous === 38 && character2 === 12) {
         points[index] = 1;
       }
@@ -40734,7 +40727,7 @@ ${latestSubscriptionCallbackError.current.stack}
     do {
       switch (token(character2)) {
         case 0:
-          if (character2 === 38 && peek() === 12) {
+          if (character2 === 38 && peek$1() === 12) {
             points[index] = 1;
           }
           parsed[index] += identifierWithPointTracking(position - 1, points, index);
@@ -40744,7 +40737,7 @@ ${latestSubscriptionCallbackError.current.stack}
           break;
         case 4:
           if (character2 === 44) {
-            parsed[++index] = peek() === 58 ? "&\f" : "";
+            parsed[++index] = peek$1() === 58 ? "&\f" : "";
             points[index] = parsed[index].length;
             break;
           }
@@ -41144,11 +41137,11 @@ ${latestSubscriptionCallbackError.current.stack}
     registerStyles(cache2, serialized, isStringTag2);
     var className = cache2.key + "-" + serialized.name;
     if (cache2.inserted[serialized.name] === void 0) {
-      var current = serialized;
+      var current2 = serialized;
       do {
-        cache2.insert(serialized === current ? "." + className : "", current, cache2.sheet, true);
-        current = current.next;
-      } while (current !== void 0);
+        cache2.insert(serialized === current2 ? "." + className : "", current2, cache2.sheet, true);
+        current2 = current2.next;
+      } while (current2 !== void 0);
     }
   };
   function murmur2(str) {
@@ -42194,7 +42187,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       tag2.__emotion_styles = processor(tag2.__emotion_styles);
     }
   };
-  const _excluded$1a = ["values", "unit", "step"];
+  const _excluded$1f = ["values", "unit", "step"];
   const sortBreakpointsValues = (values2) => {
     const breakpointsAsArray = Object.keys(values2).map((key) => ({
       key,
@@ -42225,7 +42218,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       },
       unit = "px",
       step = 5
-    } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1a);
+    } = breakpoints, other = _objectWithoutPropertiesLoose(breakpoints, _excluded$1f);
     const sortedValues = sortBreakpointsValues(values2);
     const keys = Object.keys(sortedValues);
     function up(key) {
@@ -43247,14 +43240,14 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   const styleFunctionSx = unstable_createStyleFunctionSx();
   styleFunctionSx.filterProps = ["sx"];
   const styleFunctionSx$1 = styleFunctionSx;
-  const _excluded$19 = ["breakpoints", "palette", "spacing", "shape"];
+  const _excluded$1e = ["breakpoints", "palette", "spacing", "shape"];
   function createTheme$1(options = {}, ...args) {
     const {
       breakpoints: breakpointsInput = {},
       palette: paletteInput = {},
       spacing: spacingInput,
       shape: shapeInput = {}
-    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$19);
+    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$1e);
     const breakpoints = createBreakpoints(breakpointsInput);
     const spacing = createSpacing(spacingInput);
     let muiTheme = deepmerge({
@@ -43318,7 +43311,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
      */
     themeId: PropTypes.string
   } : void 0;
-  const _excluded$18 = ["sx"];
+  const _excluded$1d = ["sx"];
   const splitProps = (props) => {
     var _props$theme$unstable, _props$theme;
     const result = {
@@ -43338,7 +43331,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   function extendSxProp(props) {
     const {
       sx: inSx
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$18);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1d);
     const {
       systemProps,
       otherProps
@@ -43349,7 +43342,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     } else if (typeof inSx === "function") {
       finalSx = (...args) => {
         const result = inSx(...args);
-        if (!isPlainObject$3(result)) {
+        if (!isPlainObject$4(result)) {
           return systemProps;
         }
         return _extends$1({}, systemProps, result);
@@ -43361,7 +43354,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       sx: finalSx
     });
   }
-  const _excluded$17 = ["className", "component"];
+  const _excluded$1c = ["className", "component"];
   function createBox(options = {}) {
     const {
       themeId,
@@ -43377,7 +43370,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
       const _extendSxProp = extendSxProp(inProps), {
         className,
         component = "div"
-      } = _extendSxProp, other = _objectWithoutPropertiesLoose(_extendSxProp, _excluded$17);
+      } = _extendSxProp, other = _objectWithoutPropertiesLoose(_extendSxProp, _excluded$1c);
       return /* @__PURE__ */ jsxRuntimeExports.jsx(BoxRoot, _extends$1({
         as: component,
         ref,
@@ -43387,14 +43380,14 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return Box2;
   }
-  const _excluded$16 = ["variant"];
+  const _excluded$1b = ["variant"];
   function isEmpty$3(string) {
     return string.length === 0;
   }
   function propsToClassKey(props) {
     const {
       variant
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$16);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$1b);
     let classKey = variant || "";
     Object.keys(other).sort().forEach((key) => {
       if (key === "color") {
@@ -43405,7 +43398,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     });
     return classKey;
   }
-  const _excluded$15 = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
+  const _excluded$1a = ["name", "slot", "skipVariantsResolver", "skipSx", "overridesResolver"];
   function isEmpty$2(obj) {
     return Object.keys(obj).length === 0;
   }
@@ -43535,7 +43528,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
         // TODO v6: remove `lowercaseFirstLetter()` in the next major release
         // For more details: https://github.com/mui/material-ui/pull/37908
         overridesResolver: overridesResolver2 = defaultOverridesResolver(lowercaseFirstLetter(componentSlot))
-      } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$15);
+      } = inputOptions, options = _objectWithoutPropertiesLoose(inputOptions, _excluded$1a);
       const skipVariantsResolver = inputSkipVariantsResolver !== void 0 ? inputSkipVariantsResolver : (
         // TODO v6: remove `Root` in the next major release
         // For more details: https://github.com/mui/material-ui/pull/37908
@@ -43570,7 +43563,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
               themeId
             });
           }
-          if (isPlainObject$3(stylesArg)) {
+          if (isPlainObject$4(stylesArg)) {
             let transformedStylesArg = stylesArg;
             let styledArgVariants;
             if (stylesArg && stylesArg.variants) {
@@ -43590,7 +43583,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
           return stylesArg;
         }) : [];
         let transformedStyleArg = styleArg;
-        if (isPlainObject$3(styleArg)) {
+        if (isPlainObject$4(styleArg)) {
           let styledArgVariants;
           if (styleArg && styleArg.variants) {
             styledArgVariants = styleArg.variants;
@@ -43985,7 +43978,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
   if (process.env.NODE_ENV !== "production") {
     process.env.NODE_ENV !== "production" ? ThemeProvider$1.propTypes = exactProp(ThemeProvider$1.propTypes) : void 0;
   }
-  const _excluded$14 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
+  const _excluded$19 = ["component", "direction", "spacing", "divider", "children", "className", "useFlexGap"];
   const defaultTheme$3 = createTheme$1();
   const defaultCreateStyledComponent = systemStyled("div", {
     name: "MuiStack",
@@ -44108,7 +44101,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
         children,
         className,
         useFlexGap = false
-      } = props, other = _objectWithoutPropertiesLoose(props, _excluded$14);
+      } = props, other = _objectWithoutPropertiesLoose(props, _excluded$19);
       const ownerState = {
         direction,
         spacing,
@@ -44272,7 +44265,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
     A700: "#00c853"
   };
   const green$1 = green;
-  const _excluded$13 = ["mode", "contrastThreshold", "tonalOffset"];
+  const _excluded$18 = ["mode", "contrastThreshold", "tonalOffset"];
   const light = {
     // The colors used to style the text.
     text: {
@@ -44440,7 +44433,7 @@ The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rg
       mode = "light",
       contrastThreshold = 3,
       tonalOffset = 0.2
-    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$13);
+    } = palette, other = _objectWithoutPropertiesLoose(palette, _excluded$18);
     const primary = palette.primary || getDefaultPrimary(mode);
     const secondary = palette.secondary || getDefaultSecondary(mode);
     const error = palette.error || getDefaultError(mode);
@@ -44559,7 +44552,7 @@ const theme2 = createTheme({ palette: {
     }, modes[mode]), other);
     return paletteOutput;
   }
-  const _excluded$12 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
+  const _excluded$17 = ["fontFamily", "fontSize", "fontWeightLight", "fontWeightRegular", "fontWeightMedium", "fontWeightBold", "htmlFontSize", "allVariants", "pxToRem"];
   function round$1(value) {
     return Math.round(value * 1e5) / 1e5;
   }
@@ -44583,7 +44576,7 @@ const theme2 = createTheme({ palette: {
       // Apply the CSS properties to all the variants.
       allVariants,
       pxToRem: pxToRem2
-    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$12);
+    } = _ref, other = _objectWithoutPropertiesLoose(_ref, _excluded$17);
     if (process.env.NODE_ENV !== "production") {
       if (typeof fontSize !== "number") {
         console.error("MUI: `fontSize` is required to be a number.");
@@ -44648,7 +44641,7 @@ const theme2 = createTheme({ palette: {
   }
   const shadows = ["none", createShadow(0, 2, 1, -1, 0, 1, 1, 0, 0, 1, 3, 0), createShadow(0, 3, 1, -2, 0, 2, 2, 0, 0, 1, 5, 0), createShadow(0, 3, 3, -2, 0, 3, 4, 0, 0, 1, 8, 0), createShadow(0, 2, 4, -1, 0, 4, 5, 0, 0, 1, 10, 0), createShadow(0, 3, 5, -1, 0, 5, 8, 0, 0, 1, 14, 0), createShadow(0, 3, 5, -1, 0, 6, 10, 0, 0, 1, 18, 0), createShadow(0, 4, 5, -2, 0, 7, 10, 1, 0, 2, 16, 1), createShadow(0, 5, 5, -3, 0, 8, 10, 1, 0, 3, 14, 2), createShadow(0, 5, 6, -3, 0, 9, 12, 1, 0, 3, 16, 2), createShadow(0, 6, 6, -3, 0, 10, 14, 1, 0, 4, 18, 3), createShadow(0, 6, 7, -4, 0, 11, 15, 1, 0, 4, 20, 3), createShadow(0, 7, 8, -4, 0, 12, 17, 2, 0, 5, 22, 4), createShadow(0, 7, 8, -4, 0, 13, 19, 2, 0, 5, 24, 4), createShadow(0, 7, 9, -4, 0, 14, 21, 2, 0, 5, 26, 4), createShadow(0, 8, 9, -5, 0, 15, 22, 2, 0, 6, 28, 5), createShadow(0, 8, 10, -5, 0, 16, 24, 2, 0, 6, 30, 5), createShadow(0, 8, 11, -5, 0, 17, 26, 2, 0, 6, 32, 5), createShadow(0, 9, 11, -5, 0, 18, 28, 2, 0, 7, 34, 6), createShadow(0, 9, 12, -6, 0, 19, 29, 2, 0, 7, 36, 6), createShadow(0, 10, 13, -6, 0, 20, 31, 3, 0, 8, 38, 7), createShadow(0, 10, 13, -6, 0, 21, 33, 3, 0, 8, 40, 7), createShadow(0, 10, 14, -6, 0, 22, 35, 3, 0, 8, 42, 7), createShadow(0, 11, 14, -7, 0, 23, 36, 3, 0, 9, 44, 8), createShadow(0, 11, 15, -7, 0, 24, 38, 3, 0, 9, 46, 8)];
   const shadows$1 = shadows;
-  const _excluded$11 = ["duration", "easing", "delay"];
+  const _excluded$16 = ["duration", "easing", "delay"];
   const easing = {
     // This is the most common easing curve.
     easeInOut: "cubic-bezier(0.4, 0, 0.2, 1)",
@@ -44691,7 +44684,7 @@ const theme2 = createTheme({ palette: {
         duration: durationOption = mergedDuration.standard,
         easing: easingOption = mergedEasing.easeInOut,
         delay = 0
-      } = options, other = _objectWithoutPropertiesLoose(options, _excluded$11);
+      } = options, other = _objectWithoutPropertiesLoose(options, _excluded$16);
       if (process.env.NODE_ENV !== "production") {
         const isString2 = (value) => typeof value === "string";
         const isNumber2 = (value) => !isNaN(parseFloat(value));
@@ -44735,14 +44728,14 @@ const theme2 = createTheme({ palette: {
     tooltip: 1500
   };
   const zIndex$1 = zIndex;
-  const _excluded$10 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
+  const _excluded$15 = ["breakpoints", "mixins", "spacing", "palette", "transitions", "typography", "shape"];
   function createTheme(options = {}, ...args) {
     const {
       mixins: mixinsInput = {},
       palette: paletteInput = {},
       transitions: transitionsInput = {},
       typography: typographyInput = {}
-    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$10);
+    } = options, other = _objectWithoutPropertiesLoose(options, _excluded$15);
     if (options.vars) {
       throw new Error(process.env.NODE_ENV !== "production" ? `MUI: \`vars\` is a private field used for CSS variables support.
 Please use another name.` : formatMuiErrorMessage(18));
@@ -44821,8 +44814,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiSvgIcon", slot);
   }
   generateUtilityClasses("MuiSvgIcon", ["root", "colorPrimary", "colorSecondary", "colorAction", "colorError", "colorDisabled", "fontSizeInherit", "fontSizeSmall", "fontSizeMedium", "fontSizeLarge"]);
-  const _excluded$$ = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
-  const useUtilityClasses$R = (ownerState) => {
+  const _excluded$14 = ["children", "className", "color", "component", "fontSize", "htmlColor", "inheritViewBox", "titleAccess", "viewBox"];
+  const useUtilityClasses$W = (ownerState) => {
     const {
       color: color2,
       fontSize,
@@ -44888,7 +44881,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       inheritViewBox = false,
       titleAccess,
       viewBox = "0 0 24 24"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$14);
     const hasSvgAsChild = /* @__PURE__ */ reactExports.isValidElement(children) && children.type === "svg";
     const ownerState = _extends$1({}, props, {
       color: color2,
@@ -44903,7 +44896,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     if (!inheritViewBox) {
       more.viewBox = viewBox;
     }
-    const classes = useUtilityClasses$R(ownerState);
+    const classes = useUtilityClasses$W(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SvgIconRoot, _extends$1({
       as: component,
       className: clsx(classes.root, className),
@@ -45058,29 +45051,29 @@ Please use another name.` : formatMuiErrorMessage(18));
     })(createSvgIcon$1);
     return createSvgIcon$1;
   }
-  var _interopRequireDefault$e = interopRequireDefaultExports;
+  var _interopRequireDefault$g = interopRequireDefaultExports;
   Object.defineProperty(Star, "__esModule", {
     value: true
   });
-  var default_1$e = Star.default = void 0;
-  var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
-  var _jsxRuntime$e = jsxRuntimeExports;
-  var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
+  var default_1$g = Star.default = void 0;
+  var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
+  var _jsxRuntime$g = jsxRuntimeExports;
+  var _default$g = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
     d: "M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
   }), "Star");
-  default_1$e = Star.default = _default$e;
+  default_1$g = Star.default = _default$g;
   var StarOutline = {};
-  var _interopRequireDefault$d = interopRequireDefaultExports;
+  var _interopRequireDefault$f = interopRequireDefaultExports;
   Object.defineProperty(StarOutline, "__esModule", {
     value: true
   });
-  var default_1$d = StarOutline.default = void 0;
-  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-  var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+  var default_1$f = StarOutline.default = void 0;
+  var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
+  var _jsxRuntime$f = jsxRuntimeExports;
+  var _default$f = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
     d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
   }), "StarOutline");
-  default_1$d = StarOutline.default = _default$d;
+  default_1$f = StarOutline.default = _default$f;
   function useTheme() {
     const theme2 = useTheme$2(defaultTheme$2);
     if (process.env.NODE_ENV !== "production") {
@@ -45088,11 +45081,11 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return theme2[THEME_ID] || theme2;
   }
-  const _excluded$_ = ["theme"];
+  const _excluded$13 = ["theme"];
   function ThemeProvider(_ref) {
     let {
       theme: themeInput
-    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$_);
+    } = _ref, props = _objectWithoutPropertiesLoose(_ref, _excluded$13);
     const scopedTheme = themeInput[THEME_ID];
     return /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider$1, _extends$1({}, props, {
       themeId: scopedTheme ? THEME_ID : void 0,
@@ -45924,7 +45917,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   } : void 0;
   const touchRippleClasses = generateUtilityClasses("MuiTouchRipple", ["root", "ripple", "rippleVisible", "ripplePulsate", "child", "childLeaving", "childPulsate"]);
   const touchRippleClasses$1 = touchRippleClasses;
-  const _excluded$Z = ["center", "classes", "className"];
+  const _excluded$12 = ["center", "classes", "className"];
   let _ = (t) => t, _t, _t2, _t3, _t4;
   const DURATION = 550;
   const DELAY_RIPPLE = 80;
@@ -46039,7 +46032,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       center: centerProp = false,
       classes = {},
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$12);
     const [ripples, setRipples] = reactExports.useState([]);
     const nextKey = reactExports.useRef(0);
     const rippleCallback = reactExports.useRef(null);
@@ -46222,8 +46215,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const buttonBaseClasses = generateUtilityClasses("MuiButtonBase", ["root", "disabled", "focusVisible"]);
   const buttonBaseClasses$1 = buttonBaseClasses;
-  const _excluded$Y = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
-  const useUtilityClasses$Q = (ownerState) => {
+  const _excluded$11 = ["action", "centerRipple", "children", "className", "component", "disabled", "disableRipple", "disableTouchRipple", "focusRipple", "focusVisibleClassName", "LinkComponent", "onBlur", "onClick", "onContextMenu", "onDragLeave", "onFocus", "onFocusVisible", "onKeyDown", "onKeyUp", "onMouseDown", "onMouseLeave", "onMouseUp", "onTouchEnd", "onTouchMove", "onTouchStart", "tabIndex", "TouchRippleProps", "touchRippleRef", "type"];
+  const useUtilityClasses$V = (ownerState) => {
     const {
       disabled,
       focusVisible,
@@ -46317,7 +46310,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       TouchRippleProps,
       touchRippleRef,
       type
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$11);
     const buttonRef = reactExports.useRef(null);
     const rippleRef = reactExports.useRef(null);
     const handleRippleRef = useForkRef(rippleRef, touchRippleRef);
@@ -46471,7 +46464,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       focusVisible
     });
-    const classes = useUtilityClasses$Q(ownerState);
+    const classes = useUtilityClasses$V(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonBaseRoot, _extends$1({
       as: ComponentProp,
       className: clsx(classes.root, className),
@@ -46666,8 +46659,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const chipClasses = generateUtilityClasses("MuiChip", ["root", "sizeSmall", "sizeMedium", "colorError", "colorInfo", "colorPrimary", "colorSecondary", "colorSuccess", "colorWarning", "disabled", "clickable", "clickableColorPrimary", "clickableColorSecondary", "deletable", "deletableColorPrimary", "deletableColorSecondary", "outlined", "filled", "outlinedPrimary", "outlinedSecondary", "filledPrimary", "filledSecondary", "avatar", "avatarSmall", "avatarMedium", "avatarColorPrimary", "avatarColorSecondary", "icon", "iconSmall", "iconMedium", "iconColorPrimary", "iconColorSecondary", "label", "labelSmall", "labelMedium", "deleteIcon", "deleteIconSmall", "deleteIconMedium", "deleteIconColorPrimary", "deleteIconColorSecondary", "deleteIconOutlinedColorPrimary", "deleteIconOutlinedColorSecondary", "deleteIconFilledColorPrimary", "deleteIconFilledColorSecondary", "focusVisible"]);
   const chipClasses$1 = chipClasses;
-  const _excluded$X = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
-  const useUtilityClasses$P = (ownerState) => {
+  const _excluded$10 = ["avatar", "className", "clickable", "color", "component", "deleteIcon", "disabled", "icon", "label", "onClick", "onDelete", "onKeyDown", "onKeyUp", "size", "variant", "tabIndex", "skipFocusWhenDisabled"];
+  const useUtilityClasses$U = (ownerState) => {
     const {
       classes,
       disabled,
@@ -46948,7 +46941,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       skipFocusWhenDisabled = false
       // TODO v6: Rename to `focusableWhenDisabled`.
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$10);
     const chipRef = reactExports.useRef(null);
     const handleRef = useForkRef(chipRef, ref);
     const handleDeleteIconClick = (event) => {
@@ -46989,7 +46982,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       clickable,
       variant
     });
-    const classes = useUtilityClasses$P(ownerState);
+    const classes = useUtilityClasses$U(ownerState);
     const moreProps = component === ButtonBase$1 ? _extends$1({
       component: ComponentProp || "div",
       focusVisibleClassName: classes.focusVisible
@@ -47148,8 +47141,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiTypography", slot);
   }
   generateUtilityClasses("MuiTypography", ["root", "h1", "h2", "h3", "h4", "h5", "h6", "subtitle1", "subtitle2", "body1", "body2", "inherit", "button", "caption", "overline", "alignLeft", "alignRight", "alignCenter", "alignJustify", "noWrap", "gutterBottom", "paragraph"]);
-  const _excluded$W = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
-  const useUtilityClasses$O = (ownerState) => {
+  const _excluded$$ = ["align", "className", "component", "gutterBottom", "noWrap", "paragraph", "variant", "variantMapping"];
+  const useUtilityClasses$T = (ownerState) => {
     const {
       align,
       gutterBottom,
@@ -47232,7 +47225,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       paragraph = false,
       variant = "body1",
       variantMapping = defaultVariantMapping
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$$);
     const ownerState = _extends$1({}, props, {
       align,
       color: color2,
@@ -47245,7 +47238,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       variantMapping
     });
     const Component = component || (paragraph ? "p" : variantMapping[variant] || defaultVariantMapping[variant]) || "span";
-    const classes = useUtilityClasses$O(ownerState);
+    const classes = useUtilityClasses$T(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(TypographyRoot, _extends$1({
       as: Component,
       ref,
@@ -47334,8 +47327,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const iconButtonClasses = generateUtilityClasses("MuiIconButton", ["root", "disabled", "colorInherit", "colorPrimary", "colorSecondary", "colorError", "colorInfo", "colorSuccess", "colorWarning", "edgeStart", "edgeEnd", "sizeSmall", "sizeMedium", "sizeLarge"]);
   const iconButtonClasses$1 = iconButtonClasses;
-  const _excluded$V = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
-  const useUtilityClasses$N = (ownerState) => {
+  const _excluded$_ = ["edge", "children", "className", "color", "disabled", "disableFocusRipple", "size"];
+  const useUtilityClasses$S = (ownerState) => {
     const {
       classes,
       disabled,
@@ -47429,7 +47422,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled = false,
       disableFocusRipple = false,
       size: size2 = "medium"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$_);
     const ownerState = _extends$1({}, props, {
       edge,
       color: color2,
@@ -47437,7 +47430,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableFocusRipple,
       size: size2
     });
-    const classes = useUtilityClasses$N(ownerState);
+    const classes = useUtilityClasses$S(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(IconButtonRoot, _extends$1({
       className: clsx(classes.root, className),
       centerRipple: true,
@@ -47650,7 +47643,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 color: isFavourite ? "courseflow.favouriteActive" : "courseflow.favouriteInactive"
               },
               onClick: onFavourite,
-              children: isFavourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {})
+              children: isFavourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {})
             }
           ) })
         ] })
@@ -48737,7 +48730,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return "@@redux/PROBE_UNKNOWN_ACTION" + randomString();
     }
   };
-  function isPlainObject$2(obj) {
+  function isPlainObject$3(obj) {
     if (typeof obj !== "object" || obj === null)
       return false;
     var proto = obj;
@@ -48856,7 +48849,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       };
     }
     function dispatch(action) {
-      if (!isPlainObject$2(action)) {
+      if (!isPlainObject$3(action)) {
         throw new Error(process.env.NODE_ENV === "production" ? formatProdErrorMessage(7) : "Actions must be plain objects. Instead, the actual type was: '" + kindOf(action) + "'. You may need to add middleware to your store setup to handle dispatching other values, such as 'redux-thunk' to handle dispatching functions. See https://redux.js.org/tutorials/fundamentals/part-4-store#middleware and https://redux.js.org/tutorials/fundamentals/part-6-async-logic#using-the-redux-thunk-middleware for examples.");
       }
       if (typeof action.type === "undefined") {
@@ -48943,7 +48936,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     if (reducerKeys.length === 0) {
       return "Store does not have a valid reducer. Make sure the argument passed to combineReducers is an object whose values are reducers.";
     }
-    if (!isPlainObject$2(inputState)) {
+    if (!isPlainObject$3(inputState)) {
       return "The " + argumentName + ' has unexpected type of "' + kindOf(inputState) + '". Expected argument to be an object with the following ' + ('keys: "' + reducerKeys.join('", "') + '"');
     }
     var unexpectedKeys = Object.keys(inputState).filter(function(key) {
@@ -50879,22 +50872,22 @@ Please use another name.` : formatMuiErrorMessage(18));
         if (this.props.object_sets && ["node", "outcome"].indexOf(type) >= 0) {
           const term_type = type == "node" ? node_type_keys[data.node_type] : data.type;
           const allowed_sets = this.props.object_sets.filter(
-            (set) => set.term == term_type
+            (set2) => set2.term == term_type
           );
           if (allowed_sets.length >= 0) {
             const disable_sets = data.depth || read_only ? true : false;
-            const set_options = allowed_sets.map((set) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            const set_options = allowed_sets.map((set2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "input",
                 {
                   disabled: disable_sets,
                   type: "checkbox",
-                  name: set.id,
-                  checked: data.sets.indexOf(set.id) >= 0,
-                  onChange: this.setChanged.bind(this, set.id)
+                  name: set2.id,
+                  checked: data.sets.indexOf(set2.id) >= 0,
+                  onChange: this.setChanged.bind(this, set2.id)
                 }
               ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set.id, children: set.title })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: set2.id, children: set2.title })
             ] }));
             sets = [/* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Sets") }), set_options];
           }
@@ -55051,7 +55044,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return dependency && dependency[0] === "?" ? dependency.slice(1) : dependency;
   }
   function getSafeProperty(object, prop) {
-    if (isPlainObject$1(object) && isSafeProperty(object, prop)) {
+    if (isPlainObject$2(object) && isSafeProperty(object, prop)) {
       return object[prop];
     }
     if (typeof object[prop] === "function" && isSafeMethod(object, prop)) {
@@ -55060,7 +55053,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     throw new Error('No access to property "' + prop + '"');
   }
   function setSafeProperty(object, prop, value) {
-    if (isPlainObject$1(object) && isSafeProperty(object, prop)) {
+    if (isPlainObject$2(object) && isSafeProperty(object, prop)) {
       object[prop] = value;
       return value;
     }
@@ -55102,7 +55095,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     return true;
   }
-  function isPlainObject$1(object) {
+  function isPlainObject$2(object) {
     return typeof object === "object" && object && object.constructor === Object;
   }
   var safeNativeProperties = {
@@ -55132,7 +55125,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return hasSafeProperty(this.wrappedObject, key);
     }
   }
-  function isMap(object) {
+  function isMap$1(object) {
     if (!object) {
       return false;
     }
@@ -55311,7 +55304,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       },
       {
         name: "Map",
-        test: isMap
+        test: isMap$1
       },
       {
         name: "Object",
@@ -70796,12 +70789,363 @@ Please use another name.` : formatMuiErrorMessage(18));
       delay: style2.transitionDelay
     };
   }
+  function getCollapseUtilityClass(slot) {
+    return generateUtilityClass("MuiCollapse", slot);
+  }
+  generateUtilityClasses("MuiCollapse", ["root", "horizontal", "vertical", "entered", "hidden", "wrapper", "wrapperInner"]);
+  const _excluded$Z = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
+  const useUtilityClasses$R = (ownerState) => {
+    const {
+      orientation,
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root", `${orientation}`],
+      entered: ["entered"],
+      hidden: ["hidden"],
+      wrapper: ["wrapper", `${orientation}`],
+      wrapperInner: ["wrapperInner", `${orientation}`]
+    };
+    return composeClasses(slots, getCollapseUtilityClass, classes);
+  };
+  const CollapseRoot = styled$1("div", {
+    name: "MuiCollapse",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, styles2[ownerState.orientation], ownerState.state === "entered" && styles2.entered, ownerState.state === "exited" && !ownerState.in && ownerState.collapsedSize === "0px" && styles2.hidden];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    height: 0,
+    overflow: "hidden",
+    transition: theme2.transitions.create("height")
+  }, ownerState.orientation === "horizontal" && {
+    height: "auto",
+    width: 0,
+    transition: theme2.transitions.create("width")
+  }, ownerState.state === "entered" && _extends$1({
+    height: "auto",
+    overflow: "visible"
+  }, ownerState.orientation === "horizontal" && {
+    width: "auto"
+  }), ownerState.state === "exited" && !ownerState.in && ownerState.collapsedSize === "0px" && {
+    visibility: "hidden"
+  }));
+  const CollapseWrapper = styled$1("div", {
+    name: "MuiCollapse",
+    slot: "Wrapper",
+    overridesResolver: (props, styles2) => styles2.wrapper
+  })(({
+    ownerState
+  }) => _extends$1({
+    // Hack to get children with a negative margin to not falsify the height computation.
+    display: "flex",
+    width: "100%"
+  }, ownerState.orientation === "horizontal" && {
+    width: "auto",
+    height: "100%"
+  }));
+  const CollapseWrapperInner = styled$1("div", {
+    name: "MuiCollapse",
+    slot: "WrapperInner",
+    overridesResolver: (props, styles2) => styles2.wrapperInner
+  })(({
+    ownerState
+  }) => _extends$1({
+    width: "100%"
+  }, ownerState.orientation === "horizontal" && {
+    width: "auto",
+    height: "100%"
+  }));
+  const Collapse$1 = /* @__PURE__ */ reactExports.forwardRef(function Collapse2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiCollapse"
+    });
+    const {
+      addEndListener,
+      children,
+      className,
+      collapsedSize: collapsedSizeProp = "0px",
+      component,
+      easing: easing2,
+      in: inProp,
+      onEnter,
+      onEntered,
+      onEntering,
+      onExit,
+      onExited,
+      onExiting,
+      orientation = "vertical",
+      style: style2,
+      timeout = duration.standard,
+      // eslint-disable-next-line react/prop-types
+      TransitionComponent = Transition$1
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    const ownerState = _extends$1({}, props, {
+      orientation,
+      collapsedSize: collapsedSizeProp
+    });
+    const classes = useUtilityClasses$R(ownerState);
+    const theme2 = useTheme();
+    const timer = reactExports.useRef();
+    const wrapperRef = reactExports.useRef(null);
+    const autoTransitionDuration = reactExports.useRef();
+    const collapsedSize = typeof collapsedSizeProp === "number" ? `${collapsedSizeProp}px` : collapsedSizeProp;
+    const isHorizontal = orientation === "horizontal";
+    const size2 = isHorizontal ? "width" : "height";
+    reactExports.useEffect(() => {
+      return () => {
+        clearTimeout(timer.current);
+      };
+    }, []);
+    const nodeRef = reactExports.useRef(null);
+    const handleRef = useForkRef(ref, nodeRef);
+    const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
+      if (callback) {
+        const node2 = nodeRef.current;
+        if (maybeIsAppearing === void 0) {
+          callback(node2);
+        } else {
+          callback(node2, maybeIsAppearing);
+        }
+      }
+    };
+    const getWrapperSize = () => wrapperRef.current ? wrapperRef.current[isHorizontal ? "clientWidth" : "clientHeight"] : 0;
+    const handleEnter = normalizedTransitionCallback((node2, isAppearing) => {
+      if (wrapperRef.current && isHorizontal) {
+        wrapperRef.current.style.position = "absolute";
+      }
+      node2.style[size2] = collapsedSize;
+      if (onEnter) {
+        onEnter(node2, isAppearing);
+      }
+    });
+    const handleEntering = normalizedTransitionCallback((node2, isAppearing) => {
+      const wrapperSize = getWrapperSize();
+      if (wrapperRef.current && isHorizontal) {
+        wrapperRef.current.style.position = "";
+      }
+      const {
+        duration: transitionDuration,
+        easing: transitionTimingFunction
+      } = getTransitionProps({
+        style: style2,
+        timeout,
+        easing: easing2
+      }, {
+        mode: "enter"
+      });
+      if (timeout === "auto") {
+        const duration2 = theme2.transitions.getAutoHeightDuration(wrapperSize);
+        node2.style.transitionDuration = `${duration2}ms`;
+        autoTransitionDuration.current = duration2;
+      } else {
+        node2.style.transitionDuration = typeof transitionDuration === "string" ? transitionDuration : `${transitionDuration}ms`;
+      }
+      node2.style[size2] = `${wrapperSize}px`;
+      node2.style.transitionTimingFunction = transitionTimingFunction;
+      if (onEntering) {
+        onEntering(node2, isAppearing);
+      }
+    });
+    const handleEntered = normalizedTransitionCallback((node2, isAppearing) => {
+      node2.style[size2] = "auto";
+      if (onEntered) {
+        onEntered(node2, isAppearing);
+      }
+    });
+    const handleExit = normalizedTransitionCallback((node2) => {
+      node2.style[size2] = `${getWrapperSize()}px`;
+      if (onExit) {
+        onExit(node2);
+      }
+    });
+    const handleExited = normalizedTransitionCallback(onExited);
+    const handleExiting = normalizedTransitionCallback((node2) => {
+      const wrapperSize = getWrapperSize();
+      const {
+        duration: transitionDuration,
+        easing: transitionTimingFunction
+      } = getTransitionProps({
+        style: style2,
+        timeout,
+        easing: easing2
+      }, {
+        mode: "exit"
+      });
+      if (timeout === "auto") {
+        const duration2 = theme2.transitions.getAutoHeightDuration(wrapperSize);
+        node2.style.transitionDuration = `${duration2}ms`;
+        autoTransitionDuration.current = duration2;
+      } else {
+        node2.style.transitionDuration = typeof transitionDuration === "string" ? transitionDuration : `${transitionDuration}ms`;
+      }
+      node2.style[size2] = collapsedSize;
+      node2.style.transitionTimingFunction = transitionTimingFunction;
+      if (onExiting) {
+        onExiting(node2);
+      }
+    });
+    const handleAddEndListener = (next2) => {
+      if (timeout === "auto") {
+        timer.current = setTimeout(next2, autoTransitionDuration.current || 0);
+      }
+      if (addEndListener) {
+        addEndListener(nodeRef.current, next2);
+      }
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+      in: inProp,
+      onEnter: handleEnter,
+      onEntered: handleEntered,
+      onEntering: handleEntering,
+      onExit: handleExit,
+      onExited: handleExited,
+      onExiting: handleExiting,
+      addEndListener: handleAddEndListener,
+      nodeRef,
+      timeout: timeout === "auto" ? null : timeout
+    }, other, {
+      children: (state, childProps) => /* @__PURE__ */ jsxRuntimeExports.jsx(CollapseRoot, _extends$1({
+        as: component,
+        className: clsx(classes.root, className, {
+          "entered": classes.entered,
+          "exited": !inProp && collapsedSize === "0px" && classes.hidden
+        }[state]),
+        style: _extends$1({
+          [isHorizontal ? "minWidth" : "minHeight"]: collapsedSize
+        }, style2),
+        ownerState: _extends$1({}, ownerState, {
+          state
+        }),
+        ref: handleRef
+      }, childProps, {
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(CollapseWrapper, {
+          ownerState: _extends$1({}, ownerState, {
+            state
+          }),
+          className: classes.wrapper,
+          ref: wrapperRef,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(CollapseWrapperInner, {
+            ownerState: _extends$1({}, ownerState, {
+              state
+            }),
+            className: classes.wrapperInner,
+            children
+          })
+        })
+      }))
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Collapse$1.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * Add a custom transition end trigger. Called with the transitioning DOM
+     * node and a done callback. Allows for more fine grained transition end
+     * logic. Note: Timeouts are still used as a fallback if provided.
+     */
+    addEndListener: PropTypes.func,
+    /**
+     * The content node to be collapsed.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The width (horizontal) or height (vertical) of the container when collapsed.
+     * @default '0px'
+     */
+    collapsedSize: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: elementTypeAcceptingRef$1,
+    /**
+     * The transition timing function.
+     * You may specify a single easing or a object containing enter and exit values.
+     */
+    easing: PropTypes.oneOfType([PropTypes.shape({
+      enter: PropTypes.string,
+      exit: PropTypes.string
+    }), PropTypes.string]),
+    /**
+     * If `true`, the component will transition in.
+     */
+    in: PropTypes.bool,
+    /**
+     * @ignore
+     */
+    onEnter: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onEntered: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onEntering: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onExit: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onExited: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onExiting: PropTypes.func,
+    /**
+     * The transition orientation.
+     * @default 'vertical'
+     */
+    orientation: PropTypes.oneOf(["horizontal", "vertical"]),
+    /**
+     * @ignore
+     */
+    style: PropTypes.object,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The duration for the transition, in milliseconds.
+     * You may specify a single timeout for all transitions, or individually with an object.
+     *
+     * Set to 'auto' to automatically calculate transition time based on height.
+     * @default duration.standard
+     */
+    timeout: PropTypes.oneOfType([PropTypes.oneOf(["auto"]), PropTypes.number, PropTypes.shape({
+      appear: PropTypes.number,
+      enter: PropTypes.number,
+      exit: PropTypes.number
+    })])
+  } : void 0;
+  Collapse$1.muiSupportAuto = true;
+  const Collapse$2 = Collapse$1;
   function getPaperUtilityClass(slot) {
     return generateUtilityClass("MuiPaper", slot);
   }
   generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-  const _excluded$U = ["className", "component", "elevation", "square", "variant"];
-  const useUtilityClasses$M = (ownerState) => {
+  const _excluded$Y = ["className", "component", "elevation", "square", "variant"];
+  const useUtilityClasses$Q = (ownerState) => {
     const {
       square,
       elevation,
@@ -70854,14 +71198,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       elevation = 1,
       square = false,
       variant = "elevation"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
     const ownerState = _extends$1({}, props, {
       component,
       elevation,
       square,
       variant
     });
-    const classes = useUtilityClasses$M(ownerState);
+    const classes = useUtilityClasses$Q(ownerState);
     if (process.env.NODE_ENV !== "production") {
       const theme2 = useTheme();
       if (theme2.shadows[elevation] === void 0) {
@@ -70928,6 +71272,498 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: PropTypes.oneOfType([PropTypes.oneOf(["elevation", "outlined"]), PropTypes.string])
   } : void 0;
   const Paper$1 = Paper;
+  const AccordionContext = /* @__PURE__ */ reactExports.createContext({});
+  if (process.env.NODE_ENV !== "production") {
+    AccordionContext.displayName = "AccordionContext";
+  }
+  const AccordionContext$1 = AccordionContext;
+  function getAccordionUtilityClass(slot) {
+    return generateUtilityClass("MuiAccordion", slot);
+  }
+  const accordionClasses = generateUtilityClasses("MuiAccordion", ["root", "rounded", "expanded", "disabled", "gutters", "region"]);
+  const accordionClasses$1 = accordionClasses;
+  const _excluded$X = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
+  const useUtilityClasses$P = (ownerState) => {
+    const {
+      classes,
+      square,
+      expanded,
+      disabled,
+      disableGutters
+    } = ownerState;
+    const slots = {
+      root: ["root", !square && "rounded", expanded && "expanded", disabled && "disabled", !disableGutters && "gutters"],
+      region: ["region"]
+    };
+    return composeClasses(slots, getAccordionUtilityClass, classes);
+  };
+  const AccordionRoot = styled$1(Paper$1, {
+    name: "MuiAccordion",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [{
+        [`& .${accordionClasses$1.region}`]: styles2.region
+      }, styles2.root, !ownerState.square && styles2.rounded, !ownerState.disableGutters && styles2.gutters];
+    }
+  })(({
+    theme: theme2
+  }) => {
+    const transition = {
+      duration: theme2.transitions.duration.shortest
+    };
+    return {
+      position: "relative",
+      transition: theme2.transitions.create(["margin"], transition),
+      overflowAnchor: "none",
+      // Keep the same scrolling position
+      "&:before": {
+        position: "absolute",
+        left: 0,
+        top: -1,
+        right: 0,
+        height: 1,
+        content: '""',
+        opacity: 1,
+        backgroundColor: (theme2.vars || theme2).palette.divider,
+        transition: theme2.transitions.create(["opacity", "background-color"], transition)
+      },
+      "&:first-of-type": {
+        "&:before": {
+          display: "none"
+        }
+      },
+      [`&.${accordionClasses$1.expanded}`]: {
+        "&:before": {
+          opacity: 0
+        },
+        "&:first-of-type": {
+          marginTop: 0
+        },
+        "&:last-of-type": {
+          marginBottom: 0
+        },
+        "& + &": {
+          "&:before": {
+            display: "none"
+          }
+        }
+      },
+      [`&.${accordionClasses$1.disabled}`]: {
+        backgroundColor: (theme2.vars || theme2).palette.action.disabledBackground
+      }
+    };
+  }, ({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({}, !ownerState.square && {
+    borderRadius: 0,
+    "&:first-of-type": {
+      borderTopLeftRadius: (theme2.vars || theme2).shape.borderRadius,
+      borderTopRightRadius: (theme2.vars || theme2).shape.borderRadius
+    },
+    "&:last-of-type": {
+      borderBottomLeftRadius: (theme2.vars || theme2).shape.borderRadius,
+      borderBottomRightRadius: (theme2.vars || theme2).shape.borderRadius,
+      // Fix a rendering issue on Edge
+      "@supports (-ms-ime-align: auto)": {
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0
+      }
+    }
+  }, !ownerState.disableGutters && {
+    [`&.${accordionClasses$1.expanded}`]: {
+      margin: "16px 0"
+    }
+  }));
+  const Accordion = /* @__PURE__ */ reactExports.forwardRef(function Accordion2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiAccordion"
+    });
+    const {
+      children: childrenProp,
+      className,
+      defaultExpanded = false,
+      disabled = false,
+      disableGutters = false,
+      expanded: expandedProp,
+      onChange,
+      square = false,
+      TransitionComponent = Collapse$2,
+      TransitionProps
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
+    const [expanded, setExpandedState] = useControlled({
+      controlled: expandedProp,
+      default: defaultExpanded,
+      name: "Accordion",
+      state: "expanded"
+    });
+    const handleChange = reactExports.useCallback((event) => {
+      setExpandedState(!expanded);
+      if (onChange) {
+        onChange(event, !expanded);
+      }
+    }, [expanded, onChange, setExpandedState]);
+    const [summary, ...children] = reactExports.Children.toArray(childrenProp);
+    const contextValue = reactExports.useMemo(() => ({
+      expanded,
+      disabled,
+      disableGutters,
+      toggle: handleChange
+    }), [expanded, disabled, disableGutters, handleChange]);
+    const ownerState = _extends$1({}, props, {
+      square,
+      disabled,
+      disableGutters,
+      expanded
+    });
+    const classes = useUtilityClasses$P(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionRoot, _extends$1({
+      className: clsx(classes.root, className),
+      ref,
+      ownerState,
+      square
+    }, other, {
+      children: [/* @__PURE__ */ jsxRuntimeExports.jsx(AccordionContext$1.Provider, {
+        value: contextValue,
+        children: summary
+      }), /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+        in: expanded,
+        timeout: "auto"
+      }, TransitionProps, {
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+          "aria-labelledby": summary.props.id,
+          id: summary.props["aria-controls"],
+          role: "region",
+          className: classes.region,
+          children
+        })
+      }))]
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Accordion.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: chainPropTypes(PropTypes.node.isRequired, (props) => {
+      const summary = reactExports.Children.toArray(props.children)[0];
+      if (reactIsExports.isFragment(summary)) {
+        return new Error("MUI: The Accordion doesn't accept a Fragment as a child. Consider providing an array instead.");
+      }
+      if (!/* @__PURE__ */ reactExports.isValidElement(summary)) {
+        return new Error("MUI: Expected the first child of Accordion to be a valid element.");
+      }
+      return null;
+    }),
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * If `true`, expands the accordion by default.
+     * @default false
+     */
+    defaultExpanded: PropTypes.bool,
+    /**
+     * If `true`, the component is disabled.
+     * @default false
+     */
+    disabled: PropTypes.bool,
+    /**
+     * If `true`, it removes the margin between two expanded accordion items and the increase of height.
+     * @default false
+     */
+    disableGutters: PropTypes.bool,
+    /**
+     * If `true`, expands the accordion, otherwise collapse it.
+     * Setting this prop enables control over the accordion.
+     */
+    expanded: PropTypes.bool,
+    /**
+     * Callback fired when the expand/collapse state is changed.
+     *
+     * @param {React.SyntheticEvent} event The event source of the callback. **Warning**: This is a generic event not a change event.
+     * @param {boolean} expanded The `expanded` state of the accordion.
+     */
+    onChange: PropTypes.func,
+    /**
+     * If `true`, rounded corners are disabled.
+     * @default false
+     */
+    square: PropTypes.bool,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The component used for the transition.
+     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
+     * @default Collapse
+     */
+    TransitionComponent: PropTypes.elementType,
+    /**
+     * Props applied to the transition element.
+     * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
+     */
+    TransitionProps: PropTypes.object
+  } : void 0;
+  const Accordion$1 = Accordion;
+  function getAccordionDetailsUtilityClass(slot) {
+    return generateUtilityClass("MuiAccordionDetails", slot);
+  }
+  generateUtilityClasses("MuiAccordionDetails", ["root"]);
+  const _excluded$W = ["className"];
+  const useUtilityClasses$O = (ownerState) => {
+    const {
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root"]
+    };
+    return composeClasses(slots, getAccordionDetailsUtilityClass, classes);
+  };
+  const AccordionDetailsRoot = styled$1("div", {
+    name: "MuiAccordionDetails",
+    slot: "Root",
+    overridesResolver: (props, styles2) => styles2.root
+  })(({
+    theme: theme2
+  }) => ({
+    padding: theme2.spacing(1, 2, 2)
+  }));
+  const AccordionDetails = /* @__PURE__ */ reactExports.forwardRef(function AccordionDetails2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiAccordionDetails"
+    });
+    const {
+      className
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+    const ownerState = props;
+    const classes = useUtilityClasses$O(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionDetailsRoot, _extends$1({
+      className: clsx(classes.root, className),
+      ref,
+      ownerState
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? AccordionDetails.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const AccordionDetails$1 = AccordionDetails;
+  function getAccordionSummaryUtilityClass(slot) {
+    return generateUtilityClass("MuiAccordionSummary", slot);
+  }
+  const accordionSummaryClasses = generateUtilityClasses("MuiAccordionSummary", ["root", "expanded", "focusVisible", "disabled", "gutters", "contentGutters", "content", "expandIconWrapper"]);
+  const accordionSummaryClasses$1 = accordionSummaryClasses;
+  const _excluded$V = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
+  const useUtilityClasses$N = (ownerState) => {
+    const {
+      classes,
+      expanded,
+      disabled,
+      disableGutters
+    } = ownerState;
+    const slots = {
+      root: ["root", expanded && "expanded", disabled && "disabled", !disableGutters && "gutters"],
+      focusVisible: ["focusVisible"],
+      content: ["content", expanded && "expanded", !disableGutters && "contentGutters"],
+      expandIconWrapper: ["expandIconWrapper", expanded && "expanded"]
+    };
+    return composeClasses(slots, getAccordionSummaryUtilityClass, classes);
+  };
+  const AccordionSummaryRoot = styled$1(ButtonBase$1, {
+    name: "MuiAccordionSummary",
+    slot: "Root",
+    overridesResolver: (props, styles2) => styles2.root
+  })(({
+    theme: theme2,
+    ownerState
+  }) => {
+    const transition = {
+      duration: theme2.transitions.duration.shortest
+    };
+    return _extends$1({
+      display: "flex",
+      minHeight: 48,
+      padding: theme2.spacing(0, 2),
+      transition: theme2.transitions.create(["min-height", "background-color"], transition),
+      [`&.${accordionSummaryClasses$1.focusVisible}`]: {
+        backgroundColor: (theme2.vars || theme2).palette.action.focus
+      },
+      [`&.${accordionSummaryClasses$1.disabled}`]: {
+        opacity: (theme2.vars || theme2).palette.action.disabledOpacity
+      },
+      [`&:hover:not(.${accordionSummaryClasses$1.disabled})`]: {
+        cursor: "pointer"
+      }
+    }, !ownerState.disableGutters && {
+      [`&.${accordionSummaryClasses$1.expanded}`]: {
+        minHeight: 64
+      }
+    });
+  });
+  const AccordionSummaryContent = styled$1("div", {
+    name: "MuiAccordionSummary",
+    slot: "Content",
+    overridesResolver: (props, styles2) => styles2.content
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    display: "flex",
+    flexGrow: 1,
+    margin: "12px 0"
+  }, !ownerState.disableGutters && {
+    transition: theme2.transitions.create(["margin"], {
+      duration: theme2.transitions.duration.shortest
+    }),
+    [`&.${accordionSummaryClasses$1.expanded}`]: {
+      margin: "20px 0"
+    }
+  }));
+  const AccordionSummaryExpandIconWrapper = styled$1("div", {
+    name: "MuiAccordionSummary",
+    slot: "ExpandIconWrapper",
+    overridesResolver: (props, styles2) => styles2.expandIconWrapper
+  })(({
+    theme: theme2
+  }) => ({
+    display: "flex",
+    color: (theme2.vars || theme2).palette.action.active,
+    transform: "rotate(0deg)",
+    transition: theme2.transitions.create("transform", {
+      duration: theme2.transitions.duration.shortest
+    }),
+    [`&.${accordionSummaryClasses$1.expanded}`]: {
+      transform: "rotate(180deg)"
+    }
+  }));
+  const AccordionSummary = /* @__PURE__ */ reactExports.forwardRef(function AccordionSummary2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiAccordionSummary"
+    });
+    const {
+      children,
+      className,
+      expandIcon,
+      focusVisibleClassName,
+      onClick
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+    const {
+      disabled = false,
+      disableGutters,
+      expanded,
+      toggle
+    } = reactExports.useContext(AccordionContext$1);
+    const handleChange = (event) => {
+      if (toggle) {
+        toggle(event);
+      }
+      if (onClick) {
+        onClick(event);
+      }
+    };
+    const ownerState = _extends$1({}, props, {
+      expanded,
+      disabled,
+      disableGutters
+    });
+    const classes = useUtilityClasses$N(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionSummaryRoot, _extends$1({
+      focusRipple: false,
+      disableRipple: true,
+      disabled,
+      component: "div",
+      "aria-expanded": expanded,
+      className: clsx(classes.root, className),
+      focusVisibleClassName: clsx(classes.focusVisible, focusVisibleClassName),
+      onClick: handleChange,
+      ref,
+      ownerState
+    }, other, {
+      children: [/* @__PURE__ */ jsxRuntimeExports.jsx(AccordionSummaryContent, {
+        className: classes.content,
+        ownerState,
+        children
+      }), expandIcon && /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionSummaryExpandIconWrapper, {
+        className: classes.expandIconWrapper,
+        ownerState,
+        children: expandIcon
+      })]
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? AccordionSummary.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The icon to display as the expand indicator.
+     */
+    expandIcon: PropTypes.node,
+    /**
+     * This prop can help identify which element has keyboard focus.
+     * The class name will be applied when the element gains the focus through keyboard interaction.
+     * It's a polyfill for the [CSS :focus-visible selector](https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo).
+     * The rationale for using this feature [is explained here](https://github.com/WICG/focus-visible/blob/HEAD/explainer.md).
+     * A [polyfill can be used](https://github.com/WICG/focus-visible) to apply a `focus-visible` class to other components
+     * if needed.
+     */
+    focusVisibleClassName: PropTypes.string,
+    /**
+     * @ignore
+     */
+    onClick: PropTypes.func,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const AccordionSummary$1 = AccordionSummary;
   function getAlertUtilityClass(slot) {
     return generateUtilityClass("MuiAlert", slot);
   }
@@ -70948,8 +71784,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ClearIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  const _excluded$T = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
-  const useUtilityClasses$L = (ownerState) => {
+  const _excluded$U = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
+  const useUtilityClasses$M = (ownerState) => {
     const {
       variant,
       color: color2,
@@ -71077,13 +71913,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps = {},
       slots = {},
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
     const ownerState = _extends$1({}, props, {
       color: color2,
       severity,
       variant
     });
-    const classes = useUtilityClasses$L(ownerState);
+    const classes = useUtilityClasses$M(ownerState);
     const AlertCloseButton = (_ref = (_slots$closeButton = slots.closeButton) != null ? _slots$closeButton : components.CloseButton) != null ? _ref : IconButton$1;
     const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : ClearIcon;
     const closeButtonProps = (_slotProps$closeButto = slotProps.closeButton) != null ? _slotProps$closeButto : componentsProps.closeButton;
@@ -71255,8 +72091,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAlertTitle", slot);
   }
   generateUtilityClasses("MuiAlertTitle", ["root"]);
-  const _excluded$S = ["className"];
-  const useUtilityClasses$K = (ownerState) => {
+  const _excluded$T = ["className"];
+  const useUtilityClasses$L = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -71284,9 +72120,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
     const ownerState = props;
-    const classes = useUtilityClasses$K(ownerState);
+    const classes = useUtilityClasses$L(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AlertTitleRoot, _extends$1({
       gutterBottom: true,
       component: "div",
@@ -71322,8 +72158,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAppBar", slot);
   }
   generateUtilityClasses("MuiAppBar", ["root", "positionFixed", "positionAbsolute", "positionSticky", "positionStatic", "positionRelative", "colorDefault", "colorPrimary", "colorSecondary", "colorInherit", "colorTransparent", "colorError", "colorInfo", "colorSuccess", "colorWarning"]);
-  const _excluded$R = ["className", "color", "enableColorOnDark", "position"];
-  const useUtilityClasses$J = (ownerState) => {
+  const _excluded$S = ["className", "color", "enableColorOnDark", "position"];
+  const useUtilityClasses$K = (ownerState) => {
     const {
       color: color2,
       position: position2,
@@ -71424,13 +72260,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       color: color2 = "primary",
       enableColorOnDark = false,
       position: position2 = "fixed"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$R);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
     const ownerState = _extends$1({}, props, {
       color: color2,
       position: position2,
       enableColorOnDark
     });
-    const classes = useUtilityClasses$J(ownerState);
+    const classes = useUtilityClasses$K(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AppBarRoot, _extends$1({
       square: true,
       component: "header",
@@ -71560,7 +72396,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       internalRef: internalSlotProps.ref
     };
   }
-  const _excluded$Q = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+  const _excluded$R = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
   function useSlotProps(parameters) {
     var _parameters$additiona;
     const {
@@ -71568,7 +72404,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       externalSlotProps,
       ownerState,
       skipResolvingSlotProps = false
-    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$Q);
+    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$R);
     const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
     const {
       props: mergedProps,
@@ -72525,7 +73361,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       onClickAway: handleClickAway
     };
   }
-  const _excluded$P = ["onChange", "maxRows", "minRows", "style", "value"];
+  const _excluded$Q = ["onChange", "maxRows", "minRows", "style", "value"];
   function getStyleValue(value) {
     return parseInt(value, 10) || 0;
   }
@@ -72554,7 +73390,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       minRows = 1,
       style: style2,
       value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$P);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Q);
     const {
       current: isControlled
     } = reactExports.useRef(value != null);
@@ -72794,7 +73630,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const inputBaseClasses = generateUtilityClasses("MuiInputBase", ["root", "formControl", "focused", "disabled", "adornedStart", "adornedEnd", "error", "sizeSmall", "multiline", "colorSecondary", "fullWidth", "hiddenLabel", "readOnly", "input", "inputSizeSmall", "inputMultiline", "inputTypeSearch", "inputAdornedStart", "inputAdornedEnd", "inputHiddenLabel"]);
   const inputBaseClasses$1 = inputBaseClasses;
-  const _excluded$O = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
+  const _excluded$P = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
   const rootOverridesResolver = (props, styles2) => {
     const {
       ownerState
@@ -72807,7 +73643,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     } = props;
     return [styles2.input, ownerState.size === "small" && styles2.inputSizeSmall, ownerState.multiline && styles2.inputMultiline, ownerState.type === "search" && styles2.inputTypeSearch, ownerState.startAdornment && styles2.inputAdornedStart, ownerState.endAdornment && styles2.inputAdornedEnd, ownerState.hiddenLabel && styles2.inputHiddenLabel];
   };
-  const useUtilityClasses$I = (ownerState) => {
+  const useUtilityClasses$J = (ownerState) => {
     const {
       classes,
       color: color2,
@@ -73018,7 +73854,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startAdornment,
       type = "text",
       value: valueProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$O);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$P);
     const value = inputPropsProp.value != null ? inputPropsProp.value : valueProp;
     const {
       current: isControlled
@@ -73179,7 +74015,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startAdornment,
       type
     });
-    const classes = useUtilityClasses$I(ownerState);
+    const classes = useUtilityClasses$J(ownerState);
     const Root = slots.root || components.Root || InputBaseRoot;
     const rootProps = slotProps.root || componentsProps.root || {};
     const Input2 = slots.input || components.Input || InputBaseComponent;
@@ -73485,8 +74321,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAvatar", slot);
   }
   generateUtilityClasses("MuiAvatar", ["root", "colorDefault", "circular", "rounded", "square", "img", "fallback"]);
-  const _excluded$N = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
-  const useUtilityClasses$H = (ownerState) => {
+  const _excluded$O = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
+  const useUtilityClasses$I = (ownerState) => {
     const {
       classes,
       variant,
@@ -73612,7 +74448,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       src,
       srcSet,
       variant = "circular"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$N);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$O);
     let children = null;
     const loaded = useLoaded(_extends$1({}, imgProps, {
       src,
@@ -73625,7 +74461,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       component,
       variant
     });
-    const classes = useUtilityClasses$H(ownerState);
+    const classes = useUtilityClasses$I(ownerState);
     if (hasImgNotFailing) {
       children = /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImg, _extends$1({
         alt,
@@ -73711,7 +74547,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: PropTypes.oneOfType([PropTypes.oneOf(["circular", "rounded", "square"]), PropTypes.string])
   } : void 0;
   const Avatar$1 = Avatar;
-  const _excluded$M = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+  const _excluded$N = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
   const styles$1 = {
     entering: {
       opacity: 1
@@ -73742,7 +74578,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       timeout = defaultTimeout,
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$M);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$N);
     const nodeRef = reactExports.useRef(null);
     const handleRef = useForkRef(nodeRef, children.ref, ref);
     const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
@@ -73897,8 +74733,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiBackdrop", slot);
   }
   generateUtilityClasses("MuiBackdrop", ["root", "invisible"]);
-  const _excluded$L = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
-  const useUtilityClasses$G = (ownerState) => {
+  const _excluded$M = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
+  const useUtilityClasses$H = (ownerState) => {
     const {
       classes,
       invisible
@@ -73951,12 +74787,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       slots = {},
       TransitionComponent = Fade$1,
       transitionDuration
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$L);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$M);
     const ownerState = _extends$1({}, props, {
       component,
       invisible
     });
-    const classes = useUtilityClasses$G(ownerState);
+    const classes = useUtilityClasses$H(ownerState);
     const rootSlotProps = (_slotProps$root = slotProps.root) != null ? _slotProps$root : componentsProps.root;
     return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
       in: open,
@@ -74103,10 +74939,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     "anchorOriginBottomRightRectangular"
   ]);
   const badgeClasses$1 = badgeClasses;
-  const _excluded$K = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
+  const _excluded$L = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
   const RADIUS_STANDARD = 10;
   const RADIUS_DOT = 4;
-  const useUtilityClasses$F = (ownerState) => {
+  const useUtilityClasses$G = (ownerState) => {
     const {
       color: color2,
       anchorOrigin,
@@ -74270,7 +75106,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps,
       showZero = false,
       variant: variantProp = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$K);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$L);
     const {
       badgeContent,
       invisible: invisibleFromHook,
@@ -74308,7 +75144,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       overlap,
       variant
     });
-    const classes = useUtilityClasses$F(ownerState);
+    const classes = useUtilityClasses$G(ownerState);
     const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : BadgeRoot;
     const BadgeSlot = (_ref2 = (_slots$badge = slots == null ? void 0 : slots.badge) != null ? _slots$badge : components.Badge) != null ? _ref2 : BadgeBadge;
     const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
@@ -74468,8 +75304,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     ButtonGroupButtonContext.displayName = "ButtonGroupButtonContext";
   }
   const ButtonGroupButtonContext$1 = ButtonGroupButtonContext;
-  const _excluded$J = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
-  const useUtilityClasses$E = (ownerState) => {
+  const _excluded$K = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
+  const useUtilityClasses$F = (ownerState) => {
     const {
       color: color2,
       disableElevation,
@@ -74694,7 +75530,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startIcon: startIconProp,
       type,
       variant = "text"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$J);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$K);
     const ownerState = _extends$1({}, props, {
       color: color2,
       component,
@@ -74706,7 +75542,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       type,
       variant
     });
-    const classes = useUtilityClasses$E(ownerState);
+    const classes = useUtilityClasses$F(ownerState);
     const startIcon = startIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonStartIcon, {
       className: classes.startIcon,
       ownerState,
@@ -74831,8 +75667,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("PrivateSwitchBase", slot);
   }
   generateUtilityClasses("PrivateSwitchBase", ["root", "checked", "disabled", "input", "edgeStart", "edgeEnd"]);
-  const _excluded$I = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
-  const useUtilityClasses$D = (ownerState) => {
+  const _excluded$J = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
+  const useUtilityClasses$E = (ownerState) => {
     const {
       classes,
       checked,
@@ -74890,7 +75726,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       type,
       value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$I);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$J);
     const [checked, setCheckedState] = useControlled({
       controlled: checkedProp,
       default: Boolean(defaultChecked),
@@ -74937,7 +75773,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableFocusRipple,
       edge
     });
-    const classes = useUtilityClasses$D(ownerState);
+    const classes = useUtilityClasses$E(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SwitchBaseRoot, _extends$1({
       component: "span",
       className: clsx(classes.root, className),
@@ -75076,6 +75912,212 @@ Please use another name.` : formatMuiErrorMessage(18));
     value: PropTypes.any
   } : void 0;
   const SwitchBase$1 = SwitchBase;
+  const CheckBoxOutlineBlankIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+    d: "M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+  }), "CheckBoxOutlineBlank");
+  const CheckBoxIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+    d: "M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+  }), "CheckBox");
+  const IndeterminateCheckBoxIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
+    d: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"
+  }), "IndeterminateCheckBox");
+  function getCheckboxUtilityClass(slot) {
+    return generateUtilityClass("MuiCheckbox", slot);
+  }
+  const checkboxClasses = generateUtilityClasses("MuiCheckbox", ["root", "checked", "disabled", "indeterminate", "colorPrimary", "colorSecondary", "sizeSmall", "sizeMedium"]);
+  const checkboxClasses$1 = checkboxClasses;
+  const _excluded$I = ["checkedIcon", "color", "icon", "indeterminate", "indeterminateIcon", "inputProps", "size", "className"];
+  const useUtilityClasses$D = (ownerState) => {
+    const {
+      classes,
+      indeterminate,
+      color: color2,
+      size: size2
+    } = ownerState;
+    const slots = {
+      root: ["root", indeterminate && "indeterminate", `color${capitalize$2(color2)}`, `size${capitalize$2(size2)}`]
+    };
+    const composedClasses = composeClasses(slots, getCheckboxUtilityClass, classes);
+    return _extends$1({}, classes, composedClasses);
+  };
+  const CheckboxRoot = styled$1(SwitchBase$1, {
+    shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
+    name: "MuiCheckbox",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, ownerState.indeterminate && styles2.indeterminate, ownerState.color !== "default" && styles2[`color${capitalize$2(ownerState.color)}`]];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    color: (theme2.vars || theme2).palette.text.secondary
+  }, !ownerState.disableRipple && {
+    "&:hover": {
+      backgroundColor: theme2.vars ? `rgba(${ownerState.color === "default" ? theme2.vars.palette.action.activeChannel : theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(ownerState.color === "default" ? theme2.palette.action.active : theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
+      // Reset on touch devices, it doesn't add specificity
+      "@media (hover: none)": {
+        backgroundColor: "transparent"
+      }
+    }
+  }, ownerState.color !== "default" && {
+    [`&.${checkboxClasses$1.checked}, &.${checkboxClasses$1.indeterminate}`]: {
+      color: (theme2.vars || theme2).palette[ownerState.color].main
+    },
+    [`&.${checkboxClasses$1.disabled}`]: {
+      color: (theme2.vars || theme2).palette.action.disabled
+    }
+  }));
+  const defaultCheckedIcon$1 = /* @__PURE__ */ jsxRuntimeExports.jsx(CheckBoxIcon, {});
+  const defaultIcon$1 = /* @__PURE__ */ jsxRuntimeExports.jsx(CheckBoxOutlineBlankIcon, {});
+  const defaultIndeterminateIcon = /* @__PURE__ */ jsxRuntimeExports.jsx(IndeterminateCheckBoxIcon, {});
+  const Checkbox = /* @__PURE__ */ reactExports.forwardRef(function Checkbox2(inProps, ref) {
+    var _icon$props$fontSize, _indeterminateIcon$pr;
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiCheckbox"
+    });
+    const {
+      checkedIcon = defaultCheckedIcon$1,
+      color: color2 = "primary",
+      icon: iconProp = defaultIcon$1,
+      indeterminate = false,
+      indeterminateIcon: indeterminateIconProp = defaultIndeterminateIcon,
+      inputProps,
+      size: size2 = "medium",
+      className
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$I);
+    const icon = indeterminate ? indeterminateIconProp : iconProp;
+    const indeterminateIcon = indeterminate ? indeterminateIconProp : checkedIcon;
+    const ownerState = _extends$1({}, props, {
+      color: color2,
+      indeterminate,
+      size: size2
+    });
+    const classes = useUtilityClasses$D(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(CheckboxRoot, _extends$1({
+      type: "checkbox",
+      inputProps: _extends$1({
+        "data-indeterminate": indeterminate
+      }, inputProps),
+      icon: /* @__PURE__ */ reactExports.cloneElement(icon, {
+        fontSize: (_icon$props$fontSize = icon.props.fontSize) != null ? _icon$props$fontSize : size2
+      }),
+      checkedIcon: /* @__PURE__ */ reactExports.cloneElement(indeterminateIcon, {
+        fontSize: (_indeterminateIcon$pr = indeterminateIcon.props.fontSize) != null ? _indeterminateIcon$pr : size2
+      }),
+      ownerState,
+      ref,
+      className: clsx(classes.root, className)
+    }, other, {
+      classes
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Checkbox.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * If `true`, the component is checked.
+     */
+    checked: PropTypes.bool,
+    /**
+     * The icon to display when the component is checked.
+     * @default <CheckBoxIcon />
+     */
+    checkedIcon: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The color of the component.
+     * It supports both default and custom theme colors, which can be added as shown in the
+     * [palette customization guide](https://mui.com/material-ui/customization/palette/#custom-colors).
+     * @default 'primary'
+     */
+    color: PropTypes.oneOfType([PropTypes.oneOf(["default", "primary", "secondary", "error", "info", "success", "warning"]), PropTypes.string]),
+    /**
+     * The default checked state. Use when the component is not controlled.
+     */
+    defaultChecked: PropTypes.bool,
+    /**
+     * If `true`, the component is disabled.
+     * @default false
+     */
+    disabled: PropTypes.bool,
+    /**
+     * If `true`, the ripple effect is disabled.
+     * @default false
+     */
+    disableRipple: PropTypes.bool,
+    /**
+     * The icon to display when the component is unchecked.
+     * @default <CheckBoxOutlineBlankIcon />
+     */
+    icon: PropTypes.node,
+    /**
+     * The id of the `input` element.
+     */
+    id: PropTypes.string,
+    /**
+     * If `true`, the component appears indeterminate.
+     * This does not set the native input element to indeterminate due
+     * to inconsistent behavior across browsers.
+     * However, we set a `data-indeterminate` attribute on the `input`.
+     * @default false
+     */
+    indeterminate: PropTypes.bool,
+    /**
+     * The icon to display when the component is indeterminate.
+     * @default <IndeterminateCheckBoxIcon />
+     */
+    indeterminateIcon: PropTypes.node,
+    /**
+     * [Attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#Attributes) applied to the `input` element.
+     */
+    inputProps: PropTypes.object,
+    /**
+     * Pass a ref to the `input` element.
+     */
+    inputRef: refType$1,
+    /**
+     * Callback fired when the state is changed.
+     *
+     * @param {React.ChangeEvent<HTMLInputElement>} event The event source of the callback.
+     * You can pull out the new checked state by accessing `event.target.checked` (boolean).
+     */
+    onChange: PropTypes.func,
+    /**
+     * If `true`, the `input` element is required.
+     * @default false
+     */
+    required: PropTypes.bool,
+    /**
+     * The size of the component.
+     * `small` is equivalent to the dense checkbox styling.
+     * @default 'medium'
+     */
+    size: PropTypes.oneOfType([PropTypes.oneOf(["medium", "small"]), PropTypes.string]),
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The value of the component. The DOM API casts this to a string.
+     * The browser uses "on" as the default value.
+     */
+    value: PropTypes.any
+  } : void 0;
+  const Checkbox$1 = Checkbox;
   const html = (theme2, enableColorScheme) => _extends$1({
     WebkitFontSmoothing: "antialiased",
     // Antialiasing.
@@ -75469,11 +76511,11 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
   const dialogClasses$1 = dialogClasses;
-  const DialogContext = /* @__PURE__ */ reactExports.createContext({});
+  const DialogContext$1 = /* @__PURE__ */ reactExports.createContext({});
   if (process.env.NODE_ENV !== "production") {
-    DialogContext.displayName = "DialogContext";
+    DialogContext$1.displayName = "DialogContext";
   }
-  const DialogContext$1 = DialogContext;
+  const DialogContext$2 = DialogContext$1;
   const _excluded$G = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
   const DialogBackdrop = styled$1(Backdrop$1, {
     name: "MuiDialog",
@@ -75701,7 +76743,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           }, PaperProps, {
             className: clsx(classes.paper, PaperProps.className),
             ownerState,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$1.Provider, {
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$2.Provider, {
               value: dialogContextValue,
               children
             })
@@ -76047,7 +77089,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const classes = useUtilityClasses$y(ownerState);
     const {
       titleId = idProp
-    } = reactExports.useContext(DialogContext$1);
+    } = reactExports.useContext(DialogContext$2);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$1({
       component: "h2",
       className: clsx(classes.root, className),
@@ -90384,37 +91426,37 @@ Please use another name.` : formatMuiErrorMessage(18));
         }
       }
       function ajaxConvert(s, response, jqXHR, isSuccess) {
-        var conv2, current, conv, tmp, prev2, converters = {}, dataTypes = s.dataTypes.slice();
+        var conv2, current2, conv, tmp, prev2, converters = {}, dataTypes = s.dataTypes.slice();
         if (dataTypes[1]) {
           for (conv in s.converters) {
             converters[conv.toLowerCase()] = s.converters[conv];
           }
         }
-        current = dataTypes.shift();
-        while (current) {
-          if (s.responseFields[current]) {
-            jqXHR[s.responseFields[current]] = response;
+        current2 = dataTypes.shift();
+        while (current2) {
+          if (s.responseFields[current2]) {
+            jqXHR[s.responseFields[current2]] = response;
           }
           if (!prev2 && isSuccess && s.dataFilter) {
             response = s.dataFilter(response, s.dataType);
           }
-          prev2 = current;
-          current = dataTypes.shift();
-          if (current) {
-            if (current === "*") {
-              current = prev2;
-            } else if (prev2 !== "*" && prev2 !== current) {
-              conv = converters[prev2 + " " + current] || converters["* " + current];
+          prev2 = current2;
+          current2 = dataTypes.shift();
+          if (current2) {
+            if (current2 === "*") {
+              current2 = prev2;
+            } else if (prev2 !== "*" && prev2 !== current2) {
+              conv = converters[prev2 + " " + current2] || converters["* " + current2];
               if (!conv) {
                 for (conv2 in converters) {
                   tmp = conv2.split(" ");
-                  if (tmp[1] === current) {
+                  if (tmp[1] === current2) {
                     conv = converters[prev2 + " " + tmp[0]] || converters["* " + tmp[0]];
                     if (conv) {
                       if (conv === true) {
                         conv = converters[conv2];
                       } else if (converters[conv2] !== true) {
-                        current = tmp[0];
+                        current2 = tmp[0];
                         dataTypes.unshift(tmp[1]);
                       }
                       break;
@@ -90431,7 +91473,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                   } catch (e) {
                     return {
                       state: "parsererror",
-                      error: conv ? e : "No conversion from " + prev2 + " to " + current
+                      error: conv ? e : "No conversion from " + prev2 + " to " + current2
                     };
                   }
                 }
@@ -95273,7 +96315,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   function hashKey(queryKey) {
     return JSON.stringify(
       queryKey,
-      (_2, val) => isPlainObject(val) ? Object.keys(val).sort().reduce((result, key) => {
+      (_2, val) => isPlainObject$1(val) ? Object.keys(val).sort().reduce((result, key) => {
         result[key] = val[key];
         return result;
       }, {}) : val
@@ -95296,7 +96338,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return a;
     }
     const array = isPlainArray(a) && isPlainArray(b);
-    if (array || isPlainObject(a) && isPlainObject(b)) {
+    if (array || isPlainObject$1(a) && isPlainObject$1(b)) {
       const aItems = array ? a : Object.keys(a);
       const aSize = aItems.length;
       const bItems = array ? b : Object.keys(b);
@@ -95322,7 +96364,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   function isPlainArray(value) {
     return Array.isArray(value) && value.length === Object.keys(value).length;
   }
-  function isPlainObject(o) {
+  function isPlainObject$1(o) {
     if (!hasObjectPrototype(o)) {
       return false;
     }
@@ -96850,17 +97892,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     return /* @__PURE__ */ reactExports.createElement(QueryClientContext.Provider, { value: client }, children);
   };
   var MoreHoriz = {};
-  var _interopRequireDefault$c = interopRequireDefaultExports;
+  var _interopRequireDefault$e = interopRequireDefaultExports;
   Object.defineProperty(MoreHoriz, "__esModule", {
     value: true
   });
-  var default_1$c = MoreHoriz.default = void 0;
-  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
-  var _jsxRuntime$c = jsxRuntimeExports;
-  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+  var default_1$e = MoreHoriz.default = void 0;
+  var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
+  var _jsxRuntime$e = jsxRuntimeExports;
+  var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
     d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
   }), "MoreHoriz");
-  default_1$c = MoreHoriz.default = _default$c;
+  default_1$e = MoreHoriz.default = _default$e;
   function API_POST(url = "", data = {}) {
     if (!url) {
       return Promise.reject("You need to specify an URL in for API_POST to run.");
@@ -97054,7 +98096,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 onClick: (e) => handleMenuOpen(e, n),
                 "aria-label": COURSEFLOW_APP.strings.show_notifications_menu,
                 "aria-haspopup": "true",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {})
               }
             ),
             children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
@@ -97191,7 +98233,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   });
   const ProfileSettingsPage = ({ formData }) => {
     const [state, setState] = reactExports.useState(formData);
-    const [errors, setErrors] = reactExports.useState({});
+    const [errors2, setErrors] = reactExports.useState({});
     const [showSnackbar, setShowSnackbar] = reactExports.useState(false);
     function onFormSubmit() {
       const formData2 = {};
@@ -97202,8 +98244,8 @@ Please use another name.` : formatMuiErrorMessage(18));
       setShowSnackbar(false);
     }
     const inputFields = state.map((field, idx) => {
-      const hasError = errors[field.name];
-      const errorText = hasError && errors[field.name][0];
+      const hasError = errors2[field.name];
+      const errorText = hasError && errors2[field.name][0];
       switch (field.type) {
         case "text":
           return /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { mb: 4 }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(FormControl$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -97219,7 +98261,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               onChange: (e) => {
                 const newFieldsState = [...state];
                 newFieldsState[idx].value = e.target.value;
-                const newErrors = { ...errors };
+                const newErrors = { ...errors2 };
                 delete newErrors[field.name];
                 setErrors(newErrors);
                 setState(newFieldsState);
@@ -97238,7 +98280,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 onChange: (e) => {
                   const newFieldsState = [...state];
                   newFieldsState[idx].value = e.target.value;
-                  const newErrors = { ...errors };
+                  const newErrors = { ...errors2 };
                   delete newErrors[field.name];
                   setErrors(newErrors);
                   setState(newFieldsState);
@@ -97268,7 +98310,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           {
             variant: "contained",
             onClick: onFormSubmit,
-            disabled: showSnackbar || Object.keys(errors).length > 0,
+            disabled: showSnackbar || Object.keys(errors2).length > 0,
             children: COURSEFLOW_APP.strings.update_profile
           }
         ) })
@@ -97385,6 +98427,672 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingTop: theme2.spacing(1),
     borderTop: "1px solid rgba(0, 0, 0, 0.12)"
   }));
+  var NOTHING = Symbol.for("immer-nothing");
+  var DRAFTABLE = Symbol.for("immer-draftable");
+  var DRAFT_STATE = Symbol.for("immer-state");
+  var errors = process.env.NODE_ENV !== "production" ? [
+    // All error codes, starting by 0:
+    function(plugin) {
+      return `The plugin for '${plugin}' has not been loaded into Immer. To enable the plugin, import and call \`enable${plugin}()\` when initializing your application.`;
+    },
+    function(thing) {
+      return `produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'. Got '${thing}'`;
+    },
+    "This object has been frozen and should not be mutated",
+    function(data) {
+      return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + data;
+    },
+    "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.",
+    "Immer forbids circular references",
+    "The first or second argument to `produce` must be a function",
+    "The third argument to `produce` must be a function or undefined",
+    "First argument to `createDraft` must be a plain object, an array, or an immerable object",
+    "First argument to `finishDraft` must be a draft returned by `createDraft`",
+    function(thing) {
+      return `'current' expects a draft, got: ${thing}`;
+    },
+    "Object.defineProperty() cannot be used on an Immer draft",
+    "Object.setPrototypeOf() cannot be used on an Immer draft",
+    "Immer only supports deleting array indices",
+    "Immer only supports setting array indices and the 'length' property",
+    function(thing) {
+      return `'original' expects a draft, got: ${thing}`;
+    }
+    // Note: if more errors are added, the errorOffset in Patches.ts should be increased
+    // See Patches.ts for additional errors
+  ] : [];
+  function die(error, ...args) {
+    if (process.env.NODE_ENV !== "production") {
+      const e = errors[error];
+      const msg = typeof e === "function" ? e.apply(null, args) : e;
+      throw new Error(`[Immer] ${msg}`);
+    }
+    throw new Error(
+      `[Immer] minified error nr: ${error}. Full error at: https://bit.ly/3cXEKWf`
+    );
+  }
+  var getPrototypeOf = Object.getPrototypeOf;
+  function isDraft(value) {
+    return !!value && !!value[DRAFT_STATE];
+  }
+  function isDraftable(value) {
+    var _a2;
+    if (!value)
+      return false;
+    return isPlainObject(value) || Array.isArray(value) || !!value[DRAFTABLE] || !!((_a2 = value.constructor) == null ? void 0 : _a2[DRAFTABLE]) || isMap(value) || isSet(value);
+  }
+  var objectCtorString = Object.prototype.constructor.toString();
+  function isPlainObject(value) {
+    if (!value || typeof value !== "object")
+      return false;
+    const proto = getPrototypeOf(value);
+    if (proto === null) {
+      return true;
+    }
+    const Ctor = Object.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+    if (Ctor === Object)
+      return true;
+    return typeof Ctor == "function" && Function.toString.call(Ctor) === objectCtorString;
+  }
+  function each(obj, iter) {
+    if (getArchtype(obj) === 0) {
+      Object.entries(obj).forEach(([key, value]) => {
+        iter(key, value, obj);
+      });
+    } else {
+      obj.forEach((entry, index) => iter(index, entry, obj));
+    }
+  }
+  function getArchtype(thing) {
+    const state = thing[DRAFT_STATE];
+    return state ? state.type_ : Array.isArray(thing) ? 1 : isMap(thing) ? 2 : isSet(thing) ? 3 : 0;
+  }
+  function has(thing, prop) {
+    return getArchtype(thing) === 2 ? thing.has(prop) : Object.prototype.hasOwnProperty.call(thing, prop);
+  }
+  function set(thing, propOrOldValue, value) {
+    const t = getArchtype(thing);
+    if (t === 2)
+      thing.set(propOrOldValue, value);
+    else if (t === 3) {
+      thing.add(value);
+    } else
+      thing[propOrOldValue] = value;
+  }
+  function is(x, y) {
+    if (x === y) {
+      return x !== 0 || 1 / x === 1 / y;
+    } else {
+      return x !== x && y !== y;
+    }
+  }
+  function isMap(target) {
+    return target instanceof Map;
+  }
+  function isSet(target) {
+    return target instanceof Set;
+  }
+  function latest(state) {
+    return state.copy_ || state.base_;
+  }
+  function shallowCopy(base, strict) {
+    if (isMap(base)) {
+      return new Map(base);
+    }
+    if (isSet(base)) {
+      return new Set(base);
+    }
+    if (Array.isArray(base))
+      return Array.prototype.slice.call(base);
+    if (!strict && isPlainObject(base)) {
+      if (!getPrototypeOf(base)) {
+        const obj = /* @__PURE__ */ Object.create(null);
+        return Object.assign(obj, base);
+      }
+      return { ...base };
+    }
+    const descriptors = Object.getOwnPropertyDescriptors(base);
+    delete descriptors[DRAFT_STATE];
+    let keys = Reflect.ownKeys(descriptors);
+    for (let i2 = 0; i2 < keys.length; i2++) {
+      const key = keys[i2];
+      const desc = descriptors[key];
+      if (desc.writable === false) {
+        desc.writable = true;
+        desc.configurable = true;
+      }
+      if (desc.get || desc.set)
+        descriptors[key] = {
+          configurable: true,
+          writable: true,
+          // could live with !!desc.set as well here...
+          enumerable: desc.enumerable,
+          value: base[key]
+        };
+    }
+    return Object.create(getPrototypeOf(base), descriptors);
+  }
+  function freeze(obj, deep = false) {
+    if (isFrozen(obj) || isDraft(obj) || !isDraftable(obj))
+      return obj;
+    if (getArchtype(obj) > 1) {
+      obj.set = obj.add = obj.clear = obj.delete = dontMutateFrozenCollections;
+    }
+    Object.freeze(obj);
+    if (deep)
+      each(obj, (_key, value) => freeze(value, true));
+    return obj;
+  }
+  function dontMutateFrozenCollections() {
+    die(2);
+  }
+  function isFrozen(obj) {
+    return Object.isFrozen(obj);
+  }
+  var plugins = {};
+  function getPlugin(pluginKey) {
+    const plugin = plugins[pluginKey];
+    if (!plugin) {
+      die(0, pluginKey);
+    }
+    return plugin;
+  }
+  var currentScope;
+  function getCurrentScope() {
+    return currentScope;
+  }
+  function createScope(parent_, immer_) {
+    return {
+      drafts_: [],
+      parent_,
+      immer_,
+      // Whenever the modified draft contains a draft from another scope, we
+      // need to prevent auto-freezing so the unowned draft can be finalized.
+      canAutoFreeze_: true,
+      unfinalizedDrafts_: 0
+    };
+  }
+  function usePatchesInScope(scope, patchListener) {
+    if (patchListener) {
+      getPlugin("Patches");
+      scope.patches_ = [];
+      scope.inversePatches_ = [];
+      scope.patchListener_ = patchListener;
+    }
+  }
+  function revokeScope(scope) {
+    leaveScope(scope);
+    scope.drafts_.forEach(revokeDraft);
+    scope.drafts_ = null;
+  }
+  function leaveScope(scope) {
+    if (scope === currentScope) {
+      currentScope = scope.parent_;
+    }
+  }
+  function enterScope(immer2) {
+    return currentScope = createScope(currentScope, immer2);
+  }
+  function revokeDraft(draft) {
+    const state = draft[DRAFT_STATE];
+    if (state.type_ === 0 || state.type_ === 1)
+      state.revoke_();
+    else
+      state.revoked_ = true;
+  }
+  function processResult(result, scope) {
+    scope.unfinalizedDrafts_ = scope.drafts_.length;
+    const baseDraft = scope.drafts_[0];
+    const isReplaced = result !== void 0 && result !== baseDraft;
+    if (isReplaced) {
+      if (baseDraft[DRAFT_STATE].modified_) {
+        revokeScope(scope);
+        die(4);
+      }
+      if (isDraftable(result)) {
+        result = finalize(scope, result);
+        if (!scope.parent_)
+          maybeFreeze(scope, result);
+      }
+      if (scope.patches_) {
+        getPlugin("Patches").generateReplacementPatches_(
+          baseDraft[DRAFT_STATE].base_,
+          result,
+          scope.patches_,
+          scope.inversePatches_
+        );
+      }
+    } else {
+      result = finalize(scope, baseDraft, []);
+    }
+    revokeScope(scope);
+    if (scope.patches_) {
+      scope.patchListener_(scope.patches_, scope.inversePatches_);
+    }
+    return result !== NOTHING ? result : void 0;
+  }
+  function finalize(rootScope, value, path) {
+    if (isFrozen(value))
+      return value;
+    const state = value[DRAFT_STATE];
+    if (!state) {
+      each(
+        value,
+        (key, childValue) => finalizeProperty(rootScope, state, value, key, childValue, path)
+      );
+      return value;
+    }
+    if (state.scope_ !== rootScope)
+      return value;
+    if (!state.modified_) {
+      maybeFreeze(rootScope, state.base_, true);
+      return state.base_;
+    }
+    if (!state.finalized_) {
+      state.finalized_ = true;
+      state.scope_.unfinalizedDrafts_--;
+      const result = state.copy_;
+      let resultEach = result;
+      let isSet2 = false;
+      if (state.type_ === 3) {
+        resultEach = new Set(result);
+        result.clear();
+        isSet2 = true;
+      }
+      each(
+        resultEach,
+        (key, childValue) => finalizeProperty(rootScope, state, result, key, childValue, path, isSet2)
+      );
+      maybeFreeze(rootScope, result, false);
+      if (path && rootScope.patches_) {
+        getPlugin("Patches").generatePatches_(
+          state,
+          path,
+          rootScope.patches_,
+          rootScope.inversePatches_
+        );
+      }
+    }
+    return state.copy_;
+  }
+  function finalizeProperty(rootScope, parentState, targetObject, prop, childValue, rootPath, targetIsSet) {
+    if (process.env.NODE_ENV !== "production" && childValue === targetObject)
+      die(5);
+    if (isDraft(childValue)) {
+      const path = rootPath && parentState && parentState.type_ !== 3 && // Set objects are atomic since they have no keys.
+      !has(parentState.assigned_, prop) ? rootPath.concat(prop) : void 0;
+      const res = finalize(rootScope, childValue, path);
+      set(targetObject, prop, res);
+      if (isDraft(res)) {
+        rootScope.canAutoFreeze_ = false;
+      } else
+        return;
+    } else if (targetIsSet) {
+      targetObject.add(childValue);
+    }
+    if (isDraftable(childValue) && !isFrozen(childValue)) {
+      if (!rootScope.immer_.autoFreeze_ && rootScope.unfinalizedDrafts_ < 1) {
+        return;
+      }
+      finalize(rootScope, childValue);
+      if (!parentState || !parentState.scope_.parent_)
+        maybeFreeze(rootScope, childValue);
+    }
+  }
+  function maybeFreeze(scope, value, deep = false) {
+    if (!scope.parent_ && scope.immer_.autoFreeze_ && scope.canAutoFreeze_) {
+      freeze(value, deep);
+    }
+  }
+  function createProxyProxy(base, parent) {
+    const isArray2 = Array.isArray(base);
+    const state = {
+      type_: isArray2 ? 1 : 0,
+      // Track which produce call this is associated with.
+      scope_: parent ? parent.scope_ : getCurrentScope(),
+      // True for both shallow and deep changes.
+      modified_: false,
+      // Used during finalization.
+      finalized_: false,
+      // Track which properties have been assigned (true) or deleted (false).
+      assigned_: {},
+      // The parent draft state.
+      parent_: parent,
+      // The base state.
+      base_: base,
+      // The base proxy.
+      draft_: null,
+      // set below
+      // The base copy with any updated values.
+      copy_: null,
+      // Called by the `produce` function.
+      revoke_: null,
+      isManual_: false
+    };
+    let target = state;
+    let traps = objectTraps;
+    if (isArray2) {
+      target = [state];
+      traps = arrayTraps;
+    }
+    const { revoke, proxy } = Proxy.revocable(target, traps);
+    state.draft_ = proxy;
+    state.revoke_ = revoke;
+    return proxy;
+  }
+  var objectTraps = {
+    get(state, prop) {
+      if (prop === DRAFT_STATE)
+        return state;
+      const source = latest(state);
+      if (!has(source, prop)) {
+        return readPropFromProto(state, source, prop);
+      }
+      const value = source[prop];
+      if (state.finalized_ || !isDraftable(value)) {
+        return value;
+      }
+      if (value === peek(state.base_, prop)) {
+        prepareCopy(state);
+        return state.copy_[prop] = createProxy(value, state);
+      }
+      return value;
+    },
+    has(state, prop) {
+      return prop in latest(state);
+    },
+    ownKeys(state) {
+      return Reflect.ownKeys(latest(state));
+    },
+    set(state, prop, value) {
+      const desc = getDescriptorFromProto(latest(state), prop);
+      if (desc == null ? void 0 : desc.set) {
+        desc.set.call(state.draft_, value);
+        return true;
+      }
+      if (!state.modified_) {
+        const current2 = peek(latest(state), prop);
+        const currentState = current2 == null ? void 0 : current2[DRAFT_STATE];
+        if (currentState && currentState.base_ === value) {
+          state.copy_[prop] = value;
+          state.assigned_[prop] = false;
+          return true;
+        }
+        if (is(value, current2) && (value !== void 0 || has(state.base_, prop)))
+          return true;
+        prepareCopy(state);
+        markChanged(state);
+      }
+      if (state.copy_[prop] === value && // special case: handle new props with value 'undefined'
+      (value !== void 0 || prop in state.copy_) || // special case: NaN
+      Number.isNaN(value) && Number.isNaN(state.copy_[prop]))
+        return true;
+      state.copy_[prop] = value;
+      state.assigned_[prop] = true;
+      return true;
+    },
+    deleteProperty(state, prop) {
+      if (peek(state.base_, prop) !== void 0 || prop in state.base_) {
+        state.assigned_[prop] = false;
+        prepareCopy(state);
+        markChanged(state);
+      } else {
+        delete state.assigned_[prop];
+      }
+      if (state.copy_) {
+        delete state.copy_[prop];
+      }
+      return true;
+    },
+    // Note: We never coerce `desc.value` into an Immer draft, because we can't make
+    // the same guarantee in ES5 mode.
+    getOwnPropertyDescriptor(state, prop) {
+      const owner = latest(state);
+      const desc = Reflect.getOwnPropertyDescriptor(owner, prop);
+      if (!desc)
+        return desc;
+      return {
+        writable: true,
+        configurable: state.type_ !== 1 || prop !== "length",
+        enumerable: desc.enumerable,
+        value: owner[prop]
+      };
+    },
+    defineProperty() {
+      die(11);
+    },
+    getPrototypeOf(state) {
+      return getPrototypeOf(state.base_);
+    },
+    setPrototypeOf() {
+      die(12);
+    }
+  };
+  var arrayTraps = {};
+  each(objectTraps, (key, fn) => {
+    arrayTraps[key] = function() {
+      arguments[0] = arguments[0][0];
+      return fn.apply(this, arguments);
+    };
+  });
+  arrayTraps.deleteProperty = function(state, prop) {
+    if (process.env.NODE_ENV !== "production" && isNaN(parseInt(prop)))
+      die(13);
+    return arrayTraps.set.call(this, state, prop, void 0);
+  };
+  arrayTraps.set = function(state, prop, value) {
+    if (process.env.NODE_ENV !== "production" && prop !== "length" && isNaN(parseInt(prop)))
+      die(14);
+    return objectTraps.set.call(this, state[0], prop, value, state[0]);
+  };
+  function peek(draft, prop) {
+    const state = draft[DRAFT_STATE];
+    const source = state ? latest(state) : draft;
+    return source[prop];
+  }
+  function readPropFromProto(state, source, prop) {
+    var _a2;
+    const desc = getDescriptorFromProto(source, prop);
+    return desc ? `value` in desc ? desc.value : (
+      // This is a very special case, if the prop is a getter defined by the
+      // prototype, we should invoke it with the draft as context!
+      (_a2 = desc.get) == null ? void 0 : _a2.call(state.draft_)
+    ) : void 0;
+  }
+  function getDescriptorFromProto(source, prop) {
+    if (!(prop in source))
+      return void 0;
+    let proto = getPrototypeOf(source);
+    while (proto) {
+      const desc = Object.getOwnPropertyDescriptor(proto, prop);
+      if (desc)
+        return desc;
+      proto = getPrototypeOf(proto);
+    }
+    return void 0;
+  }
+  function markChanged(state) {
+    if (!state.modified_) {
+      state.modified_ = true;
+      if (state.parent_) {
+        markChanged(state.parent_);
+      }
+    }
+  }
+  function prepareCopy(state) {
+    if (!state.copy_) {
+      state.copy_ = shallowCopy(
+        state.base_,
+        state.scope_.immer_.useStrictShallowCopy_
+      );
+    }
+  }
+  var Immer2 = class {
+    constructor(config2) {
+      this.autoFreeze_ = true;
+      this.useStrictShallowCopy_ = false;
+      this.produce = (base, recipe, patchListener) => {
+        if (typeof base === "function" && typeof recipe !== "function") {
+          const defaultBase = recipe;
+          recipe = base;
+          const self2 = this;
+          return function curriedProduce(base2 = defaultBase, ...args) {
+            return self2.produce(base2, (draft) => recipe.call(this, draft, ...args));
+          };
+        }
+        if (typeof recipe !== "function")
+          die(6);
+        if (patchListener !== void 0 && typeof patchListener !== "function")
+          die(7);
+        let result;
+        if (isDraftable(base)) {
+          const scope = enterScope(this);
+          const proxy = createProxy(base, void 0);
+          let hasError = true;
+          try {
+            result = recipe(proxy);
+            hasError = false;
+          } finally {
+            if (hasError)
+              revokeScope(scope);
+            else
+              leaveScope(scope);
+          }
+          usePatchesInScope(scope, patchListener);
+          return processResult(result, scope);
+        } else if (!base || typeof base !== "object") {
+          result = recipe(base);
+          if (result === void 0)
+            result = base;
+          if (result === NOTHING)
+            result = void 0;
+          if (this.autoFreeze_)
+            freeze(result, true);
+          if (patchListener) {
+            const p = [];
+            const ip = [];
+            getPlugin("Patches").generateReplacementPatches_(base, result, p, ip);
+            patchListener(p, ip);
+          }
+          return result;
+        } else
+          die(1, base);
+      };
+      this.produceWithPatches = (base, recipe) => {
+        if (typeof base === "function") {
+          return (state, ...args) => this.produceWithPatches(state, (draft) => base(draft, ...args));
+        }
+        let patches, inversePatches;
+        const result = this.produce(base, recipe, (p, ip) => {
+          patches = p;
+          inversePatches = ip;
+        });
+        return [result, patches, inversePatches];
+      };
+      if (typeof (config2 == null ? void 0 : config2.autoFreeze) === "boolean")
+        this.setAutoFreeze(config2.autoFreeze);
+      if (typeof (config2 == null ? void 0 : config2.useStrictShallowCopy) === "boolean")
+        this.setUseStrictShallowCopy(config2.useStrictShallowCopy);
+    }
+    createDraft(base) {
+      if (!isDraftable(base))
+        die(8);
+      if (isDraft(base))
+        base = current(base);
+      const scope = enterScope(this);
+      const proxy = createProxy(base, void 0);
+      proxy[DRAFT_STATE].isManual_ = true;
+      leaveScope(scope);
+      return proxy;
+    }
+    finishDraft(draft, patchListener) {
+      const state = draft && draft[DRAFT_STATE];
+      if (!state || !state.isManual_)
+        die(9);
+      const { scope_: scope } = state;
+      usePatchesInScope(scope, patchListener);
+      return processResult(void 0, scope);
+    }
+    /**
+     * Pass true to automatically freeze all copies created by Immer.
+     *
+     * By default, auto-freezing is enabled.
+     */
+    setAutoFreeze(value) {
+      this.autoFreeze_ = value;
+    }
+    /**
+     * Pass true to enable strict shallow copy.
+     *
+     * By default, immer does not copy the object descriptors such as getter, setter and non-enumrable properties.
+     */
+    setUseStrictShallowCopy(value) {
+      this.useStrictShallowCopy_ = value;
+    }
+    applyPatches(base, patches) {
+      let i2;
+      for (i2 = patches.length - 1; i2 >= 0; i2--) {
+        const patch = patches[i2];
+        if (patch.path.length === 0 && patch.op === "replace") {
+          base = patch.value;
+          break;
+        }
+      }
+      if (i2 > -1) {
+        patches = patches.slice(i2 + 1);
+      }
+      const applyPatchesImpl = getPlugin("Patches").applyPatches_;
+      if (isDraft(base)) {
+        return applyPatchesImpl(base, patches);
+      }
+      return this.produce(
+        base,
+        (draft) => applyPatchesImpl(draft, patches)
+      );
+    }
+  };
+  function createProxy(value, parent) {
+    const draft = isMap(value) ? getPlugin("MapSet").proxyMap_(value, parent) : isSet(value) ? getPlugin("MapSet").proxySet_(value, parent) : createProxyProxy(value, parent);
+    const scope = parent ? parent.scope_ : getCurrentScope();
+    scope.drafts_.push(draft);
+    return draft;
+  }
+  function current(value) {
+    if (!isDraft(value))
+      die(10, value);
+    return currentImpl(value);
+  }
+  function currentImpl(value) {
+    if (!isDraftable(value) || isFrozen(value))
+      return value;
+    const state = value[DRAFT_STATE];
+    let copy2;
+    if (state) {
+      if (!state.modified_)
+        return state.base_;
+      state.finalized_ = true;
+      copy2 = shallowCopy(value, state.scope_.immer_.useStrictShallowCopy_);
+    } else {
+      copy2 = shallowCopy(value, true);
+    }
+    each(copy2, (key, childValue) => {
+      set(copy2, key, currentImpl(childValue));
+    });
+    if (state) {
+      state.finalized_ = false;
+    }
+    return copy2;
+  }
+  var immer = new Immer2();
+  var produce = immer.produce;
+  immer.produceWithPatches.bind(
+    immer
+  );
+  immer.setAutoFreeze.bind(immer);
+  immer.setUseStrictShallowCopy.bind(immer);
+  immer.applyPatches.bind(immer);
+  immer.createDraft.bind(immer);
+  immer.finishDraft.bind(immer);
   class WorkflowCardCondensed extends WorkflowCard {
     constructor() {
       super(...arguments);
@@ -98182,395 +99890,718 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] }) });
     }
   }
-  class ProjectMenu extends reactExports.Component {
-    constructor(props) {
-      super(props);
-      __publicField(this, "createDiv");
-      __publicField(this, "viewButtons");
-      /*******************************************************
-       * COMPONENTS
-       *******************************************************/
-      /*******************************************************
-       * OVERFLOW LINKS
-       *******************************************************/
-      __publicField(this, "DeleteProjectButton", () => {
-        if (!this.state.data.deleted) {
-          return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.deleteProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") }) });
-        }
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: this.restoreProject.bind(this), children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "hover-shade",
-              onClick: this.deleteProjectHard.bind(this),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") })
-            }
-          )
-        ] });
-      });
-      __publicField(this, "ExportButton", () => {
-        if (this.props.userId) {
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              id: "export-button",
-              className: "hover-shade",
-              onClick: () => {
-                this.openExportDialog.bind(this);
-              },
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
-            }
-          );
-        }
-        return null;
-      });
-      __publicField(this, "CopyButton", () => {
-        if (this.props.userId) {
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              id: "copy-button",
-              className: "hover-shade",
-              onClick: () => {
-                const loader = COURSEFLOW_APP.tinyLoader;
-                loader.startLoad();
-                duplicateBaseItemQuery(
-                  this.props.data.id,
-                  this.props.data.type,
-                  null,
-                  (response_data) => {
-                    loader.endLoad();
-                    window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
-                  }
-                );
-              },
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
-            }
-          );
-        }
-        return null;
-      });
-      __publicField(this, "OverflowLinks", () => {
-        const data = this.state.data;
-        const overflow_links = [];
-        overflow_links.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
-        );
-        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportButton, {}));
-        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.CopyButton, {}));
-        if (data.author_id === this.props.userId) {
-          overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
-          overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(this.DeleteProjectButton, {}));
-        }
-        return overflow_links;
-      });
-      /*******************************************************
-       * VISIBLE BUTTONS
-       *******************************************************/
-      __publicField(this, "Edit", () => {
-        if (!this.props.readOnly) {
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "hover-shade",
-              id: "edit-project-button",
-              title: window.gettext("Edit Project"),
-              onClick: this.openEditDialog.bind(this),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
-            }
-          );
-        }
-        return null;
-      });
-      __publicField(this, "Create", () => {
-        if (!this.props.readOnly) {
-          return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              className: "hover-shade",
-              id: "create-project-button",
-              title: window.gettext("Create workflow"),
-              ref: this.createDiv,
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "a",
-                    {
-                      id: "activity-create-project",
-                      href: this.props.projectPaths.activity,
-                      className: "hover-shade",
-                      children: window.gettext("New activity")
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "a",
-                    {
-                      id: "course-create-project",
-                      href: this.props.projectPaths.course,
-                      className: "hover-shade",
-                      children: window.gettext("New course")
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    "a",
-                    {
-                      id: "program-create-project",
-                      href: this.props.projectPaths.program,
-                      className: "hover-shade",
-                      children: window.gettext("New program")
-                    }
-                  )
-                ] })
-              ]
-            }
-          );
-        }
-        return null;
-      });
-      __publicField(this, "Share", () => {
-        if (!this.props.readOnly)
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "hover-shade",
-              id: "share-button",
-              title: window.gettext("Sharing"),
-              onClick: this.openShareDialog.bind(this),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
-            }
-          );
-        return null;
-      });
-      __publicField(this, "VisibleButtons", () => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Edit, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Create, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Share, {})
-        ] });
-      });
-      /*******************************************************
-       *
-       *******************************************************/
-      __publicField(this, "Content", () => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(
-          WorkflowFilter,
-          {
-            read_only: this.props.readOnly,
-            project_data: this.state.data,
-            workflows: this.state.workflow_data,
-            updateWorkflow: this.updateWorkflow.bind(this),
-            context: "project"
-          }
-        );
-      });
-      __publicField(this, "ShareDialog", () => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openShareDialog, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Share project") }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ShareMenu,
-            {
-              data: this.state.data,
-              actionFunction: () => {
-                this.setState({
-                  ...this.state,
-                  openShareDialog: false
-                });
-                this.getUserData();
-              }
-            }
-          )
-        ] });
-      });
-      __publicField(this, "EditDialog", () => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { open: this.state.openEditDialog, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ProjectEditDialog,
-          {
-            type: "project_edit_menu",
-            data: {
-              ...this.state.data,
-              all_disciplines: this.props.allDisciplines
-              // renderer: this.props.renderer
-            },
-            actionFunction: this.updateFunction,
-            closeAction: () => this.closeModals()
-          }
-        ) });
-      });
-      __publicField(this, "ExportDialog", () => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: this.state.openExportDialog, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Export project") }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(ExportMenu, { data: this.state.data, actionFunction: this.closeModals })
-        ] });
-      });
-      this.viewButtons = [
-        { type: "workflows", name: window.gettext("Workflows") },
-        { type: "overview", name: window.gettext("Classroom Overview") },
-        { type: "students", name: window.gettext("Students") },
-        { type: "assignments", name: window.gettext("Assignments") },
-        { type: "completion_table", name: window.gettext("Completion Table") }
-      ];
-      this.state = {
-        data: this.props.data,
-        view_type: "workflows",
-        users: null,
-        workflow_data: [],
-        openEditDialog: false,
-        openShareDialog: false,
-        openExportDialog: false
-      };
-      this.createDiv = reactExports.createRef();
-    }
-    /*******************************************************
-     * LIFECYCLE HOOKS
-     *******************************************************/
-    componentDidMount() {
-      const component = this;
-      console.log("jquery ");
-      console.log($);
-      getWorkflowsForProjectQuery(this.props.data.id, (data) => {
-        component.setState({
-          workflow_data: data.data_package
-        });
-      });
-      this.getUserData();
-      COURSEFLOW_APP.makeDropdown($(this.createDiv.current));
-    }
-    // @todo this is wrapped because it is called by openShareMenu
-    // so do not unwrap until the renderMessageBox is sorted out
-    getUserData() {
-      getUsersForObjectQuery(this.props.data.id, this.props.data.type, (data) => {
-        this.setState({ users: data });
-      });
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    changeView(view_type) {
-      this.setState({ view_type });
-    }
-    // @todo, candidate to remove
-    getRole() {
-      return "teacher";
-    }
-    /*******************************************************
-     * ACTION HANDLERS
-     *******************************************************/
-    deleteProject() {
-      if (window.confirm(
-        window.gettext("Are you sure you want to delete this project?")
-      )) {
-        deleteSelfQuery(this.props.data.id, "project", true, () => {
-          this.setState({ data: { ...this.props.data, deleted: true } });
-        });
+  var Campaign = {};
+  var _interopRequireDefault$d = interopRequireDefaultExports;
+  Object.defineProperty(Campaign, "__esModule", {
+    value: true
+  });
+  var default_1$d = Campaign.default = void 0;
+  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+  var _jsxRuntime$d = jsxRuntimeExports;
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+    d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
+  }), "Campaign");
+  default_1$d = Campaign.default = _default$d;
+  /*! js-cookie v3.0.5 | MIT */
+  function assign(target) {
+    for (var i2 = 1; i2 < arguments.length; i2++) {
+      var source = arguments[i2];
+      for (var key in source) {
+        target[key] = source[key];
       }
     }
-    deleteProjectHard() {
+    return target;
+  }
+  var defaultConverter = {
+    read: function(value) {
+      if (value[0] === '"') {
+        value = value.slice(1, -1);
+      }
+      return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
+    },
+    write: function(value) {
+      return encodeURIComponent(value).replace(
+        /%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g,
+        decodeURIComponent
+      );
+    }
+  };
+  function init(converter, defaultAttributes) {
+    function set2(name2, value, attributes) {
+      if (typeof document === "undefined") {
+        return;
+      }
+      attributes = assign({}, defaultAttributes, attributes);
+      if (typeof attributes.expires === "number") {
+        attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
+      }
+      if (attributes.expires) {
+        attributes.expires = attributes.expires.toUTCString();
+      }
+      name2 = encodeURIComponent(name2).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
+      var stringifiedAttributes = "";
+      for (var attributeName in attributes) {
+        if (!attributes[attributeName]) {
+          continue;
+        }
+        stringifiedAttributes += "; " + attributeName;
+        if (attributes[attributeName] === true) {
+          continue;
+        }
+        stringifiedAttributes += "=" + attributes[attributeName].split(";")[0];
+      }
+      return document.cookie = name2 + "=" + converter.write(value, name2) + stringifiedAttributes;
+    }
+    function get(name2) {
+      if (typeof document === "undefined" || arguments.length && !name2) {
+        return;
+      }
+      var cookies = document.cookie ? document.cookie.split("; ") : [];
+      var jar = {};
+      for (var i2 = 0; i2 < cookies.length; i2++) {
+        var parts = cookies[i2].split("=");
+        var value = parts.slice(1).join("=");
+        try {
+          var found = decodeURIComponent(parts[0]);
+          jar[found] = converter.read(value, found);
+          if (name2 === found) {
+            break;
+          }
+        } catch (e) {
+        }
+      }
+      return name2 ? jar[name2] : jar;
+    }
+    return Object.create(
+      {
+        set: set2,
+        get,
+        remove: function(name2, attributes) {
+          set2(
+            name2,
+            "",
+            assign({}, attributes, {
+              expires: -1
+            })
+          );
+        },
+        withAttributes: function(attributes) {
+          return init(this.converter, assign({}, this.attributes, attributes));
+        },
+        withConverter: function(converter2) {
+          return init(assign({}, this.converter, converter2), this.attributes);
+        }
+      },
+      {
+        attributes: { value: Object.freeze(defaultAttributes) },
+        converter: { value: Object.freeze(converter) }
+      }
+    );
+  }
+  var api = init(defaultConverter, { path: "/" });
+  const StyledTitle = styled$1(AlertTitle$1)({
+    fontWeight: 600,
+    "&:last-child": {
+      marginBottom: 0
+    }
+  });
+  const StyledSubtitle = styled$1(Typography$1)({});
+  const CFAlert = ({
+    severity = "info",
+    title,
+    subtitle,
+    onClose,
+    hideIfCookie,
+    sx
+  }) => {
+    const [hide, setHide] = reactExports.useState(
+      hideIfCookie ? !!api.get(hideIfCookie) : false
+    );
+    function handleClose() {
+      onClose && onClose();
+      api.set(hideIfCookie, "true", { expires: 7 });
+      setHide(true);
+    }
+    if (hide) {
+      return null;
+    }
+    const isUpdateAnnouncement = severity === "update";
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      Alert$1,
+      {
+        severity: isUpdateAnnouncement ? "info" : severity,
+        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : null,
+        sx,
+        onClose: hideIfCookie && handleClose,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
+          subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
+        ]
+      }
+    );
+  };
+  const defaultState = {
+    type: null
+  };
+  function stateReducer(state, action) {
+    return {
+      type: action
+    };
+  }
+  const DialogContext = reactExports.createContext(defaultState);
+  const DialogDispatchContext = reactExports.createContext(null);
+  function DialogContextProvider({ children }) {
+    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
+  }
+  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
+    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
+    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
+    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
+    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
+    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
+    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
+    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
+    return DIALOG_TYPE2;
+  })(DIALOG_TYPE || {});
+  function useDialog(dialogType = null) {
+    const dialogContext = reactExports.useContext(DialogContext);
+    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
+    if (!dialogType) {
+      return {
+        dispatch: dialogDispatch
+      };
+    }
+    return {
+      show: dialogContext.type === dialogType,
+      onClose: () => dialogDispatch(null),
+      dispatch: dialogDispatch
+    };
+  }
+  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
+    "& .MuiDialogContent-root": {
+      padding: theme2.spacing(3)
+    },
+    "& .MuiDialogActions-root": {
+      padding: theme2.spacing(1)
+    }
+  }));
+  const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "flex",
+    flexDirection: "column",
+    gap: theme2.spacing(3),
+    "& > *": {
+      flexGrow: 1
+    }
+  }));
+  const fields = {
+    type: [
+      { value: "outcome", label: "Outcomes" },
+      { value: "node", label: "Nodes" },
+      {
+        value: "framework",
+        label: "Course framework",
+        showForType: ["project", "course"]
+      },
+      {
+        value: "matrix",
+        label: "Competency matrix",
+        showForType: ["project", "program"]
+      },
+      {
+        value: "sobec",
+        label: "SOBEC validation",
+        showForType: ["project", "program"]
+      }
+    ],
+    format: [
+      { value: "excel", label: "Excel" },
+      { value: "csv", label: "CSV" }
+    ]
+  };
+  function ExportProjectDialog({ data }) {
+    const [state, setState] = reactExports.useState({
+      type: "outcome",
+      format: "excel",
+      sets: []
+    });
+    const { show, onClose } = useDialog(DIALOG_TYPE.EXPORT_PROJECT);
+    function onRadioChange(field, value) {
+      setState(
+        produce((draft) => {
+          draft[field] = value;
+        })
+      );
+    }
+    function onSetChange(value) {
+      setState(
+        produce((draft) => {
+          const found = draft.sets.indexOf(value);
+          if (found === -1) {
+            draft.sets.push(value);
+          } else {
+            draft.sets.splice(found, 1);
+          }
+        })
+      );
+    }
+    function onSubmit(e) {
+      const postData = {
+        objectID: data.id,
+        objectType: data.type,
+        exportType: state.type,
+        exportFormat: state.format,
+        objectSets: state.sets
+      };
+      console.log(
+        "export submit",
+        postData,
+        "posting to",
+        COURSEFLOW_APP.config.post_paths.get_export
+      );
+    }
+    function onDialogClose() {
+      setState(
+        produce((draft) => {
+          draft.type = "outcome";
+          draft.format = "excel";
+        })
+      );
+      onClose();
+    }
+    const projectType = data.type;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext(`Export ${projectType}`) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { severity: "warning", title: "TODO" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-type-group-label", children: window.gettext("Export type") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            RadioGroup$1,
+            {
+              "aria-labelledby": "export-type-group-label",
+              value: state.type,
+              children: fields.type.map((type, index) => {
+                return !type.showForType || type.showForType && type.showForType.indexOf(projectType) !== -1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  FormControlLabel$1,
+                  {
+                    value: type.value,
+                    control: /* @__PURE__ */ jsxRuntimeExports.jsx(Radio$1, {}),
+                    label: window.gettext(type.label),
+                    onChange: () => onRadioChange("type", type.value),
+                    checked: type.value === state.type
+                  },
+                  index
+                ) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+              })
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-format-group-label", children: window.gettext("Export format") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            RadioGroup$1,
+            {
+              "aria-labelledby": "export-format-group-label",
+              value: state.format,
+              children: fields.format.map((format2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                FormControlLabel$1,
+                {
+                  value: format2.value,
+                  control: /* @__PURE__ */ jsxRuntimeExports.jsx(Radio$1, {}),
+                  label: window.gettext(format2.label),
+                  onChange: () => onRadioChange("format", format2.value),
+                  checked: format2.value === state.format
+                },
+                index
+              ))
+            }
+          )
+        ] }),
+        data.object_sets.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-sets-group-label", children: window.gettext("Object set visibility") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormGroup$1, { children: data.object_sets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            FormControlLabel$1,
+            {
+              value: set2.id,
+              control: /* @__PURE__ */ jsxRuntimeExports.jsx(Checkbox$1, {}),
+              label: set2.title,
+              checked: state.sets.includes(set2.id),
+              onChange: () => onSetChange(set2.id.toString())
+            },
+            index
+          )) })
+        ] })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onDialogClose, children: window.gettext("Cancel") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, children: window.gettext("Export") })
+      ] })
+    ] });
+  }
+  const ArchiveProjectModal = ({ onSubmit }) => {
+    const { show, onClose } = useDialog(DIALOG_TYPE.ARCHIVE_PROJECT);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: show,
+        onClose,
+        fullWidth: true,
+        maxWidth: "sm",
+        "aria-labelledby": "archive-project-modal",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { id: "archive-project-modal", children: window.gettext("Archive project") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: window.gettext(
+            "Once your project is archived, it won’t be visible from your library. You’ll have to navigate to your archived project to access it. From there, you’ll be able to restore your project if needed."
+          ) }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: window.gettext("Cancel") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, children: window.gettext("Archive project") })
+          ] })
+        ]
+      }
+    );
+  };
+  function ProjectMenu({
+    data,
+    userId,
+    projectPaths,
+    allDisciplines,
+    readOnly
+  }) {
+    const [state, setState] = reactExports.useState({
+      data,
+      view_type: "workflows",
+      users: null,
+      workflow_data: [],
+      openEditDialog: false,
+      openShareDialog: false
+    });
+    const { dispatch } = useDialog();
+    const createDiv = reactExports.useRef();
+    const getUserData = reactExports.useCallback(() => {
+      getUsersForObjectQuery(data.id, data.type, (data2) => {
+        setState(
+          produce((draft) => {
+            draft.users = data2;
+          })
+        );
+      });
+    }, [data.id, data.type]);
+    reactExports.useEffect(() => {
+      getWorkflowsForProjectQuery(data.id, (data2) => {
+        setState(
+          produce((draft) => {
+            draft.workflow_data = data2.data_package;
+          })
+        );
+      });
+      getUserData();
+      COURSEFLOW_APP.makeDropdown($(createDiv.current));
+    }, [data.id, createDiv, getUserData]);
+    function deleteProject() {
+      deleteSelfQuery(data.id, "project", true, () => {
+        setState(
+          produce((draft) => {
+            draft.data.deleted = true;
+          })
+        );
+      });
+    }
+    function deleteProjectHard() {
       if (window.confirm(
         window.gettext(
           "Are you sure you want to permanently delete this project?"
         )
       )) {
-        deleteSelfQuery(this.props.data.id, "project", false, () => {
+        deleteSelfQuery(data.id, "project", false, () => {
           window.location.href = COURSEFLOW_APP.config.home_path;
         });
       }
     }
-    restoreProject() {
-      restoreSelfQuery(this.props.data.id, "project", () => {
-        this.setState({ data: { ...this.props.data, deleted: false } });
+    function restoreProject() {
+      restoreSelfQuery(data.id, "project", () => {
+        setState(
+          produce((draft) => {
+            draft.data.deleted = false;
+          })
+        );
       });
     }
-    /*******************************************************
-     * MODAL HANDLERS
-     *******************************************************/
-    updateWorkflow(id, new_values) {
-      for (let i2 = 0; i2 < this.state.workflow_data.length; i2++) {
-        if (this.state.workflow_data[i2].id === id) {
-          const new_state = { ...this.state };
-          new_state.workflow_data = [...this.state.workflow_data];
+    function updateWorkflow(id, new_values) {
+      for (let i2 = 0; i2 < state.workflow_data.length; i2++) {
+        if (state.workflow_data[i2].id === id) {
+          const new_state = { ...state };
+          new_state.workflow_data = [...state.workflow_data];
           new_state.workflow_data[i2] = {
-            ...this.state.workflow_data[i2],
+            ...state.workflow_data[i2],
             ...new_values
           };
-          this.setState(new_state);
+          setState(new_state);
           break;
         }
       }
     }
-    /*******************************************************
-     * MODALS
-     *******************************************************/
-    openEditDialog() {
-      this.setState({
-        ...this.state,
-        openEditDialog: true
-      });
+    function openEditDialog() {
+      setState(
+        produce((draft) => {
+          draft.openEditDialog = true;
+        })
+      );
     }
-    openShareDialog() {
-      this.setState({
-        ...this.state,
-        openShareDialog: true
-      });
+    function openShareDialog() {
+      setState(
+        produce((draft) => {
+          draft.openShareDialog = true;
+        })
+      );
     }
-    openExportDialog() {
-      this.setState({
-        ...this.state,
-        openExportDialog: true
-      });
+    function closeModals() {
+      setState(
+        produce((draft) => {
+          draft.openShareDialog = false;
+          draft.openEditDialog = false;
+        })
+      );
     }
-    closeModals() {
-      this.setState({
-        ...this.state,
-        openExportDialog: false,
-        openShareDialog: false,
-        openEditDialog: false
-      });
+    function updateFunction(new_data) {
+      setState(
+        produce((draft) => {
+          draft.data = {
+            ...draft.data,
+            ...new_data
+          };
+          draft.openEditDialog = false;
+        })
+      );
     }
-    updateFunction(new_data) {
-      this.setState({
-        ...this.state,
-        data: {
-          ...this.state.data,
-          ...new_data
-        },
-        openEditDialog: false
-      });
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          MenuBar,
+    const DeleteProjectButton = () => {
+      if (!state.data.deleted) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
           {
-            overflowLinks: () => /* @__PURE__ */ jsxRuntimeExports.jsx(this.OverflowLinks, {}),
-            visibleButtons: () => /* @__PURE__ */ jsxRuntimeExports.jsx(this.VisibleButtons, {})
+            className: "hover-shade",
+            onClick: () => dispatch(DIALOG_TYPE.ARCHIVE_PROJECT),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Archive project") })
+          }
+        );
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: restoreProject, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Restore project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hover-shade", onClick: deleteProjectHard, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Permanently delete project") }) })
+      ] });
+    };
+    const ExportButton = () => {
+      if (userId) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: "export-button",
+            className: "hover-shade",
+            onClick: () => dispatch(DIALOG_TYPE.EXPORT_PROJECT),
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Export") })
+          }
+        );
+      }
+      return null;
+    };
+    const CopyButton = () => {
+      if (userId) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            id: "copy-button",
+            className: "hover-shade",
+            onClick: () => {
+              const loader = COURSEFLOW_APP.tinyLoader;
+              loader.startLoad();
+              duplicateBaseItemQuery(
+                data.id,
+                data.type,
+                null,
+                (response_data) => {
+                  loader.endLoad();
+                  window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
+                }
+              );
+            },
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
+          }
+        );
+      }
+      return null;
+    };
+    const OverflowLinks = () => {
+      const { data: data2 } = state;
+      const overflow_links = [];
+      overflow_links.push(
+        /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
+      );
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(ExportButton, {}));
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(CopyButton, {}));
+      if (data2.author_id === userId) {
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
+        overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(DeleteProjectButton, {}));
+      }
+      return overflow_links;
+    };
+    const Edit = () => {
+      if (!readOnly) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "edit-project-button",
+            title: window.gettext("Edit Project"),
+            onClick: openEditDialog,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "edit" })
+          }
+        );
+      }
+      return null;
+    };
+    const Create = () => {
+      if (!readOnly) {
+        return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "hover-shade",
+            id: "create-project-button",
+            title: window.gettext("Create workflow"),
+            ref: createDiv,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "add_circle" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { id: "create-links-project", className: "create-dropdown", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "activity-create-project",
+                    href: projectPaths.activity,
+                    className: "hover-shade",
+                    children: window.gettext("New activity")
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "course-create-project",
+                    href: projectPaths.course,
+                    className: "hover-shade",
+                    children: window.gettext("New course")
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "a",
+                  {
+                    id: "program-create-project",
+                    href: projectPaths.program,
+                    className: "hover-shade",
+                    children: window.gettext("New program")
+                  }
+                )
+              ] })
+            ]
+          }
+        );
+      }
+      return null;
+    };
+    const Share = () => {
+      if (!readOnly)
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "div",
+          {
+            className: "hover-shade",
+            id: "share-button",
+            title: window.gettext("Sharing"),
+            onClick: openShareDialog,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "material-symbols-rounded filled", children: "person_add" })
+          }
+        );
+      return null;
+    };
+    const VisibleButtons = () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Edit, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Create, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Share, {})
+      ] });
+    };
+    const Content = () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowFilter,
+        {
+          read_only: readOnly,
+          project_data: state.data,
+          workflows: state.workflow_data,
+          updateWorkflow,
+          context: "project"
+        }
+      );
+    };
+    const ShareDialog = () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: state.openShareDialog, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Share project") }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ShareMenu,
+          {
+            data: state.data,
+            actionFunction: () => {
+              setState(
+                produce((draft) => {
+                  draft.openShareDialog = false;
+                })
+              );
+              getUserData();
+            }
+          }
+        )
+      ] });
+    };
+    const EditDialog = () => {
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { open: state.openEditDialog, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ProjectEditDialog,
+        {
+          type: "project_edit_menu",
+          data: {
+            ...state.data,
+            all_disciplines: allDisciplines
+            // renderer: renderer
+          },
+          actionFunction: updateFunction,
+          closeAction: closeModals
+        }
+      ) });
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        MenuBar,
+        {
+          overflowLinks: () => /* @__PURE__ */ jsxRuntimeExports.jsx(OverflowLinks, {}),
+          visibleButtons: () => /* @__PURE__ */ jsxRuntimeExports.jsx(VisibleButtons, {})
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Header,
+          {
+            disciplines: state.data.disciplines,
+            description: state.data.description,
+            allDisciplines,
+            data: state.data,
+            users: state.users,
+            openShareDialog,
+            readOnly
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "project-menu", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            Header,
-            {
-              disciplines: this.state.data.disciplines,
-              description: this.state.data.description,
-              allDisciplines: this.props.allDisciplines,
-              data: this.state.data,
-              users: this.state.users,
-              openShareDialog: () => this.openShareDialog(),
-              readOnly: this.props.readOnly
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.Content, {})
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.EditDialog, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {})
-      ] }) });
-    }
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Content, {})
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(EditDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ShareDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ExportProjectDialog, { data: state.data }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ArchiveProjectModal, { onSubmit: deleteProject })
+    ] });
   }
   class ProjectPage extends reactExports.Component {
     constructor(props) {
@@ -98747,513 +100778,18 @@ Please use another name.` : formatMuiErrorMessage(18));
       ) });
     }
   }
-  var Campaign = {};
-  var _interopRequireDefault$b = interopRequireDefaultExports;
-  Object.defineProperty(Campaign, "__esModule", {
-    value: true
-  });
-  var default_1$b = Campaign.default = void 0;
-  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-  var _jsxRuntime$b = jsxRuntimeExports;
-  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
-    d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
-  }), "Campaign");
-  default_1$b = Campaign.default = _default$b;
-  /*! js-cookie v3.0.5 | MIT */
-  function assign(target) {
-    for (var i2 = 1; i2 < arguments.length; i2++) {
-      var source = arguments[i2];
-      for (var key in source) {
-        target[key] = source[key];
-      }
-    }
-    return target;
-  }
-  var defaultConverter = {
-    read: function(value) {
-      if (value[0] === '"') {
-        value = value.slice(1, -1);
-      }
-      return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
-    },
-    write: function(value) {
-      return encodeURIComponent(value).replace(
-        /%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g,
-        decodeURIComponent
-      );
-    }
-  };
-  function init(converter, defaultAttributes) {
-    function set(name2, value, attributes) {
-      if (typeof document === "undefined") {
-        return;
-      }
-      attributes = assign({}, defaultAttributes, attributes);
-      if (typeof attributes.expires === "number") {
-        attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
-      }
-      if (attributes.expires) {
-        attributes.expires = attributes.expires.toUTCString();
-      }
-      name2 = encodeURIComponent(name2).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
-      var stringifiedAttributes = "";
-      for (var attributeName in attributes) {
-        if (!attributes[attributeName]) {
-          continue;
-        }
-        stringifiedAttributes += "; " + attributeName;
-        if (attributes[attributeName] === true) {
-          continue;
-        }
-        stringifiedAttributes += "=" + attributes[attributeName].split(";")[0];
-      }
-      return document.cookie = name2 + "=" + converter.write(value, name2) + stringifiedAttributes;
-    }
-    function get(name2) {
-      if (typeof document === "undefined" || arguments.length && !name2) {
-        return;
-      }
-      var cookies = document.cookie ? document.cookie.split("; ") : [];
-      var jar = {};
-      for (var i2 = 0; i2 < cookies.length; i2++) {
-        var parts = cookies[i2].split("=");
-        var value = parts.slice(1).join("=");
-        try {
-          var found = decodeURIComponent(parts[0]);
-          jar[found] = converter.read(value, found);
-          if (name2 === found) {
-            break;
-          }
-        } catch (e) {
-        }
-      }
-      return name2 ? jar[name2] : jar;
-    }
-    return Object.create(
-      {
-        set,
-        get,
-        remove: function(name2, attributes) {
-          set(
-            name2,
-            "",
-            assign({}, attributes, {
-              expires: -1
-            })
-          );
-        },
-        withAttributes: function(attributes) {
-          return init(this.converter, assign({}, this.attributes, attributes));
-        },
-        withConverter: function(converter2) {
-          return init(assign({}, this.converter, converter2), this.attributes);
-        }
-      },
-      {
-        attributes: { value: Object.freeze(defaultAttributes) },
-        converter: { value: Object.freeze(converter) }
-      }
-    );
-  }
-  var api = init(defaultConverter, { path: "/" });
-  const StyledTitle = styled$1(AlertTitle$1)({
-    fontWeight: 600,
-    "&:last-child": {
-      marginBottom: 0
-    }
-  });
-  const StyledSubtitle = styled$1(Typography$1)({});
-  const CFAlert = ({
-    severity,
-    title,
-    subtitle,
-    onClose,
-    hideIfCookie,
-    sx
-  }) => {
-    const [hide, setHide] = reactExports.useState(
-      hideIfCookie ? !!api.get(hideIfCookie) : false
-    );
-    function handleClose() {
-      onClose && onClose();
-      api.set(hideIfCookie, "true", { expires: 7 });
-      setHide(true);
-    }
-    if (hide) {
-      return null;
-    }
-    const isUpdateAnnouncement = severity === "update";
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      Alert$1,
-      {
-        severity: isUpdateAnnouncement ? "info" : severity,
-        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}) : null,
-        sx,
-        onClose: hideIfCookie && handleClose,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
-          subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
-        ]
-      }
-    );
-  };
   var Close = {};
-  var _interopRequireDefault$a = interopRequireDefaultExports;
+  var _interopRequireDefault$c = interopRequireDefaultExports;
   Object.defineProperty(Close, "__esModule", {
     value: true
   });
-  var default_1$a = Close.default = void 0;
-  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-  var _jsxRuntime$a = jsxRuntimeExports;
-  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+  var default_1$c = Close.default = void 0;
+  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+  var _jsxRuntime$c = jsxRuntimeExports;
+  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
     d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  default_1$a = Close.default = _default$a;
-  var AccountCircle = {};
-  var _interopRequireDefault$9 = interopRequireDefaultExports;
-  Object.defineProperty(AccountCircle, "__esModule", {
-    value: true
-  });
-  var default_1$9 = AccountCircle.default = void 0;
-  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-  var _jsxRuntime$9 = jsxRuntimeExports;
-  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
-  }), "AccountCircle");
-  default_1$9 = AccountCircle.default = _default$9;
-  var Logout = {};
-  var _interopRequireDefault$8 = interopRequireDefaultExports;
-  Object.defineProperty(Logout, "__esModule", {
-    value: true
-  });
-  var default_1$8 = Logout.default = void 0;
-  var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-  var _jsxRuntime$8 = jsxRuntimeExports;
-  var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
-  }), "Logout");
-  default_1$8 = Logout.default = _default$8;
-  var Notifications = {};
-  var _interopRequireDefault$7 = interopRequireDefaultExports;
-  Object.defineProperty(Notifications, "__esModule", {
-    value: true
-  });
-  var default_1$7 = Notifications.default = void 0;
-  var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
-  var _jsxRuntime$7 = jsxRuntimeExports;
-  var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
-    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
-  }), "Notifications");
-  default_1$7 = Notifications.default = _default$7;
-  var AddCircle = {};
-  var _interopRequireDefault$6 = interopRequireDefaultExports;
-  Object.defineProperty(AddCircle, "__esModule", {
-    value: true
-  });
-  var default_1$6 = AddCircle.default = void 0;
-  var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
-  var _jsxRuntime$6 = jsxRuntimeExports;
-  var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
-  }), "AddCircle");
-  default_1$6 = AddCircle.default = _default$6;
-  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
-    "& .MuiDialogContent-root": {
-      padding: theme2.spacing(2)
-    },
-    "& .MuiDialogActions-root": {
-      padding: theme2.spacing(1)
-    }
-  }));
-  const ResetPasswordModal = ({
-    show,
-    handleClose,
-    handleContinue
-  }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    StyledDialog,
-    {
-      open: show,
-      onClose: handleClose,
-      maxWidth: "xs",
-      "aria-labelledby": "reset-password-modal",
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { sx: { m: 0, p: 2 }, id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: handleClose, children: COURSEFLOW_APP.strings.cancel }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: handleContinue, children: COURSEFLOW_APP.strings.password_reset })
-        ] })
-      ]
-    }
-  );
-  const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
-    "& .MuiPaper-root": {
-      backgroundColor: theme2.palette.common.white,
-      boxShadow: "none"
-    }
-  }));
-  const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
-    "& .MuiPaper-root": {
-      minWidth: 220,
-      "& .MuiMenuItem-root": {
-        "& .MuiSvgIcon-root": {
-          marginRight: theme2.spacing(1.5)
-        }
-      }
-    }
-  }));
-  const NotificationsMenu = styled$1(Popover$1)({
-    "& .MuiPaper-root": {
-      marginLeft: "3em",
-      width: 500
-    }
-  });
-  const NotificationsHeader = styled$1(Box$1)(({ theme: theme2 }) => ({
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: theme2.spacing(2),
-    paddingBottom: theme2.spacing(2),
-    paddingLeft: theme2.spacing(3),
-    paddingRight: theme2.spacing(1),
-    borderBottom: `1px solid ${theme2.palette.divider}`,
-    "& .MuiTypography-root:not(a)": {
-      color: "currentColor"
-    }
-  }));
-  const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
-    paddingTop: 0,
-    paddingBottom: 0,
-    marginBottom: theme2.spacing(1),
-    "& .MuiListItem-root": {
-      padding: 0
-    },
-    "& .MuiListItemButton-root": {
-      paddingTop: theme2.spacing(1.5),
-      paddingBottom: theme2.spacing(1.5),
-      paddingLeft: theme2.spacing(4),
-      borderBottom: `1px solid ${theme2.palette.divider}`
-    },
-    "& .MuiBadge-root": {
-      position: "absolute",
-      left: theme2.spacing(1.7),
-      top: "50%"
-    }
-  }));
-  function openCreateActionModal(type) {
-    const createUrl = COURSEFLOW_APP.config.create_path[type];
-    COURSEFLOW_APP.tinyLoader.startLoad();
-    getTargetProjectMenu(
-      -1,
-      (response_data) => {
-        if (response_data.parentID !== null) {
-          window.location.href = createUrl.replace(
-            "/0/",
-            "/" + response_data.parentID + "/"
-          );
-        }
-      },
-      () => {
-        COURSEFLOW_APP.tinyLoader.endLoad();
-      }
-    );
-  }
-  const TopBar = ({ isTeacher, menus, notifications: notifications2 }) => {
-    const [anchorEl, setAnchorEl] = reactExports.useState(null);
-    const isMenuOpen = Boolean(anchorEl);
-    const [resetPassword, setResetPassword] = reactExports.useState(false);
-    const [addMenuAnchorEl, setAddMenuAnchorEl] = reactExports.useState(null);
-    const isAddMenuOpen = Boolean(addMenuAnchorEl);
-    const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = reactExports.useState(null);
-    const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
-    const handleMenuOpen = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
-    const handleAddMenuOpen = (event) => {
-      setAddMenuAnchorEl(event.currentTarget);
-    };
-    const handleNotificationsMenuOpen = (event) => {
-      setNotificationsMenuAnchorEl(event.currentTarget);
-    };
-    const handleLogout = () => [
-      window.location.replace(COURSEFLOW_APP.config.logout_path)
-    ];
-    const closeAllMenus = () => {
-      setAnchorEl(null);
-      setAddMenuAnchorEl(null);
-      setNotificationsMenuAnchorEl(null);
-    };
-    const handleCreateClick = (resourceType) => {
-      openCreateActionModal(resourceType);
-      closeAllMenus();
-    };
-    const addMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      StyledMenu,
-      {
-        anchorEl: addMenuAnchorEl,
-        id: "add-menu",
-        keepMounted: true,
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "center"
-        },
-        transformOrigin: {
-          vertical: "top",
-          horizontal: "center"
-        },
-        open: isAddMenuOpen,
-        onClose: closeAllMenus,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.add.projectUrl, children: COURSEFLOW_APP.strings.project }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("program"), children: COURSEFLOW_APP.strings.program }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("course"), children: COURSEFLOW_APP.strings.course }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick("activity"), children: COURSEFLOW_APP.strings.activity })
-        ]
-      }
-    );
-    const notificationsMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      NotificationsMenu,
-      {
-        anchorEl: notificationsMenuAnchorEl,
-        id: "notifications-menu",
-        keepMounted: true,
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right"
-        },
-        transformOrigin: {
-          vertical: "top",
-          horizontal: "right"
-        },
-        open: isNotificationsMenuOpen,
-        onClose: closeAllMenus,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(NotificationsHeader, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: COURSEFLOW_APP.strings.notifications }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: notifications2.url, underline: "always", children: COURSEFLOW_APP.strings.see_all })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsList, { children: notifications2.items.map((n, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ListItem$1,
-            {
-              alignItems: "flex-start",
-              sx: {
-                backgroundColor: n.unread ? "courseflow.lightest" : null
-              },
-              children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { component: "a", href: n.url, children: [
-                n.unread && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { color: "primary", variant: "dot" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: getNameInitials(n.from) }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  ListItemText$1,
-                  {
-                    primary: n.date,
-                    secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      Typography$1,
-                      {
-                        sx: { display: "inline" },
-                        component: "span",
-                        variant: "body2",
-                        color: "text.primary",
-                        children: n.text
-                      }
-                    )
-                  }
-                )
-              ] })
-            },
-            idx
-          )) })
-        ]
-      }
-    );
-    const accountMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      StyledMenu,
-      {
-        anchorEl,
-        id: "account-menu",
-        keepMounted: true,
-        anchorOrigin: {
-          vertical: "bottom",
-          horizontal: "right"
-        },
-        transformOrigin: {
-          vertical: "top",
-          horizontal: "right"
-        },
-        open: isMenuOpen,
-        onClose: closeAllMenus,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.profileUrl, children: COURSEFLOW_APP.strings.profile }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => setResetPassword(true), children: COURSEFLOW_APP.strings.password_reset }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.notificationsSettingsUrls, children: COURSEFLOW_APP.strings.notification_settings }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { component: "a", href: menus.account.daliteUrl, children: [
-            "Go to ",
-            menus.account.daliteText
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}),
-            " ",
-            COURSEFLOW_APP.strings.sign_out
-          ] })
-        ]
-      }
-    );
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(TopBarWrap, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AppBar$1, { position: "static", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Toolbar$1, { variant: "dense", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { flexGrow: 1 }, className: "title" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Box$1, { sx: { display: "flex" }, children: [
-          isTeacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
-            IconButton$1,
-            {
-              size: "large",
-              "aria-label": "add menu",
-              "aria-controls": "add-menu",
-              "aria-haspopup": "true",
-              color: "primary",
-              onClick: handleAddMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
-            }
-          ) : null,
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            IconButton$1,
-            {
-              size: "large",
-              "aria-label": notifications2.unread >= 1 ? `show ${notifications2.unread} new notifications` : "no new notifications",
-              "aria-controls": "notifications-menu",
-              "aria-haspopup": "true",
-              onClick: handleNotificationsMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}) })
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            IconButton$1,
-            {
-              size: "large",
-              edge: "end",
-              "aria-label": "account of current user",
-              "aria-controls": "account-menu",
-              "aria-haspopup": "true",
-              onClick: handleMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {})
-            }
-          )
-        ] })
-      ] }) }),
-      isTeacher && addMenu,
-      notificationsMenu,
-      accountMenu,
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        ResetPasswordModal,
-        {
-          show: resetPassword,
-          handleClose: () => {
-            setResetPassword(false);
-          },
-          handleContinue: () => window.location.href = menus.account.resetPasswordUrl
-        }
-      )
-    ] });
-  };
+  default_1$c = Close.default = _default$c;
   const Wrap = styled$1(Box$1)(({ theme: theme2 }) => ({
     position: "relative",
     padding: `${theme2.spacing(6)} ${theme2.spacing(4)}`,
@@ -99275,18 +100811,16 @@ Please use another name.` : formatMuiErrorMessage(18));
     color: theme2.palette.primary.main
   }));
   const Welcome = ({ hide }) => {
+    const { dispatch } = useDialog();
     const [visible, setVisible] = reactExports.useState(true);
     function handleClose() {
       setVisible(!visible);
-    }
-    function handleCreateClick(resourceType) {
-      openCreateActionModal(resourceType);
     }
     if (hide || !visible) {
       return null;
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Wrap, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {}) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h4", children: window.gettext("Welcome to CourseFlow") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { sx: { mt: 2 }, children: window.gettext(
         "Tell us a bit more about your goals so that we can help you get started."
@@ -99296,16 +100830,23 @@ Please use another name.` : formatMuiErrorMessage(18));
           Button$1,
           {
             variant: "contained",
-            onClick: () => handleCreateClick("program"),
+            onClick: () => dispatch(DIALOG_TYPE.CREATE_PROGRAM),
             children: window.gettext("I want to create a program")
           }
         ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: () => handleCreateClick("course"), children: window.gettext("I want to create a course") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
           Button$1,
           {
             variant: "contained",
-            onClick: () => handleCreateClick("activity"),
+            onClick: () => dispatch(DIALOG_TYPE.CREATE_COURSE),
+            children: window.gettext("I want to create a course")
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button$1,
+          {
+            variant: "contained",
+            onClick: () => dispatch(DIALOG_TYPE.CREATE_ACTIVITY),
             children: window.gettext("I want to create an activity")
           }
         )
@@ -100636,7 +102177,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       parent = null;
     }
     var domNodes = [];
-    var current;
+    var current2;
     var index = 0;
     var nodesLength = nodes.length;
     for (; index < nodesLength; index++) {
@@ -100644,37 +102185,37 @@ Please use another name.` : formatMuiErrorMessage(18));
       switch (node2.nodeType) {
         case 1: {
           var tagName = formatTagName(node2.nodeName);
-          current = new domhandler_1.Element(tagName, formatAttributes(node2.attributes));
-          current.children = formatDOM(
+          current2 = new domhandler_1.Element(tagName, formatAttributes(node2.attributes));
+          current2.children = formatDOM(
             // template children are on content
             tagName === "template" ? node2.content.childNodes : node2.childNodes,
-            current
+            current2
           );
           break;
         }
         case 3:
-          current = new domhandler_1.Text(node2.nodeValue);
+          current2 = new domhandler_1.Text(node2.nodeValue);
           break;
         case 8:
-          current = new domhandler_1.Comment(node2.nodeValue);
+          current2 = new domhandler_1.Comment(node2.nodeValue);
           break;
         default:
           continue;
       }
       var prev2 = domNodes[index - 1] || null;
       if (prev2) {
-        prev2.next = current;
+        prev2.next = current2;
       }
-      current.parent = parent;
-      current.prev = prev2;
-      current.next = null;
-      domNodes.push(current);
+      current2.parent = parent;
+      current2.prev = prev2;
+      current2.next = null;
+      domNodes.push(current2);
     }
     if (directive) {
-      current = new domhandler_1.ProcessingInstruction(directive.substring(0, directive.indexOf(" ")).toLowerCase(), directive);
-      current.next = domNodes[0] || null;
-      current.parent = parent;
-      domNodes.unshift(current);
+      current2 = new domhandler_1.ProcessingInstruction(directive.substring(0, directive.indexOf(" ")).toLowerCase(), directive);
+      current2.next = domNodes[0] || null;
+      current2.parent = parent;
+      domNodes.unshift(current2);
       if (domNodes[1]) {
         domNodes[1].prev = domNodes[0];
       }
@@ -101879,7 +103420,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.returnFirstArg = exports.canTextBeChildOfNode = exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = exports.PRESERVE_CUSTOM_ATTRIBUTES = exports.setStyleProp = exports.isCustomComponent = void 0;
-    var react_12 = requireReact();
+    var react_12 = reactExports;
     var style_to_js_1 = __importDefault2(cjs$1);
     var RESERVED_SVG_MATHML_ELEMENTS = /* @__PURE__ */ new Set([
       "annotation-xml",
@@ -101997,7 +103538,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
   };
   Object.defineProperty(domToReact$1, "__esModule", { value: true });
-  var react_1 = requireReact();
+  var react_1 = reactExports;
   var attributes_to_props_1 = __importDefault(attributesToProps$1);
   var utilities_1 = utilities$1;
   var React = {
@@ -102114,6 +103655,623 @@ Please use another name.` : formatMuiErrorMessage(18));
   })(lib$3);
   const HTMLReactParser = /* @__PURE__ */ getDefaultExportFromCjs(lib$3);
   const HtmlReactParser = HTMLReactParser.default || HTMLReactParser;
+  var AccountCircle = {};
+  var _interopRequireDefault$b = interopRequireDefaultExports;
+  Object.defineProperty(AccountCircle, "__esModule", {
+    value: true
+  });
+  var default_1$b = AccountCircle.default = void 0;
+  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
+  var _jsxRuntime$b = jsxRuntimeExports;
+  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
+  }), "AccountCircle");
+  default_1$b = AccountCircle.default = _default$b;
+  var Logout = {};
+  var _interopRequireDefault$a = interopRequireDefaultExports;
+  Object.defineProperty(Logout, "__esModule", {
+    value: true
+  });
+  var default_1$a = Logout.default = void 0;
+  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+  var _jsxRuntime$a = jsxRuntimeExports;
+  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+  }), "Logout");
+  default_1$a = Logout.default = _default$a;
+  var Notifications = {};
+  var _interopRequireDefault$9 = interopRequireDefaultExports;
+  Object.defineProperty(Notifications, "__esModule", {
+    value: true
+  });
+  var default_1$9 = Notifications.default = void 0;
+  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+  var _jsxRuntime$9 = jsxRuntimeExports;
+  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+  }), "Notifications");
+  default_1$9 = Notifications.default = _default$9;
+  var AddCircle = {};
+  var _interopRequireDefault$8 = interopRequireDefaultExports;
+  Object.defineProperty(AddCircle, "__esModule", {
+    value: true
+  });
+  var default_1$8 = AddCircle.default = void 0;
+  var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+  var _jsxRuntime$8 = jsxRuntimeExports;
+  var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
+  }), "AddCircle");
+  default_1$8 = AddCircle.default = _default$8;
+  function CreateProgramDialog() {
+    const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROGRAM);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Hello from the Program create dialog" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
+    ] });
+  }
+  var ExpandMore = {};
+  var _interopRequireDefault$7 = interopRequireDefaultExports;
+  Object.defineProperty(ExpandMore, "__esModule", {
+    value: true
+  });
+  var default_1$7 = ExpandMore.default = void 0;
+  var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
+  var _jsxRuntime$7 = jsxRuntimeExports;
+  var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+    d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+  }), "ExpandMore");
+  default_1$7 = ExpandMore.default = _default$7;
+  var Delete = {};
+  var _interopRequireDefault$6 = interopRequireDefaultExports;
+  Object.defineProperty(Delete, "__esModule", {
+    value: true
+  });
+  var default_1$6 = Delete.default = void 0;
+  var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
+  var _jsxRuntime$6 = jsxRuntimeExports;
+  var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+  }), "Delete");
+  default_1$6 = Delete.default = _default$6;
+  const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
+    "&.MuiPaper-root": {
+      boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
+      borderRadius: theme2.shape.borderRadius,
+      border: 0,
+      "&::before": {
+        content: "none"
+      }
+    },
+    "&.Mui-expanded": {
+      marginTop: 0,
+      ".MuiAccordionSummary-root": {
+        minHeight: "auto"
+      },
+      ".MuiAccordionSummary-content": {
+        margin: "12px 0"
+      }
+    }
+  }));
+  const AdvancedLabel = styled$1(Chip$1)(({ theme: theme2 }) => ({
+    height: "22px",
+    border: 0,
+    borderRadius: theme2.shape.borderRadius,
+    alignSelf: "center",
+    backgroundColor: "rgb(229, 246, 253)",
+    color: "rgb(1, 67, 97)",
+    fontWeight: 600
+  }));
+  function ObjectSets({
+    expanded,
+    toggleExpanded,
+    sets,
+    onAddNew,
+    onUpdate
+  }) {
+    const objectSets = sets.length ? sets : [{ type: "", label: "" }];
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledAccordion, { expanded, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AccordionSummary$1,
+        {
+          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}),
+          onClick: toggleExpanded,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { children: window.gettext("Object sets") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              AdvancedLabel,
+              {
+                label: window.gettext("Advanced feature"),
+                variant: "filled"
+              }
+            )
+          ] })
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionDetails$1, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "body2", sx: { mb: 2, color: "text.secondary" }, children: window.gettext(
+          "Define categories for types outcomes or streams of nodes for your project."
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(StyledForm, { children: objectSets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Select$1,
+              {
+                value: set2.type,
+                onChange: (event) => onUpdate({
+                  index,
+                  newVal: {
+                    type: event.target.value,
+                    label: set2.label
+                  }
+                }),
+                label: "Type",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "outcome", children: "Project outcome" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "something", children: "Something" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "else", children: "Entirely else" })
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            TextField$1,
+            {
+              label: window.gettext("Label"),
+              value: set2.label,
+              variant: "standard",
+              onChange: (event) => {
+                onUpdate({
+                  index,
+                  newVal: {
+                    type: set2.type,
+                    label: event.target.value
+                  }
+                });
+              },
+              fullWidth: true
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              onClick: () => onUpdate({
+                index
+              }),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
+            }
+          ) })
+        ] }, index)) })
+      ] })
+    ] });
+  }
+  function CreateProjectDialog({
+    showNoProjectsAlert,
+    formFields
+  }) {
+    const [state, setState] = reactExports.useState({
+      fields: {},
+      objectSets: [],
+      objectSetsExpanded: false
+    });
+    const [errors2, setErrors] = reactExports.useState({});
+    const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT);
+    function onSubmit() {
+      if (Object.keys(errors2).length) {
+        return false;
+      }
+      API_POST(
+        COURSEFLOW_APP.config.json_api_paths.create_project,
+        {
+          ...state.fields,
+          objectSets: state.objectSets
+        }
+      ).then((resp) => {
+        window.location.href = resp.redirect;
+      }).catch((error) => setErrors(error.data.errors));
+    }
+    function onDialogClose() {
+      setState({
+        fields: {},
+        objectSets: [],
+        objectSetsExpanded: false
+      });
+      setErrors({});
+      onClose();
+    }
+    function onInputChange(e, field) {
+      if (errors2[field.name]) {
+        setErrors(
+          produce((draft) => {
+            delete draft[field.name];
+          })
+        );
+      }
+      setState(
+        produce((draft) => {
+          const { fields: fields2 } = draft;
+          fields2[e.target.name] = e.target.value;
+        })
+      );
+    }
+    function onObjectSetUpdate({ index, newVal }) {
+      setState(
+        produce((draft) => {
+          const sets = draft.objectSets;
+          if (newVal) {
+            sets.splice(index, 1, newVal);
+          } else {
+            sets.splice(index, 1);
+          }
+        })
+      );
+    }
+    function onObjectSetAddNew() {
+      setState(
+        produce((draft) => {
+          draft.objectSets.push({ type: "", label: "" });
+        })
+      );
+    }
+    function onObjectSetsClick() {
+      setState(
+        produce((draft) => {
+          draft.objectSetsExpanded = !draft.objectSetsExpanded;
+        })
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Create project") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { sx: { mb: 3 }, severity: "warning", title: "TODO - Backend" }),
+        showNoProjectsAlert && /* @__PURE__ */ jsxRuntimeExports.jsx(
+          CFAlert,
+          {
+            sx: { mb: 3 },
+            title: window.gettext("Start by creating a project"),
+            subtitle: window.gettext(
+              "All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow."
+            )
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
+          formFields.map((field, index) => {
+            if (field.type === "text") {
+              const hasError = !!errors2[field.name];
+              const errorText = hasError && errors2[field.name][0];
+              return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                TextField$1,
+                {
+                  name: field.name,
+                  label: field.label,
+                  required: field.required,
+                  value: state.fields[field.name] ?? "",
+                  variant: "standard",
+                  error: hasError,
+                  helperText: errorText,
+                  onChange: (e) => onInputChange(e, field)
+                },
+                index
+              );
+            }
+          }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            ObjectSets,
+            {
+              expanded: state.objectSetsExpanded,
+              toggleExpanded: onObjectSetsClick,
+              sets: state.objectSets,
+              onUpdate: onObjectSetUpdate,
+              onAddNew: onObjectSetAddNew
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onDialogClose, children: COURSEFLOW_APP.strings.cancel }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button$1,
+          {
+            variant: "contained",
+            onClick: onSubmit,
+            disabled: !!Object.keys(errors2).length,
+            children: window.gettext("Create project")
+          }
+        )
+      ] })
+    ] });
+  }
+  function CreateCourseDialog() {
+    const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_COURSE);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Course create dialog" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
+    ] });
+  }
+  function CreateActivityDialog() {
+    const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_ACTIVITY);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Activity dialog" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
+    ] });
+  }
+  const ResetPasswordModal = ({ onSubmit }) => {
+    const { show, onClose } = useDialog(DIALOG_TYPE.RESET_PASSWORD);
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: show,
+        onClose,
+        maxWidth: "xs",
+        "aria-labelledby": "reset-password-modal",
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { id: "reset-password-modal", children: COURSEFLOW_APP.strings.password_reset }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: COURSEFLOW_APP.strings.password_reset_msg }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, children: COURSEFLOW_APP.strings.password_reset })
+          ] })
+        ]
+      }
+    );
+  };
+  const TopBarWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+    "& .MuiPaper-root": {
+      backgroundColor: theme2.palette.common.white,
+      boxShadow: "none"
+    }
+  }));
+  const StyledMenu = styled$1(Menu$2)(({ theme: theme2 }) => ({
+    "& .MuiPaper-root": {
+      minWidth: 220,
+      "& .MuiMenuItem-root": {
+        "& .MuiSvgIcon-root": {
+          marginRight: theme2.spacing(1.5)
+        }
+      }
+    }
+  }));
+  const NotificationsMenu = styled$1(Popover$1)({
+    "& .MuiPaper-root": {
+      marginLeft: "3em",
+      width: 500
+    }
+  });
+  const NotificationsHeader = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: theme2.spacing(2),
+    paddingBottom: theme2.spacing(2),
+    paddingLeft: theme2.spacing(3),
+    paddingRight: theme2.spacing(1),
+    borderBottom: `1px solid ${theme2.palette.divider}`,
+    "& .MuiTypography-root:not(a)": {
+      color: "currentColor"
+    }
+  }));
+  const NotificationsList = styled$1(List$1)(({ theme: theme2 }) => ({
+    paddingTop: 0,
+    paddingBottom: 0,
+    marginBottom: theme2.spacing(1),
+    "& .MuiListItem-root": {
+      padding: 0
+    },
+    "& .MuiListItemButton-root": {
+      paddingTop: theme2.spacing(1.5),
+      paddingBottom: theme2.spacing(1.5),
+      paddingLeft: theme2.spacing(4),
+      borderBottom: `1px solid ${theme2.palette.divider}`
+    },
+    "& .MuiBadge-root": {
+      position: "absolute",
+      left: theme2.spacing(1.7),
+      top: "50%"
+    }
+  }));
+  const TopBar = ({ isTeacher, menus, notifications: notifications2, forms }) => {
+    const { dispatch } = useDialog();
+    const [anchorEl, setAnchorEl] = reactExports.useState(null);
+    const isMenuOpen = Boolean(anchorEl);
+    const [addMenuAnchorEl, setAddMenuAnchorEl] = reactExports.useState(null);
+    const isAddMenuOpen = Boolean(addMenuAnchorEl);
+    const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] = reactExports.useState(null);
+    const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl);
+    const handleMenuOpen = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleAddMenuOpen = (event) => {
+      setAddMenuAnchorEl(event.currentTarget);
+    };
+    const handleNotificationsMenuOpen = (event) => {
+      setNotificationsMenuAnchorEl(event.currentTarget);
+    };
+    const handleLogout = () => [
+      window.location.replace(COURSEFLOW_APP.config.logout_path)
+    ];
+    const closeAllMenus = () => {
+      setAnchorEl(null);
+      setAddMenuAnchorEl(null);
+      setNotificationsMenuAnchorEl(null);
+    };
+    const handleCreateClick = (resourceType) => {
+      closeAllMenus();
+      dispatch(resourceType);
+    };
+    const addMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledMenu,
+      {
+        anchorEl: addMenuAnchorEl,
+        id: "add-menu",
+        keepMounted: true,
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "center"
+        },
+        transformOrigin: {
+          vertical: "top",
+          horizontal: "center"
+        },
+        open: isAddMenuOpen,
+        onClose: closeAllMenus,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_PROJECT), children: COURSEFLOW_APP.strings.project }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_PROGRAM), children: COURSEFLOW_APP.strings.program }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_COURSE), children: COURSEFLOW_APP.strings.course }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => handleCreateClick(DIALOG_TYPE.CREATE_ACTIVITY), children: COURSEFLOW_APP.strings.activity })
+        ]
+      }
+    );
+    const notificationsMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      NotificationsMenu,
+      {
+        anchorEl: notificationsMenuAnchorEl,
+        id: "notifications-menu",
+        keepMounted: true,
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right"
+        },
+        transformOrigin: {
+          vertical: "top",
+          horizontal: "right"
+        },
+        open: isNotificationsMenuOpen,
+        onClose: closeAllMenus,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(NotificationsHeader, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: COURSEFLOW_APP.strings.notifications }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: notifications2.url, underline: "always", children: COURSEFLOW_APP.strings.see_all })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(NotificationsList, { children: notifications2.items.map((n, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            ListItem$1,
+            {
+              alignItems: "flex-start",
+              sx: {
+                backgroundColor: n.unread ? "courseflow.lightest" : null
+              },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { component: "a", href: n.url, children: [
+                n.unread && /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { color: "primary", variant: "dot" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ListItemAvatar$1, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Avatar$1, { alt: n.from, children: getNameInitials(n.from) }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  ListItemText$1,
+                  {
+                    primary: n.date,
+                    secondary: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Typography$1,
+                      {
+                        sx: { display: "inline" },
+                        component: "span",
+                        variant: "body2",
+                        color: "text.primary",
+                        children: n.text
+                      }
+                    )
+                  }
+                )
+              ] })
+            },
+            idx
+          )) })
+        ]
+      }
+    );
+    const accountMenu = /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledMenu,
+      {
+        anchorEl,
+        id: "account-menu",
+        keepMounted: true,
+        anchorOrigin: {
+          vertical: "bottom",
+          horizontal: "right"
+        },
+        transformOrigin: {
+          vertical: "top",
+          horizontal: "right"
+        },
+        open: isMenuOpen,
+        onClose: closeAllMenus,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.profileUrl, children: COURSEFLOW_APP.strings.profile }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { onClick: () => dispatch(DIALOG_TYPE.RESET_PASSWORD), children: COURSEFLOW_APP.strings.password_reset }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { component: "a", href: menus.account.notificationsSettingsUrls, children: COURSEFLOW_APP.strings.notification_settings }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Divider$1, {}),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { component: "a", href: menus.account.daliteUrl, children: [
+            "Go to ",
+            menus.account.daliteText
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}),
+            " ",
+            COURSEFLOW_APP.strings.sign_out
+          ] })
+        ]
+      }
+    );
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(TopBarWrap, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(AppBar$1, { position: "static", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Toolbar$1, { variant: "dense", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { flexGrow: 1 }, className: "title" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Box$1, { sx: { display: "flex" }, children: [
+          isTeacher ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              size: "large",
+              "aria-label": "add menu",
+              "aria-controls": "add-menu",
+              "aria-haspopup": "true",
+              color: "primary",
+              onClick: handleAddMenuOpen,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {})
+            }
+          ) : null,
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              size: "large",
+              "aria-label": notifications2.unread >= 1 ? `show ${notifications2.unread} new notifications` : "no new notifications",
+              "aria-controls": "notifications-menu",
+              "aria-haspopup": "true",
+              onClick: handleNotificationsMenuOpen,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              size: "large",
+              edge: "end",
+              "aria-label": "account of current user",
+              "aria-controls": "account-menu",
+              "aria-haspopup": "true",
+              onClick: handleMenuOpen,
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
+            }
+          )
+        ] })
+      ] }) }),
+      isTeacher && addMenu,
+      notificationsMenu,
+      accountMenu,
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ResetPasswordModal,
+        {
+          onSubmit: () => window.location.href = menus.account.resetPasswordUrl
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        CreateProjectDialog,
+        {
+          showNoProjectsAlert: forms.createProject.showNoProjectsAlert,
+          formFields: forms.createProject.formFields
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProgramDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateCourseDialog, {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateActivityDialog, {})
+    ] });
+  };
   var Home = {};
   var _interopRequireDefault$5 = interopRequireDefaultExports;
   Object.defineProperty(Home, "__esModule", {
@@ -102393,7 +104551,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     ] })
   ] });
   const { notifications, sidebar, topbar } = COURSEFLOW_APP.globalContextData;
-  const Base = ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+  const Base = ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContextProvider, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-wrapper", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { "data-component": "sidebar", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sidebar, { ...sidebar }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "react-portal-left-panel-extra" }),

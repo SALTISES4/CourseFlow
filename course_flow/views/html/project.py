@@ -108,7 +108,7 @@ def myprojects_view(request):
     return render(request, "course_flow/myprojects.html", context)
 
 
-# HTTP FRAGMENT REQUEST
+# HTTP FRAGMENT REQUEST - TODO: Replaced by the Create Project modal
 class ProjectCreateView(
     LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
 ):

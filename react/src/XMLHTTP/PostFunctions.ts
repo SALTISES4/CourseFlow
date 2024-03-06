@@ -14,7 +14,7 @@ All functions for API calls.
 
 import { VERB } from '@cfModule/types/enum'
 
-export function API_POST(url = '', data = {}) {
+export function API_POST<T>(url = '', data = {}): Promise<T> {
   if (!url) {
     return Promise.reject('You need to specify an URL in for API_POST to run.')
   }

@@ -1944,10 +1944,6 @@ table tr.total-row {
   background: #eeeeee;
 }
 
-p {
-  color: #000;
-}
-
 button,
 input[type=submit] {
   border: 2px outset #04ba74;

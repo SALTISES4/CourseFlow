@@ -55,6 +55,7 @@
     "eslint-config-react-app": "^7.0.1",
     "flatpickr": "^4.6.13",
     "html-react-parser": "^5.1.1",
+    "immer": "^10.0.3",
     "jquery": "^3.7.1",
     "jquery-ui": "^1.13.2",
     "js-cookie": "^3.0.5",

@@ -81,6 +81,12 @@ export type TopBarProps = {
       date: string
     }[]
   }
+  forms: {
+    createProject: {
+      showNoProjectsAlert: boolean
+      formFields: any // TODO: add general type declaration for FormFieldsSerializer output
+    }
+  }
   menus: {
     add: {
       projectUrl: string

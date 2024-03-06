@@ -88,6 +88,7 @@ interface GetPaths {
 }
 
 interface JSONAPIPaths {
+  create_project: string
   update_profile: string
   get_notifications_page: string
   update_notifications_settings: string

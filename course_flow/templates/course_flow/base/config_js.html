@@ -99,6 +99,7 @@
 
     // JSON API paths that
     json_api_paths: {
+      create_project: "{% url 'course_flow:json-api-post-create-project' %}",
       update_profile: "{% url 'course_flow:json-api-post-update-profile-settings' %}",
       update_notifications_settings: "{% url 'course_flow:json-api-post-notifications-settings' %}",
       mark_all_notifications_as_read: "{% url 'course_flow:json-api-post-mark-all-notifications-as-read' %}",

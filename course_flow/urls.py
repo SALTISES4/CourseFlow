@@ -114,6 +114,11 @@ def course_flow_patterns():
         ),
         # Register create JSON routes
         path(
+            "json-api-post-create-project/",
+            views.json_api.create.json_api_post_create_project,
+            name="json-api-post-create-project",
+        ),
+        path(
             "json-api-post-update-profile-settings/",
             views.json_api.update.json_api_post_profile_settings,
             name="json-api-post-update-profile-settings",

@@ -18,8 +18,12 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import { getNameInitials } from '@cfModule/utility/utilityFunctions'
-
-import ResetPasswordModal from './components/ResetPasswordModal'
+import CreateProgramModal from '@cfModule/components/common/dialog/CreateProgram'
+import CreateProjectModal from '@cfModule/components/common/dialog/CreateProject'
+import CreateCourseModal from '@cfModule/components/common/dialog/CreateCourse'
+import CreateActivityModal from '@cfModule/components/common/dialog/CreateActivity'
+import ResetPasswordModal from '@cfModule/components/common/dialog/ResetPassword'
+import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 
 import {
   TopBarWrap,
@@ -31,12 +35,8 @@ import {
 import { getTargetProjectMenu } from '@XMLHTTP/API/workflow'
 import { TopBarProps } from '@cfModule/types/common'
 
-// TODO: Extract this into separate component/modal functionality
-// see https://course-flow.atlassian.net/browse/COUR-307
-// supported "add" menu actions
-export type CreateActionType = 'program' | 'activity' | 'course'
-
-export function openCreateActionModal(type: CreateActionType) {
+// TODO: clean up and move into create modals functionality
+function openCreateActionModal(type: 'program' | 'activity' | 'course') {
   const createUrl = COURSEFLOW_APP.config.create_path[type]
   COURSEFLOW_APP.tinyLoader.startLoad()
   getTargetProjectMenu<{ parentID: number }>(
@@ -55,11 +55,10 @@ export function openCreateActionModal(type: CreateActionType) {
   )
 }
 
-const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
+const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
+  const { dispatch } = useDialog()
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
-
-  const [resetPassword, setResetPassword] = useState(false)
 
   const [addMenuAnchorEl, setAddMenuAnchorEl] = useState(null)
   const isAddMenuOpen = Boolean(addMenuAnchorEl)
@@ -90,9 +89,9 @@ const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
     setNotificationsMenuAnchorEl(null)
   }
 
-  const handleCreateClick = (resourceType: CreateActionType) => {
-    openCreateActionModal(resourceType)
+  const handleCreateClick = (resourceType: DIALOG_TYPE) => {
     closeAllMenus()
+    dispatch(resourceType)
   }
 
   const addMenu = (
@@ -111,16 +110,16 @@ const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
       open={isAddMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem component="a" href={menus.add.projectUrl}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_PROJECT)}>
         {COURSEFLOW_APP.strings.project}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick('program')}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_PROGRAM)}>
         {COURSEFLOW_APP.strings.program}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick('course')}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_COURSE)}>
         {COURSEFLOW_APP.strings.course}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick('activity')}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_ACTIVITY)}>
         {COURSEFLOW_APP.strings.activity}
       </MenuItem>
     </StyledMenu>
@@ -204,7 +203,7 @@ const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
       <MenuItem component="a" href={menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
-      <MenuItem onClick={() => setResetPassword(true)}>
+      <MenuItem onClick={() => dispatch(DIALOG_TYPE.RESET_PASSWORD)}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
       <MenuItem component="a" href={menus.account.notificationsSettingsUrls}>
@@ -273,14 +272,15 @@ const TopBar = ({ isTeacher, menus, notifications }: TopBarProps) => {
       {accountMenu}
 
       <ResetPasswordModal
-        show={resetPassword}
-        handleClose={() => {
-          setResetPassword(false)
-        }}
-        handleContinue={() =>
-          (window.location.href = menus.account.resetPasswordUrl)
-        }
+        onSubmit={() => (window.location.href = menus.account.resetPasswordUrl)}
       />
+      <CreateProjectModal
+        showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
+        formFields={forms.createProject.formFields}
+      />
+      <CreateProgramModal />
+      <CreateCourseModal />
+      <CreateActivityModal />
     </TopBarWrap>
   )
 }

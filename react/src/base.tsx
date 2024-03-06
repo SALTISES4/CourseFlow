@@ -6,6 +6,8 @@ import Alert from '@cfCommonComponents/components/Alert'
 import TopBar from '@cfCommonComponents/layout/TopBar'
 import Sidebar from '@cfCommonComponents/layout/Sidebar'
 
+import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
+
 type PropsType = {
   children: ReactNode
 }
@@ -13,7 +15,7 @@ type PropsType = {
 const { notifications, sidebar, topbar } = COURSEFLOW_APP.globalContextData
 
 const Base = ({ children }: PropsType) => (
-  <>
+  <DialogContextProvider>
     <div className="main-wrapper">
       <div data-component="sidebar">
         <Sidebar {...sidebar} />
@@ -54,7 +56,7 @@ const Base = ({ children }: PropsType) => (
     </div>
 
     <div id="popup-container"></div>
-  </>
+  </DialogContextProvider>
 )
 
 export default Base
