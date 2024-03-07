@@ -55,7 +55,7 @@ const fields = {
   ]
 }
 
-function ExportProjectDialog({ data }: { data: EProject }) {
+function ExportProjectDialog({ project }: { project: EProject }) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
@@ -89,8 +89,8 @@ function ExportProjectDialog({ data }: { data: EProject }) {
 
   function onSubmit(e: MouseEvent<HTMLButtonElement>) {
     const postData = {
-      objectID: data.id,
-      objectType: data.type,
+      objectID: project.id,
+      objectType: project.type,
       exportType: state.type,
       exportFormat: state.format,
       objectSets: state.sets
@@ -121,7 +121,7 @@ function ExportProjectDialog({ data }: { data: EProject }) {
     onClose()
   }
 
-  const projectType = data.type
+  const projectType = project.type
 
   return (
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
@@ -176,13 +176,13 @@ function ExportProjectDialog({ data }: { data: EProject }) {
             </RadioGroup>
           </FormControl>
 
-          {data.object_sets.length > 0 && (
+          {project.object_sets.length > 0 && (
             <FormControl>
               <FormLabel id="export-sets-group-label">
                 {window.gettext('Object set visibility')}
               </FormLabel>
               <FormGroup>
-                {data.object_sets.map((set, index) => (
+                {project.object_sets.map((set, index) => (
                   <FormControlLabel
                     key={index}
                     value={set.id}

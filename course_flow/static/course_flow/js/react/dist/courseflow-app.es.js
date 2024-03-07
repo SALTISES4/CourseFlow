@@ -2261,18 +2261,17 @@ function requireReact_production_min() {
   react_production_min.version = "18.2.0";
   return react_production_min;
 }
-var hasRequiredReact;
-function requireReact() {
-  if (hasRequiredReact)
-    return react.exports;
-  hasRequiredReact = 1;
-  if (process.env.NODE_ENV === "production") {
-    react.exports = requireReact_production_min();
-  } else {
-    react.exports = requireReact_development();
-  }
-  return react.exports;
+if (process.env.NODE_ENV === "production") {
+  react.exports = requireReact_production_min();
+} else {
+  react.exports = requireReact_development();
 }
+var reactExports = react.exports;
+const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
+const React$2 = /* @__PURE__ */ _mergeNamespaces({
+  __proto__: null,
+  default: React$1
+}, [reactExports]);
 /**
  * @license React
  * react-jsx-runtime.development.js
@@ -2289,7 +2288,7 @@ function requireReactJsxRuntime_development() {
   hasRequiredReactJsxRuntime_development = 1;
   if (process.env.NODE_ENV !== "production") {
     (function() {
-      var React2 = requireReact();
+      var React2 = reactExports;
       var REACT_ELEMENT_TYPE = Symbol.for("react.element");
       var REACT_PORTAL_TYPE = Symbol.for("react.portal");
       var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
@@ -3174,7 +3173,7 @@ function requireReactJsxRuntime_production_min() {
   if (hasRequiredReactJsxRuntime_production_min)
     return reactJsxRuntime_production_min;
   hasRequiredReactJsxRuntime_production_min = 1;
-  var f = requireReact(), k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
+  var f = reactExports, k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
   function q(c, a, g) {
     var b, d = {}, e = null, h = null;
     void 0 !== g && (e = "" + g);
@@ -3949,7 +3948,7 @@ function requireReactDom_development() {
       if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
         __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
       }
-      var React2 = requireReact();
+      var React2 = reactExports;
       var Scheduler = requireScheduler();
       var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
       var suppressWarning = false;
@@ -25042,7 +25041,7 @@ function requireReactDom_production_min() {
   if (hasRequiredReactDom_production_min)
     return reactDom_production_min;
   hasRequiredReactDom_production_min = 1;
-  var aa = requireReact(), ca = requireScheduler();
+  var aa = reactExports, ca = requireScheduler();
   function p(a) {
     for (var b = "https://reactjs.org/docs/error-decoder.html?invariant=" + a, c = 1; c < arguments.length; c++)
       b += "&args[]=" + encodeURIComponent(arguments[c]);
@@ -32361,12 +32360,6 @@ var VERB = /* @__PURE__ */ ((VERB2) => {
   VERB2["ERROR"] = "error";
   return VERB2;
 })(VERB || {});
-var reactExports = requireReact();
-const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
-const React$2 = /* @__PURE__ */ _mergeNamespaces({
-  __proto__: null,
-  default: React$1
-}, [reactExports]);
 var shim = { exports: {} };
 var useSyncExternalStoreShim_development = {};
 /**
@@ -32388,7 +32381,7 @@ function requireUseSyncExternalStoreShim_development() {
       if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
         __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
       }
-      var React2 = requireReact();
+      var React2 = reactExports;
       var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
       function error(format2) {
         {
@@ -32514,7 +32507,7 @@ function requireUseSyncExternalStoreShim_production_min() {
   if (hasRequiredUseSyncExternalStoreShim_production_min)
     return useSyncExternalStoreShim_production_min;
   hasRequiredUseSyncExternalStoreShim_production_min = 1;
-  var e = requireReact();
+  var e = reactExports;
   function h(a, b) {
     return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
   }
@@ -32578,7 +32571,7 @@ function requireWithSelector_development() {
       if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
         __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
       }
-      var React2 = requireReact();
+      var React2 = reactExports;
       var shim2 = shimExports;
       function is2(x, y) {
         return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
@@ -32672,7 +32665,7 @@ function requireWithSelector_production_min() {
   if (hasRequiredWithSelector_production_min)
     return withSelector_production_min;
   hasRequiredWithSelector_production_min = 1;
-  var h = requireReact(), n = shimExports;
+  var h = reactExports, n = shimExports;
   function p(a, b) {
     return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
   }
@@ -99552,7 +99545,7 @@ const Header = ({
   allDisciplines,
   description,
   disciplines,
-  data,
+  project,
   users,
   readOnly,
   openShareDialog
@@ -99563,7 +99556,7 @@ const Header = ({
     /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowTitle,
       {
-        data,
+        data: project,
         no_hyperlink: true,
         class_name: "project-title"
       }
@@ -100122,7 +100115,7 @@ const fields = {
     { value: "csv", label: "CSV" }
   ]
 };
-function ExportProjectDialog({ data }) {
+function ExportProjectDialog({ project }) {
   const [state, setState] = reactExports.useState({
     type: "outcome",
     format: "excel",
@@ -100150,8 +100143,8 @@ function ExportProjectDialog({ data }) {
   }
   function onSubmit(e) {
     const postData = {
-      objectID: data.id,
-      objectType: data.type,
+      objectID: project.id,
+      objectType: project.type,
       exportType: state.type,
       exportFormat: state.format,
       objectSets: state.sets
@@ -100172,7 +100165,7 @@ function ExportProjectDialog({ data }) {
     );
     onClose();
   }
-  const projectType = data.type;
+  const projectType = project.type;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext(`Export ${projectType}`) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
@@ -100221,9 +100214,9 @@ function ExportProjectDialog({ data }) {
           }
         )
       ] }),
-      data.object_sets.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
+      project.object_sets.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-sets-group-label", children: window.gettext("Object set visibility") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(FormGroup$1, { children: data.object_sets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        /* @__PURE__ */ jsxRuntimeExports.jsx(FormGroup$1, { children: project.object_sets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
           FormControlLabel$1,
           {
             value: set2.id,
@@ -100266,14 +100259,14 @@ const ArchiveProjectModal = ({ onSubmit }) => {
   );
 };
 function ProjectMenu({
-  data,
+  project,
   userId,
   projectPaths,
   allDisciplines,
   readOnly
 }) {
   const [state, setState] = reactExports.useState({
-    data,
+    project,
     view_type: "workflows",
     users: null,
     workflow_data: [],
@@ -100283,30 +100276,30 @@ function ProjectMenu({
   const { dispatch } = useDialog();
   const createDiv = reactExports.useRef();
   const getUserData = reactExports.useCallback(() => {
-    getUsersForObjectQuery(data.id, data.type, (data2) => {
+    getUsersForObjectQuery(project.id, project.type, (data) => {
       setState(
         produce((draft) => {
-          draft.users = data2;
+          draft.users = data;
         })
       );
     });
-  }, [data.id, data.type]);
+  }, [project.id, project.type]);
   reactExports.useEffect(() => {
-    getWorkflowsForProjectQuery(data.id, (data2) => {
+    getWorkflowsForProjectQuery(project.id, (data) => {
       setState(
         produce((draft) => {
-          draft.workflow_data = data2.data_package;
+          draft.workflow_data = data.data_package;
         })
       );
     });
     getUserData();
     COURSEFLOW_APP.makeDropdown($(createDiv.current));
-  }, [data.id, createDiv, getUserData]);
+  }, [project.id, createDiv, getUserData]);
   function deleteProject() {
-    deleteSelfQuery(data.id, "project", true, () => {
+    deleteSelfQuery(project.id, "project", true, () => {
       setState(
         produce((draft) => {
-          draft.data.deleted = true;
+          draft.project.deleted = true;
         })
       );
     });
@@ -100317,16 +100310,16 @@ function ProjectMenu({
         "Are you sure you want to permanently delete this project?"
       )
     )) {
-      deleteSelfQuery(data.id, "project", false, () => {
+      deleteSelfQuery(project.id, "project", false, () => {
         window.location.href = COURSEFLOW_APP.config.home_path;
       });
     }
   }
   function restoreProject() {
-    restoreSelfQuery(data.id, "project", () => {
+    restoreSelfQuery(project.id, "project", () => {
       setState(
         produce((draft) => {
-          draft.data.deleted = false;
+          draft.project.deleted = false;
         })
       );
     });
@@ -100370,8 +100363,8 @@ function ProjectMenu({
   function updateFunction(new_data) {
     setState(
       produce((draft) => {
-        draft.data = {
-          ...draft.data,
+        draft.project = {
+          ...draft.project,
           ...new_data
         };
         draft.openEditDialog = false;
@@ -100379,7 +100372,7 @@ function ProjectMenu({
     );
   }
   const DeleteProjectButton = () => {
-    if (!state.data.deleted) {
+    if (!state.project.deleted) {
       return /* @__PURE__ */ jsxRuntimeExports.jsx(
         "div",
         {
@@ -100419,8 +100412,8 @@ function ProjectMenu({
             const loader = COURSEFLOW_APP.tinyLoader;
             loader.startLoad();
             duplicateBaseItemQuery(
-              data.id,
-              data.type,
+              project.id,
+              project.type,
               null,
               (response_data) => {
                 loader.endLoad();
@@ -100435,7 +100428,7 @@ function ProjectMenu({
     return null;
   };
   const OverflowLinks = () => {
-    const { data: data2 } = state;
+    const { project: project2 } = state;
     const overflow_links = [];
     overflow_links.push(
       /* @__PURE__ */ jsxRuntimeExports.jsx("a", { id: "comparison-view", className: "hover-shade", href: "comparison", children: window.gettext("Workflow comparison tool") })
@@ -100443,7 +100436,7 @@ function ProjectMenu({
     overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
     overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(ExportButton, {}));
     overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(CopyButton, {}));
-    if (data2.author_id === userId) {
+    if (project2.author_id === userId) {
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(DeleteProjectButton, {}));
     }
@@ -100536,7 +100529,7 @@ function ProjectMenu({
       WorkflowFilter,
       {
         read_only: readOnly,
-        project_data: state.data,
+        project_data: state.project,
         workflows: state.workflow_data,
         updateWorkflow,
         context: "project"
@@ -100549,7 +100542,7 @@ function ProjectMenu({
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         ShareMenu,
         {
-          data: state.data,
+          data: state.project,
           actionFunction: () => {
             setState(
               produce((draft) => {
@@ -100568,7 +100561,7 @@ function ProjectMenu({
       {
         type: "project_edit_menu",
         data: {
-          ...state.data,
+          ...state.project,
           all_disciplines: allDisciplines
           // renderer: renderer
         },
@@ -100589,10 +100582,10 @@ function ProjectMenu({
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         Header,
         {
-          disciplines: state.data.disciplines,
-          description: state.data.description,
+          disciplines: state.project.disciplines,
+          description: state.project.description,
           allDisciplines,
-          data: state.data,
+          project: state.project,
           users: state.users,
           openShareDialog,
           readOnly
@@ -100602,7 +100595,7 @@ function ProjectMenu({
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(EditDialog, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ShareDialog, {}),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(ExportProjectDialog, { data: state.data }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ExportProjectDialog, { project: state.project }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ArchiveProjectModal, { onSubmit: deleteProject })
   ] });
 }
@@ -100630,7 +100623,7 @@ class ProjectPage extends reactExports.Component {
         projectPaths: this.projectPaths,
         allDisciplines: this.allDisciplines,
         readOnly: this.readOnly,
-        data: this.projectData,
+        project: this.projectData,
         userId: this.userId
       }
     );
@@ -103423,7 +103416,7 @@ cjs$1.default = StyleToJS;
   };
   Object.defineProperty(exports, "__esModule", { value: true });
   exports.returnFirstArg = exports.canTextBeChildOfNode = exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = exports.PRESERVE_CUSTOM_ATTRIBUTES = exports.setStyleProp = exports.isCustomComponent = void 0;
-  var react_12 = requireReact();
+  var react_12 = reactExports;
   var style_to_js_1 = __importDefault2(cjs$1);
   var RESERVED_SVG_MATHML_ELEMENTS = /* @__PURE__ */ new Set([
     "annotation-xml",
@@ -103541,7 +103534,7 @@ var __importDefault = commonjsGlobal && commonjsGlobal.__importDefault || functi
   return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
 };
 Object.defineProperty(domToReact$1, "__esModule", { value: true });
-var react_1 = requireReact();
+var react_1 = reactExports;
 var attributes_to_props_1 = __importDefault(attributesToProps$1);
 var utilities_1 = utilities$1;
 var React = {
