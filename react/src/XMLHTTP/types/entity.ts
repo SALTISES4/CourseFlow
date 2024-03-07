@@ -114,10 +114,11 @@ export type EProject = {
   id: number
   last_modified: string
   object_permission: ObjectPermission
-  object_sets: any[]
+  object_sets: { id: number; title: string }[]
   published: boolean
   title: string
-  type: string
+  // TODO: identify these really are the types / convert to enum?
+  type: 'project' | 'program' | 'course' | 'activity'
   workflowproject_set: number[]
 }
 

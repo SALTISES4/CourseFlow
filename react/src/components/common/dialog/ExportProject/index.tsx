@@ -14,30 +14,7 @@ import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '..'
 import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
-
-type PropsType = {
-  data: {
-    id: number
-    title: string
-    description: string
-    type: 'project' | 'program' | 'course' | 'activity'
-    author: string
-    author_id: number
-    workflowproject_set: number[]
-    disciplines: any[]
-    object_sets: { id: number; title: string }[]
-    object_permission: {
-      permission_type: number
-      last_viewed: string
-    }
-    deleted: boolean
-    published: boolean
-    favourite: boolean
-    created_on: string
-    deleted_on: string
-    last_modified: string
-  }
-}
+import { EProject } from '@cfModule/XMLHTTP/types/entity'
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -78,7 +55,7 @@ const fields = {
   ]
 }
 
-function ExportProjectDialog({ data }: PropsType) {
+function ExportProjectDialog({ data }: { data: EProject }) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
