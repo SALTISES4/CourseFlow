@@ -4,6 +4,7 @@ import { DialogDispatchContext, DialogContext } from './context'
 export enum DIALOG_TYPE {
   CREATE_PROGRAM = 'create_program',
   CREATE_PROJECT = 'create_project',
+  EDIT_PROJECT = 'edit_project',
   CREATE_ACTIVITY = 'create_activity',
   CREATE_COURSE = 'create_course',
   RESET_PASSWORD = 'reset_password',

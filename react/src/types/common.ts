@@ -84,7 +84,8 @@ export type TopBarProps = {
   forms: {
     createProject: {
       showNoProjectsAlert: boolean
-      formFields: any // TODO: add general type declaration for FormFieldsSerializer output
+      disciplines: Discipline[]
+      formFields: FormFieldSerialized[]
     }
   }
   menus: {
@@ -99,6 +100,17 @@ export type TopBarProps = {
       daliteText: string
     }
   }
+}
+
+export type FormFieldSerialized = {
+  name: string
+  label?: string
+  type: string
+  required?: boolean
+  options?: string
+  max_length?: number
+  help_text?: string
+  value?: string
 }
 
 export type EventUnion =

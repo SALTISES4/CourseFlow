@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.db.models import Q
 
 from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.discipline import Discipline
 from course_flow.models.updateNotification import UpdateNotification
 from course_flow.serializers import (
     FavouriteSerializer,
@@ -15,7 +16,10 @@ from course_flow.serializers import (
 )
 
 from course_flow.forms import CreateProject
-from course_flow.serializers import FormFieldsSerializer
+from course_flow.serializers import (
+    DisciplineSerializer,
+    FormFieldsSerializer,
+)
 
 from course_flow.templatetags.course_flow_templatetags import (
     course_flow_password_change_url,
@@ -104,6 +108,10 @@ def get_topbar(request: HttpRequest):
                 }
             )
 
+        disciplines = DisciplineSerializer(
+            Discipline.objects.order_by("title"), many=True
+        ).data
+
         form = CreateProject(
             {
                 "title": "New project name",
@@ -121,9 +129,10 @@ def get_topbar(request: HttpRequest):
             },
             "forms": {
                 "createProject": {
-                    # TODO: count the number of current user's projects
+                    # TODO: replace with the count of user's own projects
                     "showNoProjectsAlert": True,
-                    "formFields": FormFieldsSerializer(form).prepare_fields()
+                    "formFields": FormFieldsSerializer(form).prepare_fields(),
+                    "disciplines": disciplines,
                 }
             },
             "menus": {

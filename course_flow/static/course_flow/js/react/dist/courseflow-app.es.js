@@ -100053,6 +100053,7 @@ function DialogContextProvider({ children }) {
 var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
   DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
   DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
+  DIALOG_TYPE2["EDIT_PROJECT"] = "edit_project";
   DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
   DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
   DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
@@ -104260,7 +104261,8 @@ const TopBar = ({ isTeacher, menus, notifications: notifications2, forms }) => {
       CreateProjectDialog,
       {
         showNoProjectsAlert: forms.createProject.showNoProjectsAlert,
-        formFields: forms.createProject.formFields
+        formFields: forms.createProject.formFields,
+        disciplines: forms.createProject.disciplines
       }
     ),
     /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProgramDialog, {}),
