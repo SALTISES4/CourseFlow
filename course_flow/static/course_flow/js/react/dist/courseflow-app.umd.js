@@ -98434,9 +98434,230 @@ Please use another name.` : formatMuiErrorMessage(18));
     paddingTop: theme2.spacing(1),
     borderTop: "1px solid rgba(0, 0, 0, 0.12)"
   }));
-  const Styleguide = () => {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(OuterContentWrap, { children: /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { children: "Courseflow Styleguide" }) });
+  const SectionWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
+    marginBottom: theme2.spacing(6)
+  }));
+  const SectionHeader = styled$1("header")(({ theme: theme2 }) => ({
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: theme2.spacing(3),
+    ".MuiTypography-h5": {
+      color: "currentColor"
+    },
+    ".MuiLink-root": {
+      marginLeft: "auto"
+    }
+  }));
+  const Section = ({ header, children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SectionWrap, { children: [
+    header && /* @__PURE__ */ jsxRuntimeExports.jsxs(SectionHeader, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: window.gettext(header.title) }),
+      header.seeAll && /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: header.seeAll.href, children: window.gettext(header.seeAll.text || "See all") })
+    ] }),
+    children
+  ] });
+  const defaultState = {
+    type: null
   };
+  function stateReducer(state, action) {
+    return {
+      type: action
+    };
+  }
+  const DialogContext = reactExports.createContext(defaultState);
+  const DialogDispatchContext = reactExports.createContext(null);
+  function DialogContextProvider({ children }) {
+    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
+  }
+  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
+    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
+    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
+    DIALOG_TYPE2["EDIT_PROJECT"] = "edit_project";
+    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
+    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
+    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
+    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
+    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
+    return DIALOG_TYPE2;
+  })(DIALOG_TYPE || {});
+  function useDialog(dialogType = null) {
+    const dialogContext = reactExports.useContext(DialogContext);
+    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
+    if (!dialogType) {
+      return {
+        dispatch: dialogDispatch
+      };
+    }
+    return {
+      show: dialogContext.type === dialogType,
+      onClose: () => dialogDispatch(null),
+      dispatch: dialogDispatch
+    };
+  }
+  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
+    "& .MuiDialogContent-root": {
+      padding: theme2.spacing(3)
+    },
+    "& .MuiDialogActions-root": {
+      padding: theme2.spacing(1)
+    }
+  }));
+  const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "flex",
+    flexDirection: "column",
+    gap: theme2.spacing(3),
+    "& > *": {
+      flexGrow: 1
+    }
+  }));
+  var ExpandMore = {};
+  var _interopRequireDefault$d = interopRequireDefaultExports;
+  Object.defineProperty(ExpandMore, "__esModule", {
+    value: true
+  });
+  var default_1$d = ExpandMore.default = void 0;
+  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+  var _jsxRuntime$d = jsxRuntimeExports;
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+    d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+  }), "ExpandMore");
+  default_1$d = ExpandMore.default = _default$d;
+  var Delete = {};
+  var _interopRequireDefault$c = interopRequireDefaultExports;
+  Object.defineProperty(Delete, "__esModule", {
+    value: true
+  });
+  var default_1$c = Delete.default = void 0;
+  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+  var _jsxRuntime$c = jsxRuntimeExports;
+  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+  }), "Delete");
+  default_1$c = Delete.default = _default$c;
+  var AddCircle = {};
+  var _interopRequireDefault$b = interopRequireDefaultExports;
+  Object.defineProperty(AddCircle, "__esModule", {
+    value: true
+  });
+  var default_1$b = AddCircle.default = void 0;
+  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
+  var _jsxRuntime$b = jsxRuntimeExports;
+  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
+  }), "AddCircle");
+  default_1$b = AddCircle.default = _default$b;
+  const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
+    "&.MuiPaper-root": {
+      boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
+      borderRadius: theme2.shape.borderRadius,
+      border: 0,
+      "&::before": {
+        content: "none"
+      }
+    },
+    "&.Mui-expanded": {
+      marginTop: 0,
+      ".MuiAccordionSummary-root": {
+        minHeight: "auto"
+      },
+      ".MuiAccordionSummary-content": {
+        margin: "12px 0"
+      }
+    }
+  }));
+  const AdvancedLabel = styled$1(Chip$1)(({ theme: theme2 }) => ({
+    height: "22px",
+    border: 0,
+    borderRadius: theme2.shape.borderRadius,
+    alignSelf: "center",
+    backgroundColor: "rgb(229, 246, 253)",
+    color: "rgb(1, 67, 97)",
+    fontWeight: 600
+  }));
+  function ObjectSets({
+    expanded,
+    toggleExpanded,
+    sets,
+    onAddNew,
+    onUpdate
+  }) {
+    const objectSets = sets.length ? sets : [{ type: "", label: "" }];
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledAccordion, { expanded, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AccordionSummary$1,
+        {
+          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}),
+          onClick: toggleExpanded,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { children: window.gettext("Object sets") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              AdvancedLabel,
+              {
+                label: window.gettext("Advanced feature"),
+                variant: "filled"
+              }
+            )
+          ] })
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionDetails$1, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "body2", sx: { mb: 2, color: "text.secondary" }, children: window.gettext(
+          "Define categories for types outcomes or streams of nodes for your project."
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(StyledForm, { children: objectSets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Select$1,
+              {
+                value: set2.type,
+                onChange: (event) => onUpdate({
+                  index,
+                  newVal: {
+                    type: event.target.value,
+                    label: set2.label
+                  }
+                }),
+                label: "Type",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "outcome", children: "Project outcome" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "something", children: "Something" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "else", children: "Entirely else" })
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            TextField$1,
+            {
+              label: window.gettext("Label"),
+              value: set2.label,
+              variant: "standard",
+              onChange: (event) => {
+                onUpdate({
+                  index,
+                  newVal: {
+                    type: set2.type,
+                    label: event.target.value
+                  }
+                });
+              },
+              fullWidth: true
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              onClick: () => onUpdate({
+                index
+              }),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+            }
+          ) })
+        ] }, index)) })
+      ] })
+    ] });
+  }
   var NOTHING = Symbol.for("immer-nothing");
   var DRAFTABLE = Symbol.for("immer-draftable");
   var DRAFT_STATE = Symbol.for("immer-state");
@@ -99103,6 +99324,176 @@ Please use another name.` : formatMuiErrorMessage(18));
   immer.applyPatches.bind(immer);
   immer.createDraft.bind(immer);
   immer.finishDraft.bind(immer);
+  function EditProjectDialog({ formFields }) {
+    const [state, setState] = reactExports.useState({
+      fields: {},
+      objectSets: [],
+      objectSetsExpanded: false
+    });
+    const [errors2, setErrors] = reactExports.useState({});
+    const { show, onClose } = useDialog(DIALOG_TYPE.EDIT_PROJECT);
+    function onSubmit() {
+      if (Object.keys(errors2).length) {
+        return false;
+      }
+      console.log("posting with", state);
+    }
+    function onDialogClose() {
+      setState({
+        fields: {},
+        objectSets: [],
+        objectSetsExpanded: false
+      });
+      setErrors({});
+      onClose();
+    }
+    function onInputChange(e, field) {
+      if (errors2[field.name]) {
+        setErrors(
+          produce((draft) => {
+            delete draft[field.name];
+          })
+        );
+      }
+      setState(
+        produce((draft) => {
+          const { fields: fields2 } = draft;
+          fields2[e.target.name] = e.target.value;
+        })
+      );
+    }
+    function onObjectSetUpdate({ index, newVal }) {
+      setState(
+        produce((draft) => {
+          const sets = draft.objectSets;
+          if (newVal) {
+            sets.splice(index, 1, newVal);
+          } else {
+            sets.splice(index, 1);
+          }
+        })
+      );
+    }
+    function onObjectSetAddNew() {
+      setState(
+        produce((draft) => {
+          draft.objectSets.push({ type: "", label: "" });
+        })
+      );
+    }
+    function onObjectSetsClick() {
+      setState(
+        produce((draft) => {
+          draft.objectSetsExpanded = !draft.objectSetsExpanded;
+        })
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Edit project") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
+        formFields.map((field, index) => {
+          if (field.type === "text") {
+            const hasError = !!errors2[field.name];
+            const errorText = hasError && errors2[field.name][0];
+            return /* @__PURE__ */ jsxRuntimeExports.jsx(
+              TextField$1,
+              {
+                name: field.name,
+                label: field.label,
+                required: field.required,
+                value: state.fields[field.name] ?? "",
+                variant: "standard",
+                error: hasError,
+                helperText: errorText,
+                onChange: (e) => onInputChange(e, field)
+              },
+              index
+            );
+          }
+        }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          ObjectSets,
+          {
+            expanded: state.objectSetsExpanded,
+            toggleExpanded: onObjectSetsClick,
+            sets: state.objectSets,
+            onUpdate: onObjectSetUpdate,
+            onAddNew: onObjectSetAddNew
+          }
+        )
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onDialogClose, children: COURSEFLOW_APP.strings.cancel }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button$1,
+          {
+            variant: "contained",
+            onClick: onSubmit,
+            disabled: !!Object.keys(errors2).length,
+            children: window.gettext("Save project")
+          }
+        )
+      ] })
+    ] });
+  }
+  const editProjectData = {
+    disciplines: [
+      {
+        id: 1,
+        title: "Biology"
+      },
+      {
+        id: 2,
+        title: "Chemistry"
+      },
+      {
+        id: 3,
+        title: "Test discipline"
+      },
+      {
+        id: 4,
+        title: "Something"
+      },
+      {
+        id: 5,
+        title: "Else"
+      }
+    ],
+    formFields: [
+      {
+        name: "title",
+        label: "Title",
+        type: "text",
+        value: "Project title goes here"
+      },
+      {
+        name: "descritpion",
+        label: "Description",
+        type: "text",
+        value: "harder bring section memory put most steam habit structure ill lion bone driving yard equipment popular poor progress cell any full height lamp stay"
+      }
+    ]
+  };
+  const SectionDialogs = () => {
+    const { dispatch } = useDialog();
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Section, { header: { title: "Dialogs" }, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        Button$1,
+        {
+          variant: "contained",
+          onClick: () => dispatch(DIALOG_TYPE.EDIT_PROJECT),
+          children: "Open Edit Project dialog"
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(EditProjectDialog, { ...editProjectData })
+    ] });
+  };
+  const Styleguide = () => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(OuterContentWrap, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { children: "Courseflow Styleguide" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(SectionDialogs, {})
+    ] });
+  };
   class WorkflowCardCondensed extends WorkflowCard {
     constructor() {
       super(...arguments);
@@ -99901,17 +100292,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }
   var Campaign = {};
-  var _interopRequireDefault$d = interopRequireDefaultExports;
+  var _interopRequireDefault$a = interopRequireDefaultExports;
   Object.defineProperty(Campaign, "__esModule", {
     value: true
   });
-  var default_1$d = Campaign.default = void 0;
-  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-  var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+  var default_1$a = Campaign.default = void 0;
+  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+  var _jsxRuntime$a = jsxRuntimeExports;
+  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
     d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
   }), "Campaign");
-  default_1$d = Campaign.default = _default$d;
+  default_1$a = Campaign.default = _default$a;
   /*! js-cookie v3.0.5 | MIT */
   function assign(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
@@ -100040,7 +100431,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       Alert$1,
       {
         severity: isUpdateAnnouncement ? "info" : severity,
-        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : null,
+        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) : null,
         sx,
         onClose: hideIfCookie && handleClose,
         children: [
@@ -100050,61 +100441,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     );
   };
-  const defaultState = {
-    type: null
-  };
-  function stateReducer(state, action) {
-    return {
-      type: action
-    };
-  }
-  const DialogContext = reactExports.createContext(defaultState);
-  const DialogDispatchContext = reactExports.createContext(null);
-  function DialogContextProvider({ children }) {
-    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
-  }
-  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
-    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
-    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
-    DIALOG_TYPE2["EDIT_PROJECT"] = "edit_project";
-    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
-    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
-    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
-    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
-    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
-    return DIALOG_TYPE2;
-  })(DIALOG_TYPE || {});
-  function useDialog(dialogType = null) {
-    const dialogContext = reactExports.useContext(DialogContext);
-    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
-    if (!dialogType) {
-      return {
-        dispatch: dialogDispatch
-      };
-    }
-    return {
-      show: dialogContext.type === dialogType,
-      onClose: () => dialogDispatch(null),
-      dispatch: dialogDispatch
-    };
-  }
-  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
-    "& .MuiDialogContent-root": {
-      padding: theme2.spacing(3)
-    },
-    "& .MuiDialogActions-root": {
-      padding: theme2.spacing(1)
-    }
-  }));
-  const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
-    display: "flex",
-    flexDirection: "column",
-    gap: theme2.spacing(3),
-    "& > *": {
-      flexGrow: 1
-    }
-  }));
   const fields = {
     type: [
       { value: "outcome", label: "Outcomes" },
@@ -100790,17 +101126,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }
   var Close = {};
-  var _interopRequireDefault$c = interopRequireDefaultExports;
+  var _interopRequireDefault$9 = interopRequireDefaultExports;
   Object.defineProperty(Close, "__esModule", {
     value: true
   });
-  var default_1$c = Close.default = void 0;
-  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
-  var _jsxRuntime$c = jsxRuntimeExports;
-  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+  var default_1$9 = Close.default = void 0;
+  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+  var _jsxRuntime$9 = jsxRuntimeExports;
+  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
     d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  default_1$c = Close.default = _default$c;
+  default_1$9 = Close.default = _default$9;
   const Wrap = styled$1(Box$1)(({ theme: theme2 }) => ({
     position: "relative",
     padding: `${theme2.spacing(6)} ${theme2.spacing(4)}`,
@@ -100831,7 +101167,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return null;
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Wrap, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h4", children: window.gettext("Welcome to CourseFlow") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { sx: { mt: 2 }, children: window.gettext(
         "Tell us a bit more about your goals so that we can help you get started."
@@ -100864,27 +101200,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] })
     ] });
   };
-  const SectionWrap = styled$1(Box$1)(({ theme: theme2 }) => ({
-    marginBottom: theme2.spacing(6)
-  }));
-  const SectionHeader = styled$1("header")(({ theme: theme2 }) => ({
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: theme2.spacing(3),
-    ".MuiTypography-h5": {
-      color: "currentColor"
-    },
-    ".MuiLink-root": {
-      marginLeft: "auto"
-    }
-  }));
-  const Section = ({ header, children }) => /* @__PURE__ */ jsxRuntimeExports.jsxs(SectionWrap, { children: [
-    header && /* @__PURE__ */ jsxRuntimeExports.jsxs(SectionHeader, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h5", children: window.gettext(header.title) }),
-      header.seeAll && /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { href: header.seeAll.href, children: window.gettext(header.seeAll.text || "See all") })
-    ] }),
-    children
-  ] });
   const Home$1 = ({ isTeacher, projects, templates }) => {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(OuterContentWrap, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Welcome, { hide: !!projects.length }),
@@ -103667,194 +103982,46 @@ Please use another name.` : formatMuiErrorMessage(18));
   const HTMLReactParser = /* @__PURE__ */ getDefaultExportFromCjs(lib$3);
   const HtmlReactParser = HTMLReactParser.default || HTMLReactParser;
   var AccountCircle = {};
-  var _interopRequireDefault$b = interopRequireDefaultExports;
+  var _interopRequireDefault$8 = interopRequireDefaultExports;
   Object.defineProperty(AccountCircle, "__esModule", {
     value: true
   });
-  var default_1$b = AccountCircle.default = void 0;
-  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-  var _jsxRuntime$b = jsxRuntimeExports;
-  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
-  }), "AccountCircle");
-  default_1$b = AccountCircle.default = _default$b;
-  var Logout = {};
-  var _interopRequireDefault$a = interopRequireDefaultExports;
-  Object.defineProperty(Logout, "__esModule", {
-    value: true
-  });
-  var default_1$a = Logout.default = void 0;
-  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-  var _jsxRuntime$a = jsxRuntimeExports;
-  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
-    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
-  }), "Logout");
-  default_1$a = Logout.default = _default$a;
-  var Notifications = {};
-  var _interopRequireDefault$9 = interopRequireDefaultExports;
-  Object.defineProperty(Notifications, "__esModule", {
-    value: true
-  });
-  var default_1$9 = Notifications.default = void 0;
-  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-  var _jsxRuntime$9 = jsxRuntimeExports;
-  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
-    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
-  }), "Notifications");
-  default_1$9 = Notifications.default = _default$9;
-  var AddCircle = {};
-  var _interopRequireDefault$8 = interopRequireDefaultExports;
-  Object.defineProperty(AddCircle, "__esModule", {
-    value: true
-  });
-  var default_1$8 = AddCircle.default = void 0;
+  var default_1$8 = AccountCircle.default = void 0;
   var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
   var _jsxRuntime$8 = jsxRuntimeExports;
   var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
-  }), "AddCircle");
-  default_1$8 = AddCircle.default = _default$8;
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
+  }), "AccountCircle");
+  default_1$8 = AccountCircle.default = _default$8;
+  var Logout = {};
+  var _interopRequireDefault$7 = interopRequireDefaultExports;
+  Object.defineProperty(Logout, "__esModule", {
+    value: true
+  });
+  var default_1$7 = Logout.default = void 0;
+  var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
+  var _jsxRuntime$7 = jsxRuntimeExports;
+  var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
+    d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+  }), "Logout");
+  default_1$7 = Logout.default = _default$7;
+  var Notifications = {};
+  var _interopRequireDefault$6 = interopRequireDefaultExports;
+  Object.defineProperty(Notifications, "__esModule", {
+    value: true
+  });
+  var default_1$6 = Notifications.default = void 0;
+  var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
+  var _jsxRuntime$6 = jsxRuntimeExports;
+  var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
+    d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
+  }), "Notifications");
+  default_1$6 = Notifications.default = _default$6;
   function CreateProgramDialog() {
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROGRAM);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Hello from the Program create dialog" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
-    ] });
-  }
-  var ExpandMore = {};
-  var _interopRequireDefault$7 = interopRequireDefaultExports;
-  Object.defineProperty(ExpandMore, "__esModule", {
-    value: true
-  });
-  var default_1$7 = ExpandMore.default = void 0;
-  var _createSvgIcon$7 = _interopRequireDefault$7(requireCreateSvgIcon());
-  var _jsxRuntime$7 = jsxRuntimeExports;
-  var _default$7 = (0, _createSvgIcon$7.default)(/* @__PURE__ */ (0, _jsxRuntime$7.jsx)("path", {
-    d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-  }), "ExpandMore");
-  default_1$7 = ExpandMore.default = _default$7;
-  var Delete = {};
-  var _interopRequireDefault$6 = interopRequireDefaultExports;
-  Object.defineProperty(Delete, "__esModule", {
-    value: true
-  });
-  var default_1$6 = Delete.default = void 0;
-  var _createSvgIcon$6 = _interopRequireDefault$6(requireCreateSvgIcon());
-  var _jsxRuntime$6 = jsxRuntimeExports;
-  var _default$6 = (0, _createSvgIcon$6.default)(/* @__PURE__ */ (0, _jsxRuntime$6.jsx)("path", {
-    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-  }), "Delete");
-  default_1$6 = Delete.default = _default$6;
-  const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
-    "&.MuiPaper-root": {
-      boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
-      borderRadius: theme2.shape.borderRadius,
-      border: 0,
-      "&::before": {
-        content: "none"
-      }
-    },
-    "&.Mui-expanded": {
-      marginTop: 0,
-      ".MuiAccordionSummary-root": {
-        minHeight: "auto"
-      },
-      ".MuiAccordionSummary-content": {
-        margin: "12px 0"
-      }
-    }
-  }));
-  const AdvancedLabel = styled$1(Chip$1)(({ theme: theme2 }) => ({
-    height: "22px",
-    border: 0,
-    borderRadius: theme2.shape.borderRadius,
-    alignSelf: "center",
-    backgroundColor: "rgb(229, 246, 253)",
-    color: "rgb(1, 67, 97)",
-    fontWeight: 600
-  }));
-  function ObjectSets({
-    expanded,
-    toggleExpanded,
-    sets,
-    onAddNew,
-    onUpdate
-  }) {
-    const objectSets = sets.length ? sets : [{ type: "", label: "" }];
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledAccordion, { expanded, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AccordionSummary$1,
-        {
-          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}),
-          onClick: toggleExpanded,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { children: window.gettext("Object sets") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              AdvancedLabel,
-              {
-                label: window.gettext("Advanced feature"),
-                variant: "filled"
-              }
-            )
-          ] })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionDetails$1, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "body2", sx: { mb: 2, color: "text.secondary" }, children: window.gettext(
-          "Define categories for types outcomes or streams of nodes for your project."
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(StyledForm, { children: objectSets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              Select$1,
-              {
-                value: set2.type,
-                onChange: (event) => onUpdate({
-                  index,
-                  newVal: {
-                    type: event.target.value,
-                    label: set2.label
-                  }
-                }),
-                label: "Type",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "outcome", children: "Project outcome" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "something", children: "Something" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "else", children: "Entirely else" })
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            TextField$1,
-            {
-              label: window.gettext("Label"),
-              value: set2.label,
-              variant: "standard",
-              onChange: (event) => {
-                onUpdate({
-                  index,
-                  newVal: {
-                    type: set2.type,
-                    label: event.target.value
-                  }
-                });
-              },
-              fullWidth: true
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-            IconButton$1,
-            {
-              onClick: () => onUpdate({
-                index
-              }),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {})
-            }
-          ) })
-        ] }, index)) })
-      ] })
     ] });
   }
   function CreateProjectDialog({
@@ -104214,7 +104381,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             menus.account.daliteText
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$7, {}),
             " ",
             COURSEFLOW_APP.strings.sign_out
           ] })
@@ -104234,7 +104401,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-haspopup": "true",
               color: "primary",
               onClick: handleAddMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
             }
           ) : null,
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -104245,7 +104412,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-controls": "notifications-menu",
               "aria-haspopup": "true",
               onClick: handleNotificationsMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$6, {}) })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -104257,7 +104424,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-controls": "account-menu",
               "aria-haspopup": "true",
               onClick: handleMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {})
             }
           )
         ] })
