@@ -47,6 +47,8 @@ import { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar/styles'
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 
+// React dumb components styleguide page
+import Styleguide from '@cfModule/components/pages/Styleguide'
 // @WORKFLOW
 import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
 // @LIBRARY
@@ -78,6 +80,8 @@ const getAppComponent = () => {
     /*******************************************************
      * LIBRARY
      *******************************************************/
+    case 'styleguide':
+      return <Styleguide />
     case 'home':
       return <Home {...COURSEFLOW_APP.contextData} />
     case 'favorites':
