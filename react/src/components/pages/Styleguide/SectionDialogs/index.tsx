@@ -5,7 +5,7 @@ import editProjectData from '../dumb/dialog/EditProject/data'
 import { DIALOG_TYPE, useDialog } from '@cfComponents/common/dialog'
 
 const SectionDialogs = () => {
-  // used to trigger the corresponding dialog's
+  // used to trigger the corresponding dialog
   const { dispatch } = useDialog()
 
   return (

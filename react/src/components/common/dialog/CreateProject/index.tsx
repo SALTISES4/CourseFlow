@@ -11,29 +11,18 @@ import ObjectSets from './components/ObjectSets'
 import { TopBarProps } from '@cfModule/types/common'
 import { API_POST } from '@XMLHTTP/PostFunctions'
 import { produce } from 'immer'
-
-// TODO: figure out how to handle object set types and where the values come from
-export enum OBJECT_SET_TYPE {
-  OUTCOME = 'outcome',
-  SOMETHING = 'something',
-  ELSE = 'else'
-}
-
-export type ObjectSetType = {
-  type: OBJECT_SET_TYPE
-  label: string
-}
+import { ObjectSet } from '@cfModule/types/common'
 
 export type OnUpdateType = {
   index: number
-  newVal?: ObjectSetType
+  newVal?: ObjectSet
 }
 
 export type StateType = {
   fields: {
     [index: string]: string
   }
-  objectSets: ObjectSetType[]
+  objectSets: ObjectSet[]
   objectSetsExpanded: boolean
 }
 
@@ -119,7 +108,7 @@ function CreateProjectDialog({
   function onObjectSetAddNew() {
     setState(
       produce((draft) => {
-        draft.objectSets.push({ type: '' as OBJECT_SET_TYPE, label: '' })
+        draft.objectSets.push({ id: '', title: '' })
       })
     )
   }

@@ -7,49 +7,48 @@ import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '@cfComponents/common/dialog'
 import { StyledDialog, StyledForm } from '@cfComponents/common/dialog/styles'
 import ObjectSets from '@cfComponents/common/dialog/CreateProject/components/ObjectSets'
-import { Discipline, FormFieldSerialized } from '@cfModule/types/common'
+import {
+  Discipline,
+  ObjectSet,
+  FormFieldSerialized
+} from '@cfModule/types/common'
 import { API_POST } from '@XMLHTTP/PostFunctions'
 import { produce } from 'immer'
-import { EProject } from '@cfModule/XMLHTTP/types/entity'
 
-// TODO: figure out how to handle object set types and where the values come from
-export enum OBJECT_SET_TYPE {
-  OUTCOME = 'outcome',
-  SOMETHING = 'something',
-  ELSE = 'else'
-}
-
-export type ObjectSetType = {
-  type: OBJECT_SET_TYPE
-  label: string
-}
-
-export type OnUpdateType = {
+type OnUpdateType = {
   index: number
-  newVal?: ObjectSetType
+  newVal?: ObjectSet
 }
 
-export type StateType = {
+type StateType = {
   fields: {
     [index: string]: string
   }
-  objectSets: ObjectSetType[]
+  objectSets: ObjectSet[]
   objectSetsExpanded: boolean
 }
 
-type PropsType = {
-  project?: EProject
-  disciplines?: Discipline[]
+export type PropsType = {
+  objectSets?: ObjectSet[]
+  disciplines: Discipline[]
   formFields: FormFieldSerialized[]
 }
 
-function EditProjectDialog({ formFields }: PropsType) {
-  const [state, setState] = useState<StateType>({
+function EditProjectDialog({ objectSets, disciplines, formFields }: PropsType) {
+  const initialState = {
     fields: {},
-    objectSets: [],
-    objectSetsExpanded: false
+    objectSets,
+    objectSetsExpanded: objectSets?.length !== 0
+  }
+
+  formFields.map((field) => {
+    initialState.fields[field.name] = field.value
   })
+
+  const [state, setState] = useState<StateType>(initialState)
+
   const [errors, setErrors] = useState({})
+
   const { show, onClose } = useDialog(DIALOG_TYPE.EDIT_PROJECT)
 
   function onSubmit() {
@@ -58,28 +57,28 @@ function EditProjectDialog({ formFields }: PropsType) {
       return false
     }
 
+    const postData = {
+      ...state.fields,
+      objectSets: state.objectSets.filter(
+        (set) => set.id !== '' && set.title !== ''
+      )
+    }
+
     // API_POST<{ redirect: string }>(
     //   COURSEFLOW_APP.config.json_api_paths.create_project,
-    //   {
-    //     ...state.fields,
-    //     objectSets: state.objectSets
-    //   }
+    //   postData
     // )
     //   .then((resp) => {
     //     window.location.href = resp.redirect
     //   })
     //   .catch((error) => setErrors(error.data.errors))
 
-    console.log('posting with', state)
+    console.log('posting with', postData)
   }
 
   function onDialogClose() {
     // clean up the state
-    setState({
-      fields: {},
-      objectSets: [],
-      objectSetsExpanded: false
-    })
+    setState(initialState)
     setErrors({})
 
     // dispatch the close callback
@@ -124,7 +123,7 @@ function EditProjectDialog({ formFields }: PropsType) {
   function onObjectSetAddNew() {
     setState(
       produce((draft) => {
-        draft.objectSets.push({ type: '' as OBJECT_SET_TYPE, label: '' })
+        draft.objectSets.push({ id: '', title: '' })
       })
     )
   }

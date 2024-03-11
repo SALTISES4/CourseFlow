@@ -16,12 +16,13 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 
 import { StyledAccordion, AdvancedLabel } from './styles'
 import { StyledForm } from '../../../styles'
-import { ObjectSetType, OnUpdateType, OBJECT_SET_TYPE } from '../../'
+import { OnUpdateType } from '../../'
+import { ObjectSet } from '@cfModule/types/common'
 
 type PropsType = {
   expanded: boolean
   toggleExpanded: () => void
-  sets: ObjectSetType[]
+  sets: ObjectSet[]
   onUpdate: (props: OnUpdateType) => void
   onAddNew: () => void
 }
@@ -34,9 +35,7 @@ function ObjectSets({
   onUpdate
 }: PropsType) {
   // make sure there's at least one empty object set
-  const objectSets: ObjectSetType[] = sets.length
-    ? sets
-    : [{ type: '' as OBJECT_SET_TYPE, label: '' }]
+  const objectSets: ObjectSet[] = sets.length ? sets : [{ id: '', title: '' }]
 
   return (
     <StyledAccordion expanded={expanded}>
@@ -64,33 +63,34 @@ function ObjectSets({
               <FormControl variant="standard" fullWidth>
                 <InputLabel>{window.gettext('Type')}</InputLabel>
                 <Select
-                  value={set.type}
+                  value={set.id.toString()}
                   onChange={(event: SelectChangeEvent) =>
                     onUpdate({
                       index,
                       newVal: {
-                        type: event.target.value as OBJECT_SET_TYPE,
-                        label: set.label
+                        id: event.target.value,
+                        title: set.title
                       }
                     })
                   }
                   label="Type"
                 >
-                  <MenuItem value="outcome">Project outcome</MenuItem>
-                  <MenuItem value="something">Something</MenuItem>
-                  <MenuItem value="else">Entirely else</MenuItem>
+                  <MenuItem value="1">Project outcome</MenuItem>
+                  <MenuItem value="2">Something</MenuItem>
+                  <MenuItem value="3">Entirely else</MenuItem>
+                  <MenuItem value="4">Option 4</MenuItem>
                 </Select>
               </FormControl>
               <TextField
                 label={window.gettext('Label')}
-                value={set.label}
+                value={set.title}
                 variant="standard"
                 onChange={(event: ChangeEvent<HTMLInputElement>) => {
                   onUpdate({
                     index,
                     newVal: {
-                      type: set.type,
-                      label: event.target.value
+                      id: set.id,
+                      title: event.target.value
                     }
                   })
                 }}

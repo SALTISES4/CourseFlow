@@ -42,6 +42,11 @@ export type Discipline = {
   title: string
 }
 
+export type ObjectSet = {
+  id: number | string
+  title: string
+}
+
 export type ObjectLock = {
   user_id: number
   user_colour: string
