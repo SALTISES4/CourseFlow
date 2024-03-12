@@ -30,11 +30,12 @@ function CreateProjectDialog({
   showNoProjectsAlert,
   formFields
 }: TopBarProps['forms']['createProject']) {
-  const [state, setState] = useState<StateType>({
+  const initialState: StateType = {
     fields: {},
     objectSets: [],
     objectSetsExpanded: false
-  })
+  }
+  const [state, setState] = useState<StateType>(initialState)
   const [errors, setErrors] = useState({})
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT)
 
@@ -57,17 +58,9 @@ function CreateProjectDialog({
       .catch((error) => setErrors(error.data.errors))
   }
 
-  function onDialogClose() {
-    // clean up the state
-    setState({
-      fields: {},
-      objectSets: [],
-      objectSetsExpanded: false
-    })
+  function onCloseAnimationEnd() {
+    setState(initialState)
     setErrors({})
-
-    // dispatch the close callback
-    onClose()
   }
 
   function onInputChange(
@@ -122,7 +115,15 @@ function CreateProjectDialog({
   }
 
   return (
-    <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
+    <StyledDialog
+      open={show}
+      fullWidth
+      maxWidth="sm"
+      onClose={onClose}
+      TransitionProps={{
+        onExited: onCloseAnimationEnd
+      }}
+    >
       <DialogTitle>{window.gettext('Create project')}</DialogTitle>
       <DialogContent dividers>
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
@@ -166,7 +167,7 @@ function CreateProjectDialog({
         </StyledForm>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="secondary" onClick={onDialogClose}>
+        <Button variant="contained" color="secondary" onClick={onClose}>
           {COURSEFLOW_APP.strings.cancel}
         </Button>
         <Button

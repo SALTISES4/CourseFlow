@@ -98448,210 +98448,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     ] }),
     children
   ] });
-  const defaultState = {
-    type: null
-  };
-  function stateReducer(state, action) {
-    return {
-      type: action
-    };
-  }
-  const DialogContext = reactExports.createContext(defaultState);
-  const DialogDispatchContext = reactExports.createContext(null);
-  function DialogContextProvider({ children }) {
-    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
-  }
-  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
-    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
-    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
-    DIALOG_TYPE2["EDIT_PROJECT"] = "edit_project";
-    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
-    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
-    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
-    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
-    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
-    return DIALOG_TYPE2;
-  })(DIALOG_TYPE || {});
-  function useDialog(dialogType = null) {
-    const dialogContext = reactExports.useContext(DialogContext);
-    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
-    if (!dialogType) {
-      return {
-        dispatch: dialogDispatch
-      };
-    }
-    return {
-      show: dialogContext.type === dialogType,
-      onClose: () => dialogDispatch(null),
-      dispatch: dialogDispatch
-    };
-  }
-  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
-    "& .MuiDialogContent-root": {
-      padding: theme2.spacing(3)
-    },
-    "& .MuiDialogActions-root": {
-      padding: theme2.spacing(1)
-    }
-  }));
-  const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
-    display: "flex",
-    flexDirection: "column",
-    gap: theme2.spacing(3),
-    "& > *": {
-      flexGrow: 1
-    }
-  }));
-  var ExpandMore = {};
-  var _interopRequireDefault$d = interopRequireDefaultExports;
-  Object.defineProperty(ExpandMore, "__esModule", {
-    value: true
-  });
-  var default_1$d = ExpandMore.default = void 0;
-  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-  var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
-    d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-  }), "ExpandMore");
-  default_1$d = ExpandMore.default = _default$d;
-  var Delete = {};
-  var _interopRequireDefault$c = interopRequireDefaultExports;
-  Object.defineProperty(Delete, "__esModule", {
-    value: true
-  });
-  var default_1$c = Delete.default = void 0;
-  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
-  var _jsxRuntime$c = jsxRuntimeExports;
-  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
-    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-  }), "Delete");
-  default_1$c = Delete.default = _default$c;
-  var AddCircle = {};
-  var _interopRequireDefault$b = interopRequireDefaultExports;
-  Object.defineProperty(AddCircle, "__esModule", {
-    value: true
-  });
-  var default_1$b = AddCircle.default = void 0;
-  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-  var _jsxRuntime$b = jsxRuntimeExports;
-  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
-    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
-  }), "AddCircle");
-  default_1$b = AddCircle.default = _default$b;
-  const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
-    "&.MuiPaper-root": {
-      boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
-      borderRadius: theme2.shape.borderRadius,
-      border: 0,
-      "&::before": {
-        content: "none"
-      }
-    },
-    "&.Mui-expanded": {
-      marginTop: 0,
-      ".MuiAccordionSummary-root": {
-        minHeight: "auto"
-      },
-      ".MuiAccordionSummary-content": {
-        margin: "12px 0"
-      }
-    }
-  }));
-  const AdvancedLabel = styled$1(Chip$1)(({ theme: theme2 }) => ({
-    height: "22px",
-    border: 0,
-    borderRadius: theme2.shape.borderRadius,
-    alignSelf: "center",
-    backgroundColor: "rgb(229, 246, 253)",
-    color: "rgb(1, 67, 97)",
-    fontWeight: 600
-  }));
-  function ObjectSets({
-    expanded,
-    toggleExpanded,
-    sets,
-    onAddNew,
-    onUpdate
-  }) {
-    const objectSets = sets.length ? sets : [{ id: "", title: "" }];
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledAccordion, { expanded, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        AccordionSummary$1,
-        {
-          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}),
-          onClick: toggleExpanded,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { children: window.gettext("Object sets") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              AdvancedLabel,
-              {
-                label: window.gettext("Advanced feature"),
-                variant: "filled"
-              }
-            )
-          ] })
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionDetails$1, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "body2", sx: { mb: 2, color: "text.secondary" }, children: window.gettext(
-          "Define categories for types outcomes or streams of nodes for your project."
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(StyledForm, { children: objectSets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              Select$1,
-              {
-                value: set2.id.toString(),
-                onChange: (event) => onUpdate({
-                  index,
-                  newVal: {
-                    id: event.target.value,
-                    title: set2.title
-                  }
-                }),
-                label: "Type",
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "1", children: "Project outcome" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "2", children: "Something" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "3", children: "Entirely else" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "4", children: "Option 4" })
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            TextField$1,
-            {
-              label: window.gettext("Label"),
-              value: set2.title,
-              variant: "standard",
-              onChange: (event) => {
-                onUpdate({
-                  index,
-                  newVal: {
-                    id: set2.id,
-                    title: event.target.value
-                  }
-                });
-              },
-              fullWidth: true
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-            IconButton$1,
-            {
-              onClick: () => onUpdate({
-                index
-              }),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
-            }
-          ) })
-        ] }, index)) })
-      ] })
-    ] });
-  }
   var NOTHING = Symbol.for("immer-nothing");
   var DRAFTABLE = Symbol.for("immer-draftable");
   var DRAFT_STATE = Symbol.for("immer-state");
@@ -99318,6 +99114,210 @@ Please use another name.` : formatMuiErrorMessage(18));
   immer.applyPatches.bind(immer);
   immer.createDraft.bind(immer);
   immer.finishDraft.bind(immer);
+  const defaultState = {
+    type: null
+  };
+  function stateReducer(state, action) {
+    return {
+      type: action
+    };
+  }
+  const DialogContext = reactExports.createContext(defaultState);
+  const DialogDispatchContext = reactExports.createContext(null);
+  function DialogContextProvider({ children }) {
+    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
+  }
+  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
+    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
+    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
+    DIALOG_TYPE2["EDIT_PROJECT"] = "edit_project";
+    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
+    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
+    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
+    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
+    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
+    return DIALOG_TYPE2;
+  })(DIALOG_TYPE || {});
+  function useDialog(dialogType = null) {
+    const dialogContext = reactExports.useContext(DialogContext);
+    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
+    if (!dialogType) {
+      return {
+        dispatch: dialogDispatch
+      };
+    }
+    return {
+      show: dialogContext.type === dialogType,
+      onClose: () => dialogDispatch(null),
+      dispatch: dialogDispatch
+    };
+  }
+  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
+    "& .MuiDialogContent-root": {
+      padding: theme2.spacing(3)
+    },
+    "& .MuiDialogActions-root": {
+      padding: theme2.spacing(1)
+    }
+  }));
+  const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "flex",
+    flexDirection: "column",
+    gap: theme2.spacing(3),
+    "& > *": {
+      flexGrow: 1
+    }
+  }));
+  var ExpandMore = {};
+  var _interopRequireDefault$d = interopRequireDefaultExports;
+  Object.defineProperty(ExpandMore, "__esModule", {
+    value: true
+  });
+  var default_1$d = ExpandMore.default = void 0;
+  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+  var _jsxRuntime$d = jsxRuntimeExports;
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+    d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+  }), "ExpandMore");
+  default_1$d = ExpandMore.default = _default$d;
+  var Delete = {};
+  var _interopRequireDefault$c = interopRequireDefaultExports;
+  Object.defineProperty(Delete, "__esModule", {
+    value: true
+  });
+  var default_1$c = Delete.default = void 0;
+  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+  var _jsxRuntime$c = jsxRuntimeExports;
+  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+  }), "Delete");
+  default_1$c = Delete.default = _default$c;
+  var AddCircle = {};
+  var _interopRequireDefault$b = interopRequireDefaultExports;
+  Object.defineProperty(AddCircle, "__esModule", {
+    value: true
+  });
+  var default_1$b = AddCircle.default = void 0;
+  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
+  var _jsxRuntime$b = jsxRuntimeExports;
+  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+    d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
+  }), "AddCircle");
+  default_1$b = AddCircle.default = _default$b;
+  const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
+    "&.MuiPaper-root": {
+      boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
+      borderRadius: theme2.shape.borderRadius,
+      border: 0,
+      "&::before": {
+        content: "none"
+      }
+    },
+    "&.Mui-expanded": {
+      marginTop: 0,
+      ".MuiAccordionSummary-root": {
+        minHeight: "auto"
+      },
+      ".MuiAccordionSummary-content": {
+        margin: "12px 0"
+      }
+    }
+  }));
+  const AdvancedLabel = styled$1(Chip$1)(({ theme: theme2 }) => ({
+    height: "22px",
+    border: 0,
+    borderRadius: theme2.shape.borderRadius,
+    alignSelf: "center",
+    backgroundColor: "rgb(229, 246, 253)",
+    color: "rgb(1, 67, 97)",
+    fontWeight: 600
+  }));
+  function ObjectSets({
+    expanded,
+    toggleExpanded,
+    sets,
+    onAddNew,
+    onUpdate
+  }) {
+    const objectSets = sets.length ? sets : [{ id: "", title: "" }];
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledAccordion, { expanded, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        AccordionSummary$1,
+        {
+          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}),
+          onClick: toggleExpanded,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { children: window.gettext("Object sets") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              AdvancedLabel,
+              {
+                label: window.gettext("Advanced feature"),
+                variant: "filled"
+              }
+            )
+          ] })
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionDetails$1, { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "body2", sx: { mb: 2, color: "text.secondary" }, children: window.gettext(
+          "Define categories for types outcomes or streams of nodes for your project."
+        ) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(StyledForm, { children: objectSets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { variant: "standard", fullWidth: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: window.gettext("Type") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              Select$1,
+              {
+                value: set2.id.toString(),
+                onChange: (event) => onUpdate({
+                  index,
+                  newVal: {
+                    id: event.target.value,
+                    title: set2.title
+                  }
+                }),
+                label: "Type",
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "1", children: "Project outcome" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "2", children: "Something" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "3", children: "Entirely else" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(MenuItem$1, { value: "4", children: "Option 4" })
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            TextField$1,
+            {
+              label: window.gettext("Label"),
+              value: set2.title,
+              variant: "standard",
+              onChange: (event) => {
+                onUpdate({
+                  index,
+                  newVal: {
+                    id: set2.id,
+                    title: event.target.value
+                  }
+                });
+              },
+              fullWidth: true
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+            IconButton$1,
+            {
+              onClick: () => onUpdate({
+                index
+              }),
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+            }
+          ) })
+        ] }, index)) })
+      ] })
+    ] });
+  }
   function EditProjectDialog({ objectSets, disciplines, formFields }) {
     const initialState = {
       fields: {},
@@ -99342,10 +99342,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       };
       console.log("posting with", postData);
     }
-    function onDialogClose() {
+    function onCloseAnimationEnd() {
       setState(initialState);
       setErrors({});
-      onClose();
     }
     function onInputChange(e, field) {
       if (errors2[field.name]) {
@@ -99388,53 +99387,65 @@ Please use another name.` : formatMuiErrorMessage(18));
         })
       );
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Edit project") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
-        formFields.map((field, index) => {
-          if (field.type === "text") {
-            const hasError = !!errors2[field.name];
-            const errorText = hasError && errors2[field.name][0];
-            return /* @__PURE__ */ jsxRuntimeExports.jsx(
-              TextField$1,
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: show,
+        fullWidth: true,
+        maxWidth: "sm",
+        onClose,
+        TransitionProps: {
+          onExited: onCloseAnimationEnd
+        },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Edit project") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
+            formFields.map((field, index) => {
+              if (field.type === "text") {
+                const hasError = !!errors2[field.name];
+                const errorText = hasError && errors2[field.name][0];
+                return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  TextField$1,
+                  {
+                    name: field.name,
+                    label: field.label,
+                    required: field.required,
+                    value: state.fields[field.name] ?? "",
+                    variant: "standard",
+                    error: hasError,
+                    helperText: errorText,
+                    onChange: (e) => onInputChange(e, field)
+                  },
+                  index
+                );
+              }
+            }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              ObjectSets,
               {
-                name: field.name,
-                label: field.label,
-                required: field.required,
-                value: state.fields[field.name] ?? "",
-                variant: "standard",
-                error: hasError,
-                helperText: errorText,
-                onChange: (e) => onInputChange(e, field)
-              },
-              index
-            );
-          }
-        }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          ObjectSets,
-          {
-            expanded: state.objectSetsExpanded,
-            toggleExpanded: onObjectSetsClick,
-            sets: state.objectSets,
-            onUpdate: onObjectSetUpdate,
-            onAddNew: onObjectSetAddNew
-          }
-        )
-      ] }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onDialogClose, children: COURSEFLOW_APP.strings.cancel }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button$1,
-          {
-            variant: "contained",
-            onClick: onSubmit,
-            disabled: !!Object.keys(errors2).length,
-            children: window.gettext("Save project")
-          }
-        )
-      ] })
-    ] });
+                expanded: state.objectSetsExpanded,
+                toggleExpanded: onObjectSetsClick,
+                sets: state.objectSets,
+                onUpdate: onObjectSetUpdate,
+                onAddNew: onObjectSetAddNew
+              }
+            )
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button$1,
+              {
+                variant: "contained",
+                onClick: onSubmit,
+                disabled: !!Object.keys(errors2).length,
+                children: window.gettext("Save project")
+              }
+            )
+          ] })
+        ]
+      }
+    );
   }
   const data = {
     disciplines: [
@@ -104020,11 +104031,12 @@ Please use another name.` : formatMuiErrorMessage(18));
     showNoProjectsAlert,
     formFields
   }) {
-    const [state, setState] = reactExports.useState({
+    const initialState = {
       fields: {},
       objectSets: [],
       objectSetsExpanded: false
-    });
+    };
+    const [state, setState] = reactExports.useState(initialState);
     const [errors2, setErrors] = reactExports.useState({});
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT);
     function onSubmit() {
@@ -104041,14 +104053,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         window.location.href = resp.redirect;
       }).catch((error) => setErrors(error.data.errors));
     }
-    function onDialogClose() {
-      setState({
-        fields: {},
-        objectSets: [],
-        objectSetsExpanded: false
-      });
+    function onCloseAnimationEnd() {
+      setState(initialState);
       setErrors({});
-      onClose();
     }
     function onInputChange(e, field) {
       if (errors2[field.name]) {
@@ -104091,66 +104098,78 @@ Please use another name.` : formatMuiErrorMessage(18));
         })
       );
     }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Create project") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { sx: { mb: 3 }, severity: "warning", title: "TODO - Backend" }),
-        showNoProjectsAlert && /* @__PURE__ */ jsxRuntimeExports.jsx(
-          CFAlert,
-          {
-            sx: { mb: 3 },
-            title: window.gettext("Start by creating a project"),
-            subtitle: window.gettext(
-              "All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow."
-            )
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
-          formFields.map((field, index) => {
-            if (field.type === "text") {
-              const hasError = !!errors2[field.name];
-              const errorText = hasError && errors2[field.name][0];
-              return /* @__PURE__ */ jsxRuntimeExports.jsx(
-                TextField$1,
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: show,
+        fullWidth: true,
+        maxWidth: "sm",
+        onClose,
+        TransitionProps: {
+          onExited: onCloseAnimationEnd
+        },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Create project") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { sx: { mb: 3 }, severity: "warning", title: "TODO - Backend" }),
+            showNoProjectsAlert && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              CFAlert,
+              {
+                sx: { mb: 3 },
+                title: window.gettext("Start by creating a project"),
+                subtitle: window.gettext(
+                  "All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow."
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
+              formFields.map((field, index) => {
+                if (field.type === "text") {
+                  const hasError = !!errors2[field.name];
+                  const errorText = hasError && errors2[field.name][0];
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    TextField$1,
+                    {
+                      name: field.name,
+                      label: field.label,
+                      required: field.required,
+                      value: state.fields[field.name] ?? "",
+                      variant: "standard",
+                      error: hasError,
+                      helperText: errorText,
+                      onChange: (e) => onInputChange(e, field)
+                    },
+                    index
+                  );
+                }
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ObjectSets,
                 {
-                  name: field.name,
-                  label: field.label,
-                  required: field.required,
-                  value: state.fields[field.name] ?? "",
-                  variant: "standard",
-                  error: hasError,
-                  helperText: errorText,
-                  onChange: (e) => onInputChange(e, field)
-                },
-                index
-              );
-            }
-          }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ObjectSets,
-            {
-              expanded: state.objectSetsExpanded,
-              toggleExpanded: onObjectSetsClick,
-              sets: state.objectSets,
-              onUpdate: onObjectSetUpdate,
-              onAddNew: onObjectSetAddNew
-            }
-          )
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onDialogClose, children: COURSEFLOW_APP.strings.cancel }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Button$1,
-          {
-            variant: "contained",
-            onClick: onSubmit,
-            disabled: !!Object.keys(errors2).length,
-            children: window.gettext("Create project")
-          }
-        )
-      ] })
-    ] });
+                  expanded: state.objectSetsExpanded,
+                  toggleExpanded: onObjectSetsClick,
+                  sets: state.objectSets,
+                  onUpdate: onObjectSetUpdate,
+                  onAddNew: onObjectSetAddNew
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button$1,
+              {
+                variant: "contained",
+                onClick: onSubmit,
+                disabled: !!Object.keys(errors2).length,
+                children: window.gettext("Create project")
+              }
+            )
+          ] })
+        ]
+      }
+    );
   }
   function CreateCourseDialog() {
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_COURSE);

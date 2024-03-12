@@ -1,4 +1,5 @@
 import { ChangeEvent, useState } from 'react'
+import { produce } from 'immer'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -7,13 +8,12 @@ import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '@cfComponents/common/dialog'
 import { StyledDialog, StyledForm } from '@cfComponents/common/dialog/styles'
 import ObjectSets from '@cfComponents/common/dialog/CreateProject/components/ObjectSets'
+import { API_POST } from '@XMLHTTP/PostFunctions'
 import {
   Discipline,
   ObjectSet,
   FormFieldSerialized
 } from '@cfModule/types/common'
-import { API_POST } from '@XMLHTTP/PostFunctions'
-import { produce } from 'immer'
 
 type OnUpdateType = {
   index: number
@@ -35,20 +35,18 @@ export type PropsType = {
 }
 
 function EditProjectDialog({ objectSets, disciplines, formFields }: PropsType) {
-  const initialState = {
+  // set the inital state based on inputs
+  const initialState: StateType = {
     fields: {},
     objectSets,
     objectSetsExpanded: objectSets?.length !== 0
   }
-
   formFields.map((field) => {
     initialState.fields[field.name] = field.value
   })
 
-  const [state, setState] = useState<StateType>(initialState)
-
+  const [state, setState] = useState(initialState)
   const [errors, setErrors] = useState({})
-
   const { show, onClose } = useDialog(DIALOG_TYPE.EDIT_PROJECT)
 
   function onSubmit() {
@@ -76,13 +74,9 @@ function EditProjectDialog({ objectSets, disciplines, formFields }: PropsType) {
     console.log('posting with', postData)
   }
 
-  function onDialogClose() {
-    // clean up the state
+  function onCloseAnimationEnd() {
     setState(initialState)
     setErrors({})
-
-    // dispatch the close callback
-    onClose()
   }
 
   function onInputChange(
@@ -137,7 +131,15 @@ function EditProjectDialog({ objectSets, disciplines, formFields }: PropsType) {
   }
 
   return (
-    <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
+    <StyledDialog
+      open={show}
+      fullWidth
+      maxWidth="sm"
+      onClose={onClose}
+      TransitionProps={{
+        onExited: onCloseAnimationEnd
+      }}
+    >
       <DialogTitle>{window.gettext('Edit project')}</DialogTitle>
       <DialogContent dividers>
         <StyledForm component="form">
@@ -171,7 +173,7 @@ function EditProjectDialog({ objectSets, disciplines, formFields }: PropsType) {
         </StyledForm>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="secondary" onClick={onDialogClose}>
+        <Button variant="contained" color="secondary" onClick={onClose}>
           {COURSEFLOW_APP.strings.cancel}
         </Button>
         <Button
