@@ -7,6 +7,7 @@ import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
 import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/sharing'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import { EUser } from '@XMLHTTP/types/entity'
+import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 
 type PropsType = {
   data: any
@@ -22,6 +23,8 @@ type StateType = {
   cannot_change: number[]
   published?: boolean
   public_view?: boolean
+  saltise_user: boolean
+  is_template: boolean
 }
 
 /*******************************************************
@@ -37,7 +40,9 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       comment: [],
       student: [],
       userlist: [],
-      cannot_change: []
+      cannot_change: [],
+      saltise_user: false,
+      is_template: false,
     }
   }
 
@@ -57,7 +62,9 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
           student: response.students,
           published: response.published,
           public_view: response.public_view,
-          cannot_change: response.cannot_change
+          cannot_change: response.cannot_change,
+          saltise_user: response.saltise_user,
+          is_template: response.is_template,
         })
       }
     )
@@ -111,6 +118,18 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         () => component.setState({ published: published })
       )
     }
+  }
+
+
+  toggleTemplate() {
+    const component = this
+    const is_template = !this.state.is_template
+    updateValueInstantQuery(
+      component.props.data.id,
+      component.props.data.type,
+      { is_template: is_template },
+      () => component.setState({ is_template: is_template })
+    )
   }
 
   setUserPermission(permission_type, user) {
@@ -380,6 +399,16 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     }
   }
 
+  IsTemplate = () => {
+    if (this.state.published && this.state.saltise_user){
+      return [
+        <input id="toggle-is-template" type="checkbox" checked={this.state.is_template} onClick={this.toggleTemplate.bind(this)}/>,
+        <label htmlFor="toggle-is-template">{window.gettext("Make Available As Template")}</label>
+      ];
+    }
+    return null;
+  }
+
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -463,6 +492,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
           />
         </h2>
         <this.Publication />
+        <this.IsTemplate />
         <hr />
         <p>{window.gettext('Owned By')}:</p>
         <div>{owner}</div>

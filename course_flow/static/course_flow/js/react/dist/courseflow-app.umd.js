@@ -38,7 +38,7 @@ var __privateMethod = (obj, member, method) => {
   return method;
 };
 
-  var _a, _focused, _cleanup, _setup, _b, _online, _cleanup2, _setup2, _c, _gcTimeout, _d, _initialState, _revertState, _cache, _promise, _retryer, _observers, _defaultOptions, _abortSignalConsumed, _setOptions, setOptions_fn, _dispatch, dispatch_fn, _e, _queries, _f, _observers2, _defaultOptions2, _mutationCache, _retryer2, _dispatch2, dispatch_fn2, _g, _mutations, _mutationId, _resuming, _h, _queryCache, _mutationCache2, _defaultOptions3, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _i;
+  var _a, _focused, _cleanup, _setup, _b, _online, _cleanup2, _setup2, _c, _gcTimeout, _d, _initialState, _revertState, _cache, _retryer, _observers, _defaultOptions, _abortSignalConsumed, _dispatch, dispatch_fn, _e, _queries, _f, _observers2, _defaultOptions2, _mutationCache, _retryer2, _dispatch2, dispatch_fn2, _g, _mutations, _mutationId, _resuming, _h, _queryCache, _mutationCache2, _defaultOptions3, _queryDefaults, _mutationDefaults, _mountCount, _unsubscribeFocus, _unsubscribeOnline, _i;
   function _mergeNamespaces(n, m2) {
     for (var i2 = 0; i2 < m2.length; i2++) {
       const e = m2[i2];
@@ -47844,6 +47844,14 @@ Please use another name.` : formatMuiErrorMessage(18));
           label: capWords(typeText)
         };
       });
+      __publicField(this, "getTemplateChip", () => {
+        const is_template = this.workflow.is_template;
+        if (is_template)
+          return {
+            type: CHIP_TYPE.TEMPLATE,
+            label: window.gettext("Template")
+          };
+      });
       __publicField(this, "getWorkflowCountChip", () => {
         const { workflow } = this;
         if (workflow.type === WorkflowType.PROJECT && workflow.workflow_count !== null && workflow.workflow_count > 0) {
@@ -47952,6 +47960,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           onClick: this.clickAction.bind(this),
           onMouseDown: (evt) => evt.preventDefault(),
           chips: [
+            this.getTemplateChip(),
             this.getTypeChip(),
             this.getWorkflowInfo(),
             this.getWorkflowCountChip()
@@ -92800,6 +92809,15 @@ Please use another name.` : formatMuiErrorMessage(18));
           return [published_icon, /* @__PURE__ */ jsxRuntimeExports.jsx(this.PublicLink, {})];
         }
       });
+      __publicField(this, "IsTemplate", () => {
+        if (this.state.published && this.state.saltise_user) {
+          return [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "toggle-is-template", type: "checkbox", checked: this.state.is_template, onClick: this.toggleTemplate.bind(this) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "toggle-is-template", children: window.gettext("Make Available As Template") })
+          ];
+        }
+        return null;
+      });
       this.state = {
         owner: props.data.author,
         edit: [],
@@ -92807,7 +92825,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         comment: [],
         student: [],
         userlist: [],
-        cannot_change: []
+        cannot_change: [],
+        saltise_user: false,
+        is_template: false
       };
     }
     /*******************************************************
@@ -92826,7 +92846,9 @@ Please use another name.` : formatMuiErrorMessage(18));
             student: response.students,
             published: response.published,
             public_view: response.public_view,
-            cannot_change: response.cannot_change
+            cannot_change: response.cannot_change,
+            saltise_user: response.saltise_user,
+            is_template: response.is_template
           });
         }
       );
@@ -92874,6 +92896,16 @@ Please use another name.` : formatMuiErrorMessage(18));
           () => component.setState({ published })
         );
       }
+    }
+    toggleTemplate() {
+      const component = this;
+      const is_template = !this.state.is_template;
+      updateValueInstantQuery(
+        component.props.data.id,
+        component.props.data.type,
+        { is_template },
+        () => component.setState({ is_template })
+      );
     }
     setUserPermission(permission_type, user) {
       COURSEFLOW_APP.tinyLoader.startLoad();
@@ -92982,6 +93014,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(this.Publication, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(this.IsTemplate, {}),
         /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
           window.gettext("Owned By"),
@@ -96235,7 +96268,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     onUnsubscribe() {
     }
   };
-  var isServer = typeof window === "undefined" || "Deno" in window;
+  var isServer = typeof window === "undefined" || "Deno" in globalThis;
   function noop() {
     return void 0;
   }
@@ -96278,7 +96311,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     if (typeof stale === "boolean" && query.isStale() !== stale) {
       return false;
     }
-    if (typeof fetchStatus !== "undefined" && fetchStatus !== query.state.fetchStatus) {
+    if (fetchStatus && fetchStatus !== query.state.fetchStatus) {
       return false;
     }
     if (predicate && !predicate(query)) {
@@ -96369,7 +96402,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return false;
     }
     const ctor = o.constructor;
-    if (typeof ctor === "undefined") {
+    if (ctor === void 0) {
       return true;
     }
     const prot = ctor.prototype;
@@ -96405,6 +96438,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     const newItems = [item, ...items];
     return max2 && newItems.length > max2 ? newItems.slice(0, -1) : newItems;
   }
+  var skipToken = Symbol();
   var FocusManager = (_b = class extends Subscribable {
     constructor() {
       super();
@@ -96454,8 +96488,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     }
     onFocus() {
+      const isFocused = this.isFocused();
       this.listeners.forEach((listener) => {
-        listener();
+        listener(isFocused);
       });
     }
     isFocused() {
@@ -96753,19 +96788,17 @@ Please use another name.` : formatMuiErrorMessage(18));
   var Query = (_e = class extends Removable {
     constructor(config2) {
       super();
-      __privateAdd(this, _setOptions);
       __privateAdd(this, _dispatch);
       __privateAdd(this, _initialState, void 0);
       __privateAdd(this, _revertState, void 0);
       __privateAdd(this, _cache, void 0);
-      __privateAdd(this, _promise, void 0);
       __privateAdd(this, _retryer, void 0);
       __privateAdd(this, _observers, void 0);
       __privateAdd(this, _defaultOptions, void 0);
       __privateAdd(this, _abortSignalConsumed, void 0);
       __privateSet(this, _abortSignalConsumed, false);
       __privateSet(this, _defaultOptions, config2.defaultOptions);
-      __privateMethod(this, _setOptions, setOptions_fn).call(this, config2.options);
+      this.setOptions(config2.options);
       __privateSet(this, _observers, []);
       __privateSet(this, _cache, config2.cache);
       this.queryKey = config2.queryKey;
@@ -96776,6 +96809,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     get meta() {
       return this.options.meta;
+    }
+    setOptions(options) {
+      this.options = { ...__privateGet(this, _defaultOptions), ...options };
+      this.updateGcTime(this.options.gcTime);
     }
     optionalRemove() {
       if (!__privateGet(this, _observers).length && this.state.fetchStatus === "idle") {
@@ -96796,9 +96833,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       __privateMethod(this, _dispatch, dispatch_fn).call(this, { type: "setState", state, setStateOptions });
     }
     cancel(options) {
-      var _a2;
-      const promise = __privateGet(this, _promise);
-      (_a2 = __privateGet(this, _retryer)) == null ? void 0 : _a2.cancel(options);
+      var _a2, _b2;
+      const promise = (_a2 = __privateGet(this, _retryer)) == null ? void 0 : _a2.promise;
+      (_b2 = __privateGet(this, _retryer)) == null ? void 0 : _b2.cancel(options);
       return promise ? promise.then(noop).catch(noop) : Promise.resolve();
     }
     destroy() {
@@ -96818,10 +96855,18 @@ Please use another name.` : formatMuiErrorMessage(18));
       return this.getObserversCount() > 0 && !this.isActive();
     }
     isStale() {
-      return this.state.isInvalidated || !this.state.dataUpdatedAt || __privateGet(this, _observers).some((observer) => observer.getCurrentResult().isStale);
+      if (this.state.isInvalidated) {
+        return true;
+      }
+      if (this.getObserversCount() > 0) {
+        return __privateGet(this, _observers).some(
+          (observer) => observer.getCurrentResult().isStale
+        );
+      }
+      return this.state.data === void 0;
     }
     isStaleByTime(staleTime = 0) {
-      return this.state.isInvalidated || !this.state.dataUpdatedAt || !timeUntilStale(this.state.dataUpdatedAt, staleTime);
+      return this.state.isInvalidated || this.state.data === void 0 || !timeUntilStale(this.state.dataUpdatedAt, staleTime);
     }
     onFocus() {
       var _a2;
@@ -96867,22 +96912,22 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     }
     fetch(options, fetchOptions) {
-      var _a2, _b2, _c2, _d2;
+      var _a2, _b2, _c2;
       if (this.state.fetchStatus !== "idle") {
-        if (this.state.dataUpdatedAt && (fetchOptions == null ? void 0 : fetchOptions.cancelRefetch)) {
+        if (this.state.data !== void 0 && (fetchOptions == null ? void 0 : fetchOptions.cancelRefetch)) {
           this.cancel({ silent: true });
-        } else if (__privateGet(this, _promise)) {
-          (_a2 = __privateGet(this, _retryer)) == null ? void 0 : _a2.continueRetry();
-          return __privateGet(this, _promise);
+        } else if (__privateGet(this, _retryer)) {
+          __privateGet(this, _retryer).continueRetry();
+          return __privateGet(this, _retryer).promise;
         }
       }
       if (options) {
-        __privateMethod(this, _setOptions, setOptions_fn).call(this, options);
+        this.setOptions(options);
       }
       if (!this.options.queryFn) {
         const observer = __privateGet(this, _observers).find((x) => x.options.queryFn);
         if (observer) {
-          __privateMethod(this, _setOptions, setOptions_fn).call(this, observer.options);
+          this.setOptions(observer.options);
         }
       }
       if (process.env.NODE_ENV !== "production") {
@@ -96908,7 +96953,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       };
       addSignalProperty(queryFnContext);
       const fetchFn = () => {
-        if (!this.options.queryFn) {
+        if (process.env.NODE_ENV !== "production") {
+          if (this.options.queryFn === skipToken) {
+            console.error(
+              `Attempted to invoke queryFn when set to skipToken. This is likely a configuration error. Query hash: '${this.options.queryHash}'`
+            );
+          }
+        }
+        if (!this.options.queryFn || this.options.queryFn === skipToken) {
           return Promise.reject(
             new Error(`Missing queryFn: '${this.options.queryHash}'`)
           );
@@ -96933,16 +96985,16 @@ Please use another name.` : formatMuiErrorMessage(18));
         fetchFn
       };
       addSignalProperty(context);
-      (_b2 = this.options.behavior) == null ? void 0 : _b2.onFetch(
+      (_a2 = this.options.behavior) == null ? void 0 : _a2.onFetch(
         context,
         this
       );
       __privateSet(this, _revertState, this.state);
-      if (this.state.fetchStatus === "idle" || this.state.fetchMeta !== ((_c2 = context.fetchOptions) == null ? void 0 : _c2.meta)) {
-        __privateMethod(this, _dispatch, dispatch_fn).call(this, { type: "fetch", meta: (_d2 = context.fetchOptions) == null ? void 0 : _d2.meta });
+      if (this.state.fetchStatus === "idle" || this.state.fetchMeta !== ((_b2 = context.fetchOptions) == null ? void 0 : _b2.meta)) {
+        __privateMethod(this, _dispatch, dispatch_fn).call(this, { type: "fetch", meta: (_c2 = context.fetchOptions) == null ? void 0 : _c2.meta });
       }
       const onError = (error) => {
-        var _a3, _b3, _c3, _d3;
+        var _a3, _b3, _c3, _d2;
         if (!(isCancelledError(error) && error.silent)) {
           __privateMethod(this, _dispatch, dispatch_fn).call(this, {
             type: "error",
@@ -96955,7 +97007,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             error,
             this
           );
-          (_d3 = (_c3 = __privateGet(this, _cache).config).onSettled) == null ? void 0 : _d3.call(
+          (_d2 = (_c3 = __privateGet(this, _cache).config).onSettled) == null ? void 0 : _d2.call(
             _c3,
             this.state.data,
             error,
@@ -96971,8 +97023,8 @@ Please use another name.` : formatMuiErrorMessage(18));
         fn: context.fetchFn,
         abort: abortController.abort.bind(abortController),
         onSuccess: (data) => {
-          var _a3, _b3, _c3, _d3;
-          if (typeof data === "undefined") {
+          var _a3, _b3, _c3, _d2;
+          if (data === void 0) {
             if (process.env.NODE_ENV !== "production") {
               console.error(
                 `Query data cannot be undefined. Please make sure to return a value other than undefined from your query function. Affected query key: ${this.queryHash}`
@@ -96983,7 +97035,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           }
           this.setData(data);
           (_b3 = (_a3 = __privateGet(this, _cache).config).onSuccess) == null ? void 0 : _b3.call(_a3, data, this);
-          (_d3 = (_c3 = __privateGet(this, _cache).config).onSettled) == null ? void 0 : _d3.call(
+          (_d2 = (_c3 = __privateGet(this, _cache).config).onSettled) == null ? void 0 : _d2.call(
             _c3,
             data,
             this.state.error,
@@ -97008,13 +97060,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         retryDelay: context.options.retryDelay,
         networkMode: context.options.networkMode
       }));
-      __privateSet(this, _promise, __privateGet(this, _retryer).promise);
-      return __privateGet(this, _promise);
+      return __privateGet(this, _retryer).promise;
     }
-  }, _initialState = new WeakMap(), _revertState = new WeakMap(), _cache = new WeakMap(), _promise = new WeakMap(), _retryer = new WeakMap(), _observers = new WeakMap(), _defaultOptions = new WeakMap(), _abortSignalConsumed = new WeakMap(), _setOptions = new WeakSet(), setOptions_fn = function(options) {
-    this.options = { ...__privateGet(this, _defaultOptions), ...options };
-    this.updateGcTime(this.options.gcTime);
-  }, _dispatch = new WeakSet(), dispatch_fn = function(action) {
+  }, _initialState = new WeakMap(), _revertState = new WeakMap(), _cache = new WeakMap(), _retryer = new WeakMap(), _observers = new WeakMap(), _defaultOptions = new WeakMap(), _abortSignalConsumed = new WeakMap(), _dispatch = new WeakSet(), dispatch_fn = function(action) {
     const reducer2 = (state) => {
       switch (action.type) {
         case "failed":
@@ -97036,14 +97084,8 @@ Please use another name.` : formatMuiErrorMessage(18));
         case "fetch":
           return {
             ...state,
-            fetchFailureCount: 0,
-            fetchFailureReason: null,
-            fetchMeta: action.meta ?? null,
-            fetchStatus: canFetch(this.options.networkMode) ? "fetching" : "paused",
-            ...!state.dataUpdatedAt && {
-              error: null,
-              status: "pending"
-            }
+            ...fetchState(state.data, this.options),
+            fetchMeta: action.meta ?? null
           };
         case "success":
           return {
@@ -97095,9 +97137,20 @@ Please use another name.` : formatMuiErrorMessage(18));
       __privateGet(this, _cache).notify({ query: this, type: "updated", action });
     });
   }, _e);
+  function fetchState(data, options) {
+    return {
+      fetchFailureCount: 0,
+      fetchFailureReason: null,
+      fetchStatus: canFetch(options.networkMode) ? "fetching" : "paused",
+      ...data === void 0 && {
+        error: null,
+        status: "pending"
+      }
+    };
+  }
   function getDefaultState$1(options) {
     const data = typeof options.initialData === "function" ? options.initialData() : options.initialData;
-    const hasData = typeof data !== "undefined";
+    const hasData = data !== void 0;
     const initialDataUpdatedAt = hasData ? typeof options.initialDataUpdatedAt === "function" ? options.initialDataUpdatedAt() : options.initialDataUpdatedAt : 0;
     return {
       data,
@@ -97534,9 +97587,18 @@ Please use another name.` : formatMuiErrorMessage(18));
               }
             });
           };
-          const queryFn = context.options.queryFn || (() => Promise.reject(
-            new Error(`Missing queryFn: '${context.options.queryHash}'`)
-          ));
+          const queryFn = context.options.queryFn && context.options.queryFn !== skipToken ? context.options.queryFn : () => {
+            if (process.env.NODE_ENV !== "production") {
+              if (context.options.queryFn === skipToken) {
+                console.error(
+                  `Attempted to invoke queryFn when set to skipToken. This is likely a configuration error. Query hash: '${context.options.queryHash}'`
+                );
+              }
+            }
+            return Promise.reject(
+              new Error(`Missing queryFn: '${context.options.queryHash}'`)
+            );
+          };
           const fetchPage = async (data, param, previous) => {
             if (cancelled) {
               return Promise.reject();
@@ -97644,15 +97706,15 @@ Please use another name.` : formatMuiErrorMessage(18));
       __privateWrapper(this, _mountCount)._++;
       if (__privateGet(this, _mountCount) !== 1)
         return;
-      __privateSet(this, _unsubscribeFocus, focusManager.subscribe(() => {
-        if (focusManager.isFocused()) {
-          this.resumePausedMutations();
+      __privateSet(this, _unsubscribeFocus, focusManager.subscribe(async (focused) => {
+        if (focused) {
+          await this.resumePausedMutations();
           __privateGet(this, _queryCache).onFocus();
         }
       }));
-      __privateSet(this, _unsubscribeOnline, onlineManager.subscribe(() => {
-        if (onlineManager.isOnline()) {
-          this.resumePausedMutations();
+      __privateSet(this, _unsubscribeOnline, onlineManager.subscribe(async (online) => {
+        if (online) {
+          await this.resumePausedMutations();
           __privateGet(this, _queryCache).onOnline();
         }
       }));
@@ -97675,11 +97737,21 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     getQueryData(queryKey) {
       var _a2;
-      return (_a2 = __privateGet(this, _queryCache).find({ queryKey })) == null ? void 0 : _a2.state.data;
+      const options = this.defaultQueryOptions({ queryKey });
+      return (_a2 = __privateGet(this, _queryCache).get(options.queryHash)) == null ? void 0 : _a2.state.data;
     }
     ensureQueryData(options) {
       const cachedData = this.getQueryData(options.queryKey);
-      return cachedData !== void 0 ? Promise.resolve(cachedData) : this.fetchQuery(options);
+      if (cachedData === void 0)
+        return this.fetchQuery(options);
+      else {
+        const defaultedOptions = this.defaultQueryOptions(options);
+        const query = __privateGet(this, _queryCache).build(this, defaultedOptions);
+        if (options.revalidateIfStale && query.isStaleByTime(defaultedOptions.staleTime)) {
+          void this.prefetchQuery(defaultedOptions);
+        }
+        return Promise.resolve(cachedData);
+      }
     }
     getQueriesData(filters) {
       return this.getQueryCache().findAll(filters).map(({ queryKey, state }) => {
@@ -97688,13 +97760,15 @@ Please use another name.` : formatMuiErrorMessage(18));
       });
     }
     setQueryData(queryKey, updater, options) {
-      const query = __privateGet(this, _queryCache).find({ queryKey });
+      const defaultedOptions = this.defaultQueryOptions({ queryKey });
+      const query = __privateGet(this, _queryCache).get(
+        defaultedOptions.queryHash
+      );
       const prevData = query == null ? void 0 : query.state.data;
       const data = functionalUpdate(updater, prevData);
-      if (typeof data === "undefined") {
+      if (data === void 0) {
         return void 0;
       }
-      const defaultedOptions = this.defaultQueryOptions({ queryKey });
       return __privateGet(this, _queryCache).build(this, defaultedOptions).setData(data, { ...options, manual: true });
     }
     setQueriesData(filters, updater, options) {
@@ -97707,7 +97781,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     getQueryState(queryKey) {
       var _a2;
-      return (_a2 = __privateGet(this, _queryCache).find({ queryKey })) == null ? void 0 : _a2.state;
+      const options = this.defaultQueryOptions({ queryKey });
+      return (_a2 = __privateGet(this, _queryCache).get(options.queryHash)) == null ? void 0 : _a2.state;
     }
     removeQueries(filters) {
       const queryCache = __privateGet(this, _queryCache);
@@ -97770,7 +97845,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     fetchQuery(options) {
       const defaultedOptions = this.defaultQueryOptions(options);
-      if (typeof defaultedOptions.retry === "undefined") {
+      if (defaultedOptions.retry === void 0) {
         defaultedOptions.retry = false;
       }
       const query = __privateGet(this, _queryCache).build(this, defaultedOptions);
@@ -97787,7 +97862,10 @@ Please use another name.` : formatMuiErrorMessage(18));
       return this.fetchInfiniteQuery(options).then(noop).catch(noop);
     }
     resumePausedMutations() {
-      return __privateGet(this, _mutationCache2).resumePausedMutations();
+      if (onlineManager.isOnline()) {
+        return __privateGet(this, _mutationCache2).resumePausedMutations();
+      }
+      return Promise.resolve();
     }
     getQueryCache() {
       return __privateGet(this, _queryCache);
@@ -97834,12 +97912,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       return result;
     }
     defaultQueryOptions(options) {
-      if (options == null ? void 0 : options._defaulted) {
+      if (options._defaulted) {
         return options;
       }
       const defaultedOptions = {
         ...__privateGet(this, _defaultOptions3).queries,
-        ...(options == null ? void 0 : options.queryKey) && this.getQueryDefaults(options.queryKey),
+        ...this.getQueryDefaults(options.queryKey),
         ...options,
         _defaulted: true
       };
@@ -97849,14 +97927,17 @@ Please use another name.` : formatMuiErrorMessage(18));
           defaultedOptions
         );
       }
-      if (typeof defaultedOptions.refetchOnReconnect === "undefined") {
+      if (defaultedOptions.refetchOnReconnect === void 0) {
         defaultedOptions.refetchOnReconnect = defaultedOptions.networkMode !== "always";
       }
-      if (typeof defaultedOptions.throwOnError === "undefined") {
+      if (defaultedOptions.throwOnError === void 0) {
         defaultedOptions.throwOnError = !!defaultedOptions.suspense;
       }
-      if (typeof defaultedOptions.networkMode === "undefined" && defaultedOptions.persister) {
+      if (!defaultedOptions.networkMode && defaultedOptions.persister) {
         defaultedOptions.networkMode = "offlineFirst";
+      }
+      if (defaultedOptions.enabled !== true && defaultedOptions.queryFn === skipToken) {
+        defaultedOptions.enabled = false;
       }
       return defaultedOptions;
     }
@@ -97889,7 +97970,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         client.unmount();
       };
     }, [client]);
-    return /* @__PURE__ */ reactExports.createElement(QueryClientContext.Provider, { value: client }, children);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientContext.Provider, { value: client, children });
   };
   var MoreHoriz = {};
   var _interopRequireDefault$e = interopRequireDefaultExports;
@@ -98496,8 +98577,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   function each(obj, iter) {
     if (getArchtype(obj) === 0) {
-      Object.entries(obj).forEach(([key, value]) => {
-        iter(key, value, obj);
+      Reflect.ownKeys(obj).forEach((key) => {
+        iter(key, obj[key], obj);
       });
     } else {
       obj.forEach((entry, index) => iter(index, entry, obj));
@@ -98580,7 +98661,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     Object.freeze(obj);
     if (deep)
-      each(obj, (_key, value) => freeze(value, true));
+      Object.entries(obj).forEach(([key, value]) => freeze(value, true));
     return obj;
   }
   function dontMutateFrozenCollections() {
@@ -98735,7 +98816,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         return;
       }
       finalize(rootScope, childValue);
-      if (!parentState || !parentState.scope_.parent_)
+      if ((!parentState || !parentState.scope_.parent_) && typeof prop !== "symbol" && Object.prototype.propertyIsEnumerable.call(targetObject, prop))
         maybeFreeze(rootScope, childValue);
     }
   }
@@ -100916,7 +100997,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(CFAlert, { sx: { mb: 3 }, severity: "warning", title: "TODO - Backend" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: templates.map((template2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCardDumb, { ...template2 }, index)) })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: templates.map((template2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkflowCard, { workflowData: template2 }, `template-${index}`)) })
           ]
         }
       )
@@ -103196,7 +103277,6 @@ Please use another name.` : formatMuiErrorMessage(18));
   lib.possibleStandardNames = possibleStandardNames;
   var utilities$1 = {};
   var cjs$1 = {};
-  var cjs = {};
   var COMMENT_REGEX = /\/\*[^*]*\*+([^/*][^*]*\*+)*\//g;
   var NEWLINE_REGEX = /\n/g;
   var WHITESPACE_REGEX = /^\s*/;
@@ -103338,7 +103418,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   var __importDefault$2 = commonjsGlobal && commonjsGlobal.__importDefault || function(mod2) {
     return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
   };
-  Object.defineProperty(cjs, "__esModule", { value: true });
+  Object.defineProperty(cjs$1, "__esModule", { value: true });
   var inline_style_parser_1 = __importDefault$2(inlineStyleParser);
   function StyleToObject(style2, iterator) {
     var styleObject = null;
@@ -103361,7 +103441,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     return styleObject;
   }
-  cjs.default = StyleToObject;
+  cjs$1.default = StyleToObject;
   var utilities = {};
   Object.defineProperty(utilities, "__esModule", { value: true });
   utilities.camelCase = void 0;
@@ -103398,8 +103478,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   var __importDefault$1 = commonjsGlobal && commonjsGlobal.__importDefault || function(mod2) {
     return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
   };
-  Object.defineProperty(cjs$1, "__esModule", { value: true });
-  var style_to_object_1 = __importDefault$1(cjs);
+  var style_to_object_1 = __importDefault$1(cjs$1);
   var utilities_1$2 = utilities;
   function StyleToJS(style2, options) {
     var output = {};
@@ -103413,7 +103492,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     return output;
   }
-  cjs$1.default = StyleToJS;
+  StyleToJS.default = StyleToJS;
+  var cjs = StyleToJS;
   (function(exports) {
     var __importDefault2 = commonjsGlobal && commonjsGlobal.__importDefault || function(mod2) {
       return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
@@ -103421,7 +103501,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.returnFirstArg = exports.canTextBeChildOfNode = exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = exports.PRESERVE_CUSTOM_ATTRIBUTES = exports.setStyleProp = exports.isCustomComponent = void 0;
     var react_12 = reactExports;
-    var style_to_js_1 = __importDefault2(cjs$1);
+    var style_to_js_1 = __importDefault2(cjs);
     var RESERVED_SVG_MATHML_ELEMENTS = /* @__PURE__ */ new Set([
       "annotation-xml",
       "color-profile",
@@ -103547,10 +103627,13 @@ Please use another name.` : formatMuiErrorMessage(18));
     isValidElement: react_1.isValidElement
   };
   function domToReact(nodes, options) {
+    if (options === void 0) {
+      options = {};
+    }
     var reactElements = [];
-    var hasReplace = typeof (options === null || options === void 0 ? void 0 : options.replace) === "function";
-    var transform = (options === null || options === void 0 ? void 0 : options.transform) || utilities_1.returnFirstArg;
-    var _a2 = (options === null || options === void 0 ? void 0 : options.library) || React, cloneElement = _a2.cloneElement, createElement2 = _a2.createElement, isValidElement = _a2.isValidElement;
+    var hasReplace = typeof options.replace === "function";
+    var transform = options.transform || utilities_1.returnFirstArg;
+    var _a2 = options.library || React, cloneElement = _a2.cloneElement, createElement2 = _a2.createElement, isValidElement = _a2.isValidElement;
     var nodesLength = nodes.length;
     for (var index = 0; index < nodesLength; index++) {
       var node2 = nodes[index];
@@ -103571,7 +103654,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         if (isWhitespace && node2.parent && !(0, utilities_1.canTextBeChildOfNode)(node2.parent)) {
           continue;
         }
-        if ((options === null || options === void 0 ? void 0 : options.trim) && isWhitespace) {
+        if (options.trim && isWhitespace) {
           continue;
         }
         reactElements.push(transform(node2.data, node2, index));

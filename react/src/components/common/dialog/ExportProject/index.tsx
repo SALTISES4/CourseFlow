@@ -14,29 +14,10 @@ import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '..'
 import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
+import { EProject } from '@cfModule/XMLHTTP/types/entity'
 
 type PropsType = {
-  data: {
-    id: number
-    title: string
-    description: string
-    type: 'project' | 'program' | 'course' | 'activity'
-    author: string
-    author_id: number
-    workflowproject_set: number[]
-    disciplines: any[]
-    object_sets: { id: number; title: string }[]
-    object_permission: {
-      permission_type: number
-      last_viewed: string
-    }
-    deleted: boolean
-    published: boolean
-    favourite: boolean
-    created_on: string
-    deleted_on: string
-    last_modified: string
-  }
+  data: EProject
 }
 
 enum EXPORT_TYPE {

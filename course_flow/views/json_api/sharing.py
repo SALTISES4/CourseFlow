@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.humanize.templatetags import humanize
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
@@ -150,6 +150,17 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
             permission_type=ObjectPermission.PERMISSION_STUDENT,
         ).select_related("user"):
             students.add(object_permission.user)
+        try:
+            if (
+                Group.objects.get(name="SALTISE_Staff")
+                in request.user.groups.all()
+            ):
+                saltise_user = True
+            else:
+                saltise_user = False
+        except ObjectDoesNotExist:
+            saltise_user = False
+        is_template = this_object.is_template
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -164,6 +175,8 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
             "published": published,
             "public_view": public_view,
             "cannot_change": cannot_change,
+            "saltise_user": saltise_user,
+            "is_template": is_template,
         }
     )
 

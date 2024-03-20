@@ -87,8 +87,8 @@ def get_explore_objects(user, name_filter, nresults, published, data):
     types = data.get("types", [])
     disciplines = data.get("disciplines", [])
     sort = data.get("sort", None)
-    from_saltise = data.get("from_saltise", False)
-    content_rich = data.get("content_rich", False)
+    from_saltise = data.get("fromSaltise", False)
+    content_rich = data.get("contentRich", False)
     sort_reversed = data.get("sort_reversed", False)
     page = data.get("page", 1)
 

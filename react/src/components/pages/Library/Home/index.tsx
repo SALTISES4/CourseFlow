@@ -10,7 +10,7 @@ import Section from './components/Section'
 
 type PropsType = {
   projects: Workflow[]
-  templates: WorkflowCardDumbPropsType[]
+  templates: Workflow[]
   isTeacher: boolean
 }
 
@@ -65,7 +65,7 @@ const Home = ({ isTeacher, projects, templates }: PropsType) => {
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         <GridWrap>
           {templates.map((template, index) => (
-            <WorkflowCardDumb key={index} {...template} />
+            <WorkflowCard key={`template-${index}`} workflowData={template} />
           ))}
         </GridWrap>
       </Section>

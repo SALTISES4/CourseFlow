@@ -101,6 +101,8 @@ export type UsersForObjectQueryResp = {
   published: boolean
   public_view: boolean
   cannot_change: number[]
+  saltise_user: boolean
+  is_template: boolean
 }
 
 export type UserListResp = {

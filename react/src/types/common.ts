@@ -14,6 +14,7 @@ export interface Workflow {
   is_linked: boolean
   is_owned: boolean
   is_strategy: boolean
+  is_template: boolean
   is_visible: boolean
   last_modified: string
   object_permission: ObjectPermission
