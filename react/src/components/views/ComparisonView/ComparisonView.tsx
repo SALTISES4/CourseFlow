@@ -3,7 +3,7 @@ import * as reactDom from 'react-dom'
 import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar'
-import { WorkflowTitle } from '@cfUIComponents'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'

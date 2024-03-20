@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { OutcomeTitle, WeekTitle } from '@cfUIComponents'
+import { OutcomeTitle, WeekTitle } from '@cfCommonComponents/UIComponents/Titles'
 import {
   getOutcomeByID,
   getWeekByID,

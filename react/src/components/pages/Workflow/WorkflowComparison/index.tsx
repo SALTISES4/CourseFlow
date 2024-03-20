@@ -1,6 +1,6 @@
 import React from 'react'
 import * as reactDom from 'react-dom'
-import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
+import WorkflowLoader from '@cfCommonComponents/UIComponents/WorkflowLoader'
 import * as Reducers from '@cfReducers'
 import { Provider } from 'react-redux'
 import ComparisonWorkflowBase from '@cfViews/ComparisonView/ComparisonWorkflowBase'

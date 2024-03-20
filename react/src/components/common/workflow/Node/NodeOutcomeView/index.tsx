@@ -2,7 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
 import { getNodeByID, TGetNodeByID } from '@cfFindState'
-import { NodeTitle } from '@cfUIComponents'
+import { NodeTitle } from '@cfCommonComponents/UIComponents/Titles'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'

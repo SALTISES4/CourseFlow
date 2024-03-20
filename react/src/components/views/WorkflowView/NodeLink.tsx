@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import { EditableComponentWithActions } from '@cfParentComponents'
+import EditableComponentWithActions from '@cfParentComponents/EditableComponentWithActions'
 import { getNodeLinkByID, TGetNodeLinkByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import NodeLinkSVG from '@cfCommonComponents/workflow/Node/NodeLinkSVG'

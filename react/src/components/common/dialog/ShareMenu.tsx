@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { WorkflowTitle } from '@cfUIComponents'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 
 // import $ from 'jquery'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'

@@ -1,6 +1,6 @@
 import React from 'react'
 import * as reactDom from 'react-dom'
-import WorkflowLoader from '@cfUIComponents/WorkflowLoader.jsx'
+import WorkflowLoader from '@cfCommonComponents/UIComponents/WorkflowLoader.jsx'
 import * as Constants from '@cfConstants'
 import { ViewType } from '@cfModule/types/enum.js'
 import ComparisonView from '@cfViews/ComparisonView/ComparisonView'

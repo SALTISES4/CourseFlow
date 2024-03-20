@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { EditableComponent } from '@cfParentComponents'
+import EditableComponent from '@cfParentComponents/EditableComponent'
 
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
 import OutcomeEdit from './OutcomeEdit'

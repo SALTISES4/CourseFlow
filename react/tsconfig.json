@@ -67,12 +67,6 @@
       "@cfParentComponents/*": [
         "./components/common/extended/*"
       ],
-      "@cfUIComponents/*": [
-        "./components/common/UIComponents/*"
-      ],
-      "@cfUIComponents": [
-        "./components/common/UIComponents"
-      ],
       "@cfFindState": [
         "./redux/findState.ts"
       ],
