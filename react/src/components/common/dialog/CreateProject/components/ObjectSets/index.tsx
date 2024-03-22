@@ -13,6 +13,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
+import {object_sets_types} from '@cfConstants'
 
 import { StyledAccordion, AdvancedLabel } from './styles'
 import { StyledForm } from '../../../styles'
@@ -37,6 +38,11 @@ function ObjectSets({
   const objectSets: ObjectSetType[] = sets.length
     ? sets
     : [{ type: '' as OBJECT_SET_TYPE, label: '' }]
+
+  const object_set_types = object_sets_types()
+  const object_set_options = Object.keys(object_set_types).map(key=>(
+    {value:key,label:object_set_types[key]}
+  ));
 
   return (
     <StyledAccordion expanded={expanded}>
@@ -76,9 +82,9 @@ function ObjectSets({
                   }
                   label="Type"
                 >
-                  <MenuItem value="outcome">Project outcome</MenuItem>
-                  <MenuItem value="something">Something</MenuItem>
-                  <MenuItem value="else">Entirely else</MenuItem>
+                  {object_set_options.map(option=>
+                    <MenuItem value={option.value}>{option.label}</MenuItem>
+                  )}
                 </Select>
               </FormControl>
               <TextField

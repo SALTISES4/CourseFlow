@@ -1665,6 +1665,7 @@ class FormFieldsSerializer:
     # based on combination of field and widget type
     def get_field_type(self, field):
         field_type = field.__class__.__name__
+        print(field_type)
         widget_type = field.widget.__class__.__name__
 
         if field_type == "CharField":
@@ -1679,6 +1680,8 @@ class FormFieldsSerializer:
                 return "select"
             elif widget_type == "RadioSelect":
                 return "radio"
+        elif field_type == "ModelMultipleChoiceField":
+            return "multiselect"
         elif field_type == "BooleanField":
             if widget_type == "CheckboxInput":
                 return "checkbox"

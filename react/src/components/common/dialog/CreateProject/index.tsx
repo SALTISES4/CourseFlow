@@ -5,12 +5,23 @@ import Button from '@mui/material/Button'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
+import Select from '@mui/material/Select'
+import OutlinedInput from '@mui/material/OutlinedInput'
+import InputLabel from '@mui/material/InputLabel'
+import Chip from '@mui/material/Chip'
+import Box from '@mui/material/Box'
+import CancelIcon from '@mui/icons-material/Cancel'
+import CheckIcon from '@mui/icons-material/Check'
+import MenuItem from '@mui/material/MenuItem'
+import Stack from '@mui/material/Stack'
+import FormControl from '@mui/material/FormControl'
 import { DIALOG_TYPE, useDialog } from '../'
 import { StyledDialog, StyledForm } from '../styles'
 import ObjectSets from './components/ObjectSets'
 import { TopBarProps } from '@cfModule/types/common'
 import { API_POST } from '@XMLHTTP/PostFunctions'
 import { produce } from 'immer'
+import {SelectChangeEvent} from '@mui/material'
 
 // TODO: figure out how to handle object set types and where the values come from
 export enum OBJECT_SET_TYPE {
@@ -31,7 +42,7 @@ export type OnUpdateType = {
 
 export type StateType = {
   fields: {
-    [index: string]: string
+    [index: string]: string | any[]
   }
   objectSets: ObjectSetType[]
   objectSetsExpanded: boolean
@@ -82,7 +93,7 @@ function CreateProjectDialog({
   }
 
   function onInputChange(
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | any[]>,
     field: any // TODO
   ) {
     if (errors[field.name]) {
@@ -148,10 +159,9 @@ function CreateProjectDialog({
         )}
         <StyledForm component="form">
           {formFields.map((field, index) => {
+            const hasError = !!errors[field.name]
+            const errorText = hasError && errors[field.name][0]
             if (field.type === 'text') {
-              const hasError = !!errors[field.name]
-              const errorText = hasError && errors[field.name][0]
-
               return (
                 <TextField
                   key={index}
@@ -165,6 +175,35 @@ function CreateProjectDialog({
                   onChange={(e) => onInputChange(e, field)}
                 />
               )
+            }else if(field.type === 'multiselect'){
+              return ([
+                <InputLabel>{field.label}</InputLabel>,
+                <Select 
+                  key={index}
+                  name={field.name}
+                  required={field.required}
+                  multiple
+                  error={hasError}
+                  value={state.fields[field.name] ?? []}
+                  renderValue={(selected) => (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {(selected as any[]).map((value) => (
+                        <Chip key={value} label={field.options.find((option)=>option.value==value).label} />
+                      ))}
+                    </Box>
+                  )}
+                  onChange={(e) => onInputChange(e, field)}
+                >
+                  {field.options.map((option)=>(
+                    <MenuItem
+                      key={option.value}
+                      value={option.value}
+                    >
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ])
             }
           })}
           <ObjectSets

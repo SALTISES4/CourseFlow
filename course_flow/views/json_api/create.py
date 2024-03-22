@@ -3,13 +3,11 @@ import math
 import re
 
 import bleach
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpRequest, JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
 from django.urls import reverse
-
-from course_flow.forms import CreateProject
+from django.views.decorators.http import require_POST
 
 from course_flow.decorators import (
     check_object_permission,
@@ -22,6 +20,7 @@ from course_flow.duplication_functions import (
     duplicate_column,
     fast_duplicate_week,
 )
+from course_flow.forms import CreateProject
 from course_flow.models import (
     Column,
     Node,
@@ -447,18 +446,32 @@ def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
 @require_POST
 def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
     # instantiate the form with the JSON params
+    data = json.loads(request.body)
     form = CreateProject(json.loads(request.body))
 
     # if the form is valid, save it and return a success response
     # along with the redirect URL to the newly created project
     if form.is_valid():
         project = form.save()
-        return JsonResponse({
-            "action": "posted",
-            "redirect": reverse(
-                "course_flow:project-update", kwargs={"pk": project.pk}
-            )
-        })
+        project.author = request.user
+        project.save()
+
+        # Create the object sets, if any
+        object_sets = data["objectSets"]
+        for object_set in object_sets:
+            title = "Untitled Set"
+            if object_set["label"] is not None and object_set["label"] != "":
+                title = object_set["label"]
+            project.object_sets.create(term=object_set["type"], title=title)
+
+        return JsonResponse(
+            {
+                "action": "posted",
+                "redirect": reverse(
+                    "course_flow:project-update", kwargs={"pk": project.pk}
+                ),
+            }
+        )
 
     # otherwise, return the errors so UI can display errors accordingly
     return JsonResponse({"action": "error", "errors": form.errors})
