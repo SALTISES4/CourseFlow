@@ -45058,29 +45058,29 @@ Please use another name.` : formatMuiErrorMessage(18));
     })(createSvgIcon$1);
     return createSvgIcon$1;
   }
-  var _interopRequireDefault$g = interopRequireDefaultExports;
+  var _interopRequireDefault$h = interopRequireDefaultExports;
   Object.defineProperty(Star, "__esModule", {
     value: true
   });
-  var default_1$g = Star.default = void 0;
-  var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
-  var _jsxRuntime$g = jsxRuntimeExports;
-  var _default$g = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
+  var default_1$h = Star.default = void 0;
+  var _createSvgIcon$h = _interopRequireDefault$h(requireCreateSvgIcon());
+  var _jsxRuntime$h = jsxRuntimeExports;
+  var _default$h = (0, _createSvgIcon$h.default)(/* @__PURE__ */ (0, _jsxRuntime$h.jsx)("path", {
     d: "M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
   }), "Star");
-  default_1$g = Star.default = _default$g;
+  default_1$h = Star.default = _default$h;
   var StarOutline = {};
-  var _interopRequireDefault$f = interopRequireDefaultExports;
+  var _interopRequireDefault$g = interopRequireDefaultExports;
   Object.defineProperty(StarOutline, "__esModule", {
     value: true
   });
-  var default_1$f = StarOutline.default = void 0;
-  var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
-  var _jsxRuntime$f = jsxRuntimeExports;
-  var _default$f = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
+  var default_1$g = StarOutline.default = void 0;
+  var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
+  var _jsxRuntime$g = jsxRuntimeExports;
+  var _default$g = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
     d: "m22 9.24-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.63-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28-3.32-2.88 4.38-.38L12 6.1l1.71 4.04 4.38.38-3.32 2.88 1 4.28L12 15.4z"
   }), "StarOutline");
-  default_1$f = StarOutline.default = _default$f;
+  default_1$g = StarOutline.default = _default$g;
   function useTheme() {
     const theme2 = useTheme$2(defaultTheme$2);
     if (process.env.NODE_ENV !== "production") {
@@ -47650,7 +47650,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 color: isFavourite ? "courseflow.favouriteActive" : "courseflow.favouriteInactive"
               },
               onClick: onFavourite,
-              children: isFavourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {})
+              children: isFavourite ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$h, {}) : /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, {})
             }
           ) })
         ] })
@@ -97980,17 +97980,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     return /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientContext.Provider, { value: client, children });
   };
   var MoreHoriz = {};
-  var _interopRequireDefault$e = interopRequireDefaultExports;
+  var _interopRequireDefault$f = interopRequireDefaultExports;
   Object.defineProperty(MoreHoriz, "__esModule", {
     value: true
   });
-  var default_1$e = MoreHoriz.default = void 0;
-  var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
-  var _jsxRuntime$e = jsxRuntimeExports;
-  var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
+  var default_1$f = MoreHoriz.default = void 0;
+  var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
+  var _jsxRuntime$f = jsxRuntimeExports;
+  var _default$f = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
     d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
   }), "MoreHoriz");
-  default_1$e = MoreHoriz.default = _default$e;
+  default_1$f = MoreHoriz.default = _default$f;
   function API_POST(url = "", data = {}) {
     if (!url) {
       return Promise.reject("You need to specify an URL in for API_POST to run.");
@@ -98184,7 +98184,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 onClick: (e) => handleMenuOpen(e, n),
                 "aria-label": COURSEFLOW_APP.strings.show_notifications_menu,
                 "aria-haspopup": "true",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {})
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {})
               }
             ),
             children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
@@ -99979,17 +99979,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }
   var Campaign = {};
-  var _interopRequireDefault$d = interopRequireDefaultExports;
+  var _interopRequireDefault$e = interopRequireDefaultExports;
   Object.defineProperty(Campaign, "__esModule", {
     value: true
   });
-  var default_1$d = Campaign.default = void 0;
-  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-  var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+  var default_1$e = Campaign.default = void 0;
+  var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
+  var _jsxRuntime$e = jsxRuntimeExports;
+  var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
     d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
   }), "Campaign");
-  default_1$d = Campaign.default = _default$d;
+  default_1$e = Campaign.default = _default$e;
   /*! js-cookie v3.0.5 | MIT */
   function assign(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
@@ -100118,7 +100118,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       Alert$1,
       {
         severity: isUpdateAnnouncement ? "info" : severity,
-        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : null,
+        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {}) : null,
         sx,
         onClose: hideIfCookie && handleClose,
         children: [
@@ -100867,17 +100867,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }
   var Close = {};
-  var _interopRequireDefault$c = interopRequireDefaultExports;
+  var _interopRequireDefault$d = interopRequireDefaultExports;
   Object.defineProperty(Close, "__esModule", {
     value: true
   });
-  var default_1$c = Close.default = void 0;
-  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
-  var _jsxRuntime$c = jsxRuntimeExports;
-  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+  var default_1$d = Close.default = void 0;
+  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+  var _jsxRuntime$d = jsxRuntimeExports;
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
     d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  default_1$c = Close.default = _default$c;
+  default_1$d = Close.default = _default$d;
   const Wrap = styled$1(Box$1)(({ theme: theme2 }) => ({
     position: "relative",
     padding: `${theme2.spacing(6)} ${theme2.spacing(4)}`,
@@ -100908,7 +100908,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return null;
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Wrap, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h4", children: window.gettext("Welcome to CourseFlow") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { sx: { mt: 2 }, children: window.gettext(
         "Tell us a bit more about your goals so that we can help you get started."
@@ -103746,53 +103746,53 @@ Please use another name.` : formatMuiErrorMessage(18));
   const HTMLReactParser = /* @__PURE__ */ getDefaultExportFromCjs(lib$3);
   const HtmlReactParser = HTMLReactParser.default || HTMLReactParser;
   var AccountCircle = {};
-  var _interopRequireDefault$b = interopRequireDefaultExports;
+  var _interopRequireDefault$c = interopRequireDefaultExports;
   Object.defineProperty(AccountCircle, "__esModule", {
     value: true
   });
-  var default_1$b = AccountCircle.default = void 0;
-  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-  var _jsxRuntime$b = jsxRuntimeExports;
-  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+  var default_1$c = AccountCircle.default = void 0;
+  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+  var _jsxRuntime$c = jsxRuntimeExports;
+  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
     d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z"
   }), "AccountCircle");
-  default_1$b = AccountCircle.default = _default$b;
+  default_1$c = AccountCircle.default = _default$c;
   var Logout = {};
-  var _interopRequireDefault$a = interopRequireDefaultExports;
+  var _interopRequireDefault$b = interopRequireDefaultExports;
   Object.defineProperty(Logout, "__esModule", {
     value: true
   });
-  var default_1$a = Logout.default = void 0;
-  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-  var _jsxRuntime$a = jsxRuntimeExports;
-  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
+  var default_1$b = Logout.default = void 0;
+  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
+  var _jsxRuntime$b = jsxRuntimeExports;
+  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
     d: "m17 7-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
   }), "Logout");
-  default_1$a = Logout.default = _default$a;
+  default_1$b = Logout.default = _default$b;
   var Notifications = {};
-  var _interopRequireDefault$9 = interopRequireDefaultExports;
+  var _interopRequireDefault$a = interopRequireDefaultExports;
   Object.defineProperty(Notifications, "__esModule", {
     value: true
   });
-  var default_1$9 = Notifications.default = void 0;
-  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
-  var _jsxRuntime$9 = jsxRuntimeExports;
-  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
+  var default_1$a = Notifications.default = void 0;
+  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+  var _jsxRuntime$a = jsxRuntimeExports;
+  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
     d: "M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"
   }), "Notifications");
-  default_1$9 = Notifications.default = _default$9;
+  default_1$a = Notifications.default = _default$a;
   var AddCircle = {};
-  var _interopRequireDefault$8 = interopRequireDefaultExports;
+  var _interopRequireDefault$9 = interopRequireDefaultExports;
   Object.defineProperty(AddCircle, "__esModule", {
     value: true
   });
-  var default_1$8 = AddCircle.default = void 0;
-  var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
-  var _jsxRuntime$8 = jsxRuntimeExports;
-  var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+  var default_1$9 = AddCircle.default = void 0;
+  var _createSvgIcon$9 = _interopRequireDefault$9(requireCreateSvgIcon());
+  var _jsxRuntime$9 = jsxRuntimeExports;
+  var _default$9 = (0, _createSvgIcon$9.default)(/* @__PURE__ */ (0, _jsxRuntime$9.jsx)("path", {
     d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
   }), "AddCircle");
-  default_1$8 = AddCircle.default = _default$8;
+  default_1$9 = AddCircle.default = _default$9;
   function CreateProgramDialog() {
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROGRAM);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose, children: [
@@ -103800,6 +103800,18 @@ Please use another name.` : formatMuiErrorMessage(18));
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: "Hello from the CreateDialog, this is speaking" })
     ] });
   }
+  var Cancel = {};
+  var _interopRequireDefault$8 = interopRequireDefaultExports;
+  Object.defineProperty(Cancel, "__esModule", {
+    value: true
+  });
+  var default_1$8 = Cancel.default = void 0;
+  var _createSvgIcon$8 = _interopRequireDefault$8(requireCreateSvgIcon());
+  var _jsxRuntime$8 = jsxRuntimeExports;
+  var _default$8 = (0, _createSvgIcon$8.default)(/* @__PURE__ */ (0, _jsxRuntime$8.jsx)("path", {
+    d: "M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+  }), "Cancel");
+  default_1$8 = Cancel.default = _default$8;
   var ExpandMore = {};
   var _interopRequireDefault$7 = interopRequireDefaultExports;
   Object.defineProperty(ExpandMore, "__esModule", {
@@ -103923,7 +103935,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               fullWidth: true
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
             IconButton$1,
             {
               onClick: () => onUpdate({
@@ -103947,6 +103959,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const [errors2, setErrors] = reactExports.useState({});
     const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT);
+    const [selectOpenStates, setSelectOpenStates] = reactExports.useState({});
     function onSubmit() {
       if (Object.keys(errors2).length) {
         return false;
@@ -103970,7 +103983,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       setErrors({});
       onClose();
     }
-    function onInputChange(e, field) {
+    function onInputChange(e, field, override = false) {
+      console.log("input change");
+      console.log(override);
       if (errors2[field.name]) {
         setErrors(
           produce((draft) => {
@@ -103981,7 +103996,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       setState(
         produce((draft) => {
           const { fields: fields2 } = draft;
-          fields2[e.target.name] = e.target.value;
+          if (override) {
+            console.log("setting to override value");
+            fields2[field.name] = override;
+          } else {
+            fields2[field.name] = e.target.value;
+          }
         })
       );
     }
@@ -104010,6 +104030,11 @@ Please use another name.` : formatMuiErrorMessage(18));
           draft.objectSetsExpanded = !draft.objectSetsExpanded;
         })
       );
+    }
+    function handleSelectOpen(index, open) {
+      let newState = { ...selectOpenStates };
+      newState[index] = open;
+      setSelectOpenStates(newState);
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Create project") }),
@@ -104045,6 +104070,8 @@ Please use another name.` : formatMuiErrorMessage(18));
                 index
               );
             } else if (field.type === "multiselect") {
+              console.log(selectOpenStates);
+              console.log(state.fields);
               return [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: field.label }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -104053,10 +104080,36 @@ Please use another name.` : formatMuiErrorMessage(18));
                     name: field.name,
                     required: field.required,
                     multiple: true,
+                    open: selectOpenStates[index] ?? false,
                     error: hasError,
                     value: state.fields[field.name] ?? [],
-                    renderValue: (selected) => /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { display: "flex", flexWrap: "wrap", gap: 0.5 }, children: selected.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(Chip$1, { label: field.options.find((option) => option.value == value).label }, value)) }),
-                    onChange: (e) => onInputChange(e, field),
+                    renderValue: (selected) => /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { display: "flex", flexWrap: "wrap", gap: 0.5 }, children: selected.map((value) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Chip$1,
+                      {
+                        label: field.options.find((option) => option.value == value).label,
+                        clickable: true,
+                        deleteIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          default_1$8,
+                          {
+                            onMouseDown: (event) => event.stopPropagation()
+                          }
+                        ),
+                        onDelete: (event) => {
+                          console.log("deleting!");
+                          let new_value = state.fields[field.name].slice();
+                          new_value.splice(new_value.indexOf(value), 1);
+                          onInputChange(event, field, new_value);
+                          event.stopPropagation();
+                        }
+                      },
+                      value
+                    )) }),
+                    onClose: () => handleSelectOpen(index, false),
+                    onOpen: () => handleSelectOpen(index, true),
+                    onChange: (e) => {
+                      onInputChange(e, field);
+                      handleSelectOpen(index, false);
+                    },
                     children: field.options.map((option) => /* @__PURE__ */ jsxRuntimeExports.jsx(
                       MenuItem$1,
                       {
@@ -104318,7 +104371,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             menus.account.daliteText
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(MenuItem$1, { onClick: handleLogout, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}),
             " ",
             COURSEFLOW_APP.strings.sign_out
           ] })
@@ -104338,7 +104391,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-haspopup": "true",
               color: "primary",
               onClick: handleAddMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$8, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {})
             }
           ) : null,
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -104349,7 +104402,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-controls": "notifications-menu",
               "aria-haspopup": "true",
               onClick: handleNotificationsMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$9, {}) })
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Badge$1, { badgeContent: notifications2.unread, color: "primary", children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) })
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -104361,7 +104414,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-controls": "account-menu",
               "aria-haspopup": "true",
               onClick: handleMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
             }
           )
         ] })

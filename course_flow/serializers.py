@@ -1665,7 +1665,6 @@ class FormFieldsSerializer:
     # based on combination of field and widget type
     def get_field_type(self, field):
         field_type = field.__class__.__name__
-        print(field_type)
         widget_type = field.widget.__class__.__name__
 
         if field_type == "CharField":

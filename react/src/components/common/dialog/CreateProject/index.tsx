@@ -59,6 +59,7 @@ function CreateProjectDialog({
   })
   const [errors, setErrors] = useState({})
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT)
+  const [selectOpenStates,setSelectOpenStates] = useState({})
 
   function onSubmit() {
     // early exit if there are validation errors
@@ -94,8 +95,10 @@ function CreateProjectDialog({
 
   function onInputChange(
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | any[]>,
-    field: any // TODO
+    field: any, // TODO
+    override: any = false
   ) {
+
     if (errors[field.name]) {
       setErrors(
         produce((draft) => {
@@ -107,7 +110,11 @@ function CreateProjectDialog({
     setState(
       produce((draft) => {
         const { fields } = draft
-        fields[e.target.name] = e.target.value
+        if(override){
+          fields[field.name] = override
+        }else{
+          fields[field.name] = e.target.value
+        }
       })
     )
   }
@@ -141,6 +148,13 @@ function CreateProjectDialog({
         draft.objectSetsExpanded = !draft.objectSetsExpanded
       })
     )
+  }
+
+  //Open or close a controlled Select component
+  function handleSelectOpen(index: number, open: boolean){
+    let newState = {...selectOpenStates}
+    newState[index]=open;
+    setSelectOpenStates(newState);
   }
 
   return (
@@ -183,16 +197,34 @@ function CreateProjectDialog({
                   name={field.name}
                   required={field.required}
                   multiple
+                  open={selectOpenStates[index] ?? false}
                   error={hasError}
                   value={state.fields[field.name] ?? []}
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {(selected as any[]).map((value) => (
-                        <Chip key={value} label={field.options.find((option)=>option.value==value).label} />
+                        <Chip 
+                          key={value} 
+                          label={field.options.find((option)=>option.value==value).label} 
+                          clickable
+                          deleteIcon={
+                            <CancelIcon
+                              onMouseDown={(event) => event.stopPropagation()}
+                            />
+                          }
+                          onDelete={(event)=>{
+                            let new_value = state.fields[field.name].slice() as any[]
+                            new_value.splice(new_value.indexOf(value),1)
+                            onInputChange(event,field,new_value)
+                            event.stopPropagation()
+                          }}
+                        />
                       ))}
                     </Box>
                   )}
-                  onChange={(e) => onInputChange(e, field)}
+                  onClose={()=>handleSelectOpen(index, false)}
+                  onOpen={()=>handleSelectOpen(index, true)}
+                  onChange={(e) => {onInputChange(e, field);handleSelectOpen(index,false)}}
                 >
                   {field.options.map((option)=>(
                     <MenuItem
