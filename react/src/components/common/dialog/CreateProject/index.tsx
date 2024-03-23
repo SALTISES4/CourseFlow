@@ -25,9 +25,12 @@ import {SelectChangeEvent} from '@mui/material'
 
 // TODO: figure out how to handle object set types and where the values come from
 export enum OBJECT_SET_TYPE {
-  OUTCOME = 'outcome',
-  SOMETHING = 'something',
-  ELSE = 'else'
+  PROGRAM_OUTCOME = 'program outcome',
+  COURSE_OUTCOME = 'course outcome',
+  ACTIVITY_OUTCOME = 'activity outcome',
+  PROGRAM_NODE = 'program node',
+  COURSE_NODE = 'course node',
+  ACTIVITY_NODE = 'activity node',
 }
 
 export type ObjectSetType = {
