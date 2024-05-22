@@ -17,6 +17,7 @@ import {
   GetWorkflowSelectMenuResp
 } from '@XMLHTTP/types/query'
 import { EProject } from '@cfModule/XMLHTTP/types/entity'
+import { ObjectSet } from '@cfModule/types/common'
 // import $ from 'jquery'
 
 /**
@@ -26,8 +27,12 @@ import { EProject } from '@cfModule/XMLHTTP/types/entity'
  * When a workflow is added a WorkflowComparisonRenderer component is created.
  */
 
+type ObjectSetsType = ObjectSet & {
+  hidden?: boolean
+}
+
 type StateType = {
-  object_sets: AppState['objectset'] // @todo this is a guess, verify
+  object_sets: ObjectSetsType[]
   workflows: number[]
 }
 type PropsType = {
