@@ -99,6 +99,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
 
     if (Utility.checkSetHidden(data, this.props.object_sets)) return null
 
+    //Child outcomes. See comment in models/outcome.py for more info.
     const children = this.state.is_dropped ? (
       data.child_outcome_links.map((outcomeoutcome) => (
         <this.ChildType outcomeoutcome={outcomeoutcome} />
