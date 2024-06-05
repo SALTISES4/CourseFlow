@@ -5,7 +5,7 @@ import WorkflowCardDumb, {
   CHIP_TYPE,
   WorklowCardChipType
 } from '../WorkflowCardDumb'
-import { WorkflowTitle } from '@cfUIComponents/Titles'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'

@@ -11,7 +11,7 @@ import {
   OutcomeBarOutcomePropsType,
   OutcomeBarOutcomeUnconnected
 } from './OutcomeBarOutcome'
-import { OutcomeTitle } from '@cfUIComponents/Titles'
+import { OutcomeTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { AppState, TOutcomeOutcome } from '@cfRedux/types/type'
 
 /**

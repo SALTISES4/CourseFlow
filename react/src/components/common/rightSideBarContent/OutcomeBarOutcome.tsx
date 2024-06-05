@@ -6,7 +6,7 @@ import {
   TOutcomeOutcomeByID
 } from '@cfFindState'
 import { connect } from 'react-redux'
-import { OutcomeTitle } from '@cfUIComponents/Titles'
+import { OutcomeTitle } from '@cfCommonComponents/UIComponents/Titles'
 import * as Utility from '@cfUtility'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 

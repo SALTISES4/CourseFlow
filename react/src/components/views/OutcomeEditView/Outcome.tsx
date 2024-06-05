@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 // @components
-import { OutcomeTitle } from '@cfUIComponents'
-import { EditableComponentWithSorting } from '@cfParentComponents'
+import { OutcomeTitle } from '@cfCommonComponents/UIComponents/Titles'
+import EditableComponentWithSorting from '@cfParentComponents/EditableComponentWithSorting'
 import OutcomeOutcome from './OutcomeOutcome'
 import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 

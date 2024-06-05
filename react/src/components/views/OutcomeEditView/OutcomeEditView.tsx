@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 // @components
-import { EditableComponentWithSorting } from '@cfParentComponents'
+import EditableComponentWithSorting from '@cfParentComponents/EditableComponentWithSorting'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import Outcome from './Outcome'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'

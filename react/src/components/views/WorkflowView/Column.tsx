@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { EditableComponentWithActions } from '@cfParentComponents'
+import EditableComponentWithActions from '@cfParentComponents/EditableComponentWithActions'
 import { getColumnByID, TGetColumnByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import { CfObjectType } from '@cfModule/types/enum'

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
-import { OutcomeTitle } from '@cfUIComponents/index.js'
+import { OutcomeTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import { CfObjectType } from '@cfModule/types/enum'
 import ComponentWithToggleDrop, {

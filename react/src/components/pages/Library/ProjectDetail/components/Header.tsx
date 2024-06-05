@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { CollapsibleText, WorkflowTitle } from '@cfUIComponents/index.js'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
+import CollapsibleText from '@cfCommonComponents/UIComponents/CollapsibleText'
 import { Discipline } from '@cfModule/types/common'
 import Users from '@cfPages/Library/ProjectDetail/components/Users'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
