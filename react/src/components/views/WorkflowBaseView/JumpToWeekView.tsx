@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { TitleText } from '@cfUIComponents'
+import { TitleText } from '@cfCommonComponents/UIComponents/Titles'
 import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 import { connect } from 'react-redux'
 import { CfObjectType } from '@cfModule/types/enum'

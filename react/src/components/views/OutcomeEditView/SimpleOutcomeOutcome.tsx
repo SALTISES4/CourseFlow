@@ -31,6 +31,7 @@ export class SimpleOutcomeOutcomeUnconnected extends React.Component<PropsType> 
    *******************************************************/
   getChildType() {
     const data = this.props.data
+    //Child outcomes. See comment in models/outcome.py for more info.
     return (
       <SimpleOutcome
         objectID={data.child}

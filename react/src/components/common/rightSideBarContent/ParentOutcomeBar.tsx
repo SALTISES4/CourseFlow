@@ -7,7 +7,7 @@ import {
 } from '@cfFindState'
 import ParentOutcome from './ParentOutcomeBarOutcome'
 import { AppState } from '@cfRedux/types/type'
-import CompletionImg from '@cfUIComponents/CompletionImg'
+import CompletionImg from '@cfCommonComponents/UIComponents/CompletionImg'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 /**
