@@ -48,6 +48,7 @@ class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutc
       return <></>
     }
 
+    //Child outcomes. See comment in models/outcome.py for more info.
     return (
       // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> @todo this.mainDiv is not used
       <div className="outcome-outcome" id={String(this.props.data.id)}>
@@ -217,6 +218,7 @@ export class OutcomeBarOutcomeUnconnected<
 
     if (Utility.checkSetHidden(data, this.props.object_sets)) return null
 
+    //Child outcomes. See comment in models/outcome.py for more info.
     if (this.state.is_dropped)
       children = data.child_outcome_links.map((outcomeoutcome) => (
         <OutcomeBarOutcomeOutcome

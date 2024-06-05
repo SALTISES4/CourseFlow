@@ -28,6 +28,7 @@ class ParentOutcomeOutcomeUnconnected extends React.Component<ParentOutcomeOutco
    * RENDER
    *******************************************************/
   render() {
+    //Child outcomes. See comment in models/outcome.py for more info.
     return (
       // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> // @todo this.mainDiv is not defined or used
       <div className="outcome-outcome" id={String(this.props.data.id)}>
@@ -77,6 +78,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.data
+    //Child outcomes. See comment in models/outcome.py for more info.
     const children = data.child_outcome_links.map((item) => (
       <ParentOutcomeOutcome
         key={item}
