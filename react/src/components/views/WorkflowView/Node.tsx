@@ -224,7 +224,6 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     }
 
     if (!this.state.initial_render) {
-
       // this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
       nodePorts = reactDom.createPortal(
         <NodePorts

@@ -44,9 +44,7 @@ export class WorkflowComparison extends Workflow {
     this.container = container
     this.view_type = viewType
     this.initial_object_sets = initial_object_sets
-
   }
-
 
   render(view_type = ViewType.WORKFLOW) {
     this.view_type = view_type

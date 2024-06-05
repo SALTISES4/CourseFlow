@@ -28,13 +28,10 @@
   },
   "extends": [
     "eslint:recommended",
-    // "react-app", // tied to eslint-con fig-react-app
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:@typescript-eslint/recommended"
-    // "plugin:@typescript-eslint/recommended",
-    // "plugin:react/recommended",
-    // "plugin:prettier/recommended"
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended"
   ],
   "globals": {
     "$": true,
