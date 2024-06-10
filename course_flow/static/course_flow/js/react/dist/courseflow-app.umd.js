@@ -2265,18 +2265,17 @@ var __privateMethod = (obj, member, method) => {
     react_production_min.version = "18.2.0";
     return react_production_min;
   }
-  var hasRequiredReact;
-  function requireReact() {
-    if (hasRequiredReact)
-      return react.exports;
-    hasRequiredReact = 1;
-    if (process.env.NODE_ENV === "production") {
-      react.exports = requireReact_production_min();
-    } else {
-      react.exports = requireReact_development();
-    }
-    return react.exports;
+  if (process.env.NODE_ENV === "production") {
+    react.exports = requireReact_production_min();
+  } else {
+    react.exports = requireReact_development();
   }
+  var reactExports = react.exports;
+  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
+  const React$2 = /* @__PURE__ */ _mergeNamespaces({
+    __proto__: null,
+    default: React$1
+  }, [reactExports]);
   /**
    * @license React
    * react-jsx-runtime.development.js
@@ -2293,7 +2292,7 @@ var __privateMethod = (obj, member, method) => {
     hasRequiredReactJsxRuntime_development = 1;
     if (process.env.NODE_ENV !== "production") {
       (function() {
-        var React2 = requireReact();
+        var React2 = reactExports;
         var REACT_ELEMENT_TYPE = Symbol.for("react.element");
         var REACT_PORTAL_TYPE = Symbol.for("react.portal");
         var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
@@ -3178,7 +3177,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactJsxRuntime_production_min)
       return reactJsxRuntime_production_min;
     hasRequiredReactJsxRuntime_production_min = 1;
-    var f = requireReact(), k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
+    var f = reactExports, k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
     function q(c, a, g) {
       var b, d = {}, e = null, h = null;
       void 0 !== g && (e = "" + g);
@@ -3953,7 +3952,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var Scheduler = requireScheduler();
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         var suppressWarning = false;
@@ -25046,7 +25045,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactDom_production_min)
       return reactDom_production_min;
     hasRequiredReactDom_production_min = 1;
-    var aa = requireReact(), ca = requireScheduler();
+    var aa = reactExports, ca = requireScheduler();
     function p(a) {
       for (var b = "https://reactjs.org/docs/error-decoder.html?invariant=" + a, c = 1; c < arguments.length; c++)
         b += "&args[]=" + encodeURIComponent(arguments[c]);
@@ -32365,12 +32364,6 @@ var __privateMethod = (obj, member, method) => {
     VERB2["ERROR"] = "error";
     return VERB2;
   })(VERB || {});
-  var reactExports = requireReact();
-  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
-  const React$2 = /* @__PURE__ */ _mergeNamespaces({
-    __proto__: null,
-    default: React$1
-  }, [reactExports]);
   var shim = { exports: {} };
   var useSyncExternalStoreShim_development = {};
   /**
@@ -32392,7 +32385,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         function error(format2) {
           {
@@ -32518,7 +32511,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredUseSyncExternalStoreShim_production_min)
       return useSyncExternalStoreShim_production_min;
     hasRequiredUseSyncExternalStoreShim_production_min = 1;
-    var e = requireReact();
+    var e = reactExports;
     function h(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -32582,7 +32575,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var shim2 = shimExports;
         function is2(x, y) {
           return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
@@ -32676,7 +32669,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredWithSelector_production_min)
       return withSelector_production_min;
     hasRequiredWithSelector_production_min = 1;
-    var h = requireReact(), n = shimExports;
+    var h = reactExports, n = shimExports;
     function p(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -96804,6 +96797,156 @@ Please use another name.` : formatMuiErrorMessage(18));
   immer.applyPatches.bind(immer);
   immer.createDraft.bind(immer);
   immer.finishDraft.bind(immer);
+  var Campaign = {};
+  var _interopRequireDefault$d = interopRequireDefaultExports;
+  Object.defineProperty(Campaign, "__esModule", {
+    value: true
+  });
+  var default_1$d = Campaign.default = void 0;
+  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+  var _jsxRuntime$d = jsxRuntimeExports;
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+    d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
+  }), "Campaign");
+  default_1$d = Campaign.default = _default$d;
+  /*! js-cookie v3.0.5 | MIT */
+  function assign(target) {
+    for (var i2 = 1; i2 < arguments.length; i2++) {
+      var source = arguments[i2];
+      for (var key in source) {
+        target[key] = source[key];
+      }
+    }
+    return target;
+  }
+  var defaultConverter = {
+    read: function(value) {
+      if (value[0] === '"') {
+        value = value.slice(1, -1);
+      }
+      return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
+    },
+    write: function(value) {
+      return encodeURIComponent(value).replace(
+        /%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g,
+        decodeURIComponent
+      );
+    }
+  };
+  function init(converter, defaultAttributes) {
+    function set2(name2, value, attributes) {
+      if (typeof document === "undefined") {
+        return;
+      }
+      attributes = assign({}, defaultAttributes, attributes);
+      if (typeof attributes.expires === "number") {
+        attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
+      }
+      if (attributes.expires) {
+        attributes.expires = attributes.expires.toUTCString();
+      }
+      name2 = encodeURIComponent(name2).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
+      var stringifiedAttributes = "";
+      for (var attributeName in attributes) {
+        if (!attributes[attributeName]) {
+          continue;
+        }
+        stringifiedAttributes += "; " + attributeName;
+        if (attributes[attributeName] === true) {
+          continue;
+        }
+        stringifiedAttributes += "=" + attributes[attributeName].split(";")[0];
+      }
+      return document.cookie = name2 + "=" + converter.write(value, name2) + stringifiedAttributes;
+    }
+    function get(name2) {
+      if (typeof document === "undefined" || arguments.length && !name2) {
+        return;
+      }
+      var cookies = document.cookie ? document.cookie.split("; ") : [];
+      var jar = {};
+      for (var i2 = 0; i2 < cookies.length; i2++) {
+        var parts = cookies[i2].split("=");
+        var value = parts.slice(1).join("=");
+        try {
+          var found = decodeURIComponent(parts[0]);
+          jar[found] = converter.read(value, found);
+          if (name2 === found) {
+            break;
+          }
+        } catch (e) {
+        }
+      }
+      return name2 ? jar[name2] : jar;
+    }
+    return Object.create(
+      {
+        set: set2,
+        get,
+        remove: function(name2, attributes) {
+          set2(
+            name2,
+            "",
+            assign({}, attributes, {
+              expires: -1
+            })
+          );
+        },
+        withAttributes: function(attributes) {
+          return init(this.converter, assign({}, this.attributes, attributes));
+        },
+        withConverter: function(converter2) {
+          return init(assign({}, this.converter, converter2), this.attributes);
+        }
+      },
+      {
+        attributes: { value: Object.freeze(defaultAttributes) },
+        converter: { value: Object.freeze(converter) }
+      }
+    );
+  }
+  var api = init(defaultConverter, { path: "/" });
+  const StyledTitle = styled$1(AlertTitle$1)({
+    fontWeight: 600,
+    "&:last-child": {
+      marginBottom: 0
+    }
+  });
+  const StyledSubtitle = styled$1(Typography$1)({});
+  const CFAlert = ({
+    severity = "info",
+    title,
+    subtitle,
+    onClose,
+    hideIfCookie,
+    sx
+  }) => {
+    const [hide, setHide] = reactExports.useState(
+      hideIfCookie ? !!api.get(hideIfCookie) : false
+    );
+    function handleClose() {
+      onClose && onClose();
+      api.set(hideIfCookie, "true", { expires: 7 });
+      setHide(true);
+    }
+    if (hide) {
+      return null;
+    }
+    const isUpdateAnnouncement = severity === "update";
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      Alert$1,
+      {
+        severity: isUpdateAnnouncement ? "info" : severity,
+        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : null,
+        sx,
+        onClose: hideIfCookie && handleClose,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
+          subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
+        ]
+      }
+    );
+  };
   const defaultState = {
     type: null
   };
@@ -96827,6 +96970,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
     DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
     DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
+    DIALOG_TYPE2["STYLEGUIDE_CREATE_PROJECT"] = "styleguide_create_project";
+    DIALOG_TYPE2["STYLEGUIDE_EDIT_PROJECT"] = "styleguide_edit_project";
     return DIALOG_TYPE2;
   })(DIALOG_TYPE || {});
   function useDialog(dialogType = null) {
@@ -96860,41 +97005,41 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }));
   var ExpandMore = {};
-  var _interopRequireDefault$d = interopRequireDefaultExports;
+  var _interopRequireDefault$c = interopRequireDefaultExports;
   Object.defineProperty(ExpandMore, "__esModule", {
     value: true
   });
-  var default_1$d = ExpandMore.default = void 0;
-  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-  var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
-    d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
-  }), "ExpandMore");
-  default_1$d = ExpandMore.default = _default$d;
-  var Delete = {};
-  var _interopRequireDefault$c = interopRequireDefaultExports;
-  Object.defineProperty(Delete, "__esModule", {
-    value: true
-  });
-  var default_1$c = Delete.default = void 0;
+  var default_1$c = ExpandMore.default = void 0;
   var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
   var _jsxRuntime$c = jsxRuntimeExports;
   var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
-    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-  }), "Delete");
-  default_1$c = Delete.default = _default$c;
-  var AddCircle = {};
+    d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+  }), "ExpandMore");
+  default_1$c = ExpandMore.default = _default$c;
+  var Delete = {};
   var _interopRequireDefault$b = interopRequireDefaultExports;
-  Object.defineProperty(AddCircle, "__esModule", {
+  Object.defineProperty(Delete, "__esModule", {
     value: true
   });
-  var default_1$b = AddCircle.default = void 0;
+  var default_1$b = Delete.default = void 0;
   var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
   var _jsxRuntime$b = jsxRuntimeExports;
   var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
+    d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+  }), "Delete");
+  default_1$b = Delete.default = _default$b;
+  var AddCircle = {};
+  var _interopRequireDefault$a = interopRequireDefaultExports;
+  Object.defineProperty(AddCircle, "__esModule", {
+    value: true
+  });
+  var default_1$a = AddCircle.default = void 0;
+  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+  var _jsxRuntime$a = jsxRuntimeExports;
+  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
     d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
   }), "AddCircle");
-  default_1$b = AddCircle.default = _default$b;
+  default_1$a = AddCircle.default = _default$a;
   const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
     "&.MuiPaper-root": {
       boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
@@ -96935,7 +97080,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         AccordionSummary$1,
         {
-          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}),
+          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {}),
           onClick: toggleExpanded,
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { children: window.gettext("Object sets") }),
@@ -96995,19 +97140,191 @@ Please use another name.` : formatMuiErrorMessage(18));
               fullWidth: true
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
             IconButton$1,
             {
               onClick: () => onUpdate({
                 index
               }),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
             }
           ) })
         ] }, index)) })
       ] })
     ] });
   }
+  function CreateProjectDialog$1({
+    showNoProjectsAlert,
+    objectSets,
+    disciplines,
+    formFields
+  }) {
+    const initialState = {
+      fields: {},
+      objectSets,
+      objectSetsExpanded: (objectSets == null ? void 0 : objectSets.length) !== 0
+    };
+    formFields.map((field) => {
+      initialState.fields[field.name] = field.value;
+    });
+    const [state, setState] = reactExports.useState(initialState);
+    const [errors2, setErrors] = reactExports.useState({});
+    const { show, onClose } = useDialog(DIALOG_TYPE.STYLEGUIDE_CREATE_PROJECT);
+    function onSubmit() {
+      if (Object.keys(errors2).length) {
+        return false;
+      }
+      const postData = {
+        ...state.fields,
+        objectSets: state.objectSets.filter(
+          (set2) => set2.id !== "" && set2.title !== ""
+        )
+      };
+      console.log("posting with", postData);
+    }
+    function onCloseAnimationEnd() {
+      setState(initialState);
+      setErrors({});
+    }
+    function onInputChange(e, field) {
+      if (errors2[field.name]) {
+        setErrors(
+          produce((draft) => {
+            delete draft[field.name];
+          })
+        );
+      }
+      setState(
+        produce((draft) => {
+          const { fields: fields2 } = draft;
+          fields2[e.target.name] = e.target.value;
+        })
+      );
+    }
+    function onObjectSetUpdate({ index, newVal }) {
+      setState(
+        produce((draft) => {
+          const sets = draft.objectSets;
+          if (newVal) {
+            sets.splice(index, 1, newVal);
+          } else {
+            sets.splice(index, 1);
+          }
+        })
+      );
+    }
+    function onObjectSetAddNew() {
+      setState(
+        produce((draft) => {
+          draft.objectSets.push({ id: "", title: "" });
+        })
+      );
+    }
+    function onObjectSetsClick() {
+      setState(
+        produce((draft) => {
+          draft.objectSetsExpanded = !draft.objectSetsExpanded;
+        })
+      );
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: show,
+        fullWidth: true,
+        maxWidth: "sm",
+        onClose,
+        TransitionProps: {
+          onExited: onCloseAnimationEnd
+        },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Create project") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
+            showNoProjectsAlert && /* @__PURE__ */ jsxRuntimeExports.jsx(
+              CFAlert,
+              {
+                sx: { mb: 3 },
+                title: window.gettext("Start by creating a project"),
+                subtitle: window.gettext(
+                  "All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow."
+                )
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
+              formFields.map((field, index) => {
+                if (field.type === "text") {
+                  const hasError = !!errors2[field.name];
+                  const errorText = hasError && errors2[field.name][0];
+                  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    TextField$1,
+                    {
+                      name: field.name,
+                      label: field.label,
+                      required: field.required,
+                      value: state.fields[field.name] ?? "",
+                      variant: "standard",
+                      error: hasError,
+                      helperText: errorText,
+                      onChange: (e) => onInputChange(e, field)
+                    },
+                    index
+                  );
+                }
+              }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                ObjectSets,
+                {
+                  expanded: state.objectSetsExpanded,
+                  toggleExpanded: onObjectSetsClick,
+                  sets: state.objectSets,
+                  onUpdate: onObjectSetUpdate,
+                  onAddNew: onObjectSetAddNew
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: COURSEFLOW_APP.strings.cancel }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Button$1,
+              {
+                variant: "contained",
+                onClick: onSubmit,
+                disabled: !!Object.keys(errors2).length,
+                children: window.gettext("Create project")
+              }
+            )
+          ] })
+        ]
+      }
+    );
+  }
+  const data$1 = {
+    disciplines: [
+      { id: 1, title: "Biology" },
+      { id: 2, title: "Chemistry" },
+      { id: 3, title: "Test discipline" },
+      { id: 4, title: "Something" },
+      { id: 5, title: "Else" }
+    ],
+    showNoProjectsAlert: true,
+    objectSets: [],
+    formFields: [
+      {
+        name: "title",
+        label: "Title",
+        type: "text",
+        value: "",
+        required: true
+      },
+      {
+        name: "description",
+        label: "Description",
+        type: "text",
+        value: ""
+      }
+    ]
+  };
   function EditProjectDialog({ objectSets, disciplines, formFields }) {
     const initialState = {
       fields: {},
@@ -97019,7 +97336,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const [state, setState] = reactExports.useState(initialState);
     const [errors2, setErrors] = reactExports.useState({});
-    const { show, onClose } = useDialog(DIALOG_TYPE.EDIT_PROJECT);
+    const { show, onClose } = useDialog(DIALOG_TYPE.STYLEGUIDE_EDIT_PROJECT);
     function onSubmit() {
       if (Object.keys(errors2).length) {
         return false;
@@ -97170,14 +97487,25 @@ Please use another name.` : formatMuiErrorMessage(18));
   const SectionDialogs = () => {
     const { dispatch } = useDialog();
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Section, { header: { title: "Dialogs" }, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        Button$1,
-        {
-          variant: "contained",
-          onClick: () => dispatch(DIALOG_TYPE.EDIT_PROJECT),
-          children: "Open Edit Project dialog"
-        }
-      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", gap: 1, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button$1,
+          {
+            variant: "contained",
+            onClick: () => dispatch(DIALOG_TYPE.STYLEGUIDE_CREATE_PROJECT),
+            children: "Create Project"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          Button$1,
+          {
+            variant: "contained",
+            onClick: () => dispatch(DIALOG_TYPE.STYLEGUIDE_EDIT_PROJECT),
+            children: "Edit Project"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProjectDialog$1, { ...data$1 }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(EditProjectDialog, { ...data })
     ] });
   };
@@ -97984,156 +98312,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] }) });
     }
   }
-  var Campaign = {};
-  var _interopRequireDefault$a = interopRequireDefaultExports;
-  Object.defineProperty(Campaign, "__esModule", {
-    value: true
-  });
-  var default_1$a = Campaign.default = void 0;
-  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-  var _jsxRuntime$a = jsxRuntimeExports;
-  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
-    d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
-  }), "Campaign");
-  default_1$a = Campaign.default = _default$a;
-  /*! js-cookie v3.0.5 | MIT */
-  function assign(target) {
-    for (var i2 = 1; i2 < arguments.length; i2++) {
-      var source = arguments[i2];
-      for (var key in source) {
-        target[key] = source[key];
-      }
-    }
-    return target;
-  }
-  var defaultConverter = {
-    read: function(value) {
-      if (value[0] === '"') {
-        value = value.slice(1, -1);
-      }
-      return value.replace(/(%[\dA-F]{2})+/gi, decodeURIComponent);
-    },
-    write: function(value) {
-      return encodeURIComponent(value).replace(
-        /%(2[346BF]|3[AC-F]|40|5[BDE]|60|7[BCD])/g,
-        decodeURIComponent
-      );
-    }
-  };
-  function init(converter, defaultAttributes) {
-    function set2(name2, value, attributes) {
-      if (typeof document === "undefined") {
-        return;
-      }
-      attributes = assign({}, defaultAttributes, attributes);
-      if (typeof attributes.expires === "number") {
-        attributes.expires = new Date(Date.now() + attributes.expires * 864e5);
-      }
-      if (attributes.expires) {
-        attributes.expires = attributes.expires.toUTCString();
-      }
-      name2 = encodeURIComponent(name2).replace(/%(2[346B]|5E|60|7C)/g, decodeURIComponent).replace(/[()]/g, escape);
-      var stringifiedAttributes = "";
-      for (var attributeName in attributes) {
-        if (!attributes[attributeName]) {
-          continue;
-        }
-        stringifiedAttributes += "; " + attributeName;
-        if (attributes[attributeName] === true) {
-          continue;
-        }
-        stringifiedAttributes += "=" + attributes[attributeName].split(";")[0];
-      }
-      return document.cookie = name2 + "=" + converter.write(value, name2) + stringifiedAttributes;
-    }
-    function get(name2) {
-      if (typeof document === "undefined" || arguments.length && !name2) {
-        return;
-      }
-      var cookies = document.cookie ? document.cookie.split("; ") : [];
-      var jar = {};
-      for (var i2 = 0; i2 < cookies.length; i2++) {
-        var parts = cookies[i2].split("=");
-        var value = parts.slice(1).join("=");
-        try {
-          var found = decodeURIComponent(parts[0]);
-          jar[found] = converter.read(value, found);
-          if (name2 === found) {
-            break;
-          }
-        } catch (e) {
-        }
-      }
-      return name2 ? jar[name2] : jar;
-    }
-    return Object.create(
-      {
-        set: set2,
-        get,
-        remove: function(name2, attributes) {
-          set2(
-            name2,
-            "",
-            assign({}, attributes, {
-              expires: -1
-            })
-          );
-        },
-        withAttributes: function(attributes) {
-          return init(this.converter, assign({}, this.attributes, attributes));
-        },
-        withConverter: function(converter2) {
-          return init(assign({}, this.converter, converter2), this.attributes);
-        }
-      },
-      {
-        attributes: { value: Object.freeze(defaultAttributes) },
-        converter: { value: Object.freeze(converter) }
-      }
-    );
-  }
-  var api = init(defaultConverter, { path: "/" });
-  const StyledTitle = styled$1(AlertTitle$1)({
-    fontWeight: 600,
-    "&:last-child": {
-      marginBottom: 0
-    }
-  });
-  const StyledSubtitle = styled$1(Typography$1)({});
-  const CFAlert = ({
-    severity = "info",
-    title,
-    subtitle,
-    onClose,
-    hideIfCookie,
-    sx
-  }) => {
-    const [hide, setHide] = reactExports.useState(
-      hideIfCookie ? !!api.get(hideIfCookie) : false
-    );
-    function handleClose() {
-      onClose && onClose();
-      api.set(hideIfCookie, "true", { expires: 7 });
-      setHide(true);
-    }
-    if (hide) {
-      return null;
-    }
-    const isUpdateAnnouncement = severity === "update";
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      Alert$1,
-      {
-        severity: isUpdateAnnouncement ? "info" : severity,
-        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) : null,
-        sx,
-        onClose: hideIfCookie && handleClose,
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(StyledTitle, { children: title }),
-          subtitle && /* @__PURE__ */ jsxRuntimeExports.jsx(StyledSubtitle, { variant: "body2", children: subtitle })
-        ]
-      }
-    );
-  };
   const fields = {
     type: [
       { value: "outcome", label: "Outcomes" },
@@ -101439,7 +101617,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.returnFirstArg = exports.canTextBeChildOfNode = exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = exports.PRESERVE_CUSTOM_ATTRIBUTES = exports.setStyleProp = exports.isCustomComponent = void 0;
-    var react_12 = requireReact();
+    var react_12 = reactExports;
     var style_to_js_1 = __importDefault2(cjs$1);
     var RESERVED_SVG_MATHML_ELEMENTS = /* @__PURE__ */ new Set([
       "annotation-xml",
@@ -101557,7 +101735,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
   };
   Object.defineProperty(domToReact$1, "__esModule", { value: true });
-  var react_1 = requireReact();
+  var react_1 = reactExports;
   var attributes_to_props_1 = __importDefault(attributesToProps$1);
   var utilities_1 = utilities$1;
   var React = {
@@ -102102,7 +102280,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-haspopup": "true",
               color: "primary",
               onClick: handleAddMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {})
             }
           ) : null,
           /* @__PURE__ */ jsxRuntimeExports.jsx(

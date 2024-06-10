@@ -9,7 +9,12 @@ export enum DIALOG_TYPE {
   CREATE_COURSE = 'create_course',
   RESET_PASSWORD = 'reset_password',
   EXPORT_PROJECT = 'export_project',
-  ARCHIVE_PROJECT = 'archive_project'
+  ARCHIVE_PROJECT = 'archive_project',
+
+  // Styleguide popups, just for DEMO purposes only
+  // Should eventually be ditched to not cause confusion I guess
+  STYLEGUIDE_CREATE_PROJECT = 'styleguide_create_project',
+  STYLEGUIDE_EDIT_PROJECT = 'styleguide_edit_project'
 }
 
 /**

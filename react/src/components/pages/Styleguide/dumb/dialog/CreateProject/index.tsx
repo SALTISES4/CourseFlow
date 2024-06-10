@@ -1,5 +1,6 @@
 import { ChangeEvent, useState } from 'react'
 import { produce } from 'immer'
+import Alert from '@cfCommonComponents/components/Alert'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -29,12 +30,18 @@ type StateType = {
 }
 
 export type PropsType = {
+  showNoProjectsAlert?: boolean
   objectSets?: ObjectSet[]
   disciplines: Discipline[]
   formFields: FormFieldSerialized[]
 }
 
-function EditProjectDialog({ objectSets, disciplines, formFields }: PropsType) {
+function CreateProjectDialog({
+  showNoProjectsAlert,
+  objectSets,
+  disciplines,
+  formFields
+}: PropsType) {
   // set the inital state based on inputs
   const initialState: StateType = {
     fields: {},
@@ -47,7 +54,7 @@ function EditProjectDialog({ objectSets, disciplines, formFields }: PropsType) {
 
   const [state, setState] = useState(initialState)
   const [errors, setErrors] = useState({})
-  const { show, onClose } = useDialog(DIALOG_TYPE.STYLEGUIDE_EDIT_PROJECT)
+  const { show, onClose } = useDialog(DIALOG_TYPE.STYLEGUIDE_CREATE_PROJECT)
 
   function onSubmit() {
     // early exit if there are validation errors
@@ -140,8 +147,17 @@ function EditProjectDialog({ objectSets, disciplines, formFields }: PropsType) {
         onExited: onCloseAnimationEnd
       }}
     >
-      <DialogTitle>{window.gettext('Edit project')}</DialogTitle>
+      <DialogTitle>{window.gettext('Create project')}</DialogTitle>
       <DialogContent dividers>
+        {showNoProjectsAlert && (
+          <Alert
+            sx={{ mb: 3 }}
+            title={window.gettext('Start by creating a project')}
+            subtitle={window.gettext(
+              'All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow.'
+            )}
+          />
+        )}
         <StyledForm component="form">
           {formFields.map((field, index) => {
             if (field.type === 'text') {
@@ -181,11 +197,11 @@ function EditProjectDialog({ objectSets, disciplines, formFields }: PropsType) {
           onClick={onSubmit}
           disabled={!!Object.keys(errors).length}
         >
-          {window.gettext('Save project')}
+          {window.gettext('Create project')}
         </Button>
       </DialogActions>
     </StyledDialog>
   )
 }
 
-export default EditProjectDialog
+export default CreateProjectDialog
