@@ -2,15 +2,11 @@ import Section from '@cfComponents/pages/Library/Home/components/Section'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 
-// Create Project dialog
-import CreateProjectDialog from '../dumb/dialog/CreateProject'
 import createProjectData from '../dumb/dialog/CreateProject/data'
-
-// Edit Project dialog
-import EditProjectDialog from '../dumb/dialog/EditProject'
 import editProjectData from '../dumb/dialog/EditProject/data'
 
 import { DIALOG_TYPE, useDialog } from '@cfComponents/common/dialog'
+import ProjectDialog from '../dumb/dialog/Project'
 
 const SectionDialogs = () => {
   // used to trigger the corresponding dialog
@@ -21,20 +17,27 @@ const SectionDialogs = () => {
       <Stack direction="row" gap={1}>
         <Button
           variant="contained"
-          onClick={() => dispatch(DIALOG_TYPE.STYLEGUIDE_CREATE_PROJECT)}
+          onClick={() => dispatch(DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE)}
         >
           Create Project
         </Button>
         <Button
           variant="contained"
-          onClick={() => dispatch(DIALOG_TYPE.STYLEGUIDE_EDIT_PROJECT)}
+          onClick={() => dispatch(DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT)}
         >
           Edit Project
         </Button>
       </Stack>
 
-      <CreateProjectDialog {...createProjectData} />
-      <EditProjectDialog {...editProjectData} />
+      <ProjectDialog
+        {...createProjectData}
+        type={DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE}
+      />
+
+      <ProjectDialog
+        {...editProjectData}
+        type={DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT}
+      />
     </Section>
   )
 }

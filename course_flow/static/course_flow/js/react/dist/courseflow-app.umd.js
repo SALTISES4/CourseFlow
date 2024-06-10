@@ -96131,6 +96131,103 @@ Please use another name.` : formatMuiErrorMessage(18));
     ] }),
     children
   ] });
+  const data$1 = {
+    showNoProjectsAlert: true,
+    disciplines: [
+      { id: 1, title: "Biology" },
+      { id: 2, title: "Chemistry" },
+      { id: 3, title: "Test discipline" },
+      { id: 4, title: "Something" },
+      { id: 5, title: "Else" }
+    ],
+    objectSets: [],
+    formFields: [
+      {
+        name: "title",
+        label: "Title",
+        type: "text",
+        value: "",
+        required: true
+      },
+      {
+        name: "description",
+        label: "Description",
+        type: "text",
+        value: ""
+      }
+    ]
+  };
+  const data = {
+    disciplines: [
+      { id: 1, title: "Biology" },
+      { id: 2, title: "Chemistry" },
+      { id: 3, title: "Test discipline" },
+      { id: 4, title: "Something" },
+      { id: 5, title: "Else" }
+    ],
+    objectSets: [
+      { id: 1, title: "Outcome" },
+      { id: 2, title: "Project" },
+      { id: 3, title: "Something" },
+      { id: 4, title: "Object set" }
+    ],
+    formFields: [
+      {
+        name: "title",
+        label: "Title",
+        type: "text",
+        value: "Project title goes here",
+        required: true
+      },
+      {
+        name: "description",
+        label: "Description",
+        type: "text",
+        value: "harder bring section memory put most steam habit structure ill lion bone driving yard equipment popular poor progress cell any full height lamp stay"
+      }
+    ]
+  };
+  const defaultState = {
+    type: null
+  };
+  function stateReducer(state, action) {
+    return {
+      type: action
+    };
+  }
+  const DialogContext = reactExports.createContext(defaultState);
+  const DialogDispatchContext = reactExports.createContext(null);
+  function DialogContextProvider({ children }) {
+    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
+  }
+  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
+    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
+    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
+    DIALOG_TYPE2["EDIT_PROJECT"] = "edit_project";
+    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
+    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
+    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
+    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
+    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
+    DIALOG_TYPE2["STYLEGUIDE_PROJECT_CREATE"] = "styleguide_project_create";
+    DIALOG_TYPE2["STYLEGUIDE_PROJECT_EDIT"] = "styleguide_project_edit";
+    return DIALOG_TYPE2;
+  })(DIALOG_TYPE || {});
+  function useDialog(dialogType = null) {
+    const dialogContext = reactExports.useContext(DialogContext);
+    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
+    if (!dialogType) {
+      return {
+        dispatch: dialogDispatch
+      };
+    }
+    return {
+      show: dialogContext.type === dialogType,
+      onClose: () => dialogDispatch(null),
+      dispatch: dialogDispatch
+    };
+  }
   var NOTHING = Symbol.for("immer-nothing");
   var DRAFTABLE = Symbol.for("immer-draftable");
   var DRAFT_STATE = Symbol.for("immer-state");
@@ -96947,47 +97044,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     );
   };
-  const defaultState = {
-    type: null
-  };
-  function stateReducer(state, action) {
-    return {
-      type: action
-    };
-  }
-  const DialogContext = reactExports.createContext(defaultState);
-  const DialogDispatchContext = reactExports.createContext(null);
-  function DialogContextProvider({ children }) {
-    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
-  }
-  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
-    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
-    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
-    DIALOG_TYPE2["EDIT_PROJECT"] = "edit_project";
-    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
-    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
-    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
-    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
-    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
-    DIALOG_TYPE2["STYLEGUIDE_CREATE_PROJECT"] = "styleguide_create_project";
-    DIALOG_TYPE2["STYLEGUIDE_EDIT_PROJECT"] = "styleguide_edit_project";
-    return DIALOG_TYPE2;
-  })(DIALOG_TYPE || {});
-  function useDialog(dialogType = null) {
-    const dialogContext = reactExports.useContext(DialogContext);
-    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
-    if (!dialogType) {
-      return {
-        dispatch: dialogDispatch
-      };
-    }
-    return {
-      show: dialogContext.type === dialogType,
-      onClose: () => dialogDispatch(null),
-      dispatch: dialogDispatch
-    };
-  }
   const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
     "& .MuiDialogContent-root": {
       padding: theme2.spacing(3)
@@ -97155,78 +97211,19 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   function CreateProjectDialog$1({
     showNoProjectsAlert,
-    objectSets,
     disciplines,
-    formFields
+    formFields,
+    state,
+    errors: errors2,
+    onInputChange,
+    onObjectSetsClick,
+    onObjectSetUpdate,
+    onObjectSetAddNew,
+    show,
+    onClose,
+    onCloseAnimationEnd,
+    onSubmit
   }) {
-    const initialState = {
-      fields: {},
-      objectSets,
-      objectSetsExpanded: (objectSets == null ? void 0 : objectSets.length) !== 0
-    };
-    formFields.map((field) => {
-      initialState.fields[field.name] = field.value;
-    });
-    const [state, setState] = reactExports.useState(initialState);
-    const [errors2, setErrors] = reactExports.useState({});
-    const { show, onClose } = useDialog(DIALOG_TYPE.STYLEGUIDE_CREATE_PROJECT);
-    function onSubmit() {
-      if (Object.keys(errors2).length) {
-        return false;
-      }
-      const postData = {
-        ...state.fields,
-        objectSets: state.objectSets.filter(
-          (set2) => set2.id !== "" && set2.title !== ""
-        )
-      };
-      console.log("posting with", postData);
-    }
-    function onCloseAnimationEnd() {
-      setState(initialState);
-      setErrors({});
-    }
-    function onInputChange(e, field) {
-      if (errors2[field.name]) {
-        setErrors(
-          produce((draft) => {
-            delete draft[field.name];
-          })
-        );
-      }
-      setState(
-        produce((draft) => {
-          const { fields: fields2 } = draft;
-          fields2[e.target.name] = e.target.value;
-        })
-      );
-    }
-    function onObjectSetUpdate({ index, newVal }) {
-      setState(
-        produce((draft) => {
-          const sets = draft.objectSets;
-          if (newVal) {
-            sets.splice(index, 1, newVal);
-          } else {
-            sets.splice(index, 1);
-          }
-        })
-      );
-    }
-    function onObjectSetAddNew() {
-      setState(
-        produce((draft) => {
-          draft.objectSets.push({ id: "", title: "" });
-        })
-      );
-    }
-    function onObjectSetsClick() {
-      setState(
-        produce((draft) => {
-          draft.objectSetsExpanded = !draft.objectSetsExpanded;
-        })
-      );
-    }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       StyledDialog,
       {
@@ -97254,7 +97251,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               formFields.map((field, index) => {
                 if (field.type === "text") {
                   const hasError = !!errors2[field.name];
-                  const errorText = hasError && errors2[field.name][0];
+                  const errorText = hasError && errors2[field.name].join(" ");
                   return /* @__PURE__ */ jsxRuntimeExports.jsx(
                     TextField$1,
                     {
@@ -97264,7 +97261,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                       value: state.fields[field.name] ?? "",
                       variant: "standard",
                       error: hasError,
-                      helperText: errorText,
+                      helperText: hasError ? errorText : null,
                       onChange: (e) => onInputChange(e, field)
                     },
                     index
@@ -97299,101 +97296,20 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     );
   }
-  const data$1 = {
-    disciplines: [
-      { id: 1, title: "Biology" },
-      { id: 2, title: "Chemistry" },
-      { id: 3, title: "Test discipline" },
-      { id: 4, title: "Something" },
-      { id: 5, title: "Else" }
-    ],
-    showNoProjectsAlert: true,
-    objectSets: [],
-    formFields: [
-      {
-        name: "title",
-        label: "Title",
-        type: "text",
-        value: "",
-        required: true
-      },
-      {
-        name: "description",
-        label: "Description",
-        type: "text",
-        value: ""
-      }
-    ]
-  };
-  function EditProjectDialog({ objectSets, disciplines, formFields }) {
-    const initialState = {
-      fields: {},
-      objectSets,
-      objectSetsExpanded: (objectSets == null ? void 0 : objectSets.length) !== 0
-    };
-    formFields.map((field) => {
-      initialState.fields[field.name] = field.value;
-    });
-    const [state, setState] = reactExports.useState(initialState);
-    const [errors2, setErrors] = reactExports.useState({});
-    const { show, onClose } = useDialog(DIALOG_TYPE.STYLEGUIDE_EDIT_PROJECT);
-    function onSubmit() {
-      if (Object.keys(errors2).length) {
-        return false;
-      }
-      const postData = {
-        ...state.fields,
-        objectSets: state.objectSets.filter(
-          (set2) => set2.id !== "" && set2.title !== ""
-        )
-      };
-      console.log("posting with", postData);
-    }
-    function onCloseAnimationEnd() {
-      setState(initialState);
-      setErrors({});
-    }
-    function onInputChange(e, field) {
-      if (errors2[field.name]) {
-        setErrors(
-          produce((draft) => {
-            delete draft[field.name];
-          })
-        );
-      }
-      setState(
-        produce((draft) => {
-          const { fields: fields2 } = draft;
-          fields2[e.target.name] = e.target.value;
-        })
-      );
-    }
-    function onObjectSetUpdate({ index, newVal }) {
-      setState(
-        produce((draft) => {
-          const sets = draft.objectSets;
-          if (newVal) {
-            sets.splice(index, 1, newVal);
-          } else {
-            sets.splice(index, 1);
-          }
-        })
-      );
-    }
-    function onObjectSetAddNew() {
-      setState(
-        produce((draft) => {
-          draft.objectSets.push({ id: "", title: "" });
-        })
-      );
-    }
-    function onObjectSetsClick() {
-      setState(
-        produce((draft) => {
-          draft.objectSetsExpanded = !draft.objectSetsExpanded;
-        })
-      );
-    }
+  function EditProjectDialog({
+    disciplines,
+    formFields,
+    state,
+    errors: errors2,
+    onInputChange,
+    onObjectSetsClick,
+    onObjectSetUpdate,
+    onObjectSetAddNew,
+    show,
+    onClose,
+    onCloseAnimationEnd,
+    onSubmit
+  }) {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(
       StyledDialog,
       {
@@ -97454,35 +97370,99 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     );
   }
-  const data = {
-    disciplines: [
-      { id: 1, title: "Biology" },
-      { id: 2, title: "Chemistry" },
-      { id: 3, title: "Test discipline" },
-      { id: 4, title: "Something" },
-      { id: 5, title: "Else" }
-    ],
-    objectSets: [
-      { id: 1, title: "Outcome" },
-      { id: 2, title: "Project" },
-      { id: 3, title: "Something" },
-      { id: 4, title: "Object set" }
-    ],
-    formFields: [
-      {
-        name: "title",
-        label: "Title",
-        type: "text",
-        value: "Project title goes here",
-        required: true
-      },
-      {
-        name: "description",
-        label: "Description",
-        type: "text",
-        value: "harder bring section memory put most steam habit structure ill lion bone driving yard equipment popular poor progress cell any full height lamp stay"
+  const ProjectDialog = ({
+    showNoProjectsAlert,
+    objectSets,
+    disciplines,
+    formFields,
+    type
+  }) => {
+    const initialState = {
+      fields: {},
+      objectSets,
+      objectSetsExpanded: (objectSets == null ? void 0 : objectSets.length) !== 0
+    };
+    formFields.map((field) => initialState.fields[field.name] = field.value);
+    const [state, setState] = reactExports.useState(initialState);
+    const [errors2, setErrors] = reactExports.useState({});
+    const { show, onClose } = useDialog(type);
+    function onSubmit() {
+      if (Object.keys(errors2).length) {
+        return false;
       }
-    ]
+      const postData = {
+        ...state.fields,
+        objectSets: state.objectSets.filter(
+          (set2) => set2.id !== "" && set2.title !== ""
+        )
+      };
+      console.log("posting", type, " dialog with", postData);
+    }
+    function onCloseAnimationEnd() {
+      setState(initialState);
+      setErrors({});
+    }
+    function onInputChange(e, field) {
+      if (errors2[field.name]) {
+        setErrors(
+          produce((draft) => {
+            delete draft[field.name];
+          })
+        );
+      }
+      setState(
+        produce((draft) => {
+          const { fields: fields2 } = draft;
+          fields2[e.target.name] = e.target.value;
+        })
+      );
+    }
+    function onObjectSetUpdate({ index, newVal }) {
+      setState(
+        produce((draft) => {
+          const sets = draft.objectSets;
+          if (newVal) {
+            sets.splice(index, 1, newVal);
+          } else {
+            sets.splice(index, 1);
+          }
+        })
+      );
+    }
+    function onObjectSetAddNew() {
+      setState(
+        produce((draft) => {
+          draft.objectSets.push({ id: "", title: "" });
+        })
+      );
+    }
+    function onObjectSetsClick() {
+      setState(
+        produce((draft) => {
+          draft.objectSetsExpanded = !draft.objectSetsExpanded;
+        })
+      );
+    }
+    const dialogProps = {
+      // State / data
+      showNoProjectsAlert,
+      objectSets,
+      disciplines,
+      formFields,
+      state,
+      errors: errors2,
+      // Callbacks
+      onInputChange,
+      onObjectSetUpdate,
+      onObjectSetAddNew,
+      onObjectSetsClick,
+      // Dialog
+      show,
+      onClose,
+      onCloseAnimationEnd,
+      onSubmit
+    };
+    return type === DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE ? /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProjectDialog$1, { ...dialogProps }) : /* @__PURE__ */ jsxRuntimeExports.jsx(EditProjectDialog, { ...dialogProps });
   };
   const SectionDialogs = () => {
     const { dispatch } = useDialog();
@@ -97492,7 +97472,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           Button$1,
           {
             variant: "contained",
-            onClick: () => dispatch(DIALOG_TYPE.STYLEGUIDE_CREATE_PROJECT),
+            onClick: () => dispatch(DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE),
             children: "Create Project"
           }
         ),
@@ -97500,13 +97480,25 @@ Please use another name.` : formatMuiErrorMessage(18));
           Button$1,
           {
             variant: "contained",
-            onClick: () => dispatch(DIALOG_TYPE.STYLEGUIDE_EDIT_PROJECT),
+            onClick: () => dispatch(DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT),
             children: "Edit Project"
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProjectDialog$1, { ...data$1 }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(EditProjectDialog, { ...data })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ProjectDialog,
+        {
+          ...data$1,
+          type: DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        ProjectDialog,
+        {
+          ...data,
+          type: DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT
+        }
+      )
     ] });
   };
   const Styleguide = () => {

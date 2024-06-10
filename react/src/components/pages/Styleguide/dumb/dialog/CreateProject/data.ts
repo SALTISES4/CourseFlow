@@ -1,6 +1,7 @@
-import { PropsType } from './'
+import { DataType } from './'
 
-const data: PropsType = {
+const data: DataType = {
+  showNoProjectsAlert: true,
   disciplines: [
     { id: 1, title: 'Biology' },
     { id: 2, title: 'Chemistry' },
@@ -8,7 +9,6 @@ const data: PropsType = {
     { id: 4, title: 'Something' },
     { id: 5, title: 'Else' }
   ],
-  showNoProjectsAlert: true,
   objectSets: [],
   formFields: [
     {

@@ -13,8 +13,8 @@ export enum DIALOG_TYPE {
 
   // Styleguide popups, just for DEMO purposes only
   // Should eventually be ditched to not cause confusion I guess
-  STYLEGUIDE_CREATE_PROJECT = 'styleguide_create_project',
-  STYLEGUIDE_EDIT_PROJECT = 'styleguide_edit_project'
+  STYLEGUIDE_PROJECT_CREATE = 'styleguide_project_create',
+  STYLEGUIDE_PROJECT_EDIT = 'styleguide_project_edit'
 }
 
 /**

@@ -1,6 +1,6 @@
-import { PropsType } from './'
+import { DataType } from '../CreateProject'
 
-const data: PropsType = {
+const data: DataType = {
   disciplines: [
     { id: 1, title: 'Biology' },
     { id: 2, title: 'Chemistry' },
