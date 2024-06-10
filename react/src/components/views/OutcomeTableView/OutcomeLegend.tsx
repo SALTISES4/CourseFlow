@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { LegendLine } from '@cfUIComponents'
+import LegendLine from '@cfCommonComponents/UIComponents/LegendLine'
 import { AppState } from '@cfRedux/types/type.js'
 import { WorkflowLegendUnconnected } from '@cfViews/WorkflowView/WorkflowLegend'
 

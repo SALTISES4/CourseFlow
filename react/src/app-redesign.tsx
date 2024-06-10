@@ -163,14 +163,3 @@ window.addEventListener('load', () => {
     }
   }, 0) // 2000 milliseconds delay
 })
-
-// const content = getAppComponent()
-// ReactDOM.createRoot(document.getElementById('reactRoot') as HTMLElement).render(
-//   <CacheProvider value={cache}>
-//     <ThemeProvider theme={theme}>
-//       <ScopedCssBaseline sx={SidebarRootStyles}>
-//         <Base>{content}</Base>
-//       </ScopedCssBaseline>
-//     </ThemeProvider>
-//   </CacheProvider>
-// )
