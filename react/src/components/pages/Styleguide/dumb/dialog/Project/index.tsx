@@ -15,19 +15,49 @@ type ObjectSetUpdateType = {
   newVal?: ObjectSet
 }
 
-export type PropsType = {
-  showNoProjectsAlert?: boolean
-  objectSets?: ObjectSet[]
-  disciplines: Discipline[]
-  formFields: FormFieldSerialized[]
-}
-
 type StateType = {
   fields: {
     [index: string]: string
   }
   objectSets: ObjectSet[]
   objectSetsExpanded: boolean
+}
+
+export type DataType = {
+  showNoProjectsAlert?: boolean
+  objectSets: ObjectSet[]
+  disciplines: Discipline[]
+  formFields: FormFieldSerialized[]
+}
+
+export type ProjectDialogPropsType = DataType & {
+  // Input state / errors
+  state: StateType
+  errors: {
+    [index: string]: string[]
+  }
+
+  // Input callbacks
+  onInputChange: (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    field: FormFieldSerialized
+  ) => void
+  onObjectSetsClick: () => void
+  onObjectSetUpdate: ({ index, newVal }: ObjectSetUpdateType) => void
+  onObjectSetAddNew: () => void
+
+  // Dialog
+  show: boolean
+  onClose: () => void
+  onCloseAnimationEnd: () => void
+  onSubmit: () => void
+}
+
+export type PropsType = {
+  showNoProjectsAlert?: boolean
+  objectSets?: ObjectSet[]
+  disciplines: Discipline[]
+  formFields: FormFieldSerialized[]
 }
 
 const ProjectDialog = ({
@@ -66,6 +96,18 @@ const ProjectDialog = ({
       )
     }
 
+    // TODO: Handle submit based on the type of the dialog
+    switch (type) {
+      case DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE:
+        console.log('submitted CREATE PROJECT with', postData)
+        break
+
+      case DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT:
+        console.log('submitted CREATE EDIT with', postData)
+        break
+    }
+
+    // NOTE: Example using API_POST to create the project
     // API_POST<{ redirect: string }>(
     //   COURSEFLOW_APP.config.json_api_paths.create_project,
     //   postData
@@ -74,8 +116,6 @@ const ProjectDialog = ({
     //     window.location.href = resp.redirect
     //   })
     //   .catch((error) => setErrors(error.data.errors))
-
-    console.log('posting', type, ' dialog with', postData)
   }
 
   function onCloseAnimationEnd() {
@@ -135,8 +175,7 @@ const ProjectDialog = ({
   }
 
   // Drill that maaaaaaan
-  const dialogProps = {
-    // State / data
+  const dialogProps: ProjectDialogPropsType = {
     showNoProjectsAlert,
     objectSets,
     disciplines,
@@ -144,13 +183,11 @@ const ProjectDialog = ({
     state,
     errors,
 
-    // Callbacks
     onInputChange,
     onObjectSetUpdate,
     onObjectSetAddNew,
     onObjectSetsClick,
 
-    // Dialog
     show,
     onClose,
     onCloseAnimationEnd,

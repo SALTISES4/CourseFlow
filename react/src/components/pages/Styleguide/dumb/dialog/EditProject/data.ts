@@ -1,4 +1,4 @@
-import { DataType } from '../CreateProject'
+import { DataType } from '../Project'
 
 const data: DataType = {
   disciplines: [

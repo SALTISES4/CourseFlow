@@ -1,4 +1,4 @@
-import { DataType } from './'
+import { DataType } from '../Project'
 
 const data: DataType = {
   showNoProjectsAlert: true,

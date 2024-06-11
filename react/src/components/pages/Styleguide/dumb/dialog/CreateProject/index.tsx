@@ -1,4 +1,3 @@
-import { ChangeEvent } from 'react'
 import Alert from '@cfCommonComponents/components/Alert'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
@@ -7,51 +6,8 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import { StyledDialog, StyledForm } from '@cfComponents/common/dialog/styles'
 import ObjectSets from '@cfComponents/common/dialog/CreateProject/components/ObjectSets'
-import {
-  Discipline,
-  ObjectSet,
-  FormFieldSerialized
-} from '@cfModule/types/common'
 
-type ObjectSetUpdateType = {
-  index: number
-  newVal?: ObjectSet
-}
-
-type StateType = {
-  fields: {
-    [index: string]: string
-  }
-  objectSets: ObjectSet[]
-  objectSetsExpanded: boolean
-}
-
-export type DataType = {
-  showNoProjectsAlert?: boolean
-  objectSets: ObjectSet[]
-  disciplines: Discipline[]
-  formFields: FormFieldSerialized[]
-}
-
-export type PropsType = DataType & {
-  state: StateType
-  errors: {
-    [index: string]: string[]
-  }
-
-  onInputChange: (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    field: FormFieldSerialized
-  ) => void
-  onObjectSetsClick: () => void
-  onObjectSetUpdate: ({ index, newVal }: ObjectSetUpdateType) => void
-  onObjectSetAddNew: () => void
-
-  show: boolean
-  onClose: () => void
-  onCloseAnimationEnd: () => void
-  onSubmit: () => void
-}
+import { ProjectDialogPropsType as PropsType } from '../Project'
 
 function CreateProjectDialog({
   showNoProjectsAlert,
@@ -96,7 +52,6 @@ function CreateProjectDialog({
             if (field.type === 'text') {
               const hasError = !!errors[field.name]
               const errorText = hasError && errors[field.name].join(' ')
-
               return (
                 <TextField
                   key={index}

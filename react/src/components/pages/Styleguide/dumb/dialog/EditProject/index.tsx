@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions'
 import { StyledDialog, StyledForm } from '@cfComponents/common/dialog/styles'
 import ObjectSets from '@cfComponents/common/dialog/CreateProject/components/ObjectSets'
 
-import { PropsType } from '../CreateProject'
+import { ProjectDialogPropsType as PropsType } from '../Project'
 
 function EditProjectDialog({
   disciplines,
