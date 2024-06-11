@@ -496,12 +496,15 @@ export const getOutcomeHorizontalLinkByID = (
   console.log('failed to find outcomehorizontallink')
 }
 
-export type TOutcomeWithDegree = TOutcome & {degree: number}
+export type TOutcomeWithDegree = TOutcome & { degree: number }
 export type TSortedOutcomeNodes = {
   objectset: TObjectSet
   outcomes: TOutcomeWithDegree[]
 }[]
-export const getSortedOutcomeNodesFromNodes = (state: AppState, nodes): TSortedOutcomeNodes => {
+export const getSortedOutcomeNodesFromNodes = (
+  state: AppState,
+  nodes
+): TSortedOutcomeNodes => {
   let outcomenode_ids = []
   for (let i = 0; i < nodes.length; i++) {
     outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set)

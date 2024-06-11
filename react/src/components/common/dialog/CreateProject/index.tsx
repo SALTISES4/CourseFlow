@@ -22,6 +22,7 @@ import { TopBarProps } from '@cfModule/types/common'
 import { API_POST } from '@XMLHTTP/PostFunctions'
 import { produce } from 'immer'
 import {SelectChangeEvent} from '@mui/material'
+// import { ObjectSet } from '@cfModule/types/common'
 
 // TODO: figure out how to handle object set types and where the values come from
 export enum OBJECT_SET_TYPE {
@@ -45,7 +46,7 @@ export type OnUpdateType = {
 
 export type StateType = {
   fields: {
-    [index: string]: string | any[]
+    [index: string]: string
   }
   objectSets: ObjectSetType[]
   objectSetsExpanded: boolean
@@ -55,11 +56,12 @@ function CreateProjectDialog({
   showNoProjectsAlert,
   formFields
 }: TopBarProps['forms']['createProject']) {
-  const [state, setState] = useState<StateType>({
+  const initialState: StateType = {
     fields: {},
     objectSets: [],
     objectSetsExpanded: false
-  })
+  }
+  const [state, setState] = useState<StateType>(initialState)
   const [errors, setErrors] = useState({})
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT)
   const [selectOpenStates,setSelectOpenStates] = useState({})
@@ -83,17 +85,9 @@ function CreateProjectDialog({
       .catch((error) => setErrors(error.data.errors))
   }
 
-  function onDialogClose() {
-    // clean up the state
-    setState({
-      fields: {},
-      objectSets: [],
-      objectSetsExpanded: false
-    })
+  function onCloseAnimationEnd() {
+    setState(initialState)
     setErrors({})
-
-    // dispatch the close callback
-    onClose()
   }
 
   function onInputChange(
@@ -101,7 +95,6 @@ function CreateProjectDialog({
     field: any, // TODO
     override: any = false
   ) {
-
     if (errors[field.name]) {
       setErrors(
         produce((draft) => {
@@ -140,7 +133,7 @@ function CreateProjectDialog({
   function onObjectSetAddNew() {
     setState(
       produce((draft) => {
-        draft.objectSets.push({ type: '' as OBJECT_SET_TYPE, label: '' })
+        draft.objectSets.push({ id: '', title: '' })
       })
     )
   }
@@ -161,7 +154,15 @@ function CreateProjectDialog({
   }
 
   return (
-    <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
+    <StyledDialog
+      open={show}
+      fullWidth
+      maxWidth="sm"
+      onClose={onClose}
+      TransitionProps={{
+        onExited: onCloseAnimationEnd
+      }}
+    >
       <DialogTitle>{window.gettext('Create project')}</DialogTitle>
       <DialogContent dividers>
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
@@ -195,7 +196,7 @@ function CreateProjectDialog({
             }else if(field.type === 'multiselect'){
               return ([
                 <InputLabel>{field.label}</InputLabel>,
-                <Select 
+                <Select
                   key={index}
                   name={field.name}
                   required={field.required}
@@ -206,9 +207,9 @@ function CreateProjectDialog({
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {(selected as any[]).map((value) => (
-                        <Chip 
-                          key={value} 
-                          label={field.options.find((option)=>option.value==value).label} 
+                        <Chip
+                          key={value}
+                          label={field.options.find((option)=>option.value==value).label}
                           clickable
                           deleteIcon={
                             <CancelIcon
@@ -251,7 +252,7 @@ function CreateProjectDialog({
         </StyledForm>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="secondary" onClick={onDialogClose}>
+        <Button variant="contained" color="secondary" onClick={onClose}>
           {COURSEFLOW_APP.strings.cancel}
         </Button>
         <Button

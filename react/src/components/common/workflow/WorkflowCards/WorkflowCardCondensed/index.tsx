@@ -1,4 +1,4 @@
-import { WorkflowTitle } from '@cfUIComponents'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import WorkflowCard, { WorkflowCardState } from '../WorkflowCard'
 import WorkflowCardDumb from '../WorkflowCardDumb'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'

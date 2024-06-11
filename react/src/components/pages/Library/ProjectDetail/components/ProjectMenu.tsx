@@ -27,7 +27,7 @@ import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
  * retrieved it will display them in a workflowfilter.
  *******************************************************/
 interface StateType {
-  data?: EProject
+  project?: EProject
   view_type?: string
   users?: UsersForObjectQueryResp
   workflow_data?: Workflow[]
@@ -36,14 +36,14 @@ interface StateType {
 }
 
 function ProjectMenu({
-  data,
+  project,
   userId,
   projectPaths,
   allDisciplines,
   readOnly
 }: ProjectMenuProps) {
   const [state, setState] = useState<StateType>({
-    data,
+    project,
     view_type: 'workflows',
     users: null,
     workflow_data: [],
@@ -59,17 +59,17 @@ function ProjectMenu({
   // TODO: this is wrapped because it is called by openShareMenu
   // so do not unwrap until the renderMessageBox is sorted out
   const getUserData = useCallback(() => {
-    getUsersForObjectQuery(data.id, data.type, (data) => {
+    getUsersForObjectQuery(project.id, project.type, (data) => {
       setState(
         produce((draft) => {
           draft.users = data
         })
       )
     })
-  }, [data.id, data.type])
+  }, [project.id, project.type])
 
   useEffect(() => {
-    getWorkflowsForProjectQuery(data.id, (data) => {
+    getWorkflowsForProjectQuery(project.id, (data) => {
       setState(
         produce((draft) => {
           draft.workflow_data = data.data_package
@@ -79,13 +79,13 @@ function ProjectMenu({
 
     getUserData()
     COURSEFLOW_APP.makeDropdown($(createDiv.current))
-  }, [data.id, createDiv, getUserData])
+  }, [project.id, createDiv, getUserData])
 
   function deleteProject() {
-    deleteSelfQuery(data.id, 'project', true, () => {
+    deleteSelfQuery(project.id, 'project', true, () => {
       setState(
         produce((draft) => {
-          draft.data.deleted = true
+          draft.project.deleted = true
         })
       )
     })
@@ -99,17 +99,17 @@ function ProjectMenu({
         )
       )
     ) {
-      deleteSelfQuery(data.id, 'project', false, () => {
+      deleteSelfQuery(project.id, 'project', false, () => {
         window.location.href = COURSEFLOW_APP.config.home_path
       })
     }
   }
 
   function restoreProject() {
-    restoreSelfQuery(data.id, 'project', () => {
+    restoreSelfQuery(project.id, 'project', () => {
       setState(
         produce((draft) => {
-          draft.data.deleted = false
+          draft.project.deleted = false
         })
       )
     })
@@ -158,8 +158,8 @@ function ProjectMenu({
   function updateFunction(new_data) {
     setState(
       produce((draft) => {
-        draft.data = {
-          ...draft.data,
+        draft.project = {
+          ...draft.project,
           ...new_data
         }
         draft.openEditDialog = false
@@ -168,7 +168,7 @@ function ProjectMenu({
   }
 
   const DeleteProjectButton = () => {
-    if (!state.data.deleted) {
+    if (!state.project.deleted) {
       return (
         <div
           className="hover-shade"
@@ -216,8 +216,8 @@ function ProjectMenu({
             const loader = COURSEFLOW_APP.tinyLoader
             loader.startLoad()
             duplicateBaseItemQuery(
-              data.id,
-              data.type,
+              project.id,
+              project.type,
               null,
               (response_data) => {
                 loader.endLoad()
@@ -236,7 +236,7 @@ function ProjectMenu({
   }
 
   const OverflowLinks = () => {
-    const { data } = state
+    const { project } = state
 
     const overflow_links = []
 
@@ -250,7 +250,7 @@ function ProjectMenu({
     overflow_links.push(<ExportButton />)
     overflow_links.push(<CopyButton />)
 
-    if (data.author_id === userId) {
+    if (project.author_id === userId) {
       overflow_links.push(<hr />)
       overflow_links.push(<DeleteProjectButton />)
     }
@@ -347,7 +347,7 @@ function ProjectMenu({
     return (
       <WorkflowFilter
         read_only={readOnly}
-        project_data={state.data}
+        project_data={state.project}
         workflows={state.workflow_data}
         updateWorkflow={updateWorkflow}
         context="project"
@@ -362,7 +362,7 @@ function ProjectMenu({
           <h2>{window.gettext('Share project')}</h2>
         </DialogTitle>
         <ShareMenu
-          data={state.data}
+          data={state.project}
           actionFunction={() => {
             setState(
               produce((draft) => {
@@ -382,7 +382,7 @@ function ProjectMenu({
         <ProjectEditDialog
           type={'project_edit_menu'}
           data={{
-            ...state.data,
+            ...state.project,
             all_disciplines: allDisciplines
             // renderer: renderer
           }}
@@ -402,10 +402,10 @@ function ProjectMenu({
 
       <div className="project-menu">
         <Header
-          disciplines={state.data.disciplines}
-          description={state.data.description}
+          disciplines={state.project.disciplines}
+          description={state.project.description}
           allDisciplines={allDisciplines}
-          data={state.data} // @todo this needs to be unpacked
+          project={state.project}
           users={state.users}
           openShareDialog={openShareDialog}
           readOnly={readOnly}
@@ -414,7 +414,7 @@ function ProjectMenu({
       </div>
       <EditDialog />
       <ShareDialog />
-      <ExportProjectModal data={state.data} />
+      <ExportProjectModal project={state.project} />
       <ArchiveProjectModal onSubmit={deleteProject} />
     </div>
   )

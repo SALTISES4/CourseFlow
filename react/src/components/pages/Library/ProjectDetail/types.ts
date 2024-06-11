@@ -25,7 +25,7 @@ export type ObjectPermission = {
  *******************************************************/
 
 export type ProjectMenuProps = {
-  data: EProject
+  project: EProject
   userId: number
   projectPaths
   allDisciplines

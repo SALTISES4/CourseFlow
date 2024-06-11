@@ -8,8 +8,10 @@ from rest_framework.renderers import JSONRenderer
 
 from course_flow.forms import CreateProject
 from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.discipline import Discipline
 from course_flow.models.updateNotification import UpdateNotification
 from course_flow.serializers import (
+    DisciplineSerializer,
     FavouriteSerializer,
     FormFieldsSerializer,
     UpdateNotificationSerializer,
@@ -110,6 +112,11 @@ def get_topbar(request: HttpRequest):
                     "from": source_user_name,
                 }
             )
+
+        # disciplines = DisciplineSerializer(
+        #     Discipline.objects.order_by("title"), many=True
+        # ).data
+
         form = CreateProject(
             {
                 "title": "New project name",
@@ -130,6 +137,7 @@ def get_topbar(request: HttpRequest):
                     # TODO: count the number of current user's projects
                     "showNoProjectsAlert": True,
                     "formFields": FormFieldsSerializer(form).prepare_fields(),
+                    # "disciplines": disciplines,
                 }
             },
             "menus": {

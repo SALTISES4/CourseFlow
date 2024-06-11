@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 // @components
-import ActionButton from '@cfUIComponents/ActionButton'
+import ActionButton from '@cfCommonComponents/UIComponents/ActionButton'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType

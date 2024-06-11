@@ -4,12 +4,12 @@ import { getOutcomeNodeByID, TOutcomeNodeByID } from '@cfFindState'
 import SimpleOutcome from '@cfViews/OutcomeEditView/SimpleOutcome'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import { CfObjectType } from '@cfModule/types/enum'
-import CompletionImg from '@cfUIComponents/CompletionImg'
+import CompletionImg from '@cfCommonComponents/UIComponents/CompletionImg'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfParentComponents/ComponentWithToggleDrop'
 import { AppState } from '@cfRedux/types/type'
-import { ActionButton } from '@cfUIComponents'
+import ActionButton from '@cfCommonComponents/UIComponents/ActionButton'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 // import $ from 'jquery'
 

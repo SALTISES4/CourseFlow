@@ -41,9 +41,9 @@ repos:
 #        always_run: true
 #        exclude: ".*"
 #        verbose: true
-#      - id: prettier
-#        name: prettier
-#        language: system
-#        entry: bash -c 'yarn prettier || true' --
-#        always_run: true
-#        verbose: true
+      - id: lint
+        name: lint
+        language: system
+        entry: bash -c 'cd react && yarn lint-quiet || true' --
+        always_run: true
+        verbose: true

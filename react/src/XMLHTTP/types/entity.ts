@@ -1,4 +1,4 @@
-import { Discipline, ObjectPermission } from '@cfModule/types/common'
+import { Discipline, ObjectSet, ObjectPermission } from '@cfModule/types/common'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
 export type EDiscipline = {
@@ -114,10 +114,11 @@ export type EProject = {
   id: number
   last_modified: string
   object_permission: ObjectPermission
-  object_sets: any[]
+  object_sets: ObjectSet[]
   published: boolean
   title: string
-  type: string
+  // TODO: identify these really are the types / convert to enum?
+  type: 'project' | 'program' | 'course' | 'activity'
   workflowproject_set: number[]
 }
 

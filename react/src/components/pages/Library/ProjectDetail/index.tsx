@@ -42,7 +42,7 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
         projectPaths={this.projectPaths}
         allDisciplines={this.allDisciplines}
         readOnly={this.readOnly}
-        data={this.projectData}
+        project={this.projectData}
         userId={this.userId}
       />
     )

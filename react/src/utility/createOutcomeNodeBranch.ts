@@ -1,5 +1,5 @@
 import { getTableOutcomeNodeByID } from '@cfFindState'
-import {filterThenSortByID} from "@cfModule/utility/utilityFunctions";
+import { filterThenSortByID } from '@cfModule/utility/utilityFunctions'
 
 export type CreateOutcomeNodeBranchType = {
   id: any
@@ -52,14 +52,14 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           createOutcomeNodeBranch(props, outcomeoutcome.child, nodecategory)
         )
 
-      let outcomenodes = []
+      const outcomenodes = []
 
-      for (var ii = 0; ii < nodecategory.length; ii++) {
-        let category = nodecategory[ii]
-        let outcomenodes_group = []
-        for (var j = 0; j < category.nodes.length; j++) {
-          let node = category.nodes[j]
-          let outcomenode = getTableOutcomeNodeByID(
+      for (let ii = 0; ii < nodecategory.length; ii++) {
+        const category = nodecategory[ii]
+        const outcomenodes_group = []
+        for (let j = 0; j < category.nodes.length; j++) {
+          const node = category.nodes[j]
+          const outcomenode = getTableOutcomeNodeByID(
             props.outcomenode,
             node,
             outcome_id
@@ -73,7 +73,7 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           }
           //If the outcomenode doesn't exist and there are children, check them.
           let added = false
-          for (var k = 0; k < children.length; k++) {
+          for (let k = 0; k < children.length; k++) {
             if (children[k].outcomenodes[ii][j].degree !== null) {
               outcomenodes_group.push({ node_id: node, degree: 0 })
               added = true

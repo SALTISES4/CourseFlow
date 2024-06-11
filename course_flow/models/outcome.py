@@ -10,6 +10,22 @@ from course_flow.models._common import title_max_length
 User = get_user_model()
 
 
+# Model to represent an outcome. Outcome are recursively nested with an
+# "outcomeoutcome" (outcome to outcome link) as the throughmodel.
+# This allows an outcome to be split into sub-outcomes. The outcome "depth"
+# represents how far nested it is, with 0 corresponding to an outcome that is
+# associated directly with a workflow, 1 with a sub-outcome, 2 with a sub-sub-outcome.
+# The creation of outcomes of depth 3 or greater is prevented both in the front-end
+# and in the back-end for performance reasons.
+# Almost all front-end representations of an outcome necessarily follow this nested
+# structure.
+# Child outcomes are linked to this model in the "children" field.
+# Note this is different to the "horizontal outcomes" field, which refer
+# to the outcomes of a different workflow which have been associated with this one.
+# The horizontal outcomes are used primarily to allow the association of program-level
+# competencies with course-level learning outcomes. Thus a course-level learning outcome
+# which has program-level competencies associated with it will have those competencies
+# tagged onto it as its horizontal_outcomes.
 class Outcome(models.Model):
     deleted = models.BooleanField(default=False)
     deleted_on = models.DateTimeField(default=timezone.now)
