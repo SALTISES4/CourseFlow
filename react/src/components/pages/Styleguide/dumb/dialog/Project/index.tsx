@@ -103,7 +103,7 @@ const ProjectDialog = ({
         break
 
       case DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT:
-        console.log('submitted CREATE EDIT with', postData)
+        console.log('submitted EDIT PROJECT with', postData)
         break
     }
 
