@@ -87,8 +87,10 @@ function ObjectSets({
                   }
                   label="Type"
                 >
-                  {object_set_options.map((option) => (
-                    <MenuItem value={option.value}>{option.label}</MenuItem>
+                  {object_set_options.map((option, idx) => (
+                    <MenuItem key={idx} value={option.value}>
+                      {option.label}
+                    </MenuItem>
                   ))}
                 </Select>
               </FormControl>

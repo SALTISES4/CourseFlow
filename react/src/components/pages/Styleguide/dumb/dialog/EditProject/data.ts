@@ -1,4 +1,5 @@
 import { DataType } from '../Project'
+import { OBJECT_SET_TYPE } from '@cfCommonComponents/dialog/CreateProject/type'
 
 const data: DataType = {
   disciplines: [
@@ -9,10 +10,10 @@ const data: DataType = {
     { id: 5, title: 'Else' }
   ],
   objectSets: [
-    { id: 1, title: 'Outcome' },
-    { id: 2, title: 'Project' },
-    { id: 3, title: 'Something' },
-    { id: 4, title: 'Object set' }
+    { type: OBJECT_SET_TYPE.PROGRAM_OUTCOME, label: 'Outcome' },
+    { type: OBJECT_SET_TYPE.ACTIVITY_OUTCOME, label: 'Project' },
+    { type: OBJECT_SET_TYPE.PROGRAM_NODE, label: 'Something' },
+    { type: OBJECT_SET_TYPE.COURSE_OUTCOME, label: 'Object set' }
   ],
   formFields: [
     {

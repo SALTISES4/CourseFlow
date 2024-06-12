@@ -1,18 +1,14 @@
 import { ChangeEvent, useState } from 'react'
 import { produce } from 'immer'
-import {
-  Discipline,
-  // ObjectSet,
-  FormFieldSerialized
-} from '@cfModule/types/common'
+import { Discipline, FormFieldSerialized } from '@cfModule/types/common'
 import { DIALOG_TYPE, useDialog } from '@cfComponents/common/dialog'
-
-import CreateProjectDialog from '../CreateProject'
-import EditProjectDialog from '../EditProject'
 import {
   OBJECT_SET_TYPE,
   ObjectSetType
 } from '@cfCommonComponents/dialog/CreateProject/type'
+
+import CreateProjectDialog from '../CreateProject'
+import EditProjectDialog from '../EditProject'
 
 type ObjectSetUpdateType = {
   index: number
@@ -54,7 +50,7 @@ export type ProjectDialogPropsType = DataType & {
   show: boolean
   onClose: () => void
   onCloseAnimationEnd: () => void
-  onSubmit: () => void
+  onSubmit?: () => void
 }
 
 export type PropsType = {
@@ -87,44 +83,52 @@ const ProjectDialog = ({
   const [errors, setErrors] = useState({})
   const { show, onClose } = useDialog(type)
 
-  function onSubmit() {
+  function getDialogValues() {
     // early exit if there are validation errors
     if (Object.keys(errors).length) {
       return false
     }
 
-    const postData = {
+    return {
       ...state.fields,
       objectSets: state.objectSets
     }
-
-    // TODO: Handle submit based on the type of the dialog
-    switch (type) {
-      case DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE:
-        console.log('submitted CREATE PROJECT with', postData)
-        break
-
-      case DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT:
-        console.log('submitted EDIT PROJECT with', postData)
-        break
-    }
-
-    // NOTE: Example using API_POST to create the project
-    // API_POST<{ redirect: string }>(
-    //   COURSEFLOW_APP.config.json_api_paths.create_project,
-    //   postData
-    // )
-    //   .then((resp) => {
-    //     window.location.href = resp.redirect
-    //   })
-    //   .catch((error) => setErrors(error.data.errors))
   }
 
+  // TODO: Implement
+  function onCreateProjectSubmit() {
+    const values = getDialogValues()
+    if (values) {
+      console.log('submitted CREATE PROJECT with', values)
+
+      // NOTE: Example using API_POST to create the project
+      // API_POST<{ redirect: string }>(
+      //   COURSEFLOW_APP.config.json_api_paths.create_project,
+      //   values
+      // )
+      //   .then((resp) => {
+      //     window.location.href = resp.redirect
+      //   })
+      //   .catch((error) => setErrors(error.data.errors))
+    }
+  }
+
+  // TODO: Implement
+  function onEditProjectSubmit() {
+    const values = getDialogValues()
+    if (values) {
+      console.log('submitted EDIT PROJECT with', values)
+    }
+  }
+
+  // Reset dialog state when MUI Dialog animation ends
+  // so the user doesn't see the actual data reset
   function onCloseAnimationEnd() {
     setState(initialState)
     setErrors({})
   }
 
+  // Handle input change and update state
   function onInputChange(
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: FormFieldSerialized
@@ -176,7 +180,7 @@ const ProjectDialog = ({
     )
   }
 
-  // Drill that maaaaaaan
+  // Prepare all the Dialog props beforehand
   const dialogProps: ProjectDialogPropsType = {
     showNoProjectsAlert,
     objectSets,
@@ -192,14 +196,14 @@ const ProjectDialog = ({
 
     show,
     onClose,
-    onCloseAnimationEnd,
-    onSubmit
+    onCloseAnimationEnd
   }
 
+  // Render the corresponding dialog variation with respective submit handler
   return type === DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE ? (
-    <CreateProjectDialog {...dialogProps} />
+    <CreateProjectDialog {...dialogProps} onSubmit={onCreateProjectSubmit} />
   ) : (
-    <EditProjectDialog {...dialogProps} />
+    <EditProjectDialog {...dialogProps} onSubmit={onEditProjectSubmit} />
   )
 }
 
