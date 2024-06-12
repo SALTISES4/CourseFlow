@@ -2,30 +2,34 @@ import { ChangeEvent, useState } from 'react'
 import { produce } from 'immer'
 import {
   Discipline,
-  ObjectSet,
+  // ObjectSet,
   FormFieldSerialized
 } from '@cfModule/types/common'
 import { DIALOG_TYPE, useDialog } from '@cfComponents/common/dialog'
 
 import CreateProjectDialog from '../CreateProject'
 import EditProjectDialog from '../EditProject'
+import {
+  OBJECT_SET_TYPE,
+  ObjectSetType
+} from '@cfCommonComponents/dialog/CreateProject/type'
 
 type ObjectSetUpdateType = {
   index: number
-  newVal?: ObjectSet
+  newVal?: ObjectSetType
 }
 
 type StateType = {
   fields: {
     [index: string]: string
   }
-  objectSets: ObjectSet[]
+  objectSets: ObjectSetType[]
   objectSetsExpanded: boolean
 }
 
 export type DataType = {
   showNoProjectsAlert?: boolean
-  objectSets: ObjectSet[]
+  objectSets: ObjectSetType[]
   disciplines: Discipline[]
   formFields: FormFieldSerialized[]
 }
@@ -55,7 +59,7 @@ export type ProjectDialogPropsType = DataType & {
 
 export type PropsType = {
   showNoProjectsAlert?: boolean
-  objectSets?: ObjectSet[]
+  objectSets?: ObjectSetType[]
   disciplines: Discipline[]
   formFields: FormFieldSerialized[]
 }
@@ -91,9 +95,7 @@ const ProjectDialog = ({
 
     const postData = {
       ...state.fields,
-      objectSets: state.objectSets.filter(
-        (set) => set.id !== '' && set.title !== ''
-      )
+      objectSets: state.objectSets
     }
 
     // TODO: Handle submit based on the type of the dialog
@@ -161,7 +163,7 @@ const ProjectDialog = ({
   function onObjectSetAddNew() {
     setState(
       produce((draft) => {
-        draft.objectSets.push({ id: '', title: '' })
+        draft.objectSets.push({ type: '' as OBJECT_SET_TYPE, label: '' })
       })
     )
   }

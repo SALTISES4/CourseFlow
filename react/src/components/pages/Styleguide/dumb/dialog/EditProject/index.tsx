@@ -9,7 +9,6 @@ import ObjectSets from '@cfComponents/common/dialog/CreateProject/components/Obj
 import { ProjectDialogPropsType as PropsType } from '../Project'
 
 function EditProjectDialog({
-  disciplines,
   formFields,
   state,
   errors,

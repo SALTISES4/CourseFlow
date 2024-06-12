@@ -6,38 +6,24 @@ import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Select from '@mui/material/Select'
-import OutlinedInput from '@mui/material/OutlinedInput'
 import InputLabel from '@mui/material/InputLabel'
 import Chip from '@mui/material/Chip'
 import Box from '@mui/material/Box'
 import CancelIcon from '@mui/icons-material/Cancel'
-import CheckIcon from '@mui/icons-material/Check'
 import MenuItem from '@mui/material/MenuItem'
-import Stack from '@mui/material/Stack'
-import FormControl from '@mui/material/FormControl'
 import { DIALOG_TYPE, useDialog } from '../'
 import { StyledDialog, StyledForm } from '../styles'
 import ObjectSets from './components/ObjectSets'
 import { TopBarProps } from '@cfModule/types/common'
 import { API_POST } from '@XMLHTTP/PostFunctions'
 import { produce } from 'immer'
-import {SelectChangeEvent} from '@mui/material'
-// import { ObjectSet } from '@cfModule/types/common'
+import { SelectChangeEvent } from '@mui/material'
+import {
+  OBJECT_SET_TYPE,
+  ObjectSetType
+} from '@cfCommonComponents/dialog/CreateProject/type'
 
 // TODO: figure out how to handle object set types and where the values come from
-export enum OBJECT_SET_TYPE {
-  PROGRAM_OUTCOME = 'program outcome',
-  COURSE_OUTCOME = 'course outcome',
-  ACTIVITY_OUTCOME = 'activity outcome',
-  PROGRAM_NODE = 'program node',
-  COURSE_NODE = 'course node',
-  ACTIVITY_NODE = 'activity node',
-}
-
-export type ObjectSetType = {
-  type: OBJECT_SET_TYPE
-  label: string
-}
 
 export type OnUpdateType = {
   index: number
@@ -46,7 +32,7 @@ export type OnUpdateType = {
 
 export type StateType = {
   fields: {
-    [index: string]: string
+    [index: string]: string | any[]
   }
   objectSets: ObjectSetType[]
   objectSetsExpanded: boolean
@@ -56,15 +42,14 @@ function CreateProjectDialog({
   showNoProjectsAlert,
   formFields
 }: TopBarProps['forms']['createProject']) {
-  const initialState: StateType = {
+  const [state, setState] = useState<StateType>({
     fields: {},
     objectSets: [],
     objectSetsExpanded: false
-  }
-  const [state, setState] = useState<StateType>(initialState)
+  })
   const [errors, setErrors] = useState({})
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT)
-  const [selectOpenStates,setSelectOpenStates] = useState({})
+  const [selectOpenStates, setSelectOpenStates] = useState({})
 
   function onSubmit() {
     // early exit if there are validation errors
@@ -85,13 +70,23 @@ function CreateProjectDialog({
       .catch((error) => setErrors(error.data.errors))
   }
 
-  function onCloseAnimationEnd() {
-    setState(initialState)
+  function onDialogClose() {
+    // clean up the state
+    setState({
+      fields: {},
+      objectSets: [],
+      objectSetsExpanded: false
+    })
     setErrors({})
+
+    // dispatch the close callback
+    onClose()
   }
 
   function onInputChange(
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | any[]>,
+    e:
+      | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string | any[]>,
     field: any, // TODO
     override: any = false
   ) {
@@ -106,9 +101,9 @@ function CreateProjectDialog({
     setState(
       produce((draft) => {
         const { fields } = draft
-        if(override){
+        if (override) {
           fields[field.name] = override
-        }else{
+        } else {
           fields[field.name] = e.target.value
         }
       })
@@ -133,7 +128,7 @@ function CreateProjectDialog({
   function onObjectSetAddNew() {
     setState(
       produce((draft) => {
-        draft.objectSets.push({ id: '', title: '' })
+        draft.objectSets.push({ type: '' as OBJECT_SET_TYPE, label: '' })
       })
     )
   }
@@ -147,22 +142,14 @@ function CreateProjectDialog({
   }
 
   //Open or close a controlled Select component
-  function handleSelectOpen(index: number, open: boolean){
-    let newState = {...selectOpenStates}
-    newState[index]=open;
-    setSelectOpenStates(newState);
+  function handleSelectOpen(index: number, open: boolean) {
+    const newState = { ...selectOpenStates }
+    newState[index] = open
+    setSelectOpenStates(newState)
   }
 
   return (
-    <StyledDialog
-      open={show}
-      fullWidth
-      maxWidth="sm"
-      onClose={onClose}
-      TransitionProps={{
-        onExited: onCloseAnimationEnd
-      }}
-    >
+    <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
       <DialogTitle>{window.gettext('Create project')}</DialogTitle>
       <DialogContent dividers>
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
@@ -193,8 +180,8 @@ function CreateProjectDialog({
                   onChange={(e) => onInputChange(e, field)}
                 />
               )
-            }else if(field.type === 'multiselect'){
-              return ([
+            } else if (field.type === 'multiselect') {
+              return [
                 <InputLabel>{field.label}</InputLabel>,
                 <Select
                   key={index}
@@ -209,37 +196,43 @@ function CreateProjectDialog({
                       {(selected as any[]).map((value) => (
                         <Chip
                           key={value}
-                          label={field.options.find((option)=>option.value==value).label}
+                          label={
+                            field.options.find(
+                              (option) => option.value == value
+                            ).label
+                          }
                           clickable
                           deleteIcon={
                             <CancelIcon
                               onMouseDown={(event) => event.stopPropagation()}
                             />
                           }
-                          onDelete={(event)=>{
-                            let new_value = state.fields[field.name].slice() as any[]
-                            new_value.splice(new_value.indexOf(value),1)
-                            onInputChange(event,field,new_value)
+                          onDelete={(event) => {
+                            const new_value = state.fields[
+                              field.name
+                            ].slice() as any[]
+                            new_value.splice(new_value.indexOf(value), 1)
+                            onInputChange(event, field, new_value)
                             event.stopPropagation()
                           }}
                         />
                       ))}
                     </Box>
                   )}
-                  onClose={()=>handleSelectOpen(index, false)}
-                  onOpen={()=>handleSelectOpen(index, true)}
-                  onChange={(e) => {onInputChange(e, field);handleSelectOpen(index,false)}}
+                  onClose={() => handleSelectOpen(index, false)}
+                  onOpen={() => handleSelectOpen(index, true)}
+                  onChange={(e) => {
+                    onInputChange(e, field)
+                    handleSelectOpen(index, false)
+                  }}
                 >
-                  {field.options.map((option)=>(
-                    <MenuItem
-                      key={option.value}
-                      value={option.value}
-                    >
+                  {field.options.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
                       {option.label}
                     </MenuItem>
                   ))}
                 </Select>
-              ])
+              ]
             }
           })}
           <ObjectSets
@@ -252,7 +245,7 @@ function CreateProjectDialog({
         </StyledForm>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" color="secondary" onClick={onClose}>
+        <Button variant="contained" color="secondary" onClick={onDialogClose}>
           {COURSEFLOW_APP.strings.cancel}
         </Button>
         <Button

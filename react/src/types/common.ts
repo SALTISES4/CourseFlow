@@ -43,10 +43,10 @@ export type Discipline = {
   title: string
 }
 
-export type ObjectSet = {
-  id: number | string
-  title: string
-}
+// export type ObjectSet = {
+//   id: number | string
+//   title: string
+// }
 
 export type ObjectLock = {
   user_id: number
@@ -113,7 +113,7 @@ export type FormFieldSerialized = {
   label?: string
   type: string
   required?: boolean
-  options?: string
+  options?: { value: string; label: string }[]
   max_length?: number
   help_text?: string
   value?: string
