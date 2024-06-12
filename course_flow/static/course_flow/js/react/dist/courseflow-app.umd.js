@@ -2265,18 +2265,17 @@ var __privateMethod = (obj, member, method) => {
     react_production_min.version = "18.2.0";
     return react_production_min;
   }
-  var hasRequiredReact;
-  function requireReact() {
-    if (hasRequiredReact)
-      return react.exports;
-    hasRequiredReact = 1;
-    if (process.env.NODE_ENV === "production") {
-      react.exports = requireReact_production_min();
-    } else {
-      react.exports = requireReact_development();
-    }
-    return react.exports;
+  if (process.env.NODE_ENV === "production") {
+    react.exports = requireReact_production_min();
+  } else {
+    react.exports = requireReact_development();
   }
+  var reactExports = react.exports;
+  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
+  const React$2 = /* @__PURE__ */ _mergeNamespaces({
+    __proto__: null,
+    default: React$1
+  }, [reactExports]);
   /**
    * @license React
    * react-jsx-runtime.development.js
@@ -2293,7 +2292,7 @@ var __privateMethod = (obj, member, method) => {
     hasRequiredReactJsxRuntime_development = 1;
     if (process.env.NODE_ENV !== "production") {
       (function() {
-        var React2 = requireReact();
+        var React2 = reactExports;
         var REACT_ELEMENT_TYPE = Symbol.for("react.element");
         var REACT_PORTAL_TYPE = Symbol.for("react.portal");
         var REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
@@ -3178,7 +3177,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactJsxRuntime_production_min)
       return reactJsxRuntime_production_min;
     hasRequiredReactJsxRuntime_production_min = 1;
-    var f = requireReact(), k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
+    var f = reactExports, k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m2 = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = { key: true, ref: true, __self: true, __source: true };
     function q(c, a, g) {
       var b, d = {}, e = null, h = null;
       void 0 !== g && (e = "" + g);
@@ -3953,7 +3952,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var Scheduler = requireScheduler();
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         var suppressWarning = false;
@@ -25046,7 +25045,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredReactDom_production_min)
       return reactDom_production_min;
     hasRequiredReactDom_production_min = 1;
-    var aa = requireReact(), ca = requireScheduler();
+    var aa = reactExports, ca = requireScheduler();
     function p(a) {
       for (var b = "https://reactjs.org/docs/error-decoder.html?invariant=" + a, c = 1; c < arguments.length; c++)
         b += "&args[]=" + encodeURIComponent(arguments[c]);
@@ -32365,12 +32364,6 @@ var __privateMethod = (obj, member, method) => {
     VERB2["ERROR"] = "error";
     return VERB2;
   })(VERB || {});
-  var reactExports = requireReact();
-  const React$1 = /* @__PURE__ */ getDefaultExportFromCjs(reactExports);
-  const React$2 = /* @__PURE__ */ _mergeNamespaces({
-    __proto__: null,
-    default: React$1
-  }, [reactExports]);
   var shim = { exports: {} };
   var useSyncExternalStoreShim_development = {};
   /**
@@ -32392,7 +32385,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var ReactSharedInternals = React2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
         function error(format2) {
           {
@@ -32518,7 +32511,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredUseSyncExternalStoreShim_production_min)
       return useSyncExternalStoreShim_production_min;
     hasRequiredUseSyncExternalStoreShim_production_min = 1;
-    var e = requireReact();
+    var e = reactExports;
     function h(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -32582,7 +32575,7 @@ var __privateMethod = (obj, member, method) => {
         if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart === "function") {
           __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(new Error());
         }
-        var React2 = requireReact();
+        var React2 = reactExports;
         var shim2 = shimExports;
         function is2(x, y) {
           return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
@@ -32676,7 +32669,7 @@ var __privateMethod = (obj, member, method) => {
     if (hasRequiredWithSelector_production_min)
       return withSelector_production_min;
     hasRequiredWithSelector_production_min = 1;
-    var h = requireReact(), n = shimExports;
+    var h = reactExports, n = shimExports;
     function p(a, b) {
       return a === b && (0 !== a || 1 / a === 1 / b) || a !== a && b !== b;
     }
@@ -101662,7 +101655,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.returnFirstArg = exports.canTextBeChildOfNode = exports.ELEMENTS_WITH_NO_TEXT_CHILDREN = exports.PRESERVE_CUSTOM_ATTRIBUTES = exports.setStyleProp = exports.isCustomComponent = void 0;
-    var react_12 = requireReact();
+    var react_12 = reactExports;
     var style_to_js_1 = __importDefault2(cjs$1);
     var RESERVED_SVG_MATHML_ELEMENTS = /* @__PURE__ */ new Set([
       "annotation-xml",
@@ -101780,7 +101773,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return mod2 && mod2.__esModule ? mod2 : { "default": mod2 };
   };
   Object.defineProperty(domToReact$1, "__esModule", { value: true });
-  var react_1 = requireReact();
+  var react_1 = reactExports;
   var attributes_to_props_1 = __importDefault(attributesToProps$1);
   var utilities_1 = utilities$1;
   var React = {
@@ -102071,11 +102064,13 @@ Please use another name.` : formatMuiErrorMessage(18));
                 index
               );
             } else if (field.type === "multiselect") {
-              return [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: field.label }),
+              return /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { fullWidth: true, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { id: "create-project-discipline", children: field.label }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   Select$1,
                   {
+                    labelId: "create-project-discipline",
+                    label: field.label,
                     name: field.name,
                     required: field.required,
                     multiple: true,
@@ -102096,9 +102091,9 @@ Please use another name.` : formatMuiErrorMessage(18));
                           }
                         ),
                         onDelete: (event) => {
-                          const new_value = state.fields[field.name].slice();
-                          new_value.splice(new_value.indexOf(value), 1);
-                          onInputChange(event, field, new_value);
+                          const newValue = state.fields[field.name].slice();
+                          newValue.splice(newValue.indexOf(value), 1);
+                          onInputChange(event, field, newValue);
                           event.stopPropagation();
                         }
                       },
@@ -102114,7 +102109,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                   },
                   index
                 )
-              ];
+              ] }, index);
             }
           }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(

@@ -1,14 +1,17 @@
 import { ChangeEvent, useState } from 'react'
+import { produce } from 'immer'
+import { SelectChangeEvent } from '@mui/material'
 import Alert from '@cfCommonComponents/components/Alert'
-import TextField from '@mui/material/TextField'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import FormControl from '@mui/material/FormControl'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Select from '@mui/material/Select'
 import InputLabel from '@mui/material/InputLabel'
 import Chip from '@mui/material/Chip'
-import Box from '@mui/material/Box'
 import CancelIcon from '@mui/icons-material/Cancel'
 import MenuItem from '@mui/material/MenuItem'
 import { DIALOG_TYPE, useDialog } from '../'
@@ -16,14 +19,10 @@ import { StyledDialog, StyledForm } from '../styles'
 import ObjectSets from './components/ObjectSets'
 import { TopBarProps } from '@cfModule/types/common'
 import { API_POST } from '@XMLHTTP/PostFunctions'
-import { produce } from 'immer'
-import { SelectChangeEvent } from '@mui/material'
 import {
   OBJECT_SET_TYPE,
   ObjectSetType
 } from '@cfCommonComponents/dialog/CreateProject/type'
-
-// TODO: figure out how to handle object set types and where the values come from
 
 export type OnUpdateType = {
   index: number
@@ -141,7 +140,7 @@ function CreateProjectDialog({
     )
   }
 
-  //Open or close a controlled Select component
+  // Open or close a controlled Select component
   function handleSelectOpen(index: number, open: boolean) {
     const newState = { ...selectOpenStates }
     newState[index] = open
@@ -181,58 +180,64 @@ function CreateProjectDialog({
                 />
               )
             } else if (field.type === 'multiselect') {
-              return [
-                <InputLabel>{field.label}</InputLabel>,
-                <Select
-                  key={index}
-                  name={field.name}
-                  required={field.required}
-                  multiple
-                  open={selectOpenStates[index] ?? false}
-                  error={hasError}
-                  value={state.fields[field.name] ?? []}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(selected as any[]).map((value) => (
-                        <Chip
-                          key={value}
-                          label={
-                            field.options.find(
-                              (option) => option.value == value
-                            ).label
-                          }
-                          clickable
-                          deleteIcon={
-                            <CancelIcon
-                              onMouseDown={(event) => event.stopPropagation()}
-                            />
-                          }
-                          onDelete={(event) => {
-                            const new_value = state.fields[
-                              field.name
-                            ].slice() as any[]
-                            new_value.splice(new_value.indexOf(value), 1)
-                            onInputChange(event, field, new_value)
-                            event.stopPropagation()
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  )}
-                  onClose={() => handleSelectOpen(index, false)}
-                  onOpen={() => handleSelectOpen(index, true)}
-                  onChange={(e) => {
-                    onInputChange(e, field)
-                    handleSelectOpen(index, false)
-                  }}
-                >
-                  {field.options.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              ]
+              return (
+                <FormControl key={index} fullWidth>
+                  <InputLabel id="create-project-discipline">
+                    {field.label}
+                  </InputLabel>
+                  <Select
+                    labelId="create-project-discipline"
+                    label={field.label}
+                    key={index}
+                    name={field.name}
+                    required={field.required}
+                    multiple
+                    open={selectOpenStates[index] ?? false}
+                    error={hasError}
+                    value={state.fields[field.name] ?? []}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {(selected as any[]).map((value) => (
+                          <Chip
+                            key={value}
+                            label={
+                              field.options.find(
+                                (option) => option.value == value
+                              ).label
+                            }
+                            clickable
+                            deleteIcon={
+                              <CancelIcon
+                                onMouseDown={(event) => event.stopPropagation()}
+                              />
+                            }
+                            onDelete={(event) => {
+                              const newValue = state.fields[
+                                field.name
+                              ].slice() as any[]
+                              newValue.splice(newValue.indexOf(value), 1)
+                              onInputChange(event, field, newValue)
+                              event.stopPropagation()
+                            }}
+                          />
+                        ))}
+                      </Box>
+                    )}
+                    onClose={() => handleSelectOpen(index, false)}
+                    onOpen={() => handleSelectOpen(index, true)}
+                    onChange={(e) => {
+                      onInputChange(e, field)
+                      handleSelectOpen(index, false)
+                    }}
+                  >
+                    {field.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )
             }
           })}
           <ObjectSets
