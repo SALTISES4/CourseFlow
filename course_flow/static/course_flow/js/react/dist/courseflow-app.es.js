@@ -48007,7 +48007,7 @@ class MenuSection extends reactExports.Component {
    *******************************************************/
   render() {
     const section_type = this.props.section_data.object_type;
-    this.props.section_data.is_strategy;
+    const is_strategy = this.props.section_data.is_strategy;
     this.props.parentID;
     let add_button;
     let objects = this.props.section_data.objects.map((object) => /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -48025,6 +48025,39 @@ class MenuSection extends reactExports.Component {
     ));
     if (this.props.replacement_text)
       objects = this.props.replacement_text;
+    if (COURSEFLOW_APP.config.create_path && this.props.add) {
+      let types;
+      if (section_type === "workflow")
+        types = ["program", "course", "activity"];
+      else
+        types = [section_type];
+      let adds;
+      {
+        adds = types.map((this_type) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "a",
+          {
+            className: "hover-shade",
+            href: COURSEFLOW_APP.config.create_path[this_type],
+            children: window.gettext("Create new ") + window.gettext(this_type)
+          }
+        ));
+        let import_text = window.gettext("Import ") + window.gettext(section_type);
+        if (is_strategy)
+          import_text += window.gettext(" strategy");
+      }
+      add_button = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menu-create hover-shade", ref: this.dropdownDiv, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "img",
+          {
+            className: "create-button create-button-" + this.props.section_data.object_type + " link-image",
+            title: window.gettext("Add New"),
+            src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.section_data.title }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: adds })
+      ] });
+    }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "section-" + this.props.section_data.object_type, children: [
       add_button,
       /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: objects })
@@ -48255,7 +48288,24 @@ class WorkflowsMenu extends reactExports.Component {
       );
       i++;
     }
-    const current_project = null;
+    const current_project = this.current_project ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
+      ",",
+      /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+        WorkflowCard,
+        {
+          workflowData: this.current_project,
+          selected: this.state.selected === this.current_project.id,
+          noHyperlink: no_hyperlink,
+          type: this.props.type,
+          dispatch: this.props.dispatch,
+          selectAction: this.workflowSelected.bind(this)
+        }
+      ) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
+      ",",
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(this.Title, {}),
       current_project,
@@ -48267,6 +48317,48 @@ class WorkflowsMenu extends reactExports.Component {
     ] });
   }
 }
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#04BA74",
+      light: "#52C68C",
+      dark: "#009E52",
+      contrastText: "#fff"
+    },
+    secondary: {
+      main: "#78909C",
+      light: "#90A4AE",
+      dark: "#607D8B"
+    },
+    courseflow: {
+      lightest: "#e2f5eb",
+      favouriteActive: "rgba(255, 180, 0, 1)",
+      favouriteInactive: "rgba(0, 0, 0, 0.23)",
+      project: "rgba(245, 127, 23, 1)",
+      program: "rgba(0, 105, 92, 1)",
+      course: "rgba(183, 28, 28, 1)",
+      activity: "rgba(41, 98, 255, 1)",
+      template: "rgba(255, 64, 129, 1)"
+    },
+    divider: "#CFD8DC",
+    action: {
+      hover: "rgba(4, 186, 116, 0.08)"
+    }
+  },
+  typography: {
+    fontFamily: ['"Open Sans"', "Helvetica", "Arial", "sans-serif"].join(",")
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          fontWeight: 600
+        }
+      }
+    }
+  }
+});
 class MessageBox extends reactExports.Component {
   constructor() {
     super(...arguments);
@@ -48295,14 +48387,14 @@ class MessageBox extends reactExports.Component {
 }
 function renderMessageBox(data, type, updateFunction) {
   ReactDOM.render(
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
+    /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
       MessageBox,
       {
         message_data: data,
         message_type: type,
         actionFunction: updateFunction
       }
-    ),
+    ) }),
     $("#popup-container")[0]
   );
 }
@@ -96138,48 +96230,6 @@ if (process.env.NODE_ENV === "production") {
     }
   };
 }
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#04BA74",
-      light: "#52C68C",
-      dark: "#009E52",
-      contrastText: "#fff"
-    },
-    secondary: {
-      main: "#78909C",
-      light: "#90A4AE",
-      dark: "#607D8B"
-    },
-    courseflow: {
-      lightest: "#e2f5eb",
-      favouriteActive: "rgba(255, 180, 0, 1)",
-      favouriteInactive: "rgba(0, 0, 0, 0.23)",
-      project: "rgba(245, 127, 23, 1)",
-      program: "rgba(0, 105, 92, 1)",
-      course: "rgba(183, 28, 28, 1)",
-      activity: "rgba(41, 98, 255, 1)",
-      template: "rgba(255, 64, 129, 1)"
-    },
-    divider: "#CFD8DC",
-    action: {
-      hover: "rgba(4, 186, 116, 0.08)"
-    }
-  },
-  typography: {
-    fontFamily: ['"Open Sans"', "Helvetica", "Arial", "sans-serif"].join(",")
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: "none",
-          fontWeight: 600
-        }
-      }
-    }
-  }
-});
 var Subscribable = class {
   constructor() {
     this.listeners = /* @__PURE__ */ new Set();
