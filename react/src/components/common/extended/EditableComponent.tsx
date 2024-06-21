@@ -12,6 +12,20 @@ import { CfObjectType } from '@cfModule/types/enum'
 import { ReactElement, ReactPortal } from 'react'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
+import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
+import { VERB } from '@cfModule/types/enum'
+
+
+/**
+ *
+ */
+function openLinkedWorkflowMenu(response, updateFunction) {
+  if (response.action === VERB.POSTED) {
+    renderMessageBox(response, 'linked_workflow_menu', updateFunction)
+  } else {
+    alert('Failed to find the parent project. Is this workflow in a project?')
+  }
+}
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -451,12 +465,15 @@ class EditableComponent<
             COURSEFLOW_APP.tinyLoader.startLoad()
             getLinkedWorkflowMenuQuery(
               data,
-              (response_data) => {
-                console.log('linked a workflow')
-              },
-              () => {
+              (response_data)=>{
+                openLinkedWorkflowMenu(
+                  response_data,
+                  (_response_data) => {
+                    console.log('linked a workflow')
+                  },
+                )
                 COURSEFLOW_APP.tinyLoader.endLoad()
-              }
+              },
             )
           }}
         >

@@ -311,7 +311,6 @@ export function getWorkflowsForProjectQuery(
  */
 export function getLinkedWorkflowMenuQuery(
   nodeData,
-  updateFunction,
   callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
     console.log('success')
 ) {
@@ -321,7 +320,7 @@ export function getLinkedWorkflowMenuQuery(
       nodePk: JSON.stringify(nodeData.id)
     },
     (_data: LinkedWorkflowMenuQueryResp) => {
-      callBackFunction()
+      callBackFunction(_data)
       // @TODO call to react render
       //  openLinkedWorkflowMenu(_data, updateFunction)
     }

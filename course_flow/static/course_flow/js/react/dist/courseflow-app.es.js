@@ -47972,141 +47972,6 @@ class WorkflowCard extends reactExports.Component {
     );
   }
 }
-function openWorkflowSelectMenu(response, updateFunction) {
-  if (response.action === VERB.POSTED) {
-    renderMessageBox(response, "workflow_select_menu", updateFunction);
-  } else {
-    alert("Failed to find your workflows.");
-  }
-}
-function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
-    {
-      projectPk: JSON.stringify(projectPk),
-      type_filter: JSON.stringify(type_filter),
-      get_strategies: JSON.stringify(get_strategies),
-      self_only: JSON.stringify(self_only)
-    },
-    (data) => {
-    }
-  );
-}
-function columnChanged(renderer, objectID, columnID) {
-  if (!renderer.dragAction)
-    renderer.dragAction = {};
-  if (!renderer.dragAction["nodeweek"])
-    renderer.dragAction["nodeweek"] = {};
-  renderer.dragAction["nodeweek"] = {
-    ...renderer.dragAction["nodeweek"],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify("node"),
-    columnPk: JSON.stringify(columnID),
-    columnChange: JSON.stringify(true)
-  };
-  $(document).off("nodeweek-dropped");
-  $(document).on("nodeweek-dropped", () => {
-    dragAction(renderer.dragAction["nodeweek"]);
-    renderer.dragAction["nodeweek"] = null;
-    $(document).off("nodeweek-dropped");
-  });
-}
-function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
-  if (!renderer.dragAction)
-    renderer.dragAction = {};
-  if (!renderer.dragAction[throughType])
-    renderer.dragAction[throughType] = {};
-  renderer.dragAction[throughType] = {
-    ...renderer.dragAction[throughType],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    newPosition: JSON.stringify(newPosition),
-    throughType: JSON.stringify(throughType),
-    inserted: JSON.stringify(true)
-  };
-  $(document).off(throughType + "-dropped");
-  if (objectID)
-    $(document).on(throughType + "-dropped", () => {
-      dragAction(renderer.dragAction[throughType]);
-      renderer.dragAction[throughType] = null;
-      $(document).off(throughType + "-dropped");
-    });
-}
-function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
-  const sendPostRequest = (url, data) => {
-    $.post(url, data).done(function(response) {
-      console.log("duplicateBaseItemQuery response");
-      console.log(response);
-      if (response.action === VERB.POSTED) {
-        callBackFunction(response);
-      } else {
-        window.fail_function(response.action);
-      }
-    }).fail(function(error) {
-      window.fail_function();
-    });
-  };
-  const itemPkString = JSON.stringify(itemPk);
-  const projectPkString = JSON.stringify(projectID);
-  if (objectType === OBJECT_TYPE.PROJECT) {
-    sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-      projectPk: itemPkString
-    });
-  } else if (objectType === OBJECT_TYPE.STRATEGY) {
-    sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax, {
-      workflowPk: itemPkString
-    });
-  } else {
-    sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax, {
-      workflowPk: itemPkString,
-      projectPk: projectPkString
-    });
-  }
-}
-function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-  $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    throughType: JSON.stringify(throughType)
-  }).done(function(data) {
-    if (data.action === VERB.POSTED)
-      callBackFunction(data);
-    else
-      window.fail_function(data.action);
-  }).fail(function(error) {
-    window.fail_function();
-  });
-}
-class UtilityLoader {
-  constructor(identifier2) {
-    __publicField(this, "load_screen");
-    this.load_screen = document.createElement("div");
-    this.load_screen.className = "load-screen";
-    this.load_screen.addEventListener("click", (evt) => {
-      evt.preventDefault();
-    });
-    let parentElement;
-    if (identifier2 instanceof jQuery) {
-      parentElement = identifier2.get(0);
-    } else {
-      parentElement = document.querySelector(identifier2);
-    }
-    if (parentElement) {
-      parentElement.appendChild(this.load_screen);
-    } else {
-      console.error(`Element with identifier "${identifier2}" not found.`);
-    }
-  }
-  endLoad() {
-    if (this.load_screen && this.load_screen.parentNode) {
-      this.load_screen.parentNode.removeChild(this.load_screen);
-    }
-  }
-}
 const OuterContentWrap = styled$1(Box$1, {
   shouldForwardProp: (prop) => prop !== "narrow"
 })(({ theme: theme2, narrow }) => ({
@@ -48142,8 +48007,8 @@ class MenuSection extends reactExports.Component {
    *******************************************************/
   render() {
     const section_type = this.props.section_data.object_type;
-    const is_strategy = this.props.section_data.is_strategy;
-    const parentID = this.props.parentID;
+    this.props.section_data.is_strategy;
+    this.props.parentID;
     let add_button;
     let objects = this.props.section_data.objects.map((object) => /* @__PURE__ */ jsxRuntimeExports.jsx(
       WorkflowCard,
@@ -48160,56 +48025,6 @@ class MenuSection extends reactExports.Component {
     ));
     if (this.props.replacement_text)
       objects = this.props.replacement_text;
-    if (COURSEFLOW_APP.config.create_path && this.props.add) {
-      let types;
-      if (section_type === "workflow")
-        types = ["program", "course", "activity"];
-      else
-        types = [section_type];
-      let adds;
-      {
-        adds = types.map((this_type) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "a",
-          {
-            className: "hover-shade",
-            href: COURSEFLOW_APP.config.create_path[this_type],
-            children: window.gettext("Create new ") + window.gettext(this_type)
-          }
-        ));
-        let import_text = window.gettext("Import ") + window.gettext(section_type);
-        if (is_strategy)
-          import_text += window.gettext(" strategy");
-        adds.push(
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "a",
-            {
-              className: "hover-shade",
-              onClick: () => {
-                getAddedWorkflowMenu(
-                  parentID,
-                  section_type,
-                  is_strategy,
-                  false
-                );
-              },
-              children: import_text
-            }
-          )
-        );
-      }
-      add_button = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menu-create hover-shade", ref: this.dropdownDiv, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "img",
-          {
-            className: "create-button create-button-" + this.props.section_data.object_type + " link-image",
-            title: window.gettext("Add New"),
-            src: COURSEFLOW_APP.config.icon_path + "add_new_white.svg"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: this.props.section_data.title }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "create-dropdown", children: adds })
-      ] });
-    }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "section-" + this.props.section_data.object_type, children: [
       add_button,
       /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: objects })
@@ -48440,24 +48255,7 @@ class WorkflowsMenu extends reactExports.Component {
       );
       i++;
     }
-    const current_project = this.current_project ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Current project") }),
-      ",",
-      /* @__PURE__ */ jsxRuntimeExports.jsx(GridWrap, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-        WorkflowCard,
-        {
-          workflowData: this.current_project,
-          selected: this.state.selected === this.current_project.id,
-          noHyperlink: no_hyperlink,
-          type: this.props.type,
-          dispatch: this.props.dispatch,
-          selectAction: this.workflowSelected.bind(this)
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", { className: "big-space" }),
-      ",",
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
-    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
+    const current_project = null;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(this.Title, {}),
       current_project,
@@ -48691,14 +48489,14 @@ function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => c
     window.fail_function();
   });
 }
-function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
+function getLinkedWorkflowMenuQuery(nodeData, callBackFunction = (_data2) => console.log("success")) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
     {
       nodePk: JSON.stringify(nodeData.id)
     },
     (_data2) => {
-      callBackFunction();
+      callBackFunction(_data2);
     }
   ).fail(function(error) {
     window.fail_function();
@@ -50456,6 +50254,39 @@ class QuillDiv extends reactExports.Component {
     ] });
   }
 }
+class UtilityLoader {
+  constructor(identifier2) {
+    __publicField(this, "load_screen");
+    this.load_screen = document.createElement("div");
+    this.load_screen.className = "load-screen";
+    this.load_screen.addEventListener("click", (evt) => {
+      evt.preventDefault();
+    });
+    let parentElement;
+    if (identifier2 instanceof jQuery) {
+      parentElement = identifier2.get(0);
+    } else {
+      parentElement = document.querySelector(identifier2);
+    }
+    if (parentElement) {
+      parentElement.appendChild(this.load_screen);
+    } else {
+      console.error(`Element with identifier "${identifier2}" not found.`);
+    }
+  }
+  endLoad() {
+    if (this.load_screen && this.load_screen.parentNode) {
+      this.load_screen.parentNode.removeChild(this.load_screen);
+    }
+  }
+}
+function openLinkedWorkflowMenu(response, updateFunction) {
+  if (response.action === VERB.POSTED) {
+    renderMessageBox(response, "linked_workflow_menu", updateFunction);
+  } else {
+    alert("Failed to find the parent project. Is this workflow in a project?");
+  }
+}
 class EditableComponent extends ComponentWithToggleDrop {
   constructor() {
     super(...arguments);
@@ -50803,9 +50634,12 @@ class EditableComponent extends ComponentWithToggleDrop {
               getLinkedWorkflowMenuQuery(
                 data,
                 (response_data) => {
-                  console.log("linked a workflow");
-                },
-                () => {
+                  openLinkedWorkflowMenu(
+                    response_data,
+                    (_response_data) => {
+                      console.log("linked a workflow");
+                    }
+                  );
                   COURSEFLOW_APP.tinyLoader.endLoad();
                 }
               );
@@ -51497,6 +51331,53 @@ class EditableComponentWithComments extends EditableComponent {
   }
 }
 __publicField(EditableComponentWithComments, "contextType", WorkFlowConfigContext);
+function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
+  const sendPostRequest = (url, data) => {
+    $.post(url, data).done(function(response) {
+      console.log("duplicateBaseItemQuery response");
+      console.log(response);
+      if (response.action === VERB.POSTED) {
+        callBackFunction(response);
+      } else {
+        window.fail_function(response.action);
+      }
+    }).fail(function(error) {
+      window.fail_function();
+    });
+  };
+  const itemPkString = JSON.stringify(itemPk);
+  const projectPkString = JSON.stringify(projectID);
+  if (objectType === OBJECT_TYPE.PROJECT) {
+    sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+      projectPk: itemPkString
+    });
+  } else if (objectType === OBJECT_TYPE.STRATEGY) {
+    sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax, {
+      workflowPk: itemPkString
+    });
+  } else {
+    sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax, {
+      workflowPk: itemPkString,
+      projectPk: projectPkString
+    });
+  }
+}
+function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
+  $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+    parentID: JSON.stringify(parentID),
+    parentType: JSON.stringify(parentType),
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    throughType: JSON.stringify(throughType)
+  }).done(function(data) {
+    if (data.action === VERB.POSTED)
+      callBackFunction(data);
+    else
+      window.fail_function(data.action);
+  }).fail(function(error) {
+    window.fail_function();
+  });
+}
 function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
   $.post(COURSEFLOW_APP.config.post_paths.new_node, {
     weekPk: JSON.stringify(weekPk),
@@ -51993,6 +51874,55 @@ const OutcomeOutcome = connect(
   mapStateToProps$v,
   null
 )(OutcomeOutcomeUnconnected);
+function openWorkflowSelectMenu(response, updateFunction) {
+  if (response.action === VERB.POSTED) {
+    renderMessageBox(response, "workflow_select_menu", updateFunction);
+  } else {
+    alert("Failed to find your workflows.");
+  }
+}
+function columnChanged(renderer, objectID, columnID) {
+  if (!renderer.dragAction)
+    renderer.dragAction = {};
+  if (!renderer.dragAction["nodeweek"])
+    renderer.dragAction["nodeweek"] = {};
+  renderer.dragAction["nodeweek"] = {
+    ...renderer.dragAction["nodeweek"],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify("node"),
+    columnPk: JSON.stringify(columnID),
+    columnChange: JSON.stringify(true)
+  };
+  $(document).off("nodeweek-dropped");
+  $(document).on("nodeweek-dropped", () => {
+    dragAction(renderer.dragAction["nodeweek"]);
+    renderer.dragAction["nodeweek"] = null;
+    $(document).off("nodeweek-dropped");
+  });
+}
+function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
+  if (!renderer.dragAction)
+    renderer.dragAction = {};
+  if (!renderer.dragAction[throughType])
+    renderer.dragAction[throughType] = {};
+  renderer.dragAction[throughType] = {
+    ...renderer.dragAction[throughType],
+    objectID: JSON.stringify(objectID),
+    objectType: JSON.stringify(objectType),
+    parentID: JSON.stringify(parentID),
+    parentType: JSON.stringify(parentType),
+    newPosition: JSON.stringify(newPosition),
+    throughType: JSON.stringify(throughType),
+    inserted: JSON.stringify(true)
+  };
+  $(document).off(throughType + "-dropped");
+  if (objectID)
+    $(document).on(throughType + "-dropped", () => {
+      dragAction(renderer.dragAction[throughType]);
+      renderer.dragAction[throughType] = null;
+      $(document).off(throughType + "-dropped");
+    });
+}
 class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
   constructor(props) {
     super(props);
@@ -103980,8 +103910,6 @@ function CreateProjectDialog({
     onClose();
   }
   function onInputChange(e, field, override = false) {
-    console.log("input change");
-    console.log(override);
     if (errors2[field.name]) {
       setErrors(
         produce((draft) => {
@@ -103993,7 +103921,6 @@ function CreateProjectDialog({
       produce((draft) => {
         const { fields: fields2 } = draft;
         if (override) {
-          console.log("setting to override value");
           fields2[field.name] = override;
         } else {
           fields2[field.name] = e.target.value;
@@ -104066,8 +103993,6 @@ function CreateProjectDialog({
               index
             );
           } else if (field.type === "multiselect") {
-            console.log(selectOpenStates);
-            console.log(state.fields);
             return [
               /* @__PURE__ */ jsxRuntimeExports.jsx(InputLabel$1, { children: field.label }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -104091,7 +104016,6 @@ function CreateProjectDialog({
                         }
                       ),
                       onDelete: (event) => {
-                        console.log("deleting!");
                         let new_value = state.fields[field.name].slice();
                         new_value.splice(new_value.indexOf(value), 1);
                         onInputChange(event, field, new_value);
