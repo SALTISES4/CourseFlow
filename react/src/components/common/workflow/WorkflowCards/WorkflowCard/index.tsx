@@ -80,6 +80,14 @@ class WorkflowCard<
     }
   }
 
+  getTemplateChip = (): WorklowCardChipType => {
+    const is_template = this.workflow.is_template
+    if(is_template)return {
+      type:CHIP_TYPE.TEMPLATE,
+      label: window.gettext("Template")
+    }
+  }
+
   getWorkflowCountChip = (): WorklowCardChipType => {
     const { workflow } = this
 
@@ -187,9 +195,10 @@ class WorkflowCard<
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => evt.preventDefault()}
         chips={[
+          this.getTemplateChip(),
           this.getTypeChip(),
           this.getWorkflowInfo(),
-          this.getWorkflowCountChip()
+          this.getWorkflowCountChip(),
         ]}
       />
     )

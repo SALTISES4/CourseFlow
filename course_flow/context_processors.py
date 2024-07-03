@@ -1,22 +1,22 @@
 from django.conf import settings
 from django.contrib.auth.models import Group
-from rest_framework.renderers import JSONRenderer
 from django.contrib.humanize.templatetags import humanize
+from django.db.models import Q
 from django.http import HttpRequest
 from django.urls import reverse
-from django.db.models import Q
+from rest_framework.renderers import JSONRenderer
 
+from course_flow.forms import CreateProject
 from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.discipline import Discipline
 from course_flow.models.updateNotification import UpdateNotification
 from course_flow.serializers import (
+    DisciplineSerializer,
     FavouriteSerializer,
+    FormFieldsSerializer,
     UpdateNotificationSerializer,
     UserSerializer,
 )
-
-from course_flow.forms import CreateProject
-from course_flow.serializers import FormFieldsSerializer
-
 from course_flow.templatetags.course_flow_templatetags import (
     course_flow_password_change_url,
     course_flow_return_title,
@@ -27,11 +27,15 @@ from course_flow.templatetags.course_flow_templatetags import (
 
 def add_global_context(request: HttpRequest):
     return {
-        "globalContextData": JSONRenderer().render({
-            "sidebar": get_sidebar(request),
-            "topbar": get_topbar(request),
-            "notifications": get_update_notifications(request)
-        }).decode("utf-8")
+        "globalContextData": JSONRenderer()
+        .render(
+            {
+                "sidebar": get_sidebar(request),
+                "topbar": get_topbar(request),
+                "notifications": get_update_notifications(request),
+            }
+        )
+        .decode("utf-8")
     }
 
 
@@ -44,7 +48,10 @@ def get_sidebar(request: HttpRequest):
             [
                 x.content_object
                 for x in user.favourite_set.filter(
-                    Q(workflow__deleted=False, workflow__project__deleted=False)
+                    Q(
+                        workflow__deleted=False,
+                        workflow__project__deleted=False,
+                    )
                     | Q(project__deleted=False)
                 )[:5]
             ],
@@ -86,12 +93,14 @@ def get_topbar(request: HttpRequest):
                 )
 
             source_user = UserSerializer(notification.source_user).data
-            source_user_name = source_user['username']
-            if (source_user['first_name']):
-                source_user_name = source_user['first_name']
+            source_user_name = source_user["username"]
+            if source_user["first_name"]:
+                source_user_name = source_user["first_name"]
 
-            if (source_user['first_name'] and source_user['last_name']):
-                source_user_name = f"{source_user['first_name']} {source_user['last_name']}"
+            if source_user["first_name"] and source_user["last_name"]:
+                source_user_name = (
+                    f"{source_user['first_name']} {source_user['last_name']}"
+                )
 
             prepared_notifications.append(
                 {
@@ -104,11 +113,15 @@ def get_topbar(request: HttpRequest):
                 }
             )
 
+        # disciplines = DisciplineSerializer(
+        #     Discipline.objects.order_by("title"), many=True
+        # ).data
+
         form = CreateProject(
             {
                 "title": "New project name",
                 "description": "",
-                # TODO: Add object sets and discipline fields
+                "disciplines": [],
             }
         )
 
@@ -123,7 +136,8 @@ def get_topbar(request: HttpRequest):
                 "createProject": {
                     # TODO: count the number of current user's projects
                     "showNoProjectsAlert": True,
-                    "formFields": FormFieldsSerializer(form).prepare_fields()
+                    "formFields": FormFieldsSerializer(form).prepare_fields(),
+                    # "disciplines": disciplines,
                 }
             },
             "menus": {
@@ -163,7 +177,9 @@ def get_update_notifications(request: HttpRequest):
                 else:
                     show_notification_request = False
                 return {
-                    "updateNotifications": UpdateNotificationSerializer(last_update).data,
+                    "updateNotifications": UpdateNotificationSerializer(
+                        last_update
+                    ).data,
                     "showNotificationRequest": show_notification_request,
                 }
     except Exception:

@@ -1,3 +1,6 @@
+// TODO: Deprecate/remove this component in favor of "CreateProject" dialog
+// since it's used to create new or edit existing project data
+
 import * as React from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'

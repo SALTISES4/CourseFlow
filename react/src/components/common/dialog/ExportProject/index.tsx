@@ -14,30 +14,7 @@ import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '..'
 import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
-
-type PropsType = {
-  data: {
-    id: number
-    title: string
-    description: string
-    type: 'project' | 'program' | 'course' | 'activity'
-    author: string
-    author_id: number
-    workflowproject_set: number[]
-    disciplines: any[]
-    object_sets: { id: number; title: string }[]
-    object_permission: {
-      permission_type: number
-      last_viewed: string
-    }
-    deleted: boolean
-    published: boolean
-    favourite: boolean
-    created_on: string
-    deleted_on: string
-    last_modified: string
-  }
-}
+import { EProject } from '@cfModule/XMLHTTP/types/entity'
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -78,7 +55,7 @@ const fields = {
   ]
 }
 
-function ExportProjectDialog({ data }: PropsType) {
+function ExportProjectDialog({ project }: { project: EProject }) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
@@ -112,8 +89,8 @@ function ExportProjectDialog({ data }: PropsType) {
 
   function onSubmit(e: MouseEvent<HTMLButtonElement>) {
     const postData = {
-      objectID: data.id,
-      objectType: data.type,
+      objectID: project.id,
+      objectType: project.type,
       exportType: state.type,
       exportFormat: state.format,
       objectSets: state.sets
@@ -144,7 +121,7 @@ function ExportProjectDialog({ data }: PropsType) {
     onClose()
   }
 
-  const projectType = data.type
+  const projectType = project.type
 
   return (
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
@@ -199,13 +176,13 @@ function ExportProjectDialog({ data }: PropsType) {
             </RadioGroup>
           </FormControl>
 
-          {data.object_sets.length > 0 && (
+          {project.object_sets.length > 0 && (
             <FormControl>
               <FormLabel id="export-sets-group-label">
                 {window.gettext('Object set visibility')}
               </FormLabel>
               <FormGroup>
-                {data.object_sets.map((set, index) => (
+                {project.object_sets.map((set, index) => (
                   <FormControlLabel
                     key={index}
                     value={set.id}

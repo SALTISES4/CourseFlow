@@ -10,5 +10,6 @@ from .program import *
 from .project import *
 from .SALTISE_admin import *
 from .SALTISE_analytics import *
+from .styleguide import *
 from .user import *
 from .workflow import *

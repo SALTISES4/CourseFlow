@@ -3,10 +3,39 @@ import { defineConfig } from 'vite'
 import eslint from 'vite-plugin-eslint'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import * as path from 'path'
+import chokidar from 'chokidar'
+import { exec } from 'child_process'
 
 export default defineConfig({
   mode: 'development',
-  plugins: [eslint(), react(), tsconfigPaths()],
+  plugins: [
+    eslint(),
+    react(),
+    tsconfigPaths(),
+    {
+      name: 'watch-typescript',
+      configureServer(server) {
+        chokidar.watch('src/**/*.ts?(x)').on('change', (path) => {
+          exec('tsc', (err, stdout, stderr) => {
+            if (err) {
+              console.error(`exec error: ${err}`)
+              return
+            }
+            if (stderr) {
+              console.error(`stderr: ${stderr}`)
+            }
+            if (stdout) {
+              console.log(`stdout: ${stdout}`)
+            }
+            server.ws.send({
+              type: 'full-reload',
+              path
+            })
+          })
+        })
+      }
+    }
+  ],
   css: {
     devSourcemap: true
   },

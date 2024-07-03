@@ -80,7 +80,10 @@ def json_api_post_update_value(request: HttpRequest) -> JsonResponse:
         else:
             object_to_update = objects.get(pk=object_id)
         serializer = serializer_lookups_shallow[object_type](
-            object_to_update, data=data, partial=True
+            object_to_update,
+            data=data,
+            partial=True,
+            context={"user": request.user},
         )
         save_serializer(serializer)
     except ValidationError:

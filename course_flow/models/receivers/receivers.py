@@ -776,3 +776,27 @@ def set_publication_workflow(sender, instance, created, **kwargs):
                 permission_type=op.permission_type,
             )
         workflow.save()
+
+
+@receiver(post_save, sender=Project)
+def project_ensure_template_from_saltise(sender, instance, created, **kwargs):
+    if instance.is_template:
+        if instance.published:
+            if not instance.from_saltise:
+                instance.from_saltise = True
+                instance.save()
+        else:
+            instance.is_template = False
+            instance.save()
+
+
+@receiver(post_save, sender=Workflow)
+def workflow_ensure_template_from_saltise(sender, instance, created, **kwargs):
+    if instance.is_template:
+        if instance.published:
+            if not instance.from_saltise:
+                instance.from_saltise = True
+                instance.save()
+        else:
+            instance.is_template = False
+            instance.save()

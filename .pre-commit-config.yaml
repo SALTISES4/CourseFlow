@@ -44,6 +44,6 @@ repos:
       - id: lint
         name: lint
         language: system
-        entry: bash -c 'yarn lint-quiet || true' --
+        entry: bash -c 'cd react && yarn lint-quiet || true' --
         always_run: true
         verbose: true

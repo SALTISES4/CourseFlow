@@ -3,8 +3,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 
-from course_flow.models.project import Project
 from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.discipline import Discipline
+from course_flow.models.project import Project
+from course_flow.serializers import DisciplineSerializer
 
 
 class RegistrationForm(UserCreationForm):
@@ -59,18 +61,27 @@ class NotificationsSettings(forms.ModelForm):
         fields = ("notifications",)
 
 
+class DisciplineIterator(forms.models.ModelChoiceIterator):
+    def choice(self, obj):
+        return (
+            str(obj.id),
+            self.field.label_from_instance(obj),
+        )
+
+
 class CreateProject(forms.ModelForm):
     title = forms.CharField(
         label=_("Title"),
         max_length=200,
     )
 
-    description = forms.CharField(
-        label=_("Description"),
-        max_length=300,
+    disciplines = forms.ModelMultipleChoiceField(
+        label=_("Discipline"),
         required=False,
+        queryset=Discipline.objects.all(),
     )
+    disciplines.iterator = DisciplineIterator
 
     class Meta:
         model = Project
-        fields = ("title", "description",)
+        fields = ("title", "description", "disciplines")
