@@ -5,6 +5,8 @@ import { ProjectViewDTO } from '@cfPages/Library/ProjectDetail/types'
 import { Discipline } from '@cfModule/types/common'
 import { EProject } from '@cfModule/XMLHTTP/types/entity'
 
+console.log('hsd asdf fs')
+
 class ProjectPage extends React.Component<ProjectViewDTO> {
   private readonly readOnly: boolean
   private readonly projectData: EProject
@@ -41,7 +43,7 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
       <ProjectMenu
         projectPaths={this.projectPaths}
         allDisciplines={this.allDisciplines}
-        readOnly={this.readOnly}
+        readOnly={'asdf'}
         project={this.projectData}
         userId={this.userId}
       />

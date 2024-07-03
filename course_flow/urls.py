@@ -76,11 +76,11 @@ def course_flow_patterns():
             views.user.notifications_settings_view,
             name="user-notifications-settings",
         ),
-        path(
-            "project/create/",
-            views.ProjectCreateView.as_view(),
-            name="project-create",
-        ),
+        # path(
+        #     "project/create/",
+        #     views.ProgramCreateView.as_view(),
+        #     name="project-create",
+        # ),
         path(
             "program/<int:projectPk>/create/",
             views.ProgramCreateView.as_view(),
@@ -114,7 +114,10 @@ def course_flow_patterns():
         path(
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
+        #########################################################
         # Register create JSON routes
+        # @todo refactor these to a meaningful pattern, i.e. json-api/[version]/[domain]/action
+        #########################################################
         path(
             "json-api-post-create-project/",
             views.json_api.create.json_api_post_create_project,

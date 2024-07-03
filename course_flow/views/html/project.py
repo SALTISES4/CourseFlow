@@ -109,27 +109,27 @@ def myprojects_view(request):
 
 
 # HTTP FRAGMENT REQUEST - TODO: Replaced by the Create Project modal
-class ProjectCreateView(
-    LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
-):
-    model = Project
-    fields = ["title", "description"]
-    template_name = "course_flow/html/workflow_create.html"
-
-    def workflow_type(self):
-        return "project"
-
-    def test_func(self):
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-        )
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super(ProjectCreateView, self).form_valid(form)
-
-    def get_success_url(self):
-        return reverse(
-            "course_flow:project-update", kwargs={"pk": self.object.pk}
-        )
+# class ProjectCreateView(
+#     LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
+# ):
+#     model = Project
+#     fields = ["title", "description"]
+#     template_name = "course_flow/html/workflow_create.html"
+#
+#     def workflow_type(self):
+#         return "project"
+#
+#     def test_func(self):
+#         return (
+#             Group.objects.get(name=settings.TEACHER_GROUP)
+#             in self.request.user.groups.all()
+#         )
+#
+#     def form_valid(self, form):
+#         form.instance.author = self.request.user
+#         return super(ProjectCreateView, self).form_valid(form)
+#
+#     def get_success_url(self):
+#         return reverse(
+#             "course_flow:project-update", kwargs={"pk": self.object.pk}
+#         )

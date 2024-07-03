@@ -142,7 +142,8 @@ def get_topbar(request: HttpRequest):
             },
             "menus": {
                 "add": {
-                    "projectUrl": reverse("course_flow:project-create"),
+                    # "projectUrl": reverse("course_flow:project-create"),
+                    "projectUrl": "#legacy-project-create-url",
                 },
                 "account": {
                     "notificationsSettingsUrls": reverse(

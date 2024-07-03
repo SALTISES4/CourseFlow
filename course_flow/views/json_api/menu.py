@@ -37,7 +37,7 @@ def json_api_get_favourites(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"data_package": projects_serialized})
 
 
-# Used to change whether or not the user receives notifications
+# Used to change whether the user receives notifications
 @ajax_login_required
 def json_api_post_select_notifications(request: HttpRequest) -> JsonResponse:
     notifications = json.loads(request.POST.get("notifications"))
