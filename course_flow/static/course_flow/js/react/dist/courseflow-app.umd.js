@@ -48310,7 +48310,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         ",",
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
       ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", onMouseDown: (evt) => {
+        evt.stopPropagation();
+      }, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(this.Title, {}),
         current_project,
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-tabs", id: "workflow-tabs", children: [
@@ -48585,11 +48587,11 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     });
   }
-  function getLinkedWorkflowMenuQuery(nodeData, callBackFunction = (_data2) => console.log("success")) {
+  function getLinkedWorkflowMenuQuery(nodeID, callBackFunction = (_data2) => console.log("success")) {
     $.post(
       COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
       {
-        nodePk: JSON.stringify(nodeData.id)
+        nodePk: JSON.stringify(nodeID)
       },
       (_data2) => {
         callBackFunction(_data2);
@@ -50376,13 +50378,3111 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     }
   }
-  function openLinkedWorkflowMenu(response, updateFunction) {
-    if (response.action === VERB.POSTED) {
-      renderMessageBox(response, "linked_workflow_menu", updateFunction);
+  const defaultState = {
+    type: null
+  };
+  function stateReducer(state, action) {
+    return {
+      type: action
+    };
+  }
+  const DialogContext$2 = reactExports.createContext(defaultState);
+  const DialogDispatchContext = reactExports.createContext(null);
+  function DialogContextProvider({ children }) {
+    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$2.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
+  }
+  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
+    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
+    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
+    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
+    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
+    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
+    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
+    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
+    DIALOG_TYPE2["LINK_WORKFLOW"] = "link_workflow";
+    return DIALOG_TYPE2;
+  })(DIALOG_TYPE || {});
+  function useDialog(dialogType = null) {
+    const dialogContext = reactExports.useContext(DialogContext$2);
+    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
+    if (!dialogType) {
+      return {
+        dispatch: dialogDispatch
+      };
+    }
+    return {
+      show: dialogContext.type === dialogType,
+      onClose: () => dialogDispatch(null),
+      dispatch: dialogDispatch
+    };
+  }
+  function getButtonUtilityClass(slot) {
+    return generateUtilityClass("MuiButton", slot);
+  }
+  const buttonClasses = generateUtilityClasses("MuiButton", ["root", "text", "textInherit", "textPrimary", "textSecondary", "textSuccess", "textError", "textInfo", "textWarning", "outlined", "outlinedInherit", "outlinedPrimary", "outlinedSecondary", "outlinedSuccess", "outlinedError", "outlinedInfo", "outlinedWarning", "contained", "containedInherit", "containedPrimary", "containedSecondary", "containedSuccess", "containedError", "containedInfo", "containedWarning", "disableElevation", "focusVisible", "disabled", "colorInherit", "textSizeSmall", "textSizeMedium", "textSizeLarge", "outlinedSizeSmall", "outlinedSizeMedium", "outlinedSizeLarge", "containedSizeSmall", "containedSizeMedium", "containedSizeLarge", "sizeMedium", "sizeSmall", "sizeLarge", "fullWidth", "startIcon", "endIcon", "iconSizeSmall", "iconSizeMedium", "iconSizeLarge"]);
+  const buttonClasses$1 = buttonClasses;
+  const ButtonGroupContext = /* @__PURE__ */ reactExports.createContext({});
+  if (process.env.NODE_ENV !== "production") {
+    ButtonGroupContext.displayName = "ButtonGroupContext";
+  }
+  const ButtonGroupContext$1 = ButtonGroupContext;
+  const ButtonGroupButtonContext = /* @__PURE__ */ reactExports.createContext(void 0);
+  if (process.env.NODE_ENV !== "production") {
+    ButtonGroupButtonContext.displayName = "ButtonGroupButtonContext";
+  }
+  const ButtonGroupButtonContext$1 = ButtonGroupButtonContext;
+  const _excluded$Z = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
+  const useUtilityClasses$R = (ownerState) => {
+    const {
+      color: color2,
+      disableElevation,
+      fullWidth,
+      size: size2,
+      variant,
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root", variant, `${variant}${capitalize$2(color2)}`, `size${capitalize$2(size2)}`, `${variant}Size${capitalize$2(size2)}`, color2 === "inherit" && "colorInherit", disableElevation && "disableElevation", fullWidth && "fullWidth"],
+      label: ["label"],
+      startIcon: ["startIcon", `iconSize${capitalize$2(size2)}`],
+      endIcon: ["endIcon", `iconSize${capitalize$2(size2)}`]
+    };
+    const composedClasses = composeClasses(slots, getButtonUtilityClass, classes);
+    return _extends$1({}, classes, composedClasses);
+  };
+  const commonIconStyles = (ownerState) => _extends$1({}, ownerState.size === "small" && {
+    "& > *:nth-of-type(1)": {
+      fontSize: 18
+    }
+  }, ownerState.size === "medium" && {
+    "& > *:nth-of-type(1)": {
+      fontSize: 20
+    }
+  }, ownerState.size === "large" && {
+    "& > *:nth-of-type(1)": {
+      fontSize: 22
+    }
+  });
+  const ButtonRoot = styled$1(ButtonBase$1, {
+    shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
+    name: "MuiButton",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize$2(ownerState.color)}`], styles2[`size${capitalize$2(ownerState.size)}`], styles2[`${ownerState.variant}Size${capitalize$2(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, ownerState.disableElevation && styles2.disableElevation, ownerState.fullWidth && styles2.fullWidth];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => {
+    var _theme$palette$getCon, _theme$palette;
+    const inheritContainedBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey[300] : theme2.palette.grey[800];
+    const inheritContainedHoverBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey.A100 : theme2.palette.grey[700];
+    return _extends$1({}, theme2.typography.button, {
+      minWidth: 64,
+      padding: "6px 16px",
+      borderRadius: (theme2.vars || theme2).shape.borderRadius,
+      transition: theme2.transitions.create(["background-color", "box-shadow", "border-color", "color"], {
+        duration: theme2.transitions.duration.short
+      }),
+      "&:hover": _extends$1({
+        textDecoration: "none",
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.text.primary, theme2.palette.action.hoverOpacity),
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          backgroundColor: "transparent"
+        }
+      }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          backgroundColor: "transparent"
+        }
+      }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
+        border: `1px solid ${(theme2.vars || theme2).palette[ownerState.color].main}`,
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          backgroundColor: "transparent"
+        }
+      }, ownerState.variant === "contained" && {
+        backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedHoverBg : inheritContainedHoverBackgroundColor,
+        boxShadow: (theme2.vars || theme2).shadows[4],
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          boxShadow: (theme2.vars || theme2).shadows[2],
+          backgroundColor: (theme2.vars || theme2).palette.grey[300]
+        }
+      }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
+        backgroundColor: (theme2.vars || theme2).palette[ownerState.color].dark,
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
+        }
+      }),
+      "&:active": _extends$1({}, ownerState.variant === "contained" && {
+        boxShadow: (theme2.vars || theme2).shadows[8]
+      }),
+      [`&.${buttonClasses$1.focusVisible}`]: _extends$1({}, ownerState.variant === "contained" && {
+        boxShadow: (theme2.vars || theme2).shadows[6]
+      }),
+      [`&.${buttonClasses$1.disabled}`]: _extends$1({
+        color: (theme2.vars || theme2).palette.action.disabled
+      }, ownerState.variant === "outlined" && {
+        border: `1px solid ${(theme2.vars || theme2).palette.action.disabledBackground}`
+      }, ownerState.variant === "contained" && {
+        color: (theme2.vars || theme2).palette.action.disabled,
+        boxShadow: (theme2.vars || theme2).shadows[0],
+        backgroundColor: (theme2.vars || theme2).palette.action.disabledBackground
+      })
+    }, ownerState.variant === "text" && {
+      padding: "6px 8px"
+    }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
+      color: (theme2.vars || theme2).palette[ownerState.color].main
+    }, ownerState.variant === "outlined" && {
+      padding: "5px 15px",
+      border: "1px solid currentColor"
+    }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
+      color: (theme2.vars || theme2).palette[ownerState.color].main,
+      border: theme2.vars ? `1px solid rgba(${theme2.vars.palette[ownerState.color].mainChannel} / 0.5)` : `1px solid ${alpha(theme2.palette[ownerState.color].main, 0.5)}`
+    }, ownerState.variant === "contained" && {
+      color: theme2.vars ? (
+        // this is safe because grey does not change between default light/dark mode
+        theme2.vars.palette.text.primary
+      ) : (_theme$palette$getCon = (_theme$palette = theme2.palette).getContrastText) == null ? void 0 : _theme$palette$getCon.call(_theme$palette, theme2.palette.grey[300]),
+      backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedBg : inheritContainedBackgroundColor,
+      boxShadow: (theme2.vars || theme2).shadows[2]
+    }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
+      color: (theme2.vars || theme2).palette[ownerState.color].contrastText,
+      backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
+    }, ownerState.color === "inherit" && {
+      color: "inherit",
+      borderColor: "currentColor"
+    }, ownerState.size === "small" && ownerState.variant === "text" && {
+      padding: "4px 5px",
+      fontSize: theme2.typography.pxToRem(13)
+    }, ownerState.size === "large" && ownerState.variant === "text" && {
+      padding: "8px 11px",
+      fontSize: theme2.typography.pxToRem(15)
+    }, ownerState.size === "small" && ownerState.variant === "outlined" && {
+      padding: "3px 9px",
+      fontSize: theme2.typography.pxToRem(13)
+    }, ownerState.size === "large" && ownerState.variant === "outlined" && {
+      padding: "7px 21px",
+      fontSize: theme2.typography.pxToRem(15)
+    }, ownerState.size === "small" && ownerState.variant === "contained" && {
+      padding: "4px 10px",
+      fontSize: theme2.typography.pxToRem(13)
+    }, ownerState.size === "large" && ownerState.variant === "contained" && {
+      padding: "8px 22px",
+      fontSize: theme2.typography.pxToRem(15)
+    }, ownerState.fullWidth && {
+      width: "100%"
+    });
+  }, ({
+    ownerState
+  }) => ownerState.disableElevation && {
+    boxShadow: "none",
+    "&:hover": {
+      boxShadow: "none"
+    },
+    [`&.${buttonClasses$1.focusVisible}`]: {
+      boxShadow: "none"
+    },
+    "&:active": {
+      boxShadow: "none"
+    },
+    [`&.${buttonClasses$1.disabled}`]: {
+      boxShadow: "none"
+    }
+  });
+  const ButtonStartIcon = styled$1("span", {
+    name: "MuiButton",
+    slot: "StartIcon",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.startIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
+    }
+  })(({
+    ownerState
+  }) => _extends$1({
+    display: "inherit",
+    marginRight: 8,
+    marginLeft: -4
+  }, ownerState.size === "small" && {
+    marginLeft: -2
+  }, commonIconStyles(ownerState)));
+  const ButtonEndIcon = styled$1("span", {
+    name: "MuiButton",
+    slot: "EndIcon",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.endIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
+    }
+  })(({
+    ownerState
+  }) => _extends$1({
+    display: "inherit",
+    marginRight: -4,
+    marginLeft: 8
+  }, ownerState.size === "small" && {
+    marginRight: -2
+  }, commonIconStyles(ownerState)));
+  const Button = /* @__PURE__ */ reactExports.forwardRef(function Button2(inProps, ref) {
+    const contextProps = reactExports.useContext(ButtonGroupContext$1);
+    const buttonGroupButtonContextPositionClassName = reactExports.useContext(ButtonGroupButtonContext$1);
+    const resolvedProps = resolveProps(contextProps, inProps);
+    const props = useThemeProps({
+      props: resolvedProps,
+      name: "MuiButton"
+    });
+    const {
+      children,
+      color: color2 = "primary",
+      component = "button",
+      className,
+      disabled = false,
+      disableElevation = false,
+      disableFocusRipple = false,
+      endIcon: endIconProp,
+      focusVisibleClassName,
+      fullWidth = false,
+      size: size2 = "medium",
+      startIcon: startIconProp,
+      type,
+      variant = "text"
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    const ownerState = _extends$1({}, props, {
+      color: color2,
+      component,
+      disabled,
+      disableElevation,
+      disableFocusRipple,
+      fullWidth,
+      size: size2,
+      type,
+      variant
+    });
+    const classes = useUtilityClasses$R(ownerState);
+    const startIcon = startIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonStartIcon, {
+      className: classes.startIcon,
+      ownerState,
+      children: startIconProp
+    });
+    const endIcon = endIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonEndIcon, {
+      className: classes.endIcon,
+      ownerState,
+      children: endIconProp
+    });
+    const positionClassName = buttonGroupButtonContextPositionClassName || "";
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonRoot, _extends$1({
+      ownerState,
+      className: clsx(contextProps.className, classes.root, className, positionClassName),
+      component,
+      disabled,
+      focusRipple: !disableFocusRipple,
+      focusVisibleClassName: clsx(classes.focusVisible, focusVisibleClassName),
+      ref,
+      type
+    }, other, {
+      classes,
+      children: [startIcon, children, endIcon]
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Button.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The color of the component.
+     * It supports both default and custom theme colors, which can be added as shown in the
+     * [palette customization guide](https://mui.com/material-ui/customization/palette/#custom-colors).
+     * @default 'primary'
+     */
+    color: PropTypes.oneOfType([PropTypes.oneOf(["inherit", "primary", "secondary", "success", "error", "info", "warning"]), PropTypes.string]),
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * If `true`, the component is disabled.
+     * @default false
+     */
+    disabled: PropTypes.bool,
+    /**
+     * If `true`, no elevation is used.
+     * @default false
+     */
+    disableElevation: PropTypes.bool,
+    /**
+     * If `true`, the  keyboard focus ripple is disabled.
+     * @default false
+     */
+    disableFocusRipple: PropTypes.bool,
+    /**
+     * If `true`, the ripple effect is disabled.
+     *
+     * ⚠️ Without a ripple there is no styling for :focus-visible by default. Be sure
+     * to highlight the element by applying separate styles with the `.Mui-focusVisible` class.
+     * @default false
+     */
+    disableRipple: PropTypes.bool,
+    /**
+     * Element placed after the children.
+     */
+    endIcon: PropTypes.node,
+    /**
+     * @ignore
+     */
+    focusVisibleClassName: PropTypes.string,
+    /**
+     * If `true`, the button will take up the full width of its container.
+     * @default false
+     */
+    fullWidth: PropTypes.bool,
+    /**
+     * The URL to link to when the button is clicked.
+     * If defined, an `a` element will be used as the root node.
+     */
+    href: PropTypes.string,
+    /**
+     * The size of the component.
+     * `small` is equivalent to the dense button styling.
+     * @default 'medium'
+     */
+    size: PropTypes.oneOfType([PropTypes.oneOf(["small", "medium", "large"]), PropTypes.string]),
+    /**
+     * Element placed before the children.
+     */
+    startIcon: PropTypes.node,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * @ignore
+     */
+    type: PropTypes.oneOfType([PropTypes.oneOf(["button", "reset", "submit"]), PropTypes.string]),
+    /**
+     * The variant to use.
+     * @default 'text'
+     */
+    variant: PropTypes.oneOfType([PropTypes.oneOf(["contained", "outlined", "text"]), PropTypes.string])
+  } : void 0;
+  const Button$1 = Button;
+  function isHostComponent(element) {
+    return typeof element === "string";
+  }
+  function appendOwnerState(elementType, otherProps, ownerState) {
+    if (elementType === void 0 || isHostComponent(elementType)) {
+      return otherProps;
+    }
+    return _extends$1({}, otherProps, {
+      ownerState: _extends$1({}, otherProps.ownerState, ownerState)
+    });
+  }
+  function extractEventHandlers(object, excludeKeys = []) {
+    if (object === void 0) {
+      return {};
+    }
+    const result = {};
+    Object.keys(object).filter((prop) => prop.match(/^on[A-Z]/) && typeof object[prop] === "function" && !excludeKeys.includes(prop)).forEach((prop) => {
+      result[prop] = object[prop];
+    });
+    return result;
+  }
+  function resolveComponentProps(componentProps, ownerState, slotState) {
+    if (typeof componentProps === "function") {
+      return componentProps(ownerState, slotState);
+    }
+    return componentProps;
+  }
+  function omitEventHandlers(object) {
+    if (object === void 0) {
+      return {};
+    }
+    const result = {};
+    Object.keys(object).filter((prop) => !(prop.match(/^on[A-Z]/) && typeof object[prop] === "function")).forEach((prop) => {
+      result[prop] = object[prop];
+    });
+    return result;
+  }
+  function mergeSlotProps(parameters) {
+    const {
+      getSlotProps,
+      additionalProps,
+      externalSlotProps,
+      externalForwardedProps,
+      className
+    } = parameters;
+    if (!getSlotProps) {
+      const joinedClasses2 = clsx(externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className, className, additionalProps == null ? void 0 : additionalProps.className);
+      const mergedStyle2 = _extends$1({}, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
+      const props2 = _extends$1({}, additionalProps, externalForwardedProps, externalSlotProps);
+      if (joinedClasses2.length > 0) {
+        props2.className = joinedClasses2;
+      }
+      if (Object.keys(mergedStyle2).length > 0) {
+        props2.style = mergedStyle2;
+      }
+      return {
+        props: props2,
+        internalRef: void 0
+      };
+    }
+    const eventHandlers = extractEventHandlers(_extends$1({}, externalForwardedProps, externalSlotProps));
+    const componentsPropsWithoutEventHandlers = omitEventHandlers(externalSlotProps);
+    const otherPropsWithoutEventHandlers = omitEventHandlers(externalForwardedProps);
+    const internalSlotProps = getSlotProps(eventHandlers);
+    const joinedClasses = clsx(internalSlotProps == null ? void 0 : internalSlotProps.className, additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
+    const mergedStyle = _extends$1({}, internalSlotProps == null ? void 0 : internalSlotProps.style, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
+    const props = _extends$1({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
+    if (joinedClasses.length > 0) {
+      props.className = joinedClasses;
+    }
+    if (Object.keys(mergedStyle).length > 0) {
+      props.style = mergedStyle;
+    }
+    return {
+      props,
+      internalRef: internalSlotProps.ref
+    };
+  }
+  const _excluded$Y = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+  function useSlotProps(parameters) {
+    var _parameters$additiona;
+    const {
+      elementType,
+      externalSlotProps,
+      ownerState,
+      skipResolvingSlotProps = false
+    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$Y);
+    const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
+    const {
+      props: mergedProps,
+      internalRef
+    } = mergeSlotProps(_extends$1({}, rest, {
+      externalSlotProps: resolvedComponentsProps
+    }));
+    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, (_parameters$additiona = parameters.additionalProps) == null ? void 0 : _parameters$additiona.ref);
+    const props = appendOwnerState(elementType, _extends$1({}, mergedProps, {
+      ref
+    }), ownerState);
+    return props;
+  }
+  function isOverflowing(container) {
+    const doc = ownerDocument(container);
+    if (doc.body === container) {
+      return ownerWindow(container).innerWidth > doc.documentElement.clientWidth;
+    }
+    return container.scrollHeight > container.clientHeight;
+  }
+  function ariaHidden(element, show) {
+    if (show) {
+      element.setAttribute("aria-hidden", "true");
     } else {
-      alert("Failed to find the parent project. Is this workflow in a project?");
+      element.removeAttribute("aria-hidden");
     }
   }
+  function getPaddingRight(element) {
+    return parseInt(ownerWindow(element).getComputedStyle(element).paddingRight, 10) || 0;
+  }
+  function isAriaHiddenForbiddenOnElement(element) {
+    const forbiddenTagNames = ["TEMPLATE", "SCRIPT", "STYLE", "LINK", "MAP", "META", "NOSCRIPT", "PICTURE", "COL", "COLGROUP", "PARAM", "SLOT", "SOURCE", "TRACK"];
+    const isForbiddenTagName = forbiddenTagNames.indexOf(element.tagName) !== -1;
+    const isInputHidden = element.tagName === "INPUT" && element.getAttribute("type") === "hidden";
+    return isForbiddenTagName || isInputHidden;
+  }
+  function ariaHiddenSiblings(container, mountElement, currentElement, elementsToExclude, show) {
+    const blacklist = [mountElement, currentElement, ...elementsToExclude];
+    [].forEach.call(container.children, (element) => {
+      const isNotExcludedElement = blacklist.indexOf(element) === -1;
+      const isNotForbiddenElement = !isAriaHiddenForbiddenOnElement(element);
+      if (isNotExcludedElement && isNotForbiddenElement) {
+        ariaHidden(element, show);
+      }
+    });
+  }
+  function findIndexOf(items, callback) {
+    let idx = -1;
+    items.some((item, index) => {
+      if (callback(item)) {
+        idx = index;
+        return true;
+      }
+      return false;
+    });
+    return idx;
+  }
+  function handleContainer(containerInfo, props) {
+    const restoreStyle = [];
+    const container = containerInfo.container;
+    if (!props.disableScrollLock) {
+      if (isOverflowing(container)) {
+        const scrollbarSize = getScrollbarSize(ownerDocument(container));
+        restoreStyle.push({
+          value: container.style.paddingRight,
+          property: "padding-right",
+          el: container
+        });
+        container.style.paddingRight = `${getPaddingRight(container) + scrollbarSize}px`;
+        const fixedElements2 = ownerDocument(container).querySelectorAll(".mui-fixed");
+        [].forEach.call(fixedElements2, (element) => {
+          restoreStyle.push({
+            value: element.style.paddingRight,
+            property: "padding-right",
+            el: element
+          });
+          element.style.paddingRight = `${getPaddingRight(element) + scrollbarSize}px`;
+        });
+      }
+      let scrollContainer;
+      if (container.parentNode instanceof DocumentFragment) {
+        scrollContainer = ownerDocument(container).body;
+      } else {
+        const parent = container.parentElement;
+        const containerWindow = ownerWindow(container);
+        scrollContainer = (parent == null ? void 0 : parent.nodeName) === "HTML" && containerWindow.getComputedStyle(parent).overflowY === "scroll" ? parent : container;
+      }
+      restoreStyle.push({
+        value: scrollContainer.style.overflow,
+        property: "overflow",
+        el: scrollContainer
+      }, {
+        value: scrollContainer.style.overflowX,
+        property: "overflow-x",
+        el: scrollContainer
+      }, {
+        value: scrollContainer.style.overflowY,
+        property: "overflow-y",
+        el: scrollContainer
+      });
+      scrollContainer.style.overflow = "hidden";
+    }
+    const restore = () => {
+      restoreStyle.forEach(({
+        value,
+        el,
+        property
+      }) => {
+        if (value) {
+          el.style.setProperty(property, value);
+        } else {
+          el.style.removeProperty(property);
+        }
+      });
+    };
+    return restore;
+  }
+  function getHiddenSiblings(container) {
+    const hiddenSiblings = [];
+    [].forEach.call(container.children, (element) => {
+      if (element.getAttribute("aria-hidden") === "true") {
+        hiddenSiblings.push(element);
+      }
+    });
+    return hiddenSiblings;
+  }
+  class ModalManager {
+    constructor() {
+      this.containers = void 0;
+      this.modals = void 0;
+      this.modals = [];
+      this.containers = [];
+    }
+    add(modal, container) {
+      let modalIndex = this.modals.indexOf(modal);
+      if (modalIndex !== -1) {
+        return modalIndex;
+      }
+      modalIndex = this.modals.length;
+      this.modals.push(modal);
+      if (modal.modalRef) {
+        ariaHidden(modal.modalRef, false);
+      }
+      const hiddenSiblings = getHiddenSiblings(container);
+      ariaHiddenSiblings(container, modal.mount, modal.modalRef, hiddenSiblings, true);
+      const containerIndex = findIndexOf(this.containers, (item) => item.container === container);
+      if (containerIndex !== -1) {
+        this.containers[containerIndex].modals.push(modal);
+        return modalIndex;
+      }
+      this.containers.push({
+        modals: [modal],
+        container,
+        restore: null,
+        hiddenSiblings
+      });
+      return modalIndex;
+    }
+    mount(modal, props) {
+      const containerIndex = findIndexOf(this.containers, (item) => item.modals.indexOf(modal) !== -1);
+      const containerInfo = this.containers[containerIndex];
+      if (!containerInfo.restore) {
+        containerInfo.restore = handleContainer(containerInfo, props);
+      }
+    }
+    remove(modal, ariaHiddenState = true) {
+      const modalIndex = this.modals.indexOf(modal);
+      if (modalIndex === -1) {
+        return modalIndex;
+      }
+      const containerIndex = findIndexOf(this.containers, (item) => item.modals.indexOf(modal) !== -1);
+      const containerInfo = this.containers[containerIndex];
+      containerInfo.modals.splice(containerInfo.modals.indexOf(modal), 1);
+      this.modals.splice(modalIndex, 1);
+      if (containerInfo.modals.length === 0) {
+        if (containerInfo.restore) {
+          containerInfo.restore();
+        }
+        if (modal.modalRef) {
+          ariaHidden(modal.modalRef, ariaHiddenState);
+        }
+        ariaHiddenSiblings(containerInfo.container, modal.mount, modal.modalRef, containerInfo.hiddenSiblings, false);
+        this.containers.splice(containerIndex, 1);
+      } else {
+        const nextTop = containerInfo.modals[containerInfo.modals.length - 1];
+        if (nextTop.modalRef) {
+          ariaHidden(nextTop.modalRef, false);
+        }
+      }
+      return modalIndex;
+    }
+    isTopModal(modal) {
+      return this.modals.length > 0 && this.modals[this.modals.length - 1] === modal;
+    }
+  }
+  function getContainer$1(container) {
+    return typeof container === "function" ? container() : container;
+  }
+  function getHasTransition(children) {
+    return children ? children.props.hasOwnProperty("in") : false;
+  }
+  const defaultManager = new ModalManager();
+  function useModal(parameters) {
+    const {
+      container,
+      disableEscapeKeyDown = false,
+      disableScrollLock = false,
+      // @ts-ignore internal logic - Base UI supports the manager as a prop too
+      manager = defaultManager,
+      closeAfterTransition = false,
+      onTransitionEnter,
+      onTransitionExited,
+      children,
+      onClose,
+      open,
+      rootRef
+    } = parameters;
+    const modal = reactExports.useRef({});
+    const mountNodeRef = reactExports.useRef(null);
+    const modalRef = reactExports.useRef(null);
+    const handleRef = useForkRef(modalRef, rootRef);
+    const [exited, setExited] = reactExports.useState(!open);
+    const hasTransition = getHasTransition(children);
+    let ariaHiddenProp = true;
+    if (parameters["aria-hidden"] === "false" || parameters["aria-hidden"] === false) {
+      ariaHiddenProp = false;
+    }
+    const getDoc = () => ownerDocument(mountNodeRef.current);
+    const getModal = () => {
+      modal.current.modalRef = modalRef.current;
+      modal.current.mount = mountNodeRef.current;
+      return modal.current;
+    };
+    const handleMounted = () => {
+      manager.mount(getModal(), {
+        disableScrollLock
+      });
+      if (modalRef.current) {
+        modalRef.current.scrollTop = 0;
+      }
+    };
+    const handleOpen = useEventCallback(() => {
+      const resolvedContainer = getContainer$1(container) || getDoc().body;
+      manager.add(getModal(), resolvedContainer);
+      if (modalRef.current) {
+        handleMounted();
+      }
+    });
+    const isTopModal = reactExports.useCallback(() => manager.isTopModal(getModal()), [manager]);
+    const handlePortalRef = useEventCallback((node2) => {
+      mountNodeRef.current = node2;
+      if (!node2) {
+        return;
+      }
+      if (open && isTopModal()) {
+        handleMounted();
+      } else if (modalRef.current) {
+        ariaHidden(modalRef.current, ariaHiddenProp);
+      }
+    });
+    const handleClose = reactExports.useCallback(() => {
+      manager.remove(getModal(), ariaHiddenProp);
+    }, [ariaHiddenProp, manager]);
+    reactExports.useEffect(() => {
+      return () => {
+        handleClose();
+      };
+    }, [handleClose]);
+    reactExports.useEffect(() => {
+      if (open) {
+        handleOpen();
+      } else if (!hasTransition || !closeAfterTransition) {
+        handleClose();
+      }
+    }, [open, handleClose, hasTransition, closeAfterTransition, handleOpen]);
+    const createHandleKeyDown = (otherHandlers) => (event) => {
+      var _otherHandlers$onKeyD;
+      (_otherHandlers$onKeyD = otherHandlers.onKeyDown) == null || _otherHandlers$onKeyD.call(otherHandlers, event);
+      if (event.key !== "Escape" || !isTopModal()) {
+        return;
+      }
+      if (!disableEscapeKeyDown) {
+        event.stopPropagation();
+        if (onClose) {
+          onClose(event, "escapeKeyDown");
+        }
+      }
+    };
+    const createHandleBackdropClick = (otherHandlers) => (event) => {
+      var _otherHandlers$onClic;
+      (_otherHandlers$onClic = otherHandlers.onClick) == null || _otherHandlers$onClic.call(otherHandlers, event);
+      if (event.target !== event.currentTarget) {
+        return;
+      }
+      if (onClose) {
+        onClose(event, "backdropClick");
+      }
+    };
+    const getRootProps = (otherHandlers = {}) => {
+      const propsEventHandlers = extractEventHandlers(parameters);
+      delete propsEventHandlers.onTransitionEnter;
+      delete propsEventHandlers.onTransitionExited;
+      const externalEventHandlers = _extends$1({}, propsEventHandlers, otherHandlers);
+      return _extends$1({
+        role: "presentation"
+      }, externalEventHandlers, {
+        onKeyDown: createHandleKeyDown(externalEventHandlers),
+        ref: handleRef
+      });
+    };
+    const getBackdropProps = (otherHandlers = {}) => {
+      const externalEventHandlers = otherHandlers;
+      return _extends$1({
+        "aria-hidden": true
+      }, externalEventHandlers, {
+        onClick: createHandleBackdropClick(externalEventHandlers),
+        open
+      });
+    };
+    const getTransitionProps2 = () => {
+      const handleEnter = () => {
+        setExited(false);
+        if (onTransitionEnter) {
+          onTransitionEnter();
+        }
+      };
+      const handleExited = () => {
+        setExited(true);
+        if (onTransitionExited) {
+          onTransitionExited();
+        }
+        if (closeAfterTransition) {
+          handleClose();
+        }
+      };
+      return {
+        onEnter: createChainedFunction(handleEnter, children == null ? void 0 : children.props.onEnter),
+        onExited: createChainedFunction(handleExited, children == null ? void 0 : children.props.onExited)
+      };
+    };
+    return {
+      getRootProps,
+      getBackdropProps,
+      getTransitionProps: getTransitionProps2,
+      rootRef: handleRef,
+      portalRef: handlePortalRef,
+      isTopModal,
+      exited,
+      hasTransition
+    };
+  }
+  function useBadge(parameters) {
+    const {
+      badgeContent: badgeContentProp,
+      invisible: invisibleProp = false,
+      max: maxProp = 99,
+      showZero = false
+    } = parameters;
+    const prevProps = usePreviousProps$1({
+      badgeContent: badgeContentProp,
+      max: maxProp
+    });
+    let invisible = invisibleProp;
+    if (invisibleProp === false && badgeContentProp === 0 && !showZero) {
+      invisible = true;
+    }
+    const {
+      badgeContent,
+      max: max2 = maxProp
+    } = invisible ? prevProps : parameters;
+    const displayValue = badgeContent && Number(badgeContent) > max2 ? `${max2}+` : badgeContent;
+    return {
+      badgeContent,
+      invisible,
+      max: max2,
+      displayValue
+    };
+  }
+  function mapEventPropToEvent(eventProp) {
+    return eventProp.substring(2).toLowerCase();
+  }
+  function clickedRootScrollbar(event, doc) {
+    return doc.documentElement.clientWidth < event.clientX || doc.documentElement.clientHeight < event.clientY;
+  }
+  function ClickAwayListener(props) {
+    const {
+      children,
+      disableReactTree = false,
+      mouseEvent = "onClick",
+      onClickAway,
+      touchEvent = "onTouchEnd"
+    } = props;
+    const movedRef = reactExports.useRef(false);
+    const nodeRef = reactExports.useRef(null);
+    const activatedRef = reactExports.useRef(false);
+    const syntheticEventRef = reactExports.useRef(false);
+    reactExports.useEffect(() => {
+      setTimeout(() => {
+        activatedRef.current = true;
+      }, 0);
+      return () => {
+        activatedRef.current = false;
+      };
+    }, []);
+    const handleRef = useForkRef(
+      // @ts-expect-error TODO upstream fix
+      children.ref,
+      nodeRef
+    );
+    const handleClickAway = useEventCallback((event) => {
+      const insideReactTree = syntheticEventRef.current;
+      syntheticEventRef.current = false;
+      const doc = ownerDocument(nodeRef.current);
+      if (!activatedRef.current || !nodeRef.current || "clientX" in event && clickedRootScrollbar(event, doc)) {
+        return;
+      }
+      if (movedRef.current) {
+        movedRef.current = false;
+        return;
+      }
+      let insideDOM;
+      if (event.composedPath) {
+        insideDOM = event.composedPath().indexOf(nodeRef.current) > -1;
+      } else {
+        insideDOM = !doc.documentElement.contains(
+          // @ts-expect-error returns `false` as intended when not dispatched from a Node
+          event.target
+        ) || nodeRef.current.contains(
+          // @ts-expect-error returns `false` as intended when not dispatched from a Node
+          event.target
+        );
+      }
+      if (!insideDOM && (disableReactTree || !insideReactTree)) {
+        onClickAway(event);
+      }
+    });
+    const createHandleSynthetic = (handlerName) => (event) => {
+      syntheticEventRef.current = true;
+      const childrenPropsHandler = children.props[handlerName];
+      if (childrenPropsHandler) {
+        childrenPropsHandler(event);
+      }
+    };
+    const childrenProps = {
+      ref: handleRef
+    };
+    if (touchEvent !== false) {
+      childrenProps[touchEvent] = createHandleSynthetic(touchEvent);
+    }
+    reactExports.useEffect(() => {
+      if (touchEvent !== false) {
+        const mappedTouchEvent = mapEventPropToEvent(touchEvent);
+        const doc = ownerDocument(nodeRef.current);
+        const handleTouchMove = () => {
+          movedRef.current = true;
+        };
+        doc.addEventListener(mappedTouchEvent, handleClickAway);
+        doc.addEventListener("touchmove", handleTouchMove);
+        return () => {
+          doc.removeEventListener(mappedTouchEvent, handleClickAway);
+          doc.removeEventListener("touchmove", handleTouchMove);
+        };
+      }
+      return void 0;
+    }, [handleClickAway, touchEvent]);
+    if (mouseEvent !== false) {
+      childrenProps[mouseEvent] = createHandleSynthetic(mouseEvent);
+    }
+    reactExports.useEffect(() => {
+      if (mouseEvent !== false) {
+        const mappedMouseEvent = mapEventPropToEvent(mouseEvent);
+        const doc = ownerDocument(nodeRef.current);
+        doc.addEventListener(mappedMouseEvent, handleClickAway);
+        return () => {
+          doc.removeEventListener(mappedMouseEvent, handleClickAway);
+        };
+      }
+      return void 0;
+    }, [handleClickAway, mouseEvent]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
+      children: /* @__PURE__ */ reactExports.cloneElement(children, childrenProps)
+    });
+  }
+  process.env.NODE_ENV !== "production" ? ClickAwayListener.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
+    /**
+     * The wrapped element.
+     */
+    children: elementAcceptingRef$1.isRequired,
+    /**
+     * If `true`, the React tree is ignored and only the DOM tree is considered.
+     * This prop changes how portaled elements are handled.
+     * @default false
+     */
+    disableReactTree: PropTypes.bool,
+    /**
+     * The mouse event to listen to. You can disable the listener by providing `false`.
+     * @default 'onClick'
+     */
+    mouseEvent: PropTypes.oneOf(["onClick", "onMouseDown", "onMouseUp", "onPointerDown", "onPointerUp", false]),
+    /**
+     * Callback fired when a "click away" event is detected.
+     */
+    onClickAway: PropTypes.func.isRequired,
+    /**
+     * The touch event to listen to. You can disable the listener by providing `false`.
+     * @default 'onTouchEnd'
+     */
+    touchEvent: PropTypes.oneOf(["onTouchEnd", "onTouchStart", false])
+  } : void 0;
+  if (process.env.NODE_ENV !== "production") {
+    ClickAwayListener["propTypes"] = exactProp(ClickAwayListener.propTypes);
+  }
+  const candidatesSelector = ["input", "select", "textarea", "a[href]", "button", "[tabindex]", "audio[controls]", "video[controls]", '[contenteditable]:not([contenteditable="false"])'].join(",");
+  function getTabIndex(node2) {
+    const tabindexAttr = parseInt(node2.getAttribute("tabindex") || "", 10);
+    if (!Number.isNaN(tabindexAttr)) {
+      return tabindexAttr;
+    }
+    if (node2.contentEditable === "true" || (node2.nodeName === "AUDIO" || node2.nodeName === "VIDEO" || node2.nodeName === "DETAILS") && node2.getAttribute("tabindex") === null) {
+      return 0;
+    }
+    return node2.tabIndex;
+  }
+  function isNonTabbableRadio(node2) {
+    if (node2.tagName !== "INPUT" || node2.type !== "radio") {
+      return false;
+    }
+    if (!node2.name) {
+      return false;
+    }
+    const getRadio = (selector) => node2.ownerDocument.querySelector(`input[type="radio"]${selector}`);
+    let roving = getRadio(`[name="${node2.name}"]:checked`);
+    if (!roving) {
+      roving = getRadio(`[name="${node2.name}"]`);
+    }
+    return roving !== node2;
+  }
+  function isNodeMatchingSelectorFocusable(node2) {
+    if (node2.disabled || node2.tagName === "INPUT" && node2.type === "hidden" || isNonTabbableRadio(node2)) {
+      return false;
+    }
+    return true;
+  }
+  function defaultGetTabbable(root) {
+    const regularTabNodes = [];
+    const orderedTabNodes = [];
+    Array.from(root.querySelectorAll(candidatesSelector)).forEach((node2, i2) => {
+      const nodeTabIndex = getTabIndex(node2);
+      if (nodeTabIndex === -1 || !isNodeMatchingSelectorFocusable(node2)) {
+        return;
+      }
+      if (nodeTabIndex === 0) {
+        regularTabNodes.push(node2);
+      } else {
+        orderedTabNodes.push({
+          documentOrder: i2,
+          tabIndex: nodeTabIndex,
+          node: node2
+        });
+      }
+    });
+    return orderedTabNodes.sort((a, b) => a.tabIndex === b.tabIndex ? a.documentOrder - b.documentOrder : a.tabIndex - b.tabIndex).map((a) => a.node).concat(regularTabNodes);
+  }
+  function defaultIsEnabled() {
+    return true;
+  }
+  function FocusTrap(props) {
+    const {
+      children,
+      disableAutoFocus = false,
+      disableEnforceFocus = false,
+      disableRestoreFocus = false,
+      getTabbable = defaultGetTabbable,
+      isEnabled = defaultIsEnabled,
+      open
+    } = props;
+    const ignoreNextEnforceFocus = reactExports.useRef(false);
+    const sentinelStart = reactExports.useRef(null);
+    const sentinelEnd = reactExports.useRef(null);
+    const nodeToRestore = reactExports.useRef(null);
+    const reactFocusEventTarget = reactExports.useRef(null);
+    const activated = reactExports.useRef(false);
+    const rootRef = reactExports.useRef(null);
+    const handleRef = useForkRef(children.ref, rootRef);
+    const lastKeydown = reactExports.useRef(null);
+    reactExports.useEffect(() => {
+      if (!open || !rootRef.current) {
+        return;
+      }
+      activated.current = !disableAutoFocus;
+    }, [disableAutoFocus, open]);
+    reactExports.useEffect(() => {
+      if (!open || !rootRef.current) {
+        return;
+      }
+      const doc = ownerDocument(rootRef.current);
+      if (!rootRef.current.contains(doc.activeElement)) {
+        if (!rootRef.current.hasAttribute("tabIndex")) {
+          if (process.env.NODE_ENV !== "production") {
+            console.error(["MUI: The modal content node does not accept focus.", 'For the benefit of assistive technologies, the tabIndex of the node is being set to "-1".'].join("\n"));
+          }
+          rootRef.current.setAttribute("tabIndex", "-1");
+        }
+        if (activated.current) {
+          rootRef.current.focus();
+        }
+      }
+      return () => {
+        if (!disableRestoreFocus) {
+          if (nodeToRestore.current && nodeToRestore.current.focus) {
+            ignoreNextEnforceFocus.current = true;
+            nodeToRestore.current.focus();
+          }
+          nodeToRestore.current = null;
+        }
+      };
+    }, [open]);
+    reactExports.useEffect(() => {
+      if (!open || !rootRef.current) {
+        return;
+      }
+      const doc = ownerDocument(rootRef.current);
+      const loopFocus = (nativeEvent) => {
+        lastKeydown.current = nativeEvent;
+        if (disableEnforceFocus || !isEnabled() || nativeEvent.key !== "Tab") {
+          return;
+        }
+        if (doc.activeElement === rootRef.current && nativeEvent.shiftKey) {
+          ignoreNextEnforceFocus.current = true;
+          if (sentinelEnd.current) {
+            sentinelEnd.current.focus();
+          }
+        }
+      };
+      const contain = () => {
+        const rootElement = rootRef.current;
+        if (rootElement === null) {
+          return;
+        }
+        if (!doc.hasFocus() || !isEnabled() || ignoreNextEnforceFocus.current) {
+          ignoreNextEnforceFocus.current = false;
+          return;
+        }
+        if (rootElement.contains(doc.activeElement)) {
+          return;
+        }
+        if (disableEnforceFocus && doc.activeElement !== sentinelStart.current && doc.activeElement !== sentinelEnd.current) {
+          return;
+        }
+        if (doc.activeElement !== reactFocusEventTarget.current) {
+          reactFocusEventTarget.current = null;
+        } else if (reactFocusEventTarget.current !== null) {
+          return;
+        }
+        if (!activated.current) {
+          return;
+        }
+        let tabbable = [];
+        if (doc.activeElement === sentinelStart.current || doc.activeElement === sentinelEnd.current) {
+          tabbable = getTabbable(rootRef.current);
+        }
+        if (tabbable.length > 0) {
+          var _lastKeydown$current, _lastKeydown$current2;
+          const isShiftTab = Boolean(((_lastKeydown$current = lastKeydown.current) == null ? void 0 : _lastKeydown$current.shiftKey) && ((_lastKeydown$current2 = lastKeydown.current) == null ? void 0 : _lastKeydown$current2.key) === "Tab");
+          const focusNext = tabbable[0];
+          const focusPrevious = tabbable[tabbable.length - 1];
+          if (typeof focusNext !== "string" && typeof focusPrevious !== "string") {
+            if (isShiftTab) {
+              focusPrevious.focus();
+            } else {
+              focusNext.focus();
+            }
+          }
+        } else {
+          rootElement.focus();
+        }
+      };
+      doc.addEventListener("focusin", contain);
+      doc.addEventListener("keydown", loopFocus, true);
+      const interval = setInterval(() => {
+        if (doc.activeElement && doc.activeElement.tagName === "BODY") {
+          contain();
+        }
+      }, 50);
+      return () => {
+        clearInterval(interval);
+        doc.removeEventListener("focusin", contain);
+        doc.removeEventListener("keydown", loopFocus, true);
+      };
+    }, [disableAutoFocus, disableEnforceFocus, disableRestoreFocus, isEnabled, open, getTabbable]);
+    const onFocus = (event) => {
+      if (nodeToRestore.current === null) {
+        nodeToRestore.current = event.relatedTarget;
+      }
+      activated.current = true;
+      reactFocusEventTarget.current = event.target;
+      const childrenPropsHandler = children.props.onFocus;
+      if (childrenPropsHandler) {
+        childrenPropsHandler(event);
+      }
+    };
+    const handleFocusSentinel = (event) => {
+      if (nodeToRestore.current === null) {
+        nodeToRestore.current = event.relatedTarget;
+      }
+      activated.current = true;
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
+      children: [/* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+        tabIndex: open ? 0 : -1,
+        onFocus: handleFocusSentinel,
+        ref: sentinelStart,
+        "data-testid": "sentinelStart"
+      }), /* @__PURE__ */ reactExports.cloneElement(children, {
+        ref: handleRef,
+        onFocus
+      }), /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+        tabIndex: open ? 0 : -1,
+        onFocus: handleFocusSentinel,
+        ref: sentinelEnd,
+        "data-testid": "sentinelEnd"
+      })]
+    });
+  }
+  process.env.NODE_ENV !== "production" ? FocusTrap.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
+    /**
+     * A single child content element.
+     */
+    children: elementAcceptingRef$1,
+    /**
+     * If `true`, the focus trap will not automatically shift focus to itself when it opens, and
+     * replace it to the last focused element when it closes.
+     * This also works correctly with any focus trap children that have the `disableAutoFocus` prop.
+     *
+     * Generally this should never be set to `true` as it makes the focus trap less
+     * accessible to assistive technologies, like screen readers.
+     * @default false
+     */
+    disableAutoFocus: PropTypes.bool,
+    /**
+     * If `true`, the focus trap will not prevent focus from leaving the focus trap while open.
+     *
+     * Generally this should never be set to `true` as it makes the focus trap less
+     * accessible to assistive technologies, like screen readers.
+     * @default false
+     */
+    disableEnforceFocus: PropTypes.bool,
+    /**
+     * If `true`, the focus trap will not restore focus to previously focused element once
+     * focus trap is hidden or unmounted.
+     * @default false
+     */
+    disableRestoreFocus: PropTypes.bool,
+    /**
+     * Returns an array of ordered tabbable nodes (i.e. in tab order) within the root.
+     * For instance, you can provide the "tabbable" npm dependency.
+     * @param {HTMLElement} root
+     */
+    getTabbable: PropTypes.func,
+    /**
+     * This prop extends the `open` prop.
+     * It allows to toggle the open state without having to wait for a rerender when changing the `open` prop.
+     * This prop should be memoized.
+     * It can be used to support multiple focus trap mounted at the same time.
+     * @default function defaultIsEnabled(): boolean {
+     *   return true;
+     * }
+     */
+    isEnabled: PropTypes.func,
+    /**
+     * If `true`, focus is locked.
+     */
+    open: PropTypes.bool.isRequired
+  } : void 0;
+  if (process.env.NODE_ENV !== "production") {
+    FocusTrap["propTypes"] = exactProp(FocusTrap.propTypes);
+  }
+  function getContainer(container) {
+    return typeof container === "function" ? container() : container;
+  }
+  const Portal = /* @__PURE__ */ reactExports.forwardRef(function Portal2(props, forwardedRef) {
+    const {
+      children,
+      container,
+      disablePortal = false
+    } = props;
+    const [mountNode, setMountNode] = reactExports.useState(null);
+    const handleRef = useForkRef(/* @__PURE__ */ reactExports.isValidElement(children) ? children.ref : null, forwardedRef);
+    useEnhancedEffect$1(() => {
+      if (!disablePortal) {
+        setMountNode(getContainer(container) || document.body);
+      }
+    }, [container, disablePortal]);
+    useEnhancedEffect$1(() => {
+      if (mountNode && !disablePortal) {
+        setRef(forwardedRef, mountNode);
+        return () => {
+          setRef(forwardedRef, null);
+        };
+      }
+      return void 0;
+    }, [forwardedRef, mountNode, disablePortal]);
+    if (disablePortal) {
+      if (/* @__PURE__ */ reactExports.isValidElement(children)) {
+        const newProps = {
+          ref: handleRef
+        };
+        return /* @__PURE__ */ reactExports.cloneElement(children, newProps);
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
+        children
+      });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
+      children: mountNode ? /* @__PURE__ */ reactDomExports.createPortal(children, mountNode) : mountNode
+    });
+  });
+  process.env.NODE_ENV !== "production" ? Portal.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
+    /**
+     * The children to render into the `container`.
+     */
+    children: PropTypes.node,
+    /**
+     * An HTML element or function that returns one.
+     * The `container` will have the portal children appended to it.
+     *
+     * By default, it uses the body of the top-level document object,
+     * so it's simply `document.body` most of the time.
+     */
+    container: PropTypes.oneOfType([HTMLElementType, PropTypes.func]),
+    /**
+     * The `children` will be under the DOM hierarchy of the parent component.
+     * @default false
+     */
+    disablePortal: PropTypes.bool
+  } : void 0;
+  if (process.env.NODE_ENV !== "production") {
+    Portal["propTypes"] = exactProp(Portal.propTypes);
+  }
+  function useSnackbar(parameters = {}) {
+    const {
+      autoHideDuration = null,
+      disableWindowBlurListener = false,
+      onClose,
+      open,
+      resumeHideDuration
+    } = parameters;
+    const timerAutoHide = reactExports.useRef();
+    reactExports.useEffect(() => {
+      if (!open) {
+        return void 0;
+      }
+      function handleKeyDown2(nativeEvent) {
+        if (!nativeEvent.defaultPrevented) {
+          if (nativeEvent.key === "Escape" || nativeEvent.key === "Esc") {
+            onClose == null || onClose(nativeEvent, "escapeKeyDown");
+          }
+        }
+      }
+      document.addEventListener("keydown", handleKeyDown2);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown2);
+      };
+    }, [open, onClose]);
+    const handleClose = useEventCallback((event, reason) => {
+      onClose == null || onClose(event, reason);
+    });
+    const setAutoHideTimer = useEventCallback((autoHideDurationParam) => {
+      if (!onClose || autoHideDurationParam == null) {
+        return;
+      }
+      clearTimeout(timerAutoHide.current);
+      timerAutoHide.current = setTimeout(() => {
+        handleClose(null, "timeout");
+      }, autoHideDurationParam);
+    });
+    reactExports.useEffect(() => {
+      if (open) {
+        setAutoHideTimer(autoHideDuration);
+      }
+      return () => {
+        clearTimeout(timerAutoHide.current);
+      };
+    }, [open, autoHideDuration, setAutoHideTimer]);
+    const handleClickAway = (event) => {
+      onClose == null || onClose(event, "clickaway");
+    };
+    const handlePause = () => {
+      clearTimeout(timerAutoHide.current);
+    };
+    const handleResume = reactExports.useCallback(() => {
+      if (autoHideDuration != null) {
+        setAutoHideTimer(resumeHideDuration != null ? resumeHideDuration : autoHideDuration * 0.5);
+      }
+    }, [autoHideDuration, resumeHideDuration, setAutoHideTimer]);
+    const createHandleBlur = (otherHandlers) => (event) => {
+      const onBlurCallback = otherHandlers.onBlur;
+      onBlurCallback == null || onBlurCallback(event);
+      handleResume();
+    };
+    const createHandleFocus = (otherHandlers) => (event) => {
+      const onFocusCallback = otherHandlers.onFocus;
+      onFocusCallback == null || onFocusCallback(event);
+      handlePause();
+    };
+    const createMouseEnter = (otherHandlers) => (event) => {
+      const onMouseEnterCallback = otherHandlers.onMouseEnter;
+      onMouseEnterCallback == null || onMouseEnterCallback(event);
+      handlePause();
+    };
+    const createMouseLeave = (otherHandlers) => (event) => {
+      const onMouseLeaveCallback = otherHandlers.onMouseLeave;
+      onMouseLeaveCallback == null || onMouseLeaveCallback(event);
+      handleResume();
+    };
+    reactExports.useEffect(() => {
+      if (!disableWindowBlurListener && open) {
+        window.addEventListener("focus", handleResume);
+        window.addEventListener("blur", handlePause);
+        return () => {
+          window.removeEventListener("focus", handleResume);
+          window.removeEventListener("blur", handlePause);
+        };
+      }
+      return void 0;
+    }, [disableWindowBlurListener, handleResume, open]);
+    const getRootProps = (externalProps = {}) => {
+      const externalEventHandlers = _extends$1({}, extractEventHandlers(parameters), extractEventHandlers(externalProps));
+      return _extends$1({
+        // ClickAwayListener adds an `onClick` prop which results in the alert not being announced.
+        // See https://github.com/mui/material-ui/issues/29080
+        role: "presentation"
+      }, externalProps, externalEventHandlers, {
+        onBlur: createHandleBlur(externalEventHandlers),
+        onFocus: createHandleFocus(externalEventHandlers),
+        onMouseEnter: createMouseEnter(externalEventHandlers),
+        onMouseLeave: createMouseLeave(externalEventHandlers)
+      });
+    };
+    return {
+      getRootProps,
+      onClickAway: handleClickAway
+    };
+  }
+  const _excluded$X = ["onChange", "maxRows", "minRows", "style", "value"];
+  function getStyleValue(value) {
+    return parseInt(value, 10) || 0;
+  }
+  const styles$2 = {
+    shadow: {
+      // Visibility needed to hide the extra text area on iPads
+      visibility: "hidden",
+      // Remove from the content flow
+      position: "absolute",
+      // Ignore the scrollbar width
+      overflow: "hidden",
+      height: 0,
+      top: 0,
+      left: 0,
+      // Create a new layer, increase the isolation of the computed values
+      transform: "translateZ(0)"
+    }
+  };
+  function isEmpty$1(obj) {
+    return obj === void 0 || obj === null || Object.keys(obj).length === 0 || obj.outerHeightStyle === 0 && !obj.overflow;
+  }
+  const TextareaAutosize = /* @__PURE__ */ reactExports.forwardRef(function TextareaAutosize2(props, forwardedRef) {
+    const {
+      onChange,
+      maxRows,
+      minRows = 1,
+      style: style2,
+      value
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
+    const {
+      current: isControlled
+    } = reactExports.useRef(value != null);
+    const inputRef = reactExports.useRef(null);
+    const handleRef = useForkRef(forwardedRef, inputRef);
+    const shadowRef = reactExports.useRef(null);
+    const renders = reactExports.useRef(0);
+    const [state, setState] = reactExports.useState({
+      outerHeightStyle: 0
+    });
+    const getUpdatedState = reactExports.useCallback(() => {
+      const input = inputRef.current;
+      const containerWindow = ownerWindow(input);
+      const computedStyle = containerWindow.getComputedStyle(input);
+      if (computedStyle.width === "0px") {
+        return {
+          outerHeightStyle: 0
+        };
+      }
+      const inputShallow = shadowRef.current;
+      inputShallow.style.width = computedStyle.width;
+      inputShallow.value = input.value || props.placeholder || "x";
+      if (inputShallow.value.slice(-1) === "\n") {
+        inputShallow.value += " ";
+      }
+      const boxSizing2 = computedStyle.boxSizing;
+      const padding2 = getStyleValue(computedStyle.paddingBottom) + getStyleValue(computedStyle.paddingTop);
+      const border2 = getStyleValue(computedStyle.borderBottomWidth) + getStyleValue(computedStyle.borderTopWidth);
+      const innerHeight = inputShallow.scrollHeight;
+      inputShallow.value = "x";
+      const singleRowHeight = inputShallow.scrollHeight;
+      let outerHeight = innerHeight;
+      if (minRows) {
+        outerHeight = Math.max(Number(minRows) * singleRowHeight, outerHeight);
+      }
+      if (maxRows) {
+        outerHeight = Math.min(Number(maxRows) * singleRowHeight, outerHeight);
+      }
+      outerHeight = Math.max(outerHeight, singleRowHeight);
+      const outerHeightStyle = outerHeight + (boxSizing2 === "border-box" ? padding2 + border2 : 0);
+      const overflow = Math.abs(outerHeight - innerHeight) <= 1;
+      return {
+        outerHeightStyle,
+        overflow
+      };
+    }, [maxRows, minRows, props.placeholder]);
+    const updateState = (prevState, newState) => {
+      const {
+        outerHeightStyle,
+        overflow
+      } = newState;
+      if (renders.current < 20 && (outerHeightStyle > 0 && Math.abs((prevState.outerHeightStyle || 0) - outerHeightStyle) > 1 || prevState.overflow !== overflow)) {
+        renders.current += 1;
+        return {
+          overflow,
+          outerHeightStyle
+        };
+      }
+      if (process.env.NODE_ENV !== "production") {
+        if (renders.current === 20) {
+          console.error(["MUI: Too many re-renders. The layout is unstable.", "TextareaAutosize limits the number of renders to prevent an infinite loop."].join("\n"));
+        }
+      }
+      return prevState;
+    };
+    const syncHeight = reactExports.useCallback(() => {
+      const newState = getUpdatedState();
+      if (isEmpty$1(newState)) {
+        return;
+      }
+      setState((prevState) => updateState(prevState, newState));
+    }, [getUpdatedState]);
+    useEnhancedEffect$1(() => {
+      const syncHeightWithFlushSync = () => {
+        const newState = getUpdatedState();
+        if (isEmpty$1(newState)) {
+          return;
+        }
+        reactDomExports.flushSync(() => {
+          setState((prevState) => updateState(prevState, newState));
+        });
+      };
+      const handleResize = () => {
+        renders.current = 0;
+        syncHeightWithFlushSync();
+      };
+      let rAF;
+      const rAFHandleResize = () => {
+        cancelAnimationFrame(rAF);
+        rAF = requestAnimationFrame(() => {
+          handleResize();
+        });
+      };
+      const debounceHandleResize = debounce(handleResize);
+      const input = inputRef.current;
+      const containerWindow = ownerWindow(input);
+      containerWindow.addEventListener("resize", debounceHandleResize);
+      let resizeObserver;
+      if (typeof ResizeObserver !== "undefined") {
+        resizeObserver = new ResizeObserver(process.env.NODE_ENV === "test" ? rAFHandleResize : handleResize);
+        resizeObserver.observe(input);
+      }
+      return () => {
+        debounceHandleResize.clear();
+        cancelAnimationFrame(rAF);
+        containerWindow.removeEventListener("resize", debounceHandleResize);
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
+      };
+    }, [getUpdatedState]);
+    useEnhancedEffect$1(() => {
+      syncHeight();
+    });
+    reactExports.useEffect(() => {
+      renders.current = 0;
+    }, [value]);
+    const handleChange = (event) => {
+      renders.current = 0;
+      if (!isControlled) {
+        syncHeight();
+      }
+      if (onChange) {
+        onChange(event);
+      }
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
+      children: [/* @__PURE__ */ jsxRuntimeExports.jsx("textarea", _extends$1({
+        value,
+        onChange: handleChange,
+        ref: handleRef,
+        rows: minRows,
+        style: _extends$1({
+          height: state.outerHeightStyle,
+          // Need a large enough difference to allow scrolling.
+          // This prevents infinite rendering loop.
+          overflow: state.overflow ? "hidden" : void 0
+        }, style2)
+      }, other)), /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", {
+        "aria-hidden": true,
+        className: props.className,
+        readOnly: true,
+        ref: shadowRef,
+        tabIndex: -1,
+        style: _extends$1({}, styles$2.shadow, style2, {
+          paddingTop: 0,
+          paddingBottom: 0
+        })
+      })]
+    });
+  });
+  process.env.NODE_ENV !== "production" ? TextareaAutosize.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * Maximum number of rows to display.
+     */
+    maxRows: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    /**
+     * Minimum number of rows to display.
+     * @default 1
+     */
+    minRows: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    /**
+     * @ignore
+     */
+    onChange: PropTypes.func,
+    /**
+     * @ignore
+     */
+    placeholder: PropTypes.string,
+    /**
+     * @ignore
+     */
+    style: PropTypes.object,
+    /**
+     * @ignore
+     */
+    value: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.number, PropTypes.string])
+  } : void 0;
+  const reflow = (node2) => node2.scrollTop;
+  function getTransitionProps(props, options) {
+    var _style$transitionDura, _style$transitionTimi;
+    const {
+      timeout,
+      easing: easing2,
+      style: style2 = {}
+    } = props;
+    return {
+      duration: (_style$transitionDura = style2.transitionDuration) != null ? _style$transitionDura : typeof timeout === "number" ? timeout : timeout[options.mode] || 0,
+      easing: (_style$transitionTimi = style2.transitionTimingFunction) != null ? _style$transitionTimi : typeof easing2 === "object" ? easing2[options.mode] : easing2,
+      delay: style2.transitionDelay
+    };
+  }
+  const _excluded$W = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+  const styles$1 = {
+    entering: {
+      opacity: 1
+    },
+    entered: {
+      opacity: 1
+    }
+  };
+  const Fade = /* @__PURE__ */ reactExports.forwardRef(function Fade2(props, ref) {
+    const theme2 = useTheme();
+    const defaultTimeout = {
+      enter: theme2.transitions.duration.enteringScreen,
+      exit: theme2.transitions.duration.leavingScreen
+    };
+    const {
+      addEndListener,
+      appear = true,
+      children,
+      easing: easing2,
+      in: inProp,
+      onEnter,
+      onEntered,
+      onEntering,
+      onExit,
+      onExited,
+      onExiting,
+      style: style2,
+      timeout = defaultTimeout,
+      // eslint-disable-next-line react/prop-types
+      TransitionComponent = Transition$1
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+    const nodeRef = reactExports.useRef(null);
+    const handleRef = useForkRef(nodeRef, children.ref, ref);
+    const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
+      if (callback) {
+        const node2 = nodeRef.current;
+        if (maybeIsAppearing === void 0) {
+          callback(node2);
+        } else {
+          callback(node2, maybeIsAppearing);
+        }
+      }
+    };
+    const handleEntering = normalizedTransitionCallback(onEntering);
+    const handleEnter = normalizedTransitionCallback((node2, isAppearing) => {
+      reflow(node2);
+      const transitionProps = getTransitionProps({
+        style: style2,
+        timeout,
+        easing: easing2
+      }, {
+        mode: "enter"
+      });
+      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
+      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
+      if (onEnter) {
+        onEnter(node2, isAppearing);
+      }
+    });
+    const handleEntered = normalizedTransitionCallback(onEntered);
+    const handleExiting = normalizedTransitionCallback(onExiting);
+    const handleExit = normalizedTransitionCallback((node2) => {
+      const transitionProps = getTransitionProps({
+        style: style2,
+        timeout,
+        easing: easing2
+      }, {
+        mode: "exit"
+      });
+      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
+      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
+      if (onExit) {
+        onExit(node2);
+      }
+    });
+    const handleExited = normalizedTransitionCallback(onExited);
+    const handleAddEndListener = (next2) => {
+      if (addEndListener) {
+        addEndListener(nodeRef.current, next2);
+      }
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+      appear,
+      in: inProp,
+      nodeRef,
+      onEnter: handleEnter,
+      onEntered: handleEntered,
+      onEntering: handleEntering,
+      onExit: handleExit,
+      onExited: handleExited,
+      onExiting: handleExiting,
+      addEndListener: handleAddEndListener,
+      timeout
+    }, other, {
+      children: (state, childProps) => {
+        return /* @__PURE__ */ reactExports.cloneElement(children, _extends$1({
+          style: _extends$1({
+            opacity: 0,
+            visibility: state === "exited" && !inProp ? "hidden" : void 0
+          }, styles$1[state], style2, children.props.style),
+          ref: handleRef
+        }, childProps));
+      }
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Fade.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * Add a custom transition end trigger. Called with the transitioning DOM
+     * node and a done callback. Allows for more fine grained transition end
+     * logic. Note: Timeouts are still used as a fallback if provided.
+     */
+    addEndListener: PropTypes.func,
+    /**
+     * Perform the enter transition when it first mounts if `in` is also `true`.
+     * Set this to `false` to disable this behavior.
+     * @default true
+     */
+    appear: PropTypes.bool,
+    /**
+     * A single child content element.
+     */
+    children: elementAcceptingRef$1.isRequired,
+    /**
+     * The transition timing function.
+     * You may specify a single easing or a object containing enter and exit values.
+     */
+    easing: PropTypes.oneOfType([PropTypes.shape({
+      enter: PropTypes.string,
+      exit: PropTypes.string
+    }), PropTypes.string]),
+    /**
+     * If `true`, the component will transition in.
+     */
+    in: PropTypes.bool,
+    /**
+     * @ignore
+     */
+    onEnter: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onEntered: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onEntering: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onExit: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onExited: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onExiting: PropTypes.func,
+    /**
+     * @ignore
+     */
+    style: PropTypes.object,
+    /**
+     * The duration for the transition, in milliseconds.
+     * You may specify a single timeout for all transitions, or individually with an object.
+     * @default {
+     *   enter: theme.transitions.duration.enteringScreen,
+     *   exit: theme.transitions.duration.leavingScreen,
+     * }
+     */
+    timeout: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
+      appear: PropTypes.number,
+      enter: PropTypes.number,
+      exit: PropTypes.number
+    })])
+  } : void 0;
+  const Fade$1 = Fade;
+  function getBackdropUtilityClass(slot) {
+    return generateUtilityClass("MuiBackdrop", slot);
+  }
+  generateUtilityClasses("MuiBackdrop", ["root", "invisible"]);
+  const _excluded$V = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
+  const useUtilityClasses$Q = (ownerState) => {
+    const {
+      classes,
+      invisible
+    } = ownerState;
+    const slots = {
+      root: ["root", invisible && "invisible"]
+    };
+    return composeClasses(slots, getBackdropUtilityClass, classes);
+  };
+  const BackdropRoot = styled$1("div", {
+    name: "MuiBackdrop",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, ownerState.invisible && styles2.invisible];
+    }
+  })(({
+    ownerState
+  }) => _extends$1({
+    position: "fixed",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    right: 0,
+    bottom: 0,
+    top: 0,
+    left: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    WebkitTapHighlightColor: "transparent"
+  }, ownerState.invisible && {
+    backgroundColor: "transparent"
+  }));
+  const Backdrop = /* @__PURE__ */ reactExports.forwardRef(function Backdrop2(inProps, ref) {
+    var _slotProps$root, _ref, _slots$root;
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiBackdrop"
+    });
+    const {
+      children,
+      className,
+      component = "div",
+      components = {},
+      componentsProps = {},
+      invisible = false,
+      open,
+      slotProps = {},
+      slots = {},
+      TransitionComponent = Fade$1,
+      transitionDuration
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+    const ownerState = _extends$1({}, props, {
+      component,
+      invisible
+    });
+    const classes = useUtilityClasses$Q(ownerState);
+    const rootSlotProps = (_slotProps$root = slotProps.root) != null ? _slotProps$root : componentsProps.root;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+      in: open,
+      timeout: transitionDuration
+    }, other, {
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(BackdropRoot, _extends$1({
+        "aria-hidden": true
+      }, rootSlotProps, {
+        as: (_ref = (_slots$root = slots.root) != null ? _slots$root : components.Root) != null ? _ref : component,
+        className: clsx(classes.root, className, rootSlotProps == null ? void 0 : rootSlotProps.className),
+        ownerState: _extends$1({}, ownerState, rootSlotProps == null ? void 0 : rootSlotProps.ownerState),
+        classes,
+        ref,
+        children
+      }))
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Backdrop.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * The components used for each slot inside.
+     *
+     * This prop is an alias for the `slots` prop.
+     * It's recommended to use the `slots` prop instead.
+     *
+     * @default {}
+     */
+    components: PropTypes.shape({
+      Root: PropTypes.elementType
+    }),
+    /**
+     * The extra props for the slot components.
+     * You can override the existing props or add new ones.
+     *
+     * This prop is an alias for the `slotProps` prop.
+     * It's recommended to use the `slotProps` prop instead, as `componentsProps` will be deprecated in the future.
+     *
+     * @default {}
+     */
+    componentsProps: PropTypes.shape({
+      root: PropTypes.object
+    }),
+    /**
+     * If `true`, the backdrop is invisible.
+     * It can be used when rendering a popover or a custom select component.
+     * @default false
+     */
+    invisible: PropTypes.bool,
+    /**
+     * If `true`, the component is shown.
+     */
+    open: PropTypes.bool.isRequired,
+    /**
+     * The extra props for the slot components.
+     * You can override the existing props or add new ones.
+     *
+     * This prop is an alias for the `componentsProps` prop, which will be deprecated in the future.
+     *
+     * @default {}
+     */
+    slotProps: PropTypes.shape({
+      root: PropTypes.object
+    }),
+    /**
+     * The components used for each slot inside.
+     *
+     * This prop is an alias for the `components` prop, which will be deprecated in the future.
+     *
+     * @default {}
+     */
+    slots: PropTypes.shape({
+      root: PropTypes.elementType
+    }),
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The component used for the transition.
+     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
+     * @default Fade
+     */
+    TransitionComponent: PropTypes.elementType,
+    /**
+     * The duration for the transition, in milliseconds.
+     * You may specify a single timeout for all transitions, or individually with an object.
+     */
+    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
+      appear: PropTypes.number,
+      enter: PropTypes.number,
+      exit: PropTypes.number
+    })])
+  } : void 0;
+  const Backdrop$1 = Backdrop;
+  function getModalUtilityClass(slot) {
+    return generateUtilityClass("MuiModal", slot);
+  }
+  generateUtilityClasses("MuiModal", ["root", "hidden", "backdrop"]);
+  const _excluded$U = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
+  const useUtilityClasses$P = (ownerState) => {
+    const {
+      open,
+      exited,
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root", !open && exited && "hidden"],
+      backdrop: ["backdrop"]
+    };
+    return composeClasses(slots, getModalUtilityClass, classes);
+  };
+  const ModalRoot = styled$1("div", {
+    name: "MuiModal",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, !ownerState.open && ownerState.exited && styles2.hidden];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    position: "fixed",
+    zIndex: (theme2.vars || theme2).zIndex.modal,
+    right: 0,
+    bottom: 0,
+    top: 0,
+    left: 0
+  }, !ownerState.open && ownerState.exited && {
+    visibility: "hidden"
+  }));
+  const ModalBackdrop = styled$1(Backdrop$1, {
+    name: "MuiModal",
+    slot: "Backdrop",
+    overridesResolver: (props, styles2) => {
+      return styles2.backdrop;
+    }
+  })({
+    zIndex: -1
+  });
+  const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, ref) {
+    var _ref, _slots$root, _ref2, _slots$backdrop, _slotProps$root, _slotProps$backdrop;
+    const props = useThemeProps({
+      name: "MuiModal",
+      props: inProps
+    });
+    const {
+      BackdropComponent = ModalBackdrop,
+      BackdropProps,
+      className,
+      closeAfterTransition = false,
+      children,
+      container,
+      component,
+      components = {},
+      componentsProps = {},
+      disableAutoFocus = false,
+      disableEnforceFocus = false,
+      disableEscapeKeyDown = false,
+      disablePortal = false,
+      disableRestoreFocus = false,
+      disableScrollLock = false,
+      hideBackdrop = false,
+      keepMounted = false,
+      onBackdropClick,
+      open,
+      slotProps,
+      slots
+      // eslint-disable-next-line react/prop-types
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+    const propsWithDefaults = _extends$1({}, props, {
+      closeAfterTransition,
+      disableAutoFocus,
+      disableEnforceFocus,
+      disableEscapeKeyDown,
+      disablePortal,
+      disableRestoreFocus,
+      disableScrollLock,
+      hideBackdrop,
+      keepMounted
+    });
+    const {
+      getRootProps,
+      getBackdropProps,
+      getTransitionProps: getTransitionProps2,
+      portalRef,
+      isTopModal,
+      exited,
+      hasTransition
+    } = useModal(_extends$1({}, propsWithDefaults, {
+      rootRef: ref
+    }));
+    const ownerState = _extends$1({}, propsWithDefaults, {
+      exited
+    });
+    const classes = useUtilityClasses$P(ownerState);
+    const childProps = {};
+    if (children.props.tabIndex === void 0) {
+      childProps.tabIndex = "-1";
+    }
+    if (hasTransition) {
+      const {
+        onEnter,
+        onExited
+      } = getTransitionProps2();
+      childProps.onEnter = onEnter;
+      childProps.onExited = onExited;
+    }
+    const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : ModalRoot;
+    const BackdropSlot = (_ref2 = (_slots$backdrop = slots == null ? void 0 : slots.backdrop) != null ? _slots$backdrop : components.Backdrop) != null ? _ref2 : BackdropComponent;
+    const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
+    const backdropSlotProps = (_slotProps$backdrop = slotProps == null ? void 0 : slotProps.backdrop) != null ? _slotProps$backdrop : componentsProps.backdrop;
+    const rootProps = useSlotProps({
+      elementType: RootSlot,
+      externalSlotProps: rootSlotProps,
+      externalForwardedProps: other,
+      getSlotProps: getRootProps,
+      additionalProps: {
+        ref,
+        as: component
+      },
+      ownerState,
+      className: clsx(className, rootSlotProps == null ? void 0 : rootSlotProps.className, classes == null ? void 0 : classes.root, !ownerState.open && ownerState.exited && (classes == null ? void 0 : classes.hidden))
+    });
+    const backdropProps = useSlotProps({
+      elementType: BackdropSlot,
+      externalSlotProps: backdropSlotProps,
+      additionalProps: BackdropProps,
+      getSlotProps: (otherHandlers) => {
+        return getBackdropProps(_extends$1({}, otherHandlers, {
+          onClick: (e) => {
+            if (onBackdropClick) {
+              onBackdropClick(e);
+            }
+            if (otherHandlers != null && otherHandlers.onClick) {
+              otherHandlers.onClick(e);
+            }
+          }
+        }));
+      },
+      className: clsx(backdropSlotProps == null ? void 0 : backdropSlotProps.className, BackdropProps == null ? void 0 : BackdropProps.className, classes == null ? void 0 : classes.backdrop),
+      ownerState
+    });
+    if (!keepMounted && !open && (!hasTransition || exited)) {
+      return null;
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal, {
+      ref: portalRef,
+      container,
+      disablePortal,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(RootSlot, _extends$1({}, rootProps, {
+        children: [!hideBackdrop && BackdropComponent ? /* @__PURE__ */ jsxRuntimeExports.jsx(BackdropSlot, _extends$1({}, backdropProps)) : null, /* @__PURE__ */ jsxRuntimeExports.jsx(FocusTrap, {
+          disableEnforceFocus,
+          disableAutoFocus,
+          disableRestoreFocus,
+          isEnabled: isTopModal,
+          open,
+          children: /* @__PURE__ */ reactExports.cloneElement(children, childProps)
+        })]
+      }))
+    });
+  });
+  process.env.NODE_ENV !== "production" ? Modal.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * A backdrop component. This prop enables custom backdrop rendering.
+     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
+     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
+     * @default styled(Backdrop, {
+     *   name: 'MuiModal',
+     *   slot: 'Backdrop',
+     *   overridesResolver: (props, styles) => {
+     *     return styles.backdrop;
+     *   },
+     * })({
+     *   zIndex: -1,
+     * })
+     */
+    BackdropComponent: PropTypes.elementType,
+    /**
+     * Props applied to the [`Backdrop`](/material-ui/api/backdrop/) element.
+     * @deprecated Use `slotProps.backdrop` instead.
+     */
+    BackdropProps: PropTypes.object,
+    /**
+     * A single child content element.
+     */
+    children: elementAcceptingRef$1.isRequired,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * When set to true the Modal waits until a nested Transition is completed before closing.
+     * @default false
+     */
+    closeAfterTransition: PropTypes.bool,
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * The components used for each slot inside.
+     *
+     * This prop is an alias for the `slots` prop.
+     * It's recommended to use the `slots` prop instead.
+     *
+     * @default {}
+     */
+    components: PropTypes.shape({
+      Backdrop: PropTypes.elementType,
+      Root: PropTypes.elementType
+    }),
+    /**
+     * The extra props for the slot components.
+     * You can override the existing props or add new ones.
+     *
+     * This prop is an alias for the `slotProps` prop.
+     * It's recommended to use the `slotProps` prop instead, as `componentsProps` will be deprecated in the future.
+     *
+     * @default {}
+     */
+    componentsProps: PropTypes.shape({
+      backdrop: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+      root: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
+    }),
+    /**
+     * An HTML element or function that returns one.
+     * The `container` will have the portal children appended to it.
+     *
+     * By default, it uses the body of the top-level document object,
+     * so it's simply `document.body` most of the time.
+     */
+    container: PropTypes.oneOfType([HTMLElementType, PropTypes.func]),
+    /**
+     * If `true`, the modal will not automatically shift focus to itself when it opens, and
+     * replace it to the last focused element when it closes.
+     * This also works correctly with any modal children that have the `disableAutoFocus` prop.
+     *
+     * Generally this should never be set to `true` as it makes the modal less
+     * accessible to assistive technologies, like screen readers.
+     * @default false
+     */
+    disableAutoFocus: PropTypes.bool,
+    /**
+     * If `true`, the modal will not prevent focus from leaving the modal while open.
+     *
+     * Generally this should never be set to `true` as it makes the modal less
+     * accessible to assistive technologies, like screen readers.
+     * @default false
+     */
+    disableEnforceFocus: PropTypes.bool,
+    /**
+     * If `true`, hitting escape will not fire the `onClose` callback.
+     * @default false
+     */
+    disableEscapeKeyDown: PropTypes.bool,
+    /**
+     * The `children` will be under the DOM hierarchy of the parent component.
+     * @default false
+     */
+    disablePortal: PropTypes.bool,
+    /**
+     * If `true`, the modal will not restore focus to previously focused element once
+     * modal is hidden or unmounted.
+     * @default false
+     */
+    disableRestoreFocus: PropTypes.bool,
+    /**
+     * Disable the scroll lock behavior.
+     * @default false
+     */
+    disableScrollLock: PropTypes.bool,
+    /**
+     * If `true`, the backdrop is not rendered.
+     * @default false
+     */
+    hideBackdrop: PropTypes.bool,
+    /**
+     * Always keep the children in the DOM.
+     * This prop can be useful in SEO situation or
+     * when you want to maximize the responsiveness of the Modal.
+     * @default false
+     */
+    keepMounted: PropTypes.bool,
+    /**
+     * Callback fired when the backdrop is clicked.
+     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
+     */
+    onBackdropClick: PropTypes.func,
+    /**
+     * Callback fired when the component requests to be closed.
+     * The `reason` parameter can optionally be used to control the response to `onClose`.
+     *
+     * @param {object} event The event source of the callback.
+     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
+     */
+    onClose: PropTypes.func,
+    /**
+     * A function called when a transition enters.
+     */
+    onTransitionEnter: PropTypes.func,
+    /**
+     * A function called when a transition has exited.
+     */
+    onTransitionExited: PropTypes.func,
+    /**
+     * If `true`, the component is shown.
+     */
+    open: PropTypes.bool.isRequired,
+    /**
+     * The props used for each slot inside the Modal.
+     * @default {}
+     */
+    slotProps: PropTypes.shape({
+      backdrop: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+      root: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
+    }),
+    /**
+     * The components used for each slot inside the Modal.
+     * Either a string to use a HTML element or a component.
+     * @default {}
+     */
+    slots: PropTypes.shape({
+      backdrop: PropTypes.elementType,
+      root: PropTypes.elementType
+    }),
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const Modal$1 = Modal;
+  function getPaperUtilityClass(slot) {
+    return generateUtilityClass("MuiPaper", slot);
+  }
+  generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
+  const _excluded$T = ["className", "component", "elevation", "square", "variant"];
+  const useUtilityClasses$O = (ownerState) => {
+    const {
+      square,
+      elevation,
+      variant,
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root", variant, !square && "rounded", variant === "elevation" && `elevation${elevation}`]
+    };
+    return composeClasses(slots, getPaperUtilityClass, classes);
+  };
+  const PaperRoot = styled$1("div", {
+    name: "MuiPaper",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, styles2[ownerState.variant], !ownerState.square && styles2.rounded, ownerState.variant === "elevation" && styles2[`elevation${ownerState.elevation}`]];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => {
+    var _theme$vars$overlays;
+    return _extends$1({
+      backgroundColor: (theme2.vars || theme2).palette.background.paper,
+      color: (theme2.vars || theme2).palette.text.primary,
+      transition: theme2.transitions.create("box-shadow")
+    }, !ownerState.square && {
+      borderRadius: theme2.shape.borderRadius
+    }, ownerState.variant === "outlined" && {
+      border: `1px solid ${(theme2.vars || theme2).palette.divider}`
+    }, ownerState.variant === "elevation" && _extends$1({
+      boxShadow: (theme2.vars || theme2).shadows[ownerState.elevation]
+    }, !theme2.vars && theme2.palette.mode === "dark" && {
+      backgroundImage: `linear-gradient(${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))}, ${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))})`
+    }, theme2.vars && {
+      backgroundImage: (_theme$vars$overlays = theme2.vars.overlays) == null ? void 0 : _theme$vars$overlays[ownerState.elevation]
+    }));
+  });
+  const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiPaper"
+    });
+    const {
+      className,
+      component = "div",
+      elevation = 1,
+      square = false,
+      variant = "elevation"
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
+    const ownerState = _extends$1({}, props, {
+      component,
+      elevation,
+      square,
+      variant
+    });
+    const classes = useUtilityClasses$O(ownerState);
+    if (process.env.NODE_ENV !== "production") {
+      const theme2 = useTheme();
+      if (theme2.shadows[elevation] === void 0) {
+        console.error([`MUI: The elevation provided <Paper elevation={${elevation}}> is not available in the theme.`, `Please make sure that \`theme.shadows[${elevation}]\` is defined.`].join("\n"));
+      }
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(PaperRoot, _extends$1({
+      as: component,
+      ownerState,
+      className: clsx(classes.root, className),
+      ref
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? Paper.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * Shadow depth, corresponds to `dp` in the spec.
+     * It accepts values between 0 and 24 inclusive.
+     * @default 1
+     */
+    elevation: chainPropTypes(integerPropType, (props) => {
+      const {
+        elevation,
+        variant
+      } = props;
+      if (elevation > 0 && variant === "outlined") {
+        return new Error(`MUI: Combining \`elevation={${elevation}}\` with \`variant="${variant}"\` has no effect. Either use \`elevation={0}\` or use a different \`variant\`.`);
+      }
+      return null;
+    }),
+    /**
+     * If `true`, rounded corners are disabled.
+     * @default false
+     */
+    square: PropTypes.bool,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The variant to use.
+     * @default 'elevation'
+     */
+    variant: PropTypes.oneOfType([PropTypes.oneOf(["elevation", "outlined"]), PropTypes.string])
+  } : void 0;
+  const Paper$1 = Paper;
+  function getDialogUtilityClass(slot) {
+    return generateUtilityClass("MuiDialog", slot);
+  }
+  const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
+  const dialogClasses$1 = dialogClasses;
+  const DialogContext = /* @__PURE__ */ reactExports.createContext({});
+  if (process.env.NODE_ENV !== "production") {
+    DialogContext.displayName = "DialogContext";
+  }
+  const DialogContext$1 = DialogContext;
+  const _excluded$S = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
+  const DialogBackdrop = styled$1(Backdrop$1, {
+    name: "MuiDialog",
+    slot: "Backdrop",
+    overrides: (props, styles2) => styles2.backdrop
+  })({
+    // Improve scrollable dialog support.
+    zIndex: -1
+  });
+  const useUtilityClasses$N = (ownerState) => {
+    const {
+      classes,
+      scroll,
+      maxWidth: maxWidth2,
+      fullWidth,
+      fullScreen
+    } = ownerState;
+    const slots = {
+      root: ["root"],
+      container: ["container", `scroll${capitalize$2(scroll)}`],
+      paper: ["paper", `paperScroll${capitalize$2(scroll)}`, `paperWidth${capitalize$2(String(maxWidth2))}`, fullWidth && "paperFullWidth", fullScreen && "paperFullScreen"]
+    };
+    return composeClasses(slots, getDialogUtilityClass, classes);
+  };
+  const DialogRoot = styled$1(Modal$1, {
+    name: "MuiDialog",
+    slot: "Root",
+    overridesResolver: (props, styles2) => styles2.root
+  })({
+    "@media print": {
+      // Use !important to override the Modal inline-style.
+      position: "absolute !important"
+    }
+  });
+  const DialogContainer = styled$1("div", {
+    name: "MuiDialog",
+    slot: "Container",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.container, styles2[`scroll${capitalize$2(ownerState.scroll)}`]];
+    }
+  })(({
+    ownerState
+  }) => _extends$1({
+    height: "100%",
+    "@media print": {
+      height: "auto"
+    },
+    // We disable the focus ring for mouse, touch and keyboard users.
+    outline: 0
+  }, ownerState.scroll === "paper" && {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  }, ownerState.scroll === "body" && {
+    overflowY: "auto",
+    overflowX: "hidden",
+    textAlign: "center",
+    "&:after": {
+      content: '""',
+      display: "inline-block",
+      verticalAlign: "middle",
+      height: "100%",
+      width: "0"
+    }
+  }));
+  const DialogPaper = styled$1(Paper$1, {
+    name: "MuiDialog",
+    slot: "Paper",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.paper, styles2[`scrollPaper${capitalize$2(ownerState.scroll)}`], styles2[`paperWidth${capitalize$2(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    margin: 32,
+    position: "relative",
+    overflowY: "auto",
+    // Fix IE11 issue, to remove at some point.
+    "@media print": {
+      overflowY: "visible",
+      boxShadow: "none"
+    }
+  }, ownerState.scroll === "paper" && {
+    display: "flex",
+    flexDirection: "column",
+    maxHeight: "calc(100% - 64px)"
+  }, ownerState.scroll === "body" && {
+    display: "inline-block",
+    verticalAlign: "middle",
+    textAlign: "left"
+    // 'initial' doesn't work on IE11
+  }, !ownerState.maxWidth && {
+    maxWidth: "calc(100% - 64px)"
+  }, ownerState.maxWidth === "xs" && {
+    maxWidth: theme2.breakpoints.unit === "px" ? Math.max(theme2.breakpoints.values.xs, 444) : `max(${theme2.breakpoints.values.xs}${theme2.breakpoints.unit}, 444px)`,
+    [`&.${dialogClasses$1.paperScrollBody}`]: {
+      [theme2.breakpoints.down(Math.max(theme2.breakpoints.values.xs, 444) + 32 * 2)]: {
+        maxWidth: "calc(100% - 64px)"
+      }
+    }
+  }, ownerState.maxWidth && ownerState.maxWidth !== "xs" && {
+    maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`,
+    [`&.${dialogClasses$1.paperScrollBody}`]: {
+      [theme2.breakpoints.down(theme2.breakpoints.values[ownerState.maxWidth] + 32 * 2)]: {
+        maxWidth: "calc(100% - 64px)"
+      }
+    }
+  }, ownerState.fullWidth && {
+    width: "calc(100% - 64px)"
+  }, ownerState.fullScreen && {
+    margin: 0,
+    width: "100%",
+    maxWidth: "100%",
+    height: "100%",
+    maxHeight: "none",
+    borderRadius: 0,
+    [`&.${dialogClasses$1.paperScrollBody}`]: {
+      margin: 0,
+      maxWidth: "100%"
+    }
+  }));
+  const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialog"
+    });
+    const theme2 = useTheme();
+    const defaultTransitionDuration = {
+      enter: theme2.transitions.duration.enteringScreen,
+      exit: theme2.transitions.duration.leavingScreen
+    };
+    const {
+      "aria-describedby": ariaDescribedby,
+      "aria-labelledby": ariaLabelledbyProp,
+      BackdropComponent,
+      BackdropProps,
+      children,
+      className,
+      disableEscapeKeyDown = false,
+      fullScreen = false,
+      fullWidth = false,
+      maxWidth: maxWidth2 = "sm",
+      onBackdropClick,
+      onClose,
+      open,
+      PaperComponent = Paper$1,
+      PaperProps = {},
+      scroll = "paper",
+      TransitionComponent = Fade$1,
+      transitionDuration = defaultTransitionDuration,
+      TransitionProps
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
+    const ownerState = _extends$1({}, props, {
+      disableEscapeKeyDown,
+      fullScreen,
+      fullWidth,
+      maxWidth: maxWidth2,
+      scroll
+    });
+    const classes = useUtilityClasses$N(ownerState);
+    const backdropClick = reactExports.useRef();
+    const handleMouseDown = (event) => {
+      backdropClick.current = event.target === event.currentTarget;
+    };
+    const handleBackdropClick = (event) => {
+      if (!backdropClick.current) {
+        return;
+      }
+      backdropClick.current = null;
+      if (onBackdropClick) {
+        onBackdropClick(event);
+      }
+      if (onClose) {
+        onClose(event, "backdropClick");
+      }
+    };
+    const ariaLabelledby = useId(ariaLabelledbyProp);
+    const dialogContextValue = reactExports.useMemo(() => {
+      return {
+        titleId: ariaLabelledby
+      };
+    }, [ariaLabelledby]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogRoot, _extends$1({
+      className: clsx(classes.root, className),
+      closeAfterTransition: true,
+      components: {
+        Backdrop: DialogBackdrop
+      },
+      componentsProps: {
+        backdrop: _extends$1({
+          transitionDuration,
+          as: BackdropComponent
+        }, BackdropProps)
+      },
+      disableEscapeKeyDown,
+      onClose,
+      open,
+      ref,
+      onClick: handleBackdropClick,
+      ownerState
+    }, other, {
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+        appear: true,
+        in: open,
+        timeout: transitionDuration,
+        role: "presentation"
+      }, TransitionProps, {
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContainer, {
+          className: clsx(classes.container),
+          onMouseDown: handleMouseDown,
+          ownerState,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogPaper, _extends$1({
+            as: PaperComponent,
+            elevation: 24,
+            role: "dialog",
+            "aria-describedby": ariaDescribedby,
+            "aria-labelledby": ariaLabelledby
+          }, PaperProps, {
+            className: clsx(classes.paper, PaperProps.className),
+            ownerState,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$1.Provider, {
+              value: dialogContextValue,
+              children
+            })
+          }))
+        })
+      }))
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The id(s) of the element(s) that describe the dialog.
+     */
+    "aria-describedby": PropTypes.string,
+    /**
+     * The id(s) of the element(s) that label the dialog.
+     */
+    "aria-labelledby": PropTypes.string,
+    /**
+     * A backdrop component. This prop enables custom backdrop rendering.
+     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
+     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
+     * @default styled(Backdrop, {
+     *   name: 'MuiModal',
+     *   slot: 'Backdrop',
+     *   overridesResolver: (props, styles) => {
+     *     return styles.backdrop;
+     *   },
+     * })({
+     *   zIndex: -1,
+     * })
+     */
+    BackdropComponent: PropTypes.elementType,
+    /**
+     * @ignore
+     */
+    BackdropProps: PropTypes.object,
+    /**
+     * Dialog children, usually the included sub-components.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * If `true`, hitting escape will not fire the `onClose` callback.
+     * @default false
+     */
+    disableEscapeKeyDown: PropTypes.bool,
+    /**
+     * If `true`, the dialog is full-screen.
+     * @default false
+     */
+    fullScreen: PropTypes.bool,
+    /**
+     * If `true`, the dialog stretches to `maxWidth`.
+     *
+     * Notice that the dialog width grow is limited by the default margin.
+     * @default false
+     */
+    fullWidth: PropTypes.bool,
+    /**
+     * Determine the max-width of the dialog.
+     * The dialog width grows with the size of the screen.
+     * Set to `false` to disable `maxWidth`.
+     * @default 'sm'
+     */
+    maxWidth: PropTypes.oneOfType([PropTypes.oneOf(["xs", "sm", "md", "lg", "xl", false]), PropTypes.string]),
+    /**
+     * Callback fired when the backdrop is clicked.
+     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
+     */
+    onBackdropClick: PropTypes.func,
+    /**
+     * Callback fired when the component requests to be closed.
+     *
+     * @param {object} event The event source of the callback.
+     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
+     */
+    onClose: PropTypes.func,
+    /**
+     * If `true`, the component is shown.
+     */
+    open: PropTypes.bool.isRequired,
+    /**
+     * The component used to render the body of the dialog.
+     * @default Paper
+     */
+    PaperComponent: PropTypes.elementType,
+    /**
+     * Props applied to the [`Paper`](/material-ui/api/paper/) element.
+     * @default {}
+     */
+    PaperProps: PropTypes.object,
+    /**
+     * Determine the container for scrolling the dialog.
+     * @default 'paper'
+     */
+    scroll: PropTypes.oneOf(["body", "paper"]),
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The component used for the transition.
+     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
+     * @default Fade
+     */
+    TransitionComponent: PropTypes.elementType,
+    /**
+     * The duration for the transition, in milliseconds.
+     * You may specify a single timeout for all transitions, or individually with an object.
+     * @default {
+     *   enter: theme.transitions.duration.enteringScreen,
+     *   exit: theme.transitions.duration.leavingScreen,
+     * }
+     */
+    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
+      appear: PropTypes.number,
+      enter: PropTypes.number,
+      exit: PropTypes.number
+    })]),
+    /**
+     * Props applied to the transition element.
+     * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
+     */
+    TransitionProps: PropTypes.object
+  } : void 0;
+  const Dialog$1 = Dialog;
+  function getDialogTitleUtilityClass(slot) {
+    return generateUtilityClass("MuiDialogTitle", slot);
+  }
+  const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
+  const _excluded$R = ["className", "id"];
+  const useUtilityClasses$M = (ownerState) => {
+    const {
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root"]
+    };
+    return composeClasses(slots, getDialogTitleUtilityClass, classes);
+  };
+  const DialogTitleRoot = styled$1(Typography$1, {
+    name: "MuiDialogTitle",
+    slot: "Root",
+    overridesResolver: (props, styles2) => styles2.root
+  })({
+    padding: "16px 24px",
+    flex: "0 0 auto"
+  });
+  const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialogTitle"
+    });
+    const {
+      className,
+      id: idProp
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$R);
+    const ownerState = props;
+    const classes = useUtilityClasses$M(ownerState);
+    const {
+      titleId = idProp
+    } = reactExports.useContext(DialogContext$1);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$1({
+      component: "h2",
+      className: clsx(classes.root, className),
+      ownerState,
+      ref,
+      variant: "h6",
+      id: idProp != null ? idProp : titleId
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * @ignore
+     */
+    id: PropTypes.string,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const DialogTitle$1 = DialogTitle;
+  function getDialogContentUtilityClass(slot) {
+    return generateUtilityClass("MuiDialogContent", slot);
+  }
+  generateUtilityClasses("MuiDialogContent", ["root", "dividers"]);
+  const _excluded$Q = ["className", "dividers"];
+  const useUtilityClasses$L = (ownerState) => {
+    const {
+      classes,
+      dividers
+    } = ownerState;
+    const slots = {
+      root: ["root", dividers && "dividers"]
+    };
+    return composeClasses(slots, getDialogContentUtilityClass, classes);
+  };
+  const DialogContentRoot = styled$1("div", {
+    name: "MuiDialogContent",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, ownerState.dividers && styles2.dividers];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    flex: "1 1 auto",
+    // Add iOS momentum scrolling for iOS < 13.0
+    WebkitOverflowScrolling: "touch",
+    overflowY: "auto",
+    padding: "20px 24px"
+  }, ownerState.dividers ? {
+    padding: "16px 24px",
+    borderTop: `1px solid ${(theme2.vars || theme2).palette.divider}`,
+    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`
+  } : {
+    [`.${dialogTitleClasses.root} + &`]: {
+      paddingTop: 0
+    }
+  }));
+  const DialogContent = /* @__PURE__ */ reactExports.forwardRef(function DialogContent2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialogContent"
+    });
+    const {
+      className,
+      dividers = false
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Q);
+    const ownerState = _extends$1({}, props, {
+      dividers
+    });
+    const classes = useUtilityClasses$L(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentRoot, _extends$1({
+      className: clsx(classes.root, className),
+      ownerState,
+      ref
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? DialogContent.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * Display the top and bottom dividers.
+     * @default false
+     */
+    dividers: PropTypes.bool,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const DialogContent$1 = DialogContent;
+  function LinkWorkflowDialog({ id }) {
+    console.log(id);
+    const { show, onClose } = useDialog(DIALOG_TYPE.LINK_WORKFLOW);
+    const [workflow_data, setWorkflowData] = reactExports.useState(null);
+    const onDialogClose = () => {
+      setWorkflowData(null);
+      onClose();
+    };
+    const getContent = () => {
+      if (show) {
+        if (workflow_data == null)
+          getLinkedWorkflowMenuQuery(id, setWorkflowData);
+        else
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(LinkWorkflowDialogContents, { data: workflow_data, onDialogClose });
+      } else
+        return null;
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose: onDialogClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Choose A Workflow") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: getContent() })
+    ] });
+  }
+  function LinkWorkflowDialogContents({ data, onDialogClose }) {
+    console.log(data);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowsMenu,
+      {
+        type: "linked_workflow_menu",
+        data,
+        actionFunction: onDialogClose,
+        dispatch: null
+      }
+    );
+  }
+  const LinkedWorkflowButton = (id) => {
+    const { dispatch } = useDialog();
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { onClick: () => {
+      console.log(dispatch);
+      console.log(id);
+      dispatch(DIALOG_TYPE.LINK_WORKFLOW);
+    }, children: window.gettext("Change") });
+  };
   class EditableComponent extends ComponentWithToggleDrop {
     constructor() {
       super(...arguments);
@@ -50719,30 +53819,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Linked Workflow") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data.linked_workflow && data.linked_workflow_data.title }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              className: "primary-button",
-              disabled: readOnly,
-              id: "linked-workflow-editor",
-              onClick: () => {
-                COURSEFLOW_APP.tinyLoader.startLoad();
-                getLinkedWorkflowMenuQuery(
-                  data,
-                  (response_data) => {
-                    openLinkedWorkflowMenu(
-                      response_data,
-                      (_response_data) => {
-                        console.log("linked a workflow");
-                      }
-                    );
-                    COURSEFLOW_APP.tinyLoader.endLoad();
-                  }
-                );
-              },
-              children: window.gettext("Change")
-            }
-          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(LinkedWorkflowButton, { id: data.id }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -50890,7 +53967,10 @@ Please use another name.` : formatMuiErrorMessage(18));
                   read_only
                 }
               ),
-              type === CfObjectType.NODE && data.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data, readOnly: read_only }),
+              type === CfObjectType.NODE && data.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContextProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ThemeProvider, { theme, children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LinkWorkflowDialog, { id: data.id }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data, readOnly: read_only })
+              ] }) }),
               type == CfObjectType.NODE && data.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Other, { data, readOnly: read_only }),
               type == CfObjectType.NODELINK && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Style, { data, readOnly: read_only }),
               type === CfObjectType.WORKFLOW && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Workflow, { data, readOnly: read_only }),
@@ -70813,26 +73893,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
     }
   }
-  const reflow = (node2) => node2.scrollTop;
-  function getTransitionProps(props, options) {
-    var _style$transitionDura, _style$transitionTimi;
-    const {
-      timeout,
-      easing: easing2,
-      style: style2 = {}
-    } = props;
-    return {
-      duration: (_style$transitionDura = style2.transitionDuration) != null ? _style$transitionDura : typeof timeout === "number" ? timeout : timeout[options.mode] || 0,
-      easing: (_style$transitionTimi = style2.transitionTimingFunction) != null ? _style$transitionTimi : typeof easing2 === "object" ? easing2[options.mode] : easing2,
-      delay: style2.transitionDelay
-    };
-  }
   function getCollapseUtilityClass(slot) {
     return generateUtilityClass("MuiCollapse", slot);
   }
   generateUtilityClasses("MuiCollapse", ["root", "horizontal", "vertical", "entered", "hidden", "wrapper", "wrapperInner"]);
-  const _excluded$Z = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
-  const useUtilityClasses$R = (ownerState) => {
+  const _excluded$P = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
+  const useUtilityClasses$K = (ownerState) => {
     const {
       orientation,
       classes
@@ -70924,12 +73990,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       timeout = duration.standard,
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Z);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$P);
     const ownerState = _extends$1({}, props, {
       orientation,
       collapsedSize: collapsedSizeProp
     });
-    const classes = useUtilityClasses$R(ownerState);
+    const classes = useUtilityClasses$K(ownerState);
     const theme2 = useTheme();
     const timer = reactExports.useRef();
     const wrapperRef = reactExports.useRef(null);
@@ -71178,138 +74244,6 @@ Please use another name.` : formatMuiErrorMessage(18));
   } : void 0;
   Collapse$1.muiSupportAuto = true;
   const Collapse$2 = Collapse$1;
-  function getPaperUtilityClass(slot) {
-    return generateUtilityClass("MuiPaper", slot);
-  }
-  generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-  const _excluded$Y = ["className", "component", "elevation", "square", "variant"];
-  const useUtilityClasses$Q = (ownerState) => {
-    const {
-      square,
-      elevation,
-      variant,
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root", variant, !square && "rounded", variant === "elevation" && `elevation${elevation}`]
-    };
-    return composeClasses(slots, getPaperUtilityClass, classes);
-  };
-  const PaperRoot = styled$1("div", {
-    name: "MuiPaper",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, styles2[ownerState.variant], !ownerState.square && styles2.rounded, ownerState.variant === "elevation" && styles2[`elevation${ownerState.elevation}`]];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => {
-    var _theme$vars$overlays;
-    return _extends$1({
-      backgroundColor: (theme2.vars || theme2).palette.background.paper,
-      color: (theme2.vars || theme2).palette.text.primary,
-      transition: theme2.transitions.create("box-shadow")
-    }, !ownerState.square && {
-      borderRadius: theme2.shape.borderRadius
-    }, ownerState.variant === "outlined" && {
-      border: `1px solid ${(theme2.vars || theme2).palette.divider}`
-    }, ownerState.variant === "elevation" && _extends$1({
-      boxShadow: (theme2.vars || theme2).shadows[ownerState.elevation]
-    }, !theme2.vars && theme2.palette.mode === "dark" && {
-      backgroundImage: `linear-gradient(${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))}, ${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))})`
-    }, theme2.vars && {
-      backgroundImage: (_theme$vars$overlays = theme2.vars.overlays) == null ? void 0 : _theme$vars$overlays[ownerState.elevation]
-    }));
-  });
-  const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiPaper"
-    });
-    const {
-      className,
-      component = "div",
-      elevation = 1,
-      square = false,
-      variant = "elevation"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Y);
-    const ownerState = _extends$1({}, props, {
-      component,
-      elevation,
-      square,
-      variant
-    });
-    const classes = useUtilityClasses$Q(ownerState);
-    if (process.env.NODE_ENV !== "production") {
-      const theme2 = useTheme();
-      if (theme2.shadows[elevation] === void 0) {
-        console.error([`MUI: The elevation provided <Paper elevation={${elevation}}> is not available in the theme.`, `Please make sure that \`theme.shadows[${elevation}]\` is defined.`].join("\n"));
-      }
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(PaperRoot, _extends$1({
-      as: component,
-      ownerState,
-      className: clsx(classes.root, className),
-      ref
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? Paper.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * Shadow depth, corresponds to `dp` in the spec.
-     * It accepts values between 0 and 24 inclusive.
-     * @default 1
-     */
-    elevation: chainPropTypes(integerPropType, (props) => {
-      const {
-        elevation,
-        variant
-      } = props;
-      if (elevation > 0 && variant === "outlined") {
-        return new Error(`MUI: Combining \`elevation={${elevation}}\` with \`variant="${variant}"\` has no effect. Either use \`elevation={0}\` or use a different \`variant\`.`);
-      }
-      return null;
-    }),
-    /**
-     * If `true`, rounded corners are disabled.
-     * @default false
-     */
-    square: PropTypes.bool,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * The variant to use.
-     * @default 'elevation'
-     */
-    variant: PropTypes.oneOfType([PropTypes.oneOf(["elevation", "outlined"]), PropTypes.string])
-  } : void 0;
-  const Paper$1 = Paper;
   const AccordionContext = /* @__PURE__ */ reactExports.createContext({});
   if (process.env.NODE_ENV !== "production") {
     AccordionContext.displayName = "AccordionContext";
@@ -71320,8 +74254,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const accordionClasses = generateUtilityClasses("MuiAccordion", ["root", "rounded", "expanded", "disabled", "gutters", "region"]);
   const accordionClasses$1 = accordionClasses;
-  const _excluded$X = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
-  const useUtilityClasses$P = (ownerState) => {
+  const _excluded$O = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
+  const useUtilityClasses$J = (ownerState) => {
     const {
       classes,
       square,
@@ -71432,7 +74366,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       square = false,
       TransitionComponent = Collapse$2,
       TransitionProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$X);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$O);
     const [expanded, setExpandedState] = useControlled({
       controlled: expandedProp,
       default: defaultExpanded,
@@ -71458,7 +74392,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableGutters,
       expanded
     });
-    const classes = useUtilityClasses$P(ownerState);
+    const classes = useUtilityClasses$J(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionRoot, _extends$1({
       className: clsx(classes.root, className),
       ref,
@@ -71561,8 +74495,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAccordionDetails", slot);
   }
   generateUtilityClasses("MuiAccordionDetails", ["root"]);
-  const _excluded$W = ["className"];
-  const useUtilityClasses$O = (ownerState) => {
+  const _excluded$N = ["className"];
+  const useUtilityClasses$I = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -71587,9 +74521,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$W);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$N);
     const ownerState = props;
-    const classes = useUtilityClasses$O(ownerState);
+    const classes = useUtilityClasses$I(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionDetailsRoot, _extends$1({
       className: clsx(classes.root, className),
       ref,
@@ -71624,8 +74558,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const accordionSummaryClasses = generateUtilityClasses("MuiAccordionSummary", ["root", "expanded", "focusVisible", "disabled", "gutters", "contentGutters", "content", "expandIconWrapper"]);
   const accordionSummaryClasses$1 = accordionSummaryClasses;
-  const _excluded$V = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
-  const useUtilityClasses$N = (ownerState) => {
+  const _excluded$M = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
+  const useUtilityClasses$H = (ownerState) => {
     const {
       classes,
       expanded,
@@ -71718,7 +74652,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       expandIcon,
       focusVisibleClassName,
       onClick
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$V);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$M);
     const {
       disabled = false,
       disableGutters,
@@ -71738,7 +74672,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled,
       disableGutters
     });
-    const classes = useUtilityClasses$N(ownerState);
+    const classes = useUtilityClasses$H(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionSummaryRoot, _extends$1({
       focusRipple: false,
       disableRipple: true,
@@ -71822,8 +74756,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ClearIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  const _excluded$U = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
-  const useUtilityClasses$M = (ownerState) => {
+  const _excluded$L = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
+  const useUtilityClasses$G = (ownerState) => {
     const {
       variant,
       color: color2,
@@ -71951,13 +74885,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps = {},
       slots = {},
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$U);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$L);
     const ownerState = _extends$1({}, props, {
       color: color2,
       severity,
       variant
     });
-    const classes = useUtilityClasses$M(ownerState);
+    const classes = useUtilityClasses$G(ownerState);
     const AlertCloseButton = (_ref = (_slots$closeButton = slots.closeButton) != null ? _slots$closeButton : components.CloseButton) != null ? _ref : IconButton$1;
     const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : ClearIcon;
     const closeButtonProps = (_slotProps$closeButto = slotProps.closeButton) != null ? _slotProps$closeButto : componentsProps.closeButton;
@@ -72129,8 +75063,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAlertTitle", slot);
   }
   generateUtilityClasses("MuiAlertTitle", ["root"]);
-  const _excluded$T = ["className"];
-  const useUtilityClasses$L = (ownerState) => {
+  const _excluded$K = ["className"];
+  const useUtilityClasses$F = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -72158,9 +75092,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$T);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$K);
     const ownerState = props;
-    const classes = useUtilityClasses$L(ownerState);
+    const classes = useUtilityClasses$F(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AlertTitleRoot, _extends$1({
       gutterBottom: true,
       component: "div",
@@ -72196,8 +75130,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAppBar", slot);
   }
   generateUtilityClasses("MuiAppBar", ["root", "positionFixed", "positionAbsolute", "positionSticky", "positionStatic", "positionRelative", "colorDefault", "colorPrimary", "colorSecondary", "colorInherit", "colorTransparent", "colorError", "colorInfo", "colorSuccess", "colorWarning"]);
-  const _excluded$S = ["className", "color", "enableColorOnDark", "position"];
-  const useUtilityClasses$K = (ownerState) => {
+  const _excluded$J = ["className", "color", "enableColorOnDark", "position"];
+  const useUtilityClasses$E = (ownerState) => {
     const {
       color: color2,
       position: position2,
@@ -72298,13 +75232,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       color: color2 = "primary",
       enableColorOnDark = false,
       position: position2 = "fixed"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$S);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$J);
     const ownerState = _extends$1({}, props, {
       color: color2,
       position: position2,
       enableColorOnDark
     });
-    const classes = useUtilityClasses$K(ownerState);
+    const classes = useUtilityClasses$E(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AppBarRoot, _extends$1({
       square: true,
       component: "header",
@@ -72356,1265 +75290,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
   } : void 0;
   const AppBar$1 = AppBar;
-  function isHostComponent(element) {
-    return typeof element === "string";
-  }
-  function appendOwnerState(elementType, otherProps, ownerState) {
-    if (elementType === void 0 || isHostComponent(elementType)) {
-      return otherProps;
-    }
-    return _extends$1({}, otherProps, {
-      ownerState: _extends$1({}, otherProps.ownerState, ownerState)
-    });
-  }
-  function extractEventHandlers(object, excludeKeys = []) {
-    if (object === void 0) {
-      return {};
-    }
-    const result = {};
-    Object.keys(object).filter((prop) => prop.match(/^on[A-Z]/) && typeof object[prop] === "function" && !excludeKeys.includes(prop)).forEach((prop) => {
-      result[prop] = object[prop];
-    });
-    return result;
-  }
-  function resolveComponentProps(componentProps, ownerState, slotState) {
-    if (typeof componentProps === "function") {
-      return componentProps(ownerState, slotState);
-    }
-    return componentProps;
-  }
-  function omitEventHandlers(object) {
-    if (object === void 0) {
-      return {};
-    }
-    const result = {};
-    Object.keys(object).filter((prop) => !(prop.match(/^on[A-Z]/) && typeof object[prop] === "function")).forEach((prop) => {
-      result[prop] = object[prop];
-    });
-    return result;
-  }
-  function mergeSlotProps(parameters) {
-    const {
-      getSlotProps,
-      additionalProps,
-      externalSlotProps,
-      externalForwardedProps,
-      className
-    } = parameters;
-    if (!getSlotProps) {
-      const joinedClasses2 = clsx(externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className, className, additionalProps == null ? void 0 : additionalProps.className);
-      const mergedStyle2 = _extends$1({}, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-      const props2 = _extends$1({}, additionalProps, externalForwardedProps, externalSlotProps);
-      if (joinedClasses2.length > 0) {
-        props2.className = joinedClasses2;
-      }
-      if (Object.keys(mergedStyle2).length > 0) {
-        props2.style = mergedStyle2;
-      }
-      return {
-        props: props2,
-        internalRef: void 0
-      };
-    }
-    const eventHandlers = extractEventHandlers(_extends$1({}, externalForwardedProps, externalSlotProps));
-    const componentsPropsWithoutEventHandlers = omitEventHandlers(externalSlotProps);
-    const otherPropsWithoutEventHandlers = omitEventHandlers(externalForwardedProps);
-    const internalSlotProps = getSlotProps(eventHandlers);
-    const joinedClasses = clsx(internalSlotProps == null ? void 0 : internalSlotProps.className, additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
-    const mergedStyle = _extends$1({}, internalSlotProps == null ? void 0 : internalSlotProps.style, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-    const props = _extends$1({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
-    if (joinedClasses.length > 0) {
-      props.className = joinedClasses;
-    }
-    if (Object.keys(mergedStyle).length > 0) {
-      props.style = mergedStyle;
-    }
-    return {
-      props,
-      internalRef: internalSlotProps.ref
-    };
-  }
-  const _excluded$R = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
-  function useSlotProps(parameters) {
-    var _parameters$additiona;
-    const {
-      elementType,
-      externalSlotProps,
-      ownerState,
-      skipResolvingSlotProps = false
-    } = parameters, rest = _objectWithoutPropertiesLoose(parameters, _excluded$R);
-    const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
-    const {
-      props: mergedProps,
-      internalRef
-    } = mergeSlotProps(_extends$1({}, rest, {
-      externalSlotProps: resolvedComponentsProps
-    }));
-    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, (_parameters$additiona = parameters.additionalProps) == null ? void 0 : _parameters$additiona.ref);
-    const props = appendOwnerState(elementType, _extends$1({}, mergedProps, {
-      ref
-    }), ownerState);
-    return props;
-  }
-  function useBadge(parameters) {
-    const {
-      badgeContent: badgeContentProp,
-      invisible: invisibleProp = false,
-      max: maxProp = 99,
-      showZero = false
-    } = parameters;
-    const prevProps = usePreviousProps$1({
-      badgeContent: badgeContentProp,
-      max: maxProp
-    });
-    let invisible = invisibleProp;
-    if (invisibleProp === false && badgeContentProp === 0 && !showZero) {
-      invisible = true;
-    }
-    const {
-      badgeContent,
-      max: max2 = maxProp
-    } = invisible ? prevProps : parameters;
-    const displayValue = badgeContent && Number(badgeContent) > max2 ? `${max2}+` : badgeContent;
-    return {
-      badgeContent,
-      invisible,
-      max: max2,
-      displayValue
-    };
-  }
-  function mapEventPropToEvent(eventProp) {
-    return eventProp.substring(2).toLowerCase();
-  }
-  function clickedRootScrollbar(event, doc) {
-    return doc.documentElement.clientWidth < event.clientX || doc.documentElement.clientHeight < event.clientY;
-  }
-  function ClickAwayListener(props) {
-    const {
-      children,
-      disableReactTree = false,
-      mouseEvent = "onClick",
-      onClickAway,
-      touchEvent = "onTouchEnd"
-    } = props;
-    const movedRef = reactExports.useRef(false);
-    const nodeRef = reactExports.useRef(null);
-    const activatedRef = reactExports.useRef(false);
-    const syntheticEventRef = reactExports.useRef(false);
-    reactExports.useEffect(() => {
-      setTimeout(() => {
-        activatedRef.current = true;
-      }, 0);
-      return () => {
-        activatedRef.current = false;
-      };
-    }, []);
-    const handleRef = useForkRef(
-      // @ts-expect-error TODO upstream fix
-      children.ref,
-      nodeRef
-    );
-    const handleClickAway = useEventCallback((event) => {
-      const insideReactTree = syntheticEventRef.current;
-      syntheticEventRef.current = false;
-      const doc = ownerDocument(nodeRef.current);
-      if (!activatedRef.current || !nodeRef.current || "clientX" in event && clickedRootScrollbar(event, doc)) {
-        return;
-      }
-      if (movedRef.current) {
-        movedRef.current = false;
-        return;
-      }
-      let insideDOM;
-      if (event.composedPath) {
-        insideDOM = event.composedPath().indexOf(nodeRef.current) > -1;
-      } else {
-        insideDOM = !doc.documentElement.contains(
-          // @ts-expect-error returns `false` as intended when not dispatched from a Node
-          event.target
-        ) || nodeRef.current.contains(
-          // @ts-expect-error returns `false` as intended when not dispatched from a Node
-          event.target
-        );
-      }
-      if (!insideDOM && (disableReactTree || !insideReactTree)) {
-        onClickAway(event);
-      }
-    });
-    const createHandleSynthetic = (handlerName) => (event) => {
-      syntheticEventRef.current = true;
-      const childrenPropsHandler = children.props[handlerName];
-      if (childrenPropsHandler) {
-        childrenPropsHandler(event);
-      }
-    };
-    const childrenProps = {
-      ref: handleRef
-    };
-    if (touchEvent !== false) {
-      childrenProps[touchEvent] = createHandleSynthetic(touchEvent);
-    }
-    reactExports.useEffect(() => {
-      if (touchEvent !== false) {
-        const mappedTouchEvent = mapEventPropToEvent(touchEvent);
-        const doc = ownerDocument(nodeRef.current);
-        const handleTouchMove = () => {
-          movedRef.current = true;
-        };
-        doc.addEventListener(mappedTouchEvent, handleClickAway);
-        doc.addEventListener("touchmove", handleTouchMove);
-        return () => {
-          doc.removeEventListener(mappedTouchEvent, handleClickAway);
-          doc.removeEventListener("touchmove", handleTouchMove);
-        };
-      }
-      return void 0;
-    }, [handleClickAway, touchEvent]);
-    if (mouseEvent !== false) {
-      childrenProps[mouseEvent] = createHandleSynthetic(mouseEvent);
-    }
-    reactExports.useEffect(() => {
-      if (mouseEvent !== false) {
-        const mappedMouseEvent = mapEventPropToEvent(mouseEvent);
-        const doc = ownerDocument(nodeRef.current);
-        doc.addEventListener(mappedMouseEvent, handleClickAway);
-        return () => {
-          doc.removeEventListener(mappedMouseEvent, handleClickAway);
-        };
-      }
-      return void 0;
-    }, [handleClickAway, mouseEvent]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
-      children: /* @__PURE__ */ reactExports.cloneElement(children, childrenProps)
-    });
-  }
-  process.env.NODE_ENV !== "production" ? ClickAwayListener.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * The wrapped element.
-     */
-    children: elementAcceptingRef$1.isRequired,
-    /**
-     * If `true`, the React tree is ignored and only the DOM tree is considered.
-     * This prop changes how portaled elements are handled.
-     * @default false
-     */
-    disableReactTree: PropTypes.bool,
-    /**
-     * The mouse event to listen to. You can disable the listener by providing `false`.
-     * @default 'onClick'
-     */
-    mouseEvent: PropTypes.oneOf(["onClick", "onMouseDown", "onMouseUp", "onPointerDown", "onPointerUp", false]),
-    /**
-     * Callback fired when a "click away" event is detected.
-     */
-    onClickAway: PropTypes.func.isRequired,
-    /**
-     * The touch event to listen to. You can disable the listener by providing `false`.
-     * @default 'onTouchEnd'
-     */
-    touchEvent: PropTypes.oneOf(["onTouchEnd", "onTouchStart", false])
-  } : void 0;
-  if (process.env.NODE_ENV !== "production") {
-    ClickAwayListener["propTypes"] = exactProp(ClickAwayListener.propTypes);
-  }
-  const candidatesSelector = ["input", "select", "textarea", "a[href]", "button", "[tabindex]", "audio[controls]", "video[controls]", '[contenteditable]:not([contenteditable="false"])'].join(",");
-  function getTabIndex(node2) {
-    const tabindexAttr = parseInt(node2.getAttribute("tabindex") || "", 10);
-    if (!Number.isNaN(tabindexAttr)) {
-      return tabindexAttr;
-    }
-    if (node2.contentEditable === "true" || (node2.nodeName === "AUDIO" || node2.nodeName === "VIDEO" || node2.nodeName === "DETAILS") && node2.getAttribute("tabindex") === null) {
-      return 0;
-    }
-    return node2.tabIndex;
-  }
-  function isNonTabbableRadio(node2) {
-    if (node2.tagName !== "INPUT" || node2.type !== "radio") {
-      return false;
-    }
-    if (!node2.name) {
-      return false;
-    }
-    const getRadio = (selector) => node2.ownerDocument.querySelector(`input[type="radio"]${selector}`);
-    let roving = getRadio(`[name="${node2.name}"]:checked`);
-    if (!roving) {
-      roving = getRadio(`[name="${node2.name}"]`);
-    }
-    return roving !== node2;
-  }
-  function isNodeMatchingSelectorFocusable(node2) {
-    if (node2.disabled || node2.tagName === "INPUT" && node2.type === "hidden" || isNonTabbableRadio(node2)) {
-      return false;
-    }
-    return true;
-  }
-  function defaultGetTabbable(root) {
-    const regularTabNodes = [];
-    const orderedTabNodes = [];
-    Array.from(root.querySelectorAll(candidatesSelector)).forEach((node2, i2) => {
-      const nodeTabIndex = getTabIndex(node2);
-      if (nodeTabIndex === -1 || !isNodeMatchingSelectorFocusable(node2)) {
-        return;
-      }
-      if (nodeTabIndex === 0) {
-        regularTabNodes.push(node2);
-      } else {
-        orderedTabNodes.push({
-          documentOrder: i2,
-          tabIndex: nodeTabIndex,
-          node: node2
-        });
-      }
-    });
-    return orderedTabNodes.sort((a, b) => a.tabIndex === b.tabIndex ? a.documentOrder - b.documentOrder : a.tabIndex - b.tabIndex).map((a) => a.node).concat(regularTabNodes);
-  }
-  function defaultIsEnabled() {
-    return true;
-  }
-  function FocusTrap(props) {
-    const {
-      children,
-      disableAutoFocus = false,
-      disableEnforceFocus = false,
-      disableRestoreFocus = false,
-      getTabbable = defaultGetTabbable,
-      isEnabled = defaultIsEnabled,
-      open
-    } = props;
-    const ignoreNextEnforceFocus = reactExports.useRef(false);
-    const sentinelStart = reactExports.useRef(null);
-    const sentinelEnd = reactExports.useRef(null);
-    const nodeToRestore = reactExports.useRef(null);
-    const reactFocusEventTarget = reactExports.useRef(null);
-    const activated = reactExports.useRef(false);
-    const rootRef = reactExports.useRef(null);
-    const handleRef = useForkRef(children.ref, rootRef);
-    const lastKeydown = reactExports.useRef(null);
-    reactExports.useEffect(() => {
-      if (!open || !rootRef.current) {
-        return;
-      }
-      activated.current = !disableAutoFocus;
-    }, [disableAutoFocus, open]);
-    reactExports.useEffect(() => {
-      if (!open || !rootRef.current) {
-        return;
-      }
-      const doc = ownerDocument(rootRef.current);
-      if (!rootRef.current.contains(doc.activeElement)) {
-        if (!rootRef.current.hasAttribute("tabIndex")) {
-          if (process.env.NODE_ENV !== "production") {
-            console.error(["MUI: The modal content node does not accept focus.", 'For the benefit of assistive technologies, the tabIndex of the node is being set to "-1".'].join("\n"));
-          }
-          rootRef.current.setAttribute("tabIndex", "-1");
-        }
-        if (activated.current) {
-          rootRef.current.focus();
-        }
-      }
-      return () => {
-        if (!disableRestoreFocus) {
-          if (nodeToRestore.current && nodeToRestore.current.focus) {
-            ignoreNextEnforceFocus.current = true;
-            nodeToRestore.current.focus();
-          }
-          nodeToRestore.current = null;
-        }
-      };
-    }, [open]);
-    reactExports.useEffect(() => {
-      if (!open || !rootRef.current) {
-        return;
-      }
-      const doc = ownerDocument(rootRef.current);
-      const loopFocus = (nativeEvent) => {
-        lastKeydown.current = nativeEvent;
-        if (disableEnforceFocus || !isEnabled() || nativeEvent.key !== "Tab") {
-          return;
-        }
-        if (doc.activeElement === rootRef.current && nativeEvent.shiftKey) {
-          ignoreNextEnforceFocus.current = true;
-          if (sentinelEnd.current) {
-            sentinelEnd.current.focus();
-          }
-        }
-      };
-      const contain = () => {
-        const rootElement = rootRef.current;
-        if (rootElement === null) {
-          return;
-        }
-        if (!doc.hasFocus() || !isEnabled() || ignoreNextEnforceFocus.current) {
-          ignoreNextEnforceFocus.current = false;
-          return;
-        }
-        if (rootElement.contains(doc.activeElement)) {
-          return;
-        }
-        if (disableEnforceFocus && doc.activeElement !== sentinelStart.current && doc.activeElement !== sentinelEnd.current) {
-          return;
-        }
-        if (doc.activeElement !== reactFocusEventTarget.current) {
-          reactFocusEventTarget.current = null;
-        } else if (reactFocusEventTarget.current !== null) {
-          return;
-        }
-        if (!activated.current) {
-          return;
-        }
-        let tabbable = [];
-        if (doc.activeElement === sentinelStart.current || doc.activeElement === sentinelEnd.current) {
-          tabbable = getTabbable(rootRef.current);
-        }
-        if (tabbable.length > 0) {
-          var _lastKeydown$current, _lastKeydown$current2;
-          const isShiftTab = Boolean(((_lastKeydown$current = lastKeydown.current) == null ? void 0 : _lastKeydown$current.shiftKey) && ((_lastKeydown$current2 = lastKeydown.current) == null ? void 0 : _lastKeydown$current2.key) === "Tab");
-          const focusNext = tabbable[0];
-          const focusPrevious = tabbable[tabbable.length - 1];
-          if (typeof focusNext !== "string" && typeof focusPrevious !== "string") {
-            if (isShiftTab) {
-              focusPrevious.focus();
-            } else {
-              focusNext.focus();
-            }
-          }
-        } else {
-          rootElement.focus();
-        }
-      };
-      doc.addEventListener("focusin", contain);
-      doc.addEventListener("keydown", loopFocus, true);
-      const interval = setInterval(() => {
-        if (doc.activeElement && doc.activeElement.tagName === "BODY") {
-          contain();
-        }
-      }, 50);
-      return () => {
-        clearInterval(interval);
-        doc.removeEventListener("focusin", contain);
-        doc.removeEventListener("keydown", loopFocus, true);
-      };
-    }, [disableAutoFocus, disableEnforceFocus, disableRestoreFocus, isEnabled, open, getTabbable]);
-    const onFocus = (event) => {
-      if (nodeToRestore.current === null) {
-        nodeToRestore.current = event.relatedTarget;
-      }
-      activated.current = true;
-      reactFocusEventTarget.current = event.target;
-      const childrenPropsHandler = children.props.onFocus;
-      if (childrenPropsHandler) {
-        childrenPropsHandler(event);
-      }
-    };
-    const handleFocusSentinel = (event) => {
-      if (nodeToRestore.current === null) {
-        nodeToRestore.current = event.relatedTarget;
-      }
-      activated.current = true;
-    };
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
-      children: [/* @__PURE__ */ jsxRuntimeExports.jsx("div", {
-        tabIndex: open ? 0 : -1,
-        onFocus: handleFocusSentinel,
-        ref: sentinelStart,
-        "data-testid": "sentinelStart"
-      }), /* @__PURE__ */ reactExports.cloneElement(children, {
-        ref: handleRef,
-        onFocus
-      }), /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
-        tabIndex: open ? 0 : -1,
-        onFocus: handleFocusSentinel,
-        ref: sentinelEnd,
-        "data-testid": "sentinelEnd"
-      })]
-    });
-  }
-  process.env.NODE_ENV !== "production" ? FocusTrap.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * A single child content element.
-     */
-    children: elementAcceptingRef$1,
-    /**
-     * If `true`, the focus trap will not automatically shift focus to itself when it opens, and
-     * replace it to the last focused element when it closes.
-     * This also works correctly with any focus trap children that have the `disableAutoFocus` prop.
-     *
-     * Generally this should never be set to `true` as it makes the focus trap less
-     * accessible to assistive technologies, like screen readers.
-     * @default false
-     */
-    disableAutoFocus: PropTypes.bool,
-    /**
-     * If `true`, the focus trap will not prevent focus from leaving the focus trap while open.
-     *
-     * Generally this should never be set to `true` as it makes the focus trap less
-     * accessible to assistive technologies, like screen readers.
-     * @default false
-     */
-    disableEnforceFocus: PropTypes.bool,
-    /**
-     * If `true`, the focus trap will not restore focus to previously focused element once
-     * focus trap is hidden or unmounted.
-     * @default false
-     */
-    disableRestoreFocus: PropTypes.bool,
-    /**
-     * Returns an array of ordered tabbable nodes (i.e. in tab order) within the root.
-     * For instance, you can provide the "tabbable" npm dependency.
-     * @param {HTMLElement} root
-     */
-    getTabbable: PropTypes.func,
-    /**
-     * This prop extends the `open` prop.
-     * It allows to toggle the open state without having to wait for a rerender when changing the `open` prop.
-     * This prop should be memoized.
-     * It can be used to support multiple focus trap mounted at the same time.
-     * @default function defaultIsEnabled(): boolean {
-     *   return true;
-     * }
-     */
-    isEnabled: PropTypes.func,
-    /**
-     * If `true`, focus is locked.
-     */
-    open: PropTypes.bool.isRequired
-  } : void 0;
-  if (process.env.NODE_ENV !== "production") {
-    FocusTrap["propTypes"] = exactProp(FocusTrap.propTypes);
-  }
-  function getContainer$1(container) {
-    return typeof container === "function" ? container() : container;
-  }
-  const Portal = /* @__PURE__ */ reactExports.forwardRef(function Portal2(props, forwardedRef) {
-    const {
-      children,
-      container,
-      disablePortal = false
-    } = props;
-    const [mountNode, setMountNode] = reactExports.useState(null);
-    const handleRef = useForkRef(/* @__PURE__ */ reactExports.isValidElement(children) ? children.ref : null, forwardedRef);
-    useEnhancedEffect$1(() => {
-      if (!disablePortal) {
-        setMountNode(getContainer$1(container) || document.body);
-      }
-    }, [container, disablePortal]);
-    useEnhancedEffect$1(() => {
-      if (mountNode && !disablePortal) {
-        setRef(forwardedRef, mountNode);
-        return () => {
-          setRef(forwardedRef, null);
-        };
-      }
-      return void 0;
-    }, [forwardedRef, mountNode, disablePortal]);
-    if (disablePortal) {
-      if (/* @__PURE__ */ reactExports.isValidElement(children)) {
-        const newProps = {
-          ref: handleRef
-        };
-        return /* @__PURE__ */ reactExports.cloneElement(children, newProps);
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
-        children
-      });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
-      children: mountNode ? /* @__PURE__ */ reactDomExports.createPortal(children, mountNode) : mountNode
-    });
-  });
-  process.env.NODE_ENV !== "production" ? Portal.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * The children to render into the `container`.
-     */
-    children: PropTypes.node,
-    /**
-     * An HTML element or function that returns one.
-     * The `container` will have the portal children appended to it.
-     *
-     * By default, it uses the body of the top-level document object,
-     * so it's simply `document.body` most of the time.
-     */
-    container: PropTypes.oneOfType([HTMLElementType, PropTypes.func]),
-    /**
-     * The `children` will be under the DOM hierarchy of the parent component.
-     * @default false
-     */
-    disablePortal: PropTypes.bool
-  } : void 0;
-  if (process.env.NODE_ENV !== "production") {
-    Portal["propTypes"] = exactProp(Portal.propTypes);
-  }
-  function isOverflowing(container) {
-    const doc = ownerDocument(container);
-    if (doc.body === container) {
-      return ownerWindow(container).innerWidth > doc.documentElement.clientWidth;
-    }
-    return container.scrollHeight > container.clientHeight;
-  }
-  function ariaHidden(element, show) {
-    if (show) {
-      element.setAttribute("aria-hidden", "true");
-    } else {
-      element.removeAttribute("aria-hidden");
-    }
-  }
-  function getPaddingRight(element) {
-    return parseInt(ownerWindow(element).getComputedStyle(element).paddingRight, 10) || 0;
-  }
-  function isAriaHiddenForbiddenOnElement(element) {
-    const forbiddenTagNames = ["TEMPLATE", "SCRIPT", "STYLE", "LINK", "MAP", "META", "NOSCRIPT", "PICTURE", "COL", "COLGROUP", "PARAM", "SLOT", "SOURCE", "TRACK"];
-    const isForbiddenTagName = forbiddenTagNames.indexOf(element.tagName) !== -1;
-    const isInputHidden = element.tagName === "INPUT" && element.getAttribute("type") === "hidden";
-    return isForbiddenTagName || isInputHidden;
-  }
-  function ariaHiddenSiblings(container, mountElement, currentElement, elementsToExclude, show) {
-    const blacklist = [mountElement, currentElement, ...elementsToExclude];
-    [].forEach.call(container.children, (element) => {
-      const isNotExcludedElement = blacklist.indexOf(element) === -1;
-      const isNotForbiddenElement = !isAriaHiddenForbiddenOnElement(element);
-      if (isNotExcludedElement && isNotForbiddenElement) {
-        ariaHidden(element, show);
-      }
-    });
-  }
-  function findIndexOf(items, callback) {
-    let idx = -1;
-    items.some((item, index) => {
-      if (callback(item)) {
-        idx = index;
-        return true;
-      }
-      return false;
-    });
-    return idx;
-  }
-  function handleContainer(containerInfo, props) {
-    const restoreStyle = [];
-    const container = containerInfo.container;
-    if (!props.disableScrollLock) {
-      if (isOverflowing(container)) {
-        const scrollbarSize = getScrollbarSize(ownerDocument(container));
-        restoreStyle.push({
-          value: container.style.paddingRight,
-          property: "padding-right",
-          el: container
-        });
-        container.style.paddingRight = `${getPaddingRight(container) + scrollbarSize}px`;
-        const fixedElements2 = ownerDocument(container).querySelectorAll(".mui-fixed");
-        [].forEach.call(fixedElements2, (element) => {
-          restoreStyle.push({
-            value: element.style.paddingRight,
-            property: "padding-right",
-            el: element
-          });
-          element.style.paddingRight = `${getPaddingRight(element) + scrollbarSize}px`;
-        });
-      }
-      let scrollContainer;
-      if (container.parentNode instanceof DocumentFragment) {
-        scrollContainer = ownerDocument(container).body;
-      } else {
-        const parent = container.parentElement;
-        const containerWindow = ownerWindow(container);
-        scrollContainer = (parent == null ? void 0 : parent.nodeName) === "HTML" && containerWindow.getComputedStyle(parent).overflowY === "scroll" ? parent : container;
-      }
-      restoreStyle.push({
-        value: scrollContainer.style.overflow,
-        property: "overflow",
-        el: scrollContainer
-      }, {
-        value: scrollContainer.style.overflowX,
-        property: "overflow-x",
-        el: scrollContainer
-      }, {
-        value: scrollContainer.style.overflowY,
-        property: "overflow-y",
-        el: scrollContainer
-      });
-      scrollContainer.style.overflow = "hidden";
-    }
-    const restore = () => {
-      restoreStyle.forEach(({
-        value,
-        el,
-        property
-      }) => {
-        if (value) {
-          el.style.setProperty(property, value);
-        } else {
-          el.style.removeProperty(property);
-        }
-      });
-    };
-    return restore;
-  }
-  function getHiddenSiblings(container) {
-    const hiddenSiblings = [];
-    [].forEach.call(container.children, (element) => {
-      if (element.getAttribute("aria-hidden") === "true") {
-        hiddenSiblings.push(element);
-      }
-    });
-    return hiddenSiblings;
-  }
-  class ModalManager {
-    constructor() {
-      this.containers = void 0;
-      this.modals = void 0;
-      this.modals = [];
-      this.containers = [];
-    }
-    add(modal, container) {
-      let modalIndex = this.modals.indexOf(modal);
-      if (modalIndex !== -1) {
-        return modalIndex;
-      }
-      modalIndex = this.modals.length;
-      this.modals.push(modal);
-      if (modal.modalRef) {
-        ariaHidden(modal.modalRef, false);
-      }
-      const hiddenSiblings = getHiddenSiblings(container);
-      ariaHiddenSiblings(container, modal.mount, modal.modalRef, hiddenSiblings, true);
-      const containerIndex = findIndexOf(this.containers, (item) => item.container === container);
-      if (containerIndex !== -1) {
-        this.containers[containerIndex].modals.push(modal);
-        return modalIndex;
-      }
-      this.containers.push({
-        modals: [modal],
-        container,
-        restore: null,
-        hiddenSiblings
-      });
-      return modalIndex;
-    }
-    mount(modal, props) {
-      const containerIndex = findIndexOf(this.containers, (item) => item.modals.indexOf(modal) !== -1);
-      const containerInfo = this.containers[containerIndex];
-      if (!containerInfo.restore) {
-        containerInfo.restore = handleContainer(containerInfo, props);
-      }
-    }
-    remove(modal, ariaHiddenState = true) {
-      const modalIndex = this.modals.indexOf(modal);
-      if (modalIndex === -1) {
-        return modalIndex;
-      }
-      const containerIndex = findIndexOf(this.containers, (item) => item.modals.indexOf(modal) !== -1);
-      const containerInfo = this.containers[containerIndex];
-      containerInfo.modals.splice(containerInfo.modals.indexOf(modal), 1);
-      this.modals.splice(modalIndex, 1);
-      if (containerInfo.modals.length === 0) {
-        if (containerInfo.restore) {
-          containerInfo.restore();
-        }
-        if (modal.modalRef) {
-          ariaHidden(modal.modalRef, ariaHiddenState);
-        }
-        ariaHiddenSiblings(containerInfo.container, modal.mount, modal.modalRef, containerInfo.hiddenSiblings, false);
-        this.containers.splice(containerIndex, 1);
-      } else {
-        const nextTop = containerInfo.modals[containerInfo.modals.length - 1];
-        if (nextTop.modalRef) {
-          ariaHidden(nextTop.modalRef, false);
-        }
-      }
-      return modalIndex;
-    }
-    isTopModal(modal) {
-      return this.modals.length > 0 && this.modals[this.modals.length - 1] === modal;
-    }
-  }
-  function getContainer(container) {
-    return typeof container === "function" ? container() : container;
-  }
-  function getHasTransition(children) {
-    return children ? children.props.hasOwnProperty("in") : false;
-  }
-  const defaultManager = new ModalManager();
-  function useModal(parameters) {
-    const {
-      container,
-      disableEscapeKeyDown = false,
-      disableScrollLock = false,
-      // @ts-ignore internal logic - Base UI supports the manager as a prop too
-      manager = defaultManager,
-      closeAfterTransition = false,
-      onTransitionEnter,
-      onTransitionExited,
-      children,
-      onClose,
-      open,
-      rootRef
-    } = parameters;
-    const modal = reactExports.useRef({});
-    const mountNodeRef = reactExports.useRef(null);
-    const modalRef = reactExports.useRef(null);
-    const handleRef = useForkRef(modalRef, rootRef);
-    const [exited, setExited] = reactExports.useState(!open);
-    const hasTransition = getHasTransition(children);
-    let ariaHiddenProp = true;
-    if (parameters["aria-hidden"] === "false" || parameters["aria-hidden"] === false) {
-      ariaHiddenProp = false;
-    }
-    const getDoc = () => ownerDocument(mountNodeRef.current);
-    const getModal = () => {
-      modal.current.modalRef = modalRef.current;
-      modal.current.mount = mountNodeRef.current;
-      return modal.current;
-    };
-    const handleMounted = () => {
-      manager.mount(getModal(), {
-        disableScrollLock
-      });
-      if (modalRef.current) {
-        modalRef.current.scrollTop = 0;
-      }
-    };
-    const handleOpen = useEventCallback(() => {
-      const resolvedContainer = getContainer(container) || getDoc().body;
-      manager.add(getModal(), resolvedContainer);
-      if (modalRef.current) {
-        handleMounted();
-      }
-    });
-    const isTopModal = reactExports.useCallback(() => manager.isTopModal(getModal()), [manager]);
-    const handlePortalRef = useEventCallback((node2) => {
-      mountNodeRef.current = node2;
-      if (!node2) {
-        return;
-      }
-      if (open && isTopModal()) {
-        handleMounted();
-      } else if (modalRef.current) {
-        ariaHidden(modalRef.current, ariaHiddenProp);
-      }
-    });
-    const handleClose = reactExports.useCallback(() => {
-      manager.remove(getModal(), ariaHiddenProp);
-    }, [ariaHiddenProp, manager]);
-    reactExports.useEffect(() => {
-      return () => {
-        handleClose();
-      };
-    }, [handleClose]);
-    reactExports.useEffect(() => {
-      if (open) {
-        handleOpen();
-      } else if (!hasTransition || !closeAfterTransition) {
-        handleClose();
-      }
-    }, [open, handleClose, hasTransition, closeAfterTransition, handleOpen]);
-    const createHandleKeyDown = (otherHandlers) => (event) => {
-      var _otherHandlers$onKeyD;
-      (_otherHandlers$onKeyD = otherHandlers.onKeyDown) == null || _otherHandlers$onKeyD.call(otherHandlers, event);
-      if (event.key !== "Escape" || !isTopModal()) {
-        return;
-      }
-      if (!disableEscapeKeyDown) {
-        event.stopPropagation();
-        if (onClose) {
-          onClose(event, "escapeKeyDown");
-        }
-      }
-    };
-    const createHandleBackdropClick = (otherHandlers) => (event) => {
-      var _otherHandlers$onClic;
-      (_otherHandlers$onClic = otherHandlers.onClick) == null || _otherHandlers$onClic.call(otherHandlers, event);
-      if (event.target !== event.currentTarget) {
-        return;
-      }
-      if (onClose) {
-        onClose(event, "backdropClick");
-      }
-    };
-    const getRootProps = (otherHandlers = {}) => {
-      const propsEventHandlers = extractEventHandlers(parameters);
-      delete propsEventHandlers.onTransitionEnter;
-      delete propsEventHandlers.onTransitionExited;
-      const externalEventHandlers = _extends$1({}, propsEventHandlers, otherHandlers);
-      return _extends$1({
-        role: "presentation"
-      }, externalEventHandlers, {
-        onKeyDown: createHandleKeyDown(externalEventHandlers),
-        ref: handleRef
-      });
-    };
-    const getBackdropProps = (otherHandlers = {}) => {
-      const externalEventHandlers = otherHandlers;
-      return _extends$1({
-        "aria-hidden": true
-      }, externalEventHandlers, {
-        onClick: createHandleBackdropClick(externalEventHandlers),
-        open
-      });
-    };
-    const getTransitionProps2 = () => {
-      const handleEnter = () => {
-        setExited(false);
-        if (onTransitionEnter) {
-          onTransitionEnter();
-        }
-      };
-      const handleExited = () => {
-        setExited(true);
-        if (onTransitionExited) {
-          onTransitionExited();
-        }
-        if (closeAfterTransition) {
-          handleClose();
-        }
-      };
-      return {
-        onEnter: createChainedFunction(handleEnter, children == null ? void 0 : children.props.onEnter),
-        onExited: createChainedFunction(handleExited, children == null ? void 0 : children.props.onExited)
-      };
-    };
-    return {
-      getRootProps,
-      getBackdropProps,
-      getTransitionProps: getTransitionProps2,
-      rootRef: handleRef,
-      portalRef: handlePortalRef,
-      isTopModal,
-      exited,
-      hasTransition
-    };
-  }
-  function useSnackbar(parameters = {}) {
-    const {
-      autoHideDuration = null,
-      disableWindowBlurListener = false,
-      onClose,
-      open,
-      resumeHideDuration
-    } = parameters;
-    const timerAutoHide = reactExports.useRef();
-    reactExports.useEffect(() => {
-      if (!open) {
-        return void 0;
-      }
-      function handleKeyDown2(nativeEvent) {
-        if (!nativeEvent.defaultPrevented) {
-          if (nativeEvent.key === "Escape" || nativeEvent.key === "Esc") {
-            onClose == null || onClose(nativeEvent, "escapeKeyDown");
-          }
-        }
-      }
-      document.addEventListener("keydown", handleKeyDown2);
-      return () => {
-        document.removeEventListener("keydown", handleKeyDown2);
-      };
-    }, [open, onClose]);
-    const handleClose = useEventCallback((event, reason) => {
-      onClose == null || onClose(event, reason);
-    });
-    const setAutoHideTimer = useEventCallback((autoHideDurationParam) => {
-      if (!onClose || autoHideDurationParam == null) {
-        return;
-      }
-      clearTimeout(timerAutoHide.current);
-      timerAutoHide.current = setTimeout(() => {
-        handleClose(null, "timeout");
-      }, autoHideDurationParam);
-    });
-    reactExports.useEffect(() => {
-      if (open) {
-        setAutoHideTimer(autoHideDuration);
-      }
-      return () => {
-        clearTimeout(timerAutoHide.current);
-      };
-    }, [open, autoHideDuration, setAutoHideTimer]);
-    const handleClickAway = (event) => {
-      onClose == null || onClose(event, "clickaway");
-    };
-    const handlePause = () => {
-      clearTimeout(timerAutoHide.current);
-    };
-    const handleResume = reactExports.useCallback(() => {
-      if (autoHideDuration != null) {
-        setAutoHideTimer(resumeHideDuration != null ? resumeHideDuration : autoHideDuration * 0.5);
-      }
-    }, [autoHideDuration, resumeHideDuration, setAutoHideTimer]);
-    const createHandleBlur = (otherHandlers) => (event) => {
-      const onBlurCallback = otherHandlers.onBlur;
-      onBlurCallback == null || onBlurCallback(event);
-      handleResume();
-    };
-    const createHandleFocus = (otherHandlers) => (event) => {
-      const onFocusCallback = otherHandlers.onFocus;
-      onFocusCallback == null || onFocusCallback(event);
-      handlePause();
-    };
-    const createMouseEnter = (otherHandlers) => (event) => {
-      const onMouseEnterCallback = otherHandlers.onMouseEnter;
-      onMouseEnterCallback == null || onMouseEnterCallback(event);
-      handlePause();
-    };
-    const createMouseLeave = (otherHandlers) => (event) => {
-      const onMouseLeaveCallback = otherHandlers.onMouseLeave;
-      onMouseLeaveCallback == null || onMouseLeaveCallback(event);
-      handleResume();
-    };
-    reactExports.useEffect(() => {
-      if (!disableWindowBlurListener && open) {
-        window.addEventListener("focus", handleResume);
-        window.addEventListener("blur", handlePause);
-        return () => {
-          window.removeEventListener("focus", handleResume);
-          window.removeEventListener("blur", handlePause);
-        };
-      }
-      return void 0;
-    }, [disableWindowBlurListener, handleResume, open]);
-    const getRootProps = (externalProps = {}) => {
-      const externalEventHandlers = _extends$1({}, extractEventHandlers(parameters), extractEventHandlers(externalProps));
-      return _extends$1({
-        // ClickAwayListener adds an `onClick` prop which results in the alert not being announced.
-        // See https://github.com/mui/material-ui/issues/29080
-        role: "presentation"
-      }, externalProps, externalEventHandlers, {
-        onBlur: createHandleBlur(externalEventHandlers),
-        onFocus: createHandleFocus(externalEventHandlers),
-        onMouseEnter: createMouseEnter(externalEventHandlers),
-        onMouseLeave: createMouseLeave(externalEventHandlers)
-      });
-    };
-    return {
-      getRootProps,
-      onClickAway: handleClickAway
-    };
-  }
-  const _excluded$Q = ["onChange", "maxRows", "minRows", "style", "value"];
-  function getStyleValue(value) {
-    return parseInt(value, 10) || 0;
-  }
-  const styles$2 = {
-    shadow: {
-      // Visibility needed to hide the extra text area on iPads
-      visibility: "hidden",
-      // Remove from the content flow
-      position: "absolute",
-      // Ignore the scrollbar width
-      overflow: "hidden",
-      height: 0,
-      top: 0,
-      left: 0,
-      // Create a new layer, increase the isolation of the computed values
-      transform: "translateZ(0)"
-    }
-  };
-  function isEmpty$1(obj) {
-    return obj === void 0 || obj === null || Object.keys(obj).length === 0 || obj.outerHeightStyle === 0 && !obj.overflow;
-  }
-  const TextareaAutosize = /* @__PURE__ */ reactExports.forwardRef(function TextareaAutosize2(props, forwardedRef) {
-    const {
-      onChange,
-      maxRows,
-      minRows = 1,
-      style: style2,
-      value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$Q);
-    const {
-      current: isControlled
-    } = reactExports.useRef(value != null);
-    const inputRef = reactExports.useRef(null);
-    const handleRef = useForkRef(forwardedRef, inputRef);
-    const shadowRef = reactExports.useRef(null);
-    const renders = reactExports.useRef(0);
-    const [state, setState] = reactExports.useState({
-      outerHeightStyle: 0
-    });
-    const getUpdatedState = reactExports.useCallback(() => {
-      const input = inputRef.current;
-      const containerWindow = ownerWindow(input);
-      const computedStyle = containerWindow.getComputedStyle(input);
-      if (computedStyle.width === "0px") {
-        return {
-          outerHeightStyle: 0
-        };
-      }
-      const inputShallow = shadowRef.current;
-      inputShallow.style.width = computedStyle.width;
-      inputShallow.value = input.value || props.placeholder || "x";
-      if (inputShallow.value.slice(-1) === "\n") {
-        inputShallow.value += " ";
-      }
-      const boxSizing2 = computedStyle.boxSizing;
-      const padding2 = getStyleValue(computedStyle.paddingBottom) + getStyleValue(computedStyle.paddingTop);
-      const border2 = getStyleValue(computedStyle.borderBottomWidth) + getStyleValue(computedStyle.borderTopWidth);
-      const innerHeight = inputShallow.scrollHeight;
-      inputShallow.value = "x";
-      const singleRowHeight = inputShallow.scrollHeight;
-      let outerHeight = innerHeight;
-      if (minRows) {
-        outerHeight = Math.max(Number(minRows) * singleRowHeight, outerHeight);
-      }
-      if (maxRows) {
-        outerHeight = Math.min(Number(maxRows) * singleRowHeight, outerHeight);
-      }
-      outerHeight = Math.max(outerHeight, singleRowHeight);
-      const outerHeightStyle = outerHeight + (boxSizing2 === "border-box" ? padding2 + border2 : 0);
-      const overflow = Math.abs(outerHeight - innerHeight) <= 1;
-      return {
-        outerHeightStyle,
-        overflow
-      };
-    }, [maxRows, minRows, props.placeholder]);
-    const updateState = (prevState, newState) => {
-      const {
-        outerHeightStyle,
-        overflow
-      } = newState;
-      if (renders.current < 20 && (outerHeightStyle > 0 && Math.abs((prevState.outerHeightStyle || 0) - outerHeightStyle) > 1 || prevState.overflow !== overflow)) {
-        renders.current += 1;
-        return {
-          overflow,
-          outerHeightStyle
-        };
-      }
-      if (process.env.NODE_ENV !== "production") {
-        if (renders.current === 20) {
-          console.error(["MUI: Too many re-renders. The layout is unstable.", "TextareaAutosize limits the number of renders to prevent an infinite loop."].join("\n"));
-        }
-      }
-      return prevState;
-    };
-    const syncHeight = reactExports.useCallback(() => {
-      const newState = getUpdatedState();
-      if (isEmpty$1(newState)) {
-        return;
-      }
-      setState((prevState) => updateState(prevState, newState));
-    }, [getUpdatedState]);
-    useEnhancedEffect$1(() => {
-      const syncHeightWithFlushSync = () => {
-        const newState = getUpdatedState();
-        if (isEmpty$1(newState)) {
-          return;
-        }
-        reactDomExports.flushSync(() => {
-          setState((prevState) => updateState(prevState, newState));
-        });
-      };
-      const handleResize = () => {
-        renders.current = 0;
-        syncHeightWithFlushSync();
-      };
-      let rAF;
-      const rAFHandleResize = () => {
-        cancelAnimationFrame(rAF);
-        rAF = requestAnimationFrame(() => {
-          handleResize();
-        });
-      };
-      const debounceHandleResize = debounce(handleResize);
-      const input = inputRef.current;
-      const containerWindow = ownerWindow(input);
-      containerWindow.addEventListener("resize", debounceHandleResize);
-      let resizeObserver;
-      if (typeof ResizeObserver !== "undefined") {
-        resizeObserver = new ResizeObserver(process.env.NODE_ENV === "test" ? rAFHandleResize : handleResize);
-        resizeObserver.observe(input);
-      }
-      return () => {
-        debounceHandleResize.clear();
-        cancelAnimationFrame(rAF);
-        containerWindow.removeEventListener("resize", debounceHandleResize);
-        if (resizeObserver) {
-          resizeObserver.disconnect();
-        }
-      };
-    }, [getUpdatedState]);
-    useEnhancedEffect$1(() => {
-      syncHeight();
-    });
-    reactExports.useEffect(() => {
-      renders.current = 0;
-    }, [value]);
-    const handleChange = (event) => {
-      renders.current = 0;
-      if (!isControlled) {
-        syncHeight();
-      }
-      if (onChange) {
-        onChange(event);
-      }
-    };
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
-      children: [/* @__PURE__ */ jsxRuntimeExports.jsx("textarea", _extends$1({
-        value,
-        onChange: handleChange,
-        ref: handleRef,
-        rows: minRows,
-        style: _extends$1({
-          height: state.outerHeightStyle,
-          // Need a large enough difference to allow scrolling.
-          // This prevents infinite rendering loop.
-          overflow: state.overflow ? "hidden" : void 0
-        }, style2)
-      }, other)), /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", {
-        "aria-hidden": true,
-        className: props.className,
-        readOnly: true,
-        ref: shadowRef,
-        tabIndex: -1,
-        style: _extends$1({}, styles$2.shadow, style2, {
-          paddingTop: 0,
-          paddingBottom: 0
-        })
-      })]
-    });
-  });
-  process.env.NODE_ENV !== "production" ? TextareaAutosize.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * Maximum number of rows to display.
-     */
-    maxRows: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    /**
-     * Minimum number of rows to display.
-     * @default 1
-     */
-    minRows: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    /**
-     * @ignore
-     */
-    onChange: PropTypes.func,
-    /**
-     * @ignore
-     */
-    placeholder: PropTypes.string,
-    /**
-     * @ignore
-     */
-    style: PropTypes.object,
-    /**
-     * @ignore
-     */
-    value: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.number, PropTypes.string])
-  } : void 0;
   function formControlState({
     props,
     states,
@@ -73668,7 +75343,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const inputBaseClasses = generateUtilityClasses("MuiInputBase", ["root", "formControl", "focused", "disabled", "adornedStart", "adornedEnd", "error", "sizeSmall", "multiline", "colorSecondary", "fullWidth", "hiddenLabel", "readOnly", "input", "inputSizeSmall", "inputMultiline", "inputTypeSearch", "inputAdornedStart", "inputAdornedEnd", "inputHiddenLabel"]);
   const inputBaseClasses$1 = inputBaseClasses;
-  const _excluded$P = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
+  const _excluded$I = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
   const rootOverridesResolver = (props, styles2) => {
     const {
       ownerState
@@ -73681,7 +75356,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     } = props;
     return [styles2.input, ownerState.size === "small" && styles2.inputSizeSmall, ownerState.multiline && styles2.inputMultiline, ownerState.type === "search" && styles2.inputTypeSearch, ownerState.startAdornment && styles2.inputAdornedStart, ownerState.endAdornment && styles2.inputAdornedEnd, ownerState.hiddenLabel && styles2.inputHiddenLabel];
   };
-  const useUtilityClasses$J = (ownerState) => {
+  const useUtilityClasses$D = (ownerState) => {
     const {
       classes,
       color: color2,
@@ -73892,7 +75567,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startAdornment,
       type = "text",
       value: valueProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$P);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$I);
     const value = inputPropsProp.value != null ? inputPropsProp.value : valueProp;
     const {
       current: isControlled
@@ -74053,7 +75728,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startAdornment,
       type
     });
-    const classes = useUtilityClasses$J(ownerState);
+    const classes = useUtilityClasses$D(ownerState);
     const Root = slots.root || components.Root || InputBaseRoot;
     const rootProps = slotProps.root || componentsProps.root || {};
     const Input2 = slots.input || components.Input || InputBaseComponent;
@@ -74359,8 +76034,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAvatar", slot);
   }
   generateUtilityClasses("MuiAvatar", ["root", "colorDefault", "circular", "rounded", "square", "img", "fallback"]);
-  const _excluded$O = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
-  const useUtilityClasses$I = (ownerState) => {
+  const _excluded$H = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
+  const useUtilityClasses$C = (ownerState) => {
     const {
       classes,
       variant,
@@ -74486,7 +76161,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       src,
       srcSet,
       variant = "circular"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$O);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$H);
     let children = null;
     const loaded = useLoaded(_extends$1({}, imgProps, {
       src,
@@ -74499,7 +76174,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       component,
       variant
     });
-    const classes = useUtilityClasses$I(ownerState);
+    const classes = useUtilityClasses$C(ownerState);
     if (hasImgNotFailing) {
       children = /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImg, _extends$1({
         alt,
@@ -74585,366 +76260,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: PropTypes.oneOfType([PropTypes.oneOf(["circular", "rounded", "square"]), PropTypes.string])
   } : void 0;
   const Avatar$1 = Avatar;
-  const _excluded$N = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
-  const styles$1 = {
-    entering: {
-      opacity: 1
-    },
-    entered: {
-      opacity: 1
-    }
-  };
-  const Fade = /* @__PURE__ */ reactExports.forwardRef(function Fade2(props, ref) {
-    const theme2 = useTheme();
-    const defaultTimeout = {
-      enter: theme2.transitions.duration.enteringScreen,
-      exit: theme2.transitions.duration.leavingScreen
-    };
-    const {
-      addEndListener,
-      appear = true,
-      children,
-      easing: easing2,
-      in: inProp,
-      onEnter,
-      onEntered,
-      onEntering,
-      onExit,
-      onExited,
-      onExiting,
-      style: style2,
-      timeout = defaultTimeout,
-      // eslint-disable-next-line react/prop-types
-      TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$N);
-    const nodeRef = reactExports.useRef(null);
-    const handleRef = useForkRef(nodeRef, children.ref, ref);
-    const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
-      if (callback) {
-        const node2 = nodeRef.current;
-        if (maybeIsAppearing === void 0) {
-          callback(node2);
-        } else {
-          callback(node2, maybeIsAppearing);
-        }
-      }
-    };
-    const handleEntering = normalizedTransitionCallback(onEntering);
-    const handleEnter = normalizedTransitionCallback((node2, isAppearing) => {
-      reflow(node2);
-      const transitionProps = getTransitionProps({
-        style: style2,
-        timeout,
-        easing: easing2
-      }, {
-        mode: "enter"
-      });
-      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
-      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
-      if (onEnter) {
-        onEnter(node2, isAppearing);
-      }
-    });
-    const handleEntered = normalizedTransitionCallback(onEntered);
-    const handleExiting = normalizedTransitionCallback(onExiting);
-    const handleExit = normalizedTransitionCallback((node2) => {
-      const transitionProps = getTransitionProps({
-        style: style2,
-        timeout,
-        easing: easing2
-      }, {
-        mode: "exit"
-      });
-      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
-      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
-      if (onExit) {
-        onExit(node2);
-      }
-    });
-    const handleExited = normalizedTransitionCallback(onExited);
-    const handleAddEndListener = (next2) => {
-      if (addEndListener) {
-        addEndListener(nodeRef.current, next2);
-      }
-    };
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
-      appear,
-      in: inProp,
-      nodeRef,
-      onEnter: handleEnter,
-      onEntered: handleEntered,
-      onEntering: handleEntering,
-      onExit: handleExit,
-      onExited: handleExited,
-      onExiting: handleExiting,
-      addEndListener: handleAddEndListener,
-      timeout
-    }, other, {
-      children: (state, childProps) => {
-        return /* @__PURE__ */ reactExports.cloneElement(children, _extends$1({
-          style: _extends$1({
-            opacity: 0,
-            visibility: state === "exited" && !inProp ? "hidden" : void 0
-          }, styles$1[state], style2, children.props.style),
-          ref: handleRef
-        }, childProps));
-      }
-    }));
-  });
-  process.env.NODE_ENV !== "production" ? Fade.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * Add a custom transition end trigger. Called with the transitioning DOM
-     * node and a done callback. Allows for more fine grained transition end
-     * logic. Note: Timeouts are still used as a fallback if provided.
-     */
-    addEndListener: PropTypes.func,
-    /**
-     * Perform the enter transition when it first mounts if `in` is also `true`.
-     * Set this to `false` to disable this behavior.
-     * @default true
-     */
-    appear: PropTypes.bool,
-    /**
-     * A single child content element.
-     */
-    children: elementAcceptingRef$1.isRequired,
-    /**
-     * The transition timing function.
-     * You may specify a single easing or a object containing enter and exit values.
-     */
-    easing: PropTypes.oneOfType([PropTypes.shape({
-      enter: PropTypes.string,
-      exit: PropTypes.string
-    }), PropTypes.string]),
-    /**
-     * If `true`, the component will transition in.
-     */
-    in: PropTypes.bool,
-    /**
-     * @ignore
-     */
-    onEnter: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onEntered: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onEntering: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onExit: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onExited: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onExiting: PropTypes.func,
-    /**
-     * @ignore
-     */
-    style: PropTypes.object,
-    /**
-     * The duration for the transition, in milliseconds.
-     * You may specify a single timeout for all transitions, or individually with an object.
-     * @default {
-     *   enter: theme.transitions.duration.enteringScreen,
-     *   exit: theme.transitions.duration.leavingScreen,
-     * }
-     */
-    timeout: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
-      appear: PropTypes.number,
-      enter: PropTypes.number,
-      exit: PropTypes.number
-    })])
-  } : void 0;
-  const Fade$1 = Fade;
-  function getBackdropUtilityClass(slot) {
-    return generateUtilityClass("MuiBackdrop", slot);
-  }
-  generateUtilityClasses("MuiBackdrop", ["root", "invisible"]);
-  const _excluded$M = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
-  const useUtilityClasses$H = (ownerState) => {
-    const {
-      classes,
-      invisible
-    } = ownerState;
-    const slots = {
-      root: ["root", invisible && "invisible"]
-    };
-    return composeClasses(slots, getBackdropUtilityClass, classes);
-  };
-  const BackdropRoot = styled$1("div", {
-    name: "MuiBackdrop",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, ownerState.invisible && styles2.invisible];
-    }
-  })(({
-    ownerState
-  }) => _extends$1({
-    position: "fixed",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    right: 0,
-    bottom: 0,
-    top: 0,
-    left: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    WebkitTapHighlightColor: "transparent"
-  }, ownerState.invisible && {
-    backgroundColor: "transparent"
-  }));
-  const Backdrop = /* @__PURE__ */ reactExports.forwardRef(function Backdrop2(inProps, ref) {
-    var _slotProps$root, _ref, _slots$root;
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiBackdrop"
-    });
-    const {
-      children,
-      className,
-      component = "div",
-      components = {},
-      componentsProps = {},
-      invisible = false,
-      open,
-      slotProps = {},
-      slots = {},
-      TransitionComponent = Fade$1,
-      transitionDuration
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$M);
-    const ownerState = _extends$1({}, props, {
-      component,
-      invisible
-    });
-    const classes = useUtilityClasses$H(ownerState);
-    const rootSlotProps = (_slotProps$root = slotProps.root) != null ? _slotProps$root : componentsProps.root;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
-      in: open,
-      timeout: transitionDuration
-    }, other, {
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(BackdropRoot, _extends$1({
-        "aria-hidden": true
-      }, rootSlotProps, {
-        as: (_ref = (_slots$root = slots.root) != null ? _slots$root : components.Root) != null ? _ref : component,
-        className: clsx(classes.root, className, rootSlotProps == null ? void 0 : rootSlotProps.className),
-        ownerState: _extends$1({}, ownerState, rootSlotProps == null ? void 0 : rootSlotProps.ownerState),
-        classes,
-        ref,
-        children
-      }))
-    }));
-  });
-  process.env.NODE_ENV !== "production" ? Backdrop.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * The components used for each slot inside.
-     *
-     * This prop is an alias for the `slots` prop.
-     * It's recommended to use the `slots` prop instead.
-     *
-     * @default {}
-     */
-    components: PropTypes.shape({
-      Root: PropTypes.elementType
-    }),
-    /**
-     * The extra props for the slot components.
-     * You can override the existing props or add new ones.
-     *
-     * This prop is an alias for the `slotProps` prop.
-     * It's recommended to use the `slotProps` prop instead, as `componentsProps` will be deprecated in the future.
-     *
-     * @default {}
-     */
-    componentsProps: PropTypes.shape({
-      root: PropTypes.object
-    }),
-    /**
-     * If `true`, the backdrop is invisible.
-     * It can be used when rendering a popover or a custom select component.
-     * @default false
-     */
-    invisible: PropTypes.bool,
-    /**
-     * If `true`, the component is shown.
-     */
-    open: PropTypes.bool.isRequired,
-    /**
-     * The extra props for the slot components.
-     * You can override the existing props or add new ones.
-     *
-     * This prop is an alias for the `componentsProps` prop, which will be deprecated in the future.
-     *
-     * @default {}
-     */
-    slotProps: PropTypes.shape({
-      root: PropTypes.object
-    }),
-    /**
-     * The components used for each slot inside.
-     *
-     * This prop is an alias for the `components` prop, which will be deprecated in the future.
-     *
-     * @default {}
-     */
-    slots: PropTypes.shape({
-      root: PropTypes.elementType
-    }),
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * The component used for the transition.
-     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
-     * @default Fade
-     */
-    TransitionComponent: PropTypes.elementType,
-    /**
-     * The duration for the transition, in milliseconds.
-     * You may specify a single timeout for all transitions, or individually with an object.
-     */
-    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
-      appear: PropTypes.number,
-      enter: PropTypes.number,
-      exit: PropTypes.number
-    })])
-  } : void 0;
-  const Backdrop$1 = Backdrop;
   function getBadgeUtilityClass(slot) {
     return generateUtilityClass("MuiBadge", slot);
   }
@@ -74977,10 +76292,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     "anchorOriginBottomRightRectangular"
   ]);
   const badgeClasses$1 = badgeClasses;
-  const _excluded$L = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
+  const _excluded$G = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
   const RADIUS_STANDARD = 10;
   const RADIUS_DOT = 4;
-  const useUtilityClasses$G = (ownerState) => {
+  const useUtilityClasses$B = (ownerState) => {
     const {
       color: color2,
       anchorOrigin,
@@ -75144,7 +76459,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps,
       showZero = false,
       variant: variantProp = "standard"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$L);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$G);
     const {
       badgeContent,
       invisible: invisibleFromHook,
@@ -75182,7 +76497,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       overlap,
       variant
     });
-    const classes = useUtilityClasses$G(ownerState);
+    const classes = useUtilityClasses$B(ownerState);
     const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : BadgeRoot;
     const BadgeSlot = (_ref2 = (_slots$badge = slots == null ? void 0 : slots.badge) != null ? _slots$badge : components.Badge) != null ? _ref2 : BadgeBadge;
     const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
@@ -75327,386 +76642,12 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: PropTypes.oneOfType([PropTypes.oneOf(["dot", "standard"]), PropTypes.string])
   } : void 0;
   const Badge$1 = Badge;
-  function getButtonUtilityClass(slot) {
-    return generateUtilityClass("MuiButton", slot);
-  }
-  const buttonClasses = generateUtilityClasses("MuiButton", ["root", "text", "textInherit", "textPrimary", "textSecondary", "textSuccess", "textError", "textInfo", "textWarning", "outlined", "outlinedInherit", "outlinedPrimary", "outlinedSecondary", "outlinedSuccess", "outlinedError", "outlinedInfo", "outlinedWarning", "contained", "containedInherit", "containedPrimary", "containedSecondary", "containedSuccess", "containedError", "containedInfo", "containedWarning", "disableElevation", "focusVisible", "disabled", "colorInherit", "textSizeSmall", "textSizeMedium", "textSizeLarge", "outlinedSizeSmall", "outlinedSizeMedium", "outlinedSizeLarge", "containedSizeSmall", "containedSizeMedium", "containedSizeLarge", "sizeMedium", "sizeSmall", "sizeLarge", "fullWidth", "startIcon", "endIcon", "iconSizeSmall", "iconSizeMedium", "iconSizeLarge"]);
-  const buttonClasses$1 = buttonClasses;
-  const ButtonGroupContext = /* @__PURE__ */ reactExports.createContext({});
-  if (process.env.NODE_ENV !== "production") {
-    ButtonGroupContext.displayName = "ButtonGroupContext";
-  }
-  const ButtonGroupContext$1 = ButtonGroupContext;
-  const ButtonGroupButtonContext = /* @__PURE__ */ reactExports.createContext(void 0);
-  if (process.env.NODE_ENV !== "production") {
-    ButtonGroupButtonContext.displayName = "ButtonGroupButtonContext";
-  }
-  const ButtonGroupButtonContext$1 = ButtonGroupButtonContext;
-  const _excluded$K = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
-  const useUtilityClasses$F = (ownerState) => {
-    const {
-      color: color2,
-      disableElevation,
-      fullWidth,
-      size: size2,
-      variant,
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root", variant, `${variant}${capitalize$2(color2)}`, `size${capitalize$2(size2)}`, `${variant}Size${capitalize$2(size2)}`, color2 === "inherit" && "colorInherit", disableElevation && "disableElevation", fullWidth && "fullWidth"],
-      label: ["label"],
-      startIcon: ["startIcon", `iconSize${capitalize$2(size2)}`],
-      endIcon: ["endIcon", `iconSize${capitalize$2(size2)}`]
-    };
-    const composedClasses = composeClasses(slots, getButtonUtilityClass, classes);
-    return _extends$1({}, classes, composedClasses);
-  };
-  const commonIconStyles = (ownerState) => _extends$1({}, ownerState.size === "small" && {
-    "& > *:nth-of-type(1)": {
-      fontSize: 18
-    }
-  }, ownerState.size === "medium" && {
-    "& > *:nth-of-type(1)": {
-      fontSize: 20
-    }
-  }, ownerState.size === "large" && {
-    "& > *:nth-of-type(1)": {
-      fontSize: 22
-    }
-  });
-  const ButtonRoot = styled$1(ButtonBase$1, {
-    shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
-    name: "MuiButton",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize$2(ownerState.color)}`], styles2[`size${capitalize$2(ownerState.size)}`], styles2[`${ownerState.variant}Size${capitalize$2(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, ownerState.disableElevation && styles2.disableElevation, ownerState.fullWidth && styles2.fullWidth];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => {
-    var _theme$palette$getCon, _theme$palette;
-    const inheritContainedBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey[300] : theme2.palette.grey[800];
-    const inheritContainedHoverBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey.A100 : theme2.palette.grey[700];
-    return _extends$1({}, theme2.typography.button, {
-      minWidth: 64,
-      padding: "6px 16px",
-      borderRadius: (theme2.vars || theme2).shape.borderRadius,
-      transition: theme2.transitions.create(["background-color", "box-shadow", "border-color", "color"], {
-        duration: theme2.transitions.duration.short
-      }),
-      "&:hover": _extends$1({
-        textDecoration: "none",
-        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.text.primary, theme2.palette.action.hoverOpacity),
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          backgroundColor: "transparent"
-        }
-      }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
-        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          backgroundColor: "transparent"
-        }
-      }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
-        border: `1px solid ${(theme2.vars || theme2).palette[ownerState.color].main}`,
-        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          backgroundColor: "transparent"
-        }
-      }, ownerState.variant === "contained" && {
-        backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedHoverBg : inheritContainedHoverBackgroundColor,
-        boxShadow: (theme2.vars || theme2).shadows[4],
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          boxShadow: (theme2.vars || theme2).shadows[2],
-          backgroundColor: (theme2.vars || theme2).palette.grey[300]
-        }
-      }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
-        backgroundColor: (theme2.vars || theme2).palette[ownerState.color].dark,
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
-        }
-      }),
-      "&:active": _extends$1({}, ownerState.variant === "contained" && {
-        boxShadow: (theme2.vars || theme2).shadows[8]
-      }),
-      [`&.${buttonClasses$1.focusVisible}`]: _extends$1({}, ownerState.variant === "contained" && {
-        boxShadow: (theme2.vars || theme2).shadows[6]
-      }),
-      [`&.${buttonClasses$1.disabled}`]: _extends$1({
-        color: (theme2.vars || theme2).palette.action.disabled
-      }, ownerState.variant === "outlined" && {
-        border: `1px solid ${(theme2.vars || theme2).palette.action.disabledBackground}`
-      }, ownerState.variant === "contained" && {
-        color: (theme2.vars || theme2).palette.action.disabled,
-        boxShadow: (theme2.vars || theme2).shadows[0],
-        backgroundColor: (theme2.vars || theme2).palette.action.disabledBackground
-      })
-    }, ownerState.variant === "text" && {
-      padding: "6px 8px"
-    }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
-      color: (theme2.vars || theme2).palette[ownerState.color].main
-    }, ownerState.variant === "outlined" && {
-      padding: "5px 15px",
-      border: "1px solid currentColor"
-    }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
-      color: (theme2.vars || theme2).palette[ownerState.color].main,
-      border: theme2.vars ? `1px solid rgba(${theme2.vars.palette[ownerState.color].mainChannel} / 0.5)` : `1px solid ${alpha(theme2.palette[ownerState.color].main, 0.5)}`
-    }, ownerState.variant === "contained" && {
-      color: theme2.vars ? (
-        // this is safe because grey does not change between default light/dark mode
-        theme2.vars.palette.text.primary
-      ) : (_theme$palette$getCon = (_theme$palette = theme2.palette).getContrastText) == null ? void 0 : _theme$palette$getCon.call(_theme$palette, theme2.palette.grey[300]),
-      backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedBg : inheritContainedBackgroundColor,
-      boxShadow: (theme2.vars || theme2).shadows[2]
-    }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
-      color: (theme2.vars || theme2).palette[ownerState.color].contrastText,
-      backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
-    }, ownerState.color === "inherit" && {
-      color: "inherit",
-      borderColor: "currentColor"
-    }, ownerState.size === "small" && ownerState.variant === "text" && {
-      padding: "4px 5px",
-      fontSize: theme2.typography.pxToRem(13)
-    }, ownerState.size === "large" && ownerState.variant === "text" && {
-      padding: "8px 11px",
-      fontSize: theme2.typography.pxToRem(15)
-    }, ownerState.size === "small" && ownerState.variant === "outlined" && {
-      padding: "3px 9px",
-      fontSize: theme2.typography.pxToRem(13)
-    }, ownerState.size === "large" && ownerState.variant === "outlined" && {
-      padding: "7px 21px",
-      fontSize: theme2.typography.pxToRem(15)
-    }, ownerState.size === "small" && ownerState.variant === "contained" && {
-      padding: "4px 10px",
-      fontSize: theme2.typography.pxToRem(13)
-    }, ownerState.size === "large" && ownerState.variant === "contained" && {
-      padding: "8px 22px",
-      fontSize: theme2.typography.pxToRem(15)
-    }, ownerState.fullWidth && {
-      width: "100%"
-    });
-  }, ({
-    ownerState
-  }) => ownerState.disableElevation && {
-    boxShadow: "none",
-    "&:hover": {
-      boxShadow: "none"
-    },
-    [`&.${buttonClasses$1.focusVisible}`]: {
-      boxShadow: "none"
-    },
-    "&:active": {
-      boxShadow: "none"
-    },
-    [`&.${buttonClasses$1.disabled}`]: {
-      boxShadow: "none"
-    }
-  });
-  const ButtonStartIcon = styled$1("span", {
-    name: "MuiButton",
-    slot: "StartIcon",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.startIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
-    }
-  })(({
-    ownerState
-  }) => _extends$1({
-    display: "inherit",
-    marginRight: 8,
-    marginLeft: -4
-  }, ownerState.size === "small" && {
-    marginLeft: -2
-  }, commonIconStyles(ownerState)));
-  const ButtonEndIcon = styled$1("span", {
-    name: "MuiButton",
-    slot: "EndIcon",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.endIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
-    }
-  })(({
-    ownerState
-  }) => _extends$1({
-    display: "inherit",
-    marginRight: -4,
-    marginLeft: 8
-  }, ownerState.size === "small" && {
-    marginRight: -2
-  }, commonIconStyles(ownerState)));
-  const Button = /* @__PURE__ */ reactExports.forwardRef(function Button2(inProps, ref) {
-    const contextProps = reactExports.useContext(ButtonGroupContext$1);
-    const buttonGroupButtonContextPositionClassName = reactExports.useContext(ButtonGroupButtonContext$1);
-    const resolvedProps = resolveProps(contextProps, inProps);
-    const props = useThemeProps({
-      props: resolvedProps,
-      name: "MuiButton"
-    });
-    const {
-      children,
-      color: color2 = "primary",
-      component = "button",
-      className,
-      disabled = false,
-      disableElevation = false,
-      disableFocusRipple = false,
-      endIcon: endIconProp,
-      focusVisibleClassName,
-      fullWidth = false,
-      size: size2 = "medium",
-      startIcon: startIconProp,
-      type,
-      variant = "text"
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$K);
-    const ownerState = _extends$1({}, props, {
-      color: color2,
-      component,
-      disabled,
-      disableElevation,
-      disableFocusRipple,
-      fullWidth,
-      size: size2,
-      type,
-      variant
-    });
-    const classes = useUtilityClasses$F(ownerState);
-    const startIcon = startIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonStartIcon, {
-      className: classes.startIcon,
-      ownerState,
-      children: startIconProp
-    });
-    const endIcon = endIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonEndIcon, {
-      className: classes.endIcon,
-      ownerState,
-      children: endIconProp
-    });
-    const positionClassName = buttonGroupButtonContextPositionClassName || "";
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonRoot, _extends$1({
-      ownerState,
-      className: clsx(contextProps.className, classes.root, className, positionClassName),
-      component,
-      disabled,
-      focusRipple: !disableFocusRipple,
-      focusVisibleClassName: clsx(classes.focusVisible, focusVisibleClassName),
-      ref,
-      type
-    }, other, {
-      classes,
-      children: [startIcon, children, endIcon]
-    }));
-  });
-  process.env.NODE_ENV !== "production" ? Button.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * The color of the component.
-     * It supports both default and custom theme colors, which can be added as shown in the
-     * [palette customization guide](https://mui.com/material-ui/customization/palette/#custom-colors).
-     * @default 'primary'
-     */
-    color: PropTypes.oneOfType([PropTypes.oneOf(["inherit", "primary", "secondary", "success", "error", "info", "warning"]), PropTypes.string]),
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * If `true`, the component is disabled.
-     * @default false
-     */
-    disabled: PropTypes.bool,
-    /**
-     * If `true`, no elevation is used.
-     * @default false
-     */
-    disableElevation: PropTypes.bool,
-    /**
-     * If `true`, the  keyboard focus ripple is disabled.
-     * @default false
-     */
-    disableFocusRipple: PropTypes.bool,
-    /**
-     * If `true`, the ripple effect is disabled.
-     *
-     * ⚠️ Without a ripple there is no styling for :focus-visible by default. Be sure
-     * to highlight the element by applying separate styles with the `.Mui-focusVisible` class.
-     * @default false
-     */
-    disableRipple: PropTypes.bool,
-    /**
-     * Element placed after the children.
-     */
-    endIcon: PropTypes.node,
-    /**
-     * @ignore
-     */
-    focusVisibleClassName: PropTypes.string,
-    /**
-     * If `true`, the button will take up the full width of its container.
-     * @default false
-     */
-    fullWidth: PropTypes.bool,
-    /**
-     * The URL to link to when the button is clicked.
-     * If defined, an `a` element will be used as the root node.
-     */
-    href: PropTypes.string,
-    /**
-     * The size of the component.
-     * `small` is equivalent to the dense button styling.
-     * @default 'medium'
-     */
-    size: PropTypes.oneOfType([PropTypes.oneOf(["small", "medium", "large"]), PropTypes.string]),
-    /**
-     * Element placed before the children.
-     */
-    startIcon: PropTypes.node,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * @ignore
-     */
-    type: PropTypes.oneOfType([PropTypes.oneOf(["button", "reset", "submit"]), PropTypes.string]),
-    /**
-     * The variant to use.
-     * @default 'text'
-     */
-    variant: PropTypes.oneOfType([PropTypes.oneOf(["contained", "outlined", "text"]), PropTypes.string])
-  } : void 0;
-  const Button$1 = Button;
   function getSwitchBaseUtilityClass(slot) {
     return generateUtilityClass("PrivateSwitchBase", slot);
   }
   generateUtilityClasses("PrivateSwitchBase", ["root", "checked", "disabled", "input", "edgeStart", "edgeEnd"]);
-  const _excluded$J = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
-  const useUtilityClasses$E = (ownerState) => {
+  const _excluded$F = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
+  const useUtilityClasses$A = (ownerState) => {
     const {
       classes,
       checked,
@@ -75764,7 +76705,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       type,
       value
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$J);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$F);
     const [checked, setCheckedState] = useControlled({
       controlled: checkedProp,
       default: Boolean(defaultChecked),
@@ -75811,7 +76752,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableFocusRipple,
       edge
     });
-    const classes = useUtilityClasses$E(ownerState);
+    const classes = useUtilityClasses$A(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SwitchBaseRoot, _extends$1({
       component: "span",
       className: clsx(classes.root, className),
@@ -75964,8 +76905,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const checkboxClasses = generateUtilityClasses("MuiCheckbox", ["root", "checked", "disabled", "indeterminate", "colorPrimary", "colorSecondary", "sizeSmall", "sizeMedium"]);
   const checkboxClasses$1 = checkboxClasses;
-  const _excluded$I = ["checkedIcon", "color", "icon", "indeterminate", "indeterminateIcon", "inputProps", "size", "className"];
-  const useUtilityClasses$D = (ownerState) => {
+  const _excluded$E = ["checkedIcon", "color", "icon", "indeterminate", "indeterminateIcon", "inputProps", "size", "className"];
+  const useUtilityClasses$z = (ownerState) => {
     const {
       classes,
       indeterminate,
@@ -76027,7 +76968,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       inputProps,
       size: size2 = "medium",
       className
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$I);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$E);
     const icon = indeterminate ? indeterminateIconProp : iconProp;
     const indeterminateIcon = indeterminate ? indeterminateIconProp : checkedIcon;
     const ownerState = _extends$1({}, props, {
@@ -76035,7 +76976,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       indeterminate,
       size: size2
     });
-    const classes = useUtilityClasses$D(ownerState);
+    const classes = useUtilityClasses$z(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(CheckboxRoot, _extends$1({
       type: "checkbox",
       inputProps: _extends$1({
@@ -76195,736 +77136,12 @@ Please use another name.` : formatMuiErrorMessage(18));
      */
     enableColorScheme: PropTypes.bool
   } : void 0;
-  function getModalUtilityClass(slot) {
-    return generateUtilityClass("MuiModal", slot);
-  }
-  generateUtilityClasses("MuiModal", ["root", "hidden", "backdrop"]);
-  const _excluded$H = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
-  const useUtilityClasses$C = (ownerState) => {
-    const {
-      open,
-      exited,
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root", !open && exited && "hidden"],
-      backdrop: ["backdrop"]
-    };
-    return composeClasses(slots, getModalUtilityClass, classes);
-  };
-  const ModalRoot = styled$1("div", {
-    name: "MuiModal",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, !ownerState.open && ownerState.exited && styles2.hidden];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$1({
-    position: "fixed",
-    zIndex: (theme2.vars || theme2).zIndex.modal,
-    right: 0,
-    bottom: 0,
-    top: 0,
-    left: 0
-  }, !ownerState.open && ownerState.exited && {
-    visibility: "hidden"
-  }));
-  const ModalBackdrop = styled$1(Backdrop$1, {
-    name: "MuiModal",
-    slot: "Backdrop",
-    overridesResolver: (props, styles2) => {
-      return styles2.backdrop;
-    }
-  })({
-    zIndex: -1
-  });
-  const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, ref) {
-    var _ref, _slots$root, _ref2, _slots$backdrop, _slotProps$root, _slotProps$backdrop;
-    const props = useThemeProps({
-      name: "MuiModal",
-      props: inProps
-    });
-    const {
-      BackdropComponent = ModalBackdrop,
-      BackdropProps,
-      className,
-      closeAfterTransition = false,
-      children,
-      container,
-      component,
-      components = {},
-      componentsProps = {},
-      disableAutoFocus = false,
-      disableEnforceFocus = false,
-      disableEscapeKeyDown = false,
-      disablePortal = false,
-      disableRestoreFocus = false,
-      disableScrollLock = false,
-      hideBackdrop = false,
-      keepMounted = false,
-      onBackdropClick,
-      open,
-      slotProps,
-      slots
-      // eslint-disable-next-line react/prop-types
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$H);
-    const propsWithDefaults = _extends$1({}, props, {
-      closeAfterTransition,
-      disableAutoFocus,
-      disableEnforceFocus,
-      disableEscapeKeyDown,
-      disablePortal,
-      disableRestoreFocus,
-      disableScrollLock,
-      hideBackdrop,
-      keepMounted
-    });
-    const {
-      getRootProps,
-      getBackdropProps,
-      getTransitionProps: getTransitionProps2,
-      portalRef,
-      isTopModal,
-      exited,
-      hasTransition
-    } = useModal(_extends$1({}, propsWithDefaults, {
-      rootRef: ref
-    }));
-    const ownerState = _extends$1({}, propsWithDefaults, {
-      exited
-    });
-    const classes = useUtilityClasses$C(ownerState);
-    const childProps = {};
-    if (children.props.tabIndex === void 0) {
-      childProps.tabIndex = "-1";
-    }
-    if (hasTransition) {
-      const {
-        onEnter,
-        onExited
-      } = getTransitionProps2();
-      childProps.onEnter = onEnter;
-      childProps.onExited = onExited;
-    }
-    const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : ModalRoot;
-    const BackdropSlot = (_ref2 = (_slots$backdrop = slots == null ? void 0 : slots.backdrop) != null ? _slots$backdrop : components.Backdrop) != null ? _ref2 : BackdropComponent;
-    const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
-    const backdropSlotProps = (_slotProps$backdrop = slotProps == null ? void 0 : slotProps.backdrop) != null ? _slotProps$backdrop : componentsProps.backdrop;
-    const rootProps = useSlotProps({
-      elementType: RootSlot,
-      externalSlotProps: rootSlotProps,
-      externalForwardedProps: other,
-      getSlotProps: getRootProps,
-      additionalProps: {
-        ref,
-        as: component
-      },
-      ownerState,
-      className: clsx(className, rootSlotProps == null ? void 0 : rootSlotProps.className, classes == null ? void 0 : classes.root, !ownerState.open && ownerState.exited && (classes == null ? void 0 : classes.hidden))
-    });
-    const backdropProps = useSlotProps({
-      elementType: BackdropSlot,
-      externalSlotProps: backdropSlotProps,
-      additionalProps: BackdropProps,
-      getSlotProps: (otherHandlers) => {
-        return getBackdropProps(_extends$1({}, otherHandlers, {
-          onClick: (e) => {
-            if (onBackdropClick) {
-              onBackdropClick(e);
-            }
-            if (otherHandlers != null && otherHandlers.onClick) {
-              otherHandlers.onClick(e);
-            }
-          }
-        }));
-      },
-      className: clsx(backdropSlotProps == null ? void 0 : backdropSlotProps.className, BackdropProps == null ? void 0 : BackdropProps.className, classes == null ? void 0 : classes.backdrop),
-      ownerState
-    });
-    if (!keepMounted && !open && (!hasTransition || exited)) {
-      return null;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal, {
-      ref: portalRef,
-      container,
-      disablePortal,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(RootSlot, _extends$1({}, rootProps, {
-        children: [!hideBackdrop && BackdropComponent ? /* @__PURE__ */ jsxRuntimeExports.jsx(BackdropSlot, _extends$1({}, backdropProps)) : null, /* @__PURE__ */ jsxRuntimeExports.jsx(FocusTrap, {
-          disableEnforceFocus,
-          disableAutoFocus,
-          disableRestoreFocus,
-          isEnabled: isTopModal,
-          open,
-          children: /* @__PURE__ */ reactExports.cloneElement(children, childProps)
-        })]
-      }))
-    });
-  });
-  process.env.NODE_ENV !== "production" ? Modal.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * A backdrop component. This prop enables custom backdrop rendering.
-     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
-     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
-     * @default styled(Backdrop, {
-     *   name: 'MuiModal',
-     *   slot: 'Backdrop',
-     *   overridesResolver: (props, styles) => {
-     *     return styles.backdrop;
-     *   },
-     * })({
-     *   zIndex: -1,
-     * })
-     */
-    BackdropComponent: PropTypes.elementType,
-    /**
-     * Props applied to the [`Backdrop`](/material-ui/api/backdrop/) element.
-     * @deprecated Use `slotProps.backdrop` instead.
-     */
-    BackdropProps: PropTypes.object,
-    /**
-     * A single child content element.
-     */
-    children: elementAcceptingRef$1.isRequired,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * When set to true the Modal waits until a nested Transition is completed before closing.
-     * @default false
-     */
-    closeAfterTransition: PropTypes.bool,
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * The components used for each slot inside.
-     *
-     * This prop is an alias for the `slots` prop.
-     * It's recommended to use the `slots` prop instead.
-     *
-     * @default {}
-     */
-    components: PropTypes.shape({
-      Backdrop: PropTypes.elementType,
-      Root: PropTypes.elementType
-    }),
-    /**
-     * The extra props for the slot components.
-     * You can override the existing props or add new ones.
-     *
-     * This prop is an alias for the `slotProps` prop.
-     * It's recommended to use the `slotProps` prop instead, as `componentsProps` will be deprecated in the future.
-     *
-     * @default {}
-     */
-    componentsProps: PropTypes.shape({
-      backdrop: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-      root: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
-    }),
-    /**
-     * An HTML element or function that returns one.
-     * The `container` will have the portal children appended to it.
-     *
-     * By default, it uses the body of the top-level document object,
-     * so it's simply `document.body` most of the time.
-     */
-    container: PropTypes.oneOfType([HTMLElementType, PropTypes.func]),
-    /**
-     * If `true`, the modal will not automatically shift focus to itself when it opens, and
-     * replace it to the last focused element when it closes.
-     * This also works correctly with any modal children that have the `disableAutoFocus` prop.
-     *
-     * Generally this should never be set to `true` as it makes the modal less
-     * accessible to assistive technologies, like screen readers.
-     * @default false
-     */
-    disableAutoFocus: PropTypes.bool,
-    /**
-     * If `true`, the modal will not prevent focus from leaving the modal while open.
-     *
-     * Generally this should never be set to `true` as it makes the modal less
-     * accessible to assistive technologies, like screen readers.
-     * @default false
-     */
-    disableEnforceFocus: PropTypes.bool,
-    /**
-     * If `true`, hitting escape will not fire the `onClose` callback.
-     * @default false
-     */
-    disableEscapeKeyDown: PropTypes.bool,
-    /**
-     * The `children` will be under the DOM hierarchy of the parent component.
-     * @default false
-     */
-    disablePortal: PropTypes.bool,
-    /**
-     * If `true`, the modal will not restore focus to previously focused element once
-     * modal is hidden or unmounted.
-     * @default false
-     */
-    disableRestoreFocus: PropTypes.bool,
-    /**
-     * Disable the scroll lock behavior.
-     * @default false
-     */
-    disableScrollLock: PropTypes.bool,
-    /**
-     * If `true`, the backdrop is not rendered.
-     * @default false
-     */
-    hideBackdrop: PropTypes.bool,
-    /**
-     * Always keep the children in the DOM.
-     * This prop can be useful in SEO situation or
-     * when you want to maximize the responsiveness of the Modal.
-     * @default false
-     */
-    keepMounted: PropTypes.bool,
-    /**
-     * Callback fired when the backdrop is clicked.
-     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
-     */
-    onBackdropClick: PropTypes.func,
-    /**
-     * Callback fired when the component requests to be closed.
-     * The `reason` parameter can optionally be used to control the response to `onClose`.
-     *
-     * @param {object} event The event source of the callback.
-     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
-     */
-    onClose: PropTypes.func,
-    /**
-     * A function called when a transition enters.
-     */
-    onTransitionEnter: PropTypes.func,
-    /**
-     * A function called when a transition has exited.
-     */
-    onTransitionExited: PropTypes.func,
-    /**
-     * If `true`, the component is shown.
-     */
-    open: PropTypes.bool.isRequired,
-    /**
-     * The props used for each slot inside the Modal.
-     * @default {}
-     */
-    slotProps: PropTypes.shape({
-      backdrop: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-      root: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
-    }),
-    /**
-     * The components used for each slot inside the Modal.
-     * Either a string to use a HTML element or a component.
-     * @default {}
-     */
-    slots: PropTypes.shape({
-      backdrop: PropTypes.elementType,
-      root: PropTypes.elementType
-    }),
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const Modal$1 = Modal;
-  function getDialogUtilityClass(slot) {
-    return generateUtilityClass("MuiDialog", slot);
-  }
-  const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
-  const dialogClasses$1 = dialogClasses;
-  const DialogContext$1 = /* @__PURE__ */ reactExports.createContext({});
-  if (process.env.NODE_ENV !== "production") {
-    DialogContext$1.displayName = "DialogContext";
-  }
-  const DialogContext$2 = DialogContext$1;
-  const _excluded$G = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
-  const DialogBackdrop = styled$1(Backdrop$1, {
-    name: "MuiDialog",
-    slot: "Backdrop",
-    overrides: (props, styles2) => styles2.backdrop
-  })({
-    // Improve scrollable dialog support.
-    zIndex: -1
-  });
-  const useUtilityClasses$B = (ownerState) => {
-    const {
-      classes,
-      scroll,
-      maxWidth: maxWidth2,
-      fullWidth,
-      fullScreen
-    } = ownerState;
-    const slots = {
-      root: ["root"],
-      container: ["container", `scroll${capitalize$2(scroll)}`],
-      paper: ["paper", `paperScroll${capitalize$2(scroll)}`, `paperWidth${capitalize$2(String(maxWidth2))}`, fullWidth && "paperFullWidth", fullScreen && "paperFullScreen"]
-    };
-    return composeClasses(slots, getDialogUtilityClass, classes);
-  };
-  const DialogRoot = styled$1(Modal$1, {
-    name: "MuiDialog",
-    slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
-  })({
-    "@media print": {
-      // Use !important to override the Modal inline-style.
-      position: "absolute !important"
-    }
-  });
-  const DialogContainer = styled$1("div", {
-    name: "MuiDialog",
-    slot: "Container",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.container, styles2[`scroll${capitalize$2(ownerState.scroll)}`]];
-    }
-  })(({
-    ownerState
-  }) => _extends$1({
-    height: "100%",
-    "@media print": {
-      height: "auto"
-    },
-    // We disable the focus ring for mouse, touch and keyboard users.
-    outline: 0
-  }, ownerState.scroll === "paper" && {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
-  }, ownerState.scroll === "body" && {
-    overflowY: "auto",
-    overflowX: "hidden",
-    textAlign: "center",
-    "&:after": {
-      content: '""',
-      display: "inline-block",
-      verticalAlign: "middle",
-      height: "100%",
-      width: "0"
-    }
-  }));
-  const DialogPaper = styled$1(Paper$1, {
-    name: "MuiDialog",
-    slot: "Paper",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.paper, styles2[`scrollPaper${capitalize$2(ownerState.scroll)}`], styles2[`paperWidth${capitalize$2(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$1({
-    margin: 32,
-    position: "relative",
-    overflowY: "auto",
-    // Fix IE11 issue, to remove at some point.
-    "@media print": {
-      overflowY: "visible",
-      boxShadow: "none"
-    }
-  }, ownerState.scroll === "paper" && {
-    display: "flex",
-    flexDirection: "column",
-    maxHeight: "calc(100% - 64px)"
-  }, ownerState.scroll === "body" && {
-    display: "inline-block",
-    verticalAlign: "middle",
-    textAlign: "left"
-    // 'initial' doesn't work on IE11
-  }, !ownerState.maxWidth && {
-    maxWidth: "calc(100% - 64px)"
-  }, ownerState.maxWidth === "xs" && {
-    maxWidth: theme2.breakpoints.unit === "px" ? Math.max(theme2.breakpoints.values.xs, 444) : `max(${theme2.breakpoints.values.xs}${theme2.breakpoints.unit}, 444px)`,
-    [`&.${dialogClasses$1.paperScrollBody}`]: {
-      [theme2.breakpoints.down(Math.max(theme2.breakpoints.values.xs, 444) + 32 * 2)]: {
-        maxWidth: "calc(100% - 64px)"
-      }
-    }
-  }, ownerState.maxWidth && ownerState.maxWidth !== "xs" && {
-    maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`,
-    [`&.${dialogClasses$1.paperScrollBody}`]: {
-      [theme2.breakpoints.down(theme2.breakpoints.values[ownerState.maxWidth] + 32 * 2)]: {
-        maxWidth: "calc(100% - 64px)"
-      }
-    }
-  }, ownerState.fullWidth && {
-    width: "calc(100% - 64px)"
-  }, ownerState.fullScreen && {
-    margin: 0,
-    width: "100%",
-    maxWidth: "100%",
-    height: "100%",
-    maxHeight: "none",
-    borderRadius: 0,
-    [`&.${dialogClasses$1.paperScrollBody}`]: {
-      margin: 0,
-      maxWidth: "100%"
-    }
-  }));
-  const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialog"
-    });
-    const theme2 = useTheme();
-    const defaultTransitionDuration = {
-      enter: theme2.transitions.duration.enteringScreen,
-      exit: theme2.transitions.duration.leavingScreen
-    };
-    const {
-      "aria-describedby": ariaDescribedby,
-      "aria-labelledby": ariaLabelledbyProp,
-      BackdropComponent,
-      BackdropProps,
-      children,
-      className,
-      disableEscapeKeyDown = false,
-      fullScreen = false,
-      fullWidth = false,
-      maxWidth: maxWidth2 = "sm",
-      onBackdropClick,
-      onClose,
-      open,
-      PaperComponent = Paper$1,
-      PaperProps = {},
-      scroll = "paper",
-      TransitionComponent = Fade$1,
-      transitionDuration = defaultTransitionDuration,
-      TransitionProps
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$G);
-    const ownerState = _extends$1({}, props, {
-      disableEscapeKeyDown,
-      fullScreen,
-      fullWidth,
-      maxWidth: maxWidth2,
-      scroll
-    });
-    const classes = useUtilityClasses$B(ownerState);
-    const backdropClick = reactExports.useRef();
-    const handleMouseDown = (event) => {
-      backdropClick.current = event.target === event.currentTarget;
-    };
-    const handleBackdropClick = (event) => {
-      if (!backdropClick.current) {
-        return;
-      }
-      backdropClick.current = null;
-      if (onBackdropClick) {
-        onBackdropClick(event);
-      }
-      if (onClose) {
-        onClose(event, "backdropClick");
-      }
-    };
-    const ariaLabelledby = useId(ariaLabelledbyProp);
-    const dialogContextValue = reactExports.useMemo(() => {
-      return {
-        titleId: ariaLabelledby
-      };
-    }, [ariaLabelledby]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogRoot, _extends$1({
-      className: clsx(classes.root, className),
-      closeAfterTransition: true,
-      components: {
-        Backdrop: DialogBackdrop
-      },
-      componentsProps: {
-        backdrop: _extends$1({
-          transitionDuration,
-          as: BackdropComponent
-        }, BackdropProps)
-      },
-      disableEscapeKeyDown,
-      onClose,
-      open,
-      ref,
-      onClick: handleBackdropClick,
-      ownerState
-    }, other, {
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
-        appear: true,
-        in: open,
-        timeout: transitionDuration,
-        role: "presentation"
-      }, TransitionProps, {
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContainer, {
-          className: clsx(classes.container),
-          onMouseDown: handleMouseDown,
-          ownerState,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogPaper, _extends$1({
-            as: PaperComponent,
-            elevation: 24,
-            role: "dialog",
-            "aria-describedby": ariaDescribedby,
-            "aria-labelledby": ariaLabelledby
-          }, PaperProps, {
-            className: clsx(classes.paper, PaperProps.className),
-            ownerState,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$2.Provider, {
-              value: dialogContextValue,
-              children
-            })
-          }))
-        })
-      }))
-    }));
-  });
-  process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The id(s) of the element(s) that describe the dialog.
-     */
-    "aria-describedby": PropTypes.string,
-    /**
-     * The id(s) of the element(s) that label the dialog.
-     */
-    "aria-labelledby": PropTypes.string,
-    /**
-     * A backdrop component. This prop enables custom backdrop rendering.
-     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
-     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
-     * @default styled(Backdrop, {
-     *   name: 'MuiModal',
-     *   slot: 'Backdrop',
-     *   overridesResolver: (props, styles) => {
-     *     return styles.backdrop;
-     *   },
-     * })({
-     *   zIndex: -1,
-     * })
-     */
-    BackdropComponent: PropTypes.elementType,
-    /**
-     * @ignore
-     */
-    BackdropProps: PropTypes.object,
-    /**
-     * Dialog children, usually the included sub-components.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * If `true`, hitting escape will not fire the `onClose` callback.
-     * @default false
-     */
-    disableEscapeKeyDown: PropTypes.bool,
-    /**
-     * If `true`, the dialog is full-screen.
-     * @default false
-     */
-    fullScreen: PropTypes.bool,
-    /**
-     * If `true`, the dialog stretches to `maxWidth`.
-     *
-     * Notice that the dialog width grow is limited by the default margin.
-     * @default false
-     */
-    fullWidth: PropTypes.bool,
-    /**
-     * Determine the max-width of the dialog.
-     * The dialog width grows with the size of the screen.
-     * Set to `false` to disable `maxWidth`.
-     * @default 'sm'
-     */
-    maxWidth: PropTypes.oneOfType([PropTypes.oneOf(["xs", "sm", "md", "lg", "xl", false]), PropTypes.string]),
-    /**
-     * Callback fired when the backdrop is clicked.
-     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
-     */
-    onBackdropClick: PropTypes.func,
-    /**
-     * Callback fired when the component requests to be closed.
-     *
-     * @param {object} event The event source of the callback.
-     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
-     */
-    onClose: PropTypes.func,
-    /**
-     * If `true`, the component is shown.
-     */
-    open: PropTypes.bool.isRequired,
-    /**
-     * The component used to render the body of the dialog.
-     * @default Paper
-     */
-    PaperComponent: PropTypes.elementType,
-    /**
-     * Props applied to the [`Paper`](/material-ui/api/paper/) element.
-     * @default {}
-     */
-    PaperProps: PropTypes.object,
-    /**
-     * Determine the container for scrolling the dialog.
-     * @default 'paper'
-     */
-    scroll: PropTypes.oneOf(["body", "paper"]),
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * The component used for the transition.
-     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
-     * @default Fade
-     */
-    TransitionComponent: PropTypes.elementType,
-    /**
-     * The duration for the transition, in milliseconds.
-     * You may specify a single timeout for all transitions, or individually with an object.
-     * @default {
-     *   enter: theme.transitions.duration.enteringScreen,
-     *   exit: theme.transitions.duration.leavingScreen,
-     * }
-     */
-    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
-      appear: PropTypes.number,
-      enter: PropTypes.number,
-      exit: PropTypes.number
-    })]),
-    /**
-     * Props applied to the transition element.
-     * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
-     */
-    TransitionProps: PropTypes.object
-  } : void 0;
-  const Dialog$1 = Dialog;
   function getDialogActionsUtilityClass(slot) {
     return generateUtilityClass("MuiDialogActions", slot);
   }
   generateUtilityClasses("MuiDialogActions", ["root", "spacing"]);
-  const _excluded$F = ["className", "disableSpacing"];
-  const useUtilityClasses$A = (ownerState) => {
+  const _excluded$D = ["className", "disableSpacing"];
+  const useUtilityClasses$y = (ownerState) => {
     const {
       classes,
       disableSpacing
@@ -76964,11 +77181,11 @@ Please use another name.` : formatMuiErrorMessage(18));
     const {
       className,
       disableSpacing = false
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$F);
+    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$D);
     const ownerState = _extends$1({}, props, {
       disableSpacing
     });
-    const classes = useUtilityClasses$A(ownerState);
+    const classes = useUtilityClasses$y(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogActionsRoot, _extends$1({
       className: clsx(classes.root, className),
       ownerState,
@@ -77003,167 +77220,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
   } : void 0;
   const DialogActions$1 = DialogActions;
-  function getDialogContentUtilityClass(slot) {
-    return generateUtilityClass("MuiDialogContent", slot);
-  }
-  generateUtilityClasses("MuiDialogContent", ["root", "dividers"]);
-  function getDialogTitleUtilityClass(slot) {
-    return generateUtilityClass("MuiDialogTitle", slot);
-  }
-  const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
-  const _excluded$E = ["className", "dividers"];
-  const useUtilityClasses$z = (ownerState) => {
-    const {
-      classes,
-      dividers
-    } = ownerState;
-    const slots = {
-      root: ["root", dividers && "dividers"]
-    };
-    return composeClasses(slots, getDialogContentUtilityClass, classes);
-  };
-  const DialogContentRoot = styled$1("div", {
-    name: "MuiDialogContent",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, ownerState.dividers && styles2.dividers];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$1({
-    flex: "1 1 auto",
-    // Add iOS momentum scrolling for iOS < 13.0
-    WebkitOverflowScrolling: "touch",
-    overflowY: "auto",
-    padding: "20px 24px"
-  }, ownerState.dividers ? {
-    padding: "16px 24px",
-    borderTop: `1px solid ${(theme2.vars || theme2).palette.divider}`,
-    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`
-  } : {
-    [`.${dialogTitleClasses.root} + &`]: {
-      paddingTop: 0
-    }
-  }));
-  const DialogContent = /* @__PURE__ */ reactExports.forwardRef(function DialogContent2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialogContent"
-    });
-    const {
-      className,
-      dividers = false
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$E);
-    const ownerState = _extends$1({}, props, {
-      dividers
-    });
-    const classes = useUtilityClasses$z(ownerState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentRoot, _extends$1({
-      className: clsx(classes.root, className),
-      ownerState,
-      ref
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? DialogContent.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * Display the top and bottom dividers.
-     * @default false
-     */
-    dividers: PropTypes.bool,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const DialogContent$1 = DialogContent;
-  const _excluded$D = ["className", "id"];
-  const useUtilityClasses$y = (ownerState) => {
-    const {
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root"]
-    };
-    return composeClasses(slots, getDialogTitleUtilityClass, classes);
-  };
-  const DialogTitleRoot = styled$1(Typography$1, {
-    name: "MuiDialogTitle",
-    slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
-  })({
-    padding: "16px 24px",
-    flex: "0 0 auto"
-  });
-  const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialogTitle"
-    });
-    const {
-      className,
-      id: idProp
-    } = props, other = _objectWithoutPropertiesLoose(props, _excluded$D);
-    const ownerState = props;
-    const classes = useUtilityClasses$y(ownerState);
-    const {
-      titleId = idProp
-    } = reactExports.useContext(DialogContext$2);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$1({
-      component: "h2",
-      className: clsx(classes.root, className),
-      ownerState,
-      ref,
-      variant: "h6",
-      id: idProp != null ? idProp : titleId
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * @ignore
-     */
-    id: PropTypes.string,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const DialogTitle$1 = DialogTitle;
   function getDividerUtilityClass(slot) {
     return generateUtilityClass("MuiDivider", slot);
   }
@@ -100108,44 +100164,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     );
   };
-  const defaultState = {
-    type: null
-  };
-  function stateReducer(state, action) {
-    return {
-      type: action
-    };
-  }
-  const DialogContext = reactExports.createContext(defaultState);
-  const DialogDispatchContext = reactExports.createContext(null);
-  function DialogContextProvider({ children }) {
-    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
-  }
-  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
-    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
-    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
-    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
-    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
-    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
-    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
-    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
-    return DIALOG_TYPE2;
-  })(DIALOG_TYPE || {});
-  function useDialog(dialogType = null) {
-    const dialogContext = reactExports.useContext(DialogContext);
-    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
-    if (!dialogType) {
-      return {
-        dispatch: dialogDispatch
-      };
-    }
-    return {
-      show: dialogContext.type === dialogType,
-      onClose: () => dialogDispatch(null),
-      dispatch: dialogDispatch
-    };
-  }
   const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
     "& .MuiDialogContent-root": {
       padding: theme2.spacing(3)

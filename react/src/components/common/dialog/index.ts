@@ -8,7 +8,8 @@ export enum DIALOG_TYPE {
   CREATE_COURSE = 'create_course',
   RESET_PASSWORD = 'reset_password',
   EXPORT_PROJECT = 'export_project',
-  ARCHIVE_PROJECT = 'archive_project'
+  ARCHIVE_PROJECT = 'archive_project',
+  LINK_WORKFLOW = 'link_workflow',
 }
 
 /**

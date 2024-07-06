@@ -23,6 +23,7 @@ import CreateProjectModal from '@cfModule/components/common/dialog/CreateProject
 import CreateCourseModal from '@cfModule/components/common/dialog/CreateCourse'
 import CreateActivityModal from '@cfModule/components/common/dialog/CreateActivity'
 import ResetPasswordModal from '@cfModule/components/common/dialog/ResetPassword'
+import LinkWorkflowModal from '@cfModule/components/common/dialog/LinkWorkflow'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 
 import {

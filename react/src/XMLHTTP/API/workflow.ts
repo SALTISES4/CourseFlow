@@ -10,7 +10,8 @@ import {
   WorkflowChildDataQueryResp,
   WorkflowsForProjectQueryResp,
   WorkflowContextQueryResp,
-  TargetProjectQueryResp
+  TargetProjectQueryResp,
+  WorkflowGroupsDataPackage,
 } from '@XMLHTTP/types/query'
 import { CfObjectType, VERB } from '@cfModule/types/enum'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
@@ -305,24 +306,22 @@ export function getWorkflowsForProjectQuery(
  *
  * endpoint: workflow/get-possible-linked-workflows
  *
- * @param nodeData
+ * @param nodeID
  * @param updateFunction
  * @param callBackFunction
  */
 export function getLinkedWorkflowMenuQuery(
-  nodeData,
+  nodeID,
   callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
     console.log('success')
 ) {
   $.post(
     COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
     {
-      nodePk: JSON.stringify(nodeData.id)
+      nodePk: JSON.stringify(nodeID)
     },
     (_data: LinkedWorkflowMenuQueryResp) => {
       callBackFunction(_data)
-      // @TODO call to react render
-      //  openLinkedWorkflowMenu(_data, updateFunction)
     }
   ).fail(function (error) {
     // Handle error specific to the AJAX request
