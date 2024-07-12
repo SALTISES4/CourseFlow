@@ -10,6 +10,7 @@ export enum DIALOG_TYPE {
   EXPORT_PROJECT = 'export_project',
   ARCHIVE_PROJECT = 'archive_project',
   LINK_WORKFLOW = 'link_workflow',
+  TARGET_PROJECT = 'target_project',
 }
 
 /**

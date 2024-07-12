@@ -26,10 +26,10 @@ export function columnChanged(renderer, objectID, columnID) {
 
   renderer.dragAction['nodeweek'] = {
     ...renderer.dragAction['nodeweek'],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify('node'),
-    columnPk: JSON.stringify(columnID),
-    columnChange: JSON.stringify(true)
+    objectID: objectID,
+    objectType: 'node',
+    columnPk: columnID,
+    columnChange: true
   }
 
   $(document).off('nodeweek-dropped')
@@ -55,13 +55,13 @@ export function insertedAt(
   if (!renderer.dragAction[throughType]) renderer.dragAction[throughType] = {}
   renderer.dragAction[throughType] = {
     ...renderer.dragAction[throughType],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    newPosition: JSON.stringify(newPosition),
-    throughType: JSON.stringify(throughType),
-    inserted: JSON.stringify(true)
+    objectID: objectID,
+    objectType: objectType,
+    parentID: parentID,
+    parentType: parentType,
+    newPosition: newPosition,
+    throughType: throughType,
+    inserted: true
   }
   $(document).off(throughType + '-dropped')
   if (objectID)

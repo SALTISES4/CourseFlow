@@ -17,18 +17,12 @@ import { VERB } from '@cfModule/types/enum'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 import Button from '@mui/material/Button'
 import LinkWorkflowModal from '@cfModule/components/common/dialog/LinkWorkflow'
-import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
-import { ThemeProvider } from '@mui/material/styles'
-import theme from '@cfMUI/theme'
-//@TODO: I don't think we actually want the theme and dialog context provider here!!! Should be in the root?
 
 const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()
 
   return (
     <Button onClick={() => {
-      console.log(dispatch)
-      console.log(id)
       dispatch(DIALOG_TYPE.LINK_WORKFLOW)}}>
       {window.gettext('Change')}
     </Button>
@@ -682,12 +676,10 @@ class EditableComponent<
         )}
 
         {type === CfObjectType.NODE && data.node_type !== 0 && (
-          <DialogContextProvider>
-            <ThemeProvider theme={theme}>
-              <LinkWorkflowModal id={data.id}/>
-              <this.LinkedWorkflow data={data} readOnly={read_only} />
-            </ThemeProvider>
-          </DialogContextProvider>
+          <>
+            <LinkWorkflowModal id={data.id}/>
+            <this.LinkedWorkflow data={data} readOnly={read_only} />
+          </>
         )}
 
         {type == CfObjectType.NODE && data.node_type != 2 && (

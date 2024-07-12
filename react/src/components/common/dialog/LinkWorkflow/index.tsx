@@ -11,13 +11,12 @@ import { DIALOG_TYPE, useDialog } from '../'
 import WorkflowsMenu from '../WorkflowsMenu'
 
 function LinkWorkflowDialog({id}:any) {
-  console.log(id)
   const { show, onClose } = useDialog(DIALOG_TYPE.LINK_WORKFLOW)
   const [workflow_data,setWorkflowData] = useState<LinkedWorkflowMenuQueryResp>(null)
 
   const onDialogClose = ()=>{
-    setWorkflowData(null)
     onClose()
+    setWorkflowData(null)
   }
 
   const getContent = ()=>{
@@ -44,12 +43,10 @@ type LinkWorkflowDialogContentsType = {
   onDialogClose:any
 }
 function LinkWorkflowDialogContents({data,onDialogClose}:LinkWorkflowDialogContentsType){
-  console.log(data)
   return (<WorkflowsMenu 
     type={"linked_workflow_menu"} 
     data={data}
     actionFunction={onDialogClose}
-    dispatch={null} //@todo: do we need this?
   />)
 }
 

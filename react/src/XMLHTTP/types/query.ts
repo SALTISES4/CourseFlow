@@ -155,6 +155,7 @@ export type ParentWorkflowInfoQueryResp = {
 }
 
 export type WorkflowsForProjectQueryResp = {
+  action: VERB
   data_package: Workflow[]
 }
 

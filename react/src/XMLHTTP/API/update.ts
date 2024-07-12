@@ -1,5 +1,6 @@
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
+import { API_POST } from '../PostFunctions'
 
 //
 /**
@@ -43,9 +44,9 @@ export function updateValueQuery(
     document.lastUpdateCallFunction()
   }
   const post_object = {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    data: JSON.stringify(json),
+    objectID: objectID,
+    objectType: objectType,
+    data: json,
     changeFieldID: 0
   }
 
@@ -56,17 +57,10 @@ export function updateValueQuery(
   }
 
   document.lastUpdateCallFunction = () => {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object)
-      .done(function (data: EmptyPostResp) {
-        // @ts-ignore
-        if (data.action === VERB.POSTED) {
-          // @ts-ignore
-          callBackFunction(_data)
-        } else window.fail_function(data.action)
-      })
-      .fail(function (error) {
-        // Handle error specific to the AJAX request
-        window.fail_function()
+    API_POST(COURSEFLOW_APP.config.post_paths.update_value, post_object)
+      .then((response:EmptyPostResp)=>{
+        if(response.action == VERB.POSTED)callBackFunction(response)
+        else window.fail_function(response.action)
       })
   }
   document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
@@ -79,19 +73,14 @@ export function updateValueInstantQuery(
   json: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    data: JSON.stringify(json)
+  API_POST(COURSEFLOW_APP.config.post_paths.update_value, {
+    objectID: objectID,
+    objectType: objectType,
+    data: json
   })
-    .done(function (data: EmptyPostResp) {
-      // @ts-ignore
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -103,16 +92,12 @@ export function dragAction(
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
 
-  $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data)
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+  API_POST(COURSEFLOW_APP.config.post_paths.inserted_at, action_data)
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
       $('.ui-draggable').draggable('enable')
       COURSEFLOW_APP.tinyLoader.endLoad()
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
     })
 }
 
@@ -126,27 +111,24 @@ export function insertedAtInstant(
   throughType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
+  console.log(parentType);
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
-  $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    newPosition: JSON.stringify(newPosition),
-    throughType: JSON.stringify(throughType),
-    inserted: JSON.stringify(true),
-    allowDifferent: JSON.stringify(true)
+  API_POST(COURSEFLOW_APP.config.post_paths.inserted_at, {
+    objectID: objectID,
+    objectType: objectType,
+    parentID: parentID,
+    parentType: parentType,
+    newPosition: newPosition,
+    throughType: throughType,
+    inserted: true,
+    allowDifferent: true
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === 'posted') callBackFunction(data)
-      else window.fail_function(data.action)
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
       $('.ui-draggable').draggable('enable')
       COURSEFLOW_APP.tinyLoader.endLoad()
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
     })
 }
 
@@ -157,18 +139,14 @@ export function updateOutcomenodeDegree(
   value,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
-    nodePk: JSON.stringify(nodeID),
-    outcomePk: JSON.stringify(outcomeID),
-    degree: JSON.stringify(value)
+  API_POST(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+    nodePk: nodeID,
+    outcomePk: outcomeID,
+    degree: value
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -179,20 +157,17 @@ export function updateOutcomehorizontallinkDegree(
   degree,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree, {
-    outcomePk: JSON.stringify(outcomePk),
-    objectID: JSON.stringify(outcome2Pk),
-    objectType: JSON.stringify('outcome'),
-    degree: JSON.stringify(degree)
+  API_POST(COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree, {
+    outcomePk: outcomePk,
+    objectID: outcome2Pk,
+    objectType: 'outcome',
+    degree: degree
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
-    })
+
 }
 
 //Set the linked workflow for the node
@@ -201,18 +176,15 @@ export function setLinkedWorkflow(
   workflow_id,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
+  API_POST(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
     nodePk: node_id,
     workflowPk: workflow_id
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
-    })
+
 }
 
 /**
@@ -227,20 +199,15 @@ export function toggleStrategyQuery(
   is_strategy: boolean,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-    weekPk: JSON.stringify(weekPk),
-    is_strategy: JSON.stringify(is_strategy)
+  API_POST(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+    weekPk: weekPk,
+    is_strategy: is_strategy
   })
-    .done(function (data: EmptyPostResp) {
-      console.log('toggleStrategyQuery data')
-      console.log(data)
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
-    })
+
 }
 
 export function updateObjectSet(
@@ -250,20 +217,17 @@ export function updateObjectSet(
   add,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    objectsetPk: JSON.stringify(objectsetPk),
-    add: JSON.stringify(add)
+  API_POST(COURSEFLOW_APP.config.post_paths.update_object_set, {
+    objectID: objectID,
+    objectType: objectType,
+    objectsetPk: objectsetPk,
+    add: add
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
-    })
+
 }
 
 //Toggle whether an item belongs to a user's favourites
@@ -273,17 +237,14 @@ export function toggleFavourite(
   favourite,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    favourite: JSON.stringify(favourite)
+  API_POST(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+    objectID: objectID,
+    objectType: objectType,
+    favourite: favourite
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
-    })
+
 }

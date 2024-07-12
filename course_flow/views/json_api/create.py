@@ -67,10 +67,11 @@ from course_flow.utils import get_model_from_str
 @user_can_edit("weekPk")
 @user_can_view_or_none("columnPk")
 def json_api_post_new_node(request: HttpRequest) -> JsonResponse:
-    week_id = json.loads(request.POST.get("weekPk"))
-    column_id = json.loads(request.POST.get("columnPk"))
-    column_type = json.loads(request.POST.get("columnType"))
-    position = json.loads(request.POST.get("position"))
+    body = json.loads(request.body)
+    week_id = body.get("weekPk")
+    column_id = body.get("columnPk")
+    column_type = body.get("columnType")
+    position = body.get("position")
     week = Week.objects.get(pk=week_id)
     try:
         if column_id is not None and column_id >= 0:
@@ -119,9 +120,10 @@ def json_api_post_new_node(request: HttpRequest) -> JsonResponse:
 def json_api_post_new_outcome_for_workflow(
     request: HttpRequest,
 ) -> JsonResponse:
-    workflow_id = json.loads(request.POST.get("workflowPk"))
+    body = json.loads(request.body)
+    workflow_id = body.get("workflowPk")
     workflow = Workflow.objects.get(pk=workflow_id)
-    objectset_id_json = request.POST.get("objectsetPk")
+    objectset_id_json = body.get("objectsetPk")
     if objectset_id_json is not None:
         objectset_id = json.loads(objectset_id_json)
     else:
@@ -153,10 +155,11 @@ def json_api_post_new_outcome_for_workflow(
 @user_can_edit("workflowPk")
 @user_can_view(False)
 def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
-    workflow_id = json.loads(request.POST.get("workflowPk"))
-    strategy_id = json.loads(request.POST.get("objectID"))
-    strategy_type = json.loads(request.POST.get("objectType"))
-    position = json.loads(request.POST.get("position"))
+    body = json.loads(request.body)
+    workflow_id = body.get("workflowPk")
+    strategy_id = body.get("objectID")
+    strategy_type = body.get("objectType")
+    position = body.get("position")
     workflow = Workflow.objects.get(pk=workflow_id)
     strategy = get_model_from_str(strategy_type).objects.get(pk=strategy_id)
     try:
@@ -269,11 +272,12 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
 @user_can_edit("nodePk")
 @user_can_edit(False)
 def json_api_post_new_node_link(request: HttpRequest) -> JsonResponse:
-    node_id = json.loads(request.POST.get("nodePk"))
-    target_id = json.loads(request.POST.get("objectID"))
-    target_type = json.loads(request.POST.get("objectType"))
-    source_port = json.loads(request.POST.get("sourcePort"))
-    target_port = json.loads(request.POST.get("targetPort"))
+    body = json.loads(request.body)
+    node_id = body.get("nodePk")
+    target_id = body.get("objectID")
+    target_type = body.get("objectType")
+    source_port = body.get("sourcePort")
+    target_port = body.get("targetPort")
     node = Node.objects.get(pk=node_id)
     target = get_model_from_str(target_type).objects.get(pk=target_id)
     try:
@@ -299,8 +303,9 @@ def json_api_post_new_node_link(request: HttpRequest) -> JsonResponse:
 # Add a new child to a model
 @user_can_edit(False)
 def json_api_post_insert_child(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
 
     try:
         if object_type == "outcome":
@@ -357,11 +362,12 @@ def json_api_post_insert_child(request: HttpRequest) -> JsonResponse:
 @user_can_view(False)
 @user_can_edit(False, get_parent=True)
 def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    parent_id = json.loads(request.POST.get("parentID"))
-    parent_type = json.loads(request.POST.get("parentType"))
-    through_type = json.loads(request.POST.get("throughType"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
+    parent_id = body.get("parentID")
+    parent_type = body.get("parentType")
+    through_type = body.get("throughType")
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
         parent = get_model_from_str(parent_type).objects.get(id=parent_id)
@@ -480,10 +486,11 @@ def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
 # Add an object set to a project
 @user_can_edit("projectPk")
 def json_api_post_add_object_set(request: HttpRequest) -> JsonResponse:
-    project = Project.objects.get(pk=request.POST.get("projectPk"))
-    term = json.loads(request.POST.get("term"))
-    title = json.loads(request.POST.get("title"))
-    translation_plural = json.loads(request.POST.get("translation_plural"))
+    body = json.loads(request.body)
+    project = Project.objects.get(pk=body.get("projectPk"))
+    term = body.get("term")
+    title = body.get("title")
+    translation_plural = body.get("translation_plural")
     try:
         project.object_sets.create(
             term=term,

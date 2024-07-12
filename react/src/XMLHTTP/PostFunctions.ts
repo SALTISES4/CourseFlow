@@ -14,17 +14,16 @@ All functions for API calls.
 
 import { VERB } from '@cfModule/types/enum'
 
-export function API_POST<T>(url = '', data = {}): Promise<T> {
+export function API_POST<T>(url = '', data = {}): Promise<any> {
   if (!url) {
     return Promise.reject('You need to specify an URL in for API_POST to run.')
   }
-
   return new Promise((res, rej) => {
     fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'root' comes from the csrf-setup script
+        // // 'root' comes from the csrf-setup script
         'X-CSRFToken': window.getCsrfToken()
       },
       body: JSON.stringify(data)

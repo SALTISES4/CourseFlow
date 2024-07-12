@@ -34,12 +34,13 @@ from course_flow.utils import get_model_from_str, make_user_notification
 # change permissions on an object for a user
 @user_can_edit(False)
 def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    objectType = json.loads(request.POST.get("objectType"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    objectType = body.get("objectType")
     if objectType in ["activity", "course", "program"]:
         objectType = "workflow"
-    user_id = json.loads(request.POST.get("permission_user"))
-    permission_type = json.loads(request.POST.get("permission_type"))
+    user_id = body.get("permission_user")
+    permission_type = body.get("permission_type")
     response = {}
     try:
         user = User.objects.get(id=user_id)
@@ -102,8 +103,9 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
 
 @user_can_view(False)
 def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
     if object_type in ["activity", "course", "program"]:
         object_type = "workflow"
     content_type = ContentType.objects.get(model=object_type)
@@ -183,7 +185,8 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
 
 @user_is_teacher()
 def json_api_post_get_user_list(request: HttpRequest) -> JsonResponse:
-    name_filter = json.loads(request.POST.get("filter"))
+    body = json.loads(request.body)
+    name_filter = body.get("filter")
     names = name_filter.split(" ")
     length = len(names)
     filters = [[name_filter, ""], ["", name_filter]]

@@ -1,5 +1,6 @@
 import { EmptyPostResp, AddTerminologyQueryResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
+import { API_POST } from '../PostFunctions'
 
 //Add a new node to a week
 export function newNodeQuery(
@@ -9,22 +10,15 @@ export function newNodeQuery(
   column_type = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.new_node, {
-    weekPk: JSON.stringify(weekPk),
-    position: JSON.stringify(position),
-    columnPk: JSON.stringify(column),
-    columnType: JSON.stringify(column_type)
+  API_POST(COURSEFLOW_APP.config.post_paths.new_node, {
+    weekPk: weekPk,
+    position: position,
+    columnPk: column,
+    columnType: column_type
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) {
-        callBackFunction(data)
-      } else {
-        window.fail_function(data.action)
-      }
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -44,17 +38,13 @@ export function newOutcomeQuery(
   object_set_id: number,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-    workflowPk: JSON.stringify(workflowPk),
-    objectsetPk: JSON.stringify(object_set_id)
+  API_POST(COURSEFLOW_APP.config.post_paths.new_outcome, {
+    workflowPk: workflowPk,
+    objectsetPk: object_set_id
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -65,22 +55,15 @@ export function addStrategyQuery(
   strategyPk = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
-    workflowPk: JSON.stringify(workflowPk),
-    position: JSON.stringify(position),
-    objectID: JSON.stringify(strategyPk),
-    objectType: JSON.stringify('workflow')
+  API_POST(COURSEFLOW_APP.config.post_paths.add_strategy, {
+    workflowPk: workflowPk,
+    position: position,
+    objectID: strategyPk,
+    objectType: 'workflow'
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) {
-        callBackFunction(data)
-      } else {
-        window.fail_function(data.action)
-      }
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -91,20 +74,16 @@ export function newNodeLink(
   target_port,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
-    nodePk: JSON.stringify(source_node),
-    objectID: JSON.stringify(target_node),
-    objectType: JSON.stringify('node'),
-    sourcePort: JSON.stringify(source_port),
-    targetPort: JSON.stringify(target_port)
+  API_POST(COURSEFLOW_APP.config.post_paths.new_node_link, {
+    nodePk: source_node,
+    objectID: target_node,
+    objectType: 'node',
+    sourcePort: source_port,
+    targetPort: target_port
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -114,17 +93,13 @@ export function insertChildQuery(
   objectType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType)
+  API_POST(COURSEFLOW_APP.config.post_paths.insert_child, {
+    objectID: objectID,
+    objectType: objectType
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -137,20 +112,16 @@ export function insertSiblingQuery(
   throughType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    throughType: JSON.stringify(throughType)
+  API_POST(COURSEFLOW_APP.config.post_paths.insert_sibling, {
+    parentID: parentID,
+    parentType: parentType,
+    objectID: objectID,
+    objectType: objectType,
+    throughType: throughType
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -170,23 +141,14 @@ export function addTerminologyQuery(
   translation_plural: any,
   callBackFunction = (_data: AddTerminologyQueryResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
-    projectPk: JSON.stringify(projectPk),
-    term: JSON.stringify(term),
-    title: JSON.stringify(title),
-    translation_plural: JSON.stringify(translation_plural)
+  API_POST(COURSEFLOW_APP.config.post_paths.add_terminology, {
+    projectPk: projectPk,
+    term: term,
+    title: title,
+    translation_plural: translation_plural
   })
-    .done(function (data: AddTerminologyQueryResp) {
-      console.log('addTerminologyQuery query')
-      console.log(data)
-      if (data.action === VERB.POSTED) {
-        callBackFunction(data)
-      } else {
-        window.fail_function(data.action)
-      }
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:AddTerminologyQueryResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }

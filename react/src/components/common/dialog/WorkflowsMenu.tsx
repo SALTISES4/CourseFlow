@@ -24,7 +24,6 @@ type PropsType = {
   type: any
   data: any
   actionFunction: any
-  dispatch: any
 }
 
 class WorkflowsMenu extends React.Component<PropsType, StateProps> {
@@ -105,7 +104,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
         <button
           id="set-linked-workflow-cancel"
           className="secondary-button"
-          onClick={closeMessageBox}
+          onClick={this.props.actionFunction}
         >
           {window.gettext('Cancel')}
         </button>
@@ -120,7 +119,6 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
               -1,
               this.props.actionFunction
             )
-            closeMessageBox()
           }}
         >
           {window.gettext('Set to None')}
@@ -137,7 +135,6 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
               this.state.selected,
               this.props.actionFunction
             )
-            closeMessageBox()
           }}
         >
           {text}
@@ -256,7 +253,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
             selected={this.state.selected === this.current_project.id}
             noHyperlink={no_hyperlink}
             type={this.props.type} // @todo i don't think this is used
-            dispatch={this.props.dispatch} // @todo i don't think this is used
+            dispatch={null} // @todo i don't think this is used
             selectAction={this.workflowSelected.bind(this)}
           />
         </GridWrap>

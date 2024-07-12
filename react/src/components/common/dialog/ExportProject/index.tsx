@@ -15,6 +15,7 @@ import { DIALOG_TYPE, useDialog } from '..'
 import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
 import { EProject } from '@cfModule/XMLHTTP/types/entity'
+import { API_POST } from '@XMLHTTP/PostFunctions'
 
 type PropsType = {
   data: EProject
@@ -63,7 +64,7 @@ function ExportProjectDialog({ data }: PropsType) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
-    sets: []
+    sets: data.object_sets.map(set=>set.id)
   })
   const { show, onClose } = useDialog(DIALOG_TYPE.EXPORT_PROJECT)
 
@@ -100,19 +101,13 @@ function ExportProjectDialog({ data }: PropsType) {
       objectSets: state.sets
     }
 
-    console.log(
-      'export submit',
-      postData,
-      'posting to',
-      COURSEFLOW_APP.config.post_paths.get_export
-    )
 
     // TODO: handle success/failure appropriately
-    // API_POST(COURSEFLOW_APP.config.post_paths.get_export, postData)
-    //   .then((resp) => {
-    //     console.log('response', resp)
-    //   })
-    //   .catch((error) => console.log('errors', error))
+    API_POST(COURSEFLOW_APP.config.post_paths.get_export, postData)
+      .then((resp) => {
+        console.log('response', resp)
+      })
+      .catch((error) => console.log('errors', error))
   }
 
   function onDialogClose() {

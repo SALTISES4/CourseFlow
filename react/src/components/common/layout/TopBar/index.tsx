@@ -33,27 +33,26 @@ import {
   NotificationsHeader,
   NotificationsList
 } from './styles'
-import { getTargetProjectMenu } from '@XMLHTTP/API/workflow'
 import { TopBarProps } from '@cfModule/types/common'
 
 // TODO: clean up and move into create modals functionality
 function openCreateActionModal(type: 'program' | 'activity' | 'course') {
   const createUrl = COURSEFLOW_APP.config.create_path[type]
   COURSEFLOW_APP.tinyLoader.startLoad()
-  getTargetProjectMenu<{ parentID: number }>(
-    -1,
-    (response_data) => {
-      if (response_data.parentID !== null) {
-        window.location.href = createUrl.replace(
-          '/0/',
-          '/' + response_data.parentID + '/'
-        )
-      }
-    },
-    () => {
-      COURSEFLOW_APP.tinyLoader.endLoad()
-    }
-  )
+  // getTargetProjectMenu<{ parentID: number }>(
+  //   -1,
+  //   (response_data) => {
+  //     if (response_data.parentID !== null) {
+  //       window.location.href = createUrl.replace(
+  //         '/0/',
+  //         '/' + response_data.parentID + '/'
+  //       )
+  //     }
+  //   },
+  //   () => {
+  //     COURSEFLOW_APP.tinyLoader.endLoad()
+  //   }
+  // )
 }
 
 const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {

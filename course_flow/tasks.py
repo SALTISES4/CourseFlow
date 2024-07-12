@@ -60,7 +60,6 @@ def async_send_export_email(
         file_ext = "xlsx"
     elif export_format == "csv":
         file_ext = "csv"
-
     filename = (
         object_type
         + "_"

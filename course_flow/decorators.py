@@ -67,15 +67,14 @@ def is_owner(model):
         @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(request, model=model, *args, **kwargs):
+            body = json.loads(request.body)
             if model:
                 if model[-2:] == "Pk":
-                    pk = json.loads(request.POST.get(model, json.dumps("")))
+                    pk = body.get(model, "")
                     model = model[:-2]
             else:
-                pk = json.loads(request.POST.get("objectID", json.dumps("")))
-                model = json.loads(
-                    request.POST.get("objectType", json.dumps(""))
-                )
+                pk = body.get("objectID", "")
+                model = body.get("objectType", "")
 
             if not pk or not model:
                 return HttpResponseBadRequest()
@@ -165,38 +164,38 @@ def check_special_case_delete_permission(model_data, user):
         )
 
 
-def get_model_from_request(model, request, **kwargs):
+def get_model_from_request(model, body, **kwargs):
     if model:
         if model[-2:] == "Pk":
-            request_data = request.POST.get(model)
+            request_data = body.get(model)
             if request_data is None:
                 pk = None
             else:
-                pk = json.loads(request.POST.get(model))
+                pk = body.get(model)
             model = model[:-2]
     else:
         get_parent = kwargs.get("get_parent", False)
         if get_parent:
-            request_data = request.POST.get("parentID")
+            request_data = body.get("parentID")
             if request_data is None:
                 pk = None
                 model = None
             else:
-                pk = json.loads(request_data)
-                model = json.loads(request.POST.get("parentType"))
+                pk = request_data
+                model = body.get("parentType")
         else:
-            request_data = request.POST.get("objectID")
+            request_data = body.get("objectID")
             if request_data is None:
                 pk = None
                 model = None
             else:
-                pk = json.loads(request_data)
-                model = json.loads(request.POST.get("objectType"))
+                pk = request_data
+                model = body.get("objectType")
     return {"model": model, "pk": pk}
 
 
-def get_permission_objects(model, request, **kwargs):
-    model_data = get_model_from_request(model, request, **kwargs)
+def get_permission_objects(model, body, **kwargs):
+    model_data = get_model_from_request(model, body, **kwargs)
     object_type = get_model_from_str(model_data["model"])
     permission_objects = object_type.objects.get(
         pk=model_data["pk"]
@@ -213,8 +212,9 @@ def user_is_author(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
+                body = json.loads(request.body)
                 permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
+                    model, body, **outer_kwargs
                 )
                 if all(
                     [
@@ -246,8 +246,9 @@ def user_can_edit(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
+                body = json.loads(request.body)
                 permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
+                    model, body, **outer_kwargs
                 )
                 if check_objects_permission(
                     permission_objects,
@@ -278,8 +279,9 @@ def user_can_view(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
+                body = json.loads(request.body)
                 permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
+                    model, body, **outer_kwargs
                 )
             except AttributeError:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
@@ -310,13 +312,14 @@ def user_can_view_or_none(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
+                body = json.loads(request.body)
                 model_data = get_model_from_request(
-                    model, request, **outer_kwargs
+                    model, body, **outer_kwargs
                 )
                 if model_data["pk"] is None or model_data["pk"] == -1:
                     return fct(request, *args, **kwargs)
                 permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
+                    model, body, **outer_kwargs
                 )
             except AttributeError:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
@@ -347,13 +350,14 @@ def user_can_edit_or_none(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
+                body = json.loads(request.body)
                 model_data = get_model_from_request(
-                    model, request, **outer_kwargs
+                    model, body, **outer_kwargs
                 )
                 if model_data["pk"] is None or model_data["pk"] == -1:
                     return fct(request, *args, **kwargs)
                 permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
+                    model, body, **outer_kwargs
                 )
             except AttributeError:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
@@ -393,8 +397,9 @@ def user_can_comment(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
+                body = json.loads(request.body)
                 permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
+                    model, body, **outer_kwargs
                 )
             except AttributeError:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
@@ -425,8 +430,9 @@ def user_can_delete(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
+                body = json.loads(request.body)
                 model_data = get_model_from_request(
-                    model, request, **outer_kwargs
+                    model, body, **outer_kwargs
                 )
                 if model_data["model"] in delete_exceptions:
                     try:
@@ -441,7 +447,7 @@ def user_can_delete(model, **outer_kwargs):
                         return fct(request, *args, **kwargs)
                 else:
                     permission_objects = get_permission_objects(
-                        model, request, **outer_kwargs
+                        model, body, **outer_kwargs
                     )
                     if check_objects_permission(
                         permission_objects,
@@ -477,17 +483,16 @@ def from_same_workflow(model1, model2, **outer_kwargs):
             **kwargs
         ):
             try:
+                body = json.loads(request.body)
                 model_data1 = get_model_from_request(
                     model1,
-                    request,
+                    body,
                 )
                 model_data2 = get_model_from_request(
-                    model2, request, **outer_kwargs
+                    model2, body, **outer_kwargs
                 )
-                if json.loads(
-                    request.POST.get("allowDifferent", "false")
-                ) and not json.loads(
-                    request.POST.get("columnChange", "false")
+                if (body.get("allowDifferent", "false")) and not (
+                    body.get("columnChange", "false")
                 ):
                     return fct(request, *args, **kwargs)
                 if model_data2["pk"] is None or model_data2["pk"] == -1:

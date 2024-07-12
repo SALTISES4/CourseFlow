@@ -179,7 +179,6 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
           id={data.id}
           ref={this.mainDiv}
           onClick={(evt) => {
-            console.log('clicked')
             return () => selection_manager.changeSelection(evt, this)
           }}
         >
