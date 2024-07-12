@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { TitleText } from '@cfUIComponents'
+import { TitleText } from '@cfCommonComponents/UIComponents/Titles'
 import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 import { connect } from 'react-redux'
 import { CfObjectType } from '@cfModule/types/enum'
@@ -39,7 +39,6 @@ export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
     const week_id = this.props.data.id
     const week = $(".week-workflow[data-child-id='" + week_id + "'] > .week")
     if (week.length > 0) {
-
       // @todo remove this
       const container = $('#container')
 

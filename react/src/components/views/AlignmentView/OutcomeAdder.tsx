@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeTitle } from '@cfUIComponents/Titles'
+import { getOutcomeTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 // import $ from 'jquery'

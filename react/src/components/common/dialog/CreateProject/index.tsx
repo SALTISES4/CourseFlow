@@ -1,42 +1,28 @@
 import { ChangeEvent, useState } from 'react'
+import { produce } from 'immer'
+import { SelectChangeEvent } from '@mui/material'
 import Alert from '@cfCommonComponents/components/Alert'
-import TextField from '@mui/material/TextField'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import FormControl from '@mui/material/FormControl'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Select from '@mui/material/Select'
-import OutlinedInput from '@mui/material/OutlinedInput'
 import InputLabel from '@mui/material/InputLabel'
 import Chip from '@mui/material/Chip'
-import Box from '@mui/material/Box'
 import CancelIcon from '@mui/icons-material/Cancel'
-import CheckIcon from '@mui/icons-material/Check'
 import MenuItem from '@mui/material/MenuItem'
-import Stack from '@mui/material/Stack'
-import FormControl from '@mui/material/FormControl'
 import { DIALOG_TYPE, useDialog } from '../'
 import { StyledDialog, StyledForm } from '../styles'
 import ObjectSets from './components/ObjectSets'
 import { TopBarProps } from '@cfModule/types/common'
 import { API_POST } from '@XMLHTTP/PostFunctions'
-import { produce } from 'immer'
-import {SelectChangeEvent} from '@mui/material'
-
-// TODO: figure out how to handle object set types and where the values come from
-export enum OBJECT_SET_TYPE {
-  PROGRAM_OUTCOME = 'program outcome',
-  COURSE_OUTCOME = 'course outcome',
-  ACTIVITY_OUTCOME = 'activity outcome',
-  PROGRAM_NODE = 'program node',
-  COURSE_NODE = 'course node',
-  ACTIVITY_NODE = 'activity node',
-}
-
-export type ObjectSetType = {
-  type: OBJECT_SET_TYPE
-  label: string
-}
+import {
+  OBJECT_SET_TYPE,
+  ObjectSetType
+} from '@cfCommonComponents/dialog/CreateProject/type'
 
 export type OnUpdateType = {
   index: number
@@ -62,7 +48,7 @@ function CreateProjectDialog({
   })
   const [errors, setErrors] = useState({})
   const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT)
-  const [selectOpenStates,setSelectOpenStates] = useState({})
+  const [selectOpenStates, setSelectOpenStates] = useState({})
 
   function onSubmit() {
     // early exit if there are validation errors
@@ -97,11 +83,12 @@ function CreateProjectDialog({
   }
 
   function onInputChange(
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | any[]>,
+    e:
+      | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent<string | any[]>,
     field: any, // TODO
     override: any = false
   ) {
-
     if (errors[field.name]) {
       setErrors(
         produce((draft) => {
@@ -113,9 +100,9 @@ function CreateProjectDialog({
     setState(
       produce((draft) => {
         const { fields } = draft
-        if(override){
+        if (override) {
           fields[field.name] = override
-        }else{
+        } else {
           fields[field.name] = e.target.value
         }
       })
@@ -153,11 +140,11 @@ function CreateProjectDialog({
     )
   }
 
-  //Open or close a controlled Select component
-  function handleSelectOpen(index: number, open: boolean){
-    let newState = {...selectOpenStates}
-    newState[index]=open;
-    setSelectOpenStates(newState);
+  // Open or close a controlled Select component
+  function handleSelectOpen(index: number, open: boolean) {
+    const newState = { ...selectOpenStates }
+    newState[index] = open
+    setSelectOpenStates(newState)
   }
 
   return (
@@ -192,53 +179,65 @@ function CreateProjectDialog({
                   onChange={(e) => onInputChange(e, field)}
                 />
               )
-            }else if(field.type === 'multiselect'){
-              return ([
-                <InputLabel>{field.label}</InputLabel>,
-                <Select 
-                  key={index}
-                  name={field.name}
-                  required={field.required}
-                  multiple
-                  open={selectOpenStates[index] ?? false}
-                  error={hasError}
-                  value={state.fields[field.name] ?? []}
-                  renderValue={(selected) => (
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                      {(selected as any[]).map((value) => (
-                        <Chip 
-                          key={value} 
-                          label={field.options.find((option)=>option.value==value).label} 
-                          clickable
-                          deleteIcon={
-                            <CancelIcon
-                              onMouseDown={(event) => event.stopPropagation()}
-                            />
-                          }
-                          onDelete={(event)=>{
-                            let new_value = state.fields[field.name].slice() as any[]
-                            new_value.splice(new_value.indexOf(value),1)
-                            onInputChange(event,field,new_value)
-                            event.stopPropagation()
-                          }}
-                        />
-                      ))}
-                    </Box>
-                  )}
-                  onClose={()=>handleSelectOpen(index, false)}
-                  onOpen={()=>handleSelectOpen(index, true)}
-                  onChange={(e) => {onInputChange(e, field);handleSelectOpen(index,false)}}
-                >
-                  {field.options.map((option)=>(
-                    <MenuItem
-                      key={option.value}
-                      value={option.value}
-                    >
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              ])
+            } else if (field.type === 'multiselect') {
+              return (
+                <FormControl key={index} fullWidth>
+                  <InputLabel id="create-project-discipline">
+                    {field.label}
+                  </InputLabel>
+                  <Select
+                    labelId="create-project-discipline"
+                    label={field.label}
+                    key={index}
+                    name={field.name}
+                    required={field.required}
+                    multiple
+                    open={selectOpenStates[index] ?? false}
+                    error={hasError}
+                    value={state.fields[field.name] ?? []}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {(selected as any[]).map((value) => (
+                          <Chip
+                            key={value}
+                            label={
+                              field.options.find(
+                                (option) => option.value == value
+                              ).label
+                            }
+                            clickable
+                            deleteIcon={
+                              <CancelIcon
+                                onMouseDown={(event) => event.stopPropagation()}
+                              />
+                            }
+                            onDelete={(event) => {
+                              const newValue = state.fields[
+                                field.name
+                              ].slice() as any[]
+                              newValue.splice(newValue.indexOf(value), 1)
+                              onInputChange(event, field, newValue)
+                              event.stopPropagation()
+                            }}
+                          />
+                        ))}
+                      </Box>
+                    )}
+                    onClose={() => handleSelectOpen(index, false)}
+                    onOpen={() => handleSelectOpen(index, true)}
+                    onChange={(e) => {
+                      onInputChange(e, field)
+                      handleSelectOpen(index, false)
+                    }}
+                  >
+                    {field.options.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )
             }
           })}
           <ObjectSets

@@ -4,6 +4,7 @@ import { DialogDispatchContext, DialogContext } from './context'
 export enum DIALOG_TYPE {
   CREATE_PROGRAM = 'create_program',
   CREATE_PROJECT = 'create_project',
+  EDIT_PROJECT = 'edit_project',
   CREATE_ACTIVITY = 'create_activity',
   CREATE_COURSE = 'create_course',
   RESET_PASSWORD = 'reset_password',
@@ -11,6 +12,11 @@ export enum DIALOG_TYPE {
   ARCHIVE_PROJECT = 'archive_project',
   LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
+
+  // Styleguide popups, just for DEMO purposes only
+  // Should eventually be ditched to not cause confusion I guess
+  STYLEGUIDE_PROJECT_CREATE = 'styleguide_project_create',
+  STYLEGUIDE_PROJECT_EDIT = 'styleguide_project_edit'
 }
 
 /**

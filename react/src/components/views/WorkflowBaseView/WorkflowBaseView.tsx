@@ -18,8 +18,8 @@ import { Dialog, DialogTitle } from '@mui/material'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ImportMenu from '@cfCommonComponents/dialog/ImportMenu.jsx'
-import { WorkflowTitle } from '@cfUIComponents'
-import CollapsibleText from '@cfUIComponents/CollapsibleText'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
+import CollapsibleText from '@cfCommonComponents/UIComponents/CollapsibleText'
 import { AppState } from '@cfRedux/types/type'
 import EditableComponent, {
   EditableComponentProps,

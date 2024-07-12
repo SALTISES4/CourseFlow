@@ -13,6 +13,8 @@ app_name = "course_flow"
 
 def course_flow_patterns():
     return [
+        # React component styleguide / dumb components preview page
+        path("styleguide/", views.html.styleguide_home, name="styleguide"),
         path("home/", views.home_view, name="home"),
         path(
             "saltise-admin/",

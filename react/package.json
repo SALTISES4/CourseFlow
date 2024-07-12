@@ -11,14 +11,15 @@
   "author": "Scivero",
   "scripts": {
     "test": "jest",
-    "prettier": "prettier --write 'course_flow/static/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",
-    "dev": "vite --config vite.config.dev.js",
+    "dev": "VITE_BUILD_WATCH=true vite --config vite.config.dev.js",
+    "prettier": "prettier --write './src/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",
     "build": "tsc && vite --config vite.config.dev.js build",
-    "build-watch": "tsc && VITE_BUILD_WATCH=true vite --config vite.config.dev.js build",
-    "buildts": "tsc",
+    "tsc-watch": "tsc-watch --onSuccess \"npm run vite-build\"",
+    "vite-build": "vite --config vite.config.dev.js build",
+    "vite-watch": "wait-on dist && VITE_BUILD_WATCH=true vite --config vite.config.dev.js build --watch",
+    "build-watch": "concurrently -k \"npm run tsc-watch\" \"npm run vite-watch\"",
     "buildDev": "tsc && vite build --mode development --minify false",
     "preview": "vite preview",
-    "lint:fix": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix --ignore-path ./.gitignore",
     "lint-quiet": "eslint --fix --quiet --max-warnings=-1  ./src --ext .js,.tsx,.ts -c ./.eslintrc.json"
   },
   "browserslist": "last 4 versions and >=0.2% in CA and not ie <= 11",
@@ -50,6 +51,7 @@
     "@typescript-eslint/parser": "^6.15.0",
     "@vitejs/plugin-react": "^4.2.1",
     "@welldone-software/why-did-you-render": "^7.0.1",
+    "concurrently": "^8.2.2",
     "decimal.js": "^10.4.3",
     "enzyme": "^3.11.0",
     "eslint-config-react-app": "^7.0.1",
@@ -66,10 +68,12 @@
     "redux": "^4.2.1",
     "regenerator": "^0.14.10",
     "sass": "^1.69.5",
+    "tsc-watch": "^6.2.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.10",
     "vite-plugin-eslint": "^1.8.1",
     "vite-tsconfig-paths": "^4.2.2",
+    "wait-on": "^7.2.0",
     "yarn": "^1.22.19"
   }
 }

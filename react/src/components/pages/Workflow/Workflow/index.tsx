@@ -10,7 +10,7 @@ import {
   Store
 } from '@reduxjs/toolkit'
 import * as Reducers from '@cfReducers'
-import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
+import WorkflowLoader from '@cfCommonComponents/UIComponents/WorkflowLoader'
 import WorkflowBaseView from '@cfViews/WorkflowBaseView/WorkflowBaseView'
 import { WorkflowDetailViewDTO } from '@cfPages/Workflow/Workflow/types'
 import {

@@ -33,6 +33,7 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
     // @ts-ignore
     if (data.no_drag) my_class += ' no-drag'
 
+    //Child outcomes. See comment in models/outcome.py for more info.
     return (
       <li
         className={my_class}

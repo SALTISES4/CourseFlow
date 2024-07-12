@@ -17,10 +17,6 @@ import { produce } from 'immer'
 import { EProject } from '@cfModule/XMLHTTP/types/entity'
 import { API_POST } from '@XMLHTTP/PostFunctions'
 
-type PropsType = {
-  data: EProject
-}
-
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
   NODE = 'node',
@@ -60,7 +56,7 @@ const fields = {
   ]
 }
 
-function ExportProjectDialog({ data }: PropsType) {
+function ExportProjectDialog({ data }: { data: EProject }) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,

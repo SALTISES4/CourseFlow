@@ -1,6 +1,6 @@
 // Only used in classroom view. Should be removed/replaced.
 import * as React from 'react'
-import { WorkflowTitle } from '@cfUIComponents'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 
 class WorkflowCardSimple extends React.Component {
   constructor(props) {

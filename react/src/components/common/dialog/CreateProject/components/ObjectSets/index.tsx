@@ -13,11 +13,15 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
-import {object_sets_types} from '@cfConstants'
+import { object_sets_types } from '@cfConstants'
 
 import { StyledAccordion, AdvancedLabel } from './styles'
 import { StyledForm } from '../../../styles'
-import { ObjectSetType, OnUpdateType, OBJECT_SET_TYPE } from '../../'
+import { OnUpdateType } from '../../'
+import {
+  OBJECT_SET_TYPE,
+  ObjectSetType
+} from '@cfCommonComponents/dialog/CreateProject/type'
 
 type PropsType = {
   expanded: boolean
@@ -40,9 +44,10 @@ function ObjectSets({
     : [{ type: '' as OBJECT_SET_TYPE, label: '' }]
 
   const object_set_types = object_sets_types()
-  const object_set_options = Object.keys(object_set_types).map(key=>(
-    {value:key,label:object_set_types[key]}
-  ));
+  const object_set_options = Object.keys(object_set_types).map((key) => ({
+    value: key,
+    label: object_set_types[key]
+  }))
 
   return (
     <StyledAccordion expanded={expanded}>
@@ -82,9 +87,11 @@ function ObjectSets({
                   }
                   label="Type"
                 >
-                  {object_set_options.map(option=>
-                    <MenuItem value={option.value}>{option.label}</MenuItem>
-                  )}
+                  {object_set_options.map((option, idx) => (
+                    <MenuItem key={idx} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
               <TextField

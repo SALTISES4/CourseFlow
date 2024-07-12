@@ -5,7 +5,7 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { CfObjectType } from '@cfModule/types/enum'
 import * as Constants from '@cfModule/constants'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
-import { ActionButton } from '@cfUIComponents'
+import ActionButton from '@cfCommonComponents/UIComponents/ActionButton'
 import SimpleOutcome from '@cfViews/OutcomeEditView/SimpleOutcome'
 import {
   getOutcomeHorizontalLinkByID,

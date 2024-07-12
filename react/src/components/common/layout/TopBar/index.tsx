@@ -277,6 +277,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       <CreateProjectModal
         showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
         formFields={forms.createProject.formFields}
+        disciplines={forms.createProject.disciplines}
       />
       <CreateProgramModal />
       <CreateCourseModal />
