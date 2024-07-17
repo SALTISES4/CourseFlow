@@ -12,6 +12,8 @@ export enum DIALOG_TYPE {
   ARCHIVE_PROJECT = 'archive_project',
   LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
+  IMPORT_OUTCOMES = 'import_outcomes',
+  IMPORT_NODES = 'import_nodes',
 
   // Styleguide popups, just for DEMO purposes only
   // Should eventually be ditched to not cause confusion I guess
