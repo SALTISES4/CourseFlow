@@ -10,6 +10,8 @@ export enum DIALOG_TYPE {
   RESET_PASSWORD = 'reset_password',
   EXPORT_PROJECT = 'export_project',
   ARCHIVE_PROJECT = 'archive_project',
+  IMPORT_OUTCOMES = 'import_outcomes',
+  IMPORT_NODES = 'import_nodes',
 
   // Styleguide popups, just for DEMO purposes only
   // Should eventually be ditched to not cause confusion I guess
