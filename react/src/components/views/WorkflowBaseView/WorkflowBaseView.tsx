@@ -43,6 +43,8 @@ import { DialogContextProvider } from '@cfModule/components/common/dialog/contex
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@cfMUI/theme'
 import TargetProjectModal from '@cfModule/components/common/dialog/TargetProject'
+import ImportNodesModal from '@cfModule/components/common/dialog/ImportNodes'
+import ImportOutcomesModal from '@cfModule/components/common/dialog/ImportOutcomes'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -75,13 +77,28 @@ const CopyButton = (data: any) => {
             }
           )
         } else {
-          console.log(dispatch)
           dispatch(DIALOG_TYPE.TARGET_PROJECT)
         }
       }}
     >
       <div>{window.gettext('Copy to my library')}</div>
     </div>
+  )
+}
+
+const ImportButtons = ({aClass}: {aClass:string})=>{
+  const { dispatch } = useDialog()
+
+  return (
+    <>
+      <hr />
+      <a className={aClass} onClick={()=>dispatch(DIALOG_TYPE.IMPORT_OUTCOMES)}>
+        {window.gettext('Import Outcomes')}
+      </a>
+      <a className={aClass} onClick={()=>dispatch(DIALOG_TYPE.IMPORT_NODES)}>
+        {window.gettext('Import Nodes')}
+      </a>
+    </>
   )
 }
 
@@ -306,20 +323,20 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.selection_manager.changeSelection(evt, this)
   }
 
-  clickImport(import_type, evt) {
-    evt.preventDefault()
-    renderMessageBox(
-      {
-        object_id: this.props.data.id,
-        object_type: this.objectType,
-        import_type: import_type
-      },
-      'import',
-      () => {
-        closeMessageBox()
-      }
-    )
-  }
+  // clickImport(import_type, evt) {
+  //   evt.preventDefault()
+  //   renderMessageBox(
+  //     {
+  //       object_id: this.props.data.id,
+  //       object_type: this.objectType,
+  //       import_type: import_type
+  //     },
+  //     'import',
+  //     () => {
+  //       closeMessageBox()
+  //     }
+  //   )
+  // }
 
   // @todo it this ViewType or cfobjecttype
   expandAll(type: CfObjectType) {
@@ -855,16 +872,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const aClass = disabled ? ' disabled' : 'hover-shade'
 
     return (
-      <>
-        <hr />
-        <a className={aClass} onClick={this.clickImport.bind(this, 'outcomes')}>
-          {window.gettext('Import Outcomes')}
-        </a>
-        <a className={aClass} onClick={this.clickImport.bind(this, 'nodes')}>
-          {window.gettext('Import Nodes')}
-        </a>
-      </>
+      <ImportButtons aClass={aClass}/>
     )
+
   }
 
   DeleteWorkflowButton = () => {
@@ -999,30 +1009,30 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     )
   }
 
-  ImportDialog = () => {
-    return (
-      <Dialog open={this.state.openImportDialog}>
-        <>
-          <ImportMenu
-            data={{
-              object_id: this.data.id,
-              object_type: this.objectType,
-              import_type: 'outcomes'
-            }}
-            actionFunction={this.closeModals}
-          />
-          <ImportMenu
-            data={{
-              object_id: this.data.id,
-              object_type: this.objectType,
-              import_type: 'nodes'
-            }}
-            actionFunction={this.closeModals}
-          />
-        </>
-      </Dialog>
-    )
-  }
+  // ImportDialog = () => {
+  //   return (
+  //     <Dialog open={this.state.openImportDialog}>
+  //       <>
+  //         <ImportMenu
+  //           data={{
+  //             object_id: this.data.id,
+  //             object_type: this.objectType,
+  //             import_type: 'outcomes'
+  //           }}
+  //           actionFunction={this.closeModals}
+  //         />
+  //         <ImportMenu
+  //           data={{
+  //             object_id: this.data.id,
+  //             object_type: this.objectType,
+  //             import_type: 'nodes'
+  //           }}
+  //           actionFunction={this.closeModals}
+  //         />
+  //       </>
+  //     </Dialog>
+  //   )
+  // }
 
   /*******************************************************
    * RENDER
@@ -1082,9 +1092,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               }
             }}
             />
+            <ImportNodesModal workflowID={this.data.id}/>
+            <ImportOutcomesModal workflowID={this.data.id}/>
             <this.ShareDialog />
-            <this.ExportDialog />
-            <this.ImportDialog />
           </div>
         </ThemeProvider>
       </DialogContextProvider>

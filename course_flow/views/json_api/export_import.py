@@ -17,11 +17,11 @@ from course_flow.decorators import user_can_edit, user_can_view
 
 @user_can_edit(False)
 def json_api_post_import_data(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
+    body = json.loads(request.POST["body"])
     object_id = body.get("objectID")
     object_type = body.get("objectType")
     task_type = body.get("importType")
-    file = request.FILES.get("myFile")
+    file = request.FILES.get("file")
     try:
         if file.size < 1024 * 1024:
             file_type = file.content_type

@@ -246,7 +246,10 @@ def user_can_edit(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
-                body = json.loads(request.body)
+                if request.content_type == "multipart/form-data":
+                    body = json.loads(request.POST["body"])
+                else:
+                    body = json.loads(request.body)
                 permission_objects = get_permission_objects(
                     model, body, **outer_kwargs
                 )

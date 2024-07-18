@@ -34579,6 +34579,34 @@ ${latestSubscriptionCallbackError.current.stack}
       });
     });
   }
+  function API_POST_FILE(url = "", data2 = {}, file = null) {
+    if (!url) {
+      return Promise.reject("You need to specify an URL in for API_POST to run.");
+    }
+    var form_data = new FormData();
+    form_data.set("body", JSON.stringify(data2));
+    form_data.set("file", file);
+    console.log("API POST FILE", file, form_data);
+    return new Promise((res, rej) => {
+      fetch(url, {
+        method: "POST",
+        headers: {
+          //'Content-Type': 'multipart/form-data',
+          // // 'root' comes from the csrf-setup script
+          "X-CSRFToken": window.getCsrfToken()
+        },
+        body: form_data
+      }).then((response) => response.json()).then((data22) => {
+        if (data22.action === VERB.POSTED) {
+          res(data22);
+        } else {
+          rej({ error: "API_POST failed", url, data: data22 });
+        }
+      }).catch((err) => {
+        rej({ error: "API_POST failed", originalError: err });
+      });
+    });
+  }
   function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data) => console.log("success")) {
     let path;
     if (soft)
@@ -91220,108 +91248,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] });
     }
   }
-  class ImportMenu extends reactExports.Component {
-    constructor(props) {
-      super(props);
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    submit(evt) {
-      $("#submit-button").attr("disabled", true);
-      setTimeout(() => {
-        this.props.actionFunction();
-        alert(
-          window.gettext(
-            "Your file has been submitted. Please wait while it is imported. You may close this message."
-          )
-        );
-      }, 100);
-      return true;
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Import Files") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-          "Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format."
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "form",
-          {
-            encType: "multipart/form-data",
-            action: COURSEFLOW_APP.config.post_paths.import_data,
-            method: "POST",
-            id: "upload-form",
-            target: "redirect-iframe",
-            onSubmit: this.submit.bind(this),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "hidden",
-                  name: "csrfmiddlewaretoken",
-                  value: window.getCsrfToken()
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "hidden",
-                  id: "objectID",
-                  name: "objectID",
-                  value: JSON.stringify(this.props.data.object_id)
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "hidden",
-                  id: "objectType",
-                  name: "objectType",
-                  value: JSON.stringify(this.props.data.object_type)
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "hidden",
-                  id: "importType",
-                  name: "importType",
-                  value: this.props.data.import_type
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "file",
-                  id: "myFile",
-                  name: "myFile",
-                  accept: ".xls, .xlsx, .csv",
-                  required: true
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "submit-button", type: "submit" })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-          "The uploading process may take some time. It is not recommended to continue editing until it is complete."
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "window-close-button",
-            onClick: this.props.actionFunction,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
-          }
-        )
-      ] });
-    }
-  }
   class CollapsibleText extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
@@ -92390,6 +92316,2511 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     );
   }
+  var NOTHING = Symbol.for("immer-nothing");
+  var DRAFTABLE = Symbol.for("immer-draftable");
+  var DRAFT_STATE = Symbol.for("immer-state");
+  var errors = process.env.NODE_ENV !== "production" ? [
+    // All error codes, starting by 0:
+    function(plugin) {
+      return `The plugin for '${plugin}' has not been loaded into Immer. To enable the plugin, import and call \`enable${plugin}()\` when initializing your application.`;
+    },
+    function(thing) {
+      return `produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'. Got '${thing}'`;
+    },
+    "This object has been frozen and should not be mutated",
+    function(data2) {
+      return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + data2;
+    },
+    "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.",
+    "Immer forbids circular references",
+    "The first or second argument to `produce` must be a function",
+    "The third argument to `produce` must be a function or undefined",
+    "First argument to `createDraft` must be a plain object, an array, or an immerable object",
+    "First argument to `finishDraft` must be a draft returned by `createDraft`",
+    function(thing) {
+      return `'current' expects a draft, got: ${thing}`;
+    },
+    "Object.defineProperty() cannot be used on an Immer draft",
+    "Object.setPrototypeOf() cannot be used on an Immer draft",
+    "Immer only supports deleting array indices",
+    "Immer only supports setting array indices and the 'length' property",
+    function(thing) {
+      return `'original' expects a draft, got: ${thing}`;
+    }
+    // Note: if more errors are added, the errorOffset in Patches.ts should be increased
+    // See Patches.ts for additional errors
+  ] : [];
+  function die(error, ...args) {
+    if (process.env.NODE_ENV !== "production") {
+      const e = errors[error];
+      const msg = typeof e === "function" ? e.apply(null, args) : e;
+      throw new Error(`[Immer] ${msg}`);
+    }
+    throw new Error(
+      `[Immer] minified error nr: ${error}. Full error at: https://bit.ly/3cXEKWf`
+    );
+  }
+  var getPrototypeOf = Object.getPrototypeOf;
+  function isDraft(value) {
+    return !!value && !!value[DRAFT_STATE];
+  }
+  function isDraftable(value) {
+    var _a2;
+    if (!value)
+      return false;
+    return isPlainObject$1(value) || Array.isArray(value) || !!value[DRAFTABLE] || !!((_a2 = value.constructor) == null ? void 0 : _a2[DRAFTABLE]) || isMap(value) || isSet(value);
+  }
+  var objectCtorString = Object.prototype.constructor.toString();
+  function isPlainObject$1(value) {
+    if (!value || typeof value !== "object")
+      return false;
+    const proto = getPrototypeOf(value);
+    if (proto === null) {
+      return true;
+    }
+    const Ctor = Object.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+    if (Ctor === Object)
+      return true;
+    return typeof Ctor == "function" && Function.toString.call(Ctor) === objectCtorString;
+  }
+  function each(obj, iter) {
+    if (getArchtype(obj) === 0) {
+      Reflect.ownKeys(obj).forEach((key) => {
+        iter(key, obj[key], obj);
+      });
+    } else {
+      obj.forEach((entry, index) => iter(index, entry, obj));
+    }
+  }
+  function getArchtype(thing) {
+    const state = thing[DRAFT_STATE];
+    return state ? state.type_ : Array.isArray(thing) ? 1 : isMap(thing) ? 2 : isSet(thing) ? 3 : 0;
+  }
+  function has(thing, prop) {
+    return getArchtype(thing) === 2 ? thing.has(prop) : Object.prototype.hasOwnProperty.call(thing, prop);
+  }
+  function set(thing, propOrOldValue, value) {
+    const t = getArchtype(thing);
+    if (t === 2)
+      thing.set(propOrOldValue, value);
+    else if (t === 3) {
+      thing.add(value);
+    } else
+      thing[propOrOldValue] = value;
+  }
+  function is(x, y) {
+    if (x === y) {
+      return x !== 0 || 1 / x === 1 / y;
+    } else {
+      return x !== x && y !== y;
+    }
+  }
+  function isMap(target) {
+    return target instanceof Map;
+  }
+  function isSet(target) {
+    return target instanceof Set;
+  }
+  function latest(state) {
+    return state.copy_ || state.base_;
+  }
+  function shallowCopy(base, strict) {
+    if (isMap(base)) {
+      return new Map(base);
+    }
+    if (isSet(base)) {
+      return new Set(base);
+    }
+    if (Array.isArray(base))
+      return Array.prototype.slice.call(base);
+    if (!strict && isPlainObject$1(base)) {
+      if (!getPrototypeOf(base)) {
+        const obj = /* @__PURE__ */ Object.create(null);
+        return Object.assign(obj, base);
+      }
+      return { ...base };
+    }
+    const descriptors = Object.getOwnPropertyDescriptors(base);
+    delete descriptors[DRAFT_STATE];
+    let keys = Reflect.ownKeys(descriptors);
+    for (let i2 = 0; i2 < keys.length; i2++) {
+      const key = keys[i2];
+      const desc = descriptors[key];
+      if (desc.writable === false) {
+        desc.writable = true;
+        desc.configurable = true;
+      }
+      if (desc.get || desc.set)
+        descriptors[key] = {
+          configurable: true,
+          writable: true,
+          // could live with !!desc.set as well here...
+          enumerable: desc.enumerable,
+          value: base[key]
+        };
+    }
+    return Object.create(getPrototypeOf(base), descriptors);
+  }
+  function freeze(obj, deep = false) {
+    if (isFrozen(obj) || isDraft(obj) || !isDraftable(obj))
+      return obj;
+    if (getArchtype(obj) > 1) {
+      obj.set = obj.add = obj.clear = obj.delete = dontMutateFrozenCollections;
+    }
+    Object.freeze(obj);
+    if (deep)
+      Object.entries(obj).forEach(([key, value]) => freeze(value, true));
+    return obj;
+  }
+  function dontMutateFrozenCollections() {
+    die(2);
+  }
+  function isFrozen(obj) {
+    return Object.isFrozen(obj);
+  }
+  var plugins = {};
+  function getPlugin(pluginKey) {
+    const plugin = plugins[pluginKey];
+    if (!plugin) {
+      die(0, pluginKey);
+    }
+    return plugin;
+  }
+  var currentScope;
+  function getCurrentScope() {
+    return currentScope;
+  }
+  function createScope(parent_, immer_) {
+    return {
+      drafts_: [],
+      parent_,
+      immer_,
+      // Whenever the modified draft contains a draft from another scope, we
+      // need to prevent auto-freezing so the unowned draft can be finalized.
+      canAutoFreeze_: true,
+      unfinalizedDrafts_: 0
+    };
+  }
+  function usePatchesInScope(scope, patchListener) {
+    if (patchListener) {
+      getPlugin("Patches");
+      scope.patches_ = [];
+      scope.inversePatches_ = [];
+      scope.patchListener_ = patchListener;
+    }
+  }
+  function revokeScope(scope) {
+    leaveScope(scope);
+    scope.drafts_.forEach(revokeDraft);
+    scope.drafts_ = null;
+  }
+  function leaveScope(scope) {
+    if (scope === currentScope) {
+      currentScope = scope.parent_;
+    }
+  }
+  function enterScope(immer2) {
+    return currentScope = createScope(currentScope, immer2);
+  }
+  function revokeDraft(draft) {
+    const state = draft[DRAFT_STATE];
+    if (state.type_ === 0 || state.type_ === 1)
+      state.revoke_();
+    else
+      state.revoked_ = true;
+  }
+  function processResult(result, scope) {
+    scope.unfinalizedDrafts_ = scope.drafts_.length;
+    const baseDraft = scope.drafts_[0];
+    const isReplaced = result !== void 0 && result !== baseDraft;
+    if (isReplaced) {
+      if (baseDraft[DRAFT_STATE].modified_) {
+        revokeScope(scope);
+        die(4);
+      }
+      if (isDraftable(result)) {
+        result = finalize(scope, result);
+        if (!scope.parent_)
+          maybeFreeze(scope, result);
+      }
+      if (scope.patches_) {
+        getPlugin("Patches").generateReplacementPatches_(
+          baseDraft[DRAFT_STATE].base_,
+          result,
+          scope.patches_,
+          scope.inversePatches_
+        );
+      }
+    } else {
+      result = finalize(scope, baseDraft, []);
+    }
+    revokeScope(scope);
+    if (scope.patches_) {
+      scope.patchListener_(scope.patches_, scope.inversePatches_);
+    }
+    return result !== NOTHING ? result : void 0;
+  }
+  function finalize(rootScope, value, path) {
+    if (isFrozen(value))
+      return value;
+    const state = value[DRAFT_STATE];
+    if (!state) {
+      each(
+        value,
+        (key, childValue) => finalizeProperty(rootScope, state, value, key, childValue, path)
+      );
+      return value;
+    }
+    if (state.scope_ !== rootScope)
+      return value;
+    if (!state.modified_) {
+      maybeFreeze(rootScope, state.base_, true);
+      return state.base_;
+    }
+    if (!state.finalized_) {
+      state.finalized_ = true;
+      state.scope_.unfinalizedDrafts_--;
+      const result = state.copy_;
+      let resultEach = result;
+      let isSet2 = false;
+      if (state.type_ === 3) {
+        resultEach = new Set(result);
+        result.clear();
+        isSet2 = true;
+      }
+      each(
+        resultEach,
+        (key, childValue) => finalizeProperty(rootScope, state, result, key, childValue, path, isSet2)
+      );
+      maybeFreeze(rootScope, result, false);
+      if (path && rootScope.patches_) {
+        getPlugin("Patches").generatePatches_(
+          state,
+          path,
+          rootScope.patches_,
+          rootScope.inversePatches_
+        );
+      }
+    }
+    return state.copy_;
+  }
+  function finalizeProperty(rootScope, parentState, targetObject, prop, childValue, rootPath, targetIsSet) {
+    if (process.env.NODE_ENV !== "production" && childValue === targetObject)
+      die(5);
+    if (isDraft(childValue)) {
+      const path = rootPath && parentState && parentState.type_ !== 3 && // Set objects are atomic since they have no keys.
+      !has(parentState.assigned_, prop) ? rootPath.concat(prop) : void 0;
+      const res = finalize(rootScope, childValue, path);
+      set(targetObject, prop, res);
+      if (isDraft(res)) {
+        rootScope.canAutoFreeze_ = false;
+      } else
+        return;
+    } else if (targetIsSet) {
+      targetObject.add(childValue);
+    }
+    if (isDraftable(childValue) && !isFrozen(childValue)) {
+      if (!rootScope.immer_.autoFreeze_ && rootScope.unfinalizedDrafts_ < 1) {
+        return;
+      }
+      finalize(rootScope, childValue);
+      if ((!parentState || !parentState.scope_.parent_) && typeof prop !== "symbol" && Object.prototype.propertyIsEnumerable.call(targetObject, prop))
+        maybeFreeze(rootScope, childValue);
+    }
+  }
+  function maybeFreeze(scope, value, deep = false) {
+    if (!scope.parent_ && scope.immer_.autoFreeze_ && scope.canAutoFreeze_) {
+      freeze(value, deep);
+    }
+  }
+  function createProxyProxy(base, parent) {
+    const isArray2 = Array.isArray(base);
+    const state = {
+      type_: isArray2 ? 1 : 0,
+      // Track which produce call this is associated with.
+      scope_: parent ? parent.scope_ : getCurrentScope(),
+      // True for both shallow and deep changes.
+      modified_: false,
+      // Used during finalization.
+      finalized_: false,
+      // Track which properties have been assigned (true) or deleted (false).
+      assigned_: {},
+      // The parent draft state.
+      parent_: parent,
+      // The base state.
+      base_: base,
+      // The base proxy.
+      draft_: null,
+      // set below
+      // The base copy with any updated values.
+      copy_: null,
+      // Called by the `produce` function.
+      revoke_: null,
+      isManual_: false
+    };
+    let target = state;
+    let traps = objectTraps;
+    if (isArray2) {
+      target = [state];
+      traps = arrayTraps;
+    }
+    const { revoke, proxy } = Proxy.revocable(target, traps);
+    state.draft_ = proxy;
+    state.revoke_ = revoke;
+    return proxy;
+  }
+  var objectTraps = {
+    get(state, prop) {
+      if (prop === DRAFT_STATE)
+        return state;
+      const source = latest(state);
+      if (!has(source, prop)) {
+        return readPropFromProto(state, source, prop);
+      }
+      const value = source[prop];
+      if (state.finalized_ || !isDraftable(value)) {
+        return value;
+      }
+      if (value === peek(state.base_, prop)) {
+        prepareCopy(state);
+        return state.copy_[prop] = createProxy(value, state);
+      }
+      return value;
+    },
+    has(state, prop) {
+      return prop in latest(state);
+    },
+    ownKeys(state) {
+      return Reflect.ownKeys(latest(state));
+    },
+    set(state, prop, value) {
+      const desc = getDescriptorFromProto(latest(state), prop);
+      if (desc == null ? void 0 : desc.set) {
+        desc.set.call(state.draft_, value);
+        return true;
+      }
+      if (!state.modified_) {
+        const current2 = peek(latest(state), prop);
+        const currentState = current2 == null ? void 0 : current2[DRAFT_STATE];
+        if (currentState && currentState.base_ === value) {
+          state.copy_[prop] = value;
+          state.assigned_[prop] = false;
+          return true;
+        }
+        if (is(value, current2) && (value !== void 0 || has(state.base_, prop)))
+          return true;
+        prepareCopy(state);
+        markChanged(state);
+      }
+      if (state.copy_[prop] === value && // special case: handle new props with value 'undefined'
+      (value !== void 0 || prop in state.copy_) || // special case: NaN
+      Number.isNaN(value) && Number.isNaN(state.copy_[prop]))
+        return true;
+      state.copy_[prop] = value;
+      state.assigned_[prop] = true;
+      return true;
+    },
+    deleteProperty(state, prop) {
+      if (peek(state.base_, prop) !== void 0 || prop in state.base_) {
+        state.assigned_[prop] = false;
+        prepareCopy(state);
+        markChanged(state);
+      } else {
+        delete state.assigned_[prop];
+      }
+      if (state.copy_) {
+        delete state.copy_[prop];
+      }
+      return true;
+    },
+    // Note: We never coerce `desc.value` into an Immer draft, because we can't make
+    // the same guarantee in ES5 mode.
+    getOwnPropertyDescriptor(state, prop) {
+      const owner = latest(state);
+      const desc = Reflect.getOwnPropertyDescriptor(owner, prop);
+      if (!desc)
+        return desc;
+      return {
+        writable: true,
+        configurable: state.type_ !== 1 || prop !== "length",
+        enumerable: desc.enumerable,
+        value: owner[prop]
+      };
+    },
+    defineProperty() {
+      die(11);
+    },
+    getPrototypeOf(state) {
+      return getPrototypeOf(state.base_);
+    },
+    setPrototypeOf() {
+      die(12);
+    }
+  };
+  var arrayTraps = {};
+  each(objectTraps, (key, fn) => {
+    arrayTraps[key] = function() {
+      arguments[0] = arguments[0][0];
+      return fn.apply(this, arguments);
+    };
+  });
+  arrayTraps.deleteProperty = function(state, prop) {
+    if (process.env.NODE_ENV !== "production" && isNaN(parseInt(prop)))
+      die(13);
+    return arrayTraps.set.call(this, state, prop, void 0);
+  };
+  arrayTraps.set = function(state, prop, value) {
+    if (process.env.NODE_ENV !== "production" && prop !== "length" && isNaN(parseInt(prop)))
+      die(14);
+    return objectTraps.set.call(this, state[0], prop, value, state[0]);
+  };
+  function peek(draft, prop) {
+    const state = draft[DRAFT_STATE];
+    const source = state ? latest(state) : draft;
+    return source[prop];
+  }
+  function readPropFromProto(state, source, prop) {
+    var _a2;
+    const desc = getDescriptorFromProto(source, prop);
+    return desc ? `value` in desc ? desc.value : (
+      // This is a very special case, if the prop is a getter defined by the
+      // prototype, we should invoke it with the draft as context!
+      (_a2 = desc.get) == null ? void 0 : _a2.call(state.draft_)
+    ) : void 0;
+  }
+  function getDescriptorFromProto(source, prop) {
+    if (!(prop in source))
+      return void 0;
+    let proto = getPrototypeOf(source);
+    while (proto) {
+      const desc = Object.getOwnPropertyDescriptor(proto, prop);
+      if (desc)
+        return desc;
+      proto = getPrototypeOf(proto);
+    }
+    return void 0;
+  }
+  function markChanged(state) {
+    if (!state.modified_) {
+      state.modified_ = true;
+      if (state.parent_) {
+        markChanged(state.parent_);
+      }
+    }
+  }
+  function prepareCopy(state) {
+    if (!state.copy_) {
+      state.copy_ = shallowCopy(
+        state.base_,
+        state.scope_.immer_.useStrictShallowCopy_
+      );
+    }
+  }
+  var Immer2 = class {
+    constructor(config2) {
+      this.autoFreeze_ = true;
+      this.useStrictShallowCopy_ = false;
+      this.produce = (base, recipe, patchListener) => {
+        if (typeof base === "function" && typeof recipe !== "function") {
+          const defaultBase = recipe;
+          recipe = base;
+          const self2 = this;
+          return function curriedProduce(base2 = defaultBase, ...args) {
+            return self2.produce(base2, (draft) => recipe.call(this, draft, ...args));
+          };
+        }
+        if (typeof recipe !== "function")
+          die(6);
+        if (patchListener !== void 0 && typeof patchListener !== "function")
+          die(7);
+        let result;
+        if (isDraftable(base)) {
+          const scope = enterScope(this);
+          const proxy = createProxy(base, void 0);
+          let hasError = true;
+          try {
+            result = recipe(proxy);
+            hasError = false;
+          } finally {
+            if (hasError)
+              revokeScope(scope);
+            else
+              leaveScope(scope);
+          }
+          usePatchesInScope(scope, patchListener);
+          return processResult(result, scope);
+        } else if (!base || typeof base !== "object") {
+          result = recipe(base);
+          if (result === void 0)
+            result = base;
+          if (result === NOTHING)
+            result = void 0;
+          if (this.autoFreeze_)
+            freeze(result, true);
+          if (patchListener) {
+            const p = [];
+            const ip = [];
+            getPlugin("Patches").generateReplacementPatches_(base, result, p, ip);
+            patchListener(p, ip);
+          }
+          return result;
+        } else
+          die(1, base);
+      };
+      this.produceWithPatches = (base, recipe) => {
+        if (typeof base === "function") {
+          return (state, ...args) => this.produceWithPatches(state, (draft) => base(draft, ...args));
+        }
+        let patches, inversePatches;
+        const result = this.produce(base, recipe, (p, ip) => {
+          patches = p;
+          inversePatches = ip;
+        });
+        return [result, patches, inversePatches];
+      };
+      if (typeof (config2 == null ? void 0 : config2.autoFreeze) === "boolean")
+        this.setAutoFreeze(config2.autoFreeze);
+      if (typeof (config2 == null ? void 0 : config2.useStrictShallowCopy) === "boolean")
+        this.setUseStrictShallowCopy(config2.useStrictShallowCopy);
+    }
+    createDraft(base) {
+      if (!isDraftable(base))
+        die(8);
+      if (isDraft(base))
+        base = current(base);
+      const scope = enterScope(this);
+      const proxy = createProxy(base, void 0);
+      proxy[DRAFT_STATE].isManual_ = true;
+      leaveScope(scope);
+      return proxy;
+    }
+    finishDraft(draft, patchListener) {
+      const state = draft && draft[DRAFT_STATE];
+      if (!state || !state.isManual_)
+        die(9);
+      const { scope_: scope } = state;
+      usePatchesInScope(scope, patchListener);
+      return processResult(void 0, scope);
+    }
+    /**
+     * Pass true to automatically freeze all copies created by Immer.
+     *
+     * By default, auto-freezing is enabled.
+     */
+    setAutoFreeze(value) {
+      this.autoFreeze_ = value;
+    }
+    /**
+     * Pass true to enable strict shallow copy.
+     *
+     * By default, immer does not copy the object descriptors such as getter, setter and non-enumrable properties.
+     */
+    setUseStrictShallowCopy(value) {
+      this.useStrictShallowCopy_ = value;
+    }
+    applyPatches(base, patches) {
+      let i2;
+      for (i2 = patches.length - 1; i2 >= 0; i2--) {
+        const patch = patches[i2];
+        if (patch.path.length === 0 && patch.op === "replace") {
+          base = patch.value;
+          break;
+        }
+      }
+      if (i2 > -1) {
+        patches = patches.slice(i2 + 1);
+      }
+      const applyPatchesImpl = getPlugin("Patches").applyPatches_;
+      if (isDraft(base)) {
+        return applyPatchesImpl(base, patches);
+      }
+      return this.produce(
+        base,
+        (draft) => applyPatchesImpl(draft, patches)
+      );
+    }
+  };
+  function createProxy(value, parent) {
+    const draft = isMap(value) ? getPlugin("MapSet").proxyMap_(value, parent) : isSet(value) ? getPlugin("MapSet").proxySet_(value, parent) : createProxyProxy(value, parent);
+    const scope = parent ? parent.scope_ : getCurrentScope();
+    scope.drafts_.push(draft);
+    return draft;
+  }
+  function current(value) {
+    if (!isDraft(value))
+      die(10, value);
+    return currentImpl(value);
+  }
+  function currentImpl(value) {
+    if (!isDraftable(value) || isFrozen(value))
+      return value;
+    const state = value[DRAFT_STATE];
+    let copy2;
+    if (state) {
+      if (!state.modified_)
+        return state.base_;
+      state.finalized_ = true;
+      copy2 = shallowCopy(value, state.scope_.immer_.useStrictShallowCopy_);
+    } else {
+      copy2 = shallowCopy(value, true);
+    }
+    each(copy2, (key, childValue) => {
+      set(copy2, key, currentImpl(childValue));
+    });
+    if (state) {
+      state.finalized_ = false;
+    }
+    return copy2;
+  }
+  var immer = new Immer2();
+  var produce = immer.produce;
+  immer.produceWithPatches.bind(
+    immer
+  );
+  immer.setAutoFreeze.bind(immer);
+  immer.setUseStrictShallowCopy.bind(immer);
+  immer.applyPatches.bind(immer);
+  immer.createDraft.bind(immer);
+  immer.finishDraft.bind(immer);
+  function __awaiter(thisArg, _arguments, P2, generator) {
+    function adopt(value) {
+      return value instanceof P2 ? value : new P2(function(resolve) {
+        resolve(value);
+      });
+    }
+    return new (P2 || (P2 = Promise))(function(resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+  }
+  function __generator(thisArg, body2) {
+    var _2 = { label: 0, sent: function() {
+      if (t[0] & 1)
+        throw t[1];
+      return t[1];
+    }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
+      return this;
+    }), g;
+    function verb(n) {
+      return function(v) {
+        return step([n, v]);
+      };
+    }
+    function step(op) {
+      if (f)
+        throw new TypeError("Generator is already executing.");
+      while (g && (g = 0, op[0] && (_2 = 0)), _2)
+        try {
+          if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
+            return t;
+          if (y = 0, t)
+            op = [op[0] & 2, t.value];
+          switch (op[0]) {
+            case 0:
+            case 1:
+              t = op;
+              break;
+            case 4:
+              _2.label++;
+              return { value: op[1], done: false };
+            case 5:
+              _2.label++;
+              y = op[1];
+              op = [0];
+              continue;
+            case 7:
+              op = _2.ops.pop();
+              _2.trys.pop();
+              continue;
+            default:
+              if (!(t = _2.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                _2 = 0;
+                continue;
+              }
+              if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                _2.label = op[1];
+                break;
+              }
+              if (op[0] === 6 && _2.label < t[1]) {
+                _2.label = t[1];
+                t = op;
+                break;
+              }
+              if (t && _2.label < t[2]) {
+                _2.label = t[2];
+                _2.ops.push(op);
+                break;
+              }
+              if (t[2])
+                _2.ops.pop();
+              _2.trys.pop();
+              continue;
+          }
+          op = body2.call(thisArg, _2);
+        } catch (e) {
+          op = [6, e];
+          y = 0;
+        } finally {
+          f = t = 0;
+        }
+      if (op[0] & 5)
+        throw op[1];
+      return { value: op[0] ? op[1] : void 0, done: true };
+    }
+  }
+  function __read(o, n) {
+    var m2 = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m2)
+      return o;
+    var i2 = m2.call(o), r2, ar = [], e;
+    try {
+      while ((n === void 0 || n-- > 0) && !(r2 = i2.next()).done)
+        ar.push(r2.value);
+    } catch (error) {
+      e = { error };
+    } finally {
+      try {
+        if (r2 && !r2.done && (m2 = i2["return"]))
+          m2.call(i2);
+      } finally {
+        if (e)
+          throw e.error;
+      }
+    }
+    return ar;
+  }
+  function __spreadArray(to, from2, pack) {
+    if (pack || arguments.length === 2)
+      for (var i2 = 0, l = from2.length, ar; i2 < l; i2++) {
+        if (ar || !(i2 in from2)) {
+          if (!ar)
+            ar = Array.prototype.slice.call(from2, 0, i2);
+          ar[i2] = from2[i2];
+        }
+      }
+    return to.concat(ar || Array.prototype.slice.call(from2));
+  }
+  typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+  };
+  var COMMON_MIME_TYPES = /* @__PURE__ */ new Map([
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+    ["aac", "audio/aac"],
+    ["abw", "application/x-abiword"],
+    ["arc", "application/x-freearc"],
+    ["avif", "image/avif"],
+    ["avi", "video/x-msvideo"],
+    ["azw", "application/vnd.amazon.ebook"],
+    ["bin", "application/octet-stream"],
+    ["bmp", "image/bmp"],
+    ["bz", "application/x-bzip"],
+    ["bz2", "application/x-bzip2"],
+    ["cda", "application/x-cdf"],
+    ["csh", "application/x-csh"],
+    ["css", "text/css"],
+    ["csv", "text/csv"],
+    ["doc", "application/msword"],
+    ["docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+    ["eot", "application/vnd.ms-fontobject"],
+    ["epub", "application/epub+zip"],
+    ["gz", "application/gzip"],
+    ["gif", "image/gif"],
+    ["heic", "image/heic"],
+    ["heif", "image/heif"],
+    ["htm", "text/html"],
+    ["html", "text/html"],
+    ["ico", "image/vnd.microsoft.icon"],
+    ["ics", "text/calendar"],
+    ["jar", "application/java-archive"],
+    ["jpeg", "image/jpeg"],
+    ["jpg", "image/jpeg"],
+    ["js", "text/javascript"],
+    ["json", "application/json"],
+    ["jsonld", "application/ld+json"],
+    ["mid", "audio/midi"],
+    ["midi", "audio/midi"],
+    ["mjs", "text/javascript"],
+    ["mp3", "audio/mpeg"],
+    ["mp4", "video/mp4"],
+    ["mpeg", "video/mpeg"],
+    ["mpkg", "application/vnd.apple.installer+xml"],
+    ["odp", "application/vnd.oasis.opendocument.presentation"],
+    ["ods", "application/vnd.oasis.opendocument.spreadsheet"],
+    ["odt", "application/vnd.oasis.opendocument.text"],
+    ["oga", "audio/ogg"],
+    ["ogv", "video/ogg"],
+    ["ogx", "application/ogg"],
+    ["opus", "audio/opus"],
+    ["otf", "font/otf"],
+    ["png", "image/png"],
+    ["pdf", "application/pdf"],
+    ["php", "application/x-httpd-php"],
+    ["ppt", "application/vnd.ms-powerpoint"],
+    ["pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+    ["rar", "application/vnd.rar"],
+    ["rtf", "application/rtf"],
+    ["sh", "application/x-sh"],
+    ["svg", "image/svg+xml"],
+    ["swf", "application/x-shockwave-flash"],
+    ["tar", "application/x-tar"],
+    ["tif", "image/tiff"],
+    ["tiff", "image/tiff"],
+    ["ts", "video/mp2t"],
+    ["ttf", "font/ttf"],
+    ["txt", "text/plain"],
+    ["vsd", "application/vnd.visio"],
+    ["wav", "audio/wav"],
+    ["weba", "audio/webm"],
+    ["webm", "video/webm"],
+    ["webp", "image/webp"],
+    ["woff", "font/woff"],
+    ["woff2", "font/woff2"],
+    ["xhtml", "application/xhtml+xml"],
+    ["xls", "application/vnd.ms-excel"],
+    ["xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+    ["xml", "application/xml"],
+    ["xul", "application/vnd.mozilla.xul+xml"],
+    ["zip", "application/zip"],
+    ["7z", "application/x-7z-compressed"],
+    // Others
+    ["mkv", "video/x-matroska"],
+    ["mov", "video/quicktime"],
+    ["msg", "application/vnd.ms-outlook"]
+  ]);
+  function toFileWithPath(file, path) {
+    var f = withMimeType(file);
+    if (typeof f.path !== "string") {
+      var webkitRelativePath = file.webkitRelativePath;
+      Object.defineProperty(f, "path", {
+        value: typeof path === "string" ? path : typeof webkitRelativePath === "string" && webkitRelativePath.length > 0 ? webkitRelativePath : file.name,
+        writable: false,
+        configurable: false,
+        enumerable: true
+      });
+    }
+    return f;
+  }
+  function withMimeType(file) {
+    var name2 = file.name;
+    var hasExtension = name2 && name2.lastIndexOf(".") !== -1;
+    if (hasExtension && !file.type) {
+      var ext = name2.split(".").pop().toLowerCase();
+      var type = COMMON_MIME_TYPES.get(ext);
+      if (type) {
+        Object.defineProperty(file, "type", {
+          value: type,
+          writable: false,
+          configurable: false,
+          enumerable: true
+        });
+      }
+    }
+    return file;
+  }
+  var FILES_TO_IGNORE = [
+    // Thumbnail cache files for macOS and Windows
+    ".DS_Store",
+    "Thumbs.db"
+    // Windows
+  ];
+  function fromEvent(evt) {
+    return __awaiter(this, void 0, void 0, function() {
+      return __generator(this, function(_a2) {
+        if (isObject(evt) && isDataTransfer(evt.dataTransfer)) {
+          return [2, getDataTransferFiles(evt.dataTransfer, evt.type)];
+        } else if (isChangeEvt(evt)) {
+          return [2, getInputFiles(evt)];
+        } else if (Array.isArray(evt) && evt.every(function(item) {
+          return "getFile" in item && typeof item.getFile === "function";
+        })) {
+          return [2, getFsHandleFiles(evt)];
+        }
+        return [2, []];
+      });
+    });
+  }
+  function isDataTransfer(value) {
+    return isObject(value);
+  }
+  function isChangeEvt(value) {
+    return isObject(value) && isObject(value.target);
+  }
+  function isObject(v) {
+    return typeof v === "object" && v !== null;
+  }
+  function getInputFiles(evt) {
+    return fromList(evt.target.files).map(function(file) {
+      return toFileWithPath(file);
+    });
+  }
+  function getFsHandleFiles(handles) {
+    return __awaiter(this, void 0, void 0, function() {
+      var files;
+      return __generator(this, function(_a2) {
+        switch (_a2.label) {
+          case 0:
+            return [4, Promise.all(handles.map(function(h) {
+              return h.getFile();
+            }))];
+          case 1:
+            files = _a2.sent();
+            return [2, files.map(function(file) {
+              return toFileWithPath(file);
+            })];
+        }
+      });
+    });
+  }
+  function getDataTransferFiles(dt, type) {
+    return __awaiter(this, void 0, void 0, function() {
+      var items, files;
+      return __generator(this, function(_a2) {
+        switch (_a2.label) {
+          case 0:
+            if (!dt.items)
+              return [3, 2];
+            items = fromList(dt.items).filter(function(item) {
+              return item.kind === "file";
+            });
+            if (type !== "drop") {
+              return [2, items];
+            }
+            return [4, Promise.all(items.map(toFilePromises))];
+          case 1:
+            files = _a2.sent();
+            return [2, noIgnoredFiles(flatten(files))];
+          case 2:
+            return [2, noIgnoredFiles(fromList(dt.files).map(function(file) {
+              return toFileWithPath(file);
+            }))];
+        }
+      });
+    });
+  }
+  function noIgnoredFiles(files) {
+    return files.filter(function(file) {
+      return FILES_TO_IGNORE.indexOf(file.name) === -1;
+    });
+  }
+  function fromList(items) {
+    if (items === null) {
+      return [];
+    }
+    var files = [];
+    for (var i2 = 0; i2 < items.length; i2++) {
+      var file = items[i2];
+      files.push(file);
+    }
+    return files;
+  }
+  function toFilePromises(item) {
+    if (typeof item.webkitGetAsEntry !== "function") {
+      return fromDataTransferItem(item);
+    }
+    var entry = item.webkitGetAsEntry();
+    if (entry && entry.isDirectory) {
+      return fromDirEntry(entry);
+    }
+    return fromDataTransferItem(item);
+  }
+  function flatten(items) {
+    return items.reduce(function(acc, files) {
+      return __spreadArray(__spreadArray([], __read(acc), false), __read(Array.isArray(files) ? flatten(files) : [files]), false);
+    }, []);
+  }
+  function fromDataTransferItem(item) {
+    var file = item.getAsFile();
+    if (!file) {
+      return Promise.reject("".concat(item, " is not a File"));
+    }
+    var fwp = toFileWithPath(file);
+    return Promise.resolve(fwp);
+  }
+  function fromEntry(entry) {
+    return __awaiter(this, void 0, void 0, function() {
+      return __generator(this, function(_a2) {
+        return [2, entry.isDirectory ? fromDirEntry(entry) : fromFileEntry(entry)];
+      });
+    });
+  }
+  function fromDirEntry(entry) {
+    var reader = entry.createReader();
+    return new Promise(function(resolve, reject) {
+      var entries = [];
+      function readEntries() {
+        var _this = this;
+        reader.readEntries(function(batch2) {
+          return __awaiter(_this, void 0, void 0, function() {
+            var files, err_1, items;
+            return __generator(this, function(_a2) {
+              switch (_a2.label) {
+                case 0:
+                  if (!!batch2.length)
+                    return [3, 5];
+                  _a2.label = 1;
+                case 1:
+                  _a2.trys.push([1, 3, , 4]);
+                  return [4, Promise.all(entries)];
+                case 2:
+                  files = _a2.sent();
+                  resolve(files);
+                  return [3, 4];
+                case 3:
+                  err_1 = _a2.sent();
+                  reject(err_1);
+                  return [3, 4];
+                case 4:
+                  return [3, 6];
+                case 5:
+                  items = Promise.all(batch2.map(fromEntry));
+                  entries.push(items);
+                  readEntries();
+                  _a2.label = 6;
+                case 6:
+                  return [
+                    2
+                    /*return*/
+                  ];
+              }
+            });
+          });
+        }, function(err) {
+          reject(err);
+        });
+      }
+      readEntries();
+    });
+  }
+  function fromFileEntry(entry) {
+    return __awaiter(this, void 0, void 0, function() {
+      return __generator(this, function(_a2) {
+        return [2, new Promise(function(resolve, reject) {
+          entry.file(function(file) {
+            var fwp = toFileWithPath(file, entry.fullPath);
+            resolve(fwp);
+          }, function(err) {
+            reject(err);
+          });
+        })];
+      });
+    });
+  }
+  var _default$h = function(file, acceptedFiles) {
+    if (file && acceptedFiles) {
+      var acceptedFilesArray = Array.isArray(acceptedFiles) ? acceptedFiles : acceptedFiles.split(",");
+      var fileName = file.name || "";
+      var mimeType = (file.type || "").toLowerCase();
+      var baseMimeType = mimeType.replace(/\/.*$/, "");
+      return acceptedFilesArray.some(function(type) {
+        var validType = type.trim().toLowerCase();
+        if (validType.charAt(0) === ".") {
+          return fileName.toLowerCase().endsWith(validType);
+        } else if (validType.endsWith("/*")) {
+          return baseMimeType === validType.replace(/\/.*$/, "");
+        }
+        return mimeType === validType;
+      });
+    }
+    return true;
+  };
+  function _toConsumableArray$1(arr) {
+    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread$1();
+  }
+  function _nonIterableSpread$1() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _iterableToArray$1(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+      return Array.from(iter);
+  }
+  function _arrayWithoutHoles$1(arr) {
+    if (Array.isArray(arr))
+      return _arrayLikeToArray$1(arr);
+  }
+  function ownKeys$1(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function(sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+  }
+  function _objectSpread$1(target) {
+    for (var i2 = 1; i2 < arguments.length; i2++) {
+      var source = null != arguments[i2] ? arguments[i2] : {};
+      i2 % 2 ? ownKeys$1(Object(source), true).forEach(function(key) {
+        _defineProperty$1(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function(key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+    return target;
+  }
+  function _defineProperty$1(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true });
+    } else {
+      obj[key] = value;
+    }
+    return obj;
+  }
+  function _slicedToArray$1(arr, i2) {
+    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i2) || _unsupportedIterableToArray$1(arr, i2) || _nonIterableRest$1();
+  }
+  function _nonIterableRest$1() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _unsupportedIterableToArray$1(o, minLen) {
+    if (!o)
+      return;
+    if (typeof o === "string")
+      return _arrayLikeToArray$1(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor)
+      n = o.constructor.name;
+    if (n === "Map" || n === "Set")
+      return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+      return _arrayLikeToArray$1(o, minLen);
+  }
+  function _arrayLikeToArray$1(arr, len) {
+    if (len == null || len > arr.length)
+      len = arr.length;
+    for (var i2 = 0, arr2 = new Array(len); i2 < len; i2++) {
+      arr2[i2] = arr[i2];
+    }
+    return arr2;
+  }
+  function _iterableToArrayLimit$1(arr, i2) {
+    var _i2 = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i2 == null)
+      return;
+    var _arr = [];
+    var _n = true;
+    var _d2 = false;
+    var _s, _e2;
+    try {
+      for (_i2 = _i2.call(arr); !(_n = (_s = _i2.next()).done); _n = true) {
+        _arr.push(_s.value);
+        if (i2 && _arr.length === i2)
+          break;
+      }
+    } catch (err) {
+      _d2 = true;
+      _e2 = err;
+    } finally {
+      try {
+        if (!_n && _i2["return"] != null)
+          _i2["return"]();
+      } finally {
+        if (_d2)
+          throw _e2;
+      }
+    }
+    return _arr;
+  }
+  function _arrayWithHoles$1(arr) {
+    if (Array.isArray(arr))
+      return arr;
+  }
+  var FILE_INVALID_TYPE = "file-invalid-type";
+  var FILE_TOO_LARGE = "file-too-large";
+  var FILE_TOO_SMALL = "file-too-small";
+  var TOO_MANY_FILES = "too-many-files";
+  var getInvalidTypeRejectionErr = function getInvalidTypeRejectionErr2(accept) {
+    accept = Array.isArray(accept) && accept.length === 1 ? accept[0] : accept;
+    var messageSuffix = Array.isArray(accept) ? "one of ".concat(accept.join(", ")) : accept;
+    return {
+      code: FILE_INVALID_TYPE,
+      message: "File type must be ".concat(messageSuffix)
+    };
+  };
+  var getTooLargeRejectionErr = function getTooLargeRejectionErr2(maxSize) {
+    return {
+      code: FILE_TOO_LARGE,
+      message: "File is larger than ".concat(maxSize, " ").concat(maxSize === 1 ? "byte" : "bytes")
+    };
+  };
+  var getTooSmallRejectionErr = function getTooSmallRejectionErr2(minSize) {
+    return {
+      code: FILE_TOO_SMALL,
+      message: "File is smaller than ".concat(minSize, " ").concat(minSize === 1 ? "byte" : "bytes")
+    };
+  };
+  var TOO_MANY_FILES_REJECTION = {
+    code: TOO_MANY_FILES,
+    message: "Too many files"
+  };
+  function fileAccepted(file, accept) {
+    var isAcceptable = file.type === "application/x-moz-file" || _default$h(file, accept);
+    return [isAcceptable, isAcceptable ? null : getInvalidTypeRejectionErr(accept)];
+  }
+  function fileMatchSize(file, minSize, maxSize) {
+    if (isDefined(file.size)) {
+      if (isDefined(minSize) && isDefined(maxSize)) {
+        if (file.size > maxSize)
+          return [false, getTooLargeRejectionErr(maxSize)];
+        if (file.size < minSize)
+          return [false, getTooSmallRejectionErr(minSize)];
+      } else if (isDefined(minSize) && file.size < minSize)
+        return [false, getTooSmallRejectionErr(minSize)];
+      else if (isDefined(maxSize) && file.size > maxSize)
+        return [false, getTooLargeRejectionErr(maxSize)];
+    }
+    return [true, null];
+  }
+  function isDefined(value) {
+    return value !== void 0 && value !== null;
+  }
+  function allFilesAccepted(_ref) {
+    var files = _ref.files, accept = _ref.accept, minSize = _ref.minSize, maxSize = _ref.maxSize, multiple = _ref.multiple, maxFiles = _ref.maxFiles, validator2 = _ref.validator;
+    if (!multiple && files.length > 1 || multiple && maxFiles >= 1 && files.length > maxFiles) {
+      return false;
+    }
+    return files.every(function(file) {
+      var _fileAccepted = fileAccepted(file, accept), _fileAccepted2 = _slicedToArray$1(_fileAccepted, 1), accepted = _fileAccepted2[0];
+      var _fileMatchSize = fileMatchSize(file, minSize, maxSize), _fileMatchSize2 = _slicedToArray$1(_fileMatchSize, 1), sizeMatch = _fileMatchSize2[0];
+      var customErrors = validator2 ? validator2(file) : null;
+      return accepted && sizeMatch && !customErrors;
+    });
+  }
+  function isPropagationStopped(event) {
+    if (typeof event.isPropagationStopped === "function") {
+      return event.isPropagationStopped();
+    } else if (typeof event.cancelBubble !== "undefined") {
+      return event.cancelBubble;
+    }
+    return false;
+  }
+  function isEvtWithFiles(event) {
+    if (!event.dataTransfer) {
+      return !!event.target && !!event.target.files;
+    }
+    return Array.prototype.some.call(event.dataTransfer.types, function(type) {
+      return type === "Files" || type === "application/x-moz-file";
+    });
+  }
+  function onDocumentDragOver(event) {
+    event.preventDefault();
+  }
+  function isIe(userAgent) {
+    return userAgent.indexOf("MSIE") !== -1 || userAgent.indexOf("Trident/") !== -1;
+  }
+  function isEdge(userAgent) {
+    return userAgent.indexOf("Edge/") !== -1;
+  }
+  function isIeOrEdge() {
+    var userAgent = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : window.navigator.userAgent;
+    return isIe(userAgent) || isEdge(userAgent);
+  }
+  function composeEventHandlers() {
+    for (var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) {
+      fns[_key] = arguments[_key];
+    }
+    return function(event) {
+      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        args[_key2 - 1] = arguments[_key2];
+      }
+      return fns.some(function(fn) {
+        if (!isPropagationStopped(event) && fn) {
+          fn.apply(void 0, [event].concat(args));
+        }
+        return isPropagationStopped(event);
+      });
+    };
+  }
+  function canUseFileSystemAccessAPI() {
+    return "showOpenFilePicker" in window;
+  }
+  function pickerOptionsFromAccept(accept) {
+    if (isDefined(accept)) {
+      var acceptForPicker = Object.entries(accept).filter(function(_ref2) {
+        var _ref3 = _slicedToArray$1(_ref2, 2), mimeType = _ref3[0], ext = _ref3[1];
+        var ok2 = true;
+        if (!isMIMEType(mimeType)) {
+          console.warn('Skipped "'.concat(mimeType, '" because it is not a valid MIME type. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types for a list of valid MIME types.'));
+          ok2 = false;
+        }
+        if (!Array.isArray(ext) || !ext.every(isExt)) {
+          console.warn('Skipped "'.concat(mimeType, '" because an invalid file extension was provided.'));
+          ok2 = false;
+        }
+        return ok2;
+      }).reduce(function(agg, _ref4) {
+        var _ref5 = _slicedToArray$1(_ref4, 2), mimeType = _ref5[0], ext = _ref5[1];
+        return _objectSpread$1(_objectSpread$1({}, agg), {}, _defineProperty$1({}, mimeType, ext));
+      }, {});
+      return [{
+        // description is required due to https://crbug.com/1264708
+        description: "Files",
+        accept: acceptForPicker
+      }];
+    }
+    return accept;
+  }
+  function acceptPropAsAcceptAttr(accept) {
+    if (isDefined(accept)) {
+      return Object.entries(accept).reduce(function(a, _ref6) {
+        var _ref7 = _slicedToArray$1(_ref6, 2), mimeType = _ref7[0], ext = _ref7[1];
+        return [].concat(_toConsumableArray$1(a), [mimeType], _toConsumableArray$1(ext));
+      }, []).filter(function(v) {
+        return isMIMEType(v) || isExt(v);
+      }).join(",");
+    }
+    return void 0;
+  }
+  function isAbort(v) {
+    return v instanceof DOMException && (v.name === "AbortError" || v.code === v.ABORT_ERR);
+  }
+  function isSecurityError(v) {
+    return v instanceof DOMException && (v.name === "SecurityError" || v.code === v.SECURITY_ERR);
+  }
+  function isMIMEType(v) {
+    return v === "audio/*" || v === "video/*" || v === "image/*" || v === "text/*" || /\w+\/[-+.\w]+/g.test(v);
+  }
+  function isExt(v) {
+    return /^.*\.[\w]+$/.test(v);
+  }
+  var _excluded = ["children"], _excluded2 = ["open"], _excluded3 = ["refKey", "role", "onKeyDown", "onFocus", "onBlur", "onClick", "onDragEnter", "onDragOver", "onDragLeave", "onDrop"], _excluded4 = ["refKey", "onChange", "onClick"];
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  }
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+      return Array.from(iter);
+  }
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr))
+      return _arrayLikeToArray(arr);
+  }
+  function _slicedToArray(arr, i2) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i2) || _unsupportedIterableToArray(arr, i2) || _nonIterableRest();
+  }
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o)
+      return;
+    if (typeof o === "string")
+      return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor)
+      n = o.constructor.name;
+    if (n === "Map" || n === "Set")
+      return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+      return _arrayLikeToArray(o, minLen);
+  }
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length)
+      len = arr.length;
+    for (var i2 = 0, arr2 = new Array(len); i2 < len; i2++) {
+      arr2[i2] = arr[i2];
+    }
+    return arr2;
+  }
+  function _iterableToArrayLimit(arr, i2) {
+    var _i2 = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i2 == null)
+      return;
+    var _arr = [];
+    var _n = true;
+    var _d2 = false;
+    var _s, _e2;
+    try {
+      for (_i2 = _i2.call(arr); !(_n = (_s = _i2.next()).done); _n = true) {
+        _arr.push(_s.value);
+        if (i2 && _arr.length === i2)
+          break;
+      }
+    } catch (err) {
+      _d2 = true;
+      _e2 = err;
+    } finally {
+      try {
+        if (!_n && _i2["return"] != null)
+          _i2["return"]();
+      } finally {
+        if (_d2)
+          throw _e2;
+      }
+    }
+    return _arr;
+  }
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr))
+      return arr;
+  }
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function(sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+  }
+  function _objectSpread(target) {
+    for (var i2 = 1; i2 < arguments.length; i2++) {
+      var source = null != arguments[i2] ? arguments[i2] : {};
+      i2 % 2 ? ownKeys(Object(source), true).forEach(function(key) {
+        _defineProperty(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+    return target;
+  }
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true });
+    } else {
+      obj[key] = value;
+    }
+    return obj;
+  }
+  function _objectWithoutProperties(source, excluded) {
+    if (source == null)
+      return {};
+    var target = _objectWithoutPropertiesLoose(source, excluded);
+    var key, i2;
+    if (Object.getOwnPropertySymbols) {
+      var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+      for (i2 = 0; i2 < sourceSymbolKeys.length; i2++) {
+        key = sourceSymbolKeys[i2];
+        if (excluded.indexOf(key) >= 0)
+          continue;
+        if (!Object.prototype.propertyIsEnumerable.call(source, key))
+          continue;
+        target[key] = source[key];
+      }
+    }
+    return target;
+  }
+  function _objectWithoutPropertiesLoose(source, excluded) {
+    if (source == null)
+      return {};
+    var target = {};
+    var sourceKeys = Object.keys(source);
+    var key, i2;
+    for (i2 = 0; i2 < sourceKeys.length; i2++) {
+      key = sourceKeys[i2];
+      if (excluded.indexOf(key) >= 0)
+        continue;
+      target[key] = source[key];
+    }
+    return target;
+  }
+  var Dropzone = /* @__PURE__ */ reactExports.forwardRef(function(_ref, ref) {
+    var children = _ref.children, params = _objectWithoutProperties(_ref, _excluded);
+    var _useDropzone = useDropzone(params), open = _useDropzone.open, props = _objectWithoutProperties(_useDropzone, _excluded2);
+    reactExports.useImperativeHandle(ref, function() {
+      return {
+        open
+      };
+    }, [open]);
+    return /* @__PURE__ */ React$1.createElement(reactExports.Fragment, null, children(_objectSpread(_objectSpread({}, props), {}, {
+      open
+    })));
+  });
+  Dropzone.displayName = "Dropzone";
+  var defaultProps = {
+    disabled: false,
+    getFilesFromEvent: fromEvent,
+    maxSize: Infinity,
+    minSize: 0,
+    multiple: true,
+    maxFiles: 0,
+    preventDropOnDocument: true,
+    noClick: false,
+    noKeyboard: false,
+    noDrag: false,
+    noDragEventsBubbling: false,
+    validator: null,
+    useFsAccessApi: true,
+    autoFocus: false
+  };
+  Dropzone.defaultProps = defaultProps;
+  Dropzone.propTypes = {
+    /**
+     * Render function that exposes the dropzone state and prop getter fns
+     *
+     * @param {object} params
+     * @param {Function} params.getRootProps Returns the props you should apply to the root drop container you render
+     * @param {Function} params.getInputProps Returns the props you should apply to hidden file input you render
+     * @param {Function} params.open Open the native file selection dialog
+     * @param {boolean} params.isFocused Dropzone area is in focus
+     * @param {boolean} params.isFileDialogActive File dialog is opened
+     * @param {boolean} params.isDragActive Active drag is in progress
+     * @param {boolean} params.isDragAccept Dragged files are accepted
+     * @param {boolean} params.isDragReject Some dragged files are rejected
+     * @param {File[]} params.acceptedFiles Accepted files
+     * @param {FileRejection[]} params.fileRejections Rejected files and why they were rejected
+     */
+    children: PropTypes.func,
+    /**
+     * Set accepted file types.
+     * Checkout https://developer.mozilla.org/en-US/docs/Web/API/window/showOpenFilePicker types option for more information.
+     * Keep in mind that mime type determination is not reliable across platforms. CSV files,
+     * for example, are reported as text/plain under macOS but as application/vnd.ms-excel under
+     * Windows. In some cases there might not be a mime type set at all (https://github.com/react-dropzone/react-dropzone/issues/276).
+     */
+    accept: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
+    /**
+     * Allow drag 'n' drop (or selection from the file dialog) of multiple files
+     */
+    multiple: PropTypes.bool,
+    /**
+     * If false, allow dropped items to take over the current browser window
+     */
+    preventDropOnDocument: PropTypes.bool,
+    /**
+     * If true, disables click to open the native file selection dialog
+     */
+    noClick: PropTypes.bool,
+    /**
+     * If true, disables SPACE/ENTER to open the native file selection dialog.
+     * Note that it also stops tracking the focus state.
+     */
+    noKeyboard: PropTypes.bool,
+    /**
+     * If true, disables drag 'n' drop
+     */
+    noDrag: PropTypes.bool,
+    /**
+     * If true, stops drag event propagation to parents
+     */
+    noDragEventsBubbling: PropTypes.bool,
+    /**
+     * Minimum file size (in bytes)
+     */
+    minSize: PropTypes.number,
+    /**
+     * Maximum file size (in bytes)
+     */
+    maxSize: PropTypes.number,
+    /**
+     * Maximum accepted number of files
+     * The default value is 0 which means there is no limitation to how many files are accepted.
+     */
+    maxFiles: PropTypes.number,
+    /**
+     * Enable/disable the dropzone
+     */
+    disabled: PropTypes.bool,
+    /**
+     * Use this to provide a custom file aggregator
+     *
+     * @param {(DragEvent|Event)} event A drag event or input change event (if files were selected via the file dialog)
+     */
+    getFilesFromEvent: PropTypes.func,
+    /**
+     * Cb for when closing the file dialog with no selection
+     */
+    onFileDialogCancel: PropTypes.func,
+    /**
+     * Cb for when opening the file dialog
+     */
+    onFileDialogOpen: PropTypes.func,
+    /**
+     * Set to true to use the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API
+     * to open the file picker instead of using an `<input type="file">` click event.
+     */
+    useFsAccessApi: PropTypes.bool,
+    /**
+     * Set to true to focus the root element on render
+     */
+    autoFocus: PropTypes.bool,
+    /**
+     * Cb for when the `dragenter` event occurs.
+     *
+     * @param {DragEvent} event
+     */
+    onDragEnter: PropTypes.func,
+    /**
+     * Cb for when the `dragleave` event occurs
+     *
+     * @param {DragEvent} event
+     */
+    onDragLeave: PropTypes.func,
+    /**
+     * Cb for when the `dragover` event occurs
+     *
+     * @param {DragEvent} event
+     */
+    onDragOver: PropTypes.func,
+    /**
+     * Cb for when the `drop` event occurs.
+     * Note that this callback is invoked after the `getFilesFromEvent` callback is done.
+     *
+     * Files are accepted or rejected based on the `accept`, `multiple`, `minSize` and `maxSize` props.
+     * `accept` must be a valid [MIME type](http://www.iana.org/assignments/media-types/media-types.xhtml) according to [input element specification](https://www.w3.org/wiki/HTML/Elements/input/file) or a valid file extension.
+     * If `multiple` is set to false and additional files are dropped,
+     * all files besides the first will be rejected.
+     * Any file which does not have a size in the [`minSize`, `maxSize`] range, will be rejected as well.
+     *
+     * Note that the `onDrop` callback will always be invoked regardless if the dropped files were accepted or rejected.
+     * If you'd like to react to a specific scenario, use the `onDropAccepted`/`onDropRejected` props.
+     *
+     * `onDrop` will provide you with an array of [File](https://developer.mozilla.org/en-US/docs/Web/API/File) objects which you can then process and send to a server.
+     * For example, with [SuperAgent](https://github.com/visionmedia/superagent) as a http/ajax library:
+     *
+     * ```js
+     * function onDrop(acceptedFiles) {
+     *   const req = request.post('/upload')
+     *   acceptedFiles.forEach(file => {
+     *     req.attach(file.name, file)
+     *   })
+     *   req.end(callback)
+     * }
+     * ```
+     *
+     * @param {File[]} acceptedFiles
+     * @param {FileRejection[]} fileRejections
+     * @param {(DragEvent|Event)} event A drag event or input change event (if files were selected via the file dialog)
+     */
+    onDrop: PropTypes.func,
+    /**
+     * Cb for when the `drop` event occurs.
+     * Note that if no files are accepted, this callback is not invoked.
+     *
+     * @param {File[]} files
+     * @param {(DragEvent|Event)} event
+     */
+    onDropAccepted: PropTypes.func,
+    /**
+     * Cb for when the `drop` event occurs.
+     * Note that if no files are rejected, this callback is not invoked.
+     *
+     * @param {FileRejection[]} fileRejections
+     * @param {(DragEvent|Event)} event
+     */
+    onDropRejected: PropTypes.func,
+    /**
+     * Cb for when there's some error from any of the promises.
+     *
+     * @param {Error} error
+     */
+    onError: PropTypes.func,
+    /**
+     * Custom validation function. It must return null if there's no errors.
+     * @param {File} file
+     * @returns {FileError|FileError[]|null}
+     */
+    validator: PropTypes.func
+  };
+  var initialState$2 = {
+    isFocused: false,
+    isFileDialogActive: false,
+    isDragActive: false,
+    isDragAccept: false,
+    isDragReject: false,
+    acceptedFiles: [],
+    fileRejections: []
+  };
+  function useDropzone() {
+    var props = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+    var _defaultProps$props = _objectSpread(_objectSpread({}, defaultProps), props), accept = _defaultProps$props.accept, disabled = _defaultProps$props.disabled, getFilesFromEvent = _defaultProps$props.getFilesFromEvent, maxSize = _defaultProps$props.maxSize, minSize = _defaultProps$props.minSize, multiple = _defaultProps$props.multiple, maxFiles = _defaultProps$props.maxFiles, onDragEnter = _defaultProps$props.onDragEnter, onDragLeave = _defaultProps$props.onDragLeave, onDragOver = _defaultProps$props.onDragOver, onDrop = _defaultProps$props.onDrop, onDropAccepted = _defaultProps$props.onDropAccepted, onDropRejected = _defaultProps$props.onDropRejected, onFileDialogCancel = _defaultProps$props.onFileDialogCancel, onFileDialogOpen = _defaultProps$props.onFileDialogOpen, useFsAccessApi = _defaultProps$props.useFsAccessApi, autoFocus = _defaultProps$props.autoFocus, preventDropOnDocument = _defaultProps$props.preventDropOnDocument, noClick = _defaultProps$props.noClick, noKeyboard = _defaultProps$props.noKeyboard, noDrag = _defaultProps$props.noDrag, noDragEventsBubbling = _defaultProps$props.noDragEventsBubbling, onError = _defaultProps$props.onError, validator2 = _defaultProps$props.validator;
+    var acceptAttr = reactExports.useMemo(function() {
+      return acceptPropAsAcceptAttr(accept);
+    }, [accept]);
+    var pickerTypes = reactExports.useMemo(function() {
+      return pickerOptionsFromAccept(accept);
+    }, [accept]);
+    var onFileDialogOpenCb = reactExports.useMemo(function() {
+      return typeof onFileDialogOpen === "function" ? onFileDialogOpen : noop$1;
+    }, [onFileDialogOpen]);
+    var onFileDialogCancelCb = reactExports.useMemo(function() {
+      return typeof onFileDialogCancel === "function" ? onFileDialogCancel : noop$1;
+    }, [onFileDialogCancel]);
+    var rootRef = reactExports.useRef(null);
+    var inputRef = reactExports.useRef(null);
+    var _useReducer = reactExports.useReducer(reducer$1, initialState$2), _useReducer2 = _slicedToArray(_useReducer, 2), state = _useReducer2[0], dispatch = _useReducer2[1];
+    var isFocused = state.isFocused, isFileDialogActive = state.isFileDialogActive;
+    var fsAccessApiWorksRef = reactExports.useRef(typeof window !== "undefined" && window.isSecureContext && useFsAccessApi && canUseFileSystemAccessAPI());
+    var onWindowFocus = function onWindowFocus2() {
+      if (!fsAccessApiWorksRef.current && isFileDialogActive) {
+        setTimeout(function() {
+          if (inputRef.current) {
+            var files = inputRef.current.files;
+            if (!files.length) {
+              dispatch({
+                type: "closeDialog"
+              });
+              onFileDialogCancelCb();
+            }
+          }
+        }, 300);
+      }
+    };
+    reactExports.useEffect(function() {
+      window.addEventListener("focus", onWindowFocus, false);
+      return function() {
+        window.removeEventListener("focus", onWindowFocus, false);
+      };
+    }, [inputRef, isFileDialogActive, onFileDialogCancelCb, fsAccessApiWorksRef]);
+    var dragTargetsRef = reactExports.useRef([]);
+    var onDocumentDrop = function onDocumentDrop2(event) {
+      if (rootRef.current && rootRef.current.contains(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      dragTargetsRef.current = [];
+    };
+    reactExports.useEffect(function() {
+      if (preventDropOnDocument) {
+        document.addEventListener("dragover", onDocumentDragOver, false);
+        document.addEventListener("drop", onDocumentDrop, false);
+      }
+      return function() {
+        if (preventDropOnDocument) {
+          document.removeEventListener("dragover", onDocumentDragOver);
+          document.removeEventListener("drop", onDocumentDrop);
+        }
+      };
+    }, [rootRef, preventDropOnDocument]);
+    reactExports.useEffect(function() {
+      if (!disabled && autoFocus && rootRef.current) {
+        rootRef.current.focus();
+      }
+      return function() {
+      };
+    }, [rootRef, autoFocus, disabled]);
+    var onErrCb = reactExports.useCallback(function(e) {
+      if (onError) {
+        onError(e);
+      } else {
+        console.error(e);
+      }
+    }, [onError]);
+    var onDragEnterCb = reactExports.useCallback(function(event) {
+      event.preventDefault();
+      event.persist();
+      stopPropagation(event);
+      dragTargetsRef.current = [].concat(_toConsumableArray(dragTargetsRef.current), [event.target]);
+      if (isEvtWithFiles(event)) {
+        Promise.resolve(getFilesFromEvent(event)).then(function(files) {
+          if (isPropagationStopped(event) && !noDragEventsBubbling) {
+            return;
+          }
+          var fileCount = files.length;
+          var isDragAccept = fileCount > 0 && allFilesAccepted({
+            files,
+            accept: acceptAttr,
+            minSize,
+            maxSize,
+            multiple,
+            maxFiles,
+            validator: validator2
+          });
+          var isDragReject = fileCount > 0 && !isDragAccept;
+          dispatch({
+            isDragAccept,
+            isDragReject,
+            isDragActive: true,
+            type: "setDraggedFiles"
+          });
+          if (onDragEnter) {
+            onDragEnter(event);
+          }
+        }).catch(function(e) {
+          return onErrCb(e);
+        });
+      }
+    }, [getFilesFromEvent, onDragEnter, onErrCb, noDragEventsBubbling, acceptAttr, minSize, maxSize, multiple, maxFiles, validator2]);
+    var onDragOverCb = reactExports.useCallback(function(event) {
+      event.preventDefault();
+      event.persist();
+      stopPropagation(event);
+      var hasFiles = isEvtWithFiles(event);
+      if (hasFiles && event.dataTransfer) {
+        try {
+          event.dataTransfer.dropEffect = "copy";
+        } catch (_unused) {
+        }
+      }
+      if (hasFiles && onDragOver) {
+        onDragOver(event);
+      }
+      return false;
+    }, [onDragOver, noDragEventsBubbling]);
+    var onDragLeaveCb = reactExports.useCallback(function(event) {
+      event.preventDefault();
+      event.persist();
+      stopPropagation(event);
+      var targets = dragTargetsRef.current.filter(function(target) {
+        return rootRef.current && rootRef.current.contains(target);
+      });
+      var targetIdx = targets.indexOf(event.target);
+      if (targetIdx !== -1) {
+        targets.splice(targetIdx, 1);
+      }
+      dragTargetsRef.current = targets;
+      if (targets.length > 0) {
+        return;
+      }
+      dispatch({
+        type: "setDraggedFiles",
+        isDragActive: false,
+        isDragAccept: false,
+        isDragReject: false
+      });
+      if (isEvtWithFiles(event) && onDragLeave) {
+        onDragLeave(event);
+      }
+    }, [rootRef, onDragLeave, noDragEventsBubbling]);
+    var setFiles = reactExports.useCallback(function(files, event) {
+      var acceptedFiles = [];
+      var fileRejections = [];
+      files.forEach(function(file) {
+        var _fileAccepted = fileAccepted(file, acceptAttr), _fileAccepted2 = _slicedToArray(_fileAccepted, 2), accepted = _fileAccepted2[0], acceptError = _fileAccepted2[1];
+        var _fileMatchSize = fileMatchSize(file, minSize, maxSize), _fileMatchSize2 = _slicedToArray(_fileMatchSize, 2), sizeMatch = _fileMatchSize2[0], sizeError = _fileMatchSize2[1];
+        var customErrors = validator2 ? validator2(file) : null;
+        if (accepted && sizeMatch && !customErrors) {
+          acceptedFiles.push(file);
+        } else {
+          var errors2 = [acceptError, sizeError];
+          if (customErrors) {
+            errors2 = errors2.concat(customErrors);
+          }
+          fileRejections.push({
+            file,
+            errors: errors2.filter(function(e) {
+              return e;
+            })
+          });
+        }
+      });
+      if (!multiple && acceptedFiles.length > 1 || multiple && maxFiles >= 1 && acceptedFiles.length > maxFiles) {
+        acceptedFiles.forEach(function(file) {
+          fileRejections.push({
+            file,
+            errors: [TOO_MANY_FILES_REJECTION]
+          });
+        });
+        acceptedFiles.splice(0);
+      }
+      dispatch({
+        acceptedFiles,
+        fileRejections,
+        type: "setFiles"
+      });
+      if (onDrop) {
+        onDrop(acceptedFiles, fileRejections, event);
+      }
+      if (fileRejections.length > 0 && onDropRejected) {
+        onDropRejected(fileRejections, event);
+      }
+      if (acceptedFiles.length > 0 && onDropAccepted) {
+        onDropAccepted(acceptedFiles, event);
+      }
+    }, [dispatch, multiple, acceptAttr, minSize, maxSize, maxFiles, onDrop, onDropAccepted, onDropRejected, validator2]);
+    var onDropCb = reactExports.useCallback(function(event) {
+      event.preventDefault();
+      event.persist();
+      stopPropagation(event);
+      dragTargetsRef.current = [];
+      if (isEvtWithFiles(event)) {
+        Promise.resolve(getFilesFromEvent(event)).then(function(files) {
+          if (isPropagationStopped(event) && !noDragEventsBubbling) {
+            return;
+          }
+          setFiles(files, event);
+        }).catch(function(e) {
+          return onErrCb(e);
+        });
+      }
+      dispatch({
+        type: "reset"
+      });
+    }, [getFilesFromEvent, setFiles, onErrCb, noDragEventsBubbling]);
+    var openFileDialog = reactExports.useCallback(function() {
+      if (fsAccessApiWorksRef.current) {
+        dispatch({
+          type: "openDialog"
+        });
+        onFileDialogOpenCb();
+        var opts = {
+          multiple,
+          types: pickerTypes
+        };
+        window.showOpenFilePicker(opts).then(function(handles) {
+          return getFilesFromEvent(handles);
+        }).then(function(files) {
+          setFiles(files, null);
+          dispatch({
+            type: "closeDialog"
+          });
+        }).catch(function(e) {
+          if (isAbort(e)) {
+            onFileDialogCancelCb(e);
+            dispatch({
+              type: "closeDialog"
+            });
+          } else if (isSecurityError(e)) {
+            fsAccessApiWorksRef.current = false;
+            if (inputRef.current) {
+              inputRef.current.value = null;
+              inputRef.current.click();
+            } else {
+              onErrCb(new Error("Cannot open the file picker because the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API is not supported and no <input> was provided."));
+            }
+          } else {
+            onErrCb(e);
+          }
+        });
+        return;
+      }
+      if (inputRef.current) {
+        dispatch({
+          type: "openDialog"
+        });
+        onFileDialogOpenCb();
+        inputRef.current.value = null;
+        inputRef.current.click();
+      }
+    }, [dispatch, onFileDialogOpenCb, onFileDialogCancelCb, useFsAccessApi, setFiles, onErrCb, pickerTypes, multiple]);
+    var onKeyDownCb = reactExports.useCallback(function(event) {
+      if (!rootRef.current || !rootRef.current.isEqualNode(event.target)) {
+        return;
+      }
+      if (event.key === " " || event.key === "Enter" || event.keyCode === 32 || event.keyCode === 13) {
+        event.preventDefault();
+        openFileDialog();
+      }
+    }, [rootRef, openFileDialog]);
+    var onFocusCb = reactExports.useCallback(function() {
+      dispatch({
+        type: "focus"
+      });
+    }, []);
+    var onBlurCb = reactExports.useCallback(function() {
+      dispatch({
+        type: "blur"
+      });
+    }, []);
+    var onClickCb = reactExports.useCallback(function() {
+      if (noClick) {
+        return;
+      }
+      if (isIeOrEdge()) {
+        setTimeout(openFileDialog, 0);
+      } else {
+        openFileDialog();
+      }
+    }, [noClick, openFileDialog]);
+    var composeHandler = function composeHandler2(fn) {
+      return disabled ? null : fn;
+    };
+    var composeKeyboardHandler = function composeKeyboardHandler2(fn) {
+      return noKeyboard ? null : composeHandler(fn);
+    };
+    var composeDragHandler = function composeDragHandler2(fn) {
+      return noDrag ? null : composeHandler(fn);
+    };
+    var stopPropagation = function stopPropagation2(event) {
+      if (noDragEventsBubbling) {
+        event.stopPropagation();
+      }
+    };
+    var getRootProps = reactExports.useMemo(function() {
+      return function() {
+        var _ref2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, _ref2$refKey = _ref2.refKey, refKey = _ref2$refKey === void 0 ? "ref" : _ref2$refKey, role = _ref2.role, onKeyDown = _ref2.onKeyDown, onFocus = _ref2.onFocus, onBlur = _ref2.onBlur, onClick = _ref2.onClick, onDragEnter2 = _ref2.onDragEnter, onDragOver2 = _ref2.onDragOver, onDragLeave2 = _ref2.onDragLeave, onDrop2 = _ref2.onDrop, rest = _objectWithoutProperties(_ref2, _excluded3);
+        return _objectSpread(_objectSpread(_defineProperty({
+          onKeyDown: composeKeyboardHandler(composeEventHandlers(onKeyDown, onKeyDownCb)),
+          onFocus: composeKeyboardHandler(composeEventHandlers(onFocus, onFocusCb)),
+          onBlur: composeKeyboardHandler(composeEventHandlers(onBlur, onBlurCb)),
+          onClick: composeHandler(composeEventHandlers(onClick, onClickCb)),
+          onDragEnter: composeDragHandler(composeEventHandlers(onDragEnter2, onDragEnterCb)),
+          onDragOver: composeDragHandler(composeEventHandlers(onDragOver2, onDragOverCb)),
+          onDragLeave: composeDragHandler(composeEventHandlers(onDragLeave2, onDragLeaveCb)),
+          onDrop: composeDragHandler(composeEventHandlers(onDrop2, onDropCb)),
+          role: typeof role === "string" && role !== "" ? role : "presentation"
+        }, refKey, rootRef), !disabled && !noKeyboard ? {
+          tabIndex: 0
+        } : {}), rest);
+      };
+    }, [rootRef, onKeyDownCb, onFocusCb, onBlurCb, onClickCb, onDragEnterCb, onDragOverCb, onDragLeaveCb, onDropCb, noKeyboard, noDrag, disabled]);
+    var onInputElementClick = reactExports.useCallback(function(event) {
+      event.stopPropagation();
+    }, []);
+    var getInputProps = reactExports.useMemo(function() {
+      return function() {
+        var _ref3 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, _ref3$refKey = _ref3.refKey, refKey = _ref3$refKey === void 0 ? "ref" : _ref3$refKey, onChange = _ref3.onChange, onClick = _ref3.onClick, rest = _objectWithoutProperties(_ref3, _excluded4);
+        var inputProps = _defineProperty({
+          accept: acceptAttr,
+          multiple,
+          type: "file",
+          style: {
+            display: "none"
+          },
+          onChange: composeHandler(composeEventHandlers(onChange, onDropCb)),
+          onClick: composeHandler(composeEventHandlers(onClick, onInputElementClick)),
+          tabIndex: -1
+        }, refKey, inputRef);
+        return _objectSpread(_objectSpread({}, inputProps), rest);
+      };
+    }, [inputRef, accept, multiple, onDropCb, disabled]);
+    return _objectSpread(_objectSpread({}, state), {}, {
+      isFocused: isFocused && !disabled,
+      getRootProps,
+      getInputProps,
+      rootRef,
+      inputRef,
+      open: composeHandler(openFileDialog)
+    });
+  }
+  function reducer$1(state, action) {
+    switch (action.type) {
+      case "focus":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          isFocused: true
+        });
+      case "blur":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          isFocused: false
+        });
+      case "openDialog":
+        return _objectSpread(_objectSpread({}, initialState$2), {}, {
+          isFileDialogActive: true
+        });
+      case "closeDialog":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          isFileDialogActive: false
+        });
+      case "setDraggedFiles":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          isDragActive: action.isDragActive,
+          isDragAccept: action.isDragAccept,
+          isDragReject: action.isDragReject
+        });
+      case "setFiles":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          acceptedFiles: action.acceptedFiles,
+          fileRejections: action.fileRejections
+        });
+      case "reset":
+        return _objectSpread({}, initialState$2);
+      default:
+        return state;
+    }
+  }
+  function noop$1() {
+  }
+  var UploadFile = {};
+  var _interopRequireDefault$g = interopRequireDefaultExports;
+  Object.defineProperty(UploadFile, "__esModule", {
+    value: true
+  });
+  var default_1$g = UploadFile.default = void 0;
+  var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
+  var _jsxRuntime$g = jsxRuntimeExports;
+  var _default$g = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
+    d: "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11z"
+  }), "UploadFile");
+  default_1$g = UploadFile.default = _default$g;
+  const Wrap$1 = styled$1("div")(() => ({
+    marginTop: "1.25em"
+  }));
+  const TextWrap = styled$1("div")(({ theme: theme2 }) => ({
+    padding: "2.7em 1em",
+    border: `1px dashed ${theme2.palette.divider}`,
+    boxShadow: "none",
+    textAlign: "center",
+    cursor: "pointer",
+    span: {
+      color: theme2.palette.primary.main,
+      transition: "color 0.2s ease"
+    },
+    "&:hover span": {
+      color: theme2.palette.primary.dark,
+      textDecoration: "underline"
+    },
+    svg: {
+      marginBottom: theme2.spacing(2),
+      color: theme2.palette.primary.main
+    }
+  }));
+  const TextFiletypes = styled$1(Typography$1)(({ theme: theme2 }) => ({
+    marginTop: theme2.spacing(2),
+    color: theme2.palette.text.secondary
+  }));
+  var Close = {};
+  var _interopRequireDefault$f = interopRequireDefaultExports;
+  Object.defineProperty(Close, "__esModule", {
+    value: true
+  });
+  var default_1$f = Close.default = void 0;
+  var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
+  var _jsxRuntime$f = jsxRuntimeExports;
+  var _default$f = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
+    d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+  }), "Close");
+  default_1$f = Close.default = _default$f;
+  const FileWrap = styled$1(Paper$1, {
+    shouldForwardProp: (prop) => prop !== "error"
+  })(({ theme: theme2, error }) => ({
+    margin: `${theme2.spacing(1)} 0`,
+    padding: theme2.spacing(2),
+    border: `1px solid ${theme2.palette.divider}`,
+    boxShadow: "none",
+    ".MuiSvgIcon-root:first-of-type": {
+      padding: theme2.spacing(1)
+    },
+    ...error && {
+      color: theme2.palette.error.main
+    }
+  }));
+  const FileName = styled$1("span")(() => ({
+    display: "block",
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    color: "currentColor"
+  }));
+  const FileInfo = styled$1("div")(({ theme: theme2 }) => ({
+    display: "flex",
+    gap: theme2.spacing(1),
+    fontSize: "0.875rem",
+    "& ul": {
+      margin: 0,
+      padding: 0,
+      listStyle: "none"
+    }
+  }));
+  function getReadableFilesize(bytes) {
+    let size2 = bytes / 1024;
+    let unit = "kb";
+    if (size2 > 1e3) {
+      size2 = size2 / 1024;
+      unit = "mb";
+    }
+    return `${size2.toFixed(2)}${unit}`;
+  }
+  function randomInt(max2) {
+    return Math.ceil(Math.random() * max2);
+  }
+  const FilePreview = ({ id, file, onFileRemove, onFileUploaded }) => {
+    const [progress, setProgress] = reactExports.useState(0);
+    const hasErrors = "errors" in file;
+    reactExports.useEffect(() => {
+      if (hasErrors) {
+        return;
+      }
+      if (progress < 100) {
+        setTimeout(() => {
+          setProgress(Math.min(progress + randomInt(15), 100));
+        }, 300);
+      } else {
+        onFileUploaded && onFileUploaded(file.name);
+      }
+    }, [progress, hasErrors, onFileUploaded, file]);
+    const name2 = !hasErrors ? file.name : "Upload failed";
+    const color2 = !hasErrors ? "primary" : "error";
+    const status = !hasErrors ? progress === 100 ? "Complete" : "Loading" : "Failed";
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(FileWrap, { error: hasErrors, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", gap: 2, alignItems: "center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, { sx: { flexShrink: 0 }, color: color2 }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { gap: 1, direction: "column", sx: { minWidth: 0, flexGrow: 1 }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(FileName, { children: name2 }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(FileInfo, { children: [
+          !hasErrors ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: getReadableFilesize(file.size) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: file.errors.map((e) => {
+            let message = e.message;
+            if (e.code === "file-too-large") {
+              message = "File too large";
+            }
+            return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: message }, e.code);
+          }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "•" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: status })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LinearProgress$1,
+          {
+            variant: "determinate",
+            value: hasErrors ? 0 : progress,
+            color: color2
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        IconButton$1,
+        {
+          sx: { flexShrink: 0 },
+          "aria-label": "Remove file",
+          size: "medium",
+          onClick: () => onFileRemove && onFileRemove(id),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {})
+        }
+      )
+    ] }) });
+  };
+  const FileUploader = ({
+    maxFiles = 2,
+    maxSize = 315e4,
+    accept,
+    fileTypeMessage,
+    files,
+    onFilesDrop,
+    addFile,
+    removeFile
+  }) => {
+    const { getRootProps, getInputProps } = useDropzone({
+      onDrop: (acceptedFiles, rejectedFiles) => {
+        onFilesDrop([...acceptedFiles, ...rejectedFiles]);
+      },
+      accept,
+      maxFiles,
+      maxSize
+    });
+    const { ref, ...rootProps } = getRootProps();
+    let displayFiles = null;
+    if (files.length) {
+      displayFiles = /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: files.map((file, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        FilePreview,
+        {
+          id: idx,
+          file,
+          onFileRemove: removeFile,
+          onFileUploaded: addFile
+        },
+        idx
+      )) });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Wrap$1, { ref, children: displayFiles || /* @__PURE__ */ jsxRuntimeExports.jsxs(TextWrap, { ...rootProps, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...getInputProps() }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Typography$1, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Click to upload" }),
+          " or drag and drop"
+        ] }),
+        fileTypeMessage && /* @__PURE__ */ jsxRuntimeExports.jsx(TextFiletypes, { children: fileTypeMessage })
+      ] })
+    ] }) });
+  };
+  function importData(objectID, objectType, importType, myFile, callBackFunction = (_data) => console.log("success")) {
+    console.log("calling post file", myFile);
+    API_POST_FILE(COURSEFLOW_APP.config.post_paths.import_data, {
+      objectID,
+      objectType,
+      importType
+    }, myFile).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
+    });
+  }
+  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
+    "& .MuiDialogContent-root": {
+      padding: theme2.spacing(3)
+    },
+    "& .MuiDialogActions-root": {
+      padding: theme2.spacing(1)
+    }
+  }));
+  const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "flex",
+    flexDirection: "column",
+    gap: theme2.spacing(3),
+    "& > *": {
+      flexGrow: 1
+    }
+  }));
+  const initialState$1 = {
+    whitelisted: [],
+    queued: []
+  };
+  function ImportNodesDialog({ workflowID }) {
+    const { show, onClose } = useDialog(DIALOG_TYPE.IMPORT_NODES);
+    const [state, setState] = reactExports.useState(initialState$1);
+    const { whitelisted, queued } = state;
+    const uploadableFiles = queued.filter((file) => "name" in file);
+    const disableSubmit = whitelisted.length === 0 || whitelisted.length !== uploadableFiles.length;
+    const onUploadableFileComplete = reactExports.useCallback((name2) => {
+      setState(
+        produce((draft) => {
+          if (!draft.whitelisted.includes(name2)) {
+            draft.whitelisted.push(name2);
+          }
+        })
+      );
+    }, []);
+    const onFilesDrop = (files) => {
+      setState(
+        produce((draft) => {
+          draft.queued = files;
+        })
+      );
+    };
+    const onFileRemove = reactExports.useCallback((index) => {
+      setState(
+        produce((draft) => {
+          const removedFile = draft.queued[index];
+          if ("name" in removedFile) {
+            draft.whitelisted.splice(
+              draft.whitelisted.indexOf(removedFile.name),
+              1
+            );
+          }
+          draft.queued.splice(index, 1);
+        })
+      );
+    }, []);
+    function resetData() {
+      setState(initialState$1);
+    }
+    function onSubmit() {
+      importData(workflowID, "workflow", "nodes", uploadableFiles[0], onClose);
+      console.log("submitting Import Nodes with files", uploadableFiles);
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: !!show,
+        fullWidth: true,
+        maxWidth: "sm",
+        onClose,
+        TransitionProps: {
+          onExited: resetData
+        },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Import nodes" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: "Drag and drop your .xls or .csv file below to import. The importing process may take few minutes. Please do not edit the workflow while the import process is ongoing." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              FileUploader,
+              {
+                fileTypeMessage: "XLS or CSV (max 3MB)",
+                accept: {
+                  "application/vnd.ms-excel": [".xls"],
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+                  "text/csv": [".csv"]
+                },
+                files: state.queued,
+                onFilesDrop,
+                addFile: onUploadableFileComplete,
+                removeFile: onFileRemove
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: "Cancel" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, disabled: disableSubmit, children: "Import nodes" })
+          ] })
+        ]
+      }
+    );
+  }
+  const initialState = {
+    whitelisted: [],
+    queued: []
+  };
+  function ImportOutcomesDialog({ workflowID }) {
+    const { show, onClose } = useDialog(DIALOG_TYPE.IMPORT_OUTCOMES);
+    const [state, setState] = reactExports.useState(initialState);
+    const { whitelisted, queued } = state;
+    const uploadableFiles = queued.filter((file) => "name" in file);
+    const disableSubmit = whitelisted.length === 0 || whitelisted.length !== uploadableFiles.length;
+    const onUploadableFileComplete = reactExports.useCallback((name2) => {
+      setState(
+        produce((draft) => {
+          if (!draft.whitelisted.includes(name2)) {
+            draft.whitelisted.push(name2);
+          }
+        })
+      );
+    }, []);
+    const onFilesDrop = (files) => {
+      setState(
+        produce((draft) => {
+          draft.queued = files;
+        })
+      );
+    };
+    const onFileRemove = reactExports.useCallback((index) => {
+      setState(
+        produce((draft) => {
+          const removedFile = draft.queued[index];
+          if ("name" in removedFile) {
+            draft.whitelisted.splice(
+              draft.whitelisted.indexOf(removedFile.name),
+              1
+            );
+          }
+          draft.queued.splice(index, 1);
+        })
+      );
+    }, []);
+    function resetData() {
+      setState(initialState);
+    }
+    function onSubmit() {
+      importData(workflowID, "workflow", "outcomes", uploadableFiles[0], onClose);
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: !!show,
+        fullWidth: true,
+        maxWidth: "sm",
+        onClose,
+        TransitionProps: {
+          onExited: resetData
+        },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Import outcomes" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: "Drag and drop your .xls or .csv file below to import. The importing process may take few minutes. Please do not edit the workflow while the import process is ongoing." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              FileUploader,
+              {
+                fileTypeMessage: "XLS or CSV (max 3MB)",
+                accept: {
+                  "application/vnd.ms-excel": [".xls"],
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+                  "text/csv": [".csv"]
+                },
+                files: state.queued,
+                onFilesDrop,
+                addFile: onUploadableFileComplete,
+                removeFile: onFileRemove
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: "Cancel" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, disabled: disableSubmit, children: "Import outcomes" })
+          ] })
+        ]
+      }
+    );
+  }
   const CopyButton = (data2) => {
     const { dispatch } = useDialog();
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -92417,6 +94848,14 @@ Please use another name.` : formatMuiErrorMessage(18));
         children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
       }
     );
+  };
+  const ImportButtons = ({ aClass }) => {
+    const { dispatch } = useDialog();
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: () => dispatch(DIALOG_TYPE.IMPORT_OUTCOMES), children: window.gettext("Import Outcomes") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: () => dispatch(DIALOG_TYPE.IMPORT_NODES), children: window.gettext("Import Nodes") })
+    ] });
   };
   class WorkflowBaseViewUnconnected extends EditableComponent {
     constructor(props, context) {
@@ -92878,11 +95317,7 @@ Please use another name.` : formatMuiErrorMessage(18));
           return null;
         const disabled = !!this.data.importing;
         const aClass = disabled ? " disabled" : "hover-shade";
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: this.clickImport.bind(this, "outcomes"), children: window.gettext("Import Outcomes") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: this.clickImport.bind(this, "nodes"), children: window.gettext("Import Nodes") })
-        ] });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ImportButtons, { aClass });
       });
       __publicField(this, "DeleteWorkflowButton", () => {
         if (this.readOnly)
@@ -92960,32 +95395,6 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           )
         ] });
-      });
-      __publicField(this, "ImportDialog", () => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { open: this.state.openImportDialog, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ImportMenu,
-            {
-              data: {
-                object_id: this.data.id,
-                object_type: this.objectType,
-                import_type: "outcomes"
-              },
-              actionFunction: this.closeModals
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ImportMenu,
-            {
-              data: {
-                object_id: this.data.id,
-                object_type: this.objectType,
-                import_type: "nodes"
-              },
-              actionFunction: this.closeModals
-            }
-          )
-        ] }) });
       });
       this.context = context;
       this.data = this.props.data;
@@ -93093,20 +95502,20 @@ Please use another name.` : formatMuiErrorMessage(18));
     openEditMenu(evt) {
       this.selection_manager.changeSelection(evt, this);
     }
-    clickImport(import_type2, evt) {
-      evt.preventDefault();
-      renderMessageBox(
-        {
-          object_id: this.props.data.id,
-          object_type: this.objectType,
-          import_type: import_type2
-        },
-        "import",
-        () => {
-          closeMessageBox();
-        }
-      );
-    }
+    // clickImport(import_type, evt) {
+    //   evt.preventDefault()
+    //   renderMessageBox(
+    //     {
+    //       object_id: this.props.data.id,
+    //       object_type: this.objectType,
+    //       import_type: import_type
+    //     },
+    //     'import',
+    //     () => {
+    //       closeMessageBox()
+    //     }
+    //   )
+    // }
     // @todo it this ViewType or cfobjecttype
     expandAll(type) {
       this.props[type].forEach(
@@ -93223,6 +95632,30 @@ Please use another name.` : formatMuiErrorMessage(18));
         });
       }
     }
+    // ImportDialog = () => {
+    //   return (
+    //     <Dialog open={this.state.openImportDialog}>
+    //       <>
+    //         <ImportMenu
+    //           data={{
+    //             object_id: this.data.id,
+    //             object_type: this.objectType,
+    //             import_type: 'outcomes'
+    //           }}
+    //           actionFunction={this.closeModals}
+    //         />
+    //         <ImportMenu
+    //           data={{
+    //             object_id: this.data.id,
+    //             object_type: this.objectType,
+    //             import_type: 'nodes'
+    //           }}
+    //           actionFunction={this.closeModals}
+    //         />
+    //       </>
+    //     </Dialog>
+    //   )
+    // }
     /*******************************************************
      * RENDER
      *******************************************************/
@@ -93280,9 +95713,9 @@ Please use another name.` : formatMuiErrorMessage(18));
               }
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ImportDialog, {})
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ImportNodesDialog, { workflowID: this.data.id }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ImportOutcomesDialog, { workflowID: this.data.id }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {})
         ] })
       ] }) });
     }
@@ -94297,7 +96730,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   };
   var isServer = typeof window === "undefined" || "Deno" in globalThis;
-  function noop$1() {
+  function noop() {
     return void 0;
   }
   function functionalUpdate(updater, input) {
@@ -94376,7 +96809,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   function hashKey(queryKey) {
     return JSON.stringify(
       queryKey,
-      (_2, val) => isPlainObject$1(val) ? Object.keys(val).sort().reduce((result, key) => {
+      (_2, val) => isPlainObject(val) ? Object.keys(val).sort().reduce((result, key) => {
         result[key] = val[key];
         return result;
       }, {}) : val
@@ -94399,7 +96832,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return a;
     }
     const array = isPlainArray(a) && isPlainArray(b);
-    if (array || isPlainObject$1(a) && isPlainObject$1(b)) {
+    if (array || isPlainObject(a) && isPlainObject(b)) {
       const aItems = array ? a : Object.keys(a);
       const aSize = aItems.length;
       const bItems = array ? b : Object.keys(b);
@@ -94425,7 +96858,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   function isPlainArray(value) {
     return Array.isArray(value) && value.length === Object.keys(value).length;
   }
-  function isPlainObject$1(o) {
+  function isPlainObject(o) {
     if (!hasObjectPrototype(o)) {
       return false;
     }
@@ -94864,7 +97297,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       var _a2, _b2;
       const promise = (_a2 = __privateGet(this, _retryer)) == null ? void 0 : _a2.promise;
       (_b2 = __privateGet(this, _retryer)) == null ? void 0 : _b2.cancel(options);
-      return promise ? promise.then(noop$1).catch(noop$1) : Promise.resolve();
+      return promise ? promise.then(noop).catch(noop) : Promise.resolve();
     }
     destroy() {
       super.destroy();
@@ -95579,7 +98012,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         const pausedMutations = __privateGet(this, _mutations).filter((x) => x.state.isPaused);
         return notifyManager.batch(
           () => pausedMutations.reduce(
-            (promise, mutation) => promise.then(() => mutation.continue().catch(noop$1)),
+            (promise, mutation) => promise.then(() => mutation.continue().catch(noop)),
             Promise.resolve()
           )
         );
@@ -95838,7 +98271,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const promises = notifyManager.batch(
         () => __privateGet(this, _queryCache).findAll(filters).map((query) => query.cancel(defaultedCancelOptions))
       );
-      return Promise.all(promises).then(noop$1).catch(noop$1);
+      return Promise.all(promises).then(noop).catch(noop);
     }
     invalidateQueries(filters = {}, options = {}) {
       return notifyManager.batch(() => {
@@ -95864,12 +98297,12 @@ Please use another name.` : formatMuiErrorMessage(18));
         () => __privateGet(this, _queryCache).findAll(filters).filter((query) => !query.isDisabled()).map((query) => {
           let promise = query.fetch(void 0, fetchOptions);
           if (!fetchOptions.throwOnError) {
-            promise = promise.catch(noop$1);
+            promise = promise.catch(noop);
           }
           return query.state.fetchStatus === "paused" ? Promise.resolve() : promise;
         })
       );
-      return Promise.all(promises).then(noop$1);
+      return Promise.all(promises).then(noop);
     }
     fetchQuery(options) {
       const defaultedOptions = this.defaultQueryOptions(options);
@@ -95880,14 +98313,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       return query.isStaleByTime(defaultedOptions.staleTime) ? query.fetch(defaultedOptions) : Promise.resolve(query.state.data);
     }
     prefetchQuery(options) {
-      return this.fetchQuery(options).then(noop$1).catch(noop$1);
+      return this.fetchQuery(options).then(noop).catch(noop);
     }
     fetchInfiniteQuery(options) {
       options.behavior = infiniteQueryBehavior(options.pages);
       return this.fetchQuery(options);
     }
     prefetchInfiniteQuery(options) {
-      return this.fetchInfiniteQuery(options).then(noop$1).catch(noop$1);
+      return this.fetchInfiniteQuery(options).then(noop).catch(noop);
     }
     resumePausedMutations() {
       if (onlineManager.isOnline()) {
@@ -96001,17 +98434,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     return /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientContext.Provider, { value: client, children });
   };
   var MoreHoriz = {};
-  var _interopRequireDefault$g = interopRequireDefaultExports;
+  var _interopRequireDefault$e = interopRequireDefaultExports;
   Object.defineProperty(MoreHoriz, "__esModule", {
     value: true
   });
-  var default_1$g = MoreHoriz.default = void 0;
-  var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
-  var _jsxRuntime$g = jsxRuntimeExports;
-  var _default$h = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
+  var default_1$e = MoreHoriz.default = void 0;
+  var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
+  var _jsxRuntime$e = jsxRuntimeExports;
+  var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
     d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
   }), "MoreHoriz");
-  default_1$g = MoreHoriz.default = _default$h;
+  default_1$e = MoreHoriz.default = _default$e;
   const NotificationsWrap = styled$1(Box$1)({});
   const NotificationsHeader$1 = styled$1(Box$1)(({ theme: theme2 }) => ({
     paddingTop: theme2.spacing(4),
@@ -96181,7 +98614,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 onClick: (e) => handleMenuOpen(e, n),
                 "aria-label": COURSEFLOW_APP.strings.show_notifications_menu,
                 "aria-haspopup": "true",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, {})
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {})
               }
             ),
             children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
@@ -96256,7 +98689,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       fontSize: "34px"
     }
   }));
-  function reducer$1(state, action) {
+  function reducer(state, action) {
     switch (action.type) {
       case "SET_UPDATES":
         return {
@@ -96267,7 +98700,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return state;
   }
   const NotificationsSettingsPage = ({ formData }) => {
-    const [state, dispatch] = reactExports.useReducer(reducer$1, {
+    const [state, dispatch] = reactExports.useReducer(reducer, {
       notifications: formData.receiveNotifications
     });
     function onUpdatesSwitchChange(e) {
@@ -96598,684 +99031,18 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     ]
   };
-  var NOTHING = Symbol.for("immer-nothing");
-  var DRAFTABLE = Symbol.for("immer-draftable");
-  var DRAFT_STATE = Symbol.for("immer-state");
-  var errors = process.env.NODE_ENV !== "production" ? [
-    // All error codes, starting by 0:
-    function(plugin) {
-      return `The plugin for '${plugin}' has not been loaded into Immer. To enable the plugin, import and call \`enable${plugin}()\` when initializing your application.`;
-    },
-    function(thing) {
-      return `produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'. Got '${thing}'`;
-    },
-    "This object has been frozen and should not be mutated",
-    function(data2) {
-      return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + data2;
-    },
-    "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.",
-    "Immer forbids circular references",
-    "The first or second argument to `produce` must be a function",
-    "The third argument to `produce` must be a function or undefined",
-    "First argument to `createDraft` must be a plain object, an array, or an immerable object",
-    "First argument to `finishDraft` must be a draft returned by `createDraft`",
-    function(thing) {
-      return `'current' expects a draft, got: ${thing}`;
-    },
-    "Object.defineProperty() cannot be used on an Immer draft",
-    "Object.setPrototypeOf() cannot be used on an Immer draft",
-    "Immer only supports deleting array indices",
-    "Immer only supports setting array indices and the 'length' property",
-    function(thing) {
-      return `'original' expects a draft, got: ${thing}`;
-    }
-    // Note: if more errors are added, the errorOffset in Patches.ts should be increased
-    // See Patches.ts for additional errors
-  ] : [];
-  function die(error, ...args) {
-    if (process.env.NODE_ENV !== "production") {
-      const e = errors[error];
-      const msg = typeof e === "function" ? e.apply(null, args) : e;
-      throw new Error(`[Immer] ${msg}`);
-    }
-    throw new Error(
-      `[Immer] minified error nr: ${error}. Full error at: https://bit.ly/3cXEKWf`
-    );
-  }
-  var getPrototypeOf = Object.getPrototypeOf;
-  function isDraft(value) {
-    return !!value && !!value[DRAFT_STATE];
-  }
-  function isDraftable(value) {
-    var _a2;
-    if (!value)
-      return false;
-    return isPlainObject(value) || Array.isArray(value) || !!value[DRAFTABLE] || !!((_a2 = value.constructor) == null ? void 0 : _a2[DRAFTABLE]) || isMap(value) || isSet(value);
-  }
-  var objectCtorString = Object.prototype.constructor.toString();
-  function isPlainObject(value) {
-    if (!value || typeof value !== "object")
-      return false;
-    const proto = getPrototypeOf(value);
-    if (proto === null) {
-      return true;
-    }
-    const Ctor = Object.hasOwnProperty.call(proto, "constructor") && proto.constructor;
-    if (Ctor === Object)
-      return true;
-    return typeof Ctor == "function" && Function.toString.call(Ctor) === objectCtorString;
-  }
-  function each(obj, iter) {
-    if (getArchtype(obj) === 0) {
-      Reflect.ownKeys(obj).forEach((key) => {
-        iter(key, obj[key], obj);
-      });
-    } else {
-      obj.forEach((entry, index) => iter(index, entry, obj));
-    }
-  }
-  function getArchtype(thing) {
-    const state = thing[DRAFT_STATE];
-    return state ? state.type_ : Array.isArray(thing) ? 1 : isMap(thing) ? 2 : isSet(thing) ? 3 : 0;
-  }
-  function has(thing, prop) {
-    return getArchtype(thing) === 2 ? thing.has(prop) : Object.prototype.hasOwnProperty.call(thing, prop);
-  }
-  function set(thing, propOrOldValue, value) {
-    const t = getArchtype(thing);
-    if (t === 2)
-      thing.set(propOrOldValue, value);
-    else if (t === 3) {
-      thing.add(value);
-    } else
-      thing[propOrOldValue] = value;
-  }
-  function is(x, y) {
-    if (x === y) {
-      return x !== 0 || 1 / x === 1 / y;
-    } else {
-      return x !== x && y !== y;
-    }
-  }
-  function isMap(target) {
-    return target instanceof Map;
-  }
-  function isSet(target) {
-    return target instanceof Set;
-  }
-  function latest(state) {
-    return state.copy_ || state.base_;
-  }
-  function shallowCopy(base, strict) {
-    if (isMap(base)) {
-      return new Map(base);
-    }
-    if (isSet(base)) {
-      return new Set(base);
-    }
-    if (Array.isArray(base))
-      return Array.prototype.slice.call(base);
-    if (!strict && isPlainObject(base)) {
-      if (!getPrototypeOf(base)) {
-        const obj = /* @__PURE__ */ Object.create(null);
-        return Object.assign(obj, base);
-      }
-      return { ...base };
-    }
-    const descriptors = Object.getOwnPropertyDescriptors(base);
-    delete descriptors[DRAFT_STATE];
-    let keys = Reflect.ownKeys(descriptors);
-    for (let i2 = 0; i2 < keys.length; i2++) {
-      const key = keys[i2];
-      const desc = descriptors[key];
-      if (desc.writable === false) {
-        desc.writable = true;
-        desc.configurable = true;
-      }
-      if (desc.get || desc.set)
-        descriptors[key] = {
-          configurable: true,
-          writable: true,
-          // could live with !!desc.set as well here...
-          enumerable: desc.enumerable,
-          value: base[key]
-        };
-    }
-    return Object.create(getPrototypeOf(base), descriptors);
-  }
-  function freeze(obj, deep = false) {
-    if (isFrozen(obj) || isDraft(obj) || !isDraftable(obj))
-      return obj;
-    if (getArchtype(obj) > 1) {
-      obj.set = obj.add = obj.clear = obj.delete = dontMutateFrozenCollections;
-    }
-    Object.freeze(obj);
-    if (deep)
-      Object.entries(obj).forEach(([key, value]) => freeze(value, true));
-    return obj;
-  }
-  function dontMutateFrozenCollections() {
-    die(2);
-  }
-  function isFrozen(obj) {
-    return Object.isFrozen(obj);
-  }
-  var plugins = {};
-  function getPlugin(pluginKey) {
-    const plugin = plugins[pluginKey];
-    if (!plugin) {
-      die(0, pluginKey);
-    }
-    return plugin;
-  }
-  var currentScope;
-  function getCurrentScope() {
-    return currentScope;
-  }
-  function createScope(parent_, immer_) {
-    return {
-      drafts_: [],
-      parent_,
-      immer_,
-      // Whenever the modified draft contains a draft from another scope, we
-      // need to prevent auto-freezing so the unowned draft can be finalized.
-      canAutoFreeze_: true,
-      unfinalizedDrafts_: 0
-    };
-  }
-  function usePatchesInScope(scope, patchListener) {
-    if (patchListener) {
-      getPlugin("Patches");
-      scope.patches_ = [];
-      scope.inversePatches_ = [];
-      scope.patchListener_ = patchListener;
-    }
-  }
-  function revokeScope(scope) {
-    leaveScope(scope);
-    scope.drafts_.forEach(revokeDraft);
-    scope.drafts_ = null;
-  }
-  function leaveScope(scope) {
-    if (scope === currentScope) {
-      currentScope = scope.parent_;
-    }
-  }
-  function enterScope(immer2) {
-    return currentScope = createScope(currentScope, immer2);
-  }
-  function revokeDraft(draft) {
-    const state = draft[DRAFT_STATE];
-    if (state.type_ === 0 || state.type_ === 1)
-      state.revoke_();
-    else
-      state.revoked_ = true;
-  }
-  function processResult(result, scope) {
-    scope.unfinalizedDrafts_ = scope.drafts_.length;
-    const baseDraft = scope.drafts_[0];
-    const isReplaced = result !== void 0 && result !== baseDraft;
-    if (isReplaced) {
-      if (baseDraft[DRAFT_STATE].modified_) {
-        revokeScope(scope);
-        die(4);
-      }
-      if (isDraftable(result)) {
-        result = finalize(scope, result);
-        if (!scope.parent_)
-          maybeFreeze(scope, result);
-      }
-      if (scope.patches_) {
-        getPlugin("Patches").generateReplacementPatches_(
-          baseDraft[DRAFT_STATE].base_,
-          result,
-          scope.patches_,
-          scope.inversePatches_
-        );
-      }
-    } else {
-      result = finalize(scope, baseDraft, []);
-    }
-    revokeScope(scope);
-    if (scope.patches_) {
-      scope.patchListener_(scope.patches_, scope.inversePatches_);
-    }
-    return result !== NOTHING ? result : void 0;
-  }
-  function finalize(rootScope, value, path) {
-    if (isFrozen(value))
-      return value;
-    const state = value[DRAFT_STATE];
-    if (!state) {
-      each(
-        value,
-        (key, childValue) => finalizeProperty(rootScope, state, value, key, childValue, path)
-      );
-      return value;
-    }
-    if (state.scope_ !== rootScope)
-      return value;
-    if (!state.modified_) {
-      maybeFreeze(rootScope, state.base_, true);
-      return state.base_;
-    }
-    if (!state.finalized_) {
-      state.finalized_ = true;
-      state.scope_.unfinalizedDrafts_--;
-      const result = state.copy_;
-      let resultEach = result;
-      let isSet2 = false;
-      if (state.type_ === 3) {
-        resultEach = new Set(result);
-        result.clear();
-        isSet2 = true;
-      }
-      each(
-        resultEach,
-        (key, childValue) => finalizeProperty(rootScope, state, result, key, childValue, path, isSet2)
-      );
-      maybeFreeze(rootScope, result, false);
-      if (path && rootScope.patches_) {
-        getPlugin("Patches").generatePatches_(
-          state,
-          path,
-          rootScope.patches_,
-          rootScope.inversePatches_
-        );
-      }
-    }
-    return state.copy_;
-  }
-  function finalizeProperty(rootScope, parentState, targetObject, prop, childValue, rootPath, targetIsSet) {
-    if (process.env.NODE_ENV !== "production" && childValue === targetObject)
-      die(5);
-    if (isDraft(childValue)) {
-      const path = rootPath && parentState && parentState.type_ !== 3 && // Set objects are atomic since they have no keys.
-      !has(parentState.assigned_, prop) ? rootPath.concat(prop) : void 0;
-      const res = finalize(rootScope, childValue, path);
-      set(targetObject, prop, res);
-      if (isDraft(res)) {
-        rootScope.canAutoFreeze_ = false;
-      } else
-        return;
-    } else if (targetIsSet) {
-      targetObject.add(childValue);
-    }
-    if (isDraftable(childValue) && !isFrozen(childValue)) {
-      if (!rootScope.immer_.autoFreeze_ && rootScope.unfinalizedDrafts_ < 1) {
-        return;
-      }
-      finalize(rootScope, childValue);
-      if ((!parentState || !parentState.scope_.parent_) && typeof prop !== "symbol" && Object.prototype.propertyIsEnumerable.call(targetObject, prop))
-        maybeFreeze(rootScope, childValue);
-    }
-  }
-  function maybeFreeze(scope, value, deep = false) {
-    if (!scope.parent_ && scope.immer_.autoFreeze_ && scope.canAutoFreeze_) {
-      freeze(value, deep);
-    }
-  }
-  function createProxyProxy(base, parent) {
-    const isArray2 = Array.isArray(base);
-    const state = {
-      type_: isArray2 ? 1 : 0,
-      // Track which produce call this is associated with.
-      scope_: parent ? parent.scope_ : getCurrentScope(),
-      // True for both shallow and deep changes.
-      modified_: false,
-      // Used during finalization.
-      finalized_: false,
-      // Track which properties have been assigned (true) or deleted (false).
-      assigned_: {},
-      // The parent draft state.
-      parent_: parent,
-      // The base state.
-      base_: base,
-      // The base proxy.
-      draft_: null,
-      // set below
-      // The base copy with any updated values.
-      copy_: null,
-      // Called by the `produce` function.
-      revoke_: null,
-      isManual_: false
-    };
-    let target = state;
-    let traps = objectTraps;
-    if (isArray2) {
-      target = [state];
-      traps = arrayTraps;
-    }
-    const { revoke, proxy } = Proxy.revocable(target, traps);
-    state.draft_ = proxy;
-    state.revoke_ = revoke;
-    return proxy;
-  }
-  var objectTraps = {
-    get(state, prop) {
-      if (prop === DRAFT_STATE)
-        return state;
-      const source = latest(state);
-      if (!has(source, prop)) {
-        return readPropFromProto(state, source, prop);
-      }
-      const value = source[prop];
-      if (state.finalized_ || !isDraftable(value)) {
-        return value;
-      }
-      if (value === peek(state.base_, prop)) {
-        prepareCopy(state);
-        return state.copy_[prop] = createProxy(value, state);
-      }
-      return value;
-    },
-    has(state, prop) {
-      return prop in latest(state);
-    },
-    ownKeys(state) {
-      return Reflect.ownKeys(latest(state));
-    },
-    set(state, prop, value) {
-      const desc = getDescriptorFromProto(latest(state), prop);
-      if (desc == null ? void 0 : desc.set) {
-        desc.set.call(state.draft_, value);
-        return true;
-      }
-      if (!state.modified_) {
-        const current2 = peek(latest(state), prop);
-        const currentState = current2 == null ? void 0 : current2[DRAFT_STATE];
-        if (currentState && currentState.base_ === value) {
-          state.copy_[prop] = value;
-          state.assigned_[prop] = false;
-          return true;
-        }
-        if (is(value, current2) && (value !== void 0 || has(state.base_, prop)))
-          return true;
-        prepareCopy(state);
-        markChanged(state);
-      }
-      if (state.copy_[prop] === value && // special case: handle new props with value 'undefined'
-      (value !== void 0 || prop in state.copy_) || // special case: NaN
-      Number.isNaN(value) && Number.isNaN(state.copy_[prop]))
-        return true;
-      state.copy_[prop] = value;
-      state.assigned_[prop] = true;
-      return true;
-    },
-    deleteProperty(state, prop) {
-      if (peek(state.base_, prop) !== void 0 || prop in state.base_) {
-        state.assigned_[prop] = false;
-        prepareCopy(state);
-        markChanged(state);
-      } else {
-        delete state.assigned_[prop];
-      }
-      if (state.copy_) {
-        delete state.copy_[prop];
-      }
-      return true;
-    },
-    // Note: We never coerce `desc.value` into an Immer draft, because we can't make
-    // the same guarantee in ES5 mode.
-    getOwnPropertyDescriptor(state, prop) {
-      const owner = latest(state);
-      const desc = Reflect.getOwnPropertyDescriptor(owner, prop);
-      if (!desc)
-        return desc;
-      return {
-        writable: true,
-        configurable: state.type_ !== 1 || prop !== "length",
-        enumerable: desc.enumerable,
-        value: owner[prop]
-      };
-    },
-    defineProperty() {
-      die(11);
-    },
-    getPrototypeOf(state) {
-      return getPrototypeOf(state.base_);
-    },
-    setPrototypeOf() {
-      die(12);
-    }
-  };
-  var arrayTraps = {};
-  each(objectTraps, (key, fn) => {
-    arrayTraps[key] = function() {
-      arguments[0] = arguments[0][0];
-      return fn.apply(this, arguments);
-    };
-  });
-  arrayTraps.deleteProperty = function(state, prop) {
-    if (process.env.NODE_ENV !== "production" && isNaN(parseInt(prop)))
-      die(13);
-    return arrayTraps.set.call(this, state, prop, void 0);
-  };
-  arrayTraps.set = function(state, prop, value) {
-    if (process.env.NODE_ENV !== "production" && prop !== "length" && isNaN(parseInt(prop)))
-      die(14);
-    return objectTraps.set.call(this, state[0], prop, value, state[0]);
-  };
-  function peek(draft, prop) {
-    const state = draft[DRAFT_STATE];
-    const source = state ? latest(state) : draft;
-    return source[prop];
-  }
-  function readPropFromProto(state, source, prop) {
-    var _a2;
-    const desc = getDescriptorFromProto(source, prop);
-    return desc ? `value` in desc ? desc.value : (
-      // This is a very special case, if the prop is a getter defined by the
-      // prototype, we should invoke it with the draft as context!
-      (_a2 = desc.get) == null ? void 0 : _a2.call(state.draft_)
-    ) : void 0;
-  }
-  function getDescriptorFromProto(source, prop) {
-    if (!(prop in source))
-      return void 0;
-    let proto = getPrototypeOf(source);
-    while (proto) {
-      const desc = Object.getOwnPropertyDescriptor(proto, prop);
-      if (desc)
-        return desc;
-      proto = getPrototypeOf(proto);
-    }
-    return void 0;
-  }
-  function markChanged(state) {
-    if (!state.modified_) {
-      state.modified_ = true;
-      if (state.parent_) {
-        markChanged(state.parent_);
-      }
-    }
-  }
-  function prepareCopy(state) {
-    if (!state.copy_) {
-      state.copy_ = shallowCopy(
-        state.base_,
-        state.scope_.immer_.useStrictShallowCopy_
-      );
-    }
-  }
-  var Immer2 = class {
-    constructor(config2) {
-      this.autoFreeze_ = true;
-      this.useStrictShallowCopy_ = false;
-      this.produce = (base, recipe, patchListener) => {
-        if (typeof base === "function" && typeof recipe !== "function") {
-          const defaultBase = recipe;
-          recipe = base;
-          const self2 = this;
-          return function curriedProduce(base2 = defaultBase, ...args) {
-            return self2.produce(base2, (draft) => recipe.call(this, draft, ...args));
-          };
-        }
-        if (typeof recipe !== "function")
-          die(6);
-        if (patchListener !== void 0 && typeof patchListener !== "function")
-          die(7);
-        let result;
-        if (isDraftable(base)) {
-          const scope = enterScope(this);
-          const proxy = createProxy(base, void 0);
-          let hasError = true;
-          try {
-            result = recipe(proxy);
-            hasError = false;
-          } finally {
-            if (hasError)
-              revokeScope(scope);
-            else
-              leaveScope(scope);
-          }
-          usePatchesInScope(scope, patchListener);
-          return processResult(result, scope);
-        } else if (!base || typeof base !== "object") {
-          result = recipe(base);
-          if (result === void 0)
-            result = base;
-          if (result === NOTHING)
-            result = void 0;
-          if (this.autoFreeze_)
-            freeze(result, true);
-          if (patchListener) {
-            const p = [];
-            const ip = [];
-            getPlugin("Patches").generateReplacementPatches_(base, result, p, ip);
-            patchListener(p, ip);
-          }
-          return result;
-        } else
-          die(1, base);
-      };
-      this.produceWithPatches = (base, recipe) => {
-        if (typeof base === "function") {
-          return (state, ...args) => this.produceWithPatches(state, (draft) => base(draft, ...args));
-        }
-        let patches, inversePatches;
-        const result = this.produce(base, recipe, (p, ip) => {
-          patches = p;
-          inversePatches = ip;
-        });
-        return [result, patches, inversePatches];
-      };
-      if (typeof (config2 == null ? void 0 : config2.autoFreeze) === "boolean")
-        this.setAutoFreeze(config2.autoFreeze);
-      if (typeof (config2 == null ? void 0 : config2.useStrictShallowCopy) === "boolean")
-        this.setUseStrictShallowCopy(config2.useStrictShallowCopy);
-    }
-    createDraft(base) {
-      if (!isDraftable(base))
-        die(8);
-      if (isDraft(base))
-        base = current(base);
-      const scope = enterScope(this);
-      const proxy = createProxy(base, void 0);
-      proxy[DRAFT_STATE].isManual_ = true;
-      leaveScope(scope);
-      return proxy;
-    }
-    finishDraft(draft, patchListener) {
-      const state = draft && draft[DRAFT_STATE];
-      if (!state || !state.isManual_)
-        die(9);
-      const { scope_: scope } = state;
-      usePatchesInScope(scope, patchListener);
-      return processResult(void 0, scope);
-    }
-    /**
-     * Pass true to automatically freeze all copies created by Immer.
-     *
-     * By default, auto-freezing is enabled.
-     */
-    setAutoFreeze(value) {
-      this.autoFreeze_ = value;
-    }
-    /**
-     * Pass true to enable strict shallow copy.
-     *
-     * By default, immer does not copy the object descriptors such as getter, setter and non-enumrable properties.
-     */
-    setUseStrictShallowCopy(value) {
-      this.useStrictShallowCopy_ = value;
-    }
-    applyPatches(base, patches) {
-      let i2;
-      for (i2 = patches.length - 1; i2 >= 0; i2--) {
-        const patch = patches[i2];
-        if (patch.path.length === 0 && patch.op === "replace") {
-          base = patch.value;
-          break;
-        }
-      }
-      if (i2 > -1) {
-        patches = patches.slice(i2 + 1);
-      }
-      const applyPatchesImpl = getPlugin("Patches").applyPatches_;
-      if (isDraft(base)) {
-        return applyPatchesImpl(base, patches);
-      }
-      return this.produce(
-        base,
-        (draft) => applyPatchesImpl(draft, patches)
-      );
-    }
-  };
-  function createProxy(value, parent) {
-    const draft = isMap(value) ? getPlugin("MapSet").proxyMap_(value, parent) : isSet(value) ? getPlugin("MapSet").proxySet_(value, parent) : createProxyProxy(value, parent);
-    const scope = parent ? parent.scope_ : getCurrentScope();
-    scope.drafts_.push(draft);
-    return draft;
-  }
-  function current(value) {
-    if (!isDraft(value))
-      die(10, value);
-    return currentImpl(value);
-  }
-  function currentImpl(value) {
-    if (!isDraftable(value) || isFrozen(value))
-      return value;
-    const state = value[DRAFT_STATE];
-    let copy2;
-    if (state) {
-      if (!state.modified_)
-        return state.base_;
-      state.finalized_ = true;
-      copy2 = shallowCopy(value, state.scope_.immer_.useStrictShallowCopy_);
-    } else {
-      copy2 = shallowCopy(value, true);
-    }
-    each(copy2, (key, childValue) => {
-      set(copy2, key, currentImpl(childValue));
-    });
-    if (state) {
-      state.finalized_ = false;
-    }
-    return copy2;
-  }
-  var immer = new Immer2();
-  var produce = immer.produce;
-  immer.produceWithPatches.bind(
-    immer
-  );
-  immer.setAutoFreeze.bind(immer);
-  immer.setUseStrictShallowCopy.bind(immer);
-  immer.applyPatches.bind(immer);
-  immer.createDraft.bind(immer);
-  immer.finishDraft.bind(immer);
   var Campaign = {};
-  var _interopRequireDefault$f = interopRequireDefaultExports;
+  var _interopRequireDefault$d = interopRequireDefaultExports;
   Object.defineProperty(Campaign, "__esModule", {
     value: true
   });
-  var default_1$f = Campaign.default = void 0;
-  var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
-  var _jsxRuntime$f = jsxRuntimeExports;
-  var _default$g = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
+  var default_1$d = Campaign.default = void 0;
+  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+  var _jsxRuntime$d = jsxRuntimeExports;
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
     d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
   }), "Campaign");
-  default_1$f = Campaign.default = _default$g;
+  default_1$d = Campaign.default = _default$d;
   /*! js-cookie v3.0.5 | MIT */
   function assign(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
@@ -97404,7 +99171,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       Alert$1,
       {
         severity: isUpdateAnnouncement ? "info" : severity,
-        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {}) : null,
+        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : null,
         sx,
         onClose: hideIfCookie && handleClose,
         children: [
@@ -97414,58 +99181,42 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     );
   };
-  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
-    "& .MuiDialogContent-root": {
-      padding: theme2.spacing(3)
-    },
-    "& .MuiDialogActions-root": {
-      padding: theme2.spacing(1)
-    }
-  }));
-  const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
-    display: "flex",
-    flexDirection: "column",
-    gap: theme2.spacing(3),
-    "& > *": {
-      flexGrow: 1
-    }
-  }));
   var ExpandMore = {};
-  var _interopRequireDefault$e = interopRequireDefaultExports;
+  var _interopRequireDefault$c = interopRequireDefaultExports;
   Object.defineProperty(ExpandMore, "__esModule", {
     value: true
   });
-  var default_1$e = ExpandMore.default = void 0;
-  var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
-  var _jsxRuntime$e = jsxRuntimeExports;
-  var _default$f = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
+  var default_1$c = ExpandMore.default = void 0;
+  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+  var _jsxRuntime$c = jsxRuntimeExports;
+  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
     d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
   }), "ExpandMore");
-  default_1$e = ExpandMore.default = _default$f;
+  default_1$c = ExpandMore.default = _default$c;
   var Delete = {};
-  var _interopRequireDefault$d = interopRequireDefaultExports;
+  var _interopRequireDefault$b = interopRequireDefaultExports;
   Object.defineProperty(Delete, "__esModule", {
     value: true
   });
-  var default_1$d = Delete.default = void 0;
-  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-  var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$e = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+  var default_1$b = Delete.default = void 0;
+  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
+  var _jsxRuntime$b = jsxRuntimeExports;
+  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
     d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
   }), "Delete");
-  default_1$d = Delete.default = _default$e;
+  default_1$b = Delete.default = _default$b;
   var AddCircle = {};
-  var _interopRequireDefault$c = interopRequireDefaultExports;
+  var _interopRequireDefault$a = interopRequireDefaultExports;
   Object.defineProperty(AddCircle, "__esModule", {
     value: true
   });
-  var default_1$c = AddCircle.default = void 0;
-  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
-  var _jsxRuntime$c = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+  var default_1$a = AddCircle.default = void 0;
+  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+  var _jsxRuntime$a = jsxRuntimeExports;
+  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
     d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
   }), "AddCircle");
-  default_1$c = AddCircle.default = _default$d;
+  default_1$a = AddCircle.default = _default$a;
   const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
     "&.MuiPaper-root": {
       boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
@@ -97511,7 +99262,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         AccordionSummary$1,
         {
-          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {}),
+          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {}),
           onClick: toggleExpanded,
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { children: window.gettext("Object sets") }),
@@ -97566,13 +99317,13 @@ Please use another name.` : formatMuiErrorMessage(18));
               fullWidth: true
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
             IconButton$1,
             {
               onClick: () => onUpdate({
                 index
               }),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
             }
           ) })
         ] }, index)) })
@@ -97838,1815 +99589,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
     return type === DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE ? /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProjectDialog$1, { ...dialogProps, onSubmit: onCreateProjectSubmit }) : /* @__PURE__ */ jsxRuntimeExports.jsx(EditProjectDialog, { ...dialogProps, onSubmit: onEditProjectSubmit });
   };
-  function __awaiter(thisArg, _arguments, P2, generator) {
-    function adopt(value) {
-      return value instanceof P2 ? value : new P2(function(resolve) {
-        resolve(value);
-      });
-    }
-    return new (P2 || (P2 = Promise))(function(resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator["throw"](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-  }
-  function __generator(thisArg, body2) {
-    var _2 = { label: 0, sent: function() {
-      if (t[0] & 1)
-        throw t[1];
-      return t[1];
-    }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
-      return this;
-    }), g;
-    function verb(n) {
-      return function(v) {
-        return step([n, v]);
-      };
-    }
-    function step(op) {
-      if (f)
-        throw new TypeError("Generator is already executing.");
-      while (g && (g = 0, op[0] && (_2 = 0)), _2)
-        try {
-          if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
-            return t;
-          if (y = 0, t)
-            op = [op[0] & 2, t.value];
-          switch (op[0]) {
-            case 0:
-            case 1:
-              t = op;
-              break;
-            case 4:
-              _2.label++;
-              return { value: op[1], done: false };
-            case 5:
-              _2.label++;
-              y = op[1];
-              op = [0];
-              continue;
-            case 7:
-              op = _2.ops.pop();
-              _2.trys.pop();
-              continue;
-            default:
-              if (!(t = _2.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-                _2 = 0;
-                continue;
-              }
-              if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-                _2.label = op[1];
-                break;
-              }
-              if (op[0] === 6 && _2.label < t[1]) {
-                _2.label = t[1];
-                t = op;
-                break;
-              }
-              if (t && _2.label < t[2]) {
-                _2.label = t[2];
-                _2.ops.push(op);
-                break;
-              }
-              if (t[2])
-                _2.ops.pop();
-              _2.trys.pop();
-              continue;
-          }
-          op = body2.call(thisArg, _2);
-        } catch (e) {
-          op = [6, e];
-          y = 0;
-        } finally {
-          f = t = 0;
-        }
-      if (op[0] & 5)
-        throw op[1];
-      return { value: op[0] ? op[1] : void 0, done: true };
-    }
-  }
-  function __read(o, n) {
-    var m2 = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m2)
-      return o;
-    var i2 = m2.call(o), r2, ar = [], e;
-    try {
-      while ((n === void 0 || n-- > 0) && !(r2 = i2.next()).done)
-        ar.push(r2.value);
-    } catch (error) {
-      e = { error };
-    } finally {
-      try {
-        if (r2 && !r2.done && (m2 = i2["return"]))
-          m2.call(i2);
-      } finally {
-        if (e)
-          throw e.error;
-      }
-    }
-    return ar;
-  }
-  function __spreadArray(to, from2, pack) {
-    if (pack || arguments.length === 2)
-      for (var i2 = 0, l = from2.length, ar; i2 < l; i2++) {
-        if (ar || !(i2 in from2)) {
-          if (!ar)
-            ar = Array.prototype.slice.call(from2, 0, i2);
-          ar[i2] = from2[i2];
-        }
-      }
-    return to.concat(ar || Array.prototype.slice.call(from2));
-  }
-  typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
-    var e = new Error(message);
-    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-  };
-  var COMMON_MIME_TYPES = /* @__PURE__ */ new Map([
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
-    ["aac", "audio/aac"],
-    ["abw", "application/x-abiword"],
-    ["arc", "application/x-freearc"],
-    ["avif", "image/avif"],
-    ["avi", "video/x-msvideo"],
-    ["azw", "application/vnd.amazon.ebook"],
-    ["bin", "application/octet-stream"],
-    ["bmp", "image/bmp"],
-    ["bz", "application/x-bzip"],
-    ["bz2", "application/x-bzip2"],
-    ["cda", "application/x-cdf"],
-    ["csh", "application/x-csh"],
-    ["css", "text/css"],
-    ["csv", "text/csv"],
-    ["doc", "application/msword"],
-    ["docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
-    ["eot", "application/vnd.ms-fontobject"],
-    ["epub", "application/epub+zip"],
-    ["gz", "application/gzip"],
-    ["gif", "image/gif"],
-    ["heic", "image/heic"],
-    ["heif", "image/heif"],
-    ["htm", "text/html"],
-    ["html", "text/html"],
-    ["ico", "image/vnd.microsoft.icon"],
-    ["ics", "text/calendar"],
-    ["jar", "application/java-archive"],
-    ["jpeg", "image/jpeg"],
-    ["jpg", "image/jpeg"],
-    ["js", "text/javascript"],
-    ["json", "application/json"],
-    ["jsonld", "application/ld+json"],
-    ["mid", "audio/midi"],
-    ["midi", "audio/midi"],
-    ["mjs", "text/javascript"],
-    ["mp3", "audio/mpeg"],
-    ["mp4", "video/mp4"],
-    ["mpeg", "video/mpeg"],
-    ["mpkg", "application/vnd.apple.installer+xml"],
-    ["odp", "application/vnd.oasis.opendocument.presentation"],
-    ["ods", "application/vnd.oasis.opendocument.spreadsheet"],
-    ["odt", "application/vnd.oasis.opendocument.text"],
-    ["oga", "audio/ogg"],
-    ["ogv", "video/ogg"],
-    ["ogx", "application/ogg"],
-    ["opus", "audio/opus"],
-    ["otf", "font/otf"],
-    ["png", "image/png"],
-    ["pdf", "application/pdf"],
-    ["php", "application/x-httpd-php"],
-    ["ppt", "application/vnd.ms-powerpoint"],
-    ["pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
-    ["rar", "application/vnd.rar"],
-    ["rtf", "application/rtf"],
-    ["sh", "application/x-sh"],
-    ["svg", "image/svg+xml"],
-    ["swf", "application/x-shockwave-flash"],
-    ["tar", "application/x-tar"],
-    ["tif", "image/tiff"],
-    ["tiff", "image/tiff"],
-    ["ts", "video/mp2t"],
-    ["ttf", "font/ttf"],
-    ["txt", "text/plain"],
-    ["vsd", "application/vnd.visio"],
-    ["wav", "audio/wav"],
-    ["weba", "audio/webm"],
-    ["webm", "video/webm"],
-    ["webp", "image/webp"],
-    ["woff", "font/woff"],
-    ["woff2", "font/woff2"],
-    ["xhtml", "application/xhtml+xml"],
-    ["xls", "application/vnd.ms-excel"],
-    ["xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
-    ["xml", "application/xml"],
-    ["xul", "application/vnd.mozilla.xul+xml"],
-    ["zip", "application/zip"],
-    ["7z", "application/x-7z-compressed"],
-    // Others
-    ["mkv", "video/x-matroska"],
-    ["mov", "video/quicktime"],
-    ["msg", "application/vnd.ms-outlook"]
-  ]);
-  function toFileWithPath(file, path) {
-    var f = withMimeType(file);
-    if (typeof f.path !== "string") {
-      var webkitRelativePath = file.webkitRelativePath;
-      Object.defineProperty(f, "path", {
-        value: typeof path === "string" ? path : typeof webkitRelativePath === "string" && webkitRelativePath.length > 0 ? webkitRelativePath : file.name,
-        writable: false,
-        configurable: false,
-        enumerable: true
-      });
-    }
-    return f;
-  }
-  function withMimeType(file) {
-    var name2 = file.name;
-    var hasExtension = name2 && name2.lastIndexOf(".") !== -1;
-    if (hasExtension && !file.type) {
-      var ext = name2.split(".").pop().toLowerCase();
-      var type = COMMON_MIME_TYPES.get(ext);
-      if (type) {
-        Object.defineProperty(file, "type", {
-          value: type,
-          writable: false,
-          configurable: false,
-          enumerable: true
-        });
-      }
-    }
-    return file;
-  }
-  var FILES_TO_IGNORE = [
-    // Thumbnail cache files for macOS and Windows
-    ".DS_Store",
-    "Thumbs.db"
-    // Windows
-  ];
-  function fromEvent(evt) {
-    return __awaiter(this, void 0, void 0, function() {
-      return __generator(this, function(_a2) {
-        if (isObject(evt) && isDataTransfer(evt.dataTransfer)) {
-          return [2, getDataTransferFiles(evt.dataTransfer, evt.type)];
-        } else if (isChangeEvt(evt)) {
-          return [2, getInputFiles(evt)];
-        } else if (Array.isArray(evt) && evt.every(function(item) {
-          return "getFile" in item && typeof item.getFile === "function";
-        })) {
-          return [2, getFsHandleFiles(evt)];
-        }
-        return [2, []];
-      });
-    });
-  }
-  function isDataTransfer(value) {
-    return isObject(value);
-  }
-  function isChangeEvt(value) {
-    return isObject(value) && isObject(value.target);
-  }
-  function isObject(v) {
-    return typeof v === "object" && v !== null;
-  }
-  function getInputFiles(evt) {
-    return fromList(evt.target.files).map(function(file) {
-      return toFileWithPath(file);
-    });
-  }
-  function getFsHandleFiles(handles) {
-    return __awaiter(this, void 0, void 0, function() {
-      var files;
-      return __generator(this, function(_a2) {
-        switch (_a2.label) {
-          case 0:
-            return [4, Promise.all(handles.map(function(h) {
-              return h.getFile();
-            }))];
-          case 1:
-            files = _a2.sent();
-            return [2, files.map(function(file) {
-              return toFileWithPath(file);
-            })];
-        }
-      });
-    });
-  }
-  function getDataTransferFiles(dt, type) {
-    return __awaiter(this, void 0, void 0, function() {
-      var items, files;
-      return __generator(this, function(_a2) {
-        switch (_a2.label) {
-          case 0:
-            if (!dt.items)
-              return [3, 2];
-            items = fromList(dt.items).filter(function(item) {
-              return item.kind === "file";
-            });
-            if (type !== "drop") {
-              return [2, items];
-            }
-            return [4, Promise.all(items.map(toFilePromises))];
-          case 1:
-            files = _a2.sent();
-            return [2, noIgnoredFiles(flatten(files))];
-          case 2:
-            return [2, noIgnoredFiles(fromList(dt.files).map(function(file) {
-              return toFileWithPath(file);
-            }))];
-        }
-      });
-    });
-  }
-  function noIgnoredFiles(files) {
-    return files.filter(function(file) {
-      return FILES_TO_IGNORE.indexOf(file.name) === -1;
-    });
-  }
-  function fromList(items) {
-    if (items === null) {
-      return [];
-    }
-    var files = [];
-    for (var i2 = 0; i2 < items.length; i2++) {
-      var file = items[i2];
-      files.push(file);
-    }
-    return files;
-  }
-  function toFilePromises(item) {
-    if (typeof item.webkitGetAsEntry !== "function") {
-      return fromDataTransferItem(item);
-    }
-    var entry = item.webkitGetAsEntry();
-    if (entry && entry.isDirectory) {
-      return fromDirEntry(entry);
-    }
-    return fromDataTransferItem(item);
-  }
-  function flatten(items) {
-    return items.reduce(function(acc, files) {
-      return __spreadArray(__spreadArray([], __read(acc), false), __read(Array.isArray(files) ? flatten(files) : [files]), false);
-    }, []);
-  }
-  function fromDataTransferItem(item) {
-    var file = item.getAsFile();
-    if (!file) {
-      return Promise.reject("".concat(item, " is not a File"));
-    }
-    var fwp = toFileWithPath(file);
-    return Promise.resolve(fwp);
-  }
-  function fromEntry(entry) {
-    return __awaiter(this, void 0, void 0, function() {
-      return __generator(this, function(_a2) {
-        return [2, entry.isDirectory ? fromDirEntry(entry) : fromFileEntry(entry)];
-      });
-    });
-  }
-  function fromDirEntry(entry) {
-    var reader = entry.createReader();
-    return new Promise(function(resolve, reject) {
-      var entries = [];
-      function readEntries() {
-        var _this = this;
-        reader.readEntries(function(batch2) {
-          return __awaiter(_this, void 0, void 0, function() {
-            var files, err_1, items;
-            return __generator(this, function(_a2) {
-              switch (_a2.label) {
-                case 0:
-                  if (!!batch2.length)
-                    return [3, 5];
-                  _a2.label = 1;
-                case 1:
-                  _a2.trys.push([1, 3, , 4]);
-                  return [4, Promise.all(entries)];
-                case 2:
-                  files = _a2.sent();
-                  resolve(files);
-                  return [3, 4];
-                case 3:
-                  err_1 = _a2.sent();
-                  reject(err_1);
-                  return [3, 4];
-                case 4:
-                  return [3, 6];
-                case 5:
-                  items = Promise.all(batch2.map(fromEntry));
-                  entries.push(items);
-                  readEntries();
-                  _a2.label = 6;
-                case 6:
-                  return [
-                    2
-                    /*return*/
-                  ];
-              }
-            });
-          });
-        }, function(err) {
-          reject(err);
-        });
-      }
-      readEntries();
-    });
-  }
-  function fromFileEntry(entry) {
-    return __awaiter(this, void 0, void 0, function() {
-      return __generator(this, function(_a2) {
-        return [2, new Promise(function(resolve, reject) {
-          entry.file(function(file) {
-            var fwp = toFileWithPath(file, entry.fullPath);
-            resolve(fwp);
-          }, function(err) {
-            reject(err);
-          });
-        })];
-      });
-    });
-  }
-  var _default$c = function(file, acceptedFiles) {
-    if (file && acceptedFiles) {
-      var acceptedFilesArray = Array.isArray(acceptedFiles) ? acceptedFiles : acceptedFiles.split(",");
-      var fileName = file.name || "";
-      var mimeType = (file.type || "").toLowerCase();
-      var baseMimeType = mimeType.replace(/\/.*$/, "");
-      return acceptedFilesArray.some(function(type) {
-        var validType = type.trim().toLowerCase();
-        if (validType.charAt(0) === ".") {
-          return fileName.toLowerCase().endsWith(validType);
-        } else if (validType.endsWith("/*")) {
-          return baseMimeType === validType.replace(/\/.*$/, "");
-        }
-        return mimeType === validType;
-      });
-    }
-    return true;
-  };
-  function _toConsumableArray$1(arr) {
-    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread$1();
-  }
-  function _nonIterableSpread$1() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _iterableToArray$1(iter) {
-    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-      return Array.from(iter);
-  }
-  function _arrayWithoutHoles$1(arr) {
-    if (Array.isArray(arr))
-      return _arrayLikeToArray$1(arr);
-  }
-  function ownKeys$1(object, enumerableOnly) {
-    var keys = Object.keys(object);
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      })), keys.push.apply(keys, symbols);
-    }
-    return keys;
-  }
-  function _objectSpread$1(target) {
-    for (var i2 = 1; i2 < arguments.length; i2++) {
-      var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys$1(Object(source), true).forEach(function(key) {
-        _defineProperty$1(target, key, source[key]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function(key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
-    }
-    return target;
-  }
-  function _defineProperty$1(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true });
-    } else {
-      obj[key] = value;
-    }
-    return obj;
-  }
-  function _slicedToArray$1(arr, i2) {
-    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i2) || _unsupportedIterableToArray$1(arr, i2) || _nonIterableRest$1();
-  }
-  function _nonIterableRest$1() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _unsupportedIterableToArray$1(o, minLen) {
-    if (!o)
-      return;
-    if (typeof o === "string")
-      return _arrayLikeToArray$1(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor)
-      n = o.constructor.name;
-    if (n === "Map" || n === "Set")
-      return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-      return _arrayLikeToArray$1(o, minLen);
-  }
-  function _arrayLikeToArray$1(arr, len) {
-    if (len == null || len > arr.length)
-      len = arr.length;
-    for (var i2 = 0, arr2 = new Array(len); i2 < len; i2++) {
-      arr2[i2] = arr[i2];
-    }
-    return arr2;
-  }
-  function _iterableToArrayLimit$1(arr, i2) {
-    var _i2 = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-    if (_i2 == null)
-      return;
-    var _arr = [];
-    var _n = true;
-    var _d2 = false;
-    var _s, _e2;
-    try {
-      for (_i2 = _i2.call(arr); !(_n = (_s = _i2.next()).done); _n = true) {
-        _arr.push(_s.value);
-        if (i2 && _arr.length === i2)
-          break;
-      }
-    } catch (err) {
-      _d2 = true;
-      _e2 = err;
-    } finally {
-      try {
-        if (!_n && _i2["return"] != null)
-          _i2["return"]();
-      } finally {
-        if (_d2)
-          throw _e2;
-      }
-    }
-    return _arr;
-  }
-  function _arrayWithHoles$1(arr) {
-    if (Array.isArray(arr))
-      return arr;
-  }
-  var FILE_INVALID_TYPE = "file-invalid-type";
-  var FILE_TOO_LARGE = "file-too-large";
-  var FILE_TOO_SMALL = "file-too-small";
-  var TOO_MANY_FILES = "too-many-files";
-  var getInvalidTypeRejectionErr = function getInvalidTypeRejectionErr2(accept) {
-    accept = Array.isArray(accept) && accept.length === 1 ? accept[0] : accept;
-    var messageSuffix = Array.isArray(accept) ? "one of ".concat(accept.join(", ")) : accept;
-    return {
-      code: FILE_INVALID_TYPE,
-      message: "File type must be ".concat(messageSuffix)
-    };
-  };
-  var getTooLargeRejectionErr = function getTooLargeRejectionErr2(maxSize) {
-    return {
-      code: FILE_TOO_LARGE,
-      message: "File is larger than ".concat(maxSize, " ").concat(maxSize === 1 ? "byte" : "bytes")
-    };
-  };
-  var getTooSmallRejectionErr = function getTooSmallRejectionErr2(minSize) {
-    return {
-      code: FILE_TOO_SMALL,
-      message: "File is smaller than ".concat(minSize, " ").concat(minSize === 1 ? "byte" : "bytes")
-    };
-  };
-  var TOO_MANY_FILES_REJECTION = {
-    code: TOO_MANY_FILES,
-    message: "Too many files"
-  };
-  function fileAccepted(file, accept) {
-    var isAcceptable = file.type === "application/x-moz-file" || _default$c(file, accept);
-    return [isAcceptable, isAcceptable ? null : getInvalidTypeRejectionErr(accept)];
-  }
-  function fileMatchSize(file, minSize, maxSize) {
-    if (isDefined(file.size)) {
-      if (isDefined(minSize) && isDefined(maxSize)) {
-        if (file.size > maxSize)
-          return [false, getTooLargeRejectionErr(maxSize)];
-        if (file.size < minSize)
-          return [false, getTooSmallRejectionErr(minSize)];
-      } else if (isDefined(minSize) && file.size < minSize)
-        return [false, getTooSmallRejectionErr(minSize)];
-      else if (isDefined(maxSize) && file.size > maxSize)
-        return [false, getTooLargeRejectionErr(maxSize)];
-    }
-    return [true, null];
-  }
-  function isDefined(value) {
-    return value !== void 0 && value !== null;
-  }
-  function allFilesAccepted(_ref) {
-    var files = _ref.files, accept = _ref.accept, minSize = _ref.minSize, maxSize = _ref.maxSize, multiple = _ref.multiple, maxFiles = _ref.maxFiles, validator2 = _ref.validator;
-    if (!multiple && files.length > 1 || multiple && maxFiles >= 1 && files.length > maxFiles) {
-      return false;
-    }
-    return files.every(function(file) {
-      var _fileAccepted = fileAccepted(file, accept), _fileAccepted2 = _slicedToArray$1(_fileAccepted, 1), accepted = _fileAccepted2[0];
-      var _fileMatchSize = fileMatchSize(file, minSize, maxSize), _fileMatchSize2 = _slicedToArray$1(_fileMatchSize, 1), sizeMatch = _fileMatchSize2[0];
-      var customErrors = validator2 ? validator2(file) : null;
-      return accepted && sizeMatch && !customErrors;
-    });
-  }
-  function isPropagationStopped(event) {
-    if (typeof event.isPropagationStopped === "function") {
-      return event.isPropagationStopped();
-    } else if (typeof event.cancelBubble !== "undefined") {
-      return event.cancelBubble;
-    }
-    return false;
-  }
-  function isEvtWithFiles(event) {
-    if (!event.dataTransfer) {
-      return !!event.target && !!event.target.files;
-    }
-    return Array.prototype.some.call(event.dataTransfer.types, function(type) {
-      return type === "Files" || type === "application/x-moz-file";
-    });
-  }
-  function onDocumentDragOver(event) {
-    event.preventDefault();
-  }
-  function isIe(userAgent) {
-    return userAgent.indexOf("MSIE") !== -1 || userAgent.indexOf("Trident/") !== -1;
-  }
-  function isEdge(userAgent) {
-    return userAgent.indexOf("Edge/") !== -1;
-  }
-  function isIeOrEdge() {
-    var userAgent = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : window.navigator.userAgent;
-    return isIe(userAgent) || isEdge(userAgent);
-  }
-  function composeEventHandlers() {
-    for (var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) {
-      fns[_key] = arguments[_key];
-    }
-    return function(event) {
-      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        args[_key2 - 1] = arguments[_key2];
-      }
-      return fns.some(function(fn) {
-        if (!isPropagationStopped(event) && fn) {
-          fn.apply(void 0, [event].concat(args));
-        }
-        return isPropagationStopped(event);
-      });
-    };
-  }
-  function canUseFileSystemAccessAPI() {
-    return "showOpenFilePicker" in window;
-  }
-  function pickerOptionsFromAccept(accept) {
-    if (isDefined(accept)) {
-      var acceptForPicker = Object.entries(accept).filter(function(_ref2) {
-        var _ref3 = _slicedToArray$1(_ref2, 2), mimeType = _ref3[0], ext = _ref3[1];
-        var ok2 = true;
-        if (!isMIMEType(mimeType)) {
-          console.warn('Skipped "'.concat(mimeType, '" because it is not a valid MIME type. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types for a list of valid MIME types.'));
-          ok2 = false;
-        }
-        if (!Array.isArray(ext) || !ext.every(isExt)) {
-          console.warn('Skipped "'.concat(mimeType, '" because an invalid file extension was provided.'));
-          ok2 = false;
-        }
-        return ok2;
-      }).reduce(function(agg, _ref4) {
-        var _ref5 = _slicedToArray$1(_ref4, 2), mimeType = _ref5[0], ext = _ref5[1];
-        return _objectSpread$1(_objectSpread$1({}, agg), {}, _defineProperty$1({}, mimeType, ext));
-      }, {});
-      return [{
-        // description is required due to https://crbug.com/1264708
-        description: "Files",
-        accept: acceptForPicker
-      }];
-    }
-    return accept;
-  }
-  function acceptPropAsAcceptAttr(accept) {
-    if (isDefined(accept)) {
-      return Object.entries(accept).reduce(function(a, _ref6) {
-        var _ref7 = _slicedToArray$1(_ref6, 2), mimeType = _ref7[0], ext = _ref7[1];
-        return [].concat(_toConsumableArray$1(a), [mimeType], _toConsumableArray$1(ext));
-      }, []).filter(function(v) {
-        return isMIMEType(v) || isExt(v);
-      }).join(",");
-    }
-    return void 0;
-  }
-  function isAbort(v) {
-    return v instanceof DOMException && (v.name === "AbortError" || v.code === v.ABORT_ERR);
-  }
-  function isSecurityError(v) {
-    return v instanceof DOMException && (v.name === "SecurityError" || v.code === v.SECURITY_ERR);
-  }
-  function isMIMEType(v) {
-    return v === "audio/*" || v === "video/*" || v === "image/*" || v === "text/*" || /\w+\/[-+.\w]+/g.test(v);
-  }
-  function isExt(v) {
-    return /^.*\.[\w]+$/.test(v);
-  }
-  var _excluded = ["children"], _excluded2 = ["open"], _excluded3 = ["refKey", "role", "onKeyDown", "onFocus", "onBlur", "onClick", "onDragEnter", "onDragOver", "onDragLeave", "onDrop"], _excluded4 = ["refKey", "onChange", "onClick"];
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-  }
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _iterableToArray(iter) {
-    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-      return Array.from(iter);
-  }
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr))
-      return _arrayLikeToArray(arr);
-  }
-  function _slicedToArray(arr, i2) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i2) || _unsupportedIterableToArray(arr, i2) || _nonIterableRest();
-  }
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o)
-      return;
-    if (typeof o === "string")
-      return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor)
-      n = o.constructor.name;
-    if (n === "Map" || n === "Set")
-      return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-      return _arrayLikeToArray(o, minLen);
-  }
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length)
-      len = arr.length;
-    for (var i2 = 0, arr2 = new Array(len); i2 < len; i2++) {
-      arr2[i2] = arr[i2];
-    }
-    return arr2;
-  }
-  function _iterableToArrayLimit(arr, i2) {
-    var _i2 = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-    if (_i2 == null)
-      return;
-    var _arr = [];
-    var _n = true;
-    var _d2 = false;
-    var _s, _e2;
-    try {
-      for (_i2 = _i2.call(arr); !(_n = (_s = _i2.next()).done); _n = true) {
-        _arr.push(_s.value);
-        if (i2 && _arr.length === i2)
-          break;
-      }
-    } catch (err) {
-      _d2 = true;
-      _e2 = err;
-    } finally {
-      try {
-        if (!_n && _i2["return"] != null)
-          _i2["return"]();
-      } finally {
-        if (_d2)
-          throw _e2;
-      }
-    }
-    return _arr;
-  }
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr))
-      return arr;
-  }
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      })), keys.push.apply(keys, symbols);
-    }
-    return keys;
-  }
-  function _objectSpread(target) {
-    for (var i2 = 1; i2 < arguments.length; i2++) {
-      var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys(Object(source), true).forEach(function(key) {
-        _defineProperty(target, key, source[key]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
-    }
-    return target;
-  }
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true });
-    } else {
-      obj[key] = value;
-    }
-    return obj;
-  }
-  function _objectWithoutProperties(source, excluded) {
-    if (source == null)
-      return {};
-    var target = _objectWithoutPropertiesLoose(source, excluded);
-    var key, i2;
-    if (Object.getOwnPropertySymbols) {
-      var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-      for (i2 = 0; i2 < sourceSymbolKeys.length; i2++) {
-        key = sourceSymbolKeys[i2];
-        if (excluded.indexOf(key) >= 0)
-          continue;
-        if (!Object.prototype.propertyIsEnumerable.call(source, key))
-          continue;
-        target[key] = source[key];
-      }
-    }
-    return target;
-  }
-  function _objectWithoutPropertiesLoose(source, excluded) {
-    if (source == null)
-      return {};
-    var target = {};
-    var sourceKeys = Object.keys(source);
-    var key, i2;
-    for (i2 = 0; i2 < sourceKeys.length; i2++) {
-      key = sourceKeys[i2];
-      if (excluded.indexOf(key) >= 0)
-        continue;
-      target[key] = source[key];
-    }
-    return target;
-  }
-  var Dropzone = /* @__PURE__ */ reactExports.forwardRef(function(_ref, ref) {
-    var children = _ref.children, params = _objectWithoutProperties(_ref, _excluded);
-    var _useDropzone = useDropzone(params), open = _useDropzone.open, props = _objectWithoutProperties(_useDropzone, _excluded2);
-    reactExports.useImperativeHandle(ref, function() {
-      return {
-        open
-      };
-    }, [open]);
-    return /* @__PURE__ */ React$1.createElement(reactExports.Fragment, null, children(_objectSpread(_objectSpread({}, props), {}, {
-      open
-    })));
-  });
-  Dropzone.displayName = "Dropzone";
-  var defaultProps = {
-    disabled: false,
-    getFilesFromEvent: fromEvent,
-    maxSize: Infinity,
-    minSize: 0,
-    multiple: true,
-    maxFiles: 0,
-    preventDropOnDocument: true,
-    noClick: false,
-    noKeyboard: false,
-    noDrag: false,
-    noDragEventsBubbling: false,
-    validator: null,
-    useFsAccessApi: true,
-    autoFocus: false
-  };
-  Dropzone.defaultProps = defaultProps;
-  Dropzone.propTypes = {
-    /**
-     * Render function that exposes the dropzone state and prop getter fns
-     *
-     * @param {object} params
-     * @param {Function} params.getRootProps Returns the props you should apply to the root drop container you render
-     * @param {Function} params.getInputProps Returns the props you should apply to hidden file input you render
-     * @param {Function} params.open Open the native file selection dialog
-     * @param {boolean} params.isFocused Dropzone area is in focus
-     * @param {boolean} params.isFileDialogActive File dialog is opened
-     * @param {boolean} params.isDragActive Active drag is in progress
-     * @param {boolean} params.isDragAccept Dragged files are accepted
-     * @param {boolean} params.isDragReject Some dragged files are rejected
-     * @param {File[]} params.acceptedFiles Accepted files
-     * @param {FileRejection[]} params.fileRejections Rejected files and why they were rejected
-     */
-    children: PropTypes.func,
-    /**
-     * Set accepted file types.
-     * Checkout https://developer.mozilla.org/en-US/docs/Web/API/window/showOpenFilePicker types option for more information.
-     * Keep in mind that mime type determination is not reliable across platforms. CSV files,
-     * for example, are reported as text/plain under macOS but as application/vnd.ms-excel under
-     * Windows. In some cases there might not be a mime type set at all (https://github.com/react-dropzone/react-dropzone/issues/276).
-     */
-    accept: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
-    /**
-     * Allow drag 'n' drop (or selection from the file dialog) of multiple files
-     */
-    multiple: PropTypes.bool,
-    /**
-     * If false, allow dropped items to take over the current browser window
-     */
-    preventDropOnDocument: PropTypes.bool,
-    /**
-     * If true, disables click to open the native file selection dialog
-     */
-    noClick: PropTypes.bool,
-    /**
-     * If true, disables SPACE/ENTER to open the native file selection dialog.
-     * Note that it also stops tracking the focus state.
-     */
-    noKeyboard: PropTypes.bool,
-    /**
-     * If true, disables drag 'n' drop
-     */
-    noDrag: PropTypes.bool,
-    /**
-     * If true, stops drag event propagation to parents
-     */
-    noDragEventsBubbling: PropTypes.bool,
-    /**
-     * Minimum file size (in bytes)
-     */
-    minSize: PropTypes.number,
-    /**
-     * Maximum file size (in bytes)
-     */
-    maxSize: PropTypes.number,
-    /**
-     * Maximum accepted number of files
-     * The default value is 0 which means there is no limitation to how many files are accepted.
-     */
-    maxFiles: PropTypes.number,
-    /**
-     * Enable/disable the dropzone
-     */
-    disabled: PropTypes.bool,
-    /**
-     * Use this to provide a custom file aggregator
-     *
-     * @param {(DragEvent|Event)} event A drag event or input change event (if files were selected via the file dialog)
-     */
-    getFilesFromEvent: PropTypes.func,
-    /**
-     * Cb for when closing the file dialog with no selection
-     */
-    onFileDialogCancel: PropTypes.func,
-    /**
-     * Cb for when opening the file dialog
-     */
-    onFileDialogOpen: PropTypes.func,
-    /**
-     * Set to true to use the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API
-     * to open the file picker instead of using an `<input type="file">` click event.
-     */
-    useFsAccessApi: PropTypes.bool,
-    /**
-     * Set to true to focus the root element on render
-     */
-    autoFocus: PropTypes.bool,
-    /**
-     * Cb for when the `dragenter` event occurs.
-     *
-     * @param {DragEvent} event
-     */
-    onDragEnter: PropTypes.func,
-    /**
-     * Cb for when the `dragleave` event occurs
-     *
-     * @param {DragEvent} event
-     */
-    onDragLeave: PropTypes.func,
-    /**
-     * Cb for when the `dragover` event occurs
-     *
-     * @param {DragEvent} event
-     */
-    onDragOver: PropTypes.func,
-    /**
-     * Cb for when the `drop` event occurs.
-     * Note that this callback is invoked after the `getFilesFromEvent` callback is done.
-     *
-     * Files are accepted or rejected based on the `accept`, `multiple`, `minSize` and `maxSize` props.
-     * `accept` must be a valid [MIME type](http://www.iana.org/assignments/media-types/media-types.xhtml) according to [input element specification](https://www.w3.org/wiki/HTML/Elements/input/file) or a valid file extension.
-     * If `multiple` is set to false and additional files are dropped,
-     * all files besides the first will be rejected.
-     * Any file which does not have a size in the [`minSize`, `maxSize`] range, will be rejected as well.
-     *
-     * Note that the `onDrop` callback will always be invoked regardless if the dropped files were accepted or rejected.
-     * If you'd like to react to a specific scenario, use the `onDropAccepted`/`onDropRejected` props.
-     *
-     * `onDrop` will provide you with an array of [File](https://developer.mozilla.org/en-US/docs/Web/API/File) objects which you can then process and send to a server.
-     * For example, with [SuperAgent](https://github.com/visionmedia/superagent) as a http/ajax library:
-     *
-     * ```js
-     * function onDrop(acceptedFiles) {
-     *   const req = request.post('/upload')
-     *   acceptedFiles.forEach(file => {
-     *     req.attach(file.name, file)
-     *   })
-     *   req.end(callback)
-     * }
-     * ```
-     *
-     * @param {File[]} acceptedFiles
-     * @param {FileRejection[]} fileRejections
-     * @param {(DragEvent|Event)} event A drag event or input change event (if files were selected via the file dialog)
-     */
-    onDrop: PropTypes.func,
-    /**
-     * Cb for when the `drop` event occurs.
-     * Note that if no files are accepted, this callback is not invoked.
-     *
-     * @param {File[]} files
-     * @param {(DragEvent|Event)} event
-     */
-    onDropAccepted: PropTypes.func,
-    /**
-     * Cb for when the `drop` event occurs.
-     * Note that if no files are rejected, this callback is not invoked.
-     *
-     * @param {FileRejection[]} fileRejections
-     * @param {(DragEvent|Event)} event
-     */
-    onDropRejected: PropTypes.func,
-    /**
-     * Cb for when there's some error from any of the promises.
-     *
-     * @param {Error} error
-     */
-    onError: PropTypes.func,
-    /**
-     * Custom validation function. It must return null if there's no errors.
-     * @param {File} file
-     * @returns {FileError|FileError[]|null}
-     */
-    validator: PropTypes.func
-  };
-  var initialState$2 = {
-    isFocused: false,
-    isFileDialogActive: false,
-    isDragActive: false,
-    isDragAccept: false,
-    isDragReject: false,
-    acceptedFiles: [],
-    fileRejections: []
-  };
-  function useDropzone() {
-    var props = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
-    var _defaultProps$props = _objectSpread(_objectSpread({}, defaultProps), props), accept = _defaultProps$props.accept, disabled = _defaultProps$props.disabled, getFilesFromEvent = _defaultProps$props.getFilesFromEvent, maxSize = _defaultProps$props.maxSize, minSize = _defaultProps$props.minSize, multiple = _defaultProps$props.multiple, maxFiles = _defaultProps$props.maxFiles, onDragEnter = _defaultProps$props.onDragEnter, onDragLeave = _defaultProps$props.onDragLeave, onDragOver = _defaultProps$props.onDragOver, onDrop = _defaultProps$props.onDrop, onDropAccepted = _defaultProps$props.onDropAccepted, onDropRejected = _defaultProps$props.onDropRejected, onFileDialogCancel = _defaultProps$props.onFileDialogCancel, onFileDialogOpen = _defaultProps$props.onFileDialogOpen, useFsAccessApi = _defaultProps$props.useFsAccessApi, autoFocus = _defaultProps$props.autoFocus, preventDropOnDocument = _defaultProps$props.preventDropOnDocument, noClick = _defaultProps$props.noClick, noKeyboard = _defaultProps$props.noKeyboard, noDrag = _defaultProps$props.noDrag, noDragEventsBubbling = _defaultProps$props.noDragEventsBubbling, onError = _defaultProps$props.onError, validator2 = _defaultProps$props.validator;
-    var acceptAttr = reactExports.useMemo(function() {
-      return acceptPropAsAcceptAttr(accept);
-    }, [accept]);
-    var pickerTypes = reactExports.useMemo(function() {
-      return pickerOptionsFromAccept(accept);
-    }, [accept]);
-    var onFileDialogOpenCb = reactExports.useMemo(function() {
-      return typeof onFileDialogOpen === "function" ? onFileDialogOpen : noop;
-    }, [onFileDialogOpen]);
-    var onFileDialogCancelCb = reactExports.useMemo(function() {
-      return typeof onFileDialogCancel === "function" ? onFileDialogCancel : noop;
-    }, [onFileDialogCancel]);
-    var rootRef = reactExports.useRef(null);
-    var inputRef = reactExports.useRef(null);
-    var _useReducer = reactExports.useReducer(reducer, initialState$2), _useReducer2 = _slicedToArray(_useReducer, 2), state = _useReducer2[0], dispatch = _useReducer2[1];
-    var isFocused = state.isFocused, isFileDialogActive = state.isFileDialogActive;
-    var fsAccessApiWorksRef = reactExports.useRef(typeof window !== "undefined" && window.isSecureContext && useFsAccessApi && canUseFileSystemAccessAPI());
-    var onWindowFocus = function onWindowFocus2() {
-      if (!fsAccessApiWorksRef.current && isFileDialogActive) {
-        setTimeout(function() {
-          if (inputRef.current) {
-            var files = inputRef.current.files;
-            if (!files.length) {
-              dispatch({
-                type: "closeDialog"
-              });
-              onFileDialogCancelCb();
-            }
-          }
-        }, 300);
-      }
-    };
-    reactExports.useEffect(function() {
-      window.addEventListener("focus", onWindowFocus, false);
-      return function() {
-        window.removeEventListener("focus", onWindowFocus, false);
-      };
-    }, [inputRef, isFileDialogActive, onFileDialogCancelCb, fsAccessApiWorksRef]);
-    var dragTargetsRef = reactExports.useRef([]);
-    var onDocumentDrop = function onDocumentDrop2(event) {
-      if (rootRef.current && rootRef.current.contains(event.target)) {
-        return;
-      }
-      event.preventDefault();
-      dragTargetsRef.current = [];
-    };
-    reactExports.useEffect(function() {
-      if (preventDropOnDocument) {
-        document.addEventListener("dragover", onDocumentDragOver, false);
-        document.addEventListener("drop", onDocumentDrop, false);
-      }
-      return function() {
-        if (preventDropOnDocument) {
-          document.removeEventListener("dragover", onDocumentDragOver);
-          document.removeEventListener("drop", onDocumentDrop);
-        }
-      };
-    }, [rootRef, preventDropOnDocument]);
-    reactExports.useEffect(function() {
-      if (!disabled && autoFocus && rootRef.current) {
-        rootRef.current.focus();
-      }
-      return function() {
-      };
-    }, [rootRef, autoFocus, disabled]);
-    var onErrCb = reactExports.useCallback(function(e) {
-      if (onError) {
-        onError(e);
-      } else {
-        console.error(e);
-      }
-    }, [onError]);
-    var onDragEnterCb = reactExports.useCallback(function(event) {
-      event.preventDefault();
-      event.persist();
-      stopPropagation(event);
-      dragTargetsRef.current = [].concat(_toConsumableArray(dragTargetsRef.current), [event.target]);
-      if (isEvtWithFiles(event)) {
-        Promise.resolve(getFilesFromEvent(event)).then(function(files) {
-          if (isPropagationStopped(event) && !noDragEventsBubbling) {
-            return;
-          }
-          var fileCount = files.length;
-          var isDragAccept = fileCount > 0 && allFilesAccepted({
-            files,
-            accept: acceptAttr,
-            minSize,
-            maxSize,
-            multiple,
-            maxFiles,
-            validator: validator2
-          });
-          var isDragReject = fileCount > 0 && !isDragAccept;
-          dispatch({
-            isDragAccept,
-            isDragReject,
-            isDragActive: true,
-            type: "setDraggedFiles"
-          });
-          if (onDragEnter) {
-            onDragEnter(event);
-          }
-        }).catch(function(e) {
-          return onErrCb(e);
-        });
-      }
-    }, [getFilesFromEvent, onDragEnter, onErrCb, noDragEventsBubbling, acceptAttr, minSize, maxSize, multiple, maxFiles, validator2]);
-    var onDragOverCb = reactExports.useCallback(function(event) {
-      event.preventDefault();
-      event.persist();
-      stopPropagation(event);
-      var hasFiles = isEvtWithFiles(event);
-      if (hasFiles && event.dataTransfer) {
-        try {
-          event.dataTransfer.dropEffect = "copy";
-        } catch (_unused) {
-        }
-      }
-      if (hasFiles && onDragOver) {
-        onDragOver(event);
-      }
-      return false;
-    }, [onDragOver, noDragEventsBubbling]);
-    var onDragLeaveCb = reactExports.useCallback(function(event) {
-      event.preventDefault();
-      event.persist();
-      stopPropagation(event);
-      var targets = dragTargetsRef.current.filter(function(target) {
-        return rootRef.current && rootRef.current.contains(target);
-      });
-      var targetIdx = targets.indexOf(event.target);
-      if (targetIdx !== -1) {
-        targets.splice(targetIdx, 1);
-      }
-      dragTargetsRef.current = targets;
-      if (targets.length > 0) {
-        return;
-      }
-      dispatch({
-        type: "setDraggedFiles",
-        isDragActive: false,
-        isDragAccept: false,
-        isDragReject: false
-      });
-      if (isEvtWithFiles(event) && onDragLeave) {
-        onDragLeave(event);
-      }
-    }, [rootRef, onDragLeave, noDragEventsBubbling]);
-    var setFiles = reactExports.useCallback(function(files, event) {
-      var acceptedFiles = [];
-      var fileRejections = [];
-      files.forEach(function(file) {
-        var _fileAccepted = fileAccepted(file, acceptAttr), _fileAccepted2 = _slicedToArray(_fileAccepted, 2), accepted = _fileAccepted2[0], acceptError = _fileAccepted2[1];
-        var _fileMatchSize = fileMatchSize(file, minSize, maxSize), _fileMatchSize2 = _slicedToArray(_fileMatchSize, 2), sizeMatch = _fileMatchSize2[0], sizeError = _fileMatchSize2[1];
-        var customErrors = validator2 ? validator2(file) : null;
-        if (accepted && sizeMatch && !customErrors) {
-          acceptedFiles.push(file);
-        } else {
-          var errors2 = [acceptError, sizeError];
-          if (customErrors) {
-            errors2 = errors2.concat(customErrors);
-          }
-          fileRejections.push({
-            file,
-            errors: errors2.filter(function(e) {
-              return e;
-            })
-          });
-        }
-      });
-      if (!multiple && acceptedFiles.length > 1 || multiple && maxFiles >= 1 && acceptedFiles.length > maxFiles) {
-        acceptedFiles.forEach(function(file) {
-          fileRejections.push({
-            file,
-            errors: [TOO_MANY_FILES_REJECTION]
-          });
-        });
-        acceptedFiles.splice(0);
-      }
-      dispatch({
-        acceptedFiles,
-        fileRejections,
-        type: "setFiles"
-      });
-      if (onDrop) {
-        onDrop(acceptedFiles, fileRejections, event);
-      }
-      if (fileRejections.length > 0 && onDropRejected) {
-        onDropRejected(fileRejections, event);
-      }
-      if (acceptedFiles.length > 0 && onDropAccepted) {
-        onDropAccepted(acceptedFiles, event);
-      }
-    }, [dispatch, multiple, acceptAttr, minSize, maxSize, maxFiles, onDrop, onDropAccepted, onDropRejected, validator2]);
-    var onDropCb = reactExports.useCallback(function(event) {
-      event.preventDefault();
-      event.persist();
-      stopPropagation(event);
-      dragTargetsRef.current = [];
-      if (isEvtWithFiles(event)) {
-        Promise.resolve(getFilesFromEvent(event)).then(function(files) {
-          if (isPropagationStopped(event) && !noDragEventsBubbling) {
-            return;
-          }
-          setFiles(files, event);
-        }).catch(function(e) {
-          return onErrCb(e);
-        });
-      }
-      dispatch({
-        type: "reset"
-      });
-    }, [getFilesFromEvent, setFiles, onErrCb, noDragEventsBubbling]);
-    var openFileDialog = reactExports.useCallback(function() {
-      if (fsAccessApiWorksRef.current) {
-        dispatch({
-          type: "openDialog"
-        });
-        onFileDialogOpenCb();
-        var opts = {
-          multiple,
-          types: pickerTypes
-        };
-        window.showOpenFilePicker(opts).then(function(handles) {
-          return getFilesFromEvent(handles);
-        }).then(function(files) {
-          setFiles(files, null);
-          dispatch({
-            type: "closeDialog"
-          });
-        }).catch(function(e) {
-          if (isAbort(e)) {
-            onFileDialogCancelCb(e);
-            dispatch({
-              type: "closeDialog"
-            });
-          } else if (isSecurityError(e)) {
-            fsAccessApiWorksRef.current = false;
-            if (inputRef.current) {
-              inputRef.current.value = null;
-              inputRef.current.click();
-            } else {
-              onErrCb(new Error("Cannot open the file picker because the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API is not supported and no <input> was provided."));
-            }
-          } else {
-            onErrCb(e);
-          }
-        });
-        return;
-      }
-      if (inputRef.current) {
-        dispatch({
-          type: "openDialog"
-        });
-        onFileDialogOpenCb();
-        inputRef.current.value = null;
-        inputRef.current.click();
-      }
-    }, [dispatch, onFileDialogOpenCb, onFileDialogCancelCb, useFsAccessApi, setFiles, onErrCb, pickerTypes, multiple]);
-    var onKeyDownCb = reactExports.useCallback(function(event) {
-      if (!rootRef.current || !rootRef.current.isEqualNode(event.target)) {
-        return;
-      }
-      if (event.key === " " || event.key === "Enter" || event.keyCode === 32 || event.keyCode === 13) {
-        event.preventDefault();
-        openFileDialog();
-      }
-    }, [rootRef, openFileDialog]);
-    var onFocusCb = reactExports.useCallback(function() {
-      dispatch({
-        type: "focus"
-      });
-    }, []);
-    var onBlurCb = reactExports.useCallback(function() {
-      dispatch({
-        type: "blur"
-      });
-    }, []);
-    var onClickCb = reactExports.useCallback(function() {
-      if (noClick) {
-        return;
-      }
-      if (isIeOrEdge()) {
-        setTimeout(openFileDialog, 0);
-      } else {
-        openFileDialog();
-      }
-    }, [noClick, openFileDialog]);
-    var composeHandler = function composeHandler2(fn) {
-      return disabled ? null : fn;
-    };
-    var composeKeyboardHandler = function composeKeyboardHandler2(fn) {
-      return noKeyboard ? null : composeHandler(fn);
-    };
-    var composeDragHandler = function composeDragHandler2(fn) {
-      return noDrag ? null : composeHandler(fn);
-    };
-    var stopPropagation = function stopPropagation2(event) {
-      if (noDragEventsBubbling) {
-        event.stopPropagation();
-      }
-    };
-    var getRootProps = reactExports.useMemo(function() {
-      return function() {
-        var _ref2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, _ref2$refKey = _ref2.refKey, refKey = _ref2$refKey === void 0 ? "ref" : _ref2$refKey, role = _ref2.role, onKeyDown = _ref2.onKeyDown, onFocus = _ref2.onFocus, onBlur = _ref2.onBlur, onClick = _ref2.onClick, onDragEnter2 = _ref2.onDragEnter, onDragOver2 = _ref2.onDragOver, onDragLeave2 = _ref2.onDragLeave, onDrop2 = _ref2.onDrop, rest = _objectWithoutProperties(_ref2, _excluded3);
-        return _objectSpread(_objectSpread(_defineProperty({
-          onKeyDown: composeKeyboardHandler(composeEventHandlers(onKeyDown, onKeyDownCb)),
-          onFocus: composeKeyboardHandler(composeEventHandlers(onFocus, onFocusCb)),
-          onBlur: composeKeyboardHandler(composeEventHandlers(onBlur, onBlurCb)),
-          onClick: composeHandler(composeEventHandlers(onClick, onClickCb)),
-          onDragEnter: composeDragHandler(composeEventHandlers(onDragEnter2, onDragEnterCb)),
-          onDragOver: composeDragHandler(composeEventHandlers(onDragOver2, onDragOverCb)),
-          onDragLeave: composeDragHandler(composeEventHandlers(onDragLeave2, onDragLeaveCb)),
-          onDrop: composeDragHandler(composeEventHandlers(onDrop2, onDropCb)),
-          role: typeof role === "string" && role !== "" ? role : "presentation"
-        }, refKey, rootRef), !disabled && !noKeyboard ? {
-          tabIndex: 0
-        } : {}), rest);
-      };
-    }, [rootRef, onKeyDownCb, onFocusCb, onBlurCb, onClickCb, onDragEnterCb, onDragOverCb, onDragLeaveCb, onDropCb, noKeyboard, noDrag, disabled]);
-    var onInputElementClick = reactExports.useCallback(function(event) {
-      event.stopPropagation();
-    }, []);
-    var getInputProps = reactExports.useMemo(function() {
-      return function() {
-        var _ref3 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, _ref3$refKey = _ref3.refKey, refKey = _ref3$refKey === void 0 ? "ref" : _ref3$refKey, onChange = _ref3.onChange, onClick = _ref3.onClick, rest = _objectWithoutProperties(_ref3, _excluded4);
-        var inputProps = _defineProperty({
-          accept: acceptAttr,
-          multiple,
-          type: "file",
-          style: {
-            display: "none"
-          },
-          onChange: composeHandler(composeEventHandlers(onChange, onDropCb)),
-          onClick: composeHandler(composeEventHandlers(onClick, onInputElementClick)),
-          tabIndex: -1
-        }, refKey, inputRef);
-        return _objectSpread(_objectSpread({}, inputProps), rest);
-      };
-    }, [inputRef, accept, multiple, onDropCb, disabled]);
-    return _objectSpread(_objectSpread({}, state), {}, {
-      isFocused: isFocused && !disabled,
-      getRootProps,
-      getInputProps,
-      rootRef,
-      inputRef,
-      open: composeHandler(openFileDialog)
-    });
-  }
-  function reducer(state, action) {
-    switch (action.type) {
-      case "focus":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          isFocused: true
-        });
-      case "blur":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          isFocused: false
-        });
-      case "openDialog":
-        return _objectSpread(_objectSpread({}, initialState$2), {}, {
-          isFileDialogActive: true
-        });
-      case "closeDialog":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          isFileDialogActive: false
-        });
-      case "setDraggedFiles":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          isDragActive: action.isDragActive,
-          isDragAccept: action.isDragAccept,
-          isDragReject: action.isDragReject
-        });
-      case "setFiles":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          acceptedFiles: action.acceptedFiles,
-          fileRejections: action.fileRejections
-        });
-      case "reset":
-        return _objectSpread({}, initialState$2);
-      default:
-        return state;
-    }
-  }
-  function noop() {
-  }
-  var UploadFile = {};
-  var _interopRequireDefault$b = interopRequireDefaultExports;
-  Object.defineProperty(UploadFile, "__esModule", {
-    value: true
-  });
-  var default_1$b = UploadFile.default = void 0;
-  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-  var _jsxRuntime$b = jsxRuntimeExports;
-  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
-    d: "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11z"
-  }), "UploadFile");
-  default_1$b = UploadFile.default = _default$b;
-  const Wrap$1 = styled$1("div")(() => ({
-    marginTop: "1.25em"
-  }));
-  const TextWrap = styled$1("div")(({ theme: theme2 }) => ({
-    padding: "2.7em 1em",
-    border: `1px dashed ${theme2.palette.divider}`,
-    boxShadow: "none",
-    textAlign: "center",
-    cursor: "pointer",
-    span: {
-      color: theme2.palette.primary.main,
-      transition: "color 0.2s ease"
-    },
-    "&:hover span": {
-      color: theme2.palette.primary.dark,
-      textDecoration: "underline"
-    },
-    svg: {
-      marginBottom: theme2.spacing(2),
-      color: theme2.palette.primary.main
-    }
-  }));
-  const TextFiletypes = styled$1(Typography$1)(({ theme: theme2 }) => ({
-    marginTop: theme2.spacing(2),
-    color: theme2.palette.text.secondary
-  }));
-  var Close = {};
-  var _interopRequireDefault$a = interopRequireDefaultExports;
-  Object.defineProperty(Close, "__esModule", {
-    value: true
-  });
-  var default_1$a = Close.default = void 0;
-  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-  var _jsxRuntime$a = jsxRuntimeExports;
-  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
-    d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-  }), "Close");
-  default_1$a = Close.default = _default$a;
-  const FileWrap = styled$1(Paper$1, {
-    shouldForwardProp: (prop) => prop !== "error"
-  })(({ theme: theme2, error }) => ({
-    margin: `${theme2.spacing(1)} 0`,
-    padding: theme2.spacing(2),
-    border: `1px solid ${theme2.palette.divider}`,
-    boxShadow: "none",
-    ".MuiSvgIcon-root:first-of-type": {
-      padding: theme2.spacing(1)
-    },
-    ...error && {
-      color: theme2.palette.error.main
-    }
-  }));
-  const FileName = styled$1("span")(() => ({
-    display: "block",
-    textOverflow: "ellipsis",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    color: "currentColor"
-  }));
-  const FileInfo = styled$1("div")(({ theme: theme2 }) => ({
-    display: "flex",
-    gap: theme2.spacing(1),
-    fontSize: "0.875rem",
-    "& ul": {
-      margin: 0,
-      padding: 0,
-      listStyle: "none"
-    }
-  }));
-  function getReadableFilesize(bytes) {
-    let size2 = bytes / 1024;
-    let unit = "kb";
-    if (size2 > 1e3) {
-      size2 = size2 / 1024;
-      unit = "mb";
-    }
-    return `${size2.toFixed(2)}${unit}`;
-  }
-  function randomInt(max2) {
-    return Math.ceil(Math.random() * max2);
-  }
-  const FilePreview = ({ id, file, onFileRemove, onFileUploaded }) => {
-    const [progress, setProgress] = reactExports.useState(0);
-    const hasErrors = "errors" in file;
-    reactExports.useEffect(() => {
-      if (hasErrors) {
-        return;
-      }
-      if (progress < 100) {
-        setTimeout(() => {
-          setProgress(Math.min(progress + randomInt(15), 100));
-        }, 300);
-      } else {
-        onFileUploaded && onFileUploaded(file.name);
-      }
-    }, [progress, hasErrors, onFileUploaded, file]);
-    const name2 = !hasErrors ? file.name : "Upload failed";
-    const color2 = !hasErrors ? "primary" : "error";
-    const status = !hasErrors ? progress === 100 ? "Complete" : "Loading" : "Failed";
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(FileWrap, { error: hasErrors, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", gap: 2, alignItems: "center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, { sx: { flexShrink: 0 }, color: color2 }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { gap: 1, direction: "column", sx: { minWidth: 0, flexGrow: 1 }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(FileName, { children: name2 }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(FileInfo, { children: [
-          !hasErrors ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: getReadableFilesize(file.size) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: file.errors.map((e) => {
-            let message = e.message;
-            if (e.code === "file-too-large") {
-              message = "File too large";
-            }
-            return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: message }, e.code);
-          }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "•" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: status })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LinearProgress$1,
-          {
-            variant: "determinate",
-            value: hasErrors ? 0 : progress,
-            color: color2
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        IconButton$1,
-        {
-          sx: { flexShrink: 0 },
-          "aria-label": "Remove file",
-          size: "medium",
-          onClick: () => onFileRemove && onFileRemove(id),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {})
-        }
-      )
-    ] }) });
-  };
-  const FileUploader = ({
-    maxFiles = 2,
-    maxSize = 315e4,
-    accept,
-    fileTypeMessage,
-    files,
-    onFilesDrop,
-    addFile,
-    removeFile
-  }) => {
-    const { getRootProps, getInputProps } = useDropzone({
-      onDrop: (acceptedFiles, rejectedFiles) => {
-        onFilesDrop([...acceptedFiles, ...rejectedFiles]);
-      },
-      accept,
-      maxFiles,
-      maxSize
-    });
-    const { ref, ...rootProps } = getRootProps();
-    let displayFiles = null;
-    if (files.length) {
-      displayFiles = /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: files.map((file, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        FilePreview,
-        {
-          id: idx,
-          file,
-          onFileRemove: removeFile,
-          onFileUploaded: addFile
-        },
-        idx
-      )) });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Wrap$1, { ref, children: displayFiles || /* @__PURE__ */ jsxRuntimeExports.jsxs(TextWrap, { ...rootProps, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...getInputProps() }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Typography$1, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Click to upload" }),
-          " or drag and drop"
-        ] }),
-        fileTypeMessage && /* @__PURE__ */ jsxRuntimeExports.jsx(TextFiletypes, { children: fileTypeMessage })
-      ] })
-    ] }) });
-  };
-  const initialState$1 = {
-    whitelisted: [],
-    queued: []
-  };
-  function ImportNodesDialog() {
-    const { show, onClose } = useDialog(DIALOG_TYPE.IMPORT_NODES);
-    const [state, setState] = reactExports.useState(initialState$1);
-    const { whitelisted, queued } = state;
-    const uploadableFiles = queued.filter((file) => "name" in file);
-    const disableSubmit = whitelisted.length === 0 || whitelisted.length !== uploadableFiles.length;
-    const onUploadableFileComplete = reactExports.useCallback((name2) => {
-      setState(
-        produce((draft) => {
-          if (!draft.whitelisted.includes(name2)) {
-            draft.whitelisted.push(name2);
-          }
-        })
-      );
-    }, []);
-    const onFilesDrop = (files) => {
-      setState(
-        produce((draft) => {
-          draft.queued = files;
-        })
-      );
-    };
-    const onFileRemove = reactExports.useCallback((index) => {
-      setState(
-        produce((draft) => {
-          const removedFile = draft.queued[index];
-          if ("name" in removedFile) {
-            draft.whitelisted.splice(
-              draft.whitelisted.indexOf(removedFile.name),
-              1
-            );
-          }
-          draft.queued.splice(index, 1);
-        })
-      );
-    }, []);
-    function resetData() {
-      setState(initialState$1);
-    }
-    function onSubmit() {
-      console.log("submitting Import Nodes with files", uploadableFiles);
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      StyledDialog,
-      {
-        open: !!show,
-        fullWidth: true,
-        maxWidth: "sm",
-        onClose,
-        TransitionProps: {
-          onExited: resetData
-        },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Import nodes" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: "Drag and drop your .xls or .csv file below to import. The importing process may take few minutes. Please do not edit the workflow while the import process is ongoing." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              FileUploader,
-              {
-                fileTypeMessage: "XLS or CSV (max 3MB)",
-                accept: {
-                  "application/vnd.ms-excel": [".xls"],
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
-                  "text/csv": [".csv"]
-                },
-                files: state.queued,
-                onFilesDrop,
-                addFile: onUploadableFileComplete,
-                removeFile: onFileRemove
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: "Cancel" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, disabled: disableSubmit, children: "Import nodes" })
-          ] })
-        ]
-      }
-    );
-  }
-  const initialState = {
-    whitelisted: [],
-    queued: []
-  };
-  function ImportOutcomesDialog() {
-    const { show, onClose } = useDialog(DIALOG_TYPE.IMPORT_OUTCOMES);
-    const [state, setState] = reactExports.useState(initialState);
-    const { whitelisted, queued } = state;
-    const uploadableFiles = queued.filter((file) => "name" in file);
-    const disableSubmit = whitelisted.length === 0 || whitelisted.length !== uploadableFiles.length;
-    const onUploadableFileComplete = reactExports.useCallback((name2) => {
-      setState(
-        produce((draft) => {
-          if (!draft.whitelisted.includes(name2)) {
-            draft.whitelisted.push(name2);
-          }
-        })
-      );
-    }, []);
-    const onFilesDrop = (files) => {
-      setState(
-        produce((draft) => {
-          draft.queued = files;
-        })
-      );
-    };
-    const onFileRemove = reactExports.useCallback((index) => {
-      setState(
-        produce((draft) => {
-          const removedFile = draft.queued[index];
-          if ("name" in removedFile) {
-            draft.whitelisted.splice(
-              draft.whitelisted.indexOf(removedFile.name),
-              1
-            );
-          }
-          draft.queued.splice(index, 1);
-        })
-      );
-    }, []);
-    function resetData() {
-      setState(initialState);
-    }
-    function onSubmit() {
-      console.log("submitting Import Dialog with files", uploadableFiles);
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      StyledDialog,
-      {
-        open: !!show,
-        fullWidth: true,
-        maxWidth: "sm",
-        onClose,
-        TransitionProps: {
-          onExited: resetData
-        },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Import outcomes" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: "Drag and drop your .xls or .csv file below to import. The importing process may take few minutes. Please do not edit the workflow while the import process is ongoing." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              FileUploader,
-              {
-                fileTypeMessage: "XLS or CSV (max 3MB)",
-                accept: {
-                  "application/vnd.ms-excel": [".xls"],
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
-                  "text/csv": [".csv"]
-                },
-                files: state.queued,
-                onFilesDrop,
-                addFile: onUploadableFileComplete,
-                removeFile: onFileRemove
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: "Cancel" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, disabled: disableSubmit, children: "Import outcomes" })
-          ] })
-        ]
-      }
-    );
-  }
   const SectionDialogs = () => {
     const { dispatch } = useDialog();
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
@@ -99704,8 +99646,8 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ImportOutcomesDialog, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ImportNodesDialog, {})
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ImportOutcomesDialog, { workflowID: 1 }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ImportNodesDialog, { workflowID: 1 })
       ] })
     ] });
   };
@@ -101222,7 +101164,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return null;
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Wrap, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {}) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h4", children: window.gettext("Welcome to CourseFlow") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { sx: { mt: 2 }, children: window.gettext(
         "Tell us a bit more about your goals so that we can help you get started."
@@ -104527,7 +104469,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-haspopup": "true",
               color: "primary",
               onClick: handleAddMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {})
             }
           ) : null,
           /* @__PURE__ */ jsxRuntimeExports.jsx(
