@@ -23,6 +23,7 @@ import CreateProjectModal from '@cfModule/components/common/dialog/CreateProject
 import CreateCourseModal from '@cfModule/components/common/dialog/CreateCourse'
 import CreateActivityModal from '@cfModule/components/common/dialog/CreateActivity'
 import ResetPasswordModal from '@cfModule/components/common/dialog/ResetPassword'
+import LinkWorkflowModal from '@cfModule/components/common/dialog/LinkWorkflow'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 
 import {
@@ -32,27 +33,26 @@ import {
   NotificationsHeader,
   NotificationsList
 } from './styles'
-import { getTargetProjectMenu } from '@XMLHTTP/API/workflow'
 import { TopBarProps } from '@cfModule/types/common'
 
 // TODO: clean up and move into create modals functionality
 function openCreateActionModal(type: 'program' | 'activity' | 'course') {
   const createUrl = COURSEFLOW_APP.config.create_path[type]
   COURSEFLOW_APP.tinyLoader.startLoad()
-  getTargetProjectMenu<{ parentID: number }>(
-    -1,
-    (response_data) => {
-      if (response_data.parentID !== null) {
-        window.location.href = createUrl.replace(
-          '/0/',
-          '/' + response_data.parentID + '/'
-        )
-      }
-    },
-    () => {
-      COURSEFLOW_APP.tinyLoader.endLoad()
-    }
-  )
+  // getTargetProjectMenu<{ parentID: number }>(
+  //   -1,
+  //   (response_data) => {
+  //     if (response_data.parentID !== null) {
+  //       window.location.href = createUrl.replace(
+  //         '/0/',
+  //         '/' + response_data.parentID + '/'
+  //       )
+  //     }
+  //   },
+  //   () => {
+  //     COURSEFLOW_APP.tinyLoader.endLoad()
+  //   }
+  // )
 }
 
 const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {

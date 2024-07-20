@@ -40,7 +40,8 @@ def json_api_get_favourites(request: HttpRequest) -> JsonResponse:
 # Used to change whether or not the user receives notifications
 @ajax_login_required
 def json_api_post_select_notifications(request: HttpRequest) -> JsonResponse:
-    notifications = json.loads(request.POST.get("notifications"))
+    body = json.loads(request.body)
+    notifications = body.get("notifications")
     try:
         courseflowuser = CourseFlowUser.ensure_user(request.user)
         courseflowuser.notifications = notifications

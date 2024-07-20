@@ -34362,6 +34362,7 @@ ${latestSubscriptionCallbackError.current.stack}
         outcome_type_choices: workflowInstance.context_choices,
         outcome_sort_choices: workflowInstance.outcome_sort_choices,
         strategy_classification_choices: workflowInstance.strategy_classification_choices,
+        project: workflowInstance.project,
         workflowID: workflowInstance.workflowID,
         unread_comments: workflowInstance.unread_comments,
         add_comments: workflowInstance.add_comments,
@@ -34369,6 +34370,7 @@ ${latestSubscriptionCallbackError.current.stack}
         is_strategy: workflowInstance.is_strategy,
         // show_assignments: workflowInstance.show_assignments,
         column_choices: workflowInstance.column_choices,
+        store: workflowInstance.store,
         // functions
         lock_update: workflowInstance.lock_update,
         micro_update: workflowInstance.micro_update,
@@ -34553,39 +34555,83 @@ ${latestSubscriptionCallbackError.current.stack}
       this.state = {};
     }
   }
-  function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data2) => console.log("success")) {
+  function API_POST(url = "", data2 = {}) {
+    if (!url) {
+      return Promise.reject("You need to specify an URL in for API_POST to run.");
+    }
+    return new Promise((res, rej) => {
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // // 'root' comes from the csrf-setup script
+          "X-CSRFToken": window.getCsrfToken()
+        },
+        body: JSON.stringify(data2)
+      }).then((response) => response.json()).then((data22) => {
+        if (data22.action === VERB.POSTED) {
+          res(data22);
+        } else {
+          rej({ error: "API_POST failed", url, data: data22 });
+        }
+      }).catch((err) => {
+        rej({ error: "API_POST failed", originalError: err });
+      });
+    });
+  }
+  function API_POST_FILE(url = "", data2 = {}, file = null) {
+    if (!url) {
+      return Promise.reject("You need to specify an URL in for API_POST to run.");
+    }
+    var form_data = new FormData();
+    form_data.set("body", JSON.stringify(data2));
+    form_data.set("file", file);
+    console.log("API POST FILE", file, form_data);
+    return new Promise((res, rej) => {
+      fetch(url, {
+        method: "POST",
+        headers: {
+          //'Content-Type': 'multipart/form-data',
+          // // 'root' comes from the csrf-setup script
+          "X-CSRFToken": window.getCsrfToken()
+        },
+        body: form_data
+      }).then((response) => response.json()).then((data22) => {
+        if (data22.action === VERB.POSTED) {
+          res(data22);
+        } else {
+          rej({ error: "API_POST failed", url, data: data22 });
+        }
+      }).catch((err) => {
+        rej({ error: "API_POST failed", originalError: err });
+      });
+    });
+  }
+  function deleteSelfQuery(objectID, objectType, soft = false, callBackFunction = (_data) => console.log("success")) {
     let path;
     if (soft)
       path = COURSEFLOW_APP.config.post_paths.delete_self_soft;
     else
       path = COURSEFLOW_APP.config.post_paths.delete_self;
-    $.post(path, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      console.log("deleteSelfQuery data");
-      console.log(data2);
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+    API_POST(path, {
+      objectID,
+      objectType
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function restoreSelfQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.restore_self, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      console.log("restoreSelfQuery data");
-      console.log(data2);
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function restoreSelfQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.restore_self, {
+      objectID,
+      objectType
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
   class RestoreBarItem extends ComponentWithToggleDrop {
@@ -45225,9 +45271,9 @@ Please use another name.` : formatMuiErrorMessage(18));
       document.lastUpdateCallFunction();
     }
     const post_object = {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json),
+      objectID,
+      objectType,
+      data: json,
       changeFieldID: 0
     };
     if (changeField) {
@@ -45235,152 +45281,131 @@ Please use another name.` : formatMuiErrorMessage(18));
       COURSEFLOW_APP.contextData.changeFieldID;
     }
     document.lastUpdateCallFunction = () => {
-      $.post(COURSEFLOW_APP.config.post_paths.update_value, post_object).done(function(data2) {
-        if (data2.action === VERB.POSTED) {
-          callBackFunction(_data);
-        } else
-          window.fail_function(data2.action);
-      }).fail(function(error) {
-        window.fail_function();
+      API_POST(COURSEFLOW_APP.config.post_paths.update_value, post_object).then((response) => {
+        if (response.action == VERB.POSTED)
+          callBackFunction(response);
+        else
+          window.fail_function(response.action);
       });
     };
     document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t);
   }
-  function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.update_value, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      data: JSON.stringify(json)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function updateValueInstantQuery(objectID, objectType, json, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.update_value, {
+      objectID,
+      objectType,
+      data: json
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function dragAction(action_data, callBackFunction = (_data2) => console.log("success")) {
+  function dragAction(action_data, callBackFunction = (_data) => console.log("success")) {
     COURSEFLOW_APP.tinyLoader.startLoad();
     $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+    API_POST(COURSEFLOW_APP.config.post_paths.inserted_at, action_data).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
+        window.fail_function(response.action);
       $(".ui-draggable").draggable("enable");
       COURSEFLOW_APP.tinyLoader.endLoad();
-    }).fail(function(error) {
-      window.fail_function();
     });
   }
-  function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data2) => console.log("success")) {
+  function insertedAtInstant(objectID, objectType, parentID, parentType, newPosition, throughType, callBackFunction = (_data) => console.log("success")) {
+    console.log(parentType);
     COURSEFLOW_APP.tinyLoader.startLoad();
     $(".ui-draggable").draggable("disable");
-    $.post(COURSEFLOW_APP.config.post_paths.inserted_at, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      newPosition: JSON.stringify(newPosition),
-      throughType: JSON.stringify(throughType),
-      inserted: JSON.stringify(true),
-      allowDifferent: JSON.stringify(true)
-    }).done(function(data2) {
-      if (data2.action === "posted")
-        callBackFunction(data2);
+    API_POST(COURSEFLOW_APP.config.post_paths.inserted_at, {
+      objectID,
+      objectType,
+      parentID,
+      parentType,
+      newPosition,
+      throughType,
+      inserted: true,
+      allowDifferent: true
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
+        window.fail_function(response.action);
       $(".ui-draggable").draggable("enable");
       COURSEFLOW_APP.tinyLoader.endLoad();
-    }).fail(function(error) {
-      window.fail_function();
     });
   }
-  function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
-      nodePk: JSON.stringify(nodeID),
-      outcomePk: JSON.stringify(outcomeID),
-      degree: JSON.stringify(value)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function updateOutcomenodeDegree(nodeID, outcomeID, value, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+      nodePk: nodeID,
+      outcomePk: outcomeID,
+      degree: value
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree, {
-      outcomePk: JSON.stringify(outcomePk),
-      objectID: JSON.stringify(outcome2Pk),
-      objectType: JSON.stringify("outcome"),
-      degree: JSON.stringify(degree)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function updateOutcomehorizontallinkDegree(outcomePk, outcome2Pk, degree, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree, {
+      outcomePk,
+      objectID: outcome2Pk,
+      objectType: "outcome",
+      degree
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
+  function setLinkedWorkflow(node_id, workflow_id, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
       nodePk: node_id,
       workflowPk: workflow_id
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
-      weekPk: JSON.stringify(weekPk),
-      is_strategy: JSON.stringify(is_strategy)
-    }).done(function(data2) {
-      console.log("toggleStrategyQuery data");
-      console.log(data2);
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function toggleStrategyQuery(weekPk, is_strategy, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+      weekPk,
+      is_strategy
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.update_object_set, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      objectsetPk: JSON.stringify(objectsetPk),
-      add: JSON.stringify(add2)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function updateObjectSet(objectID, objectType, objectsetPk, add2, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.update_object_set, {
+      objectID,
+      objectType,
+      objectsetPk,
+      add: add2
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      favourite: JSON.stringify(favourite)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function toggleFavourite(objectID, objectType, favourite, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+      objectID,
+      objectType,
+      favourite
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
   class WorkflowCard extends reactExports.Component {
@@ -45528,141 +45553,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
     }
   }
-  function openWorkflowSelectMenu(response, updateFunction) {
-    if (response.action === VERB.POSTED) {
-      renderMessageBox(response, "workflow_select_menu", updateFunction);
-    } else {
-      alert("Failed to find your workflows.");
-    }
-  }
-  function getAddedWorkflowMenu(projectPk, type_filter, get_strategies, self_only, updateFunction) {
-    $.post(
-      COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
-      {
-        projectPk: JSON.stringify(projectPk),
-        type_filter: JSON.stringify(type_filter),
-        get_strategies: JSON.stringify(get_strategies),
-        self_only: JSON.stringify(self_only)
-      },
-      (data2) => {
-      }
-    );
-  }
-  function columnChanged(renderer, objectID, columnID) {
-    if (!renderer.dragAction)
-      renderer.dragAction = {};
-    if (!renderer.dragAction["nodeweek"])
-      renderer.dragAction["nodeweek"] = {};
-    renderer.dragAction["nodeweek"] = {
-      ...renderer.dragAction["nodeweek"],
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify("node"),
-      columnPk: JSON.stringify(columnID),
-      columnChange: JSON.stringify(true)
-    };
-    $(document).off("nodeweek-dropped");
-    $(document).on("nodeweek-dropped", () => {
-      dragAction(renderer.dragAction["nodeweek"]);
-      renderer.dragAction["nodeweek"] = null;
-      $(document).off("nodeweek-dropped");
-    });
-  }
-  function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
-    if (!renderer.dragAction)
-      renderer.dragAction = {};
-    if (!renderer.dragAction[throughType])
-      renderer.dragAction[throughType] = {};
-    renderer.dragAction[throughType] = {
-      ...renderer.dragAction[throughType],
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      newPosition: JSON.stringify(newPosition),
-      throughType: JSON.stringify(throughType),
-      inserted: JSON.stringify(true)
-    };
-    $(document).off(throughType + "-dropped");
-    if (objectID)
-      $(document).on(throughType + "-dropped", () => {
-        dragAction(renderer.dragAction[throughType]);
-        renderer.dragAction[throughType] = null;
-        $(document).off(throughType + "-dropped");
-      });
-  }
-  function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data2) => console.log("success")) {
-    const sendPostRequest = (url, data2) => {
-      $.post(url, data2).done(function(response) {
-        console.log("duplicateBaseItemQuery response");
-        console.log(response);
-        if (response.action === VERB.POSTED) {
-          callBackFunction(response);
-        } else {
-          window.fail_function(response.action);
-        }
-      }).fail(function(error) {
-        window.fail_function();
-      });
-    };
-    const itemPkString = JSON.stringify(itemPk);
-    const projectPkString = JSON.stringify(projectID);
-    if (objectType === OBJECT_TYPE.PROJECT) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
-        projectPk: itemPkString
-      });
-    } else if (objectType === OBJECT_TYPE.STRATEGY) {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax, {
-        workflowPk: itemPkString
-      });
-    } else {
-      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax, {
-        workflowPk: itemPkString,
-        projectPk: projectPkString
-      });
-    }
-  }
-  function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.duplicate_self, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
-      else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
-    });
-  }
-  class UtilityLoader {
-    constructor(identifier2) {
-      __publicField(this, "load_screen");
-      this.load_screen = document.createElement("div");
-      this.load_screen.className = "load-screen";
-      this.load_screen.addEventListener("click", (evt) => {
-        evt.preventDefault();
-      });
-      let parentElement;
-      if (identifier2 instanceof jQuery) {
-        parentElement = identifier2.get(0);
-      } else {
-        parentElement = document.querySelector(identifier2);
-      }
-      if (parentElement) {
-        parentElement.appendChild(this.load_screen);
-      } else {
-        console.error(`Element with identifier "${identifier2}" not found.`);
-      }
-    }
-    endLoad() {
-      if (this.load_screen && this.load_screen.parentNode) {
-        this.load_screen.parentNode.removeChild(this.load_screen);
-      }
-    }
-  }
   const OuterContentWrap = styled$1(Box$1, {
     shouldForwardProp: (prop) => prop !== "narrow"
   })(({ theme: theme2, narrow }) => ({
@@ -45699,7 +45589,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     render() {
       const section_type = this.props.section_data.object_type;
       const is_strategy = this.props.section_data.is_strategy;
-      const parentID = this.props.parentID;
+      this.props.parentID;
       let add_button;
       let objects = this.props.section_data.objects.map((object) => /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowCard,
@@ -45735,23 +45625,6 @@ Please use another name.` : formatMuiErrorMessage(18));
           let import_text = window.gettext("Import ") + window.gettext(section_type);
           if (is_strategy)
             import_text += window.gettext(" strategy");
-          adds.push(
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "a",
-              {
-                className: "hover-shade",
-                onClick: () => {
-                  getAddedWorkflowMenu(
-                    parentID,
-                    section_type,
-                    is_strategy,
-                    false
-                  );
-                },
-                children: import_text
-              }
-            )
-          );
         }
         add_button = /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "menu-create hover-shade", ref: this.dropdownDiv, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -45836,7 +45709,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               {
                 id: "set-linked-workflow-cancel",
                 className: "secondary-button",
-                onClick: closeMessageBox,
+                onClick: this.props.actionFunction,
                 children: window.gettext("Cancel")
               }
             )
@@ -45853,7 +45726,6 @@ Please use another name.` : formatMuiErrorMessage(18));
                     -1,
                     this.props.actionFunction
                   );
-                  closeMessageBox();
                 },
                 children: window.gettext("Set to None")
               }
@@ -45872,7 +45744,6 @@ Please use another name.` : formatMuiErrorMessage(18));
                     this.state.selected,
                     this.props.actionFunction
                   );
-                  closeMessageBox();
                 },
                 children: text
               }
@@ -46006,7 +45877,7 @@ Please use another name.` : formatMuiErrorMessage(18));
             selected: this.state.selected === this.current_project.id,
             noHyperlink: no_hyperlink,
             type: this.props.type,
-            dispatch: this.props.dispatch,
+            dispatch: null,
             selectAction: this.workflowSelected.bind(this)
           }
         ) }),
@@ -46014,7 +45885,9 @@ Please use another name.` : formatMuiErrorMessage(18));
         ",",
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "big-space", children: window.gettext("Or select from your projects") })
       ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, {});
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", onMouseDown: (evt) => {
+        evt.stopPropagation();
+      }, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(this.Title, {}),
         current_project,
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "home-tabs", id: "workflow-tabs", children: [
@@ -46025,6 +45898,48 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] });
     }
   }
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#04BA74",
+        light: "#52C68C",
+        dark: "#009E52",
+        contrastText: "#fff"
+      },
+      secondary: {
+        main: "#78909C",
+        light: "#90A4AE",
+        dark: "#607D8B"
+      },
+      courseflow: {
+        lightest: "#e2f5eb",
+        favouriteActive: "rgba(255, 180, 0, 1)",
+        favouriteInactive: "rgba(0, 0, 0, 0.23)",
+        project: "rgba(245, 127, 23, 1)",
+        program: "rgba(0, 105, 92, 1)",
+        course: "rgba(183, 28, 28, 1)",
+        activity: "rgba(41, 98, 255, 1)",
+        template: "rgba(255, 64, 129, 1)"
+      },
+      divider: "#CFD8DC",
+      action: {
+        hover: "rgba(4, 186, 116, 0.08)"
+      }
+    },
+    typography: {
+      fontFamily: ['"Open Sans"', "Helvetica", "Arial", "sans-serif"].join(",")
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: "none",
+            fontWeight: 600
+          }
+        }
+      }
+    }
+  });
   class MessageBox extends reactExports.Component {
     constructor() {
       super(...arguments);
@@ -46053,183 +45968,163 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   function renderMessageBox(data2, type, updateFunction) {
     ReactDOM.render(
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ThemeProvider, { theme, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         MessageBox,
         {
           message_data: data2,
           message_type: type,
           actionFunction: updateFunction
         }
-      ),
+      ) }),
       $("#popup-container")[0]
     );
   }
-  function getWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getWorkflowDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
-        workflowPk: JSON.stringify(workflowPk)
-      }).done(function(data2) {
-        if (data2.action === VERB.POSTED)
-          callBackFunction(data2);
+      API_POST(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
+        workflowPk
+      }).then((response) => {
+        if (response.action == VERB.POSTED)
+          callBackFunction(response);
         else
-          window.fail_function(data2.action);
+          window.fail_function(response.action);
       });
     } catch (err) {
       window.fail_function();
     }
   }
-  function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getWorkflowParentDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
-        workflowPk: JSON.stringify(workflowPk)
-      }).done(function(data2) {
-        console.log("getWorkflowParentData");
-        console.log(data2);
-        if (data2.action === VERB.POSTED)
-          callBackFunction(data2);
+      API_POST(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
+        workflowPk
+      }).then((response) => {
+        if (response.action == VERB.POSTED)
+          callBackFunction(response);
         else
-          window.fail_function(data2.action);
+          window.fail_function(response.action);
       });
     } catch (err) {
       window.fail_function();
     }
   }
-  function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
+  function getWorkflowChildDataQuery(nodePk, callBackFunction = (_data) => console.log("success")) {
     try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
-        nodePk: JSON.stringify(nodePk)
-      }).done(function(data2) {
-        console.log("getWorkflowChildData");
-        console.log(data2);
-        if (data2.action === VERB.POSTED)
-          callBackFunction(data2);
+      API_POST(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
+        nodePk
+      }).then((response) => {
+        if (response.action == VERB.POSTED)
+          callBackFunction(response);
         else
-          window.fail_function(data2.action);
+          window.fail_function(response.action);
       });
     } catch (err) {
       window.fail_function();
     }
   }
-  function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getPublicWorkflowDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
           "0",
           workflowPk
         )
-      ).done(function(data2) {
-        console.log("getPublicWorkflowData");
-        console.log(data2);
-        if (data2.action === VERB.POSTED)
-          callBackFunction(data2);
+      ).done(function(response) {
+        if (response.action === VERB.POSTED)
+          callBackFunction(response);
         else
-          window.fail_function(data2.action);
+          window.fail_function(response.action);
       });
     } catch (err) {
       window.fail_function();
     }
   }
-  function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getPublicWorkflowParentDataQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
           "0",
           workflowPk
         )
-      ).done(function(data2) {
-        console.log("getPublicWorkflowParentData");
-        console.log(data2);
-        if (data2.action === VERB.POSTED)
-          callBackFunction(data2);
+      ).done(function(response) {
+        if (response.action === VERB.POSTED)
+          callBackFunction(response);
         else
-          window.fail_function(data2.action);
+          window.fail_function(response.action);
       });
     } catch (err) {
       window.fail_function();
     }
   }
-  function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data2) => console.log("success")) {
+  function getPublicWorkflowChildDataQuery(nodePk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
           "0",
           nodePk
         )
-      ).done(function(data2) {
-        console.log("getPublicWorkflowChildData data");
-        console.log(data2);
-        if (data2.action === VERB.POSTED)
-          callBackFunction(data2);
+      ).done(function(response) {
+        if (response.action === VERB.POSTED)
+          callBackFunction(response);
         else
-          window.fail_function(data2.action);
+          window.fail_function(response.action);
       });
     } catch (err) {
       window.fail_function();
     }
   }
-  function getWorkflowContextQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getWorkflowContextQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
-        workflowPk: JSON.stringify(workflowPk)
-      }).done(function(data2) {
-        console.log("WorkflowContextQueryResp");
-        console.log(data2);
-        if (data2.action === VERB.POSTED)
-          callBackFunction(data2);
+      API_POST(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
+        workflowPk
+      }).then((response) => {
+        if (response.action == VERB.POSTED)
+          callBackFunction(response);
         else
-          window.fail_function(data2.action);
+          window.fail_function(response.action);
       });
     } catch (err) {
       window.fail_function();
     }
   }
-  function getTargetProjectMenu(workflowPk, updateFunction, callBackFunction = (_data2) => console.log("success")) {
-    $.post(
+  function getTargetProjectMenuQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
+    API_POST(
       COURSEFLOW_APP.config.post_paths.get_target_projects,
       {
-        workflowPk: JSON.stringify(workflowPk)
-      },
-      (data2) => {
-        callBackFunction();
-        openTargetProjectMenu(data2, updateFunction);
+        workflowPk
       }
-    );
+    ).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
+    });
   }
-  function openTargetProjectMenu(response, updateFunction) {
-    if (response.action === VERB.POSTED) {
-      renderMessageBox(response, "target_project_menu", updateFunction);
-    } else {
-      alert("Failed to find potential projects.");
-    }
-  }
-  function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getPublicParentWorkflowInfo(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
       $.get(
         COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
           "0",
           workflowPk
         )
-      ).done(function(data2) {
-        if (data2.action === VERB.POSTED)
-          callBackFunction(data2);
+      ).done(function(response) {
+        if (response.action === VERB.POSTED)
+          callBackFunction(response);
         else
-          window.fail_function(data2.action);
+          window.fail_function(response.action);
       });
     } catch (err) {
       window.fail_function();
     }
   }
-  function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data2) => console.log("success")) {
+  function getParentWorkflowInfoQuery(workflowPk, callBackFunction = (_data) => console.log("success")) {
     try {
-      $.post(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
-        workflowPk: JSON.stringify(workflowPk)
-      }).done(function(data2) {
-        if (data2.action === VERB.POSTED)
-          callBackFunction(data2);
+      API_POST(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
+        workflowPk
+      }).then((response) => {
+        if (response.action == VERB.POSTED)
+          callBackFunction(response);
         else
-          window.fail_function(data2.action);
-      }).catch((err) => {
-        console.log(err);
+          window.fail_function(response.action);
       });
     } catch (err) {
       console.log("getParentWorkflowInfoQuery error in try/catc");
@@ -46237,49 +46132,47 @@ Please use another name.` : formatMuiErrorMessage(18));
       window.fail_function();
     }
   }
-  function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+  function getWorkflowsForProjectQuery(projectPk, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
       projectPk
-    }).done(function(_data2) {
-      console.log("dead");
-      callBackFunction(_data2);
-    }).fail(function(error) {
-      window.fail_function();
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
     });
   }
-  function getLinkedWorkflowMenuQuery(nodeData, updateFunction, callBackFunction = (_data2) => console.log("success")) {
-    $.post(
+  function getLinkedWorkflowMenuQuery(nodeID, callBackFunction = (_data) => console.log("success")) {
+    API_POST(
       COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
       {
-        nodePk: JSON.stringify(nodeData.id)
-      },
-      (_data2) => {
-        callBackFunction();
+        nodePk: nodeID
       }
-    ).fail(function(error) {
-      window.fail_function();
+    ).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
     });
   }
   function getWorkflowSelectMenuQuery(projectPk, type_filter, get_strategies, self_only, callBackFunction) {
-    $.post(
+    API_POST(
       COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
       {
-        projectPk: JSON.stringify(projectPk),
-        type_filter: JSON.stringify(type_filter),
-        get_strategies: JSON.stringify(get_strategies),
-        self_only: JSON.stringify(self_only)
+        projectPk,
+        type_filter,
+        get_strategies,
+        self_only
       }
       // (data) => {
       //   // @TODO call to react render
       //   receiptFunction(data)
       // }
-    ).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+    ).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).catch((err) => {
-      console.log(err);
+        window.fail_function(response.action);
     });
   }
   function formatProdErrorMessage(code) {
@@ -48012,6 +47905,3139 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] });
     }
   }
+  class UtilityLoader {
+    constructor(identifier2) {
+      __publicField(this, "load_screen");
+      this.load_screen = document.createElement("div");
+      this.load_screen.className = "load-screen";
+      this.load_screen.addEventListener("click", (evt) => {
+        evt.preventDefault();
+      });
+      let parentElement;
+      if (identifier2 instanceof jQuery) {
+        parentElement = identifier2.get(0);
+      } else {
+        parentElement = document.querySelector(identifier2);
+      }
+      if (parentElement) {
+        parentElement.appendChild(this.load_screen);
+      } else {
+        console.error(`Element with identifier "${identifier2}" not found.`);
+      }
+    }
+    endLoad() {
+      if (this.load_screen && this.load_screen.parentNode) {
+        this.load_screen.parentNode.removeChild(this.load_screen);
+      }
+    }
+  }
+  const defaultState = {
+    type: null
+  };
+  function stateReducer(state, action) {
+    return {
+      type: action
+    };
+  }
+  const DialogContext$2 = reactExports.createContext(defaultState);
+  const DialogDispatchContext = reactExports.createContext(null);
+  function DialogContextProvider({ children }) {
+    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$2.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
+  }
+  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
+    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
+    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
+    DIALOG_TYPE2["EDIT_PROJECT"] = "edit_project";
+    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
+    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
+    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
+    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
+    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
+    DIALOG_TYPE2["LINK_WORKFLOW"] = "link_workflow";
+    DIALOG_TYPE2["TARGET_PROJECT"] = "target_project";
+    DIALOG_TYPE2["IMPORT_OUTCOMES"] = "import_outcomes";
+    DIALOG_TYPE2["IMPORT_NODES"] = "import_nodes";
+    DIALOG_TYPE2["STYLEGUIDE_PROJECT_CREATE"] = "styleguide_project_create";
+    DIALOG_TYPE2["STYLEGUIDE_PROJECT_EDIT"] = "styleguide_project_edit";
+    return DIALOG_TYPE2;
+  })(DIALOG_TYPE || {});
+  function useDialog(dialogType = null) {
+    const dialogContext = reactExports.useContext(DialogContext$2);
+    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
+    if (!dialogType) {
+      return {
+        dispatch: dialogDispatch
+      };
+    }
+    return {
+      show: dialogContext.type === dialogType,
+      onClose: () => dialogDispatch(null),
+      dispatch: dialogDispatch
+    };
+  }
+  function getButtonUtilityClass(slot) {
+    return generateUtilityClass("MuiButton", slot);
+  }
+  const buttonClasses = generateUtilityClasses("MuiButton", ["root", "text", "textInherit", "textPrimary", "textSecondary", "textSuccess", "textError", "textInfo", "textWarning", "outlined", "outlinedInherit", "outlinedPrimary", "outlinedSecondary", "outlinedSuccess", "outlinedError", "outlinedInfo", "outlinedWarning", "contained", "containedInherit", "containedPrimary", "containedSecondary", "containedSuccess", "containedError", "containedInfo", "containedWarning", "disableElevation", "focusVisible", "disabled", "colorInherit", "textSizeSmall", "textSizeMedium", "textSizeLarge", "outlinedSizeSmall", "outlinedSizeMedium", "outlinedSizeLarge", "containedSizeSmall", "containedSizeMedium", "containedSizeLarge", "sizeMedium", "sizeSmall", "sizeLarge", "fullWidth", "startIcon", "endIcon", "iconSizeSmall", "iconSizeMedium", "iconSizeLarge"]);
+  const buttonClasses$1 = buttonClasses;
+  const ButtonGroupContext = /* @__PURE__ */ reactExports.createContext({});
+  if (process.env.NODE_ENV !== "production") {
+    ButtonGroupContext.displayName = "ButtonGroupContext";
+  }
+  const ButtonGroupContext$1 = ButtonGroupContext;
+  const ButtonGroupButtonContext = /* @__PURE__ */ reactExports.createContext(void 0);
+  if (process.env.NODE_ENV !== "production") {
+    ButtonGroupButtonContext.displayName = "ButtonGroupButtonContext";
+  }
+  const ButtonGroupButtonContext$1 = ButtonGroupButtonContext;
+  const _excluded$$ = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
+  const useUtilityClasses$S = (ownerState) => {
+    const {
+      color: color2,
+      disableElevation,
+      fullWidth,
+      size: size2,
+      variant,
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root", variant, `${variant}${capitalize$2(color2)}`, `size${capitalize$2(size2)}`, `${variant}Size${capitalize$2(size2)}`, color2 === "inherit" && "colorInherit", disableElevation && "disableElevation", fullWidth && "fullWidth"],
+      label: ["label"],
+      startIcon: ["startIcon", `iconSize${capitalize$2(size2)}`],
+      endIcon: ["endIcon", `iconSize${capitalize$2(size2)}`]
+    };
+    const composedClasses = composeClasses(slots, getButtonUtilityClass, classes);
+    return _extends$1({}, classes, composedClasses);
+  };
+  const commonIconStyles = (ownerState) => _extends$1({}, ownerState.size === "small" && {
+    "& > *:nth-of-type(1)": {
+      fontSize: 18
+    }
+  }, ownerState.size === "medium" && {
+    "& > *:nth-of-type(1)": {
+      fontSize: 20
+    }
+  }, ownerState.size === "large" && {
+    "& > *:nth-of-type(1)": {
+      fontSize: 22
+    }
+  });
+  const ButtonRoot = styled$1(ButtonBase$1, {
+    shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
+    name: "MuiButton",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize$2(ownerState.color)}`], styles2[`size${capitalize$2(ownerState.size)}`], styles2[`${ownerState.variant}Size${capitalize$2(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, ownerState.disableElevation && styles2.disableElevation, ownerState.fullWidth && styles2.fullWidth];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => {
+    var _theme$palette$getCon, _theme$palette;
+    const inheritContainedBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey[300] : theme2.palette.grey[800];
+    const inheritContainedHoverBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey.A100 : theme2.palette.grey[700];
+    return _extends$1({}, theme2.typography.button, {
+      minWidth: 64,
+      padding: "6px 16px",
+      borderRadius: (theme2.vars || theme2).shape.borderRadius,
+      transition: theme2.transitions.create(["background-color", "box-shadow", "border-color", "color"], {
+        duration: theme2.transitions.duration.short
+      }),
+      "&:hover": _extends$1({
+        textDecoration: "none",
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.text.primary, theme2.palette.action.hoverOpacity),
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          backgroundColor: "transparent"
+        }
+      }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          backgroundColor: "transparent"
+        }
+      }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
+        border: `1px solid ${(theme2.vars || theme2).palette[ownerState.color].main}`,
+        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          backgroundColor: "transparent"
+        }
+      }, ownerState.variant === "contained" && {
+        backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedHoverBg : inheritContainedHoverBackgroundColor,
+        boxShadow: (theme2.vars || theme2).shadows[4],
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          boxShadow: (theme2.vars || theme2).shadows[2],
+          backgroundColor: (theme2.vars || theme2).palette.grey[300]
+        }
+      }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
+        backgroundColor: (theme2.vars || theme2).palette[ownerState.color].dark,
+        // Reset on touch devices, it doesn't add specificity
+        "@media (hover: none)": {
+          backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
+        }
+      }),
+      "&:active": _extends$1({}, ownerState.variant === "contained" && {
+        boxShadow: (theme2.vars || theme2).shadows[8]
+      }),
+      [`&.${buttonClasses$1.focusVisible}`]: _extends$1({}, ownerState.variant === "contained" && {
+        boxShadow: (theme2.vars || theme2).shadows[6]
+      }),
+      [`&.${buttonClasses$1.disabled}`]: _extends$1({
+        color: (theme2.vars || theme2).palette.action.disabled
+      }, ownerState.variant === "outlined" && {
+        border: `1px solid ${(theme2.vars || theme2).palette.action.disabledBackground}`
+      }, ownerState.variant === "contained" && {
+        color: (theme2.vars || theme2).palette.action.disabled,
+        boxShadow: (theme2.vars || theme2).shadows[0],
+        backgroundColor: (theme2.vars || theme2).palette.action.disabledBackground
+      })
+    }, ownerState.variant === "text" && {
+      padding: "6px 8px"
+    }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
+      color: (theme2.vars || theme2).palette[ownerState.color].main
+    }, ownerState.variant === "outlined" && {
+      padding: "5px 15px",
+      border: "1px solid currentColor"
+    }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
+      color: (theme2.vars || theme2).palette[ownerState.color].main,
+      border: theme2.vars ? `1px solid rgba(${theme2.vars.palette[ownerState.color].mainChannel} / 0.5)` : `1px solid ${alpha(theme2.palette[ownerState.color].main, 0.5)}`
+    }, ownerState.variant === "contained" && {
+      color: theme2.vars ? (
+        // this is safe because grey does not change between default light/dark mode
+        theme2.vars.palette.text.primary
+      ) : (_theme$palette$getCon = (_theme$palette = theme2.palette).getContrastText) == null ? void 0 : _theme$palette$getCon.call(_theme$palette, theme2.palette.grey[300]),
+      backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedBg : inheritContainedBackgroundColor,
+      boxShadow: (theme2.vars || theme2).shadows[2]
+    }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
+      color: (theme2.vars || theme2).palette[ownerState.color].contrastText,
+      backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
+    }, ownerState.color === "inherit" && {
+      color: "inherit",
+      borderColor: "currentColor"
+    }, ownerState.size === "small" && ownerState.variant === "text" && {
+      padding: "4px 5px",
+      fontSize: theme2.typography.pxToRem(13)
+    }, ownerState.size === "large" && ownerState.variant === "text" && {
+      padding: "8px 11px",
+      fontSize: theme2.typography.pxToRem(15)
+    }, ownerState.size === "small" && ownerState.variant === "outlined" && {
+      padding: "3px 9px",
+      fontSize: theme2.typography.pxToRem(13)
+    }, ownerState.size === "large" && ownerState.variant === "outlined" && {
+      padding: "7px 21px",
+      fontSize: theme2.typography.pxToRem(15)
+    }, ownerState.size === "small" && ownerState.variant === "contained" && {
+      padding: "4px 10px",
+      fontSize: theme2.typography.pxToRem(13)
+    }, ownerState.size === "large" && ownerState.variant === "contained" && {
+      padding: "8px 22px",
+      fontSize: theme2.typography.pxToRem(15)
+    }, ownerState.fullWidth && {
+      width: "100%"
+    });
+  }, ({
+    ownerState
+  }) => ownerState.disableElevation && {
+    boxShadow: "none",
+    "&:hover": {
+      boxShadow: "none"
+    },
+    [`&.${buttonClasses$1.focusVisible}`]: {
+      boxShadow: "none"
+    },
+    "&:active": {
+      boxShadow: "none"
+    },
+    [`&.${buttonClasses$1.disabled}`]: {
+      boxShadow: "none"
+    }
+  });
+  const ButtonStartIcon = styled$1("span", {
+    name: "MuiButton",
+    slot: "StartIcon",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.startIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
+    }
+  })(({
+    ownerState
+  }) => _extends$1({
+    display: "inherit",
+    marginRight: 8,
+    marginLeft: -4
+  }, ownerState.size === "small" && {
+    marginLeft: -2
+  }, commonIconStyles(ownerState)));
+  const ButtonEndIcon = styled$1("span", {
+    name: "MuiButton",
+    slot: "EndIcon",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.endIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
+    }
+  })(({
+    ownerState
+  }) => _extends$1({
+    display: "inherit",
+    marginRight: -4,
+    marginLeft: 8
+  }, ownerState.size === "small" && {
+    marginRight: -2
+  }, commonIconStyles(ownerState)));
+  const Button = /* @__PURE__ */ reactExports.forwardRef(function Button2(inProps, ref) {
+    const contextProps = reactExports.useContext(ButtonGroupContext$1);
+    const buttonGroupButtonContextPositionClassName = reactExports.useContext(ButtonGroupButtonContext$1);
+    const resolvedProps = resolveProps(contextProps, inProps);
+    const props = useThemeProps({
+      props: resolvedProps,
+      name: "MuiButton"
+    });
+    const {
+      children,
+      color: color2 = "primary",
+      component = "button",
+      className,
+      disabled = false,
+      disableElevation = false,
+      disableFocusRipple = false,
+      endIcon: endIconProp,
+      focusVisibleClassName,
+      fullWidth = false,
+      size: size2 = "medium",
+      startIcon: startIconProp,
+      type,
+      variant = "text"
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$$);
+    const ownerState = _extends$1({}, props, {
+      color: color2,
+      component,
+      disabled,
+      disableElevation,
+      disableFocusRipple,
+      fullWidth,
+      size: size2,
+      type,
+      variant
+    });
+    const classes = useUtilityClasses$S(ownerState);
+    const startIcon = startIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonStartIcon, {
+      className: classes.startIcon,
+      ownerState,
+      children: startIconProp
+    });
+    const endIcon = endIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonEndIcon, {
+      className: classes.endIcon,
+      ownerState,
+      children: endIconProp
+    });
+    const positionClassName = buttonGroupButtonContextPositionClassName || "";
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonRoot, _extends$1({
+      ownerState,
+      className: clsx(contextProps.className, classes.root, className, positionClassName),
+      component,
+      disabled,
+      focusRipple: !disableFocusRipple,
+      focusVisibleClassName: clsx(classes.focusVisible, focusVisibleClassName),
+      ref,
+      type
+    }, other, {
+      classes,
+      children: [startIcon, children, endIcon]
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Button.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The color of the component.
+     * It supports both default and custom theme colors, which can be added as shown in the
+     * [palette customization guide](https://mui.com/material-ui/customization/palette/#custom-colors).
+     * @default 'primary'
+     */
+    color: PropTypes.oneOfType([PropTypes.oneOf(["inherit", "primary", "secondary", "success", "error", "info", "warning"]), PropTypes.string]),
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * If `true`, the component is disabled.
+     * @default false
+     */
+    disabled: PropTypes.bool,
+    /**
+     * If `true`, no elevation is used.
+     * @default false
+     */
+    disableElevation: PropTypes.bool,
+    /**
+     * If `true`, the  keyboard focus ripple is disabled.
+     * @default false
+     */
+    disableFocusRipple: PropTypes.bool,
+    /**
+     * If `true`, the ripple effect is disabled.
+     *
+     * ⚠️ Without a ripple there is no styling for :focus-visible by default. Be sure
+     * to highlight the element by applying separate styles with the `.Mui-focusVisible` class.
+     * @default false
+     */
+    disableRipple: PropTypes.bool,
+    /**
+     * Element placed after the children.
+     */
+    endIcon: PropTypes.node,
+    /**
+     * @ignore
+     */
+    focusVisibleClassName: PropTypes.string,
+    /**
+     * If `true`, the button will take up the full width of its container.
+     * @default false
+     */
+    fullWidth: PropTypes.bool,
+    /**
+     * The URL to link to when the button is clicked.
+     * If defined, an `a` element will be used as the root node.
+     */
+    href: PropTypes.string,
+    /**
+     * The size of the component.
+     * `small` is equivalent to the dense button styling.
+     * @default 'medium'
+     */
+    size: PropTypes.oneOfType([PropTypes.oneOf(["small", "medium", "large"]), PropTypes.string]),
+    /**
+     * Element placed before the children.
+     */
+    startIcon: PropTypes.node,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * @ignore
+     */
+    type: PropTypes.oneOfType([PropTypes.oneOf(["button", "reset", "submit"]), PropTypes.string]),
+    /**
+     * The variant to use.
+     * @default 'text'
+     */
+    variant: PropTypes.oneOfType([PropTypes.oneOf(["contained", "outlined", "text"]), PropTypes.string])
+  } : void 0;
+  const Button$1 = Button;
+  function isHostComponent(element) {
+    return typeof element === "string";
+  }
+  function appendOwnerState(elementType, otherProps, ownerState) {
+    if (elementType === void 0 || isHostComponent(elementType)) {
+      return otherProps;
+    }
+    return _extends$1({}, otherProps, {
+      ownerState: _extends$1({}, otherProps.ownerState, ownerState)
+    });
+  }
+  function extractEventHandlers(object, excludeKeys = []) {
+    if (object === void 0) {
+      return {};
+    }
+    const result = {};
+    Object.keys(object).filter((prop) => prop.match(/^on[A-Z]/) && typeof object[prop] === "function" && !excludeKeys.includes(prop)).forEach((prop) => {
+      result[prop] = object[prop];
+    });
+    return result;
+  }
+  function resolveComponentProps(componentProps, ownerState, slotState) {
+    if (typeof componentProps === "function") {
+      return componentProps(ownerState, slotState);
+    }
+    return componentProps;
+  }
+  function omitEventHandlers(object) {
+    if (object === void 0) {
+      return {};
+    }
+    const result = {};
+    Object.keys(object).filter((prop) => !(prop.match(/^on[A-Z]/) && typeof object[prop] === "function")).forEach((prop) => {
+      result[prop] = object[prop];
+    });
+    return result;
+  }
+  function mergeSlotProps(parameters) {
+    const {
+      getSlotProps,
+      additionalProps,
+      externalSlotProps,
+      externalForwardedProps,
+      className
+    } = parameters;
+    if (!getSlotProps) {
+      const joinedClasses2 = clsx(externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className, className, additionalProps == null ? void 0 : additionalProps.className);
+      const mergedStyle2 = _extends$1({}, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
+      const props2 = _extends$1({}, additionalProps, externalForwardedProps, externalSlotProps);
+      if (joinedClasses2.length > 0) {
+        props2.className = joinedClasses2;
+      }
+      if (Object.keys(mergedStyle2).length > 0) {
+        props2.style = mergedStyle2;
+      }
+      return {
+        props: props2,
+        internalRef: void 0
+      };
+    }
+    const eventHandlers = extractEventHandlers(_extends$1({}, externalForwardedProps, externalSlotProps));
+    const componentsPropsWithoutEventHandlers = omitEventHandlers(externalSlotProps);
+    const otherPropsWithoutEventHandlers = omitEventHandlers(externalForwardedProps);
+    const internalSlotProps = getSlotProps(eventHandlers);
+    const joinedClasses = clsx(internalSlotProps == null ? void 0 : internalSlotProps.className, additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
+    const mergedStyle = _extends$1({}, internalSlotProps == null ? void 0 : internalSlotProps.style, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
+    const props = _extends$1({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
+    if (joinedClasses.length > 0) {
+      props.className = joinedClasses;
+    }
+    if (Object.keys(mergedStyle).length > 0) {
+      props.style = mergedStyle;
+    }
+    return {
+      props,
+      internalRef: internalSlotProps.ref
+    };
+  }
+  const _excluded$_ = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
+  function useSlotProps(parameters) {
+    var _parameters$additiona;
+    const {
+      elementType,
+      externalSlotProps,
+      ownerState,
+      skipResolvingSlotProps = false
+    } = parameters, rest = _objectWithoutPropertiesLoose$1(parameters, _excluded$_);
+    const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
+    const {
+      props: mergedProps,
+      internalRef
+    } = mergeSlotProps(_extends$1({}, rest, {
+      externalSlotProps: resolvedComponentsProps
+    }));
+    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, (_parameters$additiona = parameters.additionalProps) == null ? void 0 : _parameters$additiona.ref);
+    const props = appendOwnerState(elementType, _extends$1({}, mergedProps, {
+      ref
+    }), ownerState);
+    return props;
+  }
+  function isOverflowing(container) {
+    const doc = ownerDocument(container);
+    if (doc.body === container) {
+      return ownerWindow(container).innerWidth > doc.documentElement.clientWidth;
+    }
+    return container.scrollHeight > container.clientHeight;
+  }
+  function ariaHidden(element, show) {
+    if (show) {
+      element.setAttribute("aria-hidden", "true");
+    } else {
+      element.removeAttribute("aria-hidden");
+    }
+  }
+  function getPaddingRight(element) {
+    return parseInt(ownerWindow(element).getComputedStyle(element).paddingRight, 10) || 0;
+  }
+  function isAriaHiddenForbiddenOnElement(element) {
+    const forbiddenTagNames = ["TEMPLATE", "SCRIPT", "STYLE", "LINK", "MAP", "META", "NOSCRIPT", "PICTURE", "COL", "COLGROUP", "PARAM", "SLOT", "SOURCE", "TRACK"];
+    const isForbiddenTagName = forbiddenTagNames.indexOf(element.tagName) !== -1;
+    const isInputHidden = element.tagName === "INPUT" && element.getAttribute("type") === "hidden";
+    return isForbiddenTagName || isInputHidden;
+  }
+  function ariaHiddenSiblings(container, mountElement, currentElement, elementsToExclude, show) {
+    const blacklist = [mountElement, currentElement, ...elementsToExclude];
+    [].forEach.call(container.children, (element) => {
+      const isNotExcludedElement = blacklist.indexOf(element) === -1;
+      const isNotForbiddenElement = !isAriaHiddenForbiddenOnElement(element);
+      if (isNotExcludedElement && isNotForbiddenElement) {
+        ariaHidden(element, show);
+      }
+    });
+  }
+  function findIndexOf(items, callback) {
+    let idx = -1;
+    items.some((item, index) => {
+      if (callback(item)) {
+        idx = index;
+        return true;
+      }
+      return false;
+    });
+    return idx;
+  }
+  function handleContainer(containerInfo, props) {
+    const restoreStyle = [];
+    const container = containerInfo.container;
+    if (!props.disableScrollLock) {
+      if (isOverflowing(container)) {
+        const scrollbarSize = getScrollbarSize(ownerDocument(container));
+        restoreStyle.push({
+          value: container.style.paddingRight,
+          property: "padding-right",
+          el: container
+        });
+        container.style.paddingRight = `${getPaddingRight(container) + scrollbarSize}px`;
+        const fixedElements2 = ownerDocument(container).querySelectorAll(".mui-fixed");
+        [].forEach.call(fixedElements2, (element) => {
+          restoreStyle.push({
+            value: element.style.paddingRight,
+            property: "padding-right",
+            el: element
+          });
+          element.style.paddingRight = `${getPaddingRight(element) + scrollbarSize}px`;
+        });
+      }
+      let scrollContainer;
+      if (container.parentNode instanceof DocumentFragment) {
+        scrollContainer = ownerDocument(container).body;
+      } else {
+        const parent = container.parentElement;
+        const containerWindow = ownerWindow(container);
+        scrollContainer = (parent == null ? void 0 : parent.nodeName) === "HTML" && containerWindow.getComputedStyle(parent).overflowY === "scroll" ? parent : container;
+      }
+      restoreStyle.push({
+        value: scrollContainer.style.overflow,
+        property: "overflow",
+        el: scrollContainer
+      }, {
+        value: scrollContainer.style.overflowX,
+        property: "overflow-x",
+        el: scrollContainer
+      }, {
+        value: scrollContainer.style.overflowY,
+        property: "overflow-y",
+        el: scrollContainer
+      });
+      scrollContainer.style.overflow = "hidden";
+    }
+    const restore = () => {
+      restoreStyle.forEach(({
+        value,
+        el,
+        property
+      }) => {
+        if (value) {
+          el.style.setProperty(property, value);
+        } else {
+          el.style.removeProperty(property);
+        }
+      });
+    };
+    return restore;
+  }
+  function getHiddenSiblings(container) {
+    const hiddenSiblings = [];
+    [].forEach.call(container.children, (element) => {
+      if (element.getAttribute("aria-hidden") === "true") {
+        hiddenSiblings.push(element);
+      }
+    });
+    return hiddenSiblings;
+  }
+  class ModalManager {
+    constructor() {
+      this.containers = void 0;
+      this.modals = void 0;
+      this.modals = [];
+      this.containers = [];
+    }
+    add(modal, container) {
+      let modalIndex = this.modals.indexOf(modal);
+      if (modalIndex !== -1) {
+        return modalIndex;
+      }
+      modalIndex = this.modals.length;
+      this.modals.push(modal);
+      if (modal.modalRef) {
+        ariaHidden(modal.modalRef, false);
+      }
+      const hiddenSiblings = getHiddenSiblings(container);
+      ariaHiddenSiblings(container, modal.mount, modal.modalRef, hiddenSiblings, true);
+      const containerIndex = findIndexOf(this.containers, (item) => item.container === container);
+      if (containerIndex !== -1) {
+        this.containers[containerIndex].modals.push(modal);
+        return modalIndex;
+      }
+      this.containers.push({
+        modals: [modal],
+        container,
+        restore: null,
+        hiddenSiblings
+      });
+      return modalIndex;
+    }
+    mount(modal, props) {
+      const containerIndex = findIndexOf(this.containers, (item) => item.modals.indexOf(modal) !== -1);
+      const containerInfo = this.containers[containerIndex];
+      if (!containerInfo.restore) {
+        containerInfo.restore = handleContainer(containerInfo, props);
+      }
+    }
+    remove(modal, ariaHiddenState = true) {
+      const modalIndex = this.modals.indexOf(modal);
+      if (modalIndex === -1) {
+        return modalIndex;
+      }
+      const containerIndex = findIndexOf(this.containers, (item) => item.modals.indexOf(modal) !== -1);
+      const containerInfo = this.containers[containerIndex];
+      containerInfo.modals.splice(containerInfo.modals.indexOf(modal), 1);
+      this.modals.splice(modalIndex, 1);
+      if (containerInfo.modals.length === 0) {
+        if (containerInfo.restore) {
+          containerInfo.restore();
+        }
+        if (modal.modalRef) {
+          ariaHidden(modal.modalRef, ariaHiddenState);
+        }
+        ariaHiddenSiblings(containerInfo.container, modal.mount, modal.modalRef, containerInfo.hiddenSiblings, false);
+        this.containers.splice(containerIndex, 1);
+      } else {
+        const nextTop = containerInfo.modals[containerInfo.modals.length - 1];
+        if (nextTop.modalRef) {
+          ariaHidden(nextTop.modalRef, false);
+        }
+      }
+      return modalIndex;
+    }
+    isTopModal(modal) {
+      return this.modals.length > 0 && this.modals[this.modals.length - 1] === modal;
+    }
+  }
+  function getContainer$1(container) {
+    return typeof container === "function" ? container() : container;
+  }
+  function getHasTransition(children) {
+    return children ? children.props.hasOwnProperty("in") : false;
+  }
+  const defaultManager = new ModalManager();
+  function useModal(parameters) {
+    const {
+      container,
+      disableEscapeKeyDown = false,
+      disableScrollLock = false,
+      // @ts-ignore internal logic - Base UI supports the manager as a prop too
+      manager = defaultManager,
+      closeAfterTransition = false,
+      onTransitionEnter,
+      onTransitionExited,
+      children,
+      onClose,
+      open,
+      rootRef
+    } = parameters;
+    const modal = reactExports.useRef({});
+    const mountNodeRef = reactExports.useRef(null);
+    const modalRef = reactExports.useRef(null);
+    const handleRef = useForkRef(modalRef, rootRef);
+    const [exited, setExited] = reactExports.useState(!open);
+    const hasTransition = getHasTransition(children);
+    let ariaHiddenProp = true;
+    if (parameters["aria-hidden"] === "false" || parameters["aria-hidden"] === false) {
+      ariaHiddenProp = false;
+    }
+    const getDoc = () => ownerDocument(mountNodeRef.current);
+    const getModal = () => {
+      modal.current.modalRef = modalRef.current;
+      modal.current.mount = mountNodeRef.current;
+      return modal.current;
+    };
+    const handleMounted = () => {
+      manager.mount(getModal(), {
+        disableScrollLock
+      });
+      if (modalRef.current) {
+        modalRef.current.scrollTop = 0;
+      }
+    };
+    const handleOpen = useEventCallback(() => {
+      const resolvedContainer = getContainer$1(container) || getDoc().body;
+      manager.add(getModal(), resolvedContainer);
+      if (modalRef.current) {
+        handleMounted();
+      }
+    });
+    const isTopModal = reactExports.useCallback(() => manager.isTopModal(getModal()), [manager]);
+    const handlePortalRef = useEventCallback((node2) => {
+      mountNodeRef.current = node2;
+      if (!node2) {
+        return;
+      }
+      if (open && isTopModal()) {
+        handleMounted();
+      } else if (modalRef.current) {
+        ariaHidden(modalRef.current, ariaHiddenProp);
+      }
+    });
+    const handleClose = reactExports.useCallback(() => {
+      manager.remove(getModal(), ariaHiddenProp);
+    }, [ariaHiddenProp, manager]);
+    reactExports.useEffect(() => {
+      return () => {
+        handleClose();
+      };
+    }, [handleClose]);
+    reactExports.useEffect(() => {
+      if (open) {
+        handleOpen();
+      } else if (!hasTransition || !closeAfterTransition) {
+        handleClose();
+      }
+    }, [open, handleClose, hasTransition, closeAfterTransition, handleOpen]);
+    const createHandleKeyDown = (otherHandlers) => (event) => {
+      var _otherHandlers$onKeyD;
+      (_otherHandlers$onKeyD = otherHandlers.onKeyDown) == null || _otherHandlers$onKeyD.call(otherHandlers, event);
+      if (event.key !== "Escape" || !isTopModal()) {
+        return;
+      }
+      if (!disableEscapeKeyDown) {
+        event.stopPropagation();
+        if (onClose) {
+          onClose(event, "escapeKeyDown");
+        }
+      }
+    };
+    const createHandleBackdropClick = (otherHandlers) => (event) => {
+      var _otherHandlers$onClic;
+      (_otherHandlers$onClic = otherHandlers.onClick) == null || _otherHandlers$onClic.call(otherHandlers, event);
+      if (event.target !== event.currentTarget) {
+        return;
+      }
+      if (onClose) {
+        onClose(event, "backdropClick");
+      }
+    };
+    const getRootProps = (otherHandlers = {}) => {
+      const propsEventHandlers = extractEventHandlers(parameters);
+      delete propsEventHandlers.onTransitionEnter;
+      delete propsEventHandlers.onTransitionExited;
+      const externalEventHandlers = _extends$1({}, propsEventHandlers, otherHandlers);
+      return _extends$1({
+        role: "presentation"
+      }, externalEventHandlers, {
+        onKeyDown: createHandleKeyDown(externalEventHandlers),
+        ref: handleRef
+      });
+    };
+    const getBackdropProps = (otherHandlers = {}) => {
+      const externalEventHandlers = otherHandlers;
+      return _extends$1({
+        "aria-hidden": true
+      }, externalEventHandlers, {
+        onClick: createHandleBackdropClick(externalEventHandlers),
+        open
+      });
+    };
+    const getTransitionProps2 = () => {
+      const handleEnter = () => {
+        setExited(false);
+        if (onTransitionEnter) {
+          onTransitionEnter();
+        }
+      };
+      const handleExited = () => {
+        setExited(true);
+        if (onTransitionExited) {
+          onTransitionExited();
+        }
+        if (closeAfterTransition) {
+          handleClose();
+        }
+      };
+      return {
+        onEnter: createChainedFunction(handleEnter, children == null ? void 0 : children.props.onEnter),
+        onExited: createChainedFunction(handleExited, children == null ? void 0 : children.props.onExited)
+      };
+    };
+    return {
+      getRootProps,
+      getBackdropProps,
+      getTransitionProps: getTransitionProps2,
+      rootRef: handleRef,
+      portalRef: handlePortalRef,
+      isTopModal,
+      exited,
+      hasTransition
+    };
+  }
+  function useBadge(parameters) {
+    const {
+      badgeContent: badgeContentProp,
+      invisible: invisibleProp = false,
+      max: maxProp = 99,
+      showZero = false
+    } = parameters;
+    const prevProps = usePreviousProps$1({
+      badgeContent: badgeContentProp,
+      max: maxProp
+    });
+    let invisible = invisibleProp;
+    if (invisibleProp === false && badgeContentProp === 0 && !showZero) {
+      invisible = true;
+    }
+    const {
+      badgeContent,
+      max: max2 = maxProp
+    } = invisible ? prevProps : parameters;
+    const displayValue = badgeContent && Number(badgeContent) > max2 ? `${max2}+` : badgeContent;
+    return {
+      badgeContent,
+      invisible,
+      max: max2,
+      displayValue
+    };
+  }
+  function mapEventPropToEvent(eventProp) {
+    return eventProp.substring(2).toLowerCase();
+  }
+  function clickedRootScrollbar(event, doc) {
+    return doc.documentElement.clientWidth < event.clientX || doc.documentElement.clientHeight < event.clientY;
+  }
+  function ClickAwayListener(props) {
+    const {
+      children,
+      disableReactTree = false,
+      mouseEvent = "onClick",
+      onClickAway,
+      touchEvent = "onTouchEnd"
+    } = props;
+    const movedRef = reactExports.useRef(false);
+    const nodeRef = reactExports.useRef(null);
+    const activatedRef = reactExports.useRef(false);
+    const syntheticEventRef = reactExports.useRef(false);
+    reactExports.useEffect(() => {
+      setTimeout(() => {
+        activatedRef.current = true;
+      }, 0);
+      return () => {
+        activatedRef.current = false;
+      };
+    }, []);
+    const handleRef = useForkRef(
+      // @ts-expect-error TODO upstream fix
+      children.ref,
+      nodeRef
+    );
+    const handleClickAway = useEventCallback((event) => {
+      const insideReactTree = syntheticEventRef.current;
+      syntheticEventRef.current = false;
+      const doc = ownerDocument(nodeRef.current);
+      if (!activatedRef.current || !nodeRef.current || "clientX" in event && clickedRootScrollbar(event, doc)) {
+        return;
+      }
+      if (movedRef.current) {
+        movedRef.current = false;
+        return;
+      }
+      let insideDOM;
+      if (event.composedPath) {
+        insideDOM = event.composedPath().indexOf(nodeRef.current) > -1;
+      } else {
+        insideDOM = !doc.documentElement.contains(
+          // @ts-expect-error returns `false` as intended when not dispatched from a Node
+          event.target
+        ) || nodeRef.current.contains(
+          // @ts-expect-error returns `false` as intended when not dispatched from a Node
+          event.target
+        );
+      }
+      if (!insideDOM && (disableReactTree || !insideReactTree)) {
+        onClickAway(event);
+      }
+    });
+    const createHandleSynthetic = (handlerName) => (event) => {
+      syntheticEventRef.current = true;
+      const childrenPropsHandler = children.props[handlerName];
+      if (childrenPropsHandler) {
+        childrenPropsHandler(event);
+      }
+    };
+    const childrenProps = {
+      ref: handleRef
+    };
+    if (touchEvent !== false) {
+      childrenProps[touchEvent] = createHandleSynthetic(touchEvent);
+    }
+    reactExports.useEffect(() => {
+      if (touchEvent !== false) {
+        const mappedTouchEvent = mapEventPropToEvent(touchEvent);
+        const doc = ownerDocument(nodeRef.current);
+        const handleTouchMove = () => {
+          movedRef.current = true;
+        };
+        doc.addEventListener(mappedTouchEvent, handleClickAway);
+        doc.addEventListener("touchmove", handleTouchMove);
+        return () => {
+          doc.removeEventListener(mappedTouchEvent, handleClickAway);
+          doc.removeEventListener("touchmove", handleTouchMove);
+        };
+      }
+      return void 0;
+    }, [handleClickAway, touchEvent]);
+    if (mouseEvent !== false) {
+      childrenProps[mouseEvent] = createHandleSynthetic(mouseEvent);
+    }
+    reactExports.useEffect(() => {
+      if (mouseEvent !== false) {
+        const mappedMouseEvent = mapEventPropToEvent(mouseEvent);
+        const doc = ownerDocument(nodeRef.current);
+        doc.addEventListener(mappedMouseEvent, handleClickAway);
+        return () => {
+          doc.removeEventListener(mappedMouseEvent, handleClickAway);
+        };
+      }
+      return void 0;
+    }, [handleClickAway, mouseEvent]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
+      children: /* @__PURE__ */ reactExports.cloneElement(children, childrenProps)
+    });
+  }
+  process.env.NODE_ENV !== "production" ? ClickAwayListener.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
+    /**
+     * The wrapped element.
+     */
+    children: elementAcceptingRef$1.isRequired,
+    /**
+     * If `true`, the React tree is ignored and only the DOM tree is considered.
+     * This prop changes how portaled elements are handled.
+     * @default false
+     */
+    disableReactTree: PropTypes.bool,
+    /**
+     * The mouse event to listen to. You can disable the listener by providing `false`.
+     * @default 'onClick'
+     */
+    mouseEvent: PropTypes.oneOf(["onClick", "onMouseDown", "onMouseUp", "onPointerDown", "onPointerUp", false]),
+    /**
+     * Callback fired when a "click away" event is detected.
+     */
+    onClickAway: PropTypes.func.isRequired,
+    /**
+     * The touch event to listen to. You can disable the listener by providing `false`.
+     * @default 'onTouchEnd'
+     */
+    touchEvent: PropTypes.oneOf(["onTouchEnd", "onTouchStart", false])
+  } : void 0;
+  if (process.env.NODE_ENV !== "production") {
+    ClickAwayListener["propTypes"] = exactProp(ClickAwayListener.propTypes);
+  }
+  const candidatesSelector = ["input", "select", "textarea", "a[href]", "button", "[tabindex]", "audio[controls]", "video[controls]", '[contenteditable]:not([contenteditable="false"])'].join(",");
+  function getTabIndex(node2) {
+    const tabindexAttr = parseInt(node2.getAttribute("tabindex") || "", 10);
+    if (!Number.isNaN(tabindexAttr)) {
+      return tabindexAttr;
+    }
+    if (node2.contentEditable === "true" || (node2.nodeName === "AUDIO" || node2.nodeName === "VIDEO" || node2.nodeName === "DETAILS") && node2.getAttribute("tabindex") === null) {
+      return 0;
+    }
+    return node2.tabIndex;
+  }
+  function isNonTabbableRadio(node2) {
+    if (node2.tagName !== "INPUT" || node2.type !== "radio") {
+      return false;
+    }
+    if (!node2.name) {
+      return false;
+    }
+    const getRadio = (selector) => node2.ownerDocument.querySelector(`input[type="radio"]${selector}`);
+    let roving = getRadio(`[name="${node2.name}"]:checked`);
+    if (!roving) {
+      roving = getRadio(`[name="${node2.name}"]`);
+    }
+    return roving !== node2;
+  }
+  function isNodeMatchingSelectorFocusable(node2) {
+    if (node2.disabled || node2.tagName === "INPUT" && node2.type === "hidden" || isNonTabbableRadio(node2)) {
+      return false;
+    }
+    return true;
+  }
+  function defaultGetTabbable(root) {
+    const regularTabNodes = [];
+    const orderedTabNodes = [];
+    Array.from(root.querySelectorAll(candidatesSelector)).forEach((node2, i2) => {
+      const nodeTabIndex = getTabIndex(node2);
+      if (nodeTabIndex === -1 || !isNodeMatchingSelectorFocusable(node2)) {
+        return;
+      }
+      if (nodeTabIndex === 0) {
+        regularTabNodes.push(node2);
+      } else {
+        orderedTabNodes.push({
+          documentOrder: i2,
+          tabIndex: nodeTabIndex,
+          node: node2
+        });
+      }
+    });
+    return orderedTabNodes.sort((a, b) => a.tabIndex === b.tabIndex ? a.documentOrder - b.documentOrder : a.tabIndex - b.tabIndex).map((a) => a.node).concat(regularTabNodes);
+  }
+  function defaultIsEnabled() {
+    return true;
+  }
+  function FocusTrap(props) {
+    const {
+      children,
+      disableAutoFocus = false,
+      disableEnforceFocus = false,
+      disableRestoreFocus = false,
+      getTabbable = defaultGetTabbable,
+      isEnabled = defaultIsEnabled,
+      open
+    } = props;
+    const ignoreNextEnforceFocus = reactExports.useRef(false);
+    const sentinelStart = reactExports.useRef(null);
+    const sentinelEnd = reactExports.useRef(null);
+    const nodeToRestore = reactExports.useRef(null);
+    const reactFocusEventTarget = reactExports.useRef(null);
+    const activated = reactExports.useRef(false);
+    const rootRef = reactExports.useRef(null);
+    const handleRef = useForkRef(children.ref, rootRef);
+    const lastKeydown = reactExports.useRef(null);
+    reactExports.useEffect(() => {
+      if (!open || !rootRef.current) {
+        return;
+      }
+      activated.current = !disableAutoFocus;
+    }, [disableAutoFocus, open]);
+    reactExports.useEffect(() => {
+      if (!open || !rootRef.current) {
+        return;
+      }
+      const doc = ownerDocument(rootRef.current);
+      if (!rootRef.current.contains(doc.activeElement)) {
+        if (!rootRef.current.hasAttribute("tabIndex")) {
+          if (process.env.NODE_ENV !== "production") {
+            console.error(["MUI: The modal content node does not accept focus.", 'For the benefit of assistive technologies, the tabIndex of the node is being set to "-1".'].join("\n"));
+          }
+          rootRef.current.setAttribute("tabIndex", "-1");
+        }
+        if (activated.current) {
+          rootRef.current.focus();
+        }
+      }
+      return () => {
+        if (!disableRestoreFocus) {
+          if (nodeToRestore.current && nodeToRestore.current.focus) {
+            ignoreNextEnforceFocus.current = true;
+            nodeToRestore.current.focus();
+          }
+          nodeToRestore.current = null;
+        }
+      };
+    }, [open]);
+    reactExports.useEffect(() => {
+      if (!open || !rootRef.current) {
+        return;
+      }
+      const doc = ownerDocument(rootRef.current);
+      const loopFocus = (nativeEvent) => {
+        lastKeydown.current = nativeEvent;
+        if (disableEnforceFocus || !isEnabled() || nativeEvent.key !== "Tab") {
+          return;
+        }
+        if (doc.activeElement === rootRef.current && nativeEvent.shiftKey) {
+          ignoreNextEnforceFocus.current = true;
+          if (sentinelEnd.current) {
+            sentinelEnd.current.focus();
+          }
+        }
+      };
+      const contain = () => {
+        const rootElement = rootRef.current;
+        if (rootElement === null) {
+          return;
+        }
+        if (!doc.hasFocus() || !isEnabled() || ignoreNextEnforceFocus.current) {
+          ignoreNextEnforceFocus.current = false;
+          return;
+        }
+        if (rootElement.contains(doc.activeElement)) {
+          return;
+        }
+        if (disableEnforceFocus && doc.activeElement !== sentinelStart.current && doc.activeElement !== sentinelEnd.current) {
+          return;
+        }
+        if (doc.activeElement !== reactFocusEventTarget.current) {
+          reactFocusEventTarget.current = null;
+        } else if (reactFocusEventTarget.current !== null) {
+          return;
+        }
+        if (!activated.current) {
+          return;
+        }
+        let tabbable = [];
+        if (doc.activeElement === sentinelStart.current || doc.activeElement === sentinelEnd.current) {
+          tabbable = getTabbable(rootRef.current);
+        }
+        if (tabbable.length > 0) {
+          var _lastKeydown$current, _lastKeydown$current2;
+          const isShiftTab = Boolean(((_lastKeydown$current = lastKeydown.current) == null ? void 0 : _lastKeydown$current.shiftKey) && ((_lastKeydown$current2 = lastKeydown.current) == null ? void 0 : _lastKeydown$current2.key) === "Tab");
+          const focusNext = tabbable[0];
+          const focusPrevious = tabbable[tabbable.length - 1];
+          if (typeof focusNext !== "string" && typeof focusPrevious !== "string") {
+            if (isShiftTab) {
+              focusPrevious.focus();
+            } else {
+              focusNext.focus();
+            }
+          }
+        } else {
+          rootElement.focus();
+        }
+      };
+      doc.addEventListener("focusin", contain);
+      doc.addEventListener("keydown", loopFocus, true);
+      const interval = setInterval(() => {
+        if (doc.activeElement && doc.activeElement.tagName === "BODY") {
+          contain();
+        }
+      }, 50);
+      return () => {
+        clearInterval(interval);
+        doc.removeEventListener("focusin", contain);
+        doc.removeEventListener("keydown", loopFocus, true);
+      };
+    }, [disableAutoFocus, disableEnforceFocus, disableRestoreFocus, isEnabled, open, getTabbable]);
+    const onFocus = (event) => {
+      if (nodeToRestore.current === null) {
+        nodeToRestore.current = event.relatedTarget;
+      }
+      activated.current = true;
+      reactFocusEventTarget.current = event.target;
+      const childrenPropsHandler = children.props.onFocus;
+      if (childrenPropsHandler) {
+        childrenPropsHandler(event);
+      }
+    };
+    const handleFocusSentinel = (event) => {
+      if (nodeToRestore.current === null) {
+        nodeToRestore.current = event.relatedTarget;
+      }
+      activated.current = true;
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
+      children: [/* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+        tabIndex: open ? 0 : -1,
+        onFocus: handleFocusSentinel,
+        ref: sentinelStart,
+        "data-testid": "sentinelStart"
+      }), /* @__PURE__ */ reactExports.cloneElement(children, {
+        ref: handleRef,
+        onFocus
+      }), /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
+        tabIndex: open ? 0 : -1,
+        onFocus: handleFocusSentinel,
+        ref: sentinelEnd,
+        "data-testid": "sentinelEnd"
+      })]
+    });
+  }
+  process.env.NODE_ENV !== "production" ? FocusTrap.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
+    /**
+     * A single child content element.
+     */
+    children: elementAcceptingRef$1,
+    /**
+     * If `true`, the focus trap will not automatically shift focus to itself when it opens, and
+     * replace it to the last focused element when it closes.
+     * This also works correctly with any focus trap children that have the `disableAutoFocus` prop.
+     *
+     * Generally this should never be set to `true` as it makes the focus trap less
+     * accessible to assistive technologies, like screen readers.
+     * @default false
+     */
+    disableAutoFocus: PropTypes.bool,
+    /**
+     * If `true`, the focus trap will not prevent focus from leaving the focus trap while open.
+     *
+     * Generally this should never be set to `true` as it makes the focus trap less
+     * accessible to assistive technologies, like screen readers.
+     * @default false
+     */
+    disableEnforceFocus: PropTypes.bool,
+    /**
+     * If `true`, the focus trap will not restore focus to previously focused element once
+     * focus trap is hidden or unmounted.
+     * @default false
+     */
+    disableRestoreFocus: PropTypes.bool,
+    /**
+     * Returns an array of ordered tabbable nodes (i.e. in tab order) within the root.
+     * For instance, you can provide the "tabbable" npm dependency.
+     * @param {HTMLElement} root
+     */
+    getTabbable: PropTypes.func,
+    /**
+     * This prop extends the `open` prop.
+     * It allows to toggle the open state without having to wait for a rerender when changing the `open` prop.
+     * This prop should be memoized.
+     * It can be used to support multiple focus trap mounted at the same time.
+     * @default function defaultIsEnabled(): boolean {
+     *   return true;
+     * }
+     */
+    isEnabled: PropTypes.func,
+    /**
+     * If `true`, focus is locked.
+     */
+    open: PropTypes.bool.isRequired
+  } : void 0;
+  if (process.env.NODE_ENV !== "production") {
+    FocusTrap["propTypes"] = exactProp(FocusTrap.propTypes);
+  }
+  function getContainer(container) {
+    return typeof container === "function" ? container() : container;
+  }
+  const Portal = /* @__PURE__ */ reactExports.forwardRef(function Portal2(props, forwardedRef) {
+    const {
+      children,
+      container,
+      disablePortal = false
+    } = props;
+    const [mountNode, setMountNode] = reactExports.useState(null);
+    const handleRef = useForkRef(/* @__PURE__ */ reactExports.isValidElement(children) ? children.ref : null, forwardedRef);
+    useEnhancedEffect$1(() => {
+      if (!disablePortal) {
+        setMountNode(getContainer(container) || document.body);
+      }
+    }, [container, disablePortal]);
+    useEnhancedEffect$1(() => {
+      if (mountNode && !disablePortal) {
+        setRef(forwardedRef, mountNode);
+        return () => {
+          setRef(forwardedRef, null);
+        };
+      }
+      return void 0;
+    }, [forwardedRef, mountNode, disablePortal]);
+    if (disablePortal) {
+      if (/* @__PURE__ */ reactExports.isValidElement(children)) {
+        const newProps = {
+          ref: handleRef
+        };
+        return /* @__PURE__ */ reactExports.cloneElement(children, newProps);
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
+        children
+      });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
+      children: mountNode ? /* @__PURE__ */ reactDomExports.createPortal(children, mountNode) : mountNode
+    });
+  });
+  process.env.NODE_ENV !== "production" ? Portal.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
+    /**
+     * The children to render into the `container`.
+     */
+    children: PropTypes.node,
+    /**
+     * An HTML element or function that returns one.
+     * The `container` will have the portal children appended to it.
+     *
+     * By default, it uses the body of the top-level document object,
+     * so it's simply `document.body` most of the time.
+     */
+    container: PropTypes.oneOfType([HTMLElementType, PropTypes.func]),
+    /**
+     * The `children` will be under the DOM hierarchy of the parent component.
+     * @default false
+     */
+    disablePortal: PropTypes.bool
+  } : void 0;
+  if (process.env.NODE_ENV !== "production") {
+    Portal["propTypes"] = exactProp(Portal.propTypes);
+  }
+  function useSnackbar(parameters = {}) {
+    const {
+      autoHideDuration = null,
+      disableWindowBlurListener = false,
+      onClose,
+      open,
+      resumeHideDuration
+    } = parameters;
+    const timerAutoHide = reactExports.useRef();
+    reactExports.useEffect(() => {
+      if (!open) {
+        return void 0;
+      }
+      function handleKeyDown2(nativeEvent) {
+        if (!nativeEvent.defaultPrevented) {
+          if (nativeEvent.key === "Escape" || nativeEvent.key === "Esc") {
+            onClose == null || onClose(nativeEvent, "escapeKeyDown");
+          }
+        }
+      }
+      document.addEventListener("keydown", handleKeyDown2);
+      return () => {
+        document.removeEventListener("keydown", handleKeyDown2);
+      };
+    }, [open, onClose]);
+    const handleClose = useEventCallback((event, reason) => {
+      onClose == null || onClose(event, reason);
+    });
+    const setAutoHideTimer = useEventCallback((autoHideDurationParam) => {
+      if (!onClose || autoHideDurationParam == null) {
+        return;
+      }
+      clearTimeout(timerAutoHide.current);
+      timerAutoHide.current = setTimeout(() => {
+        handleClose(null, "timeout");
+      }, autoHideDurationParam);
+    });
+    reactExports.useEffect(() => {
+      if (open) {
+        setAutoHideTimer(autoHideDuration);
+      }
+      return () => {
+        clearTimeout(timerAutoHide.current);
+      };
+    }, [open, autoHideDuration, setAutoHideTimer]);
+    const handleClickAway = (event) => {
+      onClose == null || onClose(event, "clickaway");
+    };
+    const handlePause = () => {
+      clearTimeout(timerAutoHide.current);
+    };
+    const handleResume = reactExports.useCallback(() => {
+      if (autoHideDuration != null) {
+        setAutoHideTimer(resumeHideDuration != null ? resumeHideDuration : autoHideDuration * 0.5);
+      }
+    }, [autoHideDuration, resumeHideDuration, setAutoHideTimer]);
+    const createHandleBlur = (otherHandlers) => (event) => {
+      const onBlurCallback = otherHandlers.onBlur;
+      onBlurCallback == null || onBlurCallback(event);
+      handleResume();
+    };
+    const createHandleFocus = (otherHandlers) => (event) => {
+      const onFocusCallback = otherHandlers.onFocus;
+      onFocusCallback == null || onFocusCallback(event);
+      handlePause();
+    };
+    const createMouseEnter = (otherHandlers) => (event) => {
+      const onMouseEnterCallback = otherHandlers.onMouseEnter;
+      onMouseEnterCallback == null || onMouseEnterCallback(event);
+      handlePause();
+    };
+    const createMouseLeave = (otherHandlers) => (event) => {
+      const onMouseLeaveCallback = otherHandlers.onMouseLeave;
+      onMouseLeaveCallback == null || onMouseLeaveCallback(event);
+      handleResume();
+    };
+    reactExports.useEffect(() => {
+      if (!disableWindowBlurListener && open) {
+        window.addEventListener("focus", handleResume);
+        window.addEventListener("blur", handlePause);
+        return () => {
+          window.removeEventListener("focus", handleResume);
+          window.removeEventListener("blur", handlePause);
+        };
+      }
+      return void 0;
+    }, [disableWindowBlurListener, handleResume, open]);
+    const getRootProps = (externalProps = {}) => {
+      const externalEventHandlers = _extends$1({}, extractEventHandlers(parameters), extractEventHandlers(externalProps));
+      return _extends$1({
+        // ClickAwayListener adds an `onClick` prop which results in the alert not being announced.
+        // See https://github.com/mui/material-ui/issues/29080
+        role: "presentation"
+      }, externalProps, externalEventHandlers, {
+        onBlur: createHandleBlur(externalEventHandlers),
+        onFocus: createHandleFocus(externalEventHandlers),
+        onMouseEnter: createMouseEnter(externalEventHandlers),
+        onMouseLeave: createMouseLeave(externalEventHandlers)
+      });
+    };
+    return {
+      getRootProps,
+      onClickAway: handleClickAway
+    };
+  }
+  const _excluded$Z = ["onChange", "maxRows", "minRows", "style", "value"];
+  function getStyleValue(value) {
+    return parseInt(value, 10) || 0;
+  }
+  const styles$2 = {
+    shadow: {
+      // Visibility needed to hide the extra text area on iPads
+      visibility: "hidden",
+      // Remove from the content flow
+      position: "absolute",
+      // Ignore the scrollbar width
+      overflow: "hidden",
+      height: 0,
+      top: 0,
+      left: 0,
+      // Create a new layer, increase the isolation of the computed values
+      transform: "translateZ(0)"
+    }
+  };
+  function isEmpty$1(obj) {
+    return obj === void 0 || obj === null || Object.keys(obj).length === 0 || obj.outerHeightStyle === 0 && !obj.overflow;
+  }
+  const TextareaAutosize = /* @__PURE__ */ reactExports.forwardRef(function TextareaAutosize2(props, forwardedRef) {
+    const {
+      onChange,
+      maxRows,
+      minRows = 1,
+      style: style2,
+      value
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Z);
+    const {
+      current: isControlled
+    } = reactExports.useRef(value != null);
+    const inputRef = reactExports.useRef(null);
+    const handleRef = useForkRef(forwardedRef, inputRef);
+    const shadowRef = reactExports.useRef(null);
+    const renders = reactExports.useRef(0);
+    const [state, setState] = reactExports.useState({
+      outerHeightStyle: 0
+    });
+    const getUpdatedState = reactExports.useCallback(() => {
+      const input = inputRef.current;
+      const containerWindow = ownerWindow(input);
+      const computedStyle = containerWindow.getComputedStyle(input);
+      if (computedStyle.width === "0px") {
+        return {
+          outerHeightStyle: 0
+        };
+      }
+      const inputShallow = shadowRef.current;
+      inputShallow.style.width = computedStyle.width;
+      inputShallow.value = input.value || props.placeholder || "x";
+      if (inputShallow.value.slice(-1) === "\n") {
+        inputShallow.value += " ";
+      }
+      const boxSizing2 = computedStyle.boxSizing;
+      const padding2 = getStyleValue(computedStyle.paddingBottom) + getStyleValue(computedStyle.paddingTop);
+      const border2 = getStyleValue(computedStyle.borderBottomWidth) + getStyleValue(computedStyle.borderTopWidth);
+      const innerHeight = inputShallow.scrollHeight;
+      inputShallow.value = "x";
+      const singleRowHeight = inputShallow.scrollHeight;
+      let outerHeight = innerHeight;
+      if (minRows) {
+        outerHeight = Math.max(Number(minRows) * singleRowHeight, outerHeight);
+      }
+      if (maxRows) {
+        outerHeight = Math.min(Number(maxRows) * singleRowHeight, outerHeight);
+      }
+      outerHeight = Math.max(outerHeight, singleRowHeight);
+      const outerHeightStyle = outerHeight + (boxSizing2 === "border-box" ? padding2 + border2 : 0);
+      const overflow = Math.abs(outerHeight - innerHeight) <= 1;
+      return {
+        outerHeightStyle,
+        overflow
+      };
+    }, [maxRows, minRows, props.placeholder]);
+    const updateState = (prevState, newState) => {
+      const {
+        outerHeightStyle,
+        overflow
+      } = newState;
+      if (renders.current < 20 && (outerHeightStyle > 0 && Math.abs((prevState.outerHeightStyle || 0) - outerHeightStyle) > 1 || prevState.overflow !== overflow)) {
+        renders.current += 1;
+        return {
+          overflow,
+          outerHeightStyle
+        };
+      }
+      if (process.env.NODE_ENV !== "production") {
+        if (renders.current === 20) {
+          console.error(["MUI: Too many re-renders. The layout is unstable.", "TextareaAutosize limits the number of renders to prevent an infinite loop."].join("\n"));
+        }
+      }
+      return prevState;
+    };
+    const syncHeight = reactExports.useCallback(() => {
+      const newState = getUpdatedState();
+      if (isEmpty$1(newState)) {
+        return;
+      }
+      setState((prevState) => updateState(prevState, newState));
+    }, [getUpdatedState]);
+    useEnhancedEffect$1(() => {
+      const syncHeightWithFlushSync = () => {
+        const newState = getUpdatedState();
+        if (isEmpty$1(newState)) {
+          return;
+        }
+        reactDomExports.flushSync(() => {
+          setState((prevState) => updateState(prevState, newState));
+        });
+      };
+      const handleResize = () => {
+        renders.current = 0;
+        syncHeightWithFlushSync();
+      };
+      let rAF;
+      const rAFHandleResize = () => {
+        cancelAnimationFrame(rAF);
+        rAF = requestAnimationFrame(() => {
+          handleResize();
+        });
+      };
+      const debounceHandleResize = debounce(handleResize);
+      const input = inputRef.current;
+      const containerWindow = ownerWindow(input);
+      containerWindow.addEventListener("resize", debounceHandleResize);
+      let resizeObserver;
+      if (typeof ResizeObserver !== "undefined") {
+        resizeObserver = new ResizeObserver(process.env.NODE_ENV === "test" ? rAFHandleResize : handleResize);
+        resizeObserver.observe(input);
+      }
+      return () => {
+        debounceHandleResize.clear();
+        cancelAnimationFrame(rAF);
+        containerWindow.removeEventListener("resize", debounceHandleResize);
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
+      };
+    }, [getUpdatedState]);
+    useEnhancedEffect$1(() => {
+      syncHeight();
+    });
+    reactExports.useEffect(() => {
+      renders.current = 0;
+    }, [value]);
+    const handleChange = (event) => {
+      renders.current = 0;
+      if (!isControlled) {
+        syncHeight();
+      }
+      if (onChange) {
+        onChange(event);
+      }
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
+      children: [/* @__PURE__ */ jsxRuntimeExports.jsx("textarea", _extends$1({
+        value,
+        onChange: handleChange,
+        ref: handleRef,
+        rows: minRows,
+        style: _extends$1({
+          height: state.outerHeightStyle,
+          // Need a large enough difference to allow scrolling.
+          // This prevents infinite rendering loop.
+          overflow: state.overflow ? "hidden" : void 0
+        }, style2)
+      }, other)), /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", {
+        "aria-hidden": true,
+        className: props.className,
+        readOnly: true,
+        ref: shadowRef,
+        tabIndex: -1,
+        style: _extends$1({}, styles$2.shadow, style2, {
+          paddingTop: 0,
+          paddingBottom: 0
+        })
+      })]
+    });
+  });
+  process.env.NODE_ENV !== "production" ? TextareaAutosize.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit TypeScript types and run "yarn proptypes"  |
+    // ----------------------------------------------------------------------
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * Maximum number of rows to display.
+     */
+    maxRows: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    /**
+     * Minimum number of rows to display.
+     * @default 1
+     */
+    minRows: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    /**
+     * @ignore
+     */
+    onChange: PropTypes.func,
+    /**
+     * @ignore
+     */
+    placeholder: PropTypes.string,
+    /**
+     * @ignore
+     */
+    style: PropTypes.object,
+    /**
+     * @ignore
+     */
+    value: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.number, PropTypes.string])
+  } : void 0;
+  const reflow = (node2) => node2.scrollTop;
+  function getTransitionProps(props, options) {
+    var _style$transitionDura, _style$transitionTimi;
+    const {
+      timeout,
+      easing: easing2,
+      style: style2 = {}
+    } = props;
+    return {
+      duration: (_style$transitionDura = style2.transitionDuration) != null ? _style$transitionDura : typeof timeout === "number" ? timeout : timeout[options.mode] || 0,
+      easing: (_style$transitionTimi = style2.transitionTimingFunction) != null ? _style$transitionTimi : typeof easing2 === "object" ? easing2[options.mode] : easing2,
+      delay: style2.transitionDelay
+    };
+  }
+  const _excluded$Y = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
+  const styles$1 = {
+    entering: {
+      opacity: 1
+    },
+    entered: {
+      opacity: 1
+    }
+  };
+  const Fade = /* @__PURE__ */ reactExports.forwardRef(function Fade2(props, ref) {
+    const theme2 = useTheme();
+    const defaultTimeout = {
+      enter: theme2.transitions.duration.enteringScreen,
+      exit: theme2.transitions.duration.leavingScreen
+    };
+    const {
+      addEndListener,
+      appear = true,
+      children,
+      easing: easing2,
+      in: inProp,
+      onEnter,
+      onEntered,
+      onEntering,
+      onExit,
+      onExited,
+      onExiting,
+      style: style2,
+      timeout = defaultTimeout,
+      // eslint-disable-next-line react/prop-types
+      TransitionComponent = Transition$1
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Y);
+    const nodeRef = reactExports.useRef(null);
+    const handleRef = useForkRef(nodeRef, children.ref, ref);
+    const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
+      if (callback) {
+        const node2 = nodeRef.current;
+        if (maybeIsAppearing === void 0) {
+          callback(node2);
+        } else {
+          callback(node2, maybeIsAppearing);
+        }
+      }
+    };
+    const handleEntering = normalizedTransitionCallback(onEntering);
+    const handleEnter = normalizedTransitionCallback((node2, isAppearing) => {
+      reflow(node2);
+      const transitionProps = getTransitionProps({
+        style: style2,
+        timeout,
+        easing: easing2
+      }, {
+        mode: "enter"
+      });
+      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
+      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
+      if (onEnter) {
+        onEnter(node2, isAppearing);
+      }
+    });
+    const handleEntered = normalizedTransitionCallback(onEntered);
+    const handleExiting = normalizedTransitionCallback(onExiting);
+    const handleExit = normalizedTransitionCallback((node2) => {
+      const transitionProps = getTransitionProps({
+        style: style2,
+        timeout,
+        easing: easing2
+      }, {
+        mode: "exit"
+      });
+      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
+      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
+      if (onExit) {
+        onExit(node2);
+      }
+    });
+    const handleExited = normalizedTransitionCallback(onExited);
+    const handleAddEndListener = (next2) => {
+      if (addEndListener) {
+        addEndListener(nodeRef.current, next2);
+      }
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+      appear,
+      in: inProp,
+      nodeRef,
+      onEnter: handleEnter,
+      onEntered: handleEntered,
+      onEntering: handleEntering,
+      onExit: handleExit,
+      onExited: handleExited,
+      onExiting: handleExiting,
+      addEndListener: handleAddEndListener,
+      timeout
+    }, other, {
+      children: (state, childProps) => {
+        return /* @__PURE__ */ reactExports.cloneElement(children, _extends$1({
+          style: _extends$1({
+            opacity: 0,
+            visibility: state === "exited" && !inProp ? "hidden" : void 0
+          }, styles$1[state], style2, children.props.style),
+          ref: handleRef
+        }, childProps));
+      }
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Fade.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * Add a custom transition end trigger. Called with the transitioning DOM
+     * node and a done callback. Allows for more fine grained transition end
+     * logic. Note: Timeouts are still used as a fallback if provided.
+     */
+    addEndListener: PropTypes.func,
+    /**
+     * Perform the enter transition when it first mounts if `in` is also `true`.
+     * Set this to `false` to disable this behavior.
+     * @default true
+     */
+    appear: PropTypes.bool,
+    /**
+     * A single child content element.
+     */
+    children: elementAcceptingRef$1.isRequired,
+    /**
+     * The transition timing function.
+     * You may specify a single easing or a object containing enter and exit values.
+     */
+    easing: PropTypes.oneOfType([PropTypes.shape({
+      enter: PropTypes.string,
+      exit: PropTypes.string
+    }), PropTypes.string]),
+    /**
+     * If `true`, the component will transition in.
+     */
+    in: PropTypes.bool,
+    /**
+     * @ignore
+     */
+    onEnter: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onEntered: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onEntering: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onExit: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onExited: PropTypes.func,
+    /**
+     * @ignore
+     */
+    onExiting: PropTypes.func,
+    /**
+     * @ignore
+     */
+    style: PropTypes.object,
+    /**
+     * The duration for the transition, in milliseconds.
+     * You may specify a single timeout for all transitions, or individually with an object.
+     * @default {
+     *   enter: theme.transitions.duration.enteringScreen,
+     *   exit: theme.transitions.duration.leavingScreen,
+     * }
+     */
+    timeout: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
+      appear: PropTypes.number,
+      enter: PropTypes.number,
+      exit: PropTypes.number
+    })])
+  } : void 0;
+  const Fade$1 = Fade;
+  function getBackdropUtilityClass(slot) {
+    return generateUtilityClass("MuiBackdrop", slot);
+  }
+  generateUtilityClasses("MuiBackdrop", ["root", "invisible"]);
+  const _excluded$X = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
+  const useUtilityClasses$R = (ownerState) => {
+    const {
+      classes,
+      invisible
+    } = ownerState;
+    const slots = {
+      root: ["root", invisible && "invisible"]
+    };
+    return composeClasses(slots, getBackdropUtilityClass, classes);
+  };
+  const BackdropRoot = styled$1("div", {
+    name: "MuiBackdrop",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, ownerState.invisible && styles2.invisible];
+    }
+  })(({
+    ownerState
+  }) => _extends$1({
+    position: "fixed",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    right: 0,
+    bottom: 0,
+    top: 0,
+    left: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    WebkitTapHighlightColor: "transparent"
+  }, ownerState.invisible && {
+    backgroundColor: "transparent"
+  }));
+  const Backdrop = /* @__PURE__ */ reactExports.forwardRef(function Backdrop2(inProps, ref) {
+    var _slotProps$root, _ref, _slots$root;
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiBackdrop"
+    });
+    const {
+      children,
+      className,
+      component = "div",
+      components = {},
+      componentsProps = {},
+      invisible = false,
+      open,
+      slotProps = {},
+      slots = {},
+      TransitionComponent = Fade$1,
+      transitionDuration
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$X);
+    const ownerState = _extends$1({}, props, {
+      component,
+      invisible
+    });
+    const classes = useUtilityClasses$R(ownerState);
+    const rootSlotProps = (_slotProps$root = slotProps.root) != null ? _slotProps$root : componentsProps.root;
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+      in: open,
+      timeout: transitionDuration
+    }, other, {
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(BackdropRoot, _extends$1({
+        "aria-hidden": true
+      }, rootSlotProps, {
+        as: (_ref = (_slots$root = slots.root) != null ? _slots$root : components.Root) != null ? _ref : component,
+        className: clsx(classes.root, className, rootSlotProps == null ? void 0 : rootSlotProps.className),
+        ownerState: _extends$1({}, ownerState, rootSlotProps == null ? void 0 : rootSlotProps.ownerState),
+        classes,
+        ref,
+        children
+      }))
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Backdrop.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * The components used for each slot inside.
+     *
+     * This prop is an alias for the `slots` prop.
+     * It's recommended to use the `slots` prop instead.
+     *
+     * @default {}
+     */
+    components: PropTypes.shape({
+      Root: PropTypes.elementType
+    }),
+    /**
+     * The extra props for the slot components.
+     * You can override the existing props or add new ones.
+     *
+     * This prop is an alias for the `slotProps` prop.
+     * It's recommended to use the `slotProps` prop instead, as `componentsProps` will be deprecated in the future.
+     *
+     * @default {}
+     */
+    componentsProps: PropTypes.shape({
+      root: PropTypes.object
+    }),
+    /**
+     * If `true`, the backdrop is invisible.
+     * It can be used when rendering a popover or a custom select component.
+     * @default false
+     */
+    invisible: PropTypes.bool,
+    /**
+     * If `true`, the component is shown.
+     */
+    open: PropTypes.bool.isRequired,
+    /**
+     * The extra props for the slot components.
+     * You can override the existing props or add new ones.
+     *
+     * This prop is an alias for the `componentsProps` prop, which will be deprecated in the future.
+     *
+     * @default {}
+     */
+    slotProps: PropTypes.shape({
+      root: PropTypes.object
+    }),
+    /**
+     * The components used for each slot inside.
+     *
+     * This prop is an alias for the `components` prop, which will be deprecated in the future.
+     *
+     * @default {}
+     */
+    slots: PropTypes.shape({
+      root: PropTypes.elementType
+    }),
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The component used for the transition.
+     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
+     * @default Fade
+     */
+    TransitionComponent: PropTypes.elementType,
+    /**
+     * The duration for the transition, in milliseconds.
+     * You may specify a single timeout for all transitions, or individually with an object.
+     */
+    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
+      appear: PropTypes.number,
+      enter: PropTypes.number,
+      exit: PropTypes.number
+    })])
+  } : void 0;
+  const Backdrop$1 = Backdrop;
+  function getModalUtilityClass(slot) {
+    return generateUtilityClass("MuiModal", slot);
+  }
+  generateUtilityClasses("MuiModal", ["root", "hidden", "backdrop"]);
+  const _excluded$W = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
+  const useUtilityClasses$Q = (ownerState) => {
+    const {
+      open,
+      exited,
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root", !open && exited && "hidden"],
+      backdrop: ["backdrop"]
+    };
+    return composeClasses(slots, getModalUtilityClass, classes);
+  };
+  const ModalRoot = styled$1("div", {
+    name: "MuiModal",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, !ownerState.open && ownerState.exited && styles2.hidden];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    position: "fixed",
+    zIndex: (theme2.vars || theme2).zIndex.modal,
+    right: 0,
+    bottom: 0,
+    top: 0,
+    left: 0
+  }, !ownerState.open && ownerState.exited && {
+    visibility: "hidden"
+  }));
+  const ModalBackdrop = styled$1(Backdrop$1, {
+    name: "MuiModal",
+    slot: "Backdrop",
+    overridesResolver: (props, styles2) => {
+      return styles2.backdrop;
+    }
+  })({
+    zIndex: -1
+  });
+  const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, ref) {
+    var _ref, _slots$root, _ref2, _slots$backdrop, _slotProps$root, _slotProps$backdrop;
+    const props = useThemeProps({
+      name: "MuiModal",
+      props: inProps
+    });
+    const {
+      BackdropComponent = ModalBackdrop,
+      BackdropProps,
+      className,
+      closeAfterTransition = false,
+      children,
+      container,
+      component,
+      components = {},
+      componentsProps = {},
+      disableAutoFocus = false,
+      disableEnforceFocus = false,
+      disableEscapeKeyDown = false,
+      disablePortal = false,
+      disableRestoreFocus = false,
+      disableScrollLock = false,
+      hideBackdrop = false,
+      keepMounted = false,
+      onBackdropClick,
+      open,
+      slotProps,
+      slots
+      // eslint-disable-next-line react/prop-types
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$W);
+    const propsWithDefaults = _extends$1({}, props, {
+      closeAfterTransition,
+      disableAutoFocus,
+      disableEnforceFocus,
+      disableEscapeKeyDown,
+      disablePortal,
+      disableRestoreFocus,
+      disableScrollLock,
+      hideBackdrop,
+      keepMounted
+    });
+    const {
+      getRootProps,
+      getBackdropProps,
+      getTransitionProps: getTransitionProps2,
+      portalRef,
+      isTopModal,
+      exited,
+      hasTransition
+    } = useModal(_extends$1({}, propsWithDefaults, {
+      rootRef: ref
+    }));
+    const ownerState = _extends$1({}, propsWithDefaults, {
+      exited
+    });
+    const classes = useUtilityClasses$Q(ownerState);
+    const childProps = {};
+    if (children.props.tabIndex === void 0) {
+      childProps.tabIndex = "-1";
+    }
+    if (hasTransition) {
+      const {
+        onEnter,
+        onExited
+      } = getTransitionProps2();
+      childProps.onEnter = onEnter;
+      childProps.onExited = onExited;
+    }
+    const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : ModalRoot;
+    const BackdropSlot = (_ref2 = (_slots$backdrop = slots == null ? void 0 : slots.backdrop) != null ? _slots$backdrop : components.Backdrop) != null ? _ref2 : BackdropComponent;
+    const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
+    const backdropSlotProps = (_slotProps$backdrop = slotProps == null ? void 0 : slotProps.backdrop) != null ? _slotProps$backdrop : componentsProps.backdrop;
+    const rootProps = useSlotProps({
+      elementType: RootSlot,
+      externalSlotProps: rootSlotProps,
+      externalForwardedProps: other,
+      getSlotProps: getRootProps,
+      additionalProps: {
+        ref,
+        as: component
+      },
+      ownerState,
+      className: clsx(className, rootSlotProps == null ? void 0 : rootSlotProps.className, classes == null ? void 0 : classes.root, !ownerState.open && ownerState.exited && (classes == null ? void 0 : classes.hidden))
+    });
+    const backdropProps = useSlotProps({
+      elementType: BackdropSlot,
+      externalSlotProps: backdropSlotProps,
+      additionalProps: BackdropProps,
+      getSlotProps: (otherHandlers) => {
+        return getBackdropProps(_extends$1({}, otherHandlers, {
+          onClick: (e) => {
+            if (onBackdropClick) {
+              onBackdropClick(e);
+            }
+            if (otherHandlers != null && otherHandlers.onClick) {
+              otherHandlers.onClick(e);
+            }
+          }
+        }));
+      },
+      className: clsx(backdropSlotProps == null ? void 0 : backdropSlotProps.className, BackdropProps == null ? void 0 : BackdropProps.className, classes == null ? void 0 : classes.backdrop),
+      ownerState
+    });
+    if (!keepMounted && !open && (!hasTransition || exited)) {
+      return null;
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal, {
+      ref: portalRef,
+      container,
+      disablePortal,
+      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(RootSlot, _extends$1({}, rootProps, {
+        children: [!hideBackdrop && BackdropComponent ? /* @__PURE__ */ jsxRuntimeExports.jsx(BackdropSlot, _extends$1({}, backdropProps)) : null, /* @__PURE__ */ jsxRuntimeExports.jsx(FocusTrap, {
+          disableEnforceFocus,
+          disableAutoFocus,
+          disableRestoreFocus,
+          isEnabled: isTopModal,
+          open,
+          children: /* @__PURE__ */ reactExports.cloneElement(children, childProps)
+        })]
+      }))
+    });
+  });
+  process.env.NODE_ENV !== "production" ? Modal.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * A backdrop component. This prop enables custom backdrop rendering.
+     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
+     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
+     * @default styled(Backdrop, {
+     *   name: 'MuiModal',
+     *   slot: 'Backdrop',
+     *   overridesResolver: (props, styles) => {
+     *     return styles.backdrop;
+     *   },
+     * })({
+     *   zIndex: -1,
+     * })
+     */
+    BackdropComponent: PropTypes.elementType,
+    /**
+     * Props applied to the [`Backdrop`](/material-ui/api/backdrop/) element.
+     * @deprecated Use `slotProps.backdrop` instead.
+     */
+    BackdropProps: PropTypes.object,
+    /**
+     * A single child content element.
+     */
+    children: elementAcceptingRef$1.isRequired,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * When set to true the Modal waits until a nested Transition is completed before closing.
+     * @default false
+     */
+    closeAfterTransition: PropTypes.bool,
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * The components used for each slot inside.
+     *
+     * This prop is an alias for the `slots` prop.
+     * It's recommended to use the `slots` prop instead.
+     *
+     * @default {}
+     */
+    components: PropTypes.shape({
+      Backdrop: PropTypes.elementType,
+      Root: PropTypes.elementType
+    }),
+    /**
+     * The extra props for the slot components.
+     * You can override the existing props or add new ones.
+     *
+     * This prop is an alias for the `slotProps` prop.
+     * It's recommended to use the `slotProps` prop instead, as `componentsProps` will be deprecated in the future.
+     *
+     * @default {}
+     */
+    componentsProps: PropTypes.shape({
+      backdrop: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+      root: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
+    }),
+    /**
+     * An HTML element or function that returns one.
+     * The `container` will have the portal children appended to it.
+     *
+     * By default, it uses the body of the top-level document object,
+     * so it's simply `document.body` most of the time.
+     */
+    container: PropTypes.oneOfType([HTMLElementType, PropTypes.func]),
+    /**
+     * If `true`, the modal will not automatically shift focus to itself when it opens, and
+     * replace it to the last focused element when it closes.
+     * This also works correctly with any modal children that have the `disableAutoFocus` prop.
+     *
+     * Generally this should never be set to `true` as it makes the modal less
+     * accessible to assistive technologies, like screen readers.
+     * @default false
+     */
+    disableAutoFocus: PropTypes.bool,
+    /**
+     * If `true`, the modal will not prevent focus from leaving the modal while open.
+     *
+     * Generally this should never be set to `true` as it makes the modal less
+     * accessible to assistive technologies, like screen readers.
+     * @default false
+     */
+    disableEnforceFocus: PropTypes.bool,
+    /**
+     * If `true`, hitting escape will not fire the `onClose` callback.
+     * @default false
+     */
+    disableEscapeKeyDown: PropTypes.bool,
+    /**
+     * The `children` will be under the DOM hierarchy of the parent component.
+     * @default false
+     */
+    disablePortal: PropTypes.bool,
+    /**
+     * If `true`, the modal will not restore focus to previously focused element once
+     * modal is hidden or unmounted.
+     * @default false
+     */
+    disableRestoreFocus: PropTypes.bool,
+    /**
+     * Disable the scroll lock behavior.
+     * @default false
+     */
+    disableScrollLock: PropTypes.bool,
+    /**
+     * If `true`, the backdrop is not rendered.
+     * @default false
+     */
+    hideBackdrop: PropTypes.bool,
+    /**
+     * Always keep the children in the DOM.
+     * This prop can be useful in SEO situation or
+     * when you want to maximize the responsiveness of the Modal.
+     * @default false
+     */
+    keepMounted: PropTypes.bool,
+    /**
+     * Callback fired when the backdrop is clicked.
+     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
+     */
+    onBackdropClick: PropTypes.func,
+    /**
+     * Callback fired when the component requests to be closed.
+     * The `reason` parameter can optionally be used to control the response to `onClose`.
+     *
+     * @param {object} event The event source of the callback.
+     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
+     */
+    onClose: PropTypes.func,
+    /**
+     * A function called when a transition enters.
+     */
+    onTransitionEnter: PropTypes.func,
+    /**
+     * A function called when a transition has exited.
+     */
+    onTransitionExited: PropTypes.func,
+    /**
+     * If `true`, the component is shown.
+     */
+    open: PropTypes.bool.isRequired,
+    /**
+     * The props used for each slot inside the Modal.
+     * @default {}
+     */
+    slotProps: PropTypes.shape({
+      backdrop: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+      root: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
+    }),
+    /**
+     * The components used for each slot inside the Modal.
+     * Either a string to use a HTML element or a component.
+     * @default {}
+     */
+    slots: PropTypes.shape({
+      backdrop: PropTypes.elementType,
+      root: PropTypes.elementType
+    }),
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const Modal$1 = Modal;
+  function getPaperUtilityClass(slot) {
+    return generateUtilityClass("MuiPaper", slot);
+  }
+  generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
+  const _excluded$V = ["className", "component", "elevation", "square", "variant"];
+  const useUtilityClasses$P = (ownerState) => {
+    const {
+      square,
+      elevation,
+      variant,
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root", variant, !square && "rounded", variant === "elevation" && `elevation${elevation}`]
+    };
+    return composeClasses(slots, getPaperUtilityClass, classes);
+  };
+  const PaperRoot = styled$1("div", {
+    name: "MuiPaper",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, styles2[ownerState.variant], !ownerState.square && styles2.rounded, ownerState.variant === "elevation" && styles2[`elevation${ownerState.elevation}`]];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => {
+    var _theme$vars$overlays;
+    return _extends$1({
+      backgroundColor: (theme2.vars || theme2).palette.background.paper,
+      color: (theme2.vars || theme2).palette.text.primary,
+      transition: theme2.transitions.create("box-shadow")
+    }, !ownerState.square && {
+      borderRadius: theme2.shape.borderRadius
+    }, ownerState.variant === "outlined" && {
+      border: `1px solid ${(theme2.vars || theme2).palette.divider}`
+    }, ownerState.variant === "elevation" && _extends$1({
+      boxShadow: (theme2.vars || theme2).shadows[ownerState.elevation]
+    }, !theme2.vars && theme2.palette.mode === "dark" && {
+      backgroundImage: `linear-gradient(${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))}, ${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))})`
+    }, theme2.vars && {
+      backgroundImage: (_theme$vars$overlays = theme2.vars.overlays) == null ? void 0 : _theme$vars$overlays[ownerState.elevation]
+    }));
+  });
+  const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiPaper"
+    });
+    const {
+      className,
+      component = "div",
+      elevation = 1,
+      square = false,
+      variant = "elevation"
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$V);
+    const ownerState = _extends$1({}, props, {
+      component,
+      elevation,
+      square,
+      variant
+    });
+    const classes = useUtilityClasses$P(ownerState);
+    if (process.env.NODE_ENV !== "production") {
+      const theme2 = useTheme();
+      if (theme2.shadows[elevation] === void 0) {
+        console.error([`MUI: The elevation provided <Paper elevation={${elevation}}> is not available in the theme.`, `Please make sure that \`theme.shadows[${elevation}]\` is defined.`].join("\n"));
+      }
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(PaperRoot, _extends$1({
+      as: component,
+      ownerState,
+      className: clsx(classes.root, className),
+      ref
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? Paper.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * The component used for the root node.
+     * Either a string to use a HTML element or a component.
+     */
+    component: PropTypes.elementType,
+    /**
+     * Shadow depth, corresponds to `dp` in the spec.
+     * It accepts values between 0 and 24 inclusive.
+     * @default 1
+     */
+    elevation: chainPropTypes(integerPropType, (props) => {
+      const {
+        elevation,
+        variant
+      } = props;
+      if (elevation > 0 && variant === "outlined") {
+        return new Error(`MUI: Combining \`elevation={${elevation}}\` with \`variant="${variant}"\` has no effect. Either use \`elevation={0}\` or use a different \`variant\`.`);
+      }
+      return null;
+    }),
+    /**
+     * If `true`, rounded corners are disabled.
+     * @default false
+     */
+    square: PropTypes.bool,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The variant to use.
+     * @default 'elevation'
+     */
+    variant: PropTypes.oneOfType([PropTypes.oneOf(["elevation", "outlined"]), PropTypes.string])
+  } : void 0;
+  const Paper$1 = Paper;
+  function getDialogUtilityClass(slot) {
+    return generateUtilityClass("MuiDialog", slot);
+  }
+  const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
+  const dialogClasses$1 = dialogClasses;
+  const DialogContext = /* @__PURE__ */ reactExports.createContext({});
+  if (process.env.NODE_ENV !== "production") {
+    DialogContext.displayName = "DialogContext";
+  }
+  const DialogContext$1 = DialogContext;
+  const _excluded$U = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
+  const DialogBackdrop = styled$1(Backdrop$1, {
+    name: "MuiDialog",
+    slot: "Backdrop",
+    overrides: (props, styles2) => styles2.backdrop
+  })({
+    // Improve scrollable dialog support.
+    zIndex: -1
+  });
+  const useUtilityClasses$O = (ownerState) => {
+    const {
+      classes,
+      scroll,
+      maxWidth: maxWidth2,
+      fullWidth,
+      fullScreen
+    } = ownerState;
+    const slots = {
+      root: ["root"],
+      container: ["container", `scroll${capitalize$2(scroll)}`],
+      paper: ["paper", `paperScroll${capitalize$2(scroll)}`, `paperWidth${capitalize$2(String(maxWidth2))}`, fullWidth && "paperFullWidth", fullScreen && "paperFullScreen"]
+    };
+    return composeClasses(slots, getDialogUtilityClass, classes);
+  };
+  const DialogRoot = styled$1(Modal$1, {
+    name: "MuiDialog",
+    slot: "Root",
+    overridesResolver: (props, styles2) => styles2.root
+  })({
+    "@media print": {
+      // Use !important to override the Modal inline-style.
+      position: "absolute !important"
+    }
+  });
+  const DialogContainer = styled$1("div", {
+    name: "MuiDialog",
+    slot: "Container",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.container, styles2[`scroll${capitalize$2(ownerState.scroll)}`]];
+    }
+  })(({
+    ownerState
+  }) => _extends$1({
+    height: "100%",
+    "@media print": {
+      height: "auto"
+    },
+    // We disable the focus ring for mouse, touch and keyboard users.
+    outline: 0
+  }, ownerState.scroll === "paper" && {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center"
+  }, ownerState.scroll === "body" && {
+    overflowY: "auto",
+    overflowX: "hidden",
+    textAlign: "center",
+    "&:after": {
+      content: '""',
+      display: "inline-block",
+      verticalAlign: "middle",
+      height: "100%",
+      width: "0"
+    }
+  }));
+  const DialogPaper = styled$1(Paper$1, {
+    name: "MuiDialog",
+    slot: "Paper",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.paper, styles2[`scrollPaper${capitalize$2(ownerState.scroll)}`], styles2[`paperWidth${capitalize$2(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    margin: 32,
+    position: "relative",
+    overflowY: "auto",
+    // Fix IE11 issue, to remove at some point.
+    "@media print": {
+      overflowY: "visible",
+      boxShadow: "none"
+    }
+  }, ownerState.scroll === "paper" && {
+    display: "flex",
+    flexDirection: "column",
+    maxHeight: "calc(100% - 64px)"
+  }, ownerState.scroll === "body" && {
+    display: "inline-block",
+    verticalAlign: "middle",
+    textAlign: "left"
+    // 'initial' doesn't work on IE11
+  }, !ownerState.maxWidth && {
+    maxWidth: "calc(100% - 64px)"
+  }, ownerState.maxWidth === "xs" && {
+    maxWidth: theme2.breakpoints.unit === "px" ? Math.max(theme2.breakpoints.values.xs, 444) : `max(${theme2.breakpoints.values.xs}${theme2.breakpoints.unit}, 444px)`,
+    [`&.${dialogClasses$1.paperScrollBody}`]: {
+      [theme2.breakpoints.down(Math.max(theme2.breakpoints.values.xs, 444) + 32 * 2)]: {
+        maxWidth: "calc(100% - 64px)"
+      }
+    }
+  }, ownerState.maxWidth && ownerState.maxWidth !== "xs" && {
+    maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`,
+    [`&.${dialogClasses$1.paperScrollBody}`]: {
+      [theme2.breakpoints.down(theme2.breakpoints.values[ownerState.maxWidth] + 32 * 2)]: {
+        maxWidth: "calc(100% - 64px)"
+      }
+    }
+  }, ownerState.fullWidth && {
+    width: "calc(100% - 64px)"
+  }, ownerState.fullScreen && {
+    margin: 0,
+    width: "100%",
+    maxWidth: "100%",
+    height: "100%",
+    maxHeight: "none",
+    borderRadius: 0,
+    [`&.${dialogClasses$1.paperScrollBody}`]: {
+      margin: 0,
+      maxWidth: "100%"
+    }
+  }));
+  const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialog"
+    });
+    const theme2 = useTheme();
+    const defaultTransitionDuration = {
+      enter: theme2.transitions.duration.enteringScreen,
+      exit: theme2.transitions.duration.leavingScreen
+    };
+    const {
+      "aria-describedby": ariaDescribedby,
+      "aria-labelledby": ariaLabelledbyProp,
+      BackdropComponent,
+      BackdropProps,
+      children,
+      className,
+      disableEscapeKeyDown = false,
+      fullScreen = false,
+      fullWidth = false,
+      maxWidth: maxWidth2 = "sm",
+      onBackdropClick,
+      onClose,
+      open,
+      PaperComponent = Paper$1,
+      PaperProps = {},
+      scroll = "paper",
+      TransitionComponent = Fade$1,
+      transitionDuration = defaultTransitionDuration,
+      TransitionProps
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$U);
+    const ownerState = _extends$1({}, props, {
+      disableEscapeKeyDown,
+      fullScreen,
+      fullWidth,
+      maxWidth: maxWidth2,
+      scroll
+    });
+    const classes = useUtilityClasses$O(ownerState);
+    const backdropClick = reactExports.useRef();
+    const handleMouseDown = (event) => {
+      backdropClick.current = event.target === event.currentTarget;
+    };
+    const handleBackdropClick = (event) => {
+      if (!backdropClick.current) {
+        return;
+      }
+      backdropClick.current = null;
+      if (onBackdropClick) {
+        onBackdropClick(event);
+      }
+      if (onClose) {
+        onClose(event, "backdropClick");
+      }
+    };
+    const ariaLabelledby = useId(ariaLabelledbyProp);
+    const dialogContextValue = reactExports.useMemo(() => {
+      return {
+        titleId: ariaLabelledby
+      };
+    }, [ariaLabelledby]);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogRoot, _extends$1({
+      className: clsx(classes.root, className),
+      closeAfterTransition: true,
+      components: {
+        Backdrop: DialogBackdrop
+      },
+      componentsProps: {
+        backdrop: _extends$1({
+          transitionDuration,
+          as: BackdropComponent
+        }, BackdropProps)
+      },
+      disableEscapeKeyDown,
+      onClose,
+      open,
+      ref,
+      onClick: handleBackdropClick,
+      ownerState
+    }, other, {
+      children: /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
+        appear: true,
+        in: open,
+        timeout: transitionDuration,
+        role: "presentation"
+      }, TransitionProps, {
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContainer, {
+          className: clsx(classes.container),
+          onMouseDown: handleMouseDown,
+          ownerState,
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogPaper, _extends$1({
+            as: PaperComponent,
+            elevation: 24,
+            role: "dialog",
+            "aria-describedby": ariaDescribedby,
+            "aria-labelledby": ariaLabelledby
+          }, PaperProps, {
+            className: clsx(classes.paper, PaperProps.className),
+            ownerState,
+            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$1.Provider, {
+              value: dialogContextValue,
+              children
+            })
+          }))
+        })
+      }))
+    }));
+  });
+  process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The id(s) of the element(s) that describe the dialog.
+     */
+    "aria-describedby": PropTypes.string,
+    /**
+     * The id(s) of the element(s) that label the dialog.
+     */
+    "aria-labelledby": PropTypes.string,
+    /**
+     * A backdrop component. This prop enables custom backdrop rendering.
+     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
+     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
+     * @default styled(Backdrop, {
+     *   name: 'MuiModal',
+     *   slot: 'Backdrop',
+     *   overridesResolver: (props, styles) => {
+     *     return styles.backdrop;
+     *   },
+     * })({
+     *   zIndex: -1,
+     * })
+     */
+    BackdropComponent: PropTypes.elementType,
+    /**
+     * @ignore
+     */
+    BackdropProps: PropTypes.object,
+    /**
+     * Dialog children, usually the included sub-components.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * If `true`, hitting escape will not fire the `onClose` callback.
+     * @default false
+     */
+    disableEscapeKeyDown: PropTypes.bool,
+    /**
+     * If `true`, the dialog is full-screen.
+     * @default false
+     */
+    fullScreen: PropTypes.bool,
+    /**
+     * If `true`, the dialog stretches to `maxWidth`.
+     *
+     * Notice that the dialog width grow is limited by the default margin.
+     * @default false
+     */
+    fullWidth: PropTypes.bool,
+    /**
+     * Determine the max-width of the dialog.
+     * The dialog width grows with the size of the screen.
+     * Set to `false` to disable `maxWidth`.
+     * @default 'sm'
+     */
+    maxWidth: PropTypes.oneOfType([PropTypes.oneOf(["xs", "sm", "md", "lg", "xl", false]), PropTypes.string]),
+    /**
+     * Callback fired when the backdrop is clicked.
+     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
+     */
+    onBackdropClick: PropTypes.func,
+    /**
+     * Callback fired when the component requests to be closed.
+     *
+     * @param {object} event The event source of the callback.
+     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
+     */
+    onClose: PropTypes.func,
+    /**
+     * If `true`, the component is shown.
+     */
+    open: PropTypes.bool.isRequired,
+    /**
+     * The component used to render the body of the dialog.
+     * @default Paper
+     */
+    PaperComponent: PropTypes.elementType,
+    /**
+     * Props applied to the [`Paper`](/material-ui/api/paper/) element.
+     * @default {}
+     */
+    PaperProps: PropTypes.object,
+    /**
+     * Determine the container for scrolling the dialog.
+     * @default 'paper'
+     */
+    scroll: PropTypes.oneOf(["body", "paper"]),
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
+    /**
+     * The component used for the transition.
+     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
+     * @default Fade
+     */
+    TransitionComponent: PropTypes.elementType,
+    /**
+     * The duration for the transition, in milliseconds.
+     * You may specify a single timeout for all transitions, or individually with an object.
+     * @default {
+     *   enter: theme.transitions.duration.enteringScreen,
+     *   exit: theme.transitions.duration.leavingScreen,
+     * }
+     */
+    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
+      appear: PropTypes.number,
+      enter: PropTypes.number,
+      exit: PropTypes.number
+    })]),
+    /**
+     * Props applied to the transition element.
+     * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
+     */
+    TransitionProps: PropTypes.object
+  } : void 0;
+  const Dialog$1 = Dialog;
+  function getDialogTitleUtilityClass(slot) {
+    return generateUtilityClass("MuiDialogTitle", slot);
+  }
+  const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
+  const dialogTitleClasses$1 = dialogTitleClasses;
+  const _excluded$T = ["className", "id"];
+  const useUtilityClasses$N = (ownerState) => {
+    const {
+      classes
+    } = ownerState;
+    const slots = {
+      root: ["root"]
+    };
+    return composeClasses(slots, getDialogTitleUtilityClass, classes);
+  };
+  const DialogTitleRoot = styled$1(Typography$1, {
+    name: "MuiDialogTitle",
+    slot: "Root",
+    overridesResolver: (props, styles2) => styles2.root
+  })({
+    padding: "16px 24px",
+    flex: "0 0 auto"
+  });
+  const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialogTitle"
+    });
+    const {
+      className,
+      id: idProp
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$T);
+    const ownerState = props;
+    const classes = useUtilityClasses$N(ownerState);
+    const {
+      titleId = idProp
+    } = reactExports.useContext(DialogContext$1);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$1({
+      component: "h2",
+      className: clsx(classes.root, className),
+      ownerState,
+      ref,
+      variant: "h6",
+      id: idProp != null ? idProp : titleId
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * @ignore
+     */
+    id: PropTypes.string,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const DialogTitle$1 = DialogTitle;
+  function getDialogContentUtilityClass(slot) {
+    return generateUtilityClass("MuiDialogContent", slot);
+  }
+  generateUtilityClasses("MuiDialogContent", ["root", "dividers"]);
+  const _excluded$S = ["className", "dividers"];
+  const useUtilityClasses$M = (ownerState) => {
+    const {
+      classes,
+      dividers
+    } = ownerState;
+    const slots = {
+      root: ["root", dividers && "dividers"]
+    };
+    return composeClasses(slots, getDialogContentUtilityClass, classes);
+  };
+  const DialogContentRoot = styled$1("div", {
+    name: "MuiDialogContent",
+    slot: "Root",
+    overridesResolver: (props, styles2) => {
+      const {
+        ownerState
+      } = props;
+      return [styles2.root, ownerState.dividers && styles2.dividers];
+    }
+  })(({
+    theme: theme2,
+    ownerState
+  }) => _extends$1({
+    flex: "1 1 auto",
+    // Add iOS momentum scrolling for iOS < 13.0
+    WebkitOverflowScrolling: "touch",
+    overflowY: "auto",
+    padding: "20px 24px"
+  }, ownerState.dividers ? {
+    padding: "16px 24px",
+    borderTop: `1px solid ${(theme2.vars || theme2).palette.divider}`,
+    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`
+  } : {
+    [`.${dialogTitleClasses$1.root} + &`]: {
+      paddingTop: 0
+    }
+  }));
+  const DialogContent = /* @__PURE__ */ reactExports.forwardRef(function DialogContent2(inProps, ref) {
+    const props = useThemeProps({
+      props: inProps,
+      name: "MuiDialogContent"
+    });
+    const {
+      className,
+      dividers = false
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$S);
+    const ownerState = _extends$1({}, props, {
+      dividers
+    });
+    const classes = useUtilityClasses$M(ownerState);
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentRoot, _extends$1({
+      className: clsx(classes.root, className),
+      ownerState,
+      ref
+    }, other));
+  });
+  process.env.NODE_ENV !== "production" ? DialogContent.propTypes = {
+    // ----------------------------- Warning --------------------------------
+    // | These PropTypes are generated from the TypeScript type definitions |
+    // |     To update them edit the d.ts file and run "yarn proptypes"     |
+    // ----------------------------------------------------------------------
+    /**
+     * The content of the component.
+     */
+    children: PropTypes.node,
+    /**
+     * Override or extend the styles applied to the component.
+     */
+    classes: PropTypes.object,
+    /**
+     * @ignore
+     */
+    className: PropTypes.string,
+    /**
+     * Display the top and bottom dividers.
+     * @default false
+     */
+    dividers: PropTypes.bool,
+    /**
+     * The system prop that allows defining system overrides as well as additional CSS styles.
+     */
+    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
+  } : void 0;
+  const DialogContent$1 = DialogContent;
+  function LinkWorkflowDialog({ id }) {
+    const { show, onClose } = useDialog(DIALOG_TYPE.LINK_WORKFLOW);
+    const [workflow_data, setWorkflowData] = reactExports.useState(null);
+    const onDialogClose = () => {
+      onClose();
+      setWorkflowData(null);
+    };
+    const getContent = () => {
+      if (show) {
+        if (workflow_data == null)
+          getLinkedWorkflowMenuQuery(id, setWorkflowData);
+        else
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(LinkWorkflowDialogContents, { data: workflow_data, onDialogClose });
+      } else
+        return null;
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose: onDialogClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Choose A Workflow") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: getContent() })
+    ] });
+  }
+  function LinkWorkflowDialogContents({ data: data2, onDialogClose }) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowsMenu,
+      {
+        type: "linked_workflow_menu",
+        data: data2,
+        actionFunction: onDialogClose
+      }
+    );
+  }
+  const LinkedWorkflowButton = (id) => {
+    const { dispatch } = useDialog();
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { onClick: () => {
+      dispatch(DIALOG_TYPE.LINK_WORKFLOW);
+    }, children: window.gettext("Change") });
+  };
   class EditableComponent extends ComponentWithToggleDrop {
     constructor() {
       super(...arguments);
@@ -48348,27 +51374,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { children: window.gettext("Linked Workflow") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: data2.linked_workflow && data2.linked_workflow_data.title }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "button",
-            {
-              className: "primary-button",
-              disabled: readOnly,
-              id: "linked-workflow-editor",
-              onClick: () => {
-                COURSEFLOW_APP.tinyLoader.startLoad();
-                getLinkedWorkflowMenuQuery(
-                  data2,
-                  (response_data) => {
-                    console.log("linked a workflow");
-                  },
-                  () => {
-                    COURSEFLOW_APP.tinyLoader.endLoad();
-                  }
-                );
-              },
-              children: window.gettext("Change")
-            }
-          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(LinkedWorkflowButton, { id: data2.id }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -48516,7 +51522,10 @@ Please use another name.` : formatMuiErrorMessage(18));
                   read_only
                 }
               ),
-              type === CfObjectType.NODE && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data: data2, readOnly: read_only }),
+              type === CfObjectType.NODE && data2.node_type !== 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LinkWorkflowDialog, { id: data2.id }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(this.LinkedWorkflow, { data: data2, readOnly: read_only })
+              ] }),
               type == CfObjectType.NODE && data2.node_type != 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Other, { data: data2, readOnly: read_only }),
               type == CfObjectType.NODELINK && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Style, { data: data2, readOnly: read_only }),
               type === CfObjectType.WORKFLOW && /* @__PURE__ */ jsxRuntimeExports.jsx(this.Workflow, { data: data2, readOnly: read_only }),
@@ -48631,102 +51640,86 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
     }
   }
-  function removeComment(objectID, objectType, commentPk, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
-      objectID: JSON.stringify(objectID),
-      commentPk: JSON.stringify(commentPk),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function removeComment(objectID, objectType, commentPk, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.remove_comment, {
+      objectID,
+      commentPk,
+      objectType
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function removeAllComments(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function removeAllComments(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
+      objectID,
+      objectType
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function addComment(objectID, objectType, text, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      text: JSON.stringify(text)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function addComment(objectID, objectType, text, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.add_comment, {
+      objectID,
+      objectType,
+      text
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      console.log("getCommentsForObject data");
-      console.log(data2);
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function getCommentsForObjectQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
+      objectID,
+      objectType
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function setUserPermission(user_id, objectID, objectType, permission_type, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      permission_user: JSON.stringify(user_id),
-      permission_type: JSON.stringify(permission_type)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function setUserPermission(user_id, objectID, objectType, permission_type, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.set_permission, {
+      objectID,
+      objectType,
+      permission_user: user_id,
+      permission_type
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.error);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
+  function getUsersForObjectQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
     if (["program", "course", "activity"].indexOf(objectType) >= 0)
       objectType = "workflow";
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+    API_POST(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+      objectID,
+      objectType
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function getUserListQuery(filter, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
-      filter: JSON.stringify(filter)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function getUserListQuery(filter, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.get_user_list, {
+      filter
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
   class CommentBox extends ComponentWithToggleDrop {
@@ -49076,112 +52069,134 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   }
   __publicField(EditableComponentWithComments, "contextType", WorkFlowConfigContext);
-  function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.new_node, {
-      weekPk: JSON.stringify(weekPk),
-      position: JSON.stringify(position2),
-      columnPk: JSON.stringify(column2),
-      columnType: JSON.stringify(column_type)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED) {
-        callBackFunction(data2);
-      } else {
-        window.fail_function(data2.action);
-      }
-    }).fail(function(error) {
-      window.fail_function();
-    });
+  function duplicateBaseItemQuery(itemPk, objectType, projectID, callBackFunction = (_data) => console.log("success")) {
+    console.log("duplicating base item");
+    const sendPostRequest = (url, data2) => {
+      API_POST(url, data2).then((response) => {
+        if (response.action == VERB.POSTED)
+          callBackFunction(response);
+        else
+          window.fail_function(response.action);
+      });
+    };
+    const itemPkString = itemPk;
+    const projectPkString = projectID;
+    if (objectType === OBJECT_TYPE.PROJECT) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_project_ajax, {
+        projectPk: itemPkString
+      });
+    } else if (objectType === OBJECT_TYPE.STRATEGY) {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_strategy_ajax, {
+        workflowPk: itemPkString
+      });
+    } else {
+      sendPostRequest(COURSEFLOW_APP.config.post_paths.duplicate_workflow_ajax, {
+        workflowPk: itemPkString,
+        projectPk: projectPkString
+      });
+    }
   }
-  function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.new_outcome, {
-      workflowPk: JSON.stringify(workflowPk),
-      objectsetPk: JSON.stringify(object_set_id)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function duplicateSelfQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.duplicate_self, {
+      parentID,
+      parentType,
+      objectID,
+      objectType,
+      throughType
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.add_strategy, {
-      workflowPk: JSON.stringify(workflowPk),
-      position: JSON.stringify(position2),
-      objectID: JSON.stringify(strategyPk),
-      objectType: JSON.stringify("workflow")
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED) {
-        callBackFunction(data2);
-      } else {
-        window.fail_function(data2.action);
-      }
-    }).fail(function(error) {
-      window.fail_function();
-    });
-  }
-  function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.new_node_link, {
-      nodePk: JSON.stringify(source_node),
-      objectID: JSON.stringify(target_node),
-      objectType: JSON.stringify("node"),
-      sourcePort: JSON.stringify(source_port),
-      targetPort: JSON.stringify(target_port)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function newNodeQuery(weekPk, position2 = -1, column2 = -1, column_type = -1, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.new_node, {
+      weekPk,
+      position: position2,
+      columnPk: column2,
+      columnType: column_type
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function insertChildQuery(objectID, objectType, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_child, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function newOutcomeQuery(workflowPk, object_set_id, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.new_outcome, {
+      workflowPk,
+      objectsetPk: object_set_id
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.insert_sibling, {
-      parentID: JSON.stringify(parentID),
-      parentType: JSON.stringify(parentType),
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      throughType: JSON.stringify(throughType)
-    }).done(function(data2) {
-      if (data2.action === VERB.POSTED)
-        callBackFunction(data2);
+  function addStrategyQuery(workflowPk, position2 = -1, strategyPk = -1, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.add_strategy, {
+      workflowPk,
+      position: position2,
+      objectID: strategyPk,
+      objectType: "workflow"
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
       else
-        window.fail_function(data2.action);
-    }).fail(function(error) {
-      window.fail_function();
+        window.fail_function(response.action);
     });
   }
-  function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.add_terminology, {
-      projectPk: JSON.stringify(projectPk),
-      term: JSON.stringify(term),
-      title: JSON.stringify(title),
-      translation_plural: JSON.stringify(translation_plural)
-    }).done(function(data2) {
-      console.log("addTerminologyQuery query");
-      console.log(data2);
-      if (data2.action === VERB.POSTED) {
-        callBackFunction(data2);
-      } else {
-        window.fail_function(data2.action);
-      }
-    }).fail(function(error) {
-      window.fail_function();
+  function newNodeLink(source_node, target_node, source_port, target_port, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.new_node_link, {
+      nodePk: source_node,
+      objectID: target_node,
+      objectType: "node",
+      sourcePort: source_port,
+      targetPort: target_port
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
+    });
+  }
+  function insertChildQuery(objectID, objectType, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.insert_child, {
+      objectID,
+      objectType
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
+    });
+  }
+  function insertSiblingQuery(objectID, objectType, parentID, parentType, throughType, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.insert_sibling, {
+      parentID,
+      parentType,
+      objectID,
+      objectType,
+      throughType
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
+    });
+  }
+  function addTerminologyQuery(projectPk, term, title, translation_plural, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.add_terminology, {
+      projectPk,
+      term,
+      title,
+      translation_plural
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
     });
   }
   class EditableComponentWithActions extends EditableComponentWithComments {
@@ -49572,6 +52587,55 @@ Please use another name.` : formatMuiErrorMessage(18));
     mapStateToProps$v,
     null
   )(OutcomeOutcomeUnconnected);
+  function openWorkflowSelectMenu(response, updateFunction) {
+    if (response.action === VERB.POSTED) {
+      renderMessageBox(response, "workflow_select_menu", updateFunction);
+    } else {
+      alert("Failed to find your workflows.");
+    }
+  }
+  function columnChanged(renderer, objectID, columnID) {
+    if (!renderer.dragAction)
+      renderer.dragAction = {};
+    if (!renderer.dragAction["nodeweek"])
+      renderer.dragAction["nodeweek"] = {};
+    renderer.dragAction["nodeweek"] = {
+      ...renderer.dragAction["nodeweek"],
+      objectID,
+      objectType: "node",
+      columnPk: columnID,
+      columnChange: true
+    };
+    $(document).off("nodeweek-dropped");
+    $(document).on("nodeweek-dropped", () => {
+      dragAction(renderer.dragAction["nodeweek"]);
+      renderer.dragAction["nodeweek"] = null;
+      $(document).off("nodeweek-dropped");
+    });
+  }
+  function insertedAt(renderer, objectID, objectType, parentID, parentType, newPosition, throughType) {
+    if (!renderer.dragAction)
+      renderer.dragAction = {};
+    if (!renderer.dragAction[throughType])
+      renderer.dragAction[throughType] = {};
+    renderer.dragAction[throughType] = {
+      ...renderer.dragAction[throughType],
+      objectID,
+      objectType,
+      parentID,
+      parentType,
+      newPosition,
+      throughType,
+      inserted: true
+    };
+    $(document).off(throughType + "-dropped");
+    if (objectID)
+      $(document).on(throughType + "-dropped", () => {
+        dragAction(renderer.dragAction[throughType]);
+        renderer.dragAction[throughType] = null;
+        $(document).off(throughType + "-dropped");
+      });
+  }
   class SimpleOutcomeOutcomeUnconnected extends reactExports.Component {
     constructor(props) {
       super(props);
@@ -66132,7 +69196,6 @@ Please use another name.` : formatMuiErrorMessage(18));
             id: data2.id,
             ref: this.mainDiv,
             onClick: (evt) => {
-              console.log("clicked");
               return () => selection_manager.changeSelection(evt, this);
             },
             children: [
@@ -68404,26 +71467,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
     }
   }
-  const reflow = (node2) => node2.scrollTop;
-  function getTransitionProps(props, options) {
-    var _style$transitionDura, _style$transitionTimi;
-    const {
-      timeout,
-      easing: easing2,
-      style: style2 = {}
-    } = props;
-    return {
-      duration: (_style$transitionDura = style2.transitionDuration) != null ? _style$transitionDura : typeof timeout === "number" ? timeout : timeout[options.mode] || 0,
-      easing: (_style$transitionTimi = style2.transitionTimingFunction) != null ? _style$transitionTimi : typeof easing2 === "object" ? easing2[options.mode] : easing2,
-      delay: style2.transitionDelay
-    };
-  }
   function getCollapseUtilityClass(slot) {
     return generateUtilityClass("MuiCollapse", slot);
   }
   generateUtilityClasses("MuiCollapse", ["root", "horizontal", "vertical", "entered", "hidden", "wrapper", "wrapperInner"]);
-  const _excluded$$ = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
-  const useUtilityClasses$S = (ownerState) => {
+  const _excluded$R = ["addEndListener", "children", "className", "collapsedSize", "component", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "orientation", "style", "timeout", "TransitionComponent"];
+  const useUtilityClasses$L = (ownerState) => {
     const {
       orientation,
       classes
@@ -68515,12 +71564,12 @@ Please use another name.` : formatMuiErrorMessage(18));
       timeout = duration.standard,
       // eslint-disable-next-line react/prop-types
       TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$$);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$R);
     const ownerState = _extends$1({}, props, {
       orientation,
       collapsedSize: collapsedSizeProp
     });
-    const classes = useUtilityClasses$S(ownerState);
+    const classes = useUtilityClasses$L(ownerState);
     const theme2 = useTheme();
     const timer = reactExports.useRef();
     const wrapperRef = reactExports.useRef(null);
@@ -68769,138 +71818,6 @@ Please use another name.` : formatMuiErrorMessage(18));
   } : void 0;
   Collapse$1.muiSupportAuto = true;
   const Collapse$2 = Collapse$1;
-  function getPaperUtilityClass(slot) {
-    return generateUtilityClass("MuiPaper", slot);
-  }
-  generateUtilityClasses("MuiPaper", ["root", "rounded", "outlined", "elevation", "elevation0", "elevation1", "elevation2", "elevation3", "elevation4", "elevation5", "elevation6", "elevation7", "elevation8", "elevation9", "elevation10", "elevation11", "elevation12", "elevation13", "elevation14", "elevation15", "elevation16", "elevation17", "elevation18", "elevation19", "elevation20", "elevation21", "elevation22", "elevation23", "elevation24"]);
-  const _excluded$_ = ["className", "component", "elevation", "square", "variant"];
-  const useUtilityClasses$R = (ownerState) => {
-    const {
-      square,
-      elevation,
-      variant,
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root", variant, !square && "rounded", variant === "elevation" && `elevation${elevation}`]
-    };
-    return composeClasses(slots, getPaperUtilityClass, classes);
-  };
-  const PaperRoot = styled$1("div", {
-    name: "MuiPaper",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, styles2[ownerState.variant], !ownerState.square && styles2.rounded, ownerState.variant === "elevation" && styles2[`elevation${ownerState.elevation}`]];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => {
-    var _theme$vars$overlays;
-    return _extends$1({
-      backgroundColor: (theme2.vars || theme2).palette.background.paper,
-      color: (theme2.vars || theme2).palette.text.primary,
-      transition: theme2.transitions.create("box-shadow")
-    }, !ownerState.square && {
-      borderRadius: theme2.shape.borderRadius
-    }, ownerState.variant === "outlined" && {
-      border: `1px solid ${(theme2.vars || theme2).palette.divider}`
-    }, ownerState.variant === "elevation" && _extends$1({
-      boxShadow: (theme2.vars || theme2).shadows[ownerState.elevation]
-    }, !theme2.vars && theme2.palette.mode === "dark" && {
-      backgroundImage: `linear-gradient(${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))}, ${alpha("#fff", getOverlayAlpha$1(ownerState.elevation))})`
-    }, theme2.vars && {
-      backgroundImage: (_theme$vars$overlays = theme2.vars.overlays) == null ? void 0 : _theme$vars$overlays[ownerState.elevation]
-    }));
-  });
-  const Paper = /* @__PURE__ */ reactExports.forwardRef(function Paper2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiPaper"
-    });
-    const {
-      className,
-      component = "div",
-      elevation = 1,
-      square = false,
-      variant = "elevation"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$_);
-    const ownerState = _extends$1({}, props, {
-      component,
-      elevation,
-      square,
-      variant
-    });
-    const classes = useUtilityClasses$R(ownerState);
-    if (process.env.NODE_ENV !== "production") {
-      const theme2 = useTheme();
-      if (theme2.shadows[elevation] === void 0) {
-        console.error([`MUI: The elevation provided <Paper elevation={${elevation}}> is not available in the theme.`, `Please make sure that \`theme.shadows[${elevation}]\` is defined.`].join("\n"));
-      }
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(PaperRoot, _extends$1({
-      as: component,
-      ownerState,
-      className: clsx(classes.root, className),
-      ref
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? Paper.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * Shadow depth, corresponds to `dp` in the spec.
-     * It accepts values between 0 and 24 inclusive.
-     * @default 1
-     */
-    elevation: chainPropTypes(integerPropType, (props) => {
-      const {
-        elevation,
-        variant
-      } = props;
-      if (elevation > 0 && variant === "outlined") {
-        return new Error(`MUI: Combining \`elevation={${elevation}}\` with \`variant="${variant}"\` has no effect. Either use \`elevation={0}\` or use a different \`variant\`.`);
-      }
-      return null;
-    }),
-    /**
-     * If `true`, rounded corners are disabled.
-     * @default false
-     */
-    square: PropTypes.bool,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * The variant to use.
-     * @default 'elevation'
-     */
-    variant: PropTypes.oneOfType([PropTypes.oneOf(["elevation", "outlined"]), PropTypes.string])
-  } : void 0;
-  const Paper$1 = Paper;
   const AccordionContext = /* @__PURE__ */ reactExports.createContext({});
   if (process.env.NODE_ENV !== "production") {
     AccordionContext.displayName = "AccordionContext";
@@ -68911,8 +71828,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const accordionClasses = generateUtilityClasses("MuiAccordion", ["root", "rounded", "expanded", "disabled", "gutters", "region"]);
   const accordionClasses$1 = accordionClasses;
-  const _excluded$Z = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
-  const useUtilityClasses$Q = (ownerState) => {
+  const _excluded$Q = ["children", "className", "defaultExpanded", "disabled", "disableGutters", "expanded", "onChange", "square", "TransitionComponent", "TransitionProps"];
+  const useUtilityClasses$K = (ownerState) => {
     const {
       classes,
       square,
@@ -69023,7 +71940,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       square = false,
       TransitionComponent = Collapse$2,
       TransitionProps
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Z);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Q);
     const [expanded, setExpandedState] = useControlled({
       controlled: expandedProp,
       default: defaultExpanded,
@@ -69049,7 +71966,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableGutters,
       expanded
     });
-    const classes = useUtilityClasses$Q(ownerState);
+    const classes = useUtilityClasses$K(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionRoot, _extends$1({
       className: clsx(classes.root, className),
       ref,
@@ -69152,8 +72069,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAccordionDetails", slot);
   }
   generateUtilityClasses("MuiAccordionDetails", ["root"]);
-  const _excluded$Y = ["className"];
-  const useUtilityClasses$P = (ownerState) => {
+  const _excluded$P = ["className"];
+  const useUtilityClasses$J = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -69178,9 +72095,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Y);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$P);
     const ownerState = props;
-    const classes = useUtilityClasses$P(ownerState);
+    const classes = useUtilityClasses$J(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AccordionDetailsRoot, _extends$1({
       className: clsx(classes.root, className),
       ref,
@@ -69215,8 +72132,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const accordionSummaryClasses = generateUtilityClasses("MuiAccordionSummary", ["root", "expanded", "focusVisible", "disabled", "gutters", "contentGutters", "content", "expandIconWrapper"]);
   const accordionSummaryClasses$1 = accordionSummaryClasses;
-  const _excluded$X = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
-  const useUtilityClasses$O = (ownerState) => {
+  const _excluded$O = ["children", "className", "expandIcon", "focusVisibleClassName", "onClick"];
+  const useUtilityClasses$I = (ownerState) => {
     const {
       classes,
       expanded,
@@ -69309,7 +72226,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       expandIcon,
       focusVisibleClassName,
       onClick
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$X);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$O);
     const {
       disabled = false,
       disableGutters,
@@ -69329,7 +72246,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disabled,
       disableGutters
     });
-    const classes = useUtilityClasses$O(ownerState);
+    const classes = useUtilityClasses$I(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(AccordionSummaryRoot, _extends$1({
       focusRipple: false,
       disableRipple: true,
@@ -69413,8 +72330,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   const ClearIcon = createSvgIcon(/* @__PURE__ */ jsxRuntimeExports.jsx("path", {
     d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
   }), "Close");
-  const _excluded$W = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
-  const useUtilityClasses$N = (ownerState) => {
+  const _excluded$N = ["action", "children", "className", "closeText", "color", "components", "componentsProps", "icon", "iconMapping", "onClose", "role", "severity", "slotProps", "slots", "variant"];
+  const useUtilityClasses$H = (ownerState) => {
     const {
       variant,
       color: color2,
@@ -69542,13 +72459,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps = {},
       slots = {},
       variant = "standard"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$W);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$N);
     const ownerState = _extends$1({}, props, {
       color: color2,
       severity,
       variant
     });
-    const classes = useUtilityClasses$N(ownerState);
+    const classes = useUtilityClasses$H(ownerState);
     const AlertCloseButton = (_ref = (_slots$closeButton = slots.closeButton) != null ? _slots$closeButton : components.CloseButton) != null ? _ref : IconButton$1;
     const AlertCloseIcon = (_ref2 = (_slots$closeIcon = slots.closeIcon) != null ? _slots$closeIcon : components.CloseIcon) != null ? _ref2 : ClearIcon;
     const closeButtonProps = (_slotProps$closeButto = slotProps.closeButton) != null ? _slotProps$closeButto : componentsProps.closeButton;
@@ -69720,8 +72637,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAlertTitle", slot);
   }
   generateUtilityClasses("MuiAlertTitle", ["root"]);
-  const _excluded$V = ["className"];
-  const useUtilityClasses$M = (ownerState) => {
+  const _excluded$M = ["className"];
+  const useUtilityClasses$G = (ownerState) => {
     const {
       classes
     } = ownerState;
@@ -69749,9 +72666,9 @@ Please use another name.` : formatMuiErrorMessage(18));
     });
     const {
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$V);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$M);
     const ownerState = props;
-    const classes = useUtilityClasses$M(ownerState);
+    const classes = useUtilityClasses$G(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AlertTitleRoot, _extends$1({
       gutterBottom: true,
       component: "div",
@@ -69787,8 +72704,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAppBar", slot);
   }
   generateUtilityClasses("MuiAppBar", ["root", "positionFixed", "positionAbsolute", "positionSticky", "positionStatic", "positionRelative", "colorDefault", "colorPrimary", "colorSecondary", "colorInherit", "colorTransparent", "colorError", "colorInfo", "colorSuccess", "colorWarning"]);
-  const _excluded$U = ["className", "color", "enableColorOnDark", "position"];
-  const useUtilityClasses$L = (ownerState) => {
+  const _excluded$L = ["className", "color", "enableColorOnDark", "position"];
+  const useUtilityClasses$F = (ownerState) => {
     const {
       color: color2,
       position: position2,
@@ -69889,13 +72806,13 @@ Please use another name.` : formatMuiErrorMessage(18));
       color: color2 = "primary",
       enableColorOnDark = false,
       position: position2 = "fixed"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$U);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$L);
     const ownerState = _extends$1({}, props, {
       color: color2,
       position: position2,
       enableColorOnDark
     });
-    const classes = useUtilityClasses$L(ownerState);
+    const classes = useUtilityClasses$F(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(AppBarRoot, _extends$1({
       square: true,
       component: "header",
@@ -69947,1265 +72864,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
   } : void 0;
   const AppBar$1 = AppBar;
-  function isHostComponent(element) {
-    return typeof element === "string";
-  }
-  function appendOwnerState(elementType, otherProps, ownerState) {
-    if (elementType === void 0 || isHostComponent(elementType)) {
-      return otherProps;
-    }
-    return _extends$1({}, otherProps, {
-      ownerState: _extends$1({}, otherProps.ownerState, ownerState)
-    });
-  }
-  function extractEventHandlers(object, excludeKeys = []) {
-    if (object === void 0) {
-      return {};
-    }
-    const result = {};
-    Object.keys(object).filter((prop) => prop.match(/^on[A-Z]/) && typeof object[prop] === "function" && !excludeKeys.includes(prop)).forEach((prop) => {
-      result[prop] = object[prop];
-    });
-    return result;
-  }
-  function resolveComponentProps(componentProps, ownerState, slotState) {
-    if (typeof componentProps === "function") {
-      return componentProps(ownerState, slotState);
-    }
-    return componentProps;
-  }
-  function omitEventHandlers(object) {
-    if (object === void 0) {
-      return {};
-    }
-    const result = {};
-    Object.keys(object).filter((prop) => !(prop.match(/^on[A-Z]/) && typeof object[prop] === "function")).forEach((prop) => {
-      result[prop] = object[prop];
-    });
-    return result;
-  }
-  function mergeSlotProps(parameters) {
-    const {
-      getSlotProps,
-      additionalProps,
-      externalSlotProps,
-      externalForwardedProps,
-      className
-    } = parameters;
-    if (!getSlotProps) {
-      const joinedClasses2 = clsx(externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className, className, additionalProps == null ? void 0 : additionalProps.className);
-      const mergedStyle2 = _extends$1({}, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-      const props2 = _extends$1({}, additionalProps, externalForwardedProps, externalSlotProps);
-      if (joinedClasses2.length > 0) {
-        props2.className = joinedClasses2;
-      }
-      if (Object.keys(mergedStyle2).length > 0) {
-        props2.style = mergedStyle2;
-      }
-      return {
-        props: props2,
-        internalRef: void 0
-      };
-    }
-    const eventHandlers = extractEventHandlers(_extends$1({}, externalForwardedProps, externalSlotProps));
-    const componentsPropsWithoutEventHandlers = omitEventHandlers(externalSlotProps);
-    const otherPropsWithoutEventHandlers = omitEventHandlers(externalForwardedProps);
-    const internalSlotProps = getSlotProps(eventHandlers);
-    const joinedClasses = clsx(internalSlotProps == null ? void 0 : internalSlotProps.className, additionalProps == null ? void 0 : additionalProps.className, className, externalForwardedProps == null ? void 0 : externalForwardedProps.className, externalSlotProps == null ? void 0 : externalSlotProps.className);
-    const mergedStyle = _extends$1({}, internalSlotProps == null ? void 0 : internalSlotProps.style, additionalProps == null ? void 0 : additionalProps.style, externalForwardedProps == null ? void 0 : externalForwardedProps.style, externalSlotProps == null ? void 0 : externalSlotProps.style);
-    const props = _extends$1({}, internalSlotProps, additionalProps, otherPropsWithoutEventHandlers, componentsPropsWithoutEventHandlers);
-    if (joinedClasses.length > 0) {
-      props.className = joinedClasses;
-    }
-    if (Object.keys(mergedStyle).length > 0) {
-      props.style = mergedStyle;
-    }
-    return {
-      props,
-      internalRef: internalSlotProps.ref
-    };
-  }
-  const _excluded$T = ["elementType", "externalSlotProps", "ownerState", "skipResolvingSlotProps"];
-  function useSlotProps(parameters) {
-    var _parameters$additiona;
-    const {
-      elementType,
-      externalSlotProps,
-      ownerState,
-      skipResolvingSlotProps = false
-    } = parameters, rest = _objectWithoutPropertiesLoose$1(parameters, _excluded$T);
-    const resolvedComponentsProps = skipResolvingSlotProps ? {} : resolveComponentProps(externalSlotProps, ownerState);
-    const {
-      props: mergedProps,
-      internalRef
-    } = mergeSlotProps(_extends$1({}, rest, {
-      externalSlotProps: resolvedComponentsProps
-    }));
-    const ref = useForkRef(internalRef, resolvedComponentsProps == null ? void 0 : resolvedComponentsProps.ref, (_parameters$additiona = parameters.additionalProps) == null ? void 0 : _parameters$additiona.ref);
-    const props = appendOwnerState(elementType, _extends$1({}, mergedProps, {
-      ref
-    }), ownerState);
-    return props;
-  }
-  function useBadge(parameters) {
-    const {
-      badgeContent: badgeContentProp,
-      invisible: invisibleProp = false,
-      max: maxProp = 99,
-      showZero = false
-    } = parameters;
-    const prevProps = usePreviousProps$1({
-      badgeContent: badgeContentProp,
-      max: maxProp
-    });
-    let invisible = invisibleProp;
-    if (invisibleProp === false && badgeContentProp === 0 && !showZero) {
-      invisible = true;
-    }
-    const {
-      badgeContent,
-      max: max2 = maxProp
-    } = invisible ? prevProps : parameters;
-    const displayValue = badgeContent && Number(badgeContent) > max2 ? `${max2}+` : badgeContent;
-    return {
-      badgeContent,
-      invisible,
-      max: max2,
-      displayValue
-    };
-  }
-  function mapEventPropToEvent(eventProp) {
-    return eventProp.substring(2).toLowerCase();
-  }
-  function clickedRootScrollbar(event, doc) {
-    return doc.documentElement.clientWidth < event.clientX || doc.documentElement.clientHeight < event.clientY;
-  }
-  function ClickAwayListener(props) {
-    const {
-      children,
-      disableReactTree = false,
-      mouseEvent = "onClick",
-      onClickAway,
-      touchEvent = "onTouchEnd"
-    } = props;
-    const movedRef = reactExports.useRef(false);
-    const nodeRef = reactExports.useRef(null);
-    const activatedRef = reactExports.useRef(false);
-    const syntheticEventRef = reactExports.useRef(false);
-    reactExports.useEffect(() => {
-      setTimeout(() => {
-        activatedRef.current = true;
-      }, 0);
-      return () => {
-        activatedRef.current = false;
-      };
-    }, []);
-    const handleRef = useForkRef(
-      // @ts-expect-error TODO upstream fix
-      children.ref,
-      nodeRef
-    );
-    const handleClickAway = useEventCallback((event) => {
-      const insideReactTree = syntheticEventRef.current;
-      syntheticEventRef.current = false;
-      const doc = ownerDocument(nodeRef.current);
-      if (!activatedRef.current || !nodeRef.current || "clientX" in event && clickedRootScrollbar(event, doc)) {
-        return;
-      }
-      if (movedRef.current) {
-        movedRef.current = false;
-        return;
-      }
-      let insideDOM;
-      if (event.composedPath) {
-        insideDOM = event.composedPath().indexOf(nodeRef.current) > -1;
-      } else {
-        insideDOM = !doc.documentElement.contains(
-          // @ts-expect-error returns `false` as intended when not dispatched from a Node
-          event.target
-        ) || nodeRef.current.contains(
-          // @ts-expect-error returns `false` as intended when not dispatched from a Node
-          event.target
-        );
-      }
-      if (!insideDOM && (disableReactTree || !insideReactTree)) {
-        onClickAway(event);
-      }
-    });
-    const createHandleSynthetic = (handlerName) => (event) => {
-      syntheticEventRef.current = true;
-      const childrenPropsHandler = children.props[handlerName];
-      if (childrenPropsHandler) {
-        childrenPropsHandler(event);
-      }
-    };
-    const childrenProps = {
-      ref: handleRef
-    };
-    if (touchEvent !== false) {
-      childrenProps[touchEvent] = createHandleSynthetic(touchEvent);
-    }
-    reactExports.useEffect(() => {
-      if (touchEvent !== false) {
-        const mappedTouchEvent = mapEventPropToEvent(touchEvent);
-        const doc = ownerDocument(nodeRef.current);
-        const handleTouchMove = () => {
-          movedRef.current = true;
-        };
-        doc.addEventListener(mappedTouchEvent, handleClickAway);
-        doc.addEventListener("touchmove", handleTouchMove);
-        return () => {
-          doc.removeEventListener(mappedTouchEvent, handleClickAway);
-          doc.removeEventListener("touchmove", handleTouchMove);
-        };
-      }
-      return void 0;
-    }, [handleClickAway, touchEvent]);
-    if (mouseEvent !== false) {
-      childrenProps[mouseEvent] = createHandleSynthetic(mouseEvent);
-    }
-    reactExports.useEffect(() => {
-      if (mouseEvent !== false) {
-        const mappedMouseEvent = mapEventPropToEvent(mouseEvent);
-        const doc = ownerDocument(nodeRef.current);
-        doc.addEventListener(mappedMouseEvent, handleClickAway);
-        return () => {
-          doc.removeEventListener(mappedMouseEvent, handleClickAway);
-        };
-      }
-      return void 0;
-    }, [handleClickAway, mouseEvent]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
-      children: /* @__PURE__ */ reactExports.cloneElement(children, childrenProps)
-    });
-  }
-  process.env.NODE_ENV !== "production" ? ClickAwayListener.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * The wrapped element.
-     */
-    children: elementAcceptingRef$1.isRequired,
-    /**
-     * If `true`, the React tree is ignored and only the DOM tree is considered.
-     * This prop changes how portaled elements are handled.
-     * @default false
-     */
-    disableReactTree: PropTypes.bool,
-    /**
-     * The mouse event to listen to. You can disable the listener by providing `false`.
-     * @default 'onClick'
-     */
-    mouseEvent: PropTypes.oneOf(["onClick", "onMouseDown", "onMouseUp", "onPointerDown", "onPointerUp", false]),
-    /**
-     * Callback fired when a "click away" event is detected.
-     */
-    onClickAway: PropTypes.func.isRequired,
-    /**
-     * The touch event to listen to. You can disable the listener by providing `false`.
-     * @default 'onTouchEnd'
-     */
-    touchEvent: PropTypes.oneOf(["onTouchEnd", "onTouchStart", false])
-  } : void 0;
-  if (process.env.NODE_ENV !== "production") {
-    ClickAwayListener["propTypes"] = exactProp(ClickAwayListener.propTypes);
-  }
-  const candidatesSelector = ["input", "select", "textarea", "a[href]", "button", "[tabindex]", "audio[controls]", "video[controls]", '[contenteditable]:not([contenteditable="false"])'].join(",");
-  function getTabIndex(node2) {
-    const tabindexAttr = parseInt(node2.getAttribute("tabindex") || "", 10);
-    if (!Number.isNaN(tabindexAttr)) {
-      return tabindexAttr;
-    }
-    if (node2.contentEditable === "true" || (node2.nodeName === "AUDIO" || node2.nodeName === "VIDEO" || node2.nodeName === "DETAILS") && node2.getAttribute("tabindex") === null) {
-      return 0;
-    }
-    return node2.tabIndex;
-  }
-  function isNonTabbableRadio(node2) {
-    if (node2.tagName !== "INPUT" || node2.type !== "radio") {
-      return false;
-    }
-    if (!node2.name) {
-      return false;
-    }
-    const getRadio = (selector) => node2.ownerDocument.querySelector(`input[type="radio"]${selector}`);
-    let roving = getRadio(`[name="${node2.name}"]:checked`);
-    if (!roving) {
-      roving = getRadio(`[name="${node2.name}"]`);
-    }
-    return roving !== node2;
-  }
-  function isNodeMatchingSelectorFocusable(node2) {
-    if (node2.disabled || node2.tagName === "INPUT" && node2.type === "hidden" || isNonTabbableRadio(node2)) {
-      return false;
-    }
-    return true;
-  }
-  function defaultGetTabbable(root) {
-    const regularTabNodes = [];
-    const orderedTabNodes = [];
-    Array.from(root.querySelectorAll(candidatesSelector)).forEach((node2, i2) => {
-      const nodeTabIndex = getTabIndex(node2);
-      if (nodeTabIndex === -1 || !isNodeMatchingSelectorFocusable(node2)) {
-        return;
-      }
-      if (nodeTabIndex === 0) {
-        regularTabNodes.push(node2);
-      } else {
-        orderedTabNodes.push({
-          documentOrder: i2,
-          tabIndex: nodeTabIndex,
-          node: node2
-        });
-      }
-    });
-    return orderedTabNodes.sort((a, b) => a.tabIndex === b.tabIndex ? a.documentOrder - b.documentOrder : a.tabIndex - b.tabIndex).map((a) => a.node).concat(regularTabNodes);
-  }
-  function defaultIsEnabled() {
-    return true;
-  }
-  function FocusTrap(props) {
-    const {
-      children,
-      disableAutoFocus = false,
-      disableEnforceFocus = false,
-      disableRestoreFocus = false,
-      getTabbable = defaultGetTabbable,
-      isEnabled = defaultIsEnabled,
-      open
-    } = props;
-    const ignoreNextEnforceFocus = reactExports.useRef(false);
-    const sentinelStart = reactExports.useRef(null);
-    const sentinelEnd = reactExports.useRef(null);
-    const nodeToRestore = reactExports.useRef(null);
-    const reactFocusEventTarget = reactExports.useRef(null);
-    const activated = reactExports.useRef(false);
-    const rootRef = reactExports.useRef(null);
-    const handleRef = useForkRef(children.ref, rootRef);
-    const lastKeydown = reactExports.useRef(null);
-    reactExports.useEffect(() => {
-      if (!open || !rootRef.current) {
-        return;
-      }
-      activated.current = !disableAutoFocus;
-    }, [disableAutoFocus, open]);
-    reactExports.useEffect(() => {
-      if (!open || !rootRef.current) {
-        return;
-      }
-      const doc = ownerDocument(rootRef.current);
-      if (!rootRef.current.contains(doc.activeElement)) {
-        if (!rootRef.current.hasAttribute("tabIndex")) {
-          if (process.env.NODE_ENV !== "production") {
-            console.error(["MUI: The modal content node does not accept focus.", 'For the benefit of assistive technologies, the tabIndex of the node is being set to "-1".'].join("\n"));
-          }
-          rootRef.current.setAttribute("tabIndex", "-1");
-        }
-        if (activated.current) {
-          rootRef.current.focus();
-        }
-      }
-      return () => {
-        if (!disableRestoreFocus) {
-          if (nodeToRestore.current && nodeToRestore.current.focus) {
-            ignoreNextEnforceFocus.current = true;
-            nodeToRestore.current.focus();
-          }
-          nodeToRestore.current = null;
-        }
-      };
-    }, [open]);
-    reactExports.useEffect(() => {
-      if (!open || !rootRef.current) {
-        return;
-      }
-      const doc = ownerDocument(rootRef.current);
-      const loopFocus = (nativeEvent) => {
-        lastKeydown.current = nativeEvent;
-        if (disableEnforceFocus || !isEnabled() || nativeEvent.key !== "Tab") {
-          return;
-        }
-        if (doc.activeElement === rootRef.current && nativeEvent.shiftKey) {
-          ignoreNextEnforceFocus.current = true;
-          if (sentinelEnd.current) {
-            sentinelEnd.current.focus();
-          }
-        }
-      };
-      const contain = () => {
-        const rootElement = rootRef.current;
-        if (rootElement === null) {
-          return;
-        }
-        if (!doc.hasFocus() || !isEnabled() || ignoreNextEnforceFocus.current) {
-          ignoreNextEnforceFocus.current = false;
-          return;
-        }
-        if (rootElement.contains(doc.activeElement)) {
-          return;
-        }
-        if (disableEnforceFocus && doc.activeElement !== sentinelStart.current && doc.activeElement !== sentinelEnd.current) {
-          return;
-        }
-        if (doc.activeElement !== reactFocusEventTarget.current) {
-          reactFocusEventTarget.current = null;
-        } else if (reactFocusEventTarget.current !== null) {
-          return;
-        }
-        if (!activated.current) {
-          return;
-        }
-        let tabbable = [];
-        if (doc.activeElement === sentinelStart.current || doc.activeElement === sentinelEnd.current) {
-          tabbable = getTabbable(rootRef.current);
-        }
-        if (tabbable.length > 0) {
-          var _lastKeydown$current, _lastKeydown$current2;
-          const isShiftTab = Boolean(((_lastKeydown$current = lastKeydown.current) == null ? void 0 : _lastKeydown$current.shiftKey) && ((_lastKeydown$current2 = lastKeydown.current) == null ? void 0 : _lastKeydown$current2.key) === "Tab");
-          const focusNext = tabbable[0];
-          const focusPrevious = tabbable[tabbable.length - 1];
-          if (typeof focusNext !== "string" && typeof focusPrevious !== "string") {
-            if (isShiftTab) {
-              focusPrevious.focus();
-            } else {
-              focusNext.focus();
-            }
-          }
-        } else {
-          rootElement.focus();
-        }
-      };
-      doc.addEventListener("focusin", contain);
-      doc.addEventListener("keydown", loopFocus, true);
-      const interval = setInterval(() => {
-        if (doc.activeElement && doc.activeElement.tagName === "BODY") {
-          contain();
-        }
-      }, 50);
-      return () => {
-        clearInterval(interval);
-        doc.removeEventListener("focusin", contain);
-        doc.removeEventListener("keydown", loopFocus, true);
-      };
-    }, [disableAutoFocus, disableEnforceFocus, disableRestoreFocus, isEnabled, open, getTabbable]);
-    const onFocus = (event) => {
-      if (nodeToRestore.current === null) {
-        nodeToRestore.current = event.relatedTarget;
-      }
-      activated.current = true;
-      reactFocusEventTarget.current = event.target;
-      const childrenPropsHandler = children.props.onFocus;
-      if (childrenPropsHandler) {
-        childrenPropsHandler(event);
-      }
-    };
-    const handleFocusSentinel = (event) => {
-      if (nodeToRestore.current === null) {
-        nodeToRestore.current = event.relatedTarget;
-      }
-      activated.current = true;
-    };
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
-      children: [/* @__PURE__ */ jsxRuntimeExports.jsx("div", {
-        tabIndex: open ? 0 : -1,
-        onFocus: handleFocusSentinel,
-        ref: sentinelStart,
-        "data-testid": "sentinelStart"
-      }), /* @__PURE__ */ reactExports.cloneElement(children, {
-        ref: handleRef,
-        onFocus
-      }), /* @__PURE__ */ jsxRuntimeExports.jsx("div", {
-        tabIndex: open ? 0 : -1,
-        onFocus: handleFocusSentinel,
-        ref: sentinelEnd,
-        "data-testid": "sentinelEnd"
-      })]
-    });
-  }
-  process.env.NODE_ENV !== "production" ? FocusTrap.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * A single child content element.
-     */
-    children: elementAcceptingRef$1,
-    /**
-     * If `true`, the focus trap will not automatically shift focus to itself when it opens, and
-     * replace it to the last focused element when it closes.
-     * This also works correctly with any focus trap children that have the `disableAutoFocus` prop.
-     *
-     * Generally this should never be set to `true` as it makes the focus trap less
-     * accessible to assistive technologies, like screen readers.
-     * @default false
-     */
-    disableAutoFocus: PropTypes.bool,
-    /**
-     * If `true`, the focus trap will not prevent focus from leaving the focus trap while open.
-     *
-     * Generally this should never be set to `true` as it makes the focus trap less
-     * accessible to assistive technologies, like screen readers.
-     * @default false
-     */
-    disableEnforceFocus: PropTypes.bool,
-    /**
-     * If `true`, the focus trap will not restore focus to previously focused element once
-     * focus trap is hidden or unmounted.
-     * @default false
-     */
-    disableRestoreFocus: PropTypes.bool,
-    /**
-     * Returns an array of ordered tabbable nodes (i.e. in tab order) within the root.
-     * For instance, you can provide the "tabbable" npm dependency.
-     * @param {HTMLElement} root
-     */
-    getTabbable: PropTypes.func,
-    /**
-     * This prop extends the `open` prop.
-     * It allows to toggle the open state without having to wait for a rerender when changing the `open` prop.
-     * This prop should be memoized.
-     * It can be used to support multiple focus trap mounted at the same time.
-     * @default function defaultIsEnabled(): boolean {
-     *   return true;
-     * }
-     */
-    isEnabled: PropTypes.func,
-    /**
-     * If `true`, focus is locked.
-     */
-    open: PropTypes.bool.isRequired
-  } : void 0;
-  if (process.env.NODE_ENV !== "production") {
-    FocusTrap["propTypes"] = exactProp(FocusTrap.propTypes);
-  }
-  function getContainer$1(container) {
-    return typeof container === "function" ? container() : container;
-  }
-  const Portal = /* @__PURE__ */ reactExports.forwardRef(function Portal2(props, forwardedRef) {
-    const {
-      children,
-      container,
-      disablePortal = false
-    } = props;
-    const [mountNode, setMountNode] = reactExports.useState(null);
-    const handleRef = useForkRef(/* @__PURE__ */ reactExports.isValidElement(children) ? children.ref : null, forwardedRef);
-    useEnhancedEffect$1(() => {
-      if (!disablePortal) {
-        setMountNode(getContainer$1(container) || document.body);
-      }
-    }, [container, disablePortal]);
-    useEnhancedEffect$1(() => {
-      if (mountNode && !disablePortal) {
-        setRef(forwardedRef, mountNode);
-        return () => {
-          setRef(forwardedRef, null);
-        };
-      }
-      return void 0;
-    }, [forwardedRef, mountNode, disablePortal]);
-    if (disablePortal) {
-      if (/* @__PURE__ */ reactExports.isValidElement(children)) {
-        const newProps = {
-          ref: handleRef
-        };
-        return /* @__PURE__ */ reactExports.cloneElement(children, newProps);
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
-        children
-      });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.Fragment, {
-      children: mountNode ? /* @__PURE__ */ reactDomExports.createPortal(children, mountNode) : mountNode
-    });
-  });
-  process.env.NODE_ENV !== "production" ? Portal.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * The children to render into the `container`.
-     */
-    children: PropTypes.node,
-    /**
-     * An HTML element or function that returns one.
-     * The `container` will have the portal children appended to it.
-     *
-     * By default, it uses the body of the top-level document object,
-     * so it's simply `document.body` most of the time.
-     */
-    container: PropTypes.oneOfType([HTMLElementType, PropTypes.func]),
-    /**
-     * The `children` will be under the DOM hierarchy of the parent component.
-     * @default false
-     */
-    disablePortal: PropTypes.bool
-  } : void 0;
-  if (process.env.NODE_ENV !== "production") {
-    Portal["propTypes"] = exactProp(Portal.propTypes);
-  }
-  function isOverflowing(container) {
-    const doc = ownerDocument(container);
-    if (doc.body === container) {
-      return ownerWindow(container).innerWidth > doc.documentElement.clientWidth;
-    }
-    return container.scrollHeight > container.clientHeight;
-  }
-  function ariaHidden(element, show) {
-    if (show) {
-      element.setAttribute("aria-hidden", "true");
-    } else {
-      element.removeAttribute("aria-hidden");
-    }
-  }
-  function getPaddingRight(element) {
-    return parseInt(ownerWindow(element).getComputedStyle(element).paddingRight, 10) || 0;
-  }
-  function isAriaHiddenForbiddenOnElement(element) {
-    const forbiddenTagNames = ["TEMPLATE", "SCRIPT", "STYLE", "LINK", "MAP", "META", "NOSCRIPT", "PICTURE", "COL", "COLGROUP", "PARAM", "SLOT", "SOURCE", "TRACK"];
-    const isForbiddenTagName = forbiddenTagNames.indexOf(element.tagName) !== -1;
-    const isInputHidden = element.tagName === "INPUT" && element.getAttribute("type") === "hidden";
-    return isForbiddenTagName || isInputHidden;
-  }
-  function ariaHiddenSiblings(container, mountElement, currentElement, elementsToExclude, show) {
-    const blacklist = [mountElement, currentElement, ...elementsToExclude];
-    [].forEach.call(container.children, (element) => {
-      const isNotExcludedElement = blacklist.indexOf(element) === -1;
-      const isNotForbiddenElement = !isAriaHiddenForbiddenOnElement(element);
-      if (isNotExcludedElement && isNotForbiddenElement) {
-        ariaHidden(element, show);
-      }
-    });
-  }
-  function findIndexOf(items, callback) {
-    let idx = -1;
-    items.some((item, index) => {
-      if (callback(item)) {
-        idx = index;
-        return true;
-      }
-      return false;
-    });
-    return idx;
-  }
-  function handleContainer(containerInfo, props) {
-    const restoreStyle = [];
-    const container = containerInfo.container;
-    if (!props.disableScrollLock) {
-      if (isOverflowing(container)) {
-        const scrollbarSize = getScrollbarSize(ownerDocument(container));
-        restoreStyle.push({
-          value: container.style.paddingRight,
-          property: "padding-right",
-          el: container
-        });
-        container.style.paddingRight = `${getPaddingRight(container) + scrollbarSize}px`;
-        const fixedElements2 = ownerDocument(container).querySelectorAll(".mui-fixed");
-        [].forEach.call(fixedElements2, (element) => {
-          restoreStyle.push({
-            value: element.style.paddingRight,
-            property: "padding-right",
-            el: element
-          });
-          element.style.paddingRight = `${getPaddingRight(element) + scrollbarSize}px`;
-        });
-      }
-      let scrollContainer;
-      if (container.parentNode instanceof DocumentFragment) {
-        scrollContainer = ownerDocument(container).body;
-      } else {
-        const parent = container.parentElement;
-        const containerWindow = ownerWindow(container);
-        scrollContainer = (parent == null ? void 0 : parent.nodeName) === "HTML" && containerWindow.getComputedStyle(parent).overflowY === "scroll" ? parent : container;
-      }
-      restoreStyle.push({
-        value: scrollContainer.style.overflow,
-        property: "overflow",
-        el: scrollContainer
-      }, {
-        value: scrollContainer.style.overflowX,
-        property: "overflow-x",
-        el: scrollContainer
-      }, {
-        value: scrollContainer.style.overflowY,
-        property: "overflow-y",
-        el: scrollContainer
-      });
-      scrollContainer.style.overflow = "hidden";
-    }
-    const restore = () => {
-      restoreStyle.forEach(({
-        value,
-        el,
-        property
-      }) => {
-        if (value) {
-          el.style.setProperty(property, value);
-        } else {
-          el.style.removeProperty(property);
-        }
-      });
-    };
-    return restore;
-  }
-  function getHiddenSiblings(container) {
-    const hiddenSiblings = [];
-    [].forEach.call(container.children, (element) => {
-      if (element.getAttribute("aria-hidden") === "true") {
-        hiddenSiblings.push(element);
-      }
-    });
-    return hiddenSiblings;
-  }
-  class ModalManager {
-    constructor() {
-      this.containers = void 0;
-      this.modals = void 0;
-      this.modals = [];
-      this.containers = [];
-    }
-    add(modal, container) {
-      let modalIndex = this.modals.indexOf(modal);
-      if (modalIndex !== -1) {
-        return modalIndex;
-      }
-      modalIndex = this.modals.length;
-      this.modals.push(modal);
-      if (modal.modalRef) {
-        ariaHidden(modal.modalRef, false);
-      }
-      const hiddenSiblings = getHiddenSiblings(container);
-      ariaHiddenSiblings(container, modal.mount, modal.modalRef, hiddenSiblings, true);
-      const containerIndex = findIndexOf(this.containers, (item) => item.container === container);
-      if (containerIndex !== -1) {
-        this.containers[containerIndex].modals.push(modal);
-        return modalIndex;
-      }
-      this.containers.push({
-        modals: [modal],
-        container,
-        restore: null,
-        hiddenSiblings
-      });
-      return modalIndex;
-    }
-    mount(modal, props) {
-      const containerIndex = findIndexOf(this.containers, (item) => item.modals.indexOf(modal) !== -1);
-      const containerInfo = this.containers[containerIndex];
-      if (!containerInfo.restore) {
-        containerInfo.restore = handleContainer(containerInfo, props);
-      }
-    }
-    remove(modal, ariaHiddenState = true) {
-      const modalIndex = this.modals.indexOf(modal);
-      if (modalIndex === -1) {
-        return modalIndex;
-      }
-      const containerIndex = findIndexOf(this.containers, (item) => item.modals.indexOf(modal) !== -1);
-      const containerInfo = this.containers[containerIndex];
-      containerInfo.modals.splice(containerInfo.modals.indexOf(modal), 1);
-      this.modals.splice(modalIndex, 1);
-      if (containerInfo.modals.length === 0) {
-        if (containerInfo.restore) {
-          containerInfo.restore();
-        }
-        if (modal.modalRef) {
-          ariaHidden(modal.modalRef, ariaHiddenState);
-        }
-        ariaHiddenSiblings(containerInfo.container, modal.mount, modal.modalRef, containerInfo.hiddenSiblings, false);
-        this.containers.splice(containerIndex, 1);
-      } else {
-        const nextTop = containerInfo.modals[containerInfo.modals.length - 1];
-        if (nextTop.modalRef) {
-          ariaHidden(nextTop.modalRef, false);
-        }
-      }
-      return modalIndex;
-    }
-    isTopModal(modal) {
-      return this.modals.length > 0 && this.modals[this.modals.length - 1] === modal;
-    }
-  }
-  function getContainer(container) {
-    return typeof container === "function" ? container() : container;
-  }
-  function getHasTransition(children) {
-    return children ? children.props.hasOwnProperty("in") : false;
-  }
-  const defaultManager = new ModalManager();
-  function useModal(parameters) {
-    const {
-      container,
-      disableEscapeKeyDown = false,
-      disableScrollLock = false,
-      // @ts-ignore internal logic - Base UI supports the manager as a prop too
-      manager = defaultManager,
-      closeAfterTransition = false,
-      onTransitionEnter,
-      onTransitionExited,
-      children,
-      onClose,
-      open,
-      rootRef
-    } = parameters;
-    const modal = reactExports.useRef({});
-    const mountNodeRef = reactExports.useRef(null);
-    const modalRef = reactExports.useRef(null);
-    const handleRef = useForkRef(modalRef, rootRef);
-    const [exited, setExited] = reactExports.useState(!open);
-    const hasTransition = getHasTransition(children);
-    let ariaHiddenProp = true;
-    if (parameters["aria-hidden"] === "false" || parameters["aria-hidden"] === false) {
-      ariaHiddenProp = false;
-    }
-    const getDoc = () => ownerDocument(mountNodeRef.current);
-    const getModal = () => {
-      modal.current.modalRef = modalRef.current;
-      modal.current.mount = mountNodeRef.current;
-      return modal.current;
-    };
-    const handleMounted = () => {
-      manager.mount(getModal(), {
-        disableScrollLock
-      });
-      if (modalRef.current) {
-        modalRef.current.scrollTop = 0;
-      }
-    };
-    const handleOpen = useEventCallback(() => {
-      const resolvedContainer = getContainer(container) || getDoc().body;
-      manager.add(getModal(), resolvedContainer);
-      if (modalRef.current) {
-        handleMounted();
-      }
-    });
-    const isTopModal = reactExports.useCallback(() => manager.isTopModal(getModal()), [manager]);
-    const handlePortalRef = useEventCallback((node2) => {
-      mountNodeRef.current = node2;
-      if (!node2) {
-        return;
-      }
-      if (open && isTopModal()) {
-        handleMounted();
-      } else if (modalRef.current) {
-        ariaHidden(modalRef.current, ariaHiddenProp);
-      }
-    });
-    const handleClose = reactExports.useCallback(() => {
-      manager.remove(getModal(), ariaHiddenProp);
-    }, [ariaHiddenProp, manager]);
-    reactExports.useEffect(() => {
-      return () => {
-        handleClose();
-      };
-    }, [handleClose]);
-    reactExports.useEffect(() => {
-      if (open) {
-        handleOpen();
-      } else if (!hasTransition || !closeAfterTransition) {
-        handleClose();
-      }
-    }, [open, handleClose, hasTransition, closeAfterTransition, handleOpen]);
-    const createHandleKeyDown = (otherHandlers) => (event) => {
-      var _otherHandlers$onKeyD;
-      (_otherHandlers$onKeyD = otherHandlers.onKeyDown) == null || _otherHandlers$onKeyD.call(otherHandlers, event);
-      if (event.key !== "Escape" || !isTopModal()) {
-        return;
-      }
-      if (!disableEscapeKeyDown) {
-        event.stopPropagation();
-        if (onClose) {
-          onClose(event, "escapeKeyDown");
-        }
-      }
-    };
-    const createHandleBackdropClick = (otherHandlers) => (event) => {
-      var _otherHandlers$onClic;
-      (_otherHandlers$onClic = otherHandlers.onClick) == null || _otherHandlers$onClic.call(otherHandlers, event);
-      if (event.target !== event.currentTarget) {
-        return;
-      }
-      if (onClose) {
-        onClose(event, "backdropClick");
-      }
-    };
-    const getRootProps = (otherHandlers = {}) => {
-      const propsEventHandlers = extractEventHandlers(parameters);
-      delete propsEventHandlers.onTransitionEnter;
-      delete propsEventHandlers.onTransitionExited;
-      const externalEventHandlers = _extends$1({}, propsEventHandlers, otherHandlers);
-      return _extends$1({
-        role: "presentation"
-      }, externalEventHandlers, {
-        onKeyDown: createHandleKeyDown(externalEventHandlers),
-        ref: handleRef
-      });
-    };
-    const getBackdropProps = (otherHandlers = {}) => {
-      const externalEventHandlers = otherHandlers;
-      return _extends$1({
-        "aria-hidden": true
-      }, externalEventHandlers, {
-        onClick: createHandleBackdropClick(externalEventHandlers),
-        open
-      });
-    };
-    const getTransitionProps2 = () => {
-      const handleEnter = () => {
-        setExited(false);
-        if (onTransitionEnter) {
-          onTransitionEnter();
-        }
-      };
-      const handleExited = () => {
-        setExited(true);
-        if (onTransitionExited) {
-          onTransitionExited();
-        }
-        if (closeAfterTransition) {
-          handleClose();
-        }
-      };
-      return {
-        onEnter: createChainedFunction(handleEnter, children == null ? void 0 : children.props.onEnter),
-        onExited: createChainedFunction(handleExited, children == null ? void 0 : children.props.onExited)
-      };
-    };
-    return {
-      getRootProps,
-      getBackdropProps,
-      getTransitionProps: getTransitionProps2,
-      rootRef: handleRef,
-      portalRef: handlePortalRef,
-      isTopModal,
-      exited,
-      hasTransition
-    };
-  }
-  function useSnackbar(parameters = {}) {
-    const {
-      autoHideDuration = null,
-      disableWindowBlurListener = false,
-      onClose,
-      open,
-      resumeHideDuration
-    } = parameters;
-    const timerAutoHide = reactExports.useRef();
-    reactExports.useEffect(() => {
-      if (!open) {
-        return void 0;
-      }
-      function handleKeyDown2(nativeEvent) {
-        if (!nativeEvent.defaultPrevented) {
-          if (nativeEvent.key === "Escape" || nativeEvent.key === "Esc") {
-            onClose == null || onClose(nativeEvent, "escapeKeyDown");
-          }
-        }
-      }
-      document.addEventListener("keydown", handleKeyDown2);
-      return () => {
-        document.removeEventListener("keydown", handleKeyDown2);
-      };
-    }, [open, onClose]);
-    const handleClose = useEventCallback((event, reason) => {
-      onClose == null || onClose(event, reason);
-    });
-    const setAutoHideTimer = useEventCallback((autoHideDurationParam) => {
-      if (!onClose || autoHideDurationParam == null) {
-        return;
-      }
-      clearTimeout(timerAutoHide.current);
-      timerAutoHide.current = setTimeout(() => {
-        handleClose(null, "timeout");
-      }, autoHideDurationParam);
-    });
-    reactExports.useEffect(() => {
-      if (open) {
-        setAutoHideTimer(autoHideDuration);
-      }
-      return () => {
-        clearTimeout(timerAutoHide.current);
-      };
-    }, [open, autoHideDuration, setAutoHideTimer]);
-    const handleClickAway = (event) => {
-      onClose == null || onClose(event, "clickaway");
-    };
-    const handlePause = () => {
-      clearTimeout(timerAutoHide.current);
-    };
-    const handleResume = reactExports.useCallback(() => {
-      if (autoHideDuration != null) {
-        setAutoHideTimer(resumeHideDuration != null ? resumeHideDuration : autoHideDuration * 0.5);
-      }
-    }, [autoHideDuration, resumeHideDuration, setAutoHideTimer]);
-    const createHandleBlur = (otherHandlers) => (event) => {
-      const onBlurCallback = otherHandlers.onBlur;
-      onBlurCallback == null || onBlurCallback(event);
-      handleResume();
-    };
-    const createHandleFocus = (otherHandlers) => (event) => {
-      const onFocusCallback = otherHandlers.onFocus;
-      onFocusCallback == null || onFocusCallback(event);
-      handlePause();
-    };
-    const createMouseEnter = (otherHandlers) => (event) => {
-      const onMouseEnterCallback = otherHandlers.onMouseEnter;
-      onMouseEnterCallback == null || onMouseEnterCallback(event);
-      handlePause();
-    };
-    const createMouseLeave = (otherHandlers) => (event) => {
-      const onMouseLeaveCallback = otherHandlers.onMouseLeave;
-      onMouseLeaveCallback == null || onMouseLeaveCallback(event);
-      handleResume();
-    };
-    reactExports.useEffect(() => {
-      if (!disableWindowBlurListener && open) {
-        window.addEventListener("focus", handleResume);
-        window.addEventListener("blur", handlePause);
-        return () => {
-          window.removeEventListener("focus", handleResume);
-          window.removeEventListener("blur", handlePause);
-        };
-      }
-      return void 0;
-    }, [disableWindowBlurListener, handleResume, open]);
-    const getRootProps = (externalProps = {}) => {
-      const externalEventHandlers = _extends$1({}, extractEventHandlers(parameters), extractEventHandlers(externalProps));
-      return _extends$1({
-        // ClickAwayListener adds an `onClick` prop which results in the alert not being announced.
-        // See https://github.com/mui/material-ui/issues/29080
-        role: "presentation"
-      }, externalProps, externalEventHandlers, {
-        onBlur: createHandleBlur(externalEventHandlers),
-        onFocus: createHandleFocus(externalEventHandlers),
-        onMouseEnter: createMouseEnter(externalEventHandlers),
-        onMouseLeave: createMouseLeave(externalEventHandlers)
-      });
-    };
-    return {
-      getRootProps,
-      onClickAway: handleClickAway
-    };
-  }
-  const _excluded$S = ["onChange", "maxRows", "minRows", "style", "value"];
-  function getStyleValue(value) {
-    return parseInt(value, 10) || 0;
-  }
-  const styles$2 = {
-    shadow: {
-      // Visibility needed to hide the extra text area on iPads
-      visibility: "hidden",
-      // Remove from the content flow
-      position: "absolute",
-      // Ignore the scrollbar width
-      overflow: "hidden",
-      height: 0,
-      top: 0,
-      left: 0,
-      // Create a new layer, increase the isolation of the computed values
-      transform: "translateZ(0)"
-    }
-  };
-  function isEmpty$1(obj) {
-    return obj === void 0 || obj === null || Object.keys(obj).length === 0 || obj.outerHeightStyle === 0 && !obj.overflow;
-  }
-  const TextareaAutosize = /* @__PURE__ */ reactExports.forwardRef(function TextareaAutosize2(props, forwardedRef) {
-    const {
-      onChange,
-      maxRows,
-      minRows = 1,
-      style: style2,
-      value
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$S);
-    const {
-      current: isControlled
-    } = reactExports.useRef(value != null);
-    const inputRef = reactExports.useRef(null);
-    const handleRef = useForkRef(forwardedRef, inputRef);
-    const shadowRef = reactExports.useRef(null);
-    const renders = reactExports.useRef(0);
-    const [state, setState] = reactExports.useState({
-      outerHeightStyle: 0
-    });
-    const getUpdatedState = reactExports.useCallback(() => {
-      const input = inputRef.current;
-      const containerWindow = ownerWindow(input);
-      const computedStyle = containerWindow.getComputedStyle(input);
-      if (computedStyle.width === "0px") {
-        return {
-          outerHeightStyle: 0
-        };
-      }
-      const inputShallow = shadowRef.current;
-      inputShallow.style.width = computedStyle.width;
-      inputShallow.value = input.value || props.placeholder || "x";
-      if (inputShallow.value.slice(-1) === "\n") {
-        inputShallow.value += " ";
-      }
-      const boxSizing2 = computedStyle.boxSizing;
-      const padding2 = getStyleValue(computedStyle.paddingBottom) + getStyleValue(computedStyle.paddingTop);
-      const border2 = getStyleValue(computedStyle.borderBottomWidth) + getStyleValue(computedStyle.borderTopWidth);
-      const innerHeight = inputShallow.scrollHeight;
-      inputShallow.value = "x";
-      const singleRowHeight = inputShallow.scrollHeight;
-      let outerHeight = innerHeight;
-      if (minRows) {
-        outerHeight = Math.max(Number(minRows) * singleRowHeight, outerHeight);
-      }
-      if (maxRows) {
-        outerHeight = Math.min(Number(maxRows) * singleRowHeight, outerHeight);
-      }
-      outerHeight = Math.max(outerHeight, singleRowHeight);
-      const outerHeightStyle = outerHeight + (boxSizing2 === "border-box" ? padding2 + border2 : 0);
-      const overflow = Math.abs(outerHeight - innerHeight) <= 1;
-      return {
-        outerHeightStyle,
-        overflow
-      };
-    }, [maxRows, minRows, props.placeholder]);
-    const updateState = (prevState, newState) => {
-      const {
-        outerHeightStyle,
-        overflow
-      } = newState;
-      if (renders.current < 20 && (outerHeightStyle > 0 && Math.abs((prevState.outerHeightStyle || 0) - outerHeightStyle) > 1 || prevState.overflow !== overflow)) {
-        renders.current += 1;
-        return {
-          overflow,
-          outerHeightStyle
-        };
-      }
-      if (process.env.NODE_ENV !== "production") {
-        if (renders.current === 20) {
-          console.error(["MUI: Too many re-renders. The layout is unstable.", "TextareaAutosize limits the number of renders to prevent an infinite loop."].join("\n"));
-        }
-      }
-      return prevState;
-    };
-    const syncHeight = reactExports.useCallback(() => {
-      const newState = getUpdatedState();
-      if (isEmpty$1(newState)) {
-        return;
-      }
-      setState((prevState) => updateState(prevState, newState));
-    }, [getUpdatedState]);
-    useEnhancedEffect$1(() => {
-      const syncHeightWithFlushSync = () => {
-        const newState = getUpdatedState();
-        if (isEmpty$1(newState)) {
-          return;
-        }
-        reactDomExports.flushSync(() => {
-          setState((prevState) => updateState(prevState, newState));
-        });
-      };
-      const handleResize = () => {
-        renders.current = 0;
-        syncHeightWithFlushSync();
-      };
-      let rAF;
-      const rAFHandleResize = () => {
-        cancelAnimationFrame(rAF);
-        rAF = requestAnimationFrame(() => {
-          handleResize();
-        });
-      };
-      const debounceHandleResize = debounce(handleResize);
-      const input = inputRef.current;
-      const containerWindow = ownerWindow(input);
-      containerWindow.addEventListener("resize", debounceHandleResize);
-      let resizeObserver;
-      if (typeof ResizeObserver !== "undefined") {
-        resizeObserver = new ResizeObserver(process.env.NODE_ENV === "test" ? rAFHandleResize : handleResize);
-        resizeObserver.observe(input);
-      }
-      return () => {
-        debounceHandleResize.clear();
-        cancelAnimationFrame(rAF);
-        containerWindow.removeEventListener("resize", debounceHandleResize);
-        if (resizeObserver) {
-          resizeObserver.disconnect();
-        }
-      };
-    }, [getUpdatedState]);
-    useEnhancedEffect$1(() => {
-      syncHeight();
-    });
-    reactExports.useEffect(() => {
-      renders.current = 0;
-    }, [value]);
-    const handleChange = (event) => {
-      renders.current = 0;
-      if (!isControlled) {
-        syncHeight();
-      }
-      if (onChange) {
-        onChange(event);
-      }
-    };
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(reactExports.Fragment, {
-      children: [/* @__PURE__ */ jsxRuntimeExports.jsx("textarea", _extends$1({
-        value,
-        onChange: handleChange,
-        ref: handleRef,
-        rows: minRows,
-        style: _extends$1({
-          height: state.outerHeightStyle,
-          // Need a large enough difference to allow scrolling.
-          // This prevents infinite rendering loop.
-          overflow: state.overflow ? "hidden" : void 0
-        }, style2)
-      }, other)), /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", {
-        "aria-hidden": true,
-        className: props.className,
-        readOnly: true,
-        ref: shadowRef,
-        tabIndex: -1,
-        style: _extends$1({}, styles$2.shadow, style2, {
-          paddingTop: 0,
-          paddingBottom: 0
-        })
-      })]
-    });
-  });
-  process.env.NODE_ENV !== "production" ? TextareaAutosize.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit TypeScript types and run "yarn proptypes"  |
-    // ----------------------------------------------------------------------
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * Maximum number of rows to display.
-     */
-    maxRows: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    /**
-     * Minimum number of rows to display.
-     * @default 1
-     */
-    minRows: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    /**
-     * @ignore
-     */
-    onChange: PropTypes.func,
-    /**
-     * @ignore
-     */
-    placeholder: PropTypes.string,
-    /**
-     * @ignore
-     */
-    style: PropTypes.object,
-    /**
-     * @ignore
-     */
-    value: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.string), PropTypes.number, PropTypes.string])
-  } : void 0;
   function formControlState({
     props,
     states,
@@ -71259,7 +72917,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const inputBaseClasses = generateUtilityClasses("MuiInputBase", ["root", "formControl", "focused", "disabled", "adornedStart", "adornedEnd", "error", "sizeSmall", "multiline", "colorSecondary", "fullWidth", "hiddenLabel", "readOnly", "input", "inputSizeSmall", "inputMultiline", "inputTypeSearch", "inputAdornedStart", "inputAdornedEnd", "inputHiddenLabel"]);
   const inputBaseClasses$1 = inputBaseClasses;
-  const _excluded$R = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
+  const _excluded$K = ["aria-describedby", "autoComplete", "autoFocus", "className", "color", "components", "componentsProps", "defaultValue", "disabled", "disableInjectingGlobalStyles", "endAdornment", "error", "fullWidth", "id", "inputComponent", "inputProps", "inputRef", "margin", "maxRows", "minRows", "multiline", "name", "onBlur", "onChange", "onClick", "onFocus", "onKeyDown", "onKeyUp", "placeholder", "readOnly", "renderSuffix", "rows", "size", "slotProps", "slots", "startAdornment", "type", "value"];
   const rootOverridesResolver = (props, styles2) => {
     const {
       ownerState
@@ -71272,7 +72930,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     } = props;
     return [styles2.input, ownerState.size === "small" && styles2.inputSizeSmall, ownerState.multiline && styles2.inputMultiline, ownerState.type === "search" && styles2.inputTypeSearch, ownerState.startAdornment && styles2.inputAdornedStart, ownerState.endAdornment && styles2.inputAdornedEnd, ownerState.hiddenLabel && styles2.inputHiddenLabel];
   };
-  const useUtilityClasses$K = (ownerState) => {
+  const useUtilityClasses$E = (ownerState) => {
     const {
       classes,
       color: color2,
@@ -71483,7 +73141,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startAdornment,
       type = "text",
       value: valueProp
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$R);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$K);
     const value = inputPropsProp.value != null ? inputPropsProp.value : valueProp;
     const {
       current: isControlled
@@ -71644,7 +73302,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       startAdornment,
       type
     });
-    const classes = useUtilityClasses$K(ownerState);
+    const classes = useUtilityClasses$E(ownerState);
     const Root = slots.root || components.Root || InputBaseRoot;
     const rootProps = slotProps.root || componentsProps.root || {};
     const Input2 = slots.input || components.Input || InputBaseComponent;
@@ -71950,8 +73608,8 @@ Please use another name.` : formatMuiErrorMessage(18));
     return generateUtilityClass("MuiAvatar", slot);
   }
   generateUtilityClasses("MuiAvatar", ["root", "colorDefault", "circular", "rounded", "square", "img", "fallback"]);
-  const _excluded$Q = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
-  const useUtilityClasses$J = (ownerState) => {
+  const _excluded$J = ["alt", "children", "className", "component", "imgProps", "sizes", "src", "srcSet", "variant"];
+  const useUtilityClasses$D = (ownerState) => {
     const {
       classes,
       variant,
@@ -72077,7 +73735,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       src,
       srcSet,
       variant = "circular"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$Q);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$J);
     let children = null;
     const loaded = useLoaded(_extends$1({}, imgProps, {
       src,
@@ -72090,7 +73748,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       component,
       variant
     });
-    const classes = useUtilityClasses$J(ownerState);
+    const classes = useUtilityClasses$D(ownerState);
     if (hasImgNotFailing) {
       children = /* @__PURE__ */ jsxRuntimeExports.jsx(AvatarImg, _extends$1({
         alt,
@@ -72176,366 +73834,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: PropTypes.oneOfType([PropTypes.oneOf(["circular", "rounded", "square"]), PropTypes.string])
   } : void 0;
   const Avatar$1 = Avatar;
-  const _excluded$P = ["addEndListener", "appear", "children", "easing", "in", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "style", "timeout", "TransitionComponent"];
-  const styles$1 = {
-    entering: {
-      opacity: 1
-    },
-    entered: {
-      opacity: 1
-    }
-  };
-  const Fade = /* @__PURE__ */ reactExports.forwardRef(function Fade2(props, ref) {
-    const theme2 = useTheme();
-    const defaultTimeout = {
-      enter: theme2.transitions.duration.enteringScreen,
-      exit: theme2.transitions.duration.leavingScreen
-    };
-    const {
-      addEndListener,
-      appear = true,
-      children,
-      easing: easing2,
-      in: inProp,
-      onEnter,
-      onEntered,
-      onEntering,
-      onExit,
-      onExited,
-      onExiting,
-      style: style2,
-      timeout = defaultTimeout,
-      // eslint-disable-next-line react/prop-types
-      TransitionComponent = Transition$1
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$P);
-    const nodeRef = reactExports.useRef(null);
-    const handleRef = useForkRef(nodeRef, children.ref, ref);
-    const normalizedTransitionCallback = (callback) => (maybeIsAppearing) => {
-      if (callback) {
-        const node2 = nodeRef.current;
-        if (maybeIsAppearing === void 0) {
-          callback(node2);
-        } else {
-          callback(node2, maybeIsAppearing);
-        }
-      }
-    };
-    const handleEntering = normalizedTransitionCallback(onEntering);
-    const handleEnter = normalizedTransitionCallback((node2, isAppearing) => {
-      reflow(node2);
-      const transitionProps = getTransitionProps({
-        style: style2,
-        timeout,
-        easing: easing2
-      }, {
-        mode: "enter"
-      });
-      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
-      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
-      if (onEnter) {
-        onEnter(node2, isAppearing);
-      }
-    });
-    const handleEntered = normalizedTransitionCallback(onEntered);
-    const handleExiting = normalizedTransitionCallback(onExiting);
-    const handleExit = normalizedTransitionCallback((node2) => {
-      const transitionProps = getTransitionProps({
-        style: style2,
-        timeout,
-        easing: easing2
-      }, {
-        mode: "exit"
-      });
-      node2.style.webkitTransition = theme2.transitions.create("opacity", transitionProps);
-      node2.style.transition = theme2.transitions.create("opacity", transitionProps);
-      if (onExit) {
-        onExit(node2);
-      }
-    });
-    const handleExited = normalizedTransitionCallback(onExited);
-    const handleAddEndListener = (next2) => {
-      if (addEndListener) {
-        addEndListener(nodeRef.current, next2);
-      }
-    };
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
-      appear,
-      in: inProp,
-      nodeRef,
-      onEnter: handleEnter,
-      onEntered: handleEntered,
-      onEntering: handleEntering,
-      onExit: handleExit,
-      onExited: handleExited,
-      onExiting: handleExiting,
-      addEndListener: handleAddEndListener,
-      timeout
-    }, other, {
-      children: (state, childProps) => {
-        return /* @__PURE__ */ reactExports.cloneElement(children, _extends$1({
-          style: _extends$1({
-            opacity: 0,
-            visibility: state === "exited" && !inProp ? "hidden" : void 0
-          }, styles$1[state], style2, children.props.style),
-          ref: handleRef
-        }, childProps));
-      }
-    }));
-  });
-  process.env.NODE_ENV !== "production" ? Fade.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * Add a custom transition end trigger. Called with the transitioning DOM
-     * node and a done callback. Allows for more fine grained transition end
-     * logic. Note: Timeouts are still used as a fallback if provided.
-     */
-    addEndListener: PropTypes.func,
-    /**
-     * Perform the enter transition when it first mounts if `in` is also `true`.
-     * Set this to `false` to disable this behavior.
-     * @default true
-     */
-    appear: PropTypes.bool,
-    /**
-     * A single child content element.
-     */
-    children: elementAcceptingRef$1.isRequired,
-    /**
-     * The transition timing function.
-     * You may specify a single easing or a object containing enter and exit values.
-     */
-    easing: PropTypes.oneOfType([PropTypes.shape({
-      enter: PropTypes.string,
-      exit: PropTypes.string
-    }), PropTypes.string]),
-    /**
-     * If `true`, the component will transition in.
-     */
-    in: PropTypes.bool,
-    /**
-     * @ignore
-     */
-    onEnter: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onEntered: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onEntering: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onExit: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onExited: PropTypes.func,
-    /**
-     * @ignore
-     */
-    onExiting: PropTypes.func,
-    /**
-     * @ignore
-     */
-    style: PropTypes.object,
-    /**
-     * The duration for the transition, in milliseconds.
-     * You may specify a single timeout for all transitions, or individually with an object.
-     * @default {
-     *   enter: theme.transitions.duration.enteringScreen,
-     *   exit: theme.transitions.duration.leavingScreen,
-     * }
-     */
-    timeout: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
-      appear: PropTypes.number,
-      enter: PropTypes.number,
-      exit: PropTypes.number
-    })])
-  } : void 0;
-  const Fade$1 = Fade;
-  function getBackdropUtilityClass(slot) {
-    return generateUtilityClass("MuiBackdrop", slot);
-  }
-  generateUtilityClasses("MuiBackdrop", ["root", "invisible"]);
-  const _excluded$O = ["children", "className", "component", "components", "componentsProps", "invisible", "open", "slotProps", "slots", "TransitionComponent", "transitionDuration"];
-  const useUtilityClasses$I = (ownerState) => {
-    const {
-      classes,
-      invisible
-    } = ownerState;
-    const slots = {
-      root: ["root", invisible && "invisible"]
-    };
-    return composeClasses(slots, getBackdropUtilityClass, classes);
-  };
-  const BackdropRoot = styled$1("div", {
-    name: "MuiBackdrop",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, ownerState.invisible && styles2.invisible];
-    }
-  })(({
-    ownerState
-  }) => _extends$1({
-    position: "fixed",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    right: 0,
-    bottom: 0,
-    top: 0,
-    left: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    WebkitTapHighlightColor: "transparent"
-  }, ownerState.invisible && {
-    backgroundColor: "transparent"
-  }));
-  const Backdrop = /* @__PURE__ */ reactExports.forwardRef(function Backdrop2(inProps, ref) {
-    var _slotProps$root, _ref, _slots$root;
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiBackdrop"
-    });
-    const {
-      children,
-      className,
-      component = "div",
-      components = {},
-      componentsProps = {},
-      invisible = false,
-      open,
-      slotProps = {},
-      slots = {},
-      TransitionComponent = Fade$1,
-      transitionDuration
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$O);
-    const ownerState = _extends$1({}, props, {
-      component,
-      invisible
-    });
-    const classes = useUtilityClasses$I(ownerState);
-    const rootSlotProps = (_slotProps$root = slotProps.root) != null ? _slotProps$root : componentsProps.root;
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
-      in: open,
-      timeout: transitionDuration
-    }, other, {
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(BackdropRoot, _extends$1({
-        "aria-hidden": true
-      }, rootSlotProps, {
-        as: (_ref = (_slots$root = slots.root) != null ? _slots$root : components.Root) != null ? _ref : component,
-        className: clsx(classes.root, className, rootSlotProps == null ? void 0 : rootSlotProps.className),
-        ownerState: _extends$1({}, ownerState, rootSlotProps == null ? void 0 : rootSlotProps.ownerState),
-        classes,
-        ref,
-        children
-      }))
-    }));
-  });
-  process.env.NODE_ENV !== "production" ? Backdrop.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * The components used for each slot inside.
-     *
-     * This prop is an alias for the `slots` prop.
-     * It's recommended to use the `slots` prop instead.
-     *
-     * @default {}
-     */
-    components: PropTypes.shape({
-      Root: PropTypes.elementType
-    }),
-    /**
-     * The extra props for the slot components.
-     * You can override the existing props or add new ones.
-     *
-     * This prop is an alias for the `slotProps` prop.
-     * It's recommended to use the `slotProps` prop instead, as `componentsProps` will be deprecated in the future.
-     *
-     * @default {}
-     */
-    componentsProps: PropTypes.shape({
-      root: PropTypes.object
-    }),
-    /**
-     * If `true`, the backdrop is invisible.
-     * It can be used when rendering a popover or a custom select component.
-     * @default false
-     */
-    invisible: PropTypes.bool,
-    /**
-     * If `true`, the component is shown.
-     */
-    open: PropTypes.bool.isRequired,
-    /**
-     * The extra props for the slot components.
-     * You can override the existing props or add new ones.
-     *
-     * This prop is an alias for the `componentsProps` prop, which will be deprecated in the future.
-     *
-     * @default {}
-     */
-    slotProps: PropTypes.shape({
-      root: PropTypes.object
-    }),
-    /**
-     * The components used for each slot inside.
-     *
-     * This prop is an alias for the `components` prop, which will be deprecated in the future.
-     *
-     * @default {}
-     */
-    slots: PropTypes.shape({
-      root: PropTypes.elementType
-    }),
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * The component used for the transition.
-     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
-     * @default Fade
-     */
-    TransitionComponent: PropTypes.elementType,
-    /**
-     * The duration for the transition, in milliseconds.
-     * You may specify a single timeout for all transitions, or individually with an object.
-     */
-    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
-      appear: PropTypes.number,
-      enter: PropTypes.number,
-      exit: PropTypes.number
-    })])
-  } : void 0;
-  const Backdrop$1 = Backdrop;
   function getBadgeUtilityClass(slot) {
     return generateUtilityClass("MuiBadge", slot);
   }
@@ -72568,10 +73866,10 @@ Please use another name.` : formatMuiErrorMessage(18));
     "anchorOriginBottomRightRectangular"
   ]);
   const badgeClasses$1 = badgeClasses;
-  const _excluded$N = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
+  const _excluded$I = ["anchorOrigin", "className", "classes", "component", "components", "componentsProps", "children", "overlap", "color", "invisible", "max", "badgeContent", "slots", "slotProps", "showZero", "variant"];
   const RADIUS_STANDARD = 10;
   const RADIUS_DOT = 4;
-  const useUtilityClasses$H = (ownerState) => {
+  const useUtilityClasses$C = (ownerState) => {
     const {
       color: color2,
       anchorOrigin,
@@ -72735,7 +74033,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       slotProps,
       showZero = false,
       variant: variantProp = "standard"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$N);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$I);
     const {
       badgeContent,
       invisible: invisibleFromHook,
@@ -72773,7 +74071,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       overlap,
       variant
     });
-    const classes = useUtilityClasses$H(ownerState);
+    const classes = useUtilityClasses$C(ownerState);
     const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : BadgeRoot;
     const BadgeSlot = (_ref2 = (_slots$badge = slots == null ? void 0 : slots.badge) != null ? _slots$badge : components.Badge) != null ? _ref2 : BadgeBadge;
     const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
@@ -72918,386 +74216,12 @@ Please use another name.` : formatMuiErrorMessage(18));
     variant: PropTypes.oneOfType([PropTypes.oneOf(["dot", "standard"]), PropTypes.string])
   } : void 0;
   const Badge$1 = Badge;
-  function getButtonUtilityClass(slot) {
-    return generateUtilityClass("MuiButton", slot);
-  }
-  const buttonClasses = generateUtilityClasses("MuiButton", ["root", "text", "textInherit", "textPrimary", "textSecondary", "textSuccess", "textError", "textInfo", "textWarning", "outlined", "outlinedInherit", "outlinedPrimary", "outlinedSecondary", "outlinedSuccess", "outlinedError", "outlinedInfo", "outlinedWarning", "contained", "containedInherit", "containedPrimary", "containedSecondary", "containedSuccess", "containedError", "containedInfo", "containedWarning", "disableElevation", "focusVisible", "disabled", "colorInherit", "textSizeSmall", "textSizeMedium", "textSizeLarge", "outlinedSizeSmall", "outlinedSizeMedium", "outlinedSizeLarge", "containedSizeSmall", "containedSizeMedium", "containedSizeLarge", "sizeMedium", "sizeSmall", "sizeLarge", "fullWidth", "startIcon", "endIcon", "iconSizeSmall", "iconSizeMedium", "iconSizeLarge"]);
-  const buttonClasses$1 = buttonClasses;
-  const ButtonGroupContext = /* @__PURE__ */ reactExports.createContext({});
-  if (process.env.NODE_ENV !== "production") {
-    ButtonGroupContext.displayName = "ButtonGroupContext";
-  }
-  const ButtonGroupContext$1 = ButtonGroupContext;
-  const ButtonGroupButtonContext = /* @__PURE__ */ reactExports.createContext(void 0);
-  if (process.env.NODE_ENV !== "production") {
-    ButtonGroupButtonContext.displayName = "ButtonGroupButtonContext";
-  }
-  const ButtonGroupButtonContext$1 = ButtonGroupButtonContext;
-  const _excluded$M = ["children", "color", "component", "className", "disabled", "disableElevation", "disableFocusRipple", "endIcon", "focusVisibleClassName", "fullWidth", "size", "startIcon", "type", "variant"];
-  const useUtilityClasses$G = (ownerState) => {
-    const {
-      color: color2,
-      disableElevation,
-      fullWidth,
-      size: size2,
-      variant,
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root", variant, `${variant}${capitalize$2(color2)}`, `size${capitalize$2(size2)}`, `${variant}Size${capitalize$2(size2)}`, color2 === "inherit" && "colorInherit", disableElevation && "disableElevation", fullWidth && "fullWidth"],
-      label: ["label"],
-      startIcon: ["startIcon", `iconSize${capitalize$2(size2)}`],
-      endIcon: ["endIcon", `iconSize${capitalize$2(size2)}`]
-    };
-    const composedClasses = composeClasses(slots, getButtonUtilityClass, classes);
-    return _extends$1({}, classes, composedClasses);
-  };
-  const commonIconStyles = (ownerState) => _extends$1({}, ownerState.size === "small" && {
-    "& > *:nth-of-type(1)": {
-      fontSize: 18
-    }
-  }, ownerState.size === "medium" && {
-    "& > *:nth-of-type(1)": {
-      fontSize: 20
-    }
-  }, ownerState.size === "large" && {
-    "& > *:nth-of-type(1)": {
-      fontSize: 22
-    }
-  });
-  const ButtonRoot = styled$1(ButtonBase$1, {
-    shouldForwardProp: (prop) => rootShouldForwardProp(prop) || prop === "classes",
-    name: "MuiButton",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, styles2[ownerState.variant], styles2[`${ownerState.variant}${capitalize$2(ownerState.color)}`], styles2[`size${capitalize$2(ownerState.size)}`], styles2[`${ownerState.variant}Size${capitalize$2(ownerState.size)}`], ownerState.color === "inherit" && styles2.colorInherit, ownerState.disableElevation && styles2.disableElevation, ownerState.fullWidth && styles2.fullWidth];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => {
-    var _theme$palette$getCon, _theme$palette;
-    const inheritContainedBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey[300] : theme2.palette.grey[800];
-    const inheritContainedHoverBackgroundColor = theme2.palette.mode === "light" ? theme2.palette.grey.A100 : theme2.palette.grey[700];
-    return _extends$1({}, theme2.typography.button, {
-      minWidth: 64,
-      padding: "6px 16px",
-      borderRadius: (theme2.vars || theme2).shape.borderRadius,
-      transition: theme2.transitions.create(["background-color", "box-shadow", "border-color", "color"], {
-        duration: theme2.transitions.duration.short
-      }),
-      "&:hover": _extends$1({
-        textDecoration: "none",
-        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette.text.primaryChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette.text.primary, theme2.palette.action.hoverOpacity),
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          backgroundColor: "transparent"
-        }
-      }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
-        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          backgroundColor: "transparent"
-        }
-      }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
-        border: `1px solid ${(theme2.vars || theme2).palette[ownerState.color].main}`,
-        backgroundColor: theme2.vars ? `rgba(${theme2.vars.palette[ownerState.color].mainChannel} / ${theme2.vars.palette.action.hoverOpacity})` : alpha(theme2.palette[ownerState.color].main, theme2.palette.action.hoverOpacity),
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          backgroundColor: "transparent"
-        }
-      }, ownerState.variant === "contained" && {
-        backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedHoverBg : inheritContainedHoverBackgroundColor,
-        boxShadow: (theme2.vars || theme2).shadows[4],
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          boxShadow: (theme2.vars || theme2).shadows[2],
-          backgroundColor: (theme2.vars || theme2).palette.grey[300]
-        }
-      }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
-        backgroundColor: (theme2.vars || theme2).palette[ownerState.color].dark,
-        // Reset on touch devices, it doesn't add specificity
-        "@media (hover: none)": {
-          backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
-        }
-      }),
-      "&:active": _extends$1({}, ownerState.variant === "contained" && {
-        boxShadow: (theme2.vars || theme2).shadows[8]
-      }),
-      [`&.${buttonClasses$1.focusVisible}`]: _extends$1({}, ownerState.variant === "contained" && {
-        boxShadow: (theme2.vars || theme2).shadows[6]
-      }),
-      [`&.${buttonClasses$1.disabled}`]: _extends$1({
-        color: (theme2.vars || theme2).palette.action.disabled
-      }, ownerState.variant === "outlined" && {
-        border: `1px solid ${(theme2.vars || theme2).palette.action.disabledBackground}`
-      }, ownerState.variant === "contained" && {
-        color: (theme2.vars || theme2).palette.action.disabled,
-        boxShadow: (theme2.vars || theme2).shadows[0],
-        backgroundColor: (theme2.vars || theme2).palette.action.disabledBackground
-      })
-    }, ownerState.variant === "text" && {
-      padding: "6px 8px"
-    }, ownerState.variant === "text" && ownerState.color !== "inherit" && {
-      color: (theme2.vars || theme2).palette[ownerState.color].main
-    }, ownerState.variant === "outlined" && {
-      padding: "5px 15px",
-      border: "1px solid currentColor"
-    }, ownerState.variant === "outlined" && ownerState.color !== "inherit" && {
-      color: (theme2.vars || theme2).palette[ownerState.color].main,
-      border: theme2.vars ? `1px solid rgba(${theme2.vars.palette[ownerState.color].mainChannel} / 0.5)` : `1px solid ${alpha(theme2.palette[ownerState.color].main, 0.5)}`
-    }, ownerState.variant === "contained" && {
-      color: theme2.vars ? (
-        // this is safe because grey does not change between default light/dark mode
-        theme2.vars.palette.text.primary
-      ) : (_theme$palette$getCon = (_theme$palette = theme2.palette).getContrastText) == null ? void 0 : _theme$palette$getCon.call(_theme$palette, theme2.palette.grey[300]),
-      backgroundColor: theme2.vars ? theme2.vars.palette.Button.inheritContainedBg : inheritContainedBackgroundColor,
-      boxShadow: (theme2.vars || theme2).shadows[2]
-    }, ownerState.variant === "contained" && ownerState.color !== "inherit" && {
-      color: (theme2.vars || theme2).palette[ownerState.color].contrastText,
-      backgroundColor: (theme2.vars || theme2).palette[ownerState.color].main
-    }, ownerState.color === "inherit" && {
-      color: "inherit",
-      borderColor: "currentColor"
-    }, ownerState.size === "small" && ownerState.variant === "text" && {
-      padding: "4px 5px",
-      fontSize: theme2.typography.pxToRem(13)
-    }, ownerState.size === "large" && ownerState.variant === "text" && {
-      padding: "8px 11px",
-      fontSize: theme2.typography.pxToRem(15)
-    }, ownerState.size === "small" && ownerState.variant === "outlined" && {
-      padding: "3px 9px",
-      fontSize: theme2.typography.pxToRem(13)
-    }, ownerState.size === "large" && ownerState.variant === "outlined" && {
-      padding: "7px 21px",
-      fontSize: theme2.typography.pxToRem(15)
-    }, ownerState.size === "small" && ownerState.variant === "contained" && {
-      padding: "4px 10px",
-      fontSize: theme2.typography.pxToRem(13)
-    }, ownerState.size === "large" && ownerState.variant === "contained" && {
-      padding: "8px 22px",
-      fontSize: theme2.typography.pxToRem(15)
-    }, ownerState.fullWidth && {
-      width: "100%"
-    });
-  }, ({
-    ownerState
-  }) => ownerState.disableElevation && {
-    boxShadow: "none",
-    "&:hover": {
-      boxShadow: "none"
-    },
-    [`&.${buttonClasses$1.focusVisible}`]: {
-      boxShadow: "none"
-    },
-    "&:active": {
-      boxShadow: "none"
-    },
-    [`&.${buttonClasses$1.disabled}`]: {
-      boxShadow: "none"
-    }
-  });
-  const ButtonStartIcon = styled$1("span", {
-    name: "MuiButton",
-    slot: "StartIcon",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.startIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
-    }
-  })(({
-    ownerState
-  }) => _extends$1({
-    display: "inherit",
-    marginRight: 8,
-    marginLeft: -4
-  }, ownerState.size === "small" && {
-    marginLeft: -2
-  }, commonIconStyles(ownerState)));
-  const ButtonEndIcon = styled$1("span", {
-    name: "MuiButton",
-    slot: "EndIcon",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.endIcon, styles2[`iconSize${capitalize$2(ownerState.size)}`]];
-    }
-  })(({
-    ownerState
-  }) => _extends$1({
-    display: "inherit",
-    marginRight: -4,
-    marginLeft: 8
-  }, ownerState.size === "small" && {
-    marginRight: -2
-  }, commonIconStyles(ownerState)));
-  const Button = /* @__PURE__ */ reactExports.forwardRef(function Button2(inProps, ref) {
-    const contextProps = reactExports.useContext(ButtonGroupContext$1);
-    const buttonGroupButtonContextPositionClassName = reactExports.useContext(ButtonGroupButtonContext$1);
-    const resolvedProps = resolveProps(contextProps, inProps);
-    const props = useThemeProps({
-      props: resolvedProps,
-      name: "MuiButton"
-    });
-    const {
-      children,
-      color: color2 = "primary",
-      component = "button",
-      className,
-      disabled = false,
-      disableElevation = false,
-      disableFocusRipple = false,
-      endIcon: endIconProp,
-      focusVisibleClassName,
-      fullWidth = false,
-      size: size2 = "medium",
-      startIcon: startIconProp,
-      type,
-      variant = "text"
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$M);
-    const ownerState = _extends$1({}, props, {
-      color: color2,
-      component,
-      disabled,
-      disableElevation,
-      disableFocusRipple,
-      fullWidth,
-      size: size2,
-      type,
-      variant
-    });
-    const classes = useUtilityClasses$G(ownerState);
-    const startIcon = startIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonStartIcon, {
-      className: classes.startIcon,
-      ownerState,
-      children: startIconProp
-    });
-    const endIcon = endIconProp && /* @__PURE__ */ jsxRuntimeExports.jsx(ButtonEndIcon, {
-      className: classes.endIcon,
-      ownerState,
-      children: endIconProp
-    });
-    const positionClassName = buttonGroupButtonContextPositionClassName || "";
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(ButtonRoot, _extends$1({
-      ownerState,
-      className: clsx(contextProps.className, classes.root, className, positionClassName),
-      component,
-      disabled,
-      focusRipple: !disableFocusRipple,
-      focusVisibleClassName: clsx(classes.focusVisible, focusVisibleClassName),
-      ref,
-      type
-    }, other, {
-      classes,
-      children: [startIcon, children, endIcon]
-    }));
-  });
-  process.env.NODE_ENV !== "production" ? Button.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * The color of the component.
-     * It supports both default and custom theme colors, which can be added as shown in the
-     * [palette customization guide](https://mui.com/material-ui/customization/palette/#custom-colors).
-     * @default 'primary'
-     */
-    color: PropTypes.oneOfType([PropTypes.oneOf(["inherit", "primary", "secondary", "success", "error", "info", "warning"]), PropTypes.string]),
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * If `true`, the component is disabled.
-     * @default false
-     */
-    disabled: PropTypes.bool,
-    /**
-     * If `true`, no elevation is used.
-     * @default false
-     */
-    disableElevation: PropTypes.bool,
-    /**
-     * If `true`, the  keyboard focus ripple is disabled.
-     * @default false
-     */
-    disableFocusRipple: PropTypes.bool,
-    /**
-     * If `true`, the ripple effect is disabled.
-     *
-     * ⚠️ Without a ripple there is no styling for :focus-visible by default. Be sure
-     * to highlight the element by applying separate styles with the `.Mui-focusVisible` class.
-     * @default false
-     */
-    disableRipple: PropTypes.bool,
-    /**
-     * Element placed after the children.
-     */
-    endIcon: PropTypes.node,
-    /**
-     * @ignore
-     */
-    focusVisibleClassName: PropTypes.string,
-    /**
-     * If `true`, the button will take up the full width of its container.
-     * @default false
-     */
-    fullWidth: PropTypes.bool,
-    /**
-     * The URL to link to when the button is clicked.
-     * If defined, an `a` element will be used as the root node.
-     */
-    href: PropTypes.string,
-    /**
-     * The size of the component.
-     * `small` is equivalent to the dense button styling.
-     * @default 'medium'
-     */
-    size: PropTypes.oneOfType([PropTypes.oneOf(["small", "medium", "large"]), PropTypes.string]),
-    /**
-     * Element placed before the children.
-     */
-    startIcon: PropTypes.node,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * @ignore
-     */
-    type: PropTypes.oneOfType([PropTypes.oneOf(["button", "reset", "submit"]), PropTypes.string]),
-    /**
-     * The variant to use.
-     * @default 'text'
-     */
-    variant: PropTypes.oneOfType([PropTypes.oneOf(["contained", "outlined", "text"]), PropTypes.string])
-  } : void 0;
-  const Button$1 = Button;
   function getSwitchBaseUtilityClass(slot) {
     return generateUtilityClass("PrivateSwitchBase", slot);
   }
   generateUtilityClasses("PrivateSwitchBase", ["root", "checked", "disabled", "input", "edgeStart", "edgeEnd"]);
-  const _excluded$L = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
-  const useUtilityClasses$F = (ownerState) => {
+  const _excluded$H = ["autoFocus", "checked", "checkedIcon", "className", "defaultChecked", "disabled", "disableFocusRipple", "edge", "icon", "id", "inputProps", "inputRef", "name", "onBlur", "onChange", "onFocus", "readOnly", "required", "tabIndex", "type", "value"];
+  const useUtilityClasses$B = (ownerState) => {
     const {
       classes,
       checked,
@@ -73355,7 +74279,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       tabIndex,
       type,
       value
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$L);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$H);
     const [checked, setCheckedState] = useControlled({
       controlled: checkedProp,
       default: Boolean(defaultChecked),
@@ -73402,7 +74326,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       disableFocusRipple,
       edge
     });
-    const classes = useUtilityClasses$F(ownerState);
+    const classes = useUtilityClasses$B(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(SwitchBaseRoot, _extends$1({
       component: "span",
       className: clsx(classes.root, className),
@@ -73555,8 +74479,8 @@ Please use another name.` : formatMuiErrorMessage(18));
   }
   const checkboxClasses = generateUtilityClasses("MuiCheckbox", ["root", "checked", "disabled", "indeterminate", "colorPrimary", "colorSecondary", "sizeSmall", "sizeMedium"]);
   const checkboxClasses$1 = checkboxClasses;
-  const _excluded$K = ["checkedIcon", "color", "icon", "indeterminate", "indeterminateIcon", "inputProps", "size", "className"];
-  const useUtilityClasses$E = (ownerState) => {
+  const _excluded$G = ["checkedIcon", "color", "icon", "indeterminate", "indeterminateIcon", "inputProps", "size", "className"];
+  const useUtilityClasses$A = (ownerState) => {
     const {
       classes,
       indeterminate,
@@ -73618,7 +74542,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       inputProps,
       size: size2 = "medium",
       className
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$K);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$G);
     const icon = indeterminate ? indeterminateIconProp : iconProp;
     const indeterminateIcon = indeterminate ? indeterminateIconProp : checkedIcon;
     const ownerState = _extends$1({}, props, {
@@ -73626,7 +74550,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       indeterminate,
       size: size2
     });
-    const classes = useUtilityClasses$E(ownerState);
+    const classes = useUtilityClasses$A(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(CheckboxRoot, _extends$1({
       type: "checkbox",
       inputProps: _extends$1({
@@ -73786,736 +74710,12 @@ Please use another name.` : formatMuiErrorMessage(18));
      */
     enableColorScheme: PropTypes.bool
   } : void 0;
-  function getModalUtilityClass(slot) {
-    return generateUtilityClass("MuiModal", slot);
-  }
-  generateUtilityClasses("MuiModal", ["root", "hidden", "backdrop"]);
-  const _excluded$J = ["BackdropComponent", "BackdropProps", "classes", "className", "closeAfterTransition", "children", "container", "component", "components", "componentsProps", "disableAutoFocus", "disableEnforceFocus", "disableEscapeKeyDown", "disablePortal", "disableRestoreFocus", "disableScrollLock", "hideBackdrop", "keepMounted", "onBackdropClick", "onClose", "onTransitionEnter", "onTransitionExited", "open", "slotProps", "slots", "theme"];
-  const useUtilityClasses$D = (ownerState) => {
-    const {
-      open,
-      exited,
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root", !open && exited && "hidden"],
-      backdrop: ["backdrop"]
-    };
-    return composeClasses(slots, getModalUtilityClass, classes);
-  };
-  const ModalRoot = styled$1("div", {
-    name: "MuiModal",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, !ownerState.open && ownerState.exited && styles2.hidden];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$1({
-    position: "fixed",
-    zIndex: (theme2.vars || theme2).zIndex.modal,
-    right: 0,
-    bottom: 0,
-    top: 0,
-    left: 0
-  }, !ownerState.open && ownerState.exited && {
-    visibility: "hidden"
-  }));
-  const ModalBackdrop = styled$1(Backdrop$1, {
-    name: "MuiModal",
-    slot: "Backdrop",
-    overridesResolver: (props, styles2) => {
-      return styles2.backdrop;
-    }
-  })({
-    zIndex: -1
-  });
-  const Modal = /* @__PURE__ */ reactExports.forwardRef(function Modal2(inProps, ref) {
-    var _ref, _slots$root, _ref2, _slots$backdrop, _slotProps$root, _slotProps$backdrop;
-    const props = useThemeProps({
-      name: "MuiModal",
-      props: inProps
-    });
-    const {
-      BackdropComponent = ModalBackdrop,
-      BackdropProps,
-      className,
-      closeAfterTransition = false,
-      children,
-      container,
-      component,
-      components = {},
-      componentsProps = {},
-      disableAutoFocus = false,
-      disableEnforceFocus = false,
-      disableEscapeKeyDown = false,
-      disablePortal = false,
-      disableRestoreFocus = false,
-      disableScrollLock = false,
-      hideBackdrop = false,
-      keepMounted = false,
-      onBackdropClick,
-      open,
-      slotProps,
-      slots
-      // eslint-disable-next-line react/prop-types
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$J);
-    const propsWithDefaults = _extends$1({}, props, {
-      closeAfterTransition,
-      disableAutoFocus,
-      disableEnforceFocus,
-      disableEscapeKeyDown,
-      disablePortal,
-      disableRestoreFocus,
-      disableScrollLock,
-      hideBackdrop,
-      keepMounted
-    });
-    const {
-      getRootProps,
-      getBackdropProps,
-      getTransitionProps: getTransitionProps2,
-      portalRef,
-      isTopModal,
-      exited,
-      hasTransition
-    } = useModal(_extends$1({}, propsWithDefaults, {
-      rootRef: ref
-    }));
-    const ownerState = _extends$1({}, propsWithDefaults, {
-      exited
-    });
-    const classes = useUtilityClasses$D(ownerState);
-    const childProps = {};
-    if (children.props.tabIndex === void 0) {
-      childProps.tabIndex = "-1";
-    }
-    if (hasTransition) {
-      const {
-        onEnter,
-        onExited
-      } = getTransitionProps2();
-      childProps.onEnter = onEnter;
-      childProps.onExited = onExited;
-    }
-    const RootSlot = (_ref = (_slots$root = slots == null ? void 0 : slots.root) != null ? _slots$root : components.Root) != null ? _ref : ModalRoot;
-    const BackdropSlot = (_ref2 = (_slots$backdrop = slots == null ? void 0 : slots.backdrop) != null ? _slots$backdrop : components.Backdrop) != null ? _ref2 : BackdropComponent;
-    const rootSlotProps = (_slotProps$root = slotProps == null ? void 0 : slotProps.root) != null ? _slotProps$root : componentsProps.root;
-    const backdropSlotProps = (_slotProps$backdrop = slotProps == null ? void 0 : slotProps.backdrop) != null ? _slotProps$backdrop : componentsProps.backdrop;
-    const rootProps = useSlotProps({
-      elementType: RootSlot,
-      externalSlotProps: rootSlotProps,
-      externalForwardedProps: other,
-      getSlotProps: getRootProps,
-      additionalProps: {
-        ref,
-        as: component
-      },
-      ownerState,
-      className: clsx(className, rootSlotProps == null ? void 0 : rootSlotProps.className, classes == null ? void 0 : classes.root, !ownerState.open && ownerState.exited && (classes == null ? void 0 : classes.hidden))
-    });
-    const backdropProps = useSlotProps({
-      elementType: BackdropSlot,
-      externalSlotProps: backdropSlotProps,
-      additionalProps: BackdropProps,
-      getSlotProps: (otherHandlers) => {
-        return getBackdropProps(_extends$1({}, otherHandlers, {
-          onClick: (e) => {
-            if (onBackdropClick) {
-              onBackdropClick(e);
-            }
-            if (otherHandlers != null && otherHandlers.onClick) {
-              otherHandlers.onClick(e);
-            }
-          }
-        }));
-      },
-      className: clsx(backdropSlotProps == null ? void 0 : backdropSlotProps.className, BackdropProps == null ? void 0 : BackdropProps.className, classes == null ? void 0 : classes.backdrop),
-      ownerState
-    });
-    if (!keepMounted && !open && (!hasTransition || exited)) {
-      return null;
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Portal, {
-      ref: portalRef,
-      container,
-      disablePortal,
-      children: /* @__PURE__ */ jsxRuntimeExports.jsxs(RootSlot, _extends$1({}, rootProps, {
-        children: [!hideBackdrop && BackdropComponent ? /* @__PURE__ */ jsxRuntimeExports.jsx(BackdropSlot, _extends$1({}, backdropProps)) : null, /* @__PURE__ */ jsxRuntimeExports.jsx(FocusTrap, {
-          disableEnforceFocus,
-          disableAutoFocus,
-          disableRestoreFocus,
-          isEnabled: isTopModal,
-          open,
-          children: /* @__PURE__ */ reactExports.cloneElement(children, childProps)
-        })]
-      }))
-    });
-  });
-  process.env.NODE_ENV !== "production" ? Modal.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * A backdrop component. This prop enables custom backdrop rendering.
-     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
-     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
-     * @default styled(Backdrop, {
-     *   name: 'MuiModal',
-     *   slot: 'Backdrop',
-     *   overridesResolver: (props, styles) => {
-     *     return styles.backdrop;
-     *   },
-     * })({
-     *   zIndex: -1,
-     * })
-     */
-    BackdropComponent: PropTypes.elementType,
-    /**
-     * Props applied to the [`Backdrop`](/material-ui/api/backdrop/) element.
-     * @deprecated Use `slotProps.backdrop` instead.
-     */
-    BackdropProps: PropTypes.object,
-    /**
-     * A single child content element.
-     */
-    children: elementAcceptingRef$1.isRequired,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * When set to true the Modal waits until a nested Transition is completed before closing.
-     * @default false
-     */
-    closeAfterTransition: PropTypes.bool,
-    /**
-     * The component used for the root node.
-     * Either a string to use a HTML element or a component.
-     */
-    component: PropTypes.elementType,
-    /**
-     * The components used for each slot inside.
-     *
-     * This prop is an alias for the `slots` prop.
-     * It's recommended to use the `slots` prop instead.
-     *
-     * @default {}
-     */
-    components: PropTypes.shape({
-      Backdrop: PropTypes.elementType,
-      Root: PropTypes.elementType
-    }),
-    /**
-     * The extra props for the slot components.
-     * You can override the existing props or add new ones.
-     *
-     * This prop is an alias for the `slotProps` prop.
-     * It's recommended to use the `slotProps` prop instead, as `componentsProps` will be deprecated in the future.
-     *
-     * @default {}
-     */
-    componentsProps: PropTypes.shape({
-      backdrop: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-      root: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
-    }),
-    /**
-     * An HTML element or function that returns one.
-     * The `container` will have the portal children appended to it.
-     *
-     * By default, it uses the body of the top-level document object,
-     * so it's simply `document.body` most of the time.
-     */
-    container: PropTypes.oneOfType([HTMLElementType, PropTypes.func]),
-    /**
-     * If `true`, the modal will not automatically shift focus to itself when it opens, and
-     * replace it to the last focused element when it closes.
-     * This also works correctly with any modal children that have the `disableAutoFocus` prop.
-     *
-     * Generally this should never be set to `true` as it makes the modal less
-     * accessible to assistive technologies, like screen readers.
-     * @default false
-     */
-    disableAutoFocus: PropTypes.bool,
-    /**
-     * If `true`, the modal will not prevent focus from leaving the modal while open.
-     *
-     * Generally this should never be set to `true` as it makes the modal less
-     * accessible to assistive technologies, like screen readers.
-     * @default false
-     */
-    disableEnforceFocus: PropTypes.bool,
-    /**
-     * If `true`, hitting escape will not fire the `onClose` callback.
-     * @default false
-     */
-    disableEscapeKeyDown: PropTypes.bool,
-    /**
-     * The `children` will be under the DOM hierarchy of the parent component.
-     * @default false
-     */
-    disablePortal: PropTypes.bool,
-    /**
-     * If `true`, the modal will not restore focus to previously focused element once
-     * modal is hidden or unmounted.
-     * @default false
-     */
-    disableRestoreFocus: PropTypes.bool,
-    /**
-     * Disable the scroll lock behavior.
-     * @default false
-     */
-    disableScrollLock: PropTypes.bool,
-    /**
-     * If `true`, the backdrop is not rendered.
-     * @default false
-     */
-    hideBackdrop: PropTypes.bool,
-    /**
-     * Always keep the children in the DOM.
-     * This prop can be useful in SEO situation or
-     * when you want to maximize the responsiveness of the Modal.
-     * @default false
-     */
-    keepMounted: PropTypes.bool,
-    /**
-     * Callback fired when the backdrop is clicked.
-     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
-     */
-    onBackdropClick: PropTypes.func,
-    /**
-     * Callback fired when the component requests to be closed.
-     * The `reason` parameter can optionally be used to control the response to `onClose`.
-     *
-     * @param {object} event The event source of the callback.
-     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
-     */
-    onClose: PropTypes.func,
-    /**
-     * A function called when a transition enters.
-     */
-    onTransitionEnter: PropTypes.func,
-    /**
-     * A function called when a transition has exited.
-     */
-    onTransitionExited: PropTypes.func,
-    /**
-     * If `true`, the component is shown.
-     */
-    open: PropTypes.bool.isRequired,
-    /**
-     * The props used for each slot inside the Modal.
-     * @default {}
-     */
-    slotProps: PropTypes.shape({
-      backdrop: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
-      root: PropTypes.oneOfType([PropTypes.func, PropTypes.object])
-    }),
-    /**
-     * The components used for each slot inside the Modal.
-     * Either a string to use a HTML element or a component.
-     * @default {}
-     */
-    slots: PropTypes.shape({
-      backdrop: PropTypes.elementType,
-      root: PropTypes.elementType
-    }),
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const Modal$1 = Modal;
-  function getDialogUtilityClass(slot) {
-    return generateUtilityClass("MuiDialog", slot);
-  }
-  const dialogClasses = generateUtilityClasses("MuiDialog", ["root", "scrollPaper", "scrollBody", "container", "paper", "paperScrollPaper", "paperScrollBody", "paperWidthFalse", "paperWidthXs", "paperWidthSm", "paperWidthMd", "paperWidthLg", "paperWidthXl", "paperFullWidth", "paperFullScreen"]);
-  const dialogClasses$1 = dialogClasses;
-  const DialogContext$1 = /* @__PURE__ */ reactExports.createContext({});
-  if (process.env.NODE_ENV !== "production") {
-    DialogContext$1.displayName = "DialogContext";
-  }
-  const DialogContext$2 = DialogContext$1;
-  const _excluded$I = ["aria-describedby", "aria-labelledby", "BackdropComponent", "BackdropProps", "children", "className", "disableEscapeKeyDown", "fullScreen", "fullWidth", "maxWidth", "onBackdropClick", "onClose", "open", "PaperComponent", "PaperProps", "scroll", "TransitionComponent", "transitionDuration", "TransitionProps"];
-  const DialogBackdrop = styled$1(Backdrop$1, {
-    name: "MuiDialog",
-    slot: "Backdrop",
-    overrides: (props, styles2) => styles2.backdrop
-  })({
-    // Improve scrollable dialog support.
-    zIndex: -1
-  });
-  const useUtilityClasses$C = (ownerState) => {
-    const {
-      classes,
-      scroll,
-      maxWidth: maxWidth2,
-      fullWidth,
-      fullScreen
-    } = ownerState;
-    const slots = {
-      root: ["root"],
-      container: ["container", `scroll${capitalize$2(scroll)}`],
-      paper: ["paper", `paperScroll${capitalize$2(scroll)}`, `paperWidth${capitalize$2(String(maxWidth2))}`, fullWidth && "paperFullWidth", fullScreen && "paperFullScreen"]
-    };
-    return composeClasses(slots, getDialogUtilityClass, classes);
-  };
-  const DialogRoot = styled$1(Modal$1, {
-    name: "MuiDialog",
-    slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
-  })({
-    "@media print": {
-      // Use !important to override the Modal inline-style.
-      position: "absolute !important"
-    }
-  });
-  const DialogContainer = styled$1("div", {
-    name: "MuiDialog",
-    slot: "Container",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.container, styles2[`scroll${capitalize$2(ownerState.scroll)}`]];
-    }
-  })(({
-    ownerState
-  }) => _extends$1({
-    height: "100%",
-    "@media print": {
-      height: "auto"
-    },
-    // We disable the focus ring for mouse, touch and keyboard users.
-    outline: 0
-  }, ownerState.scroll === "paper" && {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center"
-  }, ownerState.scroll === "body" && {
-    overflowY: "auto",
-    overflowX: "hidden",
-    textAlign: "center",
-    "&:after": {
-      content: '""',
-      display: "inline-block",
-      verticalAlign: "middle",
-      height: "100%",
-      width: "0"
-    }
-  }));
-  const DialogPaper = styled$1(Paper$1, {
-    name: "MuiDialog",
-    slot: "Paper",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.paper, styles2[`scrollPaper${capitalize$2(ownerState.scroll)}`], styles2[`paperWidth${capitalize$2(String(ownerState.maxWidth))}`], ownerState.fullWidth && styles2.paperFullWidth, ownerState.fullScreen && styles2.paperFullScreen];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$1({
-    margin: 32,
-    position: "relative",
-    overflowY: "auto",
-    // Fix IE11 issue, to remove at some point.
-    "@media print": {
-      overflowY: "visible",
-      boxShadow: "none"
-    }
-  }, ownerState.scroll === "paper" && {
-    display: "flex",
-    flexDirection: "column",
-    maxHeight: "calc(100% - 64px)"
-  }, ownerState.scroll === "body" && {
-    display: "inline-block",
-    verticalAlign: "middle",
-    textAlign: "left"
-    // 'initial' doesn't work on IE11
-  }, !ownerState.maxWidth && {
-    maxWidth: "calc(100% - 64px)"
-  }, ownerState.maxWidth === "xs" && {
-    maxWidth: theme2.breakpoints.unit === "px" ? Math.max(theme2.breakpoints.values.xs, 444) : `max(${theme2.breakpoints.values.xs}${theme2.breakpoints.unit}, 444px)`,
-    [`&.${dialogClasses$1.paperScrollBody}`]: {
-      [theme2.breakpoints.down(Math.max(theme2.breakpoints.values.xs, 444) + 32 * 2)]: {
-        maxWidth: "calc(100% - 64px)"
-      }
-    }
-  }, ownerState.maxWidth && ownerState.maxWidth !== "xs" && {
-    maxWidth: `${theme2.breakpoints.values[ownerState.maxWidth]}${theme2.breakpoints.unit}`,
-    [`&.${dialogClasses$1.paperScrollBody}`]: {
-      [theme2.breakpoints.down(theme2.breakpoints.values[ownerState.maxWidth] + 32 * 2)]: {
-        maxWidth: "calc(100% - 64px)"
-      }
-    }
-  }, ownerState.fullWidth && {
-    width: "calc(100% - 64px)"
-  }, ownerState.fullScreen && {
-    margin: 0,
-    width: "100%",
-    maxWidth: "100%",
-    height: "100%",
-    maxHeight: "none",
-    borderRadius: 0,
-    [`&.${dialogClasses$1.paperScrollBody}`]: {
-      margin: 0,
-      maxWidth: "100%"
-    }
-  }));
-  const Dialog = /* @__PURE__ */ reactExports.forwardRef(function Dialog2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialog"
-    });
-    const theme2 = useTheme();
-    const defaultTransitionDuration = {
-      enter: theme2.transitions.duration.enteringScreen,
-      exit: theme2.transitions.duration.leavingScreen
-    };
-    const {
-      "aria-describedby": ariaDescribedby,
-      "aria-labelledby": ariaLabelledbyProp,
-      BackdropComponent,
-      BackdropProps,
-      children,
-      className,
-      disableEscapeKeyDown = false,
-      fullScreen = false,
-      fullWidth = false,
-      maxWidth: maxWidth2 = "sm",
-      onBackdropClick,
-      onClose,
-      open,
-      PaperComponent = Paper$1,
-      PaperProps = {},
-      scroll = "paper",
-      TransitionComponent = Fade$1,
-      transitionDuration = defaultTransitionDuration,
-      TransitionProps
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$I);
-    const ownerState = _extends$1({}, props, {
-      disableEscapeKeyDown,
-      fullScreen,
-      fullWidth,
-      maxWidth: maxWidth2,
-      scroll
-    });
-    const classes = useUtilityClasses$C(ownerState);
-    const backdropClick = reactExports.useRef();
-    const handleMouseDown = (event) => {
-      backdropClick.current = event.target === event.currentTarget;
-    };
-    const handleBackdropClick = (event) => {
-      if (!backdropClick.current) {
-        return;
-      }
-      backdropClick.current = null;
-      if (onBackdropClick) {
-        onBackdropClick(event);
-      }
-      if (onClose) {
-        onClose(event, "backdropClick");
-      }
-    };
-    const ariaLabelledby = useId(ariaLabelledbyProp);
-    const dialogContextValue = reactExports.useMemo(() => {
-      return {
-        titleId: ariaLabelledby
-      };
-    }, [ariaLabelledby]);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogRoot, _extends$1({
-      className: clsx(classes.root, className),
-      closeAfterTransition: true,
-      components: {
-        Backdrop: DialogBackdrop
-      },
-      componentsProps: {
-        backdrop: _extends$1({
-          transitionDuration,
-          as: BackdropComponent
-        }, BackdropProps)
-      },
-      disableEscapeKeyDown,
-      onClose,
-      open,
-      ref,
-      onClick: handleBackdropClick,
-      ownerState
-    }, other, {
-      children: /* @__PURE__ */ jsxRuntimeExports.jsx(TransitionComponent, _extends$1({
-        appear: true,
-        in: open,
-        timeout: transitionDuration,
-        role: "presentation"
-      }, TransitionProps, {
-        children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContainer, {
-          className: clsx(classes.container),
-          onMouseDown: handleMouseDown,
-          ownerState,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogPaper, _extends$1({
-            as: PaperComponent,
-            elevation: 24,
-            role: "dialog",
-            "aria-describedby": ariaDescribedby,
-            "aria-labelledby": ariaLabelledby
-          }, PaperProps, {
-            className: clsx(classes.paper, PaperProps.className),
-            ownerState,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext$2.Provider, {
-              value: dialogContextValue,
-              children
-            })
-          }))
-        })
-      }))
-    }));
-  });
-  process.env.NODE_ENV !== "production" ? Dialog.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The id(s) of the element(s) that describe the dialog.
-     */
-    "aria-describedby": PropTypes.string,
-    /**
-     * The id(s) of the element(s) that label the dialog.
-     */
-    "aria-labelledby": PropTypes.string,
-    /**
-     * A backdrop component. This prop enables custom backdrop rendering.
-     * @deprecated Use `slots.backdrop` instead. While this prop currently works, it will be removed in the next major version.
-     * Use the `slots.backdrop` prop to make your application ready for the next version of Material UI.
-     * @default styled(Backdrop, {
-     *   name: 'MuiModal',
-     *   slot: 'Backdrop',
-     *   overridesResolver: (props, styles) => {
-     *     return styles.backdrop;
-     *   },
-     * })({
-     *   zIndex: -1,
-     * })
-     */
-    BackdropComponent: PropTypes.elementType,
-    /**
-     * @ignore
-     */
-    BackdropProps: PropTypes.object,
-    /**
-     * Dialog children, usually the included sub-components.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * If `true`, hitting escape will not fire the `onClose` callback.
-     * @default false
-     */
-    disableEscapeKeyDown: PropTypes.bool,
-    /**
-     * If `true`, the dialog is full-screen.
-     * @default false
-     */
-    fullScreen: PropTypes.bool,
-    /**
-     * If `true`, the dialog stretches to `maxWidth`.
-     *
-     * Notice that the dialog width grow is limited by the default margin.
-     * @default false
-     */
-    fullWidth: PropTypes.bool,
-    /**
-     * Determine the max-width of the dialog.
-     * The dialog width grows with the size of the screen.
-     * Set to `false` to disable `maxWidth`.
-     * @default 'sm'
-     */
-    maxWidth: PropTypes.oneOfType([PropTypes.oneOf(["xs", "sm", "md", "lg", "xl", false]), PropTypes.string]),
-    /**
-     * Callback fired when the backdrop is clicked.
-     * @deprecated Use the `onClose` prop with the `reason` argument to handle the `backdropClick` events.
-     */
-    onBackdropClick: PropTypes.func,
-    /**
-     * Callback fired when the component requests to be closed.
-     *
-     * @param {object} event The event source of the callback.
-     * @param {string} reason Can be: `"escapeKeyDown"`, `"backdropClick"`.
-     */
-    onClose: PropTypes.func,
-    /**
-     * If `true`, the component is shown.
-     */
-    open: PropTypes.bool.isRequired,
-    /**
-     * The component used to render the body of the dialog.
-     * @default Paper
-     */
-    PaperComponent: PropTypes.elementType,
-    /**
-     * Props applied to the [`Paper`](/material-ui/api/paper/) element.
-     * @default {}
-     */
-    PaperProps: PropTypes.object,
-    /**
-     * Determine the container for scrolling the dialog.
-     * @default 'paper'
-     */
-    scroll: PropTypes.oneOf(["body", "paper"]),
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object]),
-    /**
-     * The component used for the transition.
-     * [Follow this guide](/material-ui/transitions/#transitioncomponent-prop) to learn more about the requirements for this component.
-     * @default Fade
-     */
-    TransitionComponent: PropTypes.elementType,
-    /**
-     * The duration for the transition, in milliseconds.
-     * You may specify a single timeout for all transitions, or individually with an object.
-     * @default {
-     *   enter: theme.transitions.duration.enteringScreen,
-     *   exit: theme.transitions.duration.leavingScreen,
-     * }
-     */
-    transitionDuration: PropTypes.oneOfType([PropTypes.number, PropTypes.shape({
-      appear: PropTypes.number,
-      enter: PropTypes.number,
-      exit: PropTypes.number
-    })]),
-    /**
-     * Props applied to the transition element.
-     * By default, the element is based on this [`Transition`](http://reactcommunity.org/react-transition-group/transition/) component.
-     */
-    TransitionProps: PropTypes.object
-  } : void 0;
-  const Dialog$1 = Dialog;
   function getDialogActionsUtilityClass(slot) {
     return generateUtilityClass("MuiDialogActions", slot);
   }
   generateUtilityClasses("MuiDialogActions", ["root", "spacing"]);
-  const _excluded$H = ["className", "disableSpacing"];
-  const useUtilityClasses$B = (ownerState) => {
+  const _excluded$F = ["className", "disableSpacing"];
+  const useUtilityClasses$z = (ownerState) => {
     const {
       classes,
       disableSpacing
@@ -74555,11 +74755,11 @@ Please use another name.` : formatMuiErrorMessage(18));
     const {
       className,
       disableSpacing = false
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$H);
+    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$F);
     const ownerState = _extends$1({}, props, {
       disableSpacing
     });
-    const classes = useUtilityClasses$B(ownerState);
+    const classes = useUtilityClasses$z(ownerState);
     return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogActionsRoot, _extends$1({
       className: clsx(classes.root, className),
       ownerState,
@@ -74594,167 +74794,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
   } : void 0;
   const DialogActions$1 = DialogActions;
-  function getDialogContentUtilityClass(slot) {
-    return generateUtilityClass("MuiDialogContent", slot);
-  }
-  generateUtilityClasses("MuiDialogContent", ["root", "dividers"]);
-  function getDialogTitleUtilityClass(slot) {
-    return generateUtilityClass("MuiDialogTitle", slot);
-  }
-  const dialogTitleClasses = generateUtilityClasses("MuiDialogTitle", ["root"]);
-  const _excluded$G = ["className", "dividers"];
-  const useUtilityClasses$A = (ownerState) => {
-    const {
-      classes,
-      dividers
-    } = ownerState;
-    const slots = {
-      root: ["root", dividers && "dividers"]
-    };
-    return composeClasses(slots, getDialogContentUtilityClass, classes);
-  };
-  const DialogContentRoot = styled$1("div", {
-    name: "MuiDialogContent",
-    slot: "Root",
-    overridesResolver: (props, styles2) => {
-      const {
-        ownerState
-      } = props;
-      return [styles2.root, ownerState.dividers && styles2.dividers];
-    }
-  })(({
-    theme: theme2,
-    ownerState
-  }) => _extends$1({
-    flex: "1 1 auto",
-    // Add iOS momentum scrolling for iOS < 13.0
-    WebkitOverflowScrolling: "touch",
-    overflowY: "auto",
-    padding: "20px 24px"
-  }, ownerState.dividers ? {
-    padding: "16px 24px",
-    borderTop: `1px solid ${(theme2.vars || theme2).palette.divider}`,
-    borderBottom: `1px solid ${(theme2.vars || theme2).palette.divider}`
-  } : {
-    [`.${dialogTitleClasses.root} + &`]: {
-      paddingTop: 0
-    }
-  }));
-  const DialogContent = /* @__PURE__ */ reactExports.forwardRef(function DialogContent2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialogContent"
-    });
-    const {
-      className,
-      dividers = false
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$G);
-    const ownerState = _extends$1({}, props, {
-      dividers
-    });
-    const classes = useUtilityClasses$A(ownerState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContentRoot, _extends$1({
-      className: clsx(classes.root, className),
-      ownerState,
-      ref
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? DialogContent.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * Display the top and bottom dividers.
-     * @default false
-     */
-    dividers: PropTypes.bool,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const DialogContent$1 = DialogContent;
-  const _excluded$F = ["className", "id"];
-  const useUtilityClasses$z = (ownerState) => {
-    const {
-      classes
-    } = ownerState;
-    const slots = {
-      root: ["root"]
-    };
-    return composeClasses(slots, getDialogTitleUtilityClass, classes);
-  };
-  const DialogTitleRoot = styled$1(Typography$1, {
-    name: "MuiDialogTitle",
-    slot: "Root",
-    overridesResolver: (props, styles2) => styles2.root
-  })({
-    padding: "16px 24px",
-    flex: "0 0 auto"
-  });
-  const DialogTitle = /* @__PURE__ */ reactExports.forwardRef(function DialogTitle2(inProps, ref) {
-    const props = useThemeProps({
-      props: inProps,
-      name: "MuiDialogTitle"
-    });
-    const {
-      className,
-      id: idProp
-    } = props, other = _objectWithoutPropertiesLoose$1(props, _excluded$F);
-    const ownerState = props;
-    const classes = useUtilityClasses$z(ownerState);
-    const {
-      titleId = idProp
-    } = reactExports.useContext(DialogContext$2);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitleRoot, _extends$1({
-      component: "h2",
-      className: clsx(classes.root, className),
-      ownerState,
-      ref,
-      variant: "h6",
-      id: idProp != null ? idProp : titleId
-    }, other));
-  });
-  process.env.NODE_ENV !== "production" ? DialogTitle.propTypes = {
-    // ----------------------------- Warning --------------------------------
-    // | These PropTypes are generated from the TypeScript type definitions |
-    // |     To update them edit the d.ts file and run "yarn proptypes"     |
-    // ----------------------------------------------------------------------
-    /**
-     * The content of the component.
-     */
-    children: PropTypes.node,
-    /**
-     * Override or extend the styles applied to the component.
-     */
-    classes: PropTypes.object,
-    /**
-     * @ignore
-     */
-    className: PropTypes.string,
-    /**
-     * @ignore
-     */
-    id: PropTypes.string,
-    /**
-     * The system prop that allows defining system overrides as well as additional CSS styles.
-     */
-    sx: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.func, PropTypes.object, PropTypes.bool])), PropTypes.func, PropTypes.object])
-  } : void 0;
-  const DialogTitle$1 = DialogTitle;
   function getDividerUtilityClass(slot) {
     return generateUtilityClass("MuiDivider", slot);
   }
@@ -91209,108 +91248,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] });
     }
   }
-  class ImportMenu extends reactExports.Component {
-    constructor(props) {
-      super(props);
-    }
-    /*******************************************************
-     * FUNCTIONS
-     *******************************************************/
-    submit(evt) {
-      $("#submit-button").attr("disabled", true);
-      setTimeout(() => {
-        this.props.actionFunction();
-        alert(
-          window.gettext(
-            "Your file has been submitted. Please wait while it is imported. You may close this message."
-          )
-        );
-      }, 100);
-      return true;
-    }
-    /*******************************************************
-     * RENDER
-     *******************************************************/
-    render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "message-wrap", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: window.gettext("Import Files") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-          "Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format."
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "form",
-          {
-            encType: "multipart/form-data",
-            action: COURSEFLOW_APP.config.post_paths.import_data,
-            method: "POST",
-            id: "upload-form",
-            target: "redirect-iframe",
-            onSubmit: this.submit.bind(this),
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "hidden",
-                  name: "csrfmiddlewaretoken",
-                  value: window.getCsrfToken()
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "hidden",
-                  id: "objectID",
-                  name: "objectID",
-                  value: JSON.stringify(this.props.data.object_id)
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "hidden",
-                  id: "objectType",
-                  name: "objectType",
-                  value: JSON.stringify(this.props.data.object_type)
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "hidden",
-                  id: "importType",
-                  name: "importType",
-                  value: this.props.data.import_type
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "input",
-                {
-                  type: "file",
-                  id: "myFile",
-                  name: "myFile",
-                  accept: ".xls, .xlsx, .csv",
-                  required: true
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { id: "submit-button", type: "submit" })
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("iframe", { hidden: true, name: "redirect-iframe", id: "redirect-iframe" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: window.gettext(
-          "The uploading process may take some time. It is not recommended to continue editing until it is complete."
-        ) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "window-close-button",
-            onClick: this.props.actionFunction,
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: COURSEFLOW_APP.config.icon_path + "close.svg" })
-          }
-        )
-      ] });
-    }
-  }
   class CollapsibleText extends ComponentWithToggleDrop {
     constructor(props) {
       super(props);
@@ -92347,6 +92284,2579 @@ Please use another name.` : formatMuiErrorMessage(18));
     mapStateToProps$1,
     null
   )(GridViewUnconnected);
+  function TargetProjectDialog({ id, actionFunction }) {
+    const { show, onClose } = useDialog(DIALOG_TYPE.TARGET_PROJECT);
+    const [project_data, setProjectData] = reactExports.useState(null);
+    const onDialogClose = (response) => {
+      onClose();
+      setProjectData(null);
+      actionFunction(response);
+    };
+    const getContent = () => {
+      if (show) {
+        if (project_data == null)
+          getTargetProjectMenuQuery(id, setProjectData);
+        else
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(TargetProjectDialogContents, { data: project_data, onDialogClose });
+      } else
+        return null;
+    };
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(Dialog$1, { open: show, onClose: onDialogClose, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext("Choose A Project") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { children: getContent() })
+    ] });
+  }
+  function TargetProjectDialogContents({ data: data2, onDialogClose }) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      WorkflowsMenu,
+      {
+        type: "target_project_menu",
+        data: data2,
+        actionFunction: onDialogClose
+      }
+    );
+  }
+  var NOTHING = Symbol.for("immer-nothing");
+  var DRAFTABLE = Symbol.for("immer-draftable");
+  var DRAFT_STATE = Symbol.for("immer-state");
+  var errors = process.env.NODE_ENV !== "production" ? [
+    // All error codes, starting by 0:
+    function(plugin) {
+      return `The plugin for '${plugin}' has not been loaded into Immer. To enable the plugin, import and call \`enable${plugin}()\` when initializing your application.`;
+    },
+    function(thing) {
+      return `produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'. Got '${thing}'`;
+    },
+    "This object has been frozen and should not be mutated",
+    function(data2) {
+      return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + data2;
+    },
+    "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.",
+    "Immer forbids circular references",
+    "The first or second argument to `produce` must be a function",
+    "The third argument to `produce` must be a function or undefined",
+    "First argument to `createDraft` must be a plain object, an array, or an immerable object",
+    "First argument to `finishDraft` must be a draft returned by `createDraft`",
+    function(thing) {
+      return `'current' expects a draft, got: ${thing}`;
+    },
+    "Object.defineProperty() cannot be used on an Immer draft",
+    "Object.setPrototypeOf() cannot be used on an Immer draft",
+    "Immer only supports deleting array indices",
+    "Immer only supports setting array indices and the 'length' property",
+    function(thing) {
+      return `'original' expects a draft, got: ${thing}`;
+    }
+    // Note: if more errors are added, the errorOffset in Patches.ts should be increased
+    // See Patches.ts for additional errors
+  ] : [];
+  function die(error, ...args) {
+    if (process.env.NODE_ENV !== "production") {
+      const e = errors[error];
+      const msg = typeof e === "function" ? e.apply(null, args) : e;
+      throw new Error(`[Immer] ${msg}`);
+    }
+    throw new Error(
+      `[Immer] minified error nr: ${error}. Full error at: https://bit.ly/3cXEKWf`
+    );
+  }
+  var getPrototypeOf = Object.getPrototypeOf;
+  function isDraft(value) {
+    return !!value && !!value[DRAFT_STATE];
+  }
+  function isDraftable(value) {
+    var _a2;
+    if (!value)
+      return false;
+    return isPlainObject$1(value) || Array.isArray(value) || !!value[DRAFTABLE] || !!((_a2 = value.constructor) == null ? void 0 : _a2[DRAFTABLE]) || isMap(value) || isSet(value);
+  }
+  var objectCtorString = Object.prototype.constructor.toString();
+  function isPlainObject$1(value) {
+    if (!value || typeof value !== "object")
+      return false;
+    const proto = getPrototypeOf(value);
+    if (proto === null) {
+      return true;
+    }
+    const Ctor = Object.hasOwnProperty.call(proto, "constructor") && proto.constructor;
+    if (Ctor === Object)
+      return true;
+    return typeof Ctor == "function" && Function.toString.call(Ctor) === objectCtorString;
+  }
+  function each(obj, iter) {
+    if (getArchtype(obj) === 0) {
+      Reflect.ownKeys(obj).forEach((key) => {
+        iter(key, obj[key], obj);
+      });
+    } else {
+      obj.forEach((entry, index) => iter(index, entry, obj));
+    }
+  }
+  function getArchtype(thing) {
+    const state = thing[DRAFT_STATE];
+    return state ? state.type_ : Array.isArray(thing) ? 1 : isMap(thing) ? 2 : isSet(thing) ? 3 : 0;
+  }
+  function has(thing, prop) {
+    return getArchtype(thing) === 2 ? thing.has(prop) : Object.prototype.hasOwnProperty.call(thing, prop);
+  }
+  function set(thing, propOrOldValue, value) {
+    const t = getArchtype(thing);
+    if (t === 2)
+      thing.set(propOrOldValue, value);
+    else if (t === 3) {
+      thing.add(value);
+    } else
+      thing[propOrOldValue] = value;
+  }
+  function is(x, y) {
+    if (x === y) {
+      return x !== 0 || 1 / x === 1 / y;
+    } else {
+      return x !== x && y !== y;
+    }
+  }
+  function isMap(target) {
+    return target instanceof Map;
+  }
+  function isSet(target) {
+    return target instanceof Set;
+  }
+  function latest(state) {
+    return state.copy_ || state.base_;
+  }
+  function shallowCopy(base, strict) {
+    if (isMap(base)) {
+      return new Map(base);
+    }
+    if (isSet(base)) {
+      return new Set(base);
+    }
+    if (Array.isArray(base))
+      return Array.prototype.slice.call(base);
+    if (!strict && isPlainObject$1(base)) {
+      if (!getPrototypeOf(base)) {
+        const obj = /* @__PURE__ */ Object.create(null);
+        return Object.assign(obj, base);
+      }
+      return { ...base };
+    }
+    const descriptors = Object.getOwnPropertyDescriptors(base);
+    delete descriptors[DRAFT_STATE];
+    let keys = Reflect.ownKeys(descriptors);
+    for (let i2 = 0; i2 < keys.length; i2++) {
+      const key = keys[i2];
+      const desc = descriptors[key];
+      if (desc.writable === false) {
+        desc.writable = true;
+        desc.configurable = true;
+      }
+      if (desc.get || desc.set)
+        descriptors[key] = {
+          configurable: true,
+          writable: true,
+          // could live with !!desc.set as well here...
+          enumerable: desc.enumerable,
+          value: base[key]
+        };
+    }
+    return Object.create(getPrototypeOf(base), descriptors);
+  }
+  function freeze(obj, deep = false) {
+    if (isFrozen(obj) || isDraft(obj) || !isDraftable(obj))
+      return obj;
+    if (getArchtype(obj) > 1) {
+      obj.set = obj.add = obj.clear = obj.delete = dontMutateFrozenCollections;
+    }
+    Object.freeze(obj);
+    if (deep)
+      Object.entries(obj).forEach(([key, value]) => freeze(value, true));
+    return obj;
+  }
+  function dontMutateFrozenCollections() {
+    die(2);
+  }
+  function isFrozen(obj) {
+    return Object.isFrozen(obj);
+  }
+  var plugins = {};
+  function getPlugin(pluginKey) {
+    const plugin = plugins[pluginKey];
+    if (!plugin) {
+      die(0, pluginKey);
+    }
+    return plugin;
+  }
+  var currentScope;
+  function getCurrentScope() {
+    return currentScope;
+  }
+  function createScope(parent_, immer_) {
+    return {
+      drafts_: [],
+      parent_,
+      immer_,
+      // Whenever the modified draft contains a draft from another scope, we
+      // need to prevent auto-freezing so the unowned draft can be finalized.
+      canAutoFreeze_: true,
+      unfinalizedDrafts_: 0
+    };
+  }
+  function usePatchesInScope(scope, patchListener) {
+    if (patchListener) {
+      getPlugin("Patches");
+      scope.patches_ = [];
+      scope.inversePatches_ = [];
+      scope.patchListener_ = patchListener;
+    }
+  }
+  function revokeScope(scope) {
+    leaveScope(scope);
+    scope.drafts_.forEach(revokeDraft);
+    scope.drafts_ = null;
+  }
+  function leaveScope(scope) {
+    if (scope === currentScope) {
+      currentScope = scope.parent_;
+    }
+  }
+  function enterScope(immer2) {
+    return currentScope = createScope(currentScope, immer2);
+  }
+  function revokeDraft(draft) {
+    const state = draft[DRAFT_STATE];
+    if (state.type_ === 0 || state.type_ === 1)
+      state.revoke_();
+    else
+      state.revoked_ = true;
+  }
+  function processResult(result, scope) {
+    scope.unfinalizedDrafts_ = scope.drafts_.length;
+    const baseDraft = scope.drafts_[0];
+    const isReplaced = result !== void 0 && result !== baseDraft;
+    if (isReplaced) {
+      if (baseDraft[DRAFT_STATE].modified_) {
+        revokeScope(scope);
+        die(4);
+      }
+      if (isDraftable(result)) {
+        result = finalize(scope, result);
+        if (!scope.parent_)
+          maybeFreeze(scope, result);
+      }
+      if (scope.patches_) {
+        getPlugin("Patches").generateReplacementPatches_(
+          baseDraft[DRAFT_STATE].base_,
+          result,
+          scope.patches_,
+          scope.inversePatches_
+        );
+      }
+    } else {
+      result = finalize(scope, baseDraft, []);
+    }
+    revokeScope(scope);
+    if (scope.patches_) {
+      scope.patchListener_(scope.patches_, scope.inversePatches_);
+    }
+    return result !== NOTHING ? result : void 0;
+  }
+  function finalize(rootScope, value, path) {
+    if (isFrozen(value))
+      return value;
+    const state = value[DRAFT_STATE];
+    if (!state) {
+      each(
+        value,
+        (key, childValue) => finalizeProperty(rootScope, state, value, key, childValue, path)
+      );
+      return value;
+    }
+    if (state.scope_ !== rootScope)
+      return value;
+    if (!state.modified_) {
+      maybeFreeze(rootScope, state.base_, true);
+      return state.base_;
+    }
+    if (!state.finalized_) {
+      state.finalized_ = true;
+      state.scope_.unfinalizedDrafts_--;
+      const result = state.copy_;
+      let resultEach = result;
+      let isSet2 = false;
+      if (state.type_ === 3) {
+        resultEach = new Set(result);
+        result.clear();
+        isSet2 = true;
+      }
+      each(
+        resultEach,
+        (key, childValue) => finalizeProperty(rootScope, state, result, key, childValue, path, isSet2)
+      );
+      maybeFreeze(rootScope, result, false);
+      if (path && rootScope.patches_) {
+        getPlugin("Patches").generatePatches_(
+          state,
+          path,
+          rootScope.patches_,
+          rootScope.inversePatches_
+        );
+      }
+    }
+    return state.copy_;
+  }
+  function finalizeProperty(rootScope, parentState, targetObject, prop, childValue, rootPath, targetIsSet) {
+    if (process.env.NODE_ENV !== "production" && childValue === targetObject)
+      die(5);
+    if (isDraft(childValue)) {
+      const path = rootPath && parentState && parentState.type_ !== 3 && // Set objects are atomic since they have no keys.
+      !has(parentState.assigned_, prop) ? rootPath.concat(prop) : void 0;
+      const res = finalize(rootScope, childValue, path);
+      set(targetObject, prop, res);
+      if (isDraft(res)) {
+        rootScope.canAutoFreeze_ = false;
+      } else
+        return;
+    } else if (targetIsSet) {
+      targetObject.add(childValue);
+    }
+    if (isDraftable(childValue) && !isFrozen(childValue)) {
+      if (!rootScope.immer_.autoFreeze_ && rootScope.unfinalizedDrafts_ < 1) {
+        return;
+      }
+      finalize(rootScope, childValue);
+      if ((!parentState || !parentState.scope_.parent_) && typeof prop !== "symbol" && Object.prototype.propertyIsEnumerable.call(targetObject, prop))
+        maybeFreeze(rootScope, childValue);
+    }
+  }
+  function maybeFreeze(scope, value, deep = false) {
+    if (!scope.parent_ && scope.immer_.autoFreeze_ && scope.canAutoFreeze_) {
+      freeze(value, deep);
+    }
+  }
+  function createProxyProxy(base, parent) {
+    const isArray2 = Array.isArray(base);
+    const state = {
+      type_: isArray2 ? 1 : 0,
+      // Track which produce call this is associated with.
+      scope_: parent ? parent.scope_ : getCurrentScope(),
+      // True for both shallow and deep changes.
+      modified_: false,
+      // Used during finalization.
+      finalized_: false,
+      // Track which properties have been assigned (true) or deleted (false).
+      assigned_: {},
+      // The parent draft state.
+      parent_: parent,
+      // The base state.
+      base_: base,
+      // The base proxy.
+      draft_: null,
+      // set below
+      // The base copy with any updated values.
+      copy_: null,
+      // Called by the `produce` function.
+      revoke_: null,
+      isManual_: false
+    };
+    let target = state;
+    let traps = objectTraps;
+    if (isArray2) {
+      target = [state];
+      traps = arrayTraps;
+    }
+    const { revoke, proxy } = Proxy.revocable(target, traps);
+    state.draft_ = proxy;
+    state.revoke_ = revoke;
+    return proxy;
+  }
+  var objectTraps = {
+    get(state, prop) {
+      if (prop === DRAFT_STATE)
+        return state;
+      const source = latest(state);
+      if (!has(source, prop)) {
+        return readPropFromProto(state, source, prop);
+      }
+      const value = source[prop];
+      if (state.finalized_ || !isDraftable(value)) {
+        return value;
+      }
+      if (value === peek(state.base_, prop)) {
+        prepareCopy(state);
+        return state.copy_[prop] = createProxy(value, state);
+      }
+      return value;
+    },
+    has(state, prop) {
+      return prop in latest(state);
+    },
+    ownKeys(state) {
+      return Reflect.ownKeys(latest(state));
+    },
+    set(state, prop, value) {
+      const desc = getDescriptorFromProto(latest(state), prop);
+      if (desc == null ? void 0 : desc.set) {
+        desc.set.call(state.draft_, value);
+        return true;
+      }
+      if (!state.modified_) {
+        const current2 = peek(latest(state), prop);
+        const currentState = current2 == null ? void 0 : current2[DRAFT_STATE];
+        if (currentState && currentState.base_ === value) {
+          state.copy_[prop] = value;
+          state.assigned_[prop] = false;
+          return true;
+        }
+        if (is(value, current2) && (value !== void 0 || has(state.base_, prop)))
+          return true;
+        prepareCopy(state);
+        markChanged(state);
+      }
+      if (state.copy_[prop] === value && // special case: handle new props with value 'undefined'
+      (value !== void 0 || prop in state.copy_) || // special case: NaN
+      Number.isNaN(value) && Number.isNaN(state.copy_[prop]))
+        return true;
+      state.copy_[prop] = value;
+      state.assigned_[prop] = true;
+      return true;
+    },
+    deleteProperty(state, prop) {
+      if (peek(state.base_, prop) !== void 0 || prop in state.base_) {
+        state.assigned_[prop] = false;
+        prepareCopy(state);
+        markChanged(state);
+      } else {
+        delete state.assigned_[prop];
+      }
+      if (state.copy_) {
+        delete state.copy_[prop];
+      }
+      return true;
+    },
+    // Note: We never coerce `desc.value` into an Immer draft, because we can't make
+    // the same guarantee in ES5 mode.
+    getOwnPropertyDescriptor(state, prop) {
+      const owner = latest(state);
+      const desc = Reflect.getOwnPropertyDescriptor(owner, prop);
+      if (!desc)
+        return desc;
+      return {
+        writable: true,
+        configurable: state.type_ !== 1 || prop !== "length",
+        enumerable: desc.enumerable,
+        value: owner[prop]
+      };
+    },
+    defineProperty() {
+      die(11);
+    },
+    getPrototypeOf(state) {
+      return getPrototypeOf(state.base_);
+    },
+    setPrototypeOf() {
+      die(12);
+    }
+  };
+  var arrayTraps = {};
+  each(objectTraps, (key, fn) => {
+    arrayTraps[key] = function() {
+      arguments[0] = arguments[0][0];
+      return fn.apply(this, arguments);
+    };
+  });
+  arrayTraps.deleteProperty = function(state, prop) {
+    if (process.env.NODE_ENV !== "production" && isNaN(parseInt(prop)))
+      die(13);
+    return arrayTraps.set.call(this, state, prop, void 0);
+  };
+  arrayTraps.set = function(state, prop, value) {
+    if (process.env.NODE_ENV !== "production" && prop !== "length" && isNaN(parseInt(prop)))
+      die(14);
+    return objectTraps.set.call(this, state[0], prop, value, state[0]);
+  };
+  function peek(draft, prop) {
+    const state = draft[DRAFT_STATE];
+    const source = state ? latest(state) : draft;
+    return source[prop];
+  }
+  function readPropFromProto(state, source, prop) {
+    var _a2;
+    const desc = getDescriptorFromProto(source, prop);
+    return desc ? `value` in desc ? desc.value : (
+      // This is a very special case, if the prop is a getter defined by the
+      // prototype, we should invoke it with the draft as context!
+      (_a2 = desc.get) == null ? void 0 : _a2.call(state.draft_)
+    ) : void 0;
+  }
+  function getDescriptorFromProto(source, prop) {
+    if (!(prop in source))
+      return void 0;
+    let proto = getPrototypeOf(source);
+    while (proto) {
+      const desc = Object.getOwnPropertyDescriptor(proto, prop);
+      if (desc)
+        return desc;
+      proto = getPrototypeOf(proto);
+    }
+    return void 0;
+  }
+  function markChanged(state) {
+    if (!state.modified_) {
+      state.modified_ = true;
+      if (state.parent_) {
+        markChanged(state.parent_);
+      }
+    }
+  }
+  function prepareCopy(state) {
+    if (!state.copy_) {
+      state.copy_ = shallowCopy(
+        state.base_,
+        state.scope_.immer_.useStrictShallowCopy_
+      );
+    }
+  }
+  var Immer2 = class {
+    constructor(config2) {
+      this.autoFreeze_ = true;
+      this.useStrictShallowCopy_ = false;
+      this.produce = (base, recipe, patchListener) => {
+        if (typeof base === "function" && typeof recipe !== "function") {
+          const defaultBase = recipe;
+          recipe = base;
+          const self2 = this;
+          return function curriedProduce(base2 = defaultBase, ...args) {
+            return self2.produce(base2, (draft) => recipe.call(this, draft, ...args));
+          };
+        }
+        if (typeof recipe !== "function")
+          die(6);
+        if (patchListener !== void 0 && typeof patchListener !== "function")
+          die(7);
+        let result;
+        if (isDraftable(base)) {
+          const scope = enterScope(this);
+          const proxy = createProxy(base, void 0);
+          let hasError = true;
+          try {
+            result = recipe(proxy);
+            hasError = false;
+          } finally {
+            if (hasError)
+              revokeScope(scope);
+            else
+              leaveScope(scope);
+          }
+          usePatchesInScope(scope, patchListener);
+          return processResult(result, scope);
+        } else if (!base || typeof base !== "object") {
+          result = recipe(base);
+          if (result === void 0)
+            result = base;
+          if (result === NOTHING)
+            result = void 0;
+          if (this.autoFreeze_)
+            freeze(result, true);
+          if (patchListener) {
+            const p = [];
+            const ip = [];
+            getPlugin("Patches").generateReplacementPatches_(base, result, p, ip);
+            patchListener(p, ip);
+          }
+          return result;
+        } else
+          die(1, base);
+      };
+      this.produceWithPatches = (base, recipe) => {
+        if (typeof base === "function") {
+          return (state, ...args) => this.produceWithPatches(state, (draft) => base(draft, ...args));
+        }
+        let patches, inversePatches;
+        const result = this.produce(base, recipe, (p, ip) => {
+          patches = p;
+          inversePatches = ip;
+        });
+        return [result, patches, inversePatches];
+      };
+      if (typeof (config2 == null ? void 0 : config2.autoFreeze) === "boolean")
+        this.setAutoFreeze(config2.autoFreeze);
+      if (typeof (config2 == null ? void 0 : config2.useStrictShallowCopy) === "boolean")
+        this.setUseStrictShallowCopy(config2.useStrictShallowCopy);
+    }
+    createDraft(base) {
+      if (!isDraftable(base))
+        die(8);
+      if (isDraft(base))
+        base = current(base);
+      const scope = enterScope(this);
+      const proxy = createProxy(base, void 0);
+      proxy[DRAFT_STATE].isManual_ = true;
+      leaveScope(scope);
+      return proxy;
+    }
+    finishDraft(draft, patchListener) {
+      const state = draft && draft[DRAFT_STATE];
+      if (!state || !state.isManual_)
+        die(9);
+      const { scope_: scope } = state;
+      usePatchesInScope(scope, patchListener);
+      return processResult(void 0, scope);
+    }
+    /**
+     * Pass true to automatically freeze all copies created by Immer.
+     *
+     * By default, auto-freezing is enabled.
+     */
+    setAutoFreeze(value) {
+      this.autoFreeze_ = value;
+    }
+    /**
+     * Pass true to enable strict shallow copy.
+     *
+     * By default, immer does not copy the object descriptors such as getter, setter and non-enumrable properties.
+     */
+    setUseStrictShallowCopy(value) {
+      this.useStrictShallowCopy_ = value;
+    }
+    applyPatches(base, patches) {
+      let i2;
+      for (i2 = patches.length - 1; i2 >= 0; i2--) {
+        const patch = patches[i2];
+        if (patch.path.length === 0 && patch.op === "replace") {
+          base = patch.value;
+          break;
+        }
+      }
+      if (i2 > -1) {
+        patches = patches.slice(i2 + 1);
+      }
+      const applyPatchesImpl = getPlugin("Patches").applyPatches_;
+      if (isDraft(base)) {
+        return applyPatchesImpl(base, patches);
+      }
+      return this.produce(
+        base,
+        (draft) => applyPatchesImpl(draft, patches)
+      );
+    }
+  };
+  function createProxy(value, parent) {
+    const draft = isMap(value) ? getPlugin("MapSet").proxyMap_(value, parent) : isSet(value) ? getPlugin("MapSet").proxySet_(value, parent) : createProxyProxy(value, parent);
+    const scope = parent ? parent.scope_ : getCurrentScope();
+    scope.drafts_.push(draft);
+    return draft;
+  }
+  function current(value) {
+    if (!isDraft(value))
+      die(10, value);
+    return currentImpl(value);
+  }
+  function currentImpl(value) {
+    if (!isDraftable(value) || isFrozen(value))
+      return value;
+    const state = value[DRAFT_STATE];
+    let copy2;
+    if (state) {
+      if (!state.modified_)
+        return state.base_;
+      state.finalized_ = true;
+      copy2 = shallowCopy(value, state.scope_.immer_.useStrictShallowCopy_);
+    } else {
+      copy2 = shallowCopy(value, true);
+    }
+    each(copy2, (key, childValue) => {
+      set(copy2, key, currentImpl(childValue));
+    });
+    if (state) {
+      state.finalized_ = false;
+    }
+    return copy2;
+  }
+  var immer = new Immer2();
+  var produce = immer.produce;
+  immer.produceWithPatches.bind(
+    immer
+  );
+  immer.setAutoFreeze.bind(immer);
+  immer.setUseStrictShallowCopy.bind(immer);
+  immer.applyPatches.bind(immer);
+  immer.createDraft.bind(immer);
+  immer.finishDraft.bind(immer);
+  function __awaiter(thisArg, _arguments, P2, generator) {
+    function adopt(value) {
+      return value instanceof P2 ? value : new P2(function(resolve) {
+        resolve(value);
+      });
+    }
+    return new (P2 || (P2 = Promise))(function(resolve, reject) {
+      function fulfilled(value) {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function rejected(value) {
+        try {
+          step(generator["throw"](value));
+        } catch (e) {
+          reject(e);
+        }
+      }
+      function step(result) {
+        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+      }
+      step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+  }
+  function __generator(thisArg, body2) {
+    var _2 = { label: 0, sent: function() {
+      if (t[0] & 1)
+        throw t[1];
+      return t[1];
+    }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
+      return this;
+    }), g;
+    function verb(n) {
+      return function(v) {
+        return step([n, v]);
+      };
+    }
+    function step(op) {
+      if (f)
+        throw new TypeError("Generator is already executing.");
+      while (g && (g = 0, op[0] && (_2 = 0)), _2)
+        try {
+          if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
+            return t;
+          if (y = 0, t)
+            op = [op[0] & 2, t.value];
+          switch (op[0]) {
+            case 0:
+            case 1:
+              t = op;
+              break;
+            case 4:
+              _2.label++;
+              return { value: op[1], done: false };
+            case 5:
+              _2.label++;
+              y = op[1];
+              op = [0];
+              continue;
+            case 7:
+              op = _2.ops.pop();
+              _2.trys.pop();
+              continue;
+            default:
+              if (!(t = _2.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+                _2 = 0;
+                continue;
+              }
+              if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+                _2.label = op[1];
+                break;
+              }
+              if (op[0] === 6 && _2.label < t[1]) {
+                _2.label = t[1];
+                t = op;
+                break;
+              }
+              if (t && _2.label < t[2]) {
+                _2.label = t[2];
+                _2.ops.push(op);
+                break;
+              }
+              if (t[2])
+                _2.ops.pop();
+              _2.trys.pop();
+              continue;
+          }
+          op = body2.call(thisArg, _2);
+        } catch (e) {
+          op = [6, e];
+          y = 0;
+        } finally {
+          f = t = 0;
+        }
+      if (op[0] & 5)
+        throw op[1];
+      return { value: op[0] ? op[1] : void 0, done: true };
+    }
+  }
+  function __read(o, n) {
+    var m2 = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m2)
+      return o;
+    var i2 = m2.call(o), r2, ar = [], e;
+    try {
+      while ((n === void 0 || n-- > 0) && !(r2 = i2.next()).done)
+        ar.push(r2.value);
+    } catch (error) {
+      e = { error };
+    } finally {
+      try {
+        if (r2 && !r2.done && (m2 = i2["return"]))
+          m2.call(i2);
+      } finally {
+        if (e)
+          throw e.error;
+      }
+    }
+    return ar;
+  }
+  function __spreadArray(to, from2, pack) {
+    if (pack || arguments.length === 2)
+      for (var i2 = 0, l = from2.length, ar; i2 < l; i2++) {
+        if (ar || !(i2 in from2)) {
+          if (!ar)
+            ar = Array.prototype.slice.call(from2, 0, i2);
+          ar[i2] = from2[i2];
+        }
+      }
+    return to.concat(ar || Array.prototype.slice.call(from2));
+  }
+  typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
+    var e = new Error(message);
+    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+  };
+  var COMMON_MIME_TYPES = /* @__PURE__ */ new Map([
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+    ["aac", "audio/aac"],
+    ["abw", "application/x-abiword"],
+    ["arc", "application/x-freearc"],
+    ["avif", "image/avif"],
+    ["avi", "video/x-msvideo"],
+    ["azw", "application/vnd.amazon.ebook"],
+    ["bin", "application/octet-stream"],
+    ["bmp", "image/bmp"],
+    ["bz", "application/x-bzip"],
+    ["bz2", "application/x-bzip2"],
+    ["cda", "application/x-cdf"],
+    ["csh", "application/x-csh"],
+    ["css", "text/css"],
+    ["csv", "text/csv"],
+    ["doc", "application/msword"],
+    ["docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+    ["eot", "application/vnd.ms-fontobject"],
+    ["epub", "application/epub+zip"],
+    ["gz", "application/gzip"],
+    ["gif", "image/gif"],
+    ["heic", "image/heic"],
+    ["heif", "image/heif"],
+    ["htm", "text/html"],
+    ["html", "text/html"],
+    ["ico", "image/vnd.microsoft.icon"],
+    ["ics", "text/calendar"],
+    ["jar", "application/java-archive"],
+    ["jpeg", "image/jpeg"],
+    ["jpg", "image/jpeg"],
+    ["js", "text/javascript"],
+    ["json", "application/json"],
+    ["jsonld", "application/ld+json"],
+    ["mid", "audio/midi"],
+    ["midi", "audio/midi"],
+    ["mjs", "text/javascript"],
+    ["mp3", "audio/mpeg"],
+    ["mp4", "video/mp4"],
+    ["mpeg", "video/mpeg"],
+    ["mpkg", "application/vnd.apple.installer+xml"],
+    ["odp", "application/vnd.oasis.opendocument.presentation"],
+    ["ods", "application/vnd.oasis.opendocument.spreadsheet"],
+    ["odt", "application/vnd.oasis.opendocument.text"],
+    ["oga", "audio/ogg"],
+    ["ogv", "video/ogg"],
+    ["ogx", "application/ogg"],
+    ["opus", "audio/opus"],
+    ["otf", "font/otf"],
+    ["png", "image/png"],
+    ["pdf", "application/pdf"],
+    ["php", "application/x-httpd-php"],
+    ["ppt", "application/vnd.ms-powerpoint"],
+    ["pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+    ["rar", "application/vnd.rar"],
+    ["rtf", "application/rtf"],
+    ["sh", "application/x-sh"],
+    ["svg", "image/svg+xml"],
+    ["swf", "application/x-shockwave-flash"],
+    ["tar", "application/x-tar"],
+    ["tif", "image/tiff"],
+    ["tiff", "image/tiff"],
+    ["ts", "video/mp2t"],
+    ["ttf", "font/ttf"],
+    ["txt", "text/plain"],
+    ["vsd", "application/vnd.visio"],
+    ["wav", "audio/wav"],
+    ["weba", "audio/webm"],
+    ["webm", "video/webm"],
+    ["webp", "image/webp"],
+    ["woff", "font/woff"],
+    ["woff2", "font/woff2"],
+    ["xhtml", "application/xhtml+xml"],
+    ["xls", "application/vnd.ms-excel"],
+    ["xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+    ["xml", "application/xml"],
+    ["xul", "application/vnd.mozilla.xul+xml"],
+    ["zip", "application/zip"],
+    ["7z", "application/x-7z-compressed"],
+    // Others
+    ["mkv", "video/x-matroska"],
+    ["mov", "video/quicktime"],
+    ["msg", "application/vnd.ms-outlook"]
+  ]);
+  function toFileWithPath(file, path) {
+    var f = withMimeType(file);
+    if (typeof f.path !== "string") {
+      var webkitRelativePath = file.webkitRelativePath;
+      Object.defineProperty(f, "path", {
+        value: typeof path === "string" ? path : typeof webkitRelativePath === "string" && webkitRelativePath.length > 0 ? webkitRelativePath : file.name,
+        writable: false,
+        configurable: false,
+        enumerable: true
+      });
+    }
+    return f;
+  }
+  function withMimeType(file) {
+    var name2 = file.name;
+    var hasExtension = name2 && name2.lastIndexOf(".") !== -1;
+    if (hasExtension && !file.type) {
+      var ext = name2.split(".").pop().toLowerCase();
+      var type = COMMON_MIME_TYPES.get(ext);
+      if (type) {
+        Object.defineProperty(file, "type", {
+          value: type,
+          writable: false,
+          configurable: false,
+          enumerable: true
+        });
+      }
+    }
+    return file;
+  }
+  var FILES_TO_IGNORE = [
+    // Thumbnail cache files for macOS and Windows
+    ".DS_Store",
+    "Thumbs.db"
+    // Windows
+  ];
+  function fromEvent(evt) {
+    return __awaiter(this, void 0, void 0, function() {
+      return __generator(this, function(_a2) {
+        if (isObject(evt) && isDataTransfer(evt.dataTransfer)) {
+          return [2, getDataTransferFiles(evt.dataTransfer, evt.type)];
+        } else if (isChangeEvt(evt)) {
+          return [2, getInputFiles(evt)];
+        } else if (Array.isArray(evt) && evt.every(function(item) {
+          return "getFile" in item && typeof item.getFile === "function";
+        })) {
+          return [2, getFsHandleFiles(evt)];
+        }
+        return [2, []];
+      });
+    });
+  }
+  function isDataTransfer(value) {
+    return isObject(value);
+  }
+  function isChangeEvt(value) {
+    return isObject(value) && isObject(value.target);
+  }
+  function isObject(v) {
+    return typeof v === "object" && v !== null;
+  }
+  function getInputFiles(evt) {
+    return fromList(evt.target.files).map(function(file) {
+      return toFileWithPath(file);
+    });
+  }
+  function getFsHandleFiles(handles) {
+    return __awaiter(this, void 0, void 0, function() {
+      var files;
+      return __generator(this, function(_a2) {
+        switch (_a2.label) {
+          case 0:
+            return [4, Promise.all(handles.map(function(h) {
+              return h.getFile();
+            }))];
+          case 1:
+            files = _a2.sent();
+            return [2, files.map(function(file) {
+              return toFileWithPath(file);
+            })];
+        }
+      });
+    });
+  }
+  function getDataTransferFiles(dt, type) {
+    return __awaiter(this, void 0, void 0, function() {
+      var items, files;
+      return __generator(this, function(_a2) {
+        switch (_a2.label) {
+          case 0:
+            if (!dt.items)
+              return [3, 2];
+            items = fromList(dt.items).filter(function(item) {
+              return item.kind === "file";
+            });
+            if (type !== "drop") {
+              return [2, items];
+            }
+            return [4, Promise.all(items.map(toFilePromises))];
+          case 1:
+            files = _a2.sent();
+            return [2, noIgnoredFiles(flatten(files))];
+          case 2:
+            return [2, noIgnoredFiles(fromList(dt.files).map(function(file) {
+              return toFileWithPath(file);
+            }))];
+        }
+      });
+    });
+  }
+  function noIgnoredFiles(files) {
+    return files.filter(function(file) {
+      return FILES_TO_IGNORE.indexOf(file.name) === -1;
+    });
+  }
+  function fromList(items) {
+    if (items === null) {
+      return [];
+    }
+    var files = [];
+    for (var i2 = 0; i2 < items.length; i2++) {
+      var file = items[i2];
+      files.push(file);
+    }
+    return files;
+  }
+  function toFilePromises(item) {
+    if (typeof item.webkitGetAsEntry !== "function") {
+      return fromDataTransferItem(item);
+    }
+    var entry = item.webkitGetAsEntry();
+    if (entry && entry.isDirectory) {
+      return fromDirEntry(entry);
+    }
+    return fromDataTransferItem(item);
+  }
+  function flatten(items) {
+    return items.reduce(function(acc, files) {
+      return __spreadArray(__spreadArray([], __read(acc), false), __read(Array.isArray(files) ? flatten(files) : [files]), false);
+    }, []);
+  }
+  function fromDataTransferItem(item) {
+    var file = item.getAsFile();
+    if (!file) {
+      return Promise.reject("".concat(item, " is not a File"));
+    }
+    var fwp = toFileWithPath(file);
+    return Promise.resolve(fwp);
+  }
+  function fromEntry(entry) {
+    return __awaiter(this, void 0, void 0, function() {
+      return __generator(this, function(_a2) {
+        return [2, entry.isDirectory ? fromDirEntry(entry) : fromFileEntry(entry)];
+      });
+    });
+  }
+  function fromDirEntry(entry) {
+    var reader = entry.createReader();
+    return new Promise(function(resolve, reject) {
+      var entries = [];
+      function readEntries() {
+        var _this = this;
+        reader.readEntries(function(batch2) {
+          return __awaiter(_this, void 0, void 0, function() {
+            var files, err_1, items;
+            return __generator(this, function(_a2) {
+              switch (_a2.label) {
+                case 0:
+                  if (!!batch2.length)
+                    return [3, 5];
+                  _a2.label = 1;
+                case 1:
+                  _a2.trys.push([1, 3, , 4]);
+                  return [4, Promise.all(entries)];
+                case 2:
+                  files = _a2.sent();
+                  resolve(files);
+                  return [3, 4];
+                case 3:
+                  err_1 = _a2.sent();
+                  reject(err_1);
+                  return [3, 4];
+                case 4:
+                  return [3, 6];
+                case 5:
+                  items = Promise.all(batch2.map(fromEntry));
+                  entries.push(items);
+                  readEntries();
+                  _a2.label = 6;
+                case 6:
+                  return [
+                    2
+                    /*return*/
+                  ];
+              }
+            });
+          });
+        }, function(err) {
+          reject(err);
+        });
+      }
+      readEntries();
+    });
+  }
+  function fromFileEntry(entry) {
+    return __awaiter(this, void 0, void 0, function() {
+      return __generator(this, function(_a2) {
+        return [2, new Promise(function(resolve, reject) {
+          entry.file(function(file) {
+            var fwp = toFileWithPath(file, entry.fullPath);
+            resolve(fwp);
+          }, function(err) {
+            reject(err);
+          });
+        })];
+      });
+    });
+  }
+  var _default$h = function(file, acceptedFiles) {
+    if (file && acceptedFiles) {
+      var acceptedFilesArray = Array.isArray(acceptedFiles) ? acceptedFiles : acceptedFiles.split(",");
+      var fileName = file.name || "";
+      var mimeType = (file.type || "").toLowerCase();
+      var baseMimeType = mimeType.replace(/\/.*$/, "");
+      return acceptedFilesArray.some(function(type) {
+        var validType = type.trim().toLowerCase();
+        if (validType.charAt(0) === ".") {
+          return fileName.toLowerCase().endsWith(validType);
+        } else if (validType.endsWith("/*")) {
+          return baseMimeType === validType.replace(/\/.*$/, "");
+        }
+        return mimeType === validType;
+      });
+    }
+    return true;
+  };
+  function _toConsumableArray$1(arr) {
+    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread$1();
+  }
+  function _nonIterableSpread$1() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _iterableToArray$1(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+      return Array.from(iter);
+  }
+  function _arrayWithoutHoles$1(arr) {
+    if (Array.isArray(arr))
+      return _arrayLikeToArray$1(arr);
+  }
+  function ownKeys$1(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function(sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+  }
+  function _objectSpread$1(target) {
+    for (var i2 = 1; i2 < arguments.length; i2++) {
+      var source = null != arguments[i2] ? arguments[i2] : {};
+      i2 % 2 ? ownKeys$1(Object(source), true).forEach(function(key) {
+        _defineProperty$1(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function(key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+    return target;
+  }
+  function _defineProperty$1(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true });
+    } else {
+      obj[key] = value;
+    }
+    return obj;
+  }
+  function _slicedToArray$1(arr, i2) {
+    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i2) || _unsupportedIterableToArray$1(arr, i2) || _nonIterableRest$1();
+  }
+  function _nonIterableRest$1() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _unsupportedIterableToArray$1(o, minLen) {
+    if (!o)
+      return;
+    if (typeof o === "string")
+      return _arrayLikeToArray$1(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor)
+      n = o.constructor.name;
+    if (n === "Map" || n === "Set")
+      return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+      return _arrayLikeToArray$1(o, minLen);
+  }
+  function _arrayLikeToArray$1(arr, len) {
+    if (len == null || len > arr.length)
+      len = arr.length;
+    for (var i2 = 0, arr2 = new Array(len); i2 < len; i2++) {
+      arr2[i2] = arr[i2];
+    }
+    return arr2;
+  }
+  function _iterableToArrayLimit$1(arr, i2) {
+    var _i2 = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i2 == null)
+      return;
+    var _arr = [];
+    var _n = true;
+    var _d2 = false;
+    var _s, _e2;
+    try {
+      for (_i2 = _i2.call(arr); !(_n = (_s = _i2.next()).done); _n = true) {
+        _arr.push(_s.value);
+        if (i2 && _arr.length === i2)
+          break;
+      }
+    } catch (err) {
+      _d2 = true;
+      _e2 = err;
+    } finally {
+      try {
+        if (!_n && _i2["return"] != null)
+          _i2["return"]();
+      } finally {
+        if (_d2)
+          throw _e2;
+      }
+    }
+    return _arr;
+  }
+  function _arrayWithHoles$1(arr) {
+    if (Array.isArray(arr))
+      return arr;
+  }
+  var FILE_INVALID_TYPE = "file-invalid-type";
+  var FILE_TOO_LARGE = "file-too-large";
+  var FILE_TOO_SMALL = "file-too-small";
+  var TOO_MANY_FILES = "too-many-files";
+  var getInvalidTypeRejectionErr = function getInvalidTypeRejectionErr2(accept) {
+    accept = Array.isArray(accept) && accept.length === 1 ? accept[0] : accept;
+    var messageSuffix = Array.isArray(accept) ? "one of ".concat(accept.join(", ")) : accept;
+    return {
+      code: FILE_INVALID_TYPE,
+      message: "File type must be ".concat(messageSuffix)
+    };
+  };
+  var getTooLargeRejectionErr = function getTooLargeRejectionErr2(maxSize) {
+    return {
+      code: FILE_TOO_LARGE,
+      message: "File is larger than ".concat(maxSize, " ").concat(maxSize === 1 ? "byte" : "bytes")
+    };
+  };
+  var getTooSmallRejectionErr = function getTooSmallRejectionErr2(minSize) {
+    return {
+      code: FILE_TOO_SMALL,
+      message: "File is smaller than ".concat(minSize, " ").concat(minSize === 1 ? "byte" : "bytes")
+    };
+  };
+  var TOO_MANY_FILES_REJECTION = {
+    code: TOO_MANY_FILES,
+    message: "Too many files"
+  };
+  function fileAccepted(file, accept) {
+    var isAcceptable = file.type === "application/x-moz-file" || _default$h(file, accept);
+    return [isAcceptable, isAcceptable ? null : getInvalidTypeRejectionErr(accept)];
+  }
+  function fileMatchSize(file, minSize, maxSize) {
+    if (isDefined(file.size)) {
+      if (isDefined(minSize) && isDefined(maxSize)) {
+        if (file.size > maxSize)
+          return [false, getTooLargeRejectionErr(maxSize)];
+        if (file.size < minSize)
+          return [false, getTooSmallRejectionErr(minSize)];
+      } else if (isDefined(minSize) && file.size < minSize)
+        return [false, getTooSmallRejectionErr(minSize)];
+      else if (isDefined(maxSize) && file.size > maxSize)
+        return [false, getTooLargeRejectionErr(maxSize)];
+    }
+    return [true, null];
+  }
+  function isDefined(value) {
+    return value !== void 0 && value !== null;
+  }
+  function allFilesAccepted(_ref) {
+    var files = _ref.files, accept = _ref.accept, minSize = _ref.minSize, maxSize = _ref.maxSize, multiple = _ref.multiple, maxFiles = _ref.maxFiles, validator2 = _ref.validator;
+    if (!multiple && files.length > 1 || multiple && maxFiles >= 1 && files.length > maxFiles) {
+      return false;
+    }
+    return files.every(function(file) {
+      var _fileAccepted = fileAccepted(file, accept), _fileAccepted2 = _slicedToArray$1(_fileAccepted, 1), accepted = _fileAccepted2[0];
+      var _fileMatchSize = fileMatchSize(file, minSize, maxSize), _fileMatchSize2 = _slicedToArray$1(_fileMatchSize, 1), sizeMatch = _fileMatchSize2[0];
+      var customErrors = validator2 ? validator2(file) : null;
+      return accepted && sizeMatch && !customErrors;
+    });
+  }
+  function isPropagationStopped(event) {
+    if (typeof event.isPropagationStopped === "function") {
+      return event.isPropagationStopped();
+    } else if (typeof event.cancelBubble !== "undefined") {
+      return event.cancelBubble;
+    }
+    return false;
+  }
+  function isEvtWithFiles(event) {
+    if (!event.dataTransfer) {
+      return !!event.target && !!event.target.files;
+    }
+    return Array.prototype.some.call(event.dataTransfer.types, function(type) {
+      return type === "Files" || type === "application/x-moz-file";
+    });
+  }
+  function onDocumentDragOver(event) {
+    event.preventDefault();
+  }
+  function isIe(userAgent) {
+    return userAgent.indexOf("MSIE") !== -1 || userAgent.indexOf("Trident/") !== -1;
+  }
+  function isEdge(userAgent) {
+    return userAgent.indexOf("Edge/") !== -1;
+  }
+  function isIeOrEdge() {
+    var userAgent = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : window.navigator.userAgent;
+    return isIe(userAgent) || isEdge(userAgent);
+  }
+  function composeEventHandlers() {
+    for (var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) {
+      fns[_key] = arguments[_key];
+    }
+    return function(event) {
+      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+        args[_key2 - 1] = arguments[_key2];
+      }
+      return fns.some(function(fn) {
+        if (!isPropagationStopped(event) && fn) {
+          fn.apply(void 0, [event].concat(args));
+        }
+        return isPropagationStopped(event);
+      });
+    };
+  }
+  function canUseFileSystemAccessAPI() {
+    return "showOpenFilePicker" in window;
+  }
+  function pickerOptionsFromAccept(accept) {
+    if (isDefined(accept)) {
+      var acceptForPicker = Object.entries(accept).filter(function(_ref2) {
+        var _ref3 = _slicedToArray$1(_ref2, 2), mimeType = _ref3[0], ext = _ref3[1];
+        var ok2 = true;
+        if (!isMIMEType(mimeType)) {
+          console.warn('Skipped "'.concat(mimeType, '" because it is not a valid MIME type. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types for a list of valid MIME types.'));
+          ok2 = false;
+        }
+        if (!Array.isArray(ext) || !ext.every(isExt)) {
+          console.warn('Skipped "'.concat(mimeType, '" because an invalid file extension was provided.'));
+          ok2 = false;
+        }
+        return ok2;
+      }).reduce(function(agg, _ref4) {
+        var _ref5 = _slicedToArray$1(_ref4, 2), mimeType = _ref5[0], ext = _ref5[1];
+        return _objectSpread$1(_objectSpread$1({}, agg), {}, _defineProperty$1({}, mimeType, ext));
+      }, {});
+      return [{
+        // description is required due to https://crbug.com/1264708
+        description: "Files",
+        accept: acceptForPicker
+      }];
+    }
+    return accept;
+  }
+  function acceptPropAsAcceptAttr(accept) {
+    if (isDefined(accept)) {
+      return Object.entries(accept).reduce(function(a, _ref6) {
+        var _ref7 = _slicedToArray$1(_ref6, 2), mimeType = _ref7[0], ext = _ref7[1];
+        return [].concat(_toConsumableArray$1(a), [mimeType], _toConsumableArray$1(ext));
+      }, []).filter(function(v) {
+        return isMIMEType(v) || isExt(v);
+      }).join(",");
+    }
+    return void 0;
+  }
+  function isAbort(v) {
+    return v instanceof DOMException && (v.name === "AbortError" || v.code === v.ABORT_ERR);
+  }
+  function isSecurityError(v) {
+    return v instanceof DOMException && (v.name === "SecurityError" || v.code === v.SECURITY_ERR);
+  }
+  function isMIMEType(v) {
+    return v === "audio/*" || v === "video/*" || v === "image/*" || v === "text/*" || /\w+\/[-+.\w]+/g.test(v);
+  }
+  function isExt(v) {
+    return /^.*\.[\w]+$/.test(v);
+  }
+  var _excluded = ["children"], _excluded2 = ["open"], _excluded3 = ["refKey", "role", "onKeyDown", "onFocus", "onBlur", "onClick", "onDragEnter", "onDragOver", "onDragLeave", "onDrop"], _excluded4 = ["refKey", "onChange", "onClick"];
+  function _toConsumableArray(arr) {
+    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+  }
+  function _nonIterableSpread() {
+    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _iterableToArray(iter) {
+    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+      return Array.from(iter);
+  }
+  function _arrayWithoutHoles(arr) {
+    if (Array.isArray(arr))
+      return _arrayLikeToArray(arr);
+  }
+  function _slicedToArray(arr, i2) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i2) || _unsupportedIterableToArray(arr, i2) || _nonIterableRest();
+  }
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+  }
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o)
+      return;
+    if (typeof o === "string")
+      return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor)
+      n = o.constructor.name;
+    if (n === "Map" || n === "Set")
+      return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+      return _arrayLikeToArray(o, minLen);
+  }
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length)
+      len = arr.length;
+    for (var i2 = 0, arr2 = new Array(len); i2 < len; i2++) {
+      arr2[i2] = arr[i2];
+    }
+    return arr2;
+  }
+  function _iterableToArrayLimit(arr, i2) {
+    var _i2 = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+    if (_i2 == null)
+      return;
+    var _arr = [];
+    var _n = true;
+    var _d2 = false;
+    var _s, _e2;
+    try {
+      for (_i2 = _i2.call(arr); !(_n = (_s = _i2.next()).done); _n = true) {
+        _arr.push(_s.value);
+        if (i2 && _arr.length === i2)
+          break;
+      }
+    } catch (err) {
+      _d2 = true;
+      _e2 = err;
+    } finally {
+      try {
+        if (!_n && _i2["return"] != null)
+          _i2["return"]();
+      } finally {
+        if (_d2)
+          throw _e2;
+      }
+    }
+    return _arr;
+  }
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr))
+      return arr;
+  }
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      enumerableOnly && (symbols = symbols.filter(function(sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      })), keys.push.apply(keys, symbols);
+    }
+    return keys;
+  }
+  function _objectSpread(target) {
+    for (var i2 = 1; i2 < arguments.length; i2++) {
+      var source = null != arguments[i2] ? arguments[i2] : {};
+      i2 % 2 ? ownKeys(Object(source), true).forEach(function(key) {
+        _defineProperty(target, key, source[key]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
+        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+      });
+    }
+    return target;
+  }
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true });
+    } else {
+      obj[key] = value;
+    }
+    return obj;
+  }
+  function _objectWithoutProperties(source, excluded) {
+    if (source == null)
+      return {};
+    var target = _objectWithoutPropertiesLoose(source, excluded);
+    var key, i2;
+    if (Object.getOwnPropertySymbols) {
+      var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+      for (i2 = 0; i2 < sourceSymbolKeys.length; i2++) {
+        key = sourceSymbolKeys[i2];
+        if (excluded.indexOf(key) >= 0)
+          continue;
+        if (!Object.prototype.propertyIsEnumerable.call(source, key))
+          continue;
+        target[key] = source[key];
+      }
+    }
+    return target;
+  }
+  function _objectWithoutPropertiesLoose(source, excluded) {
+    if (source == null)
+      return {};
+    var target = {};
+    var sourceKeys = Object.keys(source);
+    var key, i2;
+    for (i2 = 0; i2 < sourceKeys.length; i2++) {
+      key = sourceKeys[i2];
+      if (excluded.indexOf(key) >= 0)
+        continue;
+      target[key] = source[key];
+    }
+    return target;
+  }
+  var Dropzone = /* @__PURE__ */ reactExports.forwardRef(function(_ref, ref) {
+    var children = _ref.children, params = _objectWithoutProperties(_ref, _excluded);
+    var _useDropzone = useDropzone(params), open = _useDropzone.open, props = _objectWithoutProperties(_useDropzone, _excluded2);
+    reactExports.useImperativeHandle(ref, function() {
+      return {
+        open
+      };
+    }, [open]);
+    return /* @__PURE__ */ React$1.createElement(reactExports.Fragment, null, children(_objectSpread(_objectSpread({}, props), {}, {
+      open
+    })));
+  });
+  Dropzone.displayName = "Dropzone";
+  var defaultProps = {
+    disabled: false,
+    getFilesFromEvent: fromEvent,
+    maxSize: Infinity,
+    minSize: 0,
+    multiple: true,
+    maxFiles: 0,
+    preventDropOnDocument: true,
+    noClick: false,
+    noKeyboard: false,
+    noDrag: false,
+    noDragEventsBubbling: false,
+    validator: null,
+    useFsAccessApi: true,
+    autoFocus: false
+  };
+  Dropzone.defaultProps = defaultProps;
+  Dropzone.propTypes = {
+    /**
+     * Render function that exposes the dropzone state and prop getter fns
+     *
+     * @param {object} params
+     * @param {Function} params.getRootProps Returns the props you should apply to the root drop container you render
+     * @param {Function} params.getInputProps Returns the props you should apply to hidden file input you render
+     * @param {Function} params.open Open the native file selection dialog
+     * @param {boolean} params.isFocused Dropzone area is in focus
+     * @param {boolean} params.isFileDialogActive File dialog is opened
+     * @param {boolean} params.isDragActive Active drag is in progress
+     * @param {boolean} params.isDragAccept Dragged files are accepted
+     * @param {boolean} params.isDragReject Some dragged files are rejected
+     * @param {File[]} params.acceptedFiles Accepted files
+     * @param {FileRejection[]} params.fileRejections Rejected files and why they were rejected
+     */
+    children: PropTypes.func,
+    /**
+     * Set accepted file types.
+     * Checkout https://developer.mozilla.org/en-US/docs/Web/API/window/showOpenFilePicker types option for more information.
+     * Keep in mind that mime type determination is not reliable across platforms. CSV files,
+     * for example, are reported as text/plain under macOS but as application/vnd.ms-excel under
+     * Windows. In some cases there might not be a mime type set at all (https://github.com/react-dropzone/react-dropzone/issues/276).
+     */
+    accept: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
+    /**
+     * Allow drag 'n' drop (or selection from the file dialog) of multiple files
+     */
+    multiple: PropTypes.bool,
+    /**
+     * If false, allow dropped items to take over the current browser window
+     */
+    preventDropOnDocument: PropTypes.bool,
+    /**
+     * If true, disables click to open the native file selection dialog
+     */
+    noClick: PropTypes.bool,
+    /**
+     * If true, disables SPACE/ENTER to open the native file selection dialog.
+     * Note that it also stops tracking the focus state.
+     */
+    noKeyboard: PropTypes.bool,
+    /**
+     * If true, disables drag 'n' drop
+     */
+    noDrag: PropTypes.bool,
+    /**
+     * If true, stops drag event propagation to parents
+     */
+    noDragEventsBubbling: PropTypes.bool,
+    /**
+     * Minimum file size (in bytes)
+     */
+    minSize: PropTypes.number,
+    /**
+     * Maximum file size (in bytes)
+     */
+    maxSize: PropTypes.number,
+    /**
+     * Maximum accepted number of files
+     * The default value is 0 which means there is no limitation to how many files are accepted.
+     */
+    maxFiles: PropTypes.number,
+    /**
+     * Enable/disable the dropzone
+     */
+    disabled: PropTypes.bool,
+    /**
+     * Use this to provide a custom file aggregator
+     *
+     * @param {(DragEvent|Event)} event A drag event or input change event (if files were selected via the file dialog)
+     */
+    getFilesFromEvent: PropTypes.func,
+    /**
+     * Cb for when closing the file dialog with no selection
+     */
+    onFileDialogCancel: PropTypes.func,
+    /**
+     * Cb for when opening the file dialog
+     */
+    onFileDialogOpen: PropTypes.func,
+    /**
+     * Set to true to use the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API
+     * to open the file picker instead of using an `<input type="file">` click event.
+     */
+    useFsAccessApi: PropTypes.bool,
+    /**
+     * Set to true to focus the root element on render
+     */
+    autoFocus: PropTypes.bool,
+    /**
+     * Cb for when the `dragenter` event occurs.
+     *
+     * @param {DragEvent} event
+     */
+    onDragEnter: PropTypes.func,
+    /**
+     * Cb for when the `dragleave` event occurs
+     *
+     * @param {DragEvent} event
+     */
+    onDragLeave: PropTypes.func,
+    /**
+     * Cb for when the `dragover` event occurs
+     *
+     * @param {DragEvent} event
+     */
+    onDragOver: PropTypes.func,
+    /**
+     * Cb for when the `drop` event occurs.
+     * Note that this callback is invoked after the `getFilesFromEvent` callback is done.
+     *
+     * Files are accepted or rejected based on the `accept`, `multiple`, `minSize` and `maxSize` props.
+     * `accept` must be a valid [MIME type](http://www.iana.org/assignments/media-types/media-types.xhtml) according to [input element specification](https://www.w3.org/wiki/HTML/Elements/input/file) or a valid file extension.
+     * If `multiple` is set to false and additional files are dropped,
+     * all files besides the first will be rejected.
+     * Any file which does not have a size in the [`minSize`, `maxSize`] range, will be rejected as well.
+     *
+     * Note that the `onDrop` callback will always be invoked regardless if the dropped files were accepted or rejected.
+     * If you'd like to react to a specific scenario, use the `onDropAccepted`/`onDropRejected` props.
+     *
+     * `onDrop` will provide you with an array of [File](https://developer.mozilla.org/en-US/docs/Web/API/File) objects which you can then process and send to a server.
+     * For example, with [SuperAgent](https://github.com/visionmedia/superagent) as a http/ajax library:
+     *
+     * ```js
+     * function onDrop(acceptedFiles) {
+     *   const req = request.post('/upload')
+     *   acceptedFiles.forEach(file => {
+     *     req.attach(file.name, file)
+     *   })
+     *   req.end(callback)
+     * }
+     * ```
+     *
+     * @param {File[]} acceptedFiles
+     * @param {FileRejection[]} fileRejections
+     * @param {(DragEvent|Event)} event A drag event or input change event (if files were selected via the file dialog)
+     */
+    onDrop: PropTypes.func,
+    /**
+     * Cb for when the `drop` event occurs.
+     * Note that if no files are accepted, this callback is not invoked.
+     *
+     * @param {File[]} files
+     * @param {(DragEvent|Event)} event
+     */
+    onDropAccepted: PropTypes.func,
+    /**
+     * Cb for when the `drop` event occurs.
+     * Note that if no files are rejected, this callback is not invoked.
+     *
+     * @param {FileRejection[]} fileRejections
+     * @param {(DragEvent|Event)} event
+     */
+    onDropRejected: PropTypes.func,
+    /**
+     * Cb for when there's some error from any of the promises.
+     *
+     * @param {Error} error
+     */
+    onError: PropTypes.func,
+    /**
+     * Custom validation function. It must return null if there's no errors.
+     * @param {File} file
+     * @returns {FileError|FileError[]|null}
+     */
+    validator: PropTypes.func
+  };
+  var initialState$2 = {
+    isFocused: false,
+    isFileDialogActive: false,
+    isDragActive: false,
+    isDragAccept: false,
+    isDragReject: false,
+    acceptedFiles: [],
+    fileRejections: []
+  };
+  function useDropzone() {
+    var props = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
+    var _defaultProps$props = _objectSpread(_objectSpread({}, defaultProps), props), accept = _defaultProps$props.accept, disabled = _defaultProps$props.disabled, getFilesFromEvent = _defaultProps$props.getFilesFromEvent, maxSize = _defaultProps$props.maxSize, minSize = _defaultProps$props.minSize, multiple = _defaultProps$props.multiple, maxFiles = _defaultProps$props.maxFiles, onDragEnter = _defaultProps$props.onDragEnter, onDragLeave = _defaultProps$props.onDragLeave, onDragOver = _defaultProps$props.onDragOver, onDrop = _defaultProps$props.onDrop, onDropAccepted = _defaultProps$props.onDropAccepted, onDropRejected = _defaultProps$props.onDropRejected, onFileDialogCancel = _defaultProps$props.onFileDialogCancel, onFileDialogOpen = _defaultProps$props.onFileDialogOpen, useFsAccessApi = _defaultProps$props.useFsAccessApi, autoFocus = _defaultProps$props.autoFocus, preventDropOnDocument = _defaultProps$props.preventDropOnDocument, noClick = _defaultProps$props.noClick, noKeyboard = _defaultProps$props.noKeyboard, noDrag = _defaultProps$props.noDrag, noDragEventsBubbling = _defaultProps$props.noDragEventsBubbling, onError = _defaultProps$props.onError, validator2 = _defaultProps$props.validator;
+    var acceptAttr = reactExports.useMemo(function() {
+      return acceptPropAsAcceptAttr(accept);
+    }, [accept]);
+    var pickerTypes = reactExports.useMemo(function() {
+      return pickerOptionsFromAccept(accept);
+    }, [accept]);
+    var onFileDialogOpenCb = reactExports.useMemo(function() {
+      return typeof onFileDialogOpen === "function" ? onFileDialogOpen : noop$1;
+    }, [onFileDialogOpen]);
+    var onFileDialogCancelCb = reactExports.useMemo(function() {
+      return typeof onFileDialogCancel === "function" ? onFileDialogCancel : noop$1;
+    }, [onFileDialogCancel]);
+    var rootRef = reactExports.useRef(null);
+    var inputRef = reactExports.useRef(null);
+    var _useReducer = reactExports.useReducer(reducer$1, initialState$2), _useReducer2 = _slicedToArray(_useReducer, 2), state = _useReducer2[0], dispatch = _useReducer2[1];
+    var isFocused = state.isFocused, isFileDialogActive = state.isFileDialogActive;
+    var fsAccessApiWorksRef = reactExports.useRef(typeof window !== "undefined" && window.isSecureContext && useFsAccessApi && canUseFileSystemAccessAPI());
+    var onWindowFocus = function onWindowFocus2() {
+      if (!fsAccessApiWorksRef.current && isFileDialogActive) {
+        setTimeout(function() {
+          if (inputRef.current) {
+            var files = inputRef.current.files;
+            if (!files.length) {
+              dispatch({
+                type: "closeDialog"
+              });
+              onFileDialogCancelCb();
+            }
+          }
+        }, 300);
+      }
+    };
+    reactExports.useEffect(function() {
+      window.addEventListener("focus", onWindowFocus, false);
+      return function() {
+        window.removeEventListener("focus", onWindowFocus, false);
+      };
+    }, [inputRef, isFileDialogActive, onFileDialogCancelCb, fsAccessApiWorksRef]);
+    var dragTargetsRef = reactExports.useRef([]);
+    var onDocumentDrop = function onDocumentDrop2(event) {
+      if (rootRef.current && rootRef.current.contains(event.target)) {
+        return;
+      }
+      event.preventDefault();
+      dragTargetsRef.current = [];
+    };
+    reactExports.useEffect(function() {
+      if (preventDropOnDocument) {
+        document.addEventListener("dragover", onDocumentDragOver, false);
+        document.addEventListener("drop", onDocumentDrop, false);
+      }
+      return function() {
+        if (preventDropOnDocument) {
+          document.removeEventListener("dragover", onDocumentDragOver);
+          document.removeEventListener("drop", onDocumentDrop);
+        }
+      };
+    }, [rootRef, preventDropOnDocument]);
+    reactExports.useEffect(function() {
+      if (!disabled && autoFocus && rootRef.current) {
+        rootRef.current.focus();
+      }
+      return function() {
+      };
+    }, [rootRef, autoFocus, disabled]);
+    var onErrCb = reactExports.useCallback(function(e) {
+      if (onError) {
+        onError(e);
+      } else {
+        console.error(e);
+      }
+    }, [onError]);
+    var onDragEnterCb = reactExports.useCallback(function(event) {
+      event.preventDefault();
+      event.persist();
+      stopPropagation(event);
+      dragTargetsRef.current = [].concat(_toConsumableArray(dragTargetsRef.current), [event.target]);
+      if (isEvtWithFiles(event)) {
+        Promise.resolve(getFilesFromEvent(event)).then(function(files) {
+          if (isPropagationStopped(event) && !noDragEventsBubbling) {
+            return;
+          }
+          var fileCount = files.length;
+          var isDragAccept = fileCount > 0 && allFilesAccepted({
+            files,
+            accept: acceptAttr,
+            minSize,
+            maxSize,
+            multiple,
+            maxFiles,
+            validator: validator2
+          });
+          var isDragReject = fileCount > 0 && !isDragAccept;
+          dispatch({
+            isDragAccept,
+            isDragReject,
+            isDragActive: true,
+            type: "setDraggedFiles"
+          });
+          if (onDragEnter) {
+            onDragEnter(event);
+          }
+        }).catch(function(e) {
+          return onErrCb(e);
+        });
+      }
+    }, [getFilesFromEvent, onDragEnter, onErrCb, noDragEventsBubbling, acceptAttr, minSize, maxSize, multiple, maxFiles, validator2]);
+    var onDragOverCb = reactExports.useCallback(function(event) {
+      event.preventDefault();
+      event.persist();
+      stopPropagation(event);
+      var hasFiles = isEvtWithFiles(event);
+      if (hasFiles && event.dataTransfer) {
+        try {
+          event.dataTransfer.dropEffect = "copy";
+        } catch (_unused) {
+        }
+      }
+      if (hasFiles && onDragOver) {
+        onDragOver(event);
+      }
+      return false;
+    }, [onDragOver, noDragEventsBubbling]);
+    var onDragLeaveCb = reactExports.useCallback(function(event) {
+      event.preventDefault();
+      event.persist();
+      stopPropagation(event);
+      var targets = dragTargetsRef.current.filter(function(target) {
+        return rootRef.current && rootRef.current.contains(target);
+      });
+      var targetIdx = targets.indexOf(event.target);
+      if (targetIdx !== -1) {
+        targets.splice(targetIdx, 1);
+      }
+      dragTargetsRef.current = targets;
+      if (targets.length > 0) {
+        return;
+      }
+      dispatch({
+        type: "setDraggedFiles",
+        isDragActive: false,
+        isDragAccept: false,
+        isDragReject: false
+      });
+      if (isEvtWithFiles(event) && onDragLeave) {
+        onDragLeave(event);
+      }
+    }, [rootRef, onDragLeave, noDragEventsBubbling]);
+    var setFiles = reactExports.useCallback(function(files, event) {
+      var acceptedFiles = [];
+      var fileRejections = [];
+      files.forEach(function(file) {
+        var _fileAccepted = fileAccepted(file, acceptAttr), _fileAccepted2 = _slicedToArray(_fileAccepted, 2), accepted = _fileAccepted2[0], acceptError = _fileAccepted2[1];
+        var _fileMatchSize = fileMatchSize(file, minSize, maxSize), _fileMatchSize2 = _slicedToArray(_fileMatchSize, 2), sizeMatch = _fileMatchSize2[0], sizeError = _fileMatchSize2[1];
+        var customErrors = validator2 ? validator2(file) : null;
+        if (accepted && sizeMatch && !customErrors) {
+          acceptedFiles.push(file);
+        } else {
+          var errors2 = [acceptError, sizeError];
+          if (customErrors) {
+            errors2 = errors2.concat(customErrors);
+          }
+          fileRejections.push({
+            file,
+            errors: errors2.filter(function(e) {
+              return e;
+            })
+          });
+        }
+      });
+      if (!multiple && acceptedFiles.length > 1 || multiple && maxFiles >= 1 && acceptedFiles.length > maxFiles) {
+        acceptedFiles.forEach(function(file) {
+          fileRejections.push({
+            file,
+            errors: [TOO_MANY_FILES_REJECTION]
+          });
+        });
+        acceptedFiles.splice(0);
+      }
+      dispatch({
+        acceptedFiles,
+        fileRejections,
+        type: "setFiles"
+      });
+      if (onDrop) {
+        onDrop(acceptedFiles, fileRejections, event);
+      }
+      if (fileRejections.length > 0 && onDropRejected) {
+        onDropRejected(fileRejections, event);
+      }
+      if (acceptedFiles.length > 0 && onDropAccepted) {
+        onDropAccepted(acceptedFiles, event);
+      }
+    }, [dispatch, multiple, acceptAttr, minSize, maxSize, maxFiles, onDrop, onDropAccepted, onDropRejected, validator2]);
+    var onDropCb = reactExports.useCallback(function(event) {
+      event.preventDefault();
+      event.persist();
+      stopPropagation(event);
+      dragTargetsRef.current = [];
+      if (isEvtWithFiles(event)) {
+        Promise.resolve(getFilesFromEvent(event)).then(function(files) {
+          if (isPropagationStopped(event) && !noDragEventsBubbling) {
+            return;
+          }
+          setFiles(files, event);
+        }).catch(function(e) {
+          return onErrCb(e);
+        });
+      }
+      dispatch({
+        type: "reset"
+      });
+    }, [getFilesFromEvent, setFiles, onErrCb, noDragEventsBubbling]);
+    var openFileDialog = reactExports.useCallback(function() {
+      if (fsAccessApiWorksRef.current) {
+        dispatch({
+          type: "openDialog"
+        });
+        onFileDialogOpenCb();
+        var opts = {
+          multiple,
+          types: pickerTypes
+        };
+        window.showOpenFilePicker(opts).then(function(handles) {
+          return getFilesFromEvent(handles);
+        }).then(function(files) {
+          setFiles(files, null);
+          dispatch({
+            type: "closeDialog"
+          });
+        }).catch(function(e) {
+          if (isAbort(e)) {
+            onFileDialogCancelCb(e);
+            dispatch({
+              type: "closeDialog"
+            });
+          } else if (isSecurityError(e)) {
+            fsAccessApiWorksRef.current = false;
+            if (inputRef.current) {
+              inputRef.current.value = null;
+              inputRef.current.click();
+            } else {
+              onErrCb(new Error("Cannot open the file picker because the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API is not supported and no <input> was provided."));
+            }
+          } else {
+            onErrCb(e);
+          }
+        });
+        return;
+      }
+      if (inputRef.current) {
+        dispatch({
+          type: "openDialog"
+        });
+        onFileDialogOpenCb();
+        inputRef.current.value = null;
+        inputRef.current.click();
+      }
+    }, [dispatch, onFileDialogOpenCb, onFileDialogCancelCb, useFsAccessApi, setFiles, onErrCb, pickerTypes, multiple]);
+    var onKeyDownCb = reactExports.useCallback(function(event) {
+      if (!rootRef.current || !rootRef.current.isEqualNode(event.target)) {
+        return;
+      }
+      if (event.key === " " || event.key === "Enter" || event.keyCode === 32 || event.keyCode === 13) {
+        event.preventDefault();
+        openFileDialog();
+      }
+    }, [rootRef, openFileDialog]);
+    var onFocusCb = reactExports.useCallback(function() {
+      dispatch({
+        type: "focus"
+      });
+    }, []);
+    var onBlurCb = reactExports.useCallback(function() {
+      dispatch({
+        type: "blur"
+      });
+    }, []);
+    var onClickCb = reactExports.useCallback(function() {
+      if (noClick) {
+        return;
+      }
+      if (isIeOrEdge()) {
+        setTimeout(openFileDialog, 0);
+      } else {
+        openFileDialog();
+      }
+    }, [noClick, openFileDialog]);
+    var composeHandler = function composeHandler2(fn) {
+      return disabled ? null : fn;
+    };
+    var composeKeyboardHandler = function composeKeyboardHandler2(fn) {
+      return noKeyboard ? null : composeHandler(fn);
+    };
+    var composeDragHandler = function composeDragHandler2(fn) {
+      return noDrag ? null : composeHandler(fn);
+    };
+    var stopPropagation = function stopPropagation2(event) {
+      if (noDragEventsBubbling) {
+        event.stopPropagation();
+      }
+    };
+    var getRootProps = reactExports.useMemo(function() {
+      return function() {
+        var _ref2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, _ref2$refKey = _ref2.refKey, refKey = _ref2$refKey === void 0 ? "ref" : _ref2$refKey, role = _ref2.role, onKeyDown = _ref2.onKeyDown, onFocus = _ref2.onFocus, onBlur = _ref2.onBlur, onClick = _ref2.onClick, onDragEnter2 = _ref2.onDragEnter, onDragOver2 = _ref2.onDragOver, onDragLeave2 = _ref2.onDragLeave, onDrop2 = _ref2.onDrop, rest = _objectWithoutProperties(_ref2, _excluded3);
+        return _objectSpread(_objectSpread(_defineProperty({
+          onKeyDown: composeKeyboardHandler(composeEventHandlers(onKeyDown, onKeyDownCb)),
+          onFocus: composeKeyboardHandler(composeEventHandlers(onFocus, onFocusCb)),
+          onBlur: composeKeyboardHandler(composeEventHandlers(onBlur, onBlurCb)),
+          onClick: composeHandler(composeEventHandlers(onClick, onClickCb)),
+          onDragEnter: composeDragHandler(composeEventHandlers(onDragEnter2, onDragEnterCb)),
+          onDragOver: composeDragHandler(composeEventHandlers(onDragOver2, onDragOverCb)),
+          onDragLeave: composeDragHandler(composeEventHandlers(onDragLeave2, onDragLeaveCb)),
+          onDrop: composeDragHandler(composeEventHandlers(onDrop2, onDropCb)),
+          role: typeof role === "string" && role !== "" ? role : "presentation"
+        }, refKey, rootRef), !disabled && !noKeyboard ? {
+          tabIndex: 0
+        } : {}), rest);
+      };
+    }, [rootRef, onKeyDownCb, onFocusCb, onBlurCb, onClickCb, onDragEnterCb, onDragOverCb, onDragLeaveCb, onDropCb, noKeyboard, noDrag, disabled]);
+    var onInputElementClick = reactExports.useCallback(function(event) {
+      event.stopPropagation();
+    }, []);
+    var getInputProps = reactExports.useMemo(function() {
+      return function() {
+        var _ref3 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, _ref3$refKey = _ref3.refKey, refKey = _ref3$refKey === void 0 ? "ref" : _ref3$refKey, onChange = _ref3.onChange, onClick = _ref3.onClick, rest = _objectWithoutProperties(_ref3, _excluded4);
+        var inputProps = _defineProperty({
+          accept: acceptAttr,
+          multiple,
+          type: "file",
+          style: {
+            display: "none"
+          },
+          onChange: composeHandler(composeEventHandlers(onChange, onDropCb)),
+          onClick: composeHandler(composeEventHandlers(onClick, onInputElementClick)),
+          tabIndex: -1
+        }, refKey, inputRef);
+        return _objectSpread(_objectSpread({}, inputProps), rest);
+      };
+    }, [inputRef, accept, multiple, onDropCb, disabled]);
+    return _objectSpread(_objectSpread({}, state), {}, {
+      isFocused: isFocused && !disabled,
+      getRootProps,
+      getInputProps,
+      rootRef,
+      inputRef,
+      open: composeHandler(openFileDialog)
+    });
+  }
+  function reducer$1(state, action) {
+    switch (action.type) {
+      case "focus":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          isFocused: true
+        });
+      case "blur":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          isFocused: false
+        });
+      case "openDialog":
+        return _objectSpread(_objectSpread({}, initialState$2), {}, {
+          isFileDialogActive: true
+        });
+      case "closeDialog":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          isFileDialogActive: false
+        });
+      case "setDraggedFiles":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          isDragActive: action.isDragActive,
+          isDragAccept: action.isDragAccept,
+          isDragReject: action.isDragReject
+        });
+      case "setFiles":
+        return _objectSpread(_objectSpread({}, state), {}, {
+          acceptedFiles: action.acceptedFiles,
+          fileRejections: action.fileRejections
+        });
+      case "reset":
+        return _objectSpread({}, initialState$2);
+      default:
+        return state;
+    }
+  }
+  function noop$1() {
+  }
+  var UploadFile = {};
+  var _interopRequireDefault$g = interopRequireDefaultExports;
+  Object.defineProperty(UploadFile, "__esModule", {
+    value: true
+  });
+  var default_1$g = UploadFile.default = void 0;
+  var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
+  var _jsxRuntime$g = jsxRuntimeExports;
+  var _default$g = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
+    d: "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11z"
+  }), "UploadFile");
+  default_1$g = UploadFile.default = _default$g;
+  const Wrap$1 = styled$1("div")(() => ({
+    marginTop: "1.25em"
+  }));
+  const TextWrap = styled$1("div")(({ theme: theme2 }) => ({
+    padding: "2.7em 1em",
+    border: `1px dashed ${theme2.palette.divider}`,
+    boxShadow: "none",
+    textAlign: "center",
+    cursor: "pointer",
+    span: {
+      color: theme2.palette.primary.main,
+      transition: "color 0.2s ease"
+    },
+    "&:hover span": {
+      color: theme2.palette.primary.dark,
+      textDecoration: "underline"
+    },
+    svg: {
+      marginBottom: theme2.spacing(2),
+      color: theme2.palette.primary.main
+    }
+  }));
+  const TextFiletypes = styled$1(Typography$1)(({ theme: theme2 }) => ({
+    marginTop: theme2.spacing(2),
+    color: theme2.palette.text.secondary
+  }));
+  var Close = {};
+  var _interopRequireDefault$f = interopRequireDefaultExports;
+  Object.defineProperty(Close, "__esModule", {
+    value: true
+  });
+  var default_1$f = Close.default = void 0;
+  var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
+  var _jsxRuntime$f = jsxRuntimeExports;
+  var _default$f = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
+    d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+  }), "Close");
+  default_1$f = Close.default = _default$f;
+  const FileWrap = styled$1(Paper$1, {
+    shouldForwardProp: (prop) => prop !== "error"
+  })(({ theme: theme2, error }) => ({
+    margin: `${theme2.spacing(1)} 0`,
+    padding: theme2.spacing(2),
+    border: `1px solid ${theme2.palette.divider}`,
+    boxShadow: "none",
+    ".MuiSvgIcon-root:first-of-type": {
+      padding: theme2.spacing(1)
+    },
+    ...error && {
+      color: theme2.palette.error.main
+    }
+  }));
+  const FileName = styled$1("span")(() => ({
+    display: "block",
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    color: "currentColor"
+  }));
+  const FileInfo = styled$1("div")(({ theme: theme2 }) => ({
+    display: "flex",
+    gap: theme2.spacing(1),
+    fontSize: "0.875rem",
+    "& ul": {
+      margin: 0,
+      padding: 0,
+      listStyle: "none"
+    }
+  }));
+  function getReadableFilesize(bytes) {
+    let size2 = bytes / 1024;
+    let unit = "kb";
+    if (size2 > 1e3) {
+      size2 = size2 / 1024;
+      unit = "mb";
+    }
+    return `${size2.toFixed(2)}${unit}`;
+  }
+  function randomInt(max2) {
+    return Math.ceil(Math.random() * max2);
+  }
+  const FilePreview = ({ id, file, onFileRemove, onFileUploaded }) => {
+    const [progress, setProgress] = reactExports.useState(0);
+    const hasErrors = "errors" in file;
+    reactExports.useEffect(() => {
+      if (hasErrors) {
+        return;
+      }
+      if (progress < 100) {
+        setTimeout(() => {
+          setProgress(Math.min(progress + randomInt(15), 100));
+        }, 300);
+      } else {
+        onFileUploaded && onFileUploaded(file.name);
+      }
+    }, [progress, hasErrors, onFileUploaded, file]);
+    const name2 = !hasErrors ? file.name : "Upload failed";
+    const color2 = !hasErrors ? "primary" : "error";
+    const status = !hasErrors ? progress === 100 ? "Complete" : "Loading" : "Failed";
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(FileWrap, { error: hasErrors, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", gap: 2, alignItems: "center", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, { sx: { flexShrink: 0 }, color: color2 }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { gap: 1, direction: "column", sx: { minWidth: 0, flexGrow: 1 }, children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(FileName, { children: name2 }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(FileInfo, { children: [
+          !hasErrors ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: getReadableFilesize(file.size) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: file.errors.map((e) => {
+            let message = e.message;
+            if (e.code === "file-too-large") {
+              message = "File too large";
+            }
+            return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: message }, e.code);
+          }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "•" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: status })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(
+          LinearProgress$1,
+          {
+            variant: "determinate",
+            value: hasErrors ? 0 : progress,
+            color: color2
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        IconButton$1,
+        {
+          sx: { flexShrink: 0 },
+          "aria-label": "Remove file",
+          size: "medium",
+          onClick: () => onFileRemove && onFileRemove(id),
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {})
+        }
+      )
+    ] }) });
+  };
+  const FileUploader = ({
+    maxFiles = 2,
+    maxSize = 315e4,
+    accept,
+    fileTypeMessage,
+    files,
+    onFilesDrop,
+    addFile,
+    removeFile
+  }) => {
+    const { getRootProps, getInputProps } = useDropzone({
+      onDrop: (acceptedFiles, rejectedFiles) => {
+        onFilesDrop([...acceptedFiles, ...rejectedFiles]);
+      },
+      accept,
+      maxFiles,
+      maxSize
+    });
+    const { ref, ...rootProps } = getRootProps();
+    let displayFiles = null;
+    if (files.length) {
+      displayFiles = /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: files.map((file, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        FilePreview,
+        {
+          id: idx,
+          file,
+          onFileRemove: removeFile,
+          onFileUploaded: addFile
+        },
+        idx
+      )) });
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(Wrap$1, { ref, children: displayFiles || /* @__PURE__ */ jsxRuntimeExports.jsxs(TextWrap, { ...rootProps, children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...getInputProps() }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, {}),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Typography$1, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Click to upload" }),
+          " or drag and drop"
+        ] }),
+        fileTypeMessage && /* @__PURE__ */ jsxRuntimeExports.jsx(TextFiletypes, { children: fileTypeMessage })
+      ] })
+    ] }) });
+  };
+  function importData(objectID, objectType, importType, myFile, callBackFunction = (_data) => console.log("success")) {
+    console.log("calling post file", myFile);
+    API_POST_FILE(COURSEFLOW_APP.config.post_paths.import_data, {
+      objectID,
+      objectType,
+      importType
+    }, myFile).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
+    });
+  }
+  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
+    "& .MuiDialogContent-root": {
+      padding: theme2.spacing(3)
+    },
+    "& .MuiDialogActions-root": {
+      padding: theme2.spacing(1)
+    }
+  }));
+  const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
+    display: "flex",
+    flexDirection: "column",
+    gap: theme2.spacing(3),
+    "& > *": {
+      flexGrow: 1
+    }
+  }));
+  const initialState$1 = {
+    whitelisted: [],
+    queued: []
+  };
+  function ImportNodesDialog({ workflowID }) {
+    const { show, onClose } = useDialog(DIALOG_TYPE.IMPORT_NODES);
+    const [state, setState] = reactExports.useState(initialState$1);
+    const { whitelisted, queued } = state;
+    const uploadableFiles = queued.filter((file) => "name" in file);
+    const disableSubmit = whitelisted.length === 0 || whitelisted.length !== uploadableFiles.length;
+    const onUploadableFileComplete = reactExports.useCallback((name2) => {
+      setState(
+        produce((draft) => {
+          if (!draft.whitelisted.includes(name2)) {
+            draft.whitelisted.push(name2);
+          }
+        })
+      );
+    }, []);
+    const onFilesDrop = (files) => {
+      setState(
+        produce((draft) => {
+          draft.queued = files;
+        })
+      );
+    };
+    const onFileRemove = reactExports.useCallback((index) => {
+      setState(
+        produce((draft) => {
+          const removedFile = draft.queued[index];
+          if ("name" in removedFile) {
+            draft.whitelisted.splice(
+              draft.whitelisted.indexOf(removedFile.name),
+              1
+            );
+          }
+          draft.queued.splice(index, 1);
+        })
+      );
+    }, []);
+    function resetData() {
+      setState(initialState$1);
+    }
+    function onSubmit() {
+      importData(workflowID, "workflow", "nodes", uploadableFiles[0], onClose);
+      console.log("submitting Import Nodes with files", uploadableFiles);
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: !!show,
+        fullWidth: true,
+        maxWidth: "sm",
+        onClose,
+        TransitionProps: {
+          onExited: resetData
+        },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Import nodes" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: "Drag and drop your .xls or .csv file below to import. The importing process may take few minutes. Please do not edit the workflow while the import process is ongoing." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              FileUploader,
+              {
+                fileTypeMessage: "XLS or CSV (max 3MB)",
+                accept: {
+                  "application/vnd.ms-excel": [".xls"],
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+                  "text/csv": [".csv"]
+                },
+                files: state.queued,
+                onFilesDrop,
+                addFile: onUploadableFileComplete,
+                removeFile: onFileRemove
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: "Cancel" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, disabled: disableSubmit, children: "Import nodes" })
+          ] })
+        ]
+      }
+    );
+  }
+  const initialState = {
+    whitelisted: [],
+    queued: []
+  };
+  function ImportOutcomesDialog({ workflowID }) {
+    const { show, onClose } = useDialog(DIALOG_TYPE.IMPORT_OUTCOMES);
+    const [state, setState] = reactExports.useState(initialState);
+    const { whitelisted, queued } = state;
+    const uploadableFiles = queued.filter((file) => "name" in file);
+    const disableSubmit = whitelisted.length === 0 || whitelisted.length !== uploadableFiles.length;
+    const onUploadableFileComplete = reactExports.useCallback((name2) => {
+      setState(
+        produce((draft) => {
+          if (!draft.whitelisted.includes(name2)) {
+            draft.whitelisted.push(name2);
+          }
+        })
+      );
+    }, []);
+    const onFilesDrop = (files) => {
+      setState(
+        produce((draft) => {
+          draft.queued = files;
+        })
+      );
+    };
+    const onFileRemove = reactExports.useCallback((index) => {
+      setState(
+        produce((draft) => {
+          const removedFile = draft.queued[index];
+          if ("name" in removedFile) {
+            draft.whitelisted.splice(
+              draft.whitelisted.indexOf(removedFile.name),
+              1
+            );
+          }
+          draft.queued.splice(index, 1);
+        })
+      );
+    }, []);
+    function resetData() {
+      setState(initialState);
+    }
+    function onSubmit() {
+      importData(workflowID, "workflow", "outcomes", uploadableFiles[0], onClose);
+    }
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      StyledDialog,
+      {
+        open: !!show,
+        fullWidth: true,
+        maxWidth: "sm",
+        onClose,
+        TransitionProps: {
+          onExited: resetData
+        },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Import outcomes" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: "Drag and drop your .xls or .csv file below to import. The importing process may take few minutes. Please do not edit the workflow while the import process is ongoing." }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              FileUploader,
+              {
+                fileTypeMessage: "XLS or CSV (max 3MB)",
+                accept: {
+                  "application/vnd.ms-excel": [".xls"],
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+                  "text/csv": [".csv"]
+                },
+                files: state.queued,
+                onFilesDrop,
+                addFile: onUploadableFileComplete,
+                removeFile: onFileRemove
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: "Cancel" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, disabled: disableSubmit, children: "Import outcomes" })
+          ] })
+        ]
+      }
+    );
+  }
+  const CopyButton = (data2) => {
+    const { dispatch } = useDialog();
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        id: "copy-button",
+        className: "hover-shade",
+        onClick: () => {
+          const loader = COURSEFLOW_APP.tinyLoader;
+          if (data2.is_strategy) {
+            duplicateBaseItemQuery(
+              data2.id,
+              data2.type,
+              null,
+              (response_data) => {
+                loader.endLoad();
+                window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
+              }
+            );
+          } else {
+            console.log(dispatch);
+            dispatch(DIALOG_TYPE.TARGET_PROJECT);
+          }
+        },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
+      }
+    );
+  };
+  const ImportButtons = ({ aClass }) => {
+    const { dispatch } = useDialog();
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: () => dispatch(DIALOG_TYPE.IMPORT_OUTCOMES), children: window.gettext("Import Outcomes") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: () => dispatch(DIALOG_TYPE.IMPORT_NODES), children: window.gettext("Import Nodes") })
+    ] });
+  };
   class WorkflowBaseViewUnconnected extends EditableComponent {
     constructor(props, context) {
       super(props, context);
@@ -92772,47 +95282,11 @@ Please use another name.` : formatMuiErrorMessage(18));
       __publicField(this, "CopyButton", () => {
         if (!this.user_id)
           return null;
-        const export_button = [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              id: "copy-button",
-              className: "hover-shade",
-              onClick: () => {
-                const loader = COURSEFLOW_APP.tinyLoader;
-                if (this.data.is_strategy) {
-                  duplicateBaseItemQuery(
-                    this.data.id,
-                    this.data.type,
-                    null,
-                    (response_data) => {
-                      loader.endLoad();
-                      window.location = COURSEFLOW_APP.config.update_path[response_data.new_item.type].replace("0", response_data.new_item.id);
-                    }
-                  );
-                } else {
-                  getTargetProjectMenu(-1, (response_data) => {
-                    if (response_data.parentID != null) {
-                      const utilLoader = new UtilityLoader("body");
-                      duplicateBaseItemQuery(
-                        this.data.id,
-                        this.data.type,
-                        response_data.parentID,
-                        (response_data2) => {
-                          utilLoader.endLoad();
-                          window.location = COURSEFLOW_APP.config.update_path[response_data2.new_item.type].replace("0", response_data2.new_item.id);
-                        }
-                      );
-                    }
-                  });
-                }
-              },
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: window.gettext("Copy to my library") })
-            }
-          )
+        const copy_to_button = [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CopyButton, { data: this.data })
         ];
-        if (!this.data.is_strategy && this.project_permission === permission_keys.edit)
-          export_button.unshift(
+        if (!this.data.is_strategy && this.project_permission === permission_keys.edit) {
+          copy_to_button.unshift(
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
               {
@@ -92835,18 +95309,15 @@ Please use another name.` : formatMuiErrorMessage(18));
               }
             )
           );
-        return export_button;
+        }
+        return copy_to_button;
       });
       __publicField(this, "ImportButton", () => {
         if (this.readOnly)
           return null;
         const disabled = !!this.data.importing;
         const aClass = disabled ? " disabled" : "hover-shade";
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: this.clickImport.bind(this, "outcomes"), children: window.gettext("Import Outcomes") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { className: aClass, onClick: this.clickImport.bind(this, "nodes"), children: window.gettext("Import Nodes") })
-        ] });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(ImportButtons, { aClass });
       });
       __publicField(this, "DeleteWorkflowButton", () => {
         if (this.readOnly)
@@ -92925,34 +95396,9 @@ Please use another name.` : formatMuiErrorMessage(18));
           )
         ] });
       });
-      __publicField(this, "ImportDialog", () => {
-        return /* @__PURE__ */ jsxRuntimeExports.jsx(Dialog$1, { open: this.state.openImportDialog, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ImportMenu,
-            {
-              data: {
-                object_id: this.data.id,
-                object_type: this.objectType,
-                import_type: "outcomes"
-              },
-              actionFunction: this.closeModals
-            }
-          ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            ImportMenu,
-            {
-              data: {
-                object_id: this.data.id,
-                object_type: this.objectType,
-                import_type: "nodes"
-              },
-              actionFunction: this.closeModals
-            }
-          )
-        ] }) });
-      });
       this.context = context;
       this.data = this.props.data;
+      this.project = this.context.project;
       this.renderMethod = this.props.parentRender;
       this.can_view = this.props.config.canView;
       this.can_view = this.props.config.isStudent;
@@ -93056,20 +95502,20 @@ Please use another name.` : formatMuiErrorMessage(18));
     openEditMenu(evt) {
       this.selection_manager.changeSelection(evt, this);
     }
-    clickImport(import_type2, evt) {
-      evt.preventDefault();
-      renderMessageBox(
-        {
-          object_id: this.props.data.id,
-          object_type: this.objectType,
-          import_type: import_type2
-        },
-        "import",
-        () => {
-          closeMessageBox();
-        }
-      );
-    }
+    // clickImport(import_type, evt) {
+    //   evt.preventDefault()
+    //   renderMessageBox(
+    //     {
+    //       object_id: this.props.data.id,
+    //       object_type: this.objectType,
+    //       import_type: import_type
+    //     },
+    //     'import',
+    //     () => {
+    //       closeMessageBox()
+    //     }
+    //   )
+    // }
     // @todo it this ViewType or cfobjecttype
     expandAll(type) {
       this.props[type].forEach(
@@ -93186,13 +95632,37 @@ Please use another name.` : formatMuiErrorMessage(18));
         });
       }
     }
+    // ImportDialog = () => {
+    //   return (
+    //     <Dialog open={this.state.openImportDialog}>
+    //       <>
+    //         <ImportMenu
+    //           data={{
+    //             object_id: this.data.id,
+    //             object_type: this.objectType,
+    //             import_type: 'outcomes'
+    //           }}
+    //           actionFunction={this.closeModals}
+    //         />
+    //         <ImportMenu
+    //           data={{
+    //             object_id: this.data.id,
+    //             object_type: this.objectType,
+    //             import_type: 'nodes'
+    //           }}
+    //           actionFunction={this.closeModals}
+    //         />
+    //       </>
+    //     </Dialog>
+    //   )
+    // }
     /*******************************************************
      * RENDER
      *******************************************************/
     render() {
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContextProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ThemeProvider, { theme, children: [
         this.addEditable(this.props.data),
-        this.getReturnLinksPortal(),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: this.getReturnLinksPortal() }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "main-block", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             MenuBar,
@@ -93223,11 +95693,31 @@ Please use another name.` : formatMuiErrorMessage(18));
               }
             )
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ExportDialog, {}),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ImportDialog, {})
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            TargetProjectDialog,
+            {
+              id: this.data.id,
+              actionFunction: (response_data) => {
+                if (response_data.parentID != null) {
+                  const utilLoader = new UtilityLoader("body");
+                  duplicateBaseItemQuery(
+                    this.data.id,
+                    this.data.type,
+                    response_data.parentID,
+                    (response_data2) => {
+                      utilLoader.endLoad();
+                      window.location = COURSEFLOW_APP.config.update_path[response_data2.new_item.type].replace("0", response_data2.new_item.id);
+                    }
+                  );
+                }
+              }
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ImportNodesDialog, { workflowID: this.data.id }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(ImportOutcomesDialog, { workflowID: this.data.id }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(this.ShareDialog, {})
         ] })
-      ] });
+      ] }) });
     }
   }
   __publicField(WorkflowBaseViewUnconnected, "contextType", WorkFlowConfigContext);
@@ -93542,7 +96032,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     }
     connection_opened(reconnect = false) {
-      console.log("connection_opened");
       this.getWorkflowData(this.workflowID, (response) => {
         var _a2, _b2;
         this.unread_comments = (_a2 = response.data_package) == null ? void 0 : _a2.unread_comments;
@@ -93697,6 +96186,7 @@ Please use another name.` : formatMuiErrorMessage(18));
      * REACT TO MOVE
      *******************************************************/
     render(container, view_type = ViewType.WORKFLOW) {
+      console.log("THIS IS THE WORKFLOW", this.project);
       this.locks = {};
       this.selection_manager = new SelectionManager(this.read_only);
       this.child_data_needed = [];
@@ -94218,48 +96708,6 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     };
   }
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#04BA74",
-        light: "#52C68C",
-        dark: "#009E52",
-        contrastText: "#fff"
-      },
-      secondary: {
-        main: "#78909C",
-        light: "#90A4AE",
-        dark: "#607D8B"
-      },
-      courseflow: {
-        lightest: "#e2f5eb",
-        favouriteActive: "rgba(255, 180, 0, 1)",
-        favouriteInactive: "rgba(0, 0, 0, 0.23)",
-        project: "rgba(245, 127, 23, 1)",
-        program: "rgba(0, 105, 92, 1)",
-        course: "rgba(183, 28, 28, 1)",
-        activity: "rgba(41, 98, 255, 1)",
-        template: "rgba(255, 64, 129, 1)"
-      },
-      divider: "#CFD8DC",
-      action: {
-        hover: "rgba(4, 186, 116, 0.08)"
-      }
-    },
-    typography: {
-      fontFamily: ['"Open Sans"', "Helvetica", "Arial", "sans-serif"].join(",")
-    },
-    components: {
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            textTransform: "none",
-            fontWeight: 600
-          }
-        }
-      }
-    }
-  });
   var Subscribable = class {
     constructor() {
       this.listeners = /* @__PURE__ */ new Set();
@@ -94282,7 +96730,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
   };
   var isServer = typeof window === "undefined" || "Deno" in globalThis;
-  function noop$1() {
+  function noop() {
     return void 0;
   }
   function functionalUpdate(updater, input) {
@@ -94361,7 +96809,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   function hashKey(queryKey) {
     return JSON.stringify(
       queryKey,
-      (_2, val) => isPlainObject$1(val) ? Object.keys(val).sort().reduce((result, key) => {
+      (_2, val) => isPlainObject(val) ? Object.keys(val).sort().reduce((result, key) => {
         result[key] = val[key];
         return result;
       }, {}) : val
@@ -94384,7 +96832,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return a;
     }
     const array = isPlainArray(a) && isPlainArray(b);
-    if (array || isPlainObject$1(a) && isPlainObject$1(b)) {
+    if (array || isPlainObject(a) && isPlainObject(b)) {
       const aItems = array ? a : Object.keys(a);
       const aSize = aItems.length;
       const bItems = array ? b : Object.keys(b);
@@ -94410,7 +96858,7 @@ Please use another name.` : formatMuiErrorMessage(18));
   function isPlainArray(value) {
     return Array.isArray(value) && value.length === Object.keys(value).length;
   }
-  function isPlainObject$1(o) {
+  function isPlainObject(o) {
     if (!hasObjectPrototype(o)) {
       return false;
     }
@@ -94849,7 +97297,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       var _a2, _b2;
       const promise = (_a2 = __privateGet(this, _retryer)) == null ? void 0 : _a2.promise;
       (_b2 = __privateGet(this, _retryer)) == null ? void 0 : _b2.cancel(options);
-      return promise ? promise.then(noop$1).catch(noop$1) : Promise.resolve();
+      return promise ? promise.then(noop).catch(noop) : Promise.resolve();
     }
     destroy() {
       super.destroy();
@@ -95564,7 +98012,7 @@ Please use another name.` : formatMuiErrorMessage(18));
         const pausedMutations = __privateGet(this, _mutations).filter((x) => x.state.isPaused);
         return notifyManager.batch(
           () => pausedMutations.reduce(
-            (promise, mutation) => promise.then(() => mutation.continue().catch(noop$1)),
+            (promise, mutation) => promise.then(() => mutation.continue().catch(noop)),
             Promise.resolve()
           )
         );
@@ -95823,7 +98271,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       const promises = notifyManager.batch(
         () => __privateGet(this, _queryCache).findAll(filters).map((query) => query.cancel(defaultedCancelOptions))
       );
-      return Promise.all(promises).then(noop$1).catch(noop$1);
+      return Promise.all(promises).then(noop).catch(noop);
     }
     invalidateQueries(filters = {}, options = {}) {
       return notifyManager.batch(() => {
@@ -95849,12 +98297,12 @@ Please use another name.` : formatMuiErrorMessage(18));
         () => __privateGet(this, _queryCache).findAll(filters).filter((query) => !query.isDisabled()).map((query) => {
           let promise = query.fetch(void 0, fetchOptions);
           if (!fetchOptions.throwOnError) {
-            promise = promise.catch(noop$1);
+            promise = promise.catch(noop);
           }
           return query.state.fetchStatus === "paused" ? Promise.resolve() : promise;
         })
       );
-      return Promise.all(promises).then(noop$1);
+      return Promise.all(promises).then(noop);
     }
     fetchQuery(options) {
       const defaultedOptions = this.defaultQueryOptions(options);
@@ -95865,14 +98313,14 @@ Please use another name.` : formatMuiErrorMessage(18));
       return query.isStaleByTime(defaultedOptions.staleTime) ? query.fetch(defaultedOptions) : Promise.resolve(query.state.data);
     }
     prefetchQuery(options) {
-      return this.fetchQuery(options).then(noop$1).catch(noop$1);
+      return this.fetchQuery(options).then(noop).catch(noop);
     }
     fetchInfiniteQuery(options) {
       options.behavior = infiniteQueryBehavior(options.pages);
       return this.fetchQuery(options);
     }
     prefetchInfiniteQuery(options) {
-      return this.fetchInfiniteQuery(options).then(noop$1).catch(noop$1);
+      return this.fetchInfiniteQuery(options).then(noop).catch(noop);
     }
     resumePausedMutations() {
       if (onlineManager.isOnline()) {
@@ -95986,41 +98434,17 @@ Please use another name.` : formatMuiErrorMessage(18));
     return /* @__PURE__ */ jsxRuntimeExports.jsx(QueryClientContext.Provider, { value: client, children });
   };
   var MoreHoriz = {};
-  var _interopRequireDefault$g = interopRequireDefaultExports;
+  var _interopRequireDefault$e = interopRequireDefaultExports;
   Object.defineProperty(MoreHoriz, "__esModule", {
     value: true
   });
-  var default_1$g = MoreHoriz.default = void 0;
-  var _createSvgIcon$g = _interopRequireDefault$g(requireCreateSvgIcon());
-  var _jsxRuntime$g = jsxRuntimeExports;
-  var _default$h = (0, _createSvgIcon$g.default)(/* @__PURE__ */ (0, _jsxRuntime$g.jsx)("path", {
+  var default_1$e = MoreHoriz.default = void 0;
+  var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
+  var _jsxRuntime$e = jsxRuntimeExports;
+  var _default$e = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
     d: "M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
   }), "MoreHoriz");
-  default_1$g = MoreHoriz.default = _default$h;
-  function API_POST(url = "", data2 = {}) {
-    if (!url) {
-      return Promise.reject("You need to specify an URL in for API_POST to run.");
-    }
-    return new Promise((res, rej) => {
-      fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // 'root' comes from the csrf-setup script
-          "X-CSRFToken": window.getCsrfToken()
-        },
-        body: JSON.stringify(data2)
-      }).then((response) => response.json()).then((data22) => {
-        if (data22.action === VERB.POSTED) {
-          res(data22);
-        } else {
-          rej({ error: "API_POST failed", url, data: data22 });
-        }
-      }).catch((err) => {
-        rej({ error: "API_POST failed", originalError: err });
-      });
-    });
-  }
+  default_1$e = MoreHoriz.default = _default$e;
   const NotificationsWrap = styled$1(Box$1)({});
   const NotificationsHeader$1 = styled$1(Box$1)(({ theme: theme2 }) => ({
     paddingTop: theme2.spacing(4),
@@ -96190,7 +98614,7 @@ Please use another name.` : formatMuiErrorMessage(18));
                 onClick: (e) => handleMenuOpen(e, n),
                 "aria-label": COURSEFLOW_APP.strings.show_notifications_menu,
                 "aria-haspopup": "true",
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$g, {})
+                children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {})
               }
             ),
             children: /* @__PURE__ */ jsxRuntimeExports.jsxs(ListItemButton$1, { children: [
@@ -96265,7 +98689,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       fontSize: "34px"
     }
   }));
-  function reducer$1(state, action) {
+  function reducer(state, action) {
     switch (action.type) {
       case "SET_UPDATES":
         return {
@@ -96276,7 +98700,7 @@ Please use another name.` : formatMuiErrorMessage(18));
     return state;
   }
   const NotificationsSettingsPage = ({ formData }) => {
-    const [state, dispatch] = reactExports.useReducer(reducer$1, {
+    const [state, dispatch] = reactExports.useReducer(reducer, {
       notifications: formData.receiveNotifications
     });
     function onUpdatesSwitchChange(e) {
@@ -96607,727 +99031,18 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     ]
   };
-  const defaultState = {
-    type: null
-  };
-  function stateReducer(state, action) {
-    return {
-      type: action
-    };
-  }
-  const DialogContext = reactExports.createContext(defaultState);
-  const DialogDispatchContext = reactExports.createContext(null);
-  function DialogContextProvider({ children }) {
-    const [state, dispatch] = reactExports.useReducer(stateReducer, defaultState);
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContext.Provider, { value: state, children: /* @__PURE__ */ jsxRuntimeExports.jsx(DialogDispatchContext.Provider, { value: dispatch, children }) });
-  }
-  var DIALOG_TYPE = /* @__PURE__ */ ((DIALOG_TYPE2) => {
-    DIALOG_TYPE2["CREATE_PROGRAM"] = "create_program";
-    DIALOG_TYPE2["CREATE_PROJECT"] = "create_project";
-    DIALOG_TYPE2["EDIT_PROJECT"] = "edit_project";
-    DIALOG_TYPE2["CREATE_ACTIVITY"] = "create_activity";
-    DIALOG_TYPE2["CREATE_COURSE"] = "create_course";
-    DIALOG_TYPE2["RESET_PASSWORD"] = "reset_password";
-    DIALOG_TYPE2["EXPORT_PROJECT"] = "export_project";
-    DIALOG_TYPE2["ARCHIVE_PROJECT"] = "archive_project";
-    DIALOG_TYPE2["IMPORT_OUTCOMES"] = "import_outcomes";
-    DIALOG_TYPE2["IMPORT_NODES"] = "import_nodes";
-    DIALOG_TYPE2["STYLEGUIDE_PROJECT_CREATE"] = "styleguide_project_create";
-    DIALOG_TYPE2["STYLEGUIDE_PROJECT_EDIT"] = "styleguide_project_edit";
-    return DIALOG_TYPE2;
-  })(DIALOG_TYPE || {});
-  function useDialog(dialogType = null) {
-    const dialogContext = reactExports.useContext(DialogContext);
-    const dialogDispatch = reactExports.useContext(DialogDispatchContext);
-    if (!dialogType) {
-      return {
-        dispatch: dialogDispatch
-      };
-    }
-    return {
-      show: dialogContext.type === dialogType,
-      onClose: () => dialogDispatch(null),
-      dispatch: dialogDispatch
-    };
-  }
-  var NOTHING = Symbol.for("immer-nothing");
-  var DRAFTABLE = Symbol.for("immer-draftable");
-  var DRAFT_STATE = Symbol.for("immer-state");
-  var errors = process.env.NODE_ENV !== "production" ? [
-    // All error codes, starting by 0:
-    function(plugin) {
-      return `The plugin for '${plugin}' has not been loaded into Immer. To enable the plugin, import and call \`enable${plugin}()\` when initializing your application.`;
-    },
-    function(thing) {
-      return `produce can only be called on things that are draftable: plain objects, arrays, Map, Set or classes that are marked with '[immerable]: true'. Got '${thing}'`;
-    },
-    "This object has been frozen and should not be mutated",
-    function(data2) {
-      return "Cannot use a proxy that has been revoked. Did you pass an object from inside an immer function to an async process? " + data2;
-    },
-    "An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft.",
-    "Immer forbids circular references",
-    "The first or second argument to `produce` must be a function",
-    "The third argument to `produce` must be a function or undefined",
-    "First argument to `createDraft` must be a plain object, an array, or an immerable object",
-    "First argument to `finishDraft` must be a draft returned by `createDraft`",
-    function(thing) {
-      return `'current' expects a draft, got: ${thing}`;
-    },
-    "Object.defineProperty() cannot be used on an Immer draft",
-    "Object.setPrototypeOf() cannot be used on an Immer draft",
-    "Immer only supports deleting array indices",
-    "Immer only supports setting array indices and the 'length' property",
-    function(thing) {
-      return `'original' expects a draft, got: ${thing}`;
-    }
-    // Note: if more errors are added, the errorOffset in Patches.ts should be increased
-    // See Patches.ts for additional errors
-  ] : [];
-  function die(error, ...args) {
-    if (process.env.NODE_ENV !== "production") {
-      const e = errors[error];
-      const msg = typeof e === "function" ? e.apply(null, args) : e;
-      throw new Error(`[Immer] ${msg}`);
-    }
-    throw new Error(
-      `[Immer] minified error nr: ${error}. Full error at: https://bit.ly/3cXEKWf`
-    );
-  }
-  var getPrototypeOf = Object.getPrototypeOf;
-  function isDraft(value) {
-    return !!value && !!value[DRAFT_STATE];
-  }
-  function isDraftable(value) {
-    var _a2;
-    if (!value)
-      return false;
-    return isPlainObject(value) || Array.isArray(value) || !!value[DRAFTABLE] || !!((_a2 = value.constructor) == null ? void 0 : _a2[DRAFTABLE]) || isMap(value) || isSet(value);
-  }
-  var objectCtorString = Object.prototype.constructor.toString();
-  function isPlainObject(value) {
-    if (!value || typeof value !== "object")
-      return false;
-    const proto = getPrototypeOf(value);
-    if (proto === null) {
-      return true;
-    }
-    const Ctor = Object.hasOwnProperty.call(proto, "constructor") && proto.constructor;
-    if (Ctor === Object)
-      return true;
-    return typeof Ctor == "function" && Function.toString.call(Ctor) === objectCtorString;
-  }
-  function each(obj, iter) {
-    if (getArchtype(obj) === 0) {
-      Reflect.ownKeys(obj).forEach((key) => {
-        iter(key, obj[key], obj);
-      });
-    } else {
-      obj.forEach((entry, index) => iter(index, entry, obj));
-    }
-  }
-  function getArchtype(thing) {
-    const state = thing[DRAFT_STATE];
-    return state ? state.type_ : Array.isArray(thing) ? 1 : isMap(thing) ? 2 : isSet(thing) ? 3 : 0;
-  }
-  function has(thing, prop) {
-    return getArchtype(thing) === 2 ? thing.has(prop) : Object.prototype.hasOwnProperty.call(thing, prop);
-  }
-  function set(thing, propOrOldValue, value) {
-    const t = getArchtype(thing);
-    if (t === 2)
-      thing.set(propOrOldValue, value);
-    else if (t === 3) {
-      thing.add(value);
-    } else
-      thing[propOrOldValue] = value;
-  }
-  function is(x, y) {
-    if (x === y) {
-      return x !== 0 || 1 / x === 1 / y;
-    } else {
-      return x !== x && y !== y;
-    }
-  }
-  function isMap(target) {
-    return target instanceof Map;
-  }
-  function isSet(target) {
-    return target instanceof Set;
-  }
-  function latest(state) {
-    return state.copy_ || state.base_;
-  }
-  function shallowCopy(base, strict) {
-    if (isMap(base)) {
-      return new Map(base);
-    }
-    if (isSet(base)) {
-      return new Set(base);
-    }
-    if (Array.isArray(base))
-      return Array.prototype.slice.call(base);
-    if (!strict && isPlainObject(base)) {
-      if (!getPrototypeOf(base)) {
-        const obj = /* @__PURE__ */ Object.create(null);
-        return Object.assign(obj, base);
-      }
-      return { ...base };
-    }
-    const descriptors = Object.getOwnPropertyDescriptors(base);
-    delete descriptors[DRAFT_STATE];
-    let keys = Reflect.ownKeys(descriptors);
-    for (let i2 = 0; i2 < keys.length; i2++) {
-      const key = keys[i2];
-      const desc = descriptors[key];
-      if (desc.writable === false) {
-        desc.writable = true;
-        desc.configurable = true;
-      }
-      if (desc.get || desc.set)
-        descriptors[key] = {
-          configurable: true,
-          writable: true,
-          // could live with !!desc.set as well here...
-          enumerable: desc.enumerable,
-          value: base[key]
-        };
-    }
-    return Object.create(getPrototypeOf(base), descriptors);
-  }
-  function freeze(obj, deep = false) {
-    if (isFrozen(obj) || isDraft(obj) || !isDraftable(obj))
-      return obj;
-    if (getArchtype(obj) > 1) {
-      obj.set = obj.add = obj.clear = obj.delete = dontMutateFrozenCollections;
-    }
-    Object.freeze(obj);
-    if (deep)
-      Object.entries(obj).forEach(([key, value]) => freeze(value, true));
-    return obj;
-  }
-  function dontMutateFrozenCollections() {
-    die(2);
-  }
-  function isFrozen(obj) {
-    return Object.isFrozen(obj);
-  }
-  var plugins = {};
-  function getPlugin(pluginKey) {
-    const plugin = plugins[pluginKey];
-    if (!plugin) {
-      die(0, pluginKey);
-    }
-    return plugin;
-  }
-  var currentScope;
-  function getCurrentScope() {
-    return currentScope;
-  }
-  function createScope(parent_, immer_) {
-    return {
-      drafts_: [],
-      parent_,
-      immer_,
-      // Whenever the modified draft contains a draft from another scope, we
-      // need to prevent auto-freezing so the unowned draft can be finalized.
-      canAutoFreeze_: true,
-      unfinalizedDrafts_: 0
-    };
-  }
-  function usePatchesInScope(scope, patchListener) {
-    if (patchListener) {
-      getPlugin("Patches");
-      scope.patches_ = [];
-      scope.inversePatches_ = [];
-      scope.patchListener_ = patchListener;
-    }
-  }
-  function revokeScope(scope) {
-    leaveScope(scope);
-    scope.drafts_.forEach(revokeDraft);
-    scope.drafts_ = null;
-  }
-  function leaveScope(scope) {
-    if (scope === currentScope) {
-      currentScope = scope.parent_;
-    }
-  }
-  function enterScope(immer2) {
-    return currentScope = createScope(currentScope, immer2);
-  }
-  function revokeDraft(draft) {
-    const state = draft[DRAFT_STATE];
-    if (state.type_ === 0 || state.type_ === 1)
-      state.revoke_();
-    else
-      state.revoked_ = true;
-  }
-  function processResult(result, scope) {
-    scope.unfinalizedDrafts_ = scope.drafts_.length;
-    const baseDraft = scope.drafts_[0];
-    const isReplaced = result !== void 0 && result !== baseDraft;
-    if (isReplaced) {
-      if (baseDraft[DRAFT_STATE].modified_) {
-        revokeScope(scope);
-        die(4);
-      }
-      if (isDraftable(result)) {
-        result = finalize(scope, result);
-        if (!scope.parent_)
-          maybeFreeze(scope, result);
-      }
-      if (scope.patches_) {
-        getPlugin("Patches").generateReplacementPatches_(
-          baseDraft[DRAFT_STATE].base_,
-          result,
-          scope.patches_,
-          scope.inversePatches_
-        );
-      }
-    } else {
-      result = finalize(scope, baseDraft, []);
-    }
-    revokeScope(scope);
-    if (scope.patches_) {
-      scope.patchListener_(scope.patches_, scope.inversePatches_);
-    }
-    return result !== NOTHING ? result : void 0;
-  }
-  function finalize(rootScope, value, path) {
-    if (isFrozen(value))
-      return value;
-    const state = value[DRAFT_STATE];
-    if (!state) {
-      each(
-        value,
-        (key, childValue) => finalizeProperty(rootScope, state, value, key, childValue, path)
-      );
-      return value;
-    }
-    if (state.scope_ !== rootScope)
-      return value;
-    if (!state.modified_) {
-      maybeFreeze(rootScope, state.base_, true);
-      return state.base_;
-    }
-    if (!state.finalized_) {
-      state.finalized_ = true;
-      state.scope_.unfinalizedDrafts_--;
-      const result = state.copy_;
-      let resultEach = result;
-      let isSet2 = false;
-      if (state.type_ === 3) {
-        resultEach = new Set(result);
-        result.clear();
-        isSet2 = true;
-      }
-      each(
-        resultEach,
-        (key, childValue) => finalizeProperty(rootScope, state, result, key, childValue, path, isSet2)
-      );
-      maybeFreeze(rootScope, result, false);
-      if (path && rootScope.patches_) {
-        getPlugin("Patches").generatePatches_(
-          state,
-          path,
-          rootScope.patches_,
-          rootScope.inversePatches_
-        );
-      }
-    }
-    return state.copy_;
-  }
-  function finalizeProperty(rootScope, parentState, targetObject, prop, childValue, rootPath, targetIsSet) {
-    if (process.env.NODE_ENV !== "production" && childValue === targetObject)
-      die(5);
-    if (isDraft(childValue)) {
-      const path = rootPath && parentState && parentState.type_ !== 3 && // Set objects are atomic since they have no keys.
-      !has(parentState.assigned_, prop) ? rootPath.concat(prop) : void 0;
-      const res = finalize(rootScope, childValue, path);
-      set(targetObject, prop, res);
-      if (isDraft(res)) {
-        rootScope.canAutoFreeze_ = false;
-      } else
-        return;
-    } else if (targetIsSet) {
-      targetObject.add(childValue);
-    }
-    if (isDraftable(childValue) && !isFrozen(childValue)) {
-      if (!rootScope.immer_.autoFreeze_ && rootScope.unfinalizedDrafts_ < 1) {
-        return;
-      }
-      finalize(rootScope, childValue);
-      if ((!parentState || !parentState.scope_.parent_) && typeof prop !== "symbol" && Object.prototype.propertyIsEnumerable.call(targetObject, prop))
-        maybeFreeze(rootScope, childValue);
-    }
-  }
-  function maybeFreeze(scope, value, deep = false) {
-    if (!scope.parent_ && scope.immer_.autoFreeze_ && scope.canAutoFreeze_) {
-      freeze(value, deep);
-    }
-  }
-  function createProxyProxy(base, parent) {
-    const isArray2 = Array.isArray(base);
-    const state = {
-      type_: isArray2 ? 1 : 0,
-      // Track which produce call this is associated with.
-      scope_: parent ? parent.scope_ : getCurrentScope(),
-      // True for both shallow and deep changes.
-      modified_: false,
-      // Used during finalization.
-      finalized_: false,
-      // Track which properties have been assigned (true) or deleted (false).
-      assigned_: {},
-      // The parent draft state.
-      parent_: parent,
-      // The base state.
-      base_: base,
-      // The base proxy.
-      draft_: null,
-      // set below
-      // The base copy with any updated values.
-      copy_: null,
-      // Called by the `produce` function.
-      revoke_: null,
-      isManual_: false
-    };
-    let target = state;
-    let traps = objectTraps;
-    if (isArray2) {
-      target = [state];
-      traps = arrayTraps;
-    }
-    const { revoke, proxy } = Proxy.revocable(target, traps);
-    state.draft_ = proxy;
-    state.revoke_ = revoke;
-    return proxy;
-  }
-  var objectTraps = {
-    get(state, prop) {
-      if (prop === DRAFT_STATE)
-        return state;
-      const source = latest(state);
-      if (!has(source, prop)) {
-        return readPropFromProto(state, source, prop);
-      }
-      const value = source[prop];
-      if (state.finalized_ || !isDraftable(value)) {
-        return value;
-      }
-      if (value === peek(state.base_, prop)) {
-        prepareCopy(state);
-        return state.copy_[prop] = createProxy(value, state);
-      }
-      return value;
-    },
-    has(state, prop) {
-      return prop in latest(state);
-    },
-    ownKeys(state) {
-      return Reflect.ownKeys(latest(state));
-    },
-    set(state, prop, value) {
-      const desc = getDescriptorFromProto(latest(state), prop);
-      if (desc == null ? void 0 : desc.set) {
-        desc.set.call(state.draft_, value);
-        return true;
-      }
-      if (!state.modified_) {
-        const current2 = peek(latest(state), prop);
-        const currentState = current2 == null ? void 0 : current2[DRAFT_STATE];
-        if (currentState && currentState.base_ === value) {
-          state.copy_[prop] = value;
-          state.assigned_[prop] = false;
-          return true;
-        }
-        if (is(value, current2) && (value !== void 0 || has(state.base_, prop)))
-          return true;
-        prepareCopy(state);
-        markChanged(state);
-      }
-      if (state.copy_[prop] === value && // special case: handle new props with value 'undefined'
-      (value !== void 0 || prop in state.copy_) || // special case: NaN
-      Number.isNaN(value) && Number.isNaN(state.copy_[prop]))
-        return true;
-      state.copy_[prop] = value;
-      state.assigned_[prop] = true;
-      return true;
-    },
-    deleteProperty(state, prop) {
-      if (peek(state.base_, prop) !== void 0 || prop in state.base_) {
-        state.assigned_[prop] = false;
-        prepareCopy(state);
-        markChanged(state);
-      } else {
-        delete state.assigned_[prop];
-      }
-      if (state.copy_) {
-        delete state.copy_[prop];
-      }
-      return true;
-    },
-    // Note: We never coerce `desc.value` into an Immer draft, because we can't make
-    // the same guarantee in ES5 mode.
-    getOwnPropertyDescriptor(state, prop) {
-      const owner = latest(state);
-      const desc = Reflect.getOwnPropertyDescriptor(owner, prop);
-      if (!desc)
-        return desc;
-      return {
-        writable: true,
-        configurable: state.type_ !== 1 || prop !== "length",
-        enumerable: desc.enumerable,
-        value: owner[prop]
-      };
-    },
-    defineProperty() {
-      die(11);
-    },
-    getPrototypeOf(state) {
-      return getPrototypeOf(state.base_);
-    },
-    setPrototypeOf() {
-      die(12);
-    }
-  };
-  var arrayTraps = {};
-  each(objectTraps, (key, fn) => {
-    arrayTraps[key] = function() {
-      arguments[0] = arguments[0][0];
-      return fn.apply(this, arguments);
-    };
-  });
-  arrayTraps.deleteProperty = function(state, prop) {
-    if (process.env.NODE_ENV !== "production" && isNaN(parseInt(prop)))
-      die(13);
-    return arrayTraps.set.call(this, state, prop, void 0);
-  };
-  arrayTraps.set = function(state, prop, value) {
-    if (process.env.NODE_ENV !== "production" && prop !== "length" && isNaN(parseInt(prop)))
-      die(14);
-    return objectTraps.set.call(this, state[0], prop, value, state[0]);
-  };
-  function peek(draft, prop) {
-    const state = draft[DRAFT_STATE];
-    const source = state ? latest(state) : draft;
-    return source[prop];
-  }
-  function readPropFromProto(state, source, prop) {
-    var _a2;
-    const desc = getDescriptorFromProto(source, prop);
-    return desc ? `value` in desc ? desc.value : (
-      // This is a very special case, if the prop is a getter defined by the
-      // prototype, we should invoke it with the draft as context!
-      (_a2 = desc.get) == null ? void 0 : _a2.call(state.draft_)
-    ) : void 0;
-  }
-  function getDescriptorFromProto(source, prop) {
-    if (!(prop in source))
-      return void 0;
-    let proto = getPrototypeOf(source);
-    while (proto) {
-      const desc = Object.getOwnPropertyDescriptor(proto, prop);
-      if (desc)
-        return desc;
-      proto = getPrototypeOf(proto);
-    }
-    return void 0;
-  }
-  function markChanged(state) {
-    if (!state.modified_) {
-      state.modified_ = true;
-      if (state.parent_) {
-        markChanged(state.parent_);
-      }
-    }
-  }
-  function prepareCopy(state) {
-    if (!state.copy_) {
-      state.copy_ = shallowCopy(
-        state.base_,
-        state.scope_.immer_.useStrictShallowCopy_
-      );
-    }
-  }
-  var Immer2 = class {
-    constructor(config2) {
-      this.autoFreeze_ = true;
-      this.useStrictShallowCopy_ = false;
-      this.produce = (base, recipe, patchListener) => {
-        if (typeof base === "function" && typeof recipe !== "function") {
-          const defaultBase = recipe;
-          recipe = base;
-          const self2 = this;
-          return function curriedProduce(base2 = defaultBase, ...args) {
-            return self2.produce(base2, (draft) => recipe.call(this, draft, ...args));
-          };
-        }
-        if (typeof recipe !== "function")
-          die(6);
-        if (patchListener !== void 0 && typeof patchListener !== "function")
-          die(7);
-        let result;
-        if (isDraftable(base)) {
-          const scope = enterScope(this);
-          const proxy = createProxy(base, void 0);
-          let hasError = true;
-          try {
-            result = recipe(proxy);
-            hasError = false;
-          } finally {
-            if (hasError)
-              revokeScope(scope);
-            else
-              leaveScope(scope);
-          }
-          usePatchesInScope(scope, patchListener);
-          return processResult(result, scope);
-        } else if (!base || typeof base !== "object") {
-          result = recipe(base);
-          if (result === void 0)
-            result = base;
-          if (result === NOTHING)
-            result = void 0;
-          if (this.autoFreeze_)
-            freeze(result, true);
-          if (patchListener) {
-            const p = [];
-            const ip = [];
-            getPlugin("Patches").generateReplacementPatches_(base, result, p, ip);
-            patchListener(p, ip);
-          }
-          return result;
-        } else
-          die(1, base);
-      };
-      this.produceWithPatches = (base, recipe) => {
-        if (typeof base === "function") {
-          return (state, ...args) => this.produceWithPatches(state, (draft) => base(draft, ...args));
-        }
-        let patches, inversePatches;
-        const result = this.produce(base, recipe, (p, ip) => {
-          patches = p;
-          inversePatches = ip;
-        });
-        return [result, patches, inversePatches];
-      };
-      if (typeof (config2 == null ? void 0 : config2.autoFreeze) === "boolean")
-        this.setAutoFreeze(config2.autoFreeze);
-      if (typeof (config2 == null ? void 0 : config2.useStrictShallowCopy) === "boolean")
-        this.setUseStrictShallowCopy(config2.useStrictShallowCopy);
-    }
-    createDraft(base) {
-      if (!isDraftable(base))
-        die(8);
-      if (isDraft(base))
-        base = current(base);
-      const scope = enterScope(this);
-      const proxy = createProxy(base, void 0);
-      proxy[DRAFT_STATE].isManual_ = true;
-      leaveScope(scope);
-      return proxy;
-    }
-    finishDraft(draft, patchListener) {
-      const state = draft && draft[DRAFT_STATE];
-      if (!state || !state.isManual_)
-        die(9);
-      const { scope_: scope } = state;
-      usePatchesInScope(scope, patchListener);
-      return processResult(void 0, scope);
-    }
-    /**
-     * Pass true to automatically freeze all copies created by Immer.
-     *
-     * By default, auto-freezing is enabled.
-     */
-    setAutoFreeze(value) {
-      this.autoFreeze_ = value;
-    }
-    /**
-     * Pass true to enable strict shallow copy.
-     *
-     * By default, immer does not copy the object descriptors such as getter, setter and non-enumrable properties.
-     */
-    setUseStrictShallowCopy(value) {
-      this.useStrictShallowCopy_ = value;
-    }
-    applyPatches(base, patches) {
-      let i2;
-      for (i2 = patches.length - 1; i2 >= 0; i2--) {
-        const patch = patches[i2];
-        if (patch.path.length === 0 && patch.op === "replace") {
-          base = patch.value;
-          break;
-        }
-      }
-      if (i2 > -1) {
-        patches = patches.slice(i2 + 1);
-      }
-      const applyPatchesImpl = getPlugin("Patches").applyPatches_;
-      if (isDraft(base)) {
-        return applyPatchesImpl(base, patches);
-      }
-      return this.produce(
-        base,
-        (draft) => applyPatchesImpl(draft, patches)
-      );
-    }
-  };
-  function createProxy(value, parent) {
-    const draft = isMap(value) ? getPlugin("MapSet").proxyMap_(value, parent) : isSet(value) ? getPlugin("MapSet").proxySet_(value, parent) : createProxyProxy(value, parent);
-    const scope = parent ? parent.scope_ : getCurrentScope();
-    scope.drafts_.push(draft);
-    return draft;
-  }
-  function current(value) {
-    if (!isDraft(value))
-      die(10, value);
-    return currentImpl(value);
-  }
-  function currentImpl(value) {
-    if (!isDraftable(value) || isFrozen(value))
-      return value;
-    const state = value[DRAFT_STATE];
-    let copy2;
-    if (state) {
-      if (!state.modified_)
-        return state.base_;
-      state.finalized_ = true;
-      copy2 = shallowCopy(value, state.scope_.immer_.useStrictShallowCopy_);
-    } else {
-      copy2 = shallowCopy(value, true);
-    }
-    each(copy2, (key, childValue) => {
-      set(copy2, key, currentImpl(childValue));
-    });
-    if (state) {
-      state.finalized_ = false;
-    }
-    return copy2;
-  }
-  var immer = new Immer2();
-  var produce = immer.produce;
-  immer.produceWithPatches.bind(
-    immer
-  );
-  immer.setAutoFreeze.bind(immer);
-  immer.setUseStrictShallowCopy.bind(immer);
-  immer.applyPatches.bind(immer);
-  immer.createDraft.bind(immer);
-  immer.finishDraft.bind(immer);
   var Campaign = {};
-  var _interopRequireDefault$f = interopRequireDefaultExports;
+  var _interopRequireDefault$d = interopRequireDefaultExports;
   Object.defineProperty(Campaign, "__esModule", {
     value: true
   });
-  var default_1$f = Campaign.default = void 0;
-  var _createSvgIcon$f = _interopRequireDefault$f(requireCreateSvgIcon());
-  var _jsxRuntime$f = jsxRuntimeExports;
-  var _default$g = (0, _createSvgIcon$f.default)(/* @__PURE__ */ (0, _jsxRuntime$f.jsx)("path", {
+  var default_1$d = Campaign.default = void 0;
+  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
+  var _jsxRuntime$d = jsxRuntimeExports;
+  var _default$d = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
     d: "M18 11v2h4v-2h-4zm-2 6.61c.96.71 2.21 1.65 3.2 2.39.4-.53.8-1.07 1.2-1.6-.99-.74-2.24-1.68-3.2-2.4-.4.54-.8 1.08-1.2 1.61zM20.4 5.6c-.4-.53-.8-1.07-1.2-1.6-.99.74-2.24 1.68-3.2 2.4.4.53.8 1.07 1.2 1.6.96-.72 2.21-1.65 3.2-2.4zM4 9c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h1v4h2v-4h1l5 3V6L8 9H4zm11.5 3c0-1.33-.58-2.53-1.5-3.35v6.69c.92-.81 1.5-2.01 1.5-3.34z"
   }), "Campaign");
-  default_1$f = Campaign.default = _default$g;
+  default_1$d = Campaign.default = _default$d;
   /*! js-cookie v3.0.5 | MIT */
   function assign(target) {
     for (var i2 = 1; i2 < arguments.length; i2++) {
@@ -97456,7 +99171,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       Alert$1,
       {
         severity: isUpdateAnnouncement ? "info" : severity,
-        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {}) : null,
+        icon: isUpdateAnnouncement ? /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {}) : null,
         sx,
         onClose: hideIfCookie && handleClose,
         children: [
@@ -97466,58 +99181,42 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
     );
   };
-  const StyledDialog = styled$1(Dialog$1)(({ theme: theme2 }) => ({
-    "& .MuiDialogContent-root": {
-      padding: theme2.spacing(3)
-    },
-    "& .MuiDialogActions-root": {
-      padding: theme2.spacing(1)
-    }
-  }));
-  const StyledForm = styled$1(Box$1)(({ theme: theme2 }) => ({
-    display: "flex",
-    flexDirection: "column",
-    gap: theme2.spacing(3),
-    "& > *": {
-      flexGrow: 1
-    }
-  }));
   var ExpandMore = {};
-  var _interopRequireDefault$e = interopRequireDefaultExports;
+  var _interopRequireDefault$c = interopRequireDefaultExports;
   Object.defineProperty(ExpandMore, "__esModule", {
     value: true
   });
-  var default_1$e = ExpandMore.default = void 0;
-  var _createSvgIcon$e = _interopRequireDefault$e(requireCreateSvgIcon());
-  var _jsxRuntime$e = jsxRuntimeExports;
-  var _default$f = (0, _createSvgIcon$e.default)(/* @__PURE__ */ (0, _jsxRuntime$e.jsx)("path", {
+  var default_1$c = ExpandMore.default = void 0;
+  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
+  var _jsxRuntime$c = jsxRuntimeExports;
+  var _default$c = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
     d: "M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
   }), "ExpandMore");
-  default_1$e = ExpandMore.default = _default$f;
+  default_1$c = ExpandMore.default = _default$c;
   var Delete = {};
-  var _interopRequireDefault$d = interopRequireDefaultExports;
+  var _interopRequireDefault$b = interopRequireDefaultExports;
   Object.defineProperty(Delete, "__esModule", {
     value: true
   });
-  var default_1$d = Delete.default = void 0;
-  var _createSvgIcon$d = _interopRequireDefault$d(requireCreateSvgIcon());
-  var _jsxRuntime$d = jsxRuntimeExports;
-  var _default$e = (0, _createSvgIcon$d.default)(/* @__PURE__ */ (0, _jsxRuntime$d.jsx)("path", {
+  var default_1$b = Delete.default = void 0;
+  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
+  var _jsxRuntime$b = jsxRuntimeExports;
+  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
     d: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
   }), "Delete");
-  default_1$d = Delete.default = _default$e;
+  default_1$b = Delete.default = _default$b;
   var AddCircle = {};
-  var _interopRequireDefault$c = interopRequireDefaultExports;
+  var _interopRequireDefault$a = interopRequireDefaultExports;
   Object.defineProperty(AddCircle, "__esModule", {
     value: true
   });
-  var default_1$c = AddCircle.default = void 0;
-  var _createSvgIcon$c = _interopRequireDefault$c(requireCreateSvgIcon());
-  var _jsxRuntime$c = jsxRuntimeExports;
-  var _default$d = (0, _createSvgIcon$c.default)(/* @__PURE__ */ (0, _jsxRuntime$c.jsx)("path", {
+  var default_1$a = AddCircle.default = void 0;
+  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
+  var _jsxRuntime$a = jsxRuntimeExports;
+  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
     d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"
   }), "AddCircle");
-  default_1$c = AddCircle.default = _default$d;
+  default_1$a = AddCircle.default = _default$a;
   const StyledAccordion = styled$1(Accordion$1)(({ theme: theme2 }) => ({
     "&.MuiPaper-root": {
       boxShadow: `0 0 0 1px ${theme2.palette.divider}`,
@@ -97563,7 +99262,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         AccordionSummary$1,
         {
-          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$e, {}),
+          expandIcon: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {}),
           onClick: toggleExpanded,
           children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", spacing: 2, children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { children: window.gettext("Object sets") }),
@@ -97618,13 +99317,13 @@ Please use another name.` : formatMuiErrorMessage(18));
               fullWidth: true
             }
           ),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Box$1, { sx: { alignSelf: "flex-end", flexShrink: 0 }, children: index === sets.length - 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(IconButton$1, { color: "primary", onClick: onAddNew, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
             IconButton$1,
             {
               onClick: () => onUpdate({
                 index
               }),
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$d, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {})
             }
           ) })
         ] }, index)) })
@@ -97890,1815 +99589,6 @@ Please use another name.` : formatMuiErrorMessage(18));
     };
     return type === DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE ? /* @__PURE__ */ jsxRuntimeExports.jsx(CreateProjectDialog$1, { ...dialogProps, onSubmit: onCreateProjectSubmit }) : /* @__PURE__ */ jsxRuntimeExports.jsx(EditProjectDialog, { ...dialogProps, onSubmit: onEditProjectSubmit });
   };
-  function __awaiter(thisArg, _arguments, P2, generator) {
-    function adopt(value) {
-      return value instanceof P2 ? value : new P2(function(resolve) {
-        resolve(value);
-      });
-    }
-    return new (P2 || (P2 = Promise))(function(resolve, reject) {
-      function fulfilled(value) {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function rejected(value) {
-        try {
-          step(generator["throw"](value));
-        } catch (e) {
-          reject(e);
-        }
-      }
-      function step(result) {
-        result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-      }
-      step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-  }
-  function __generator(thisArg, body2) {
-    var _2 = { label: 0, sent: function() {
-      if (t[0] & 1)
-        throw t[1];
-      return t[1];
-    }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
-      return this;
-    }), g;
-    function verb(n) {
-      return function(v) {
-        return step([n, v]);
-      };
-    }
-    function step(op) {
-      if (f)
-        throw new TypeError("Generator is already executing.");
-      while (g && (g = 0, op[0] && (_2 = 0)), _2)
-        try {
-          if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done)
-            return t;
-          if (y = 0, t)
-            op = [op[0] & 2, t.value];
-          switch (op[0]) {
-            case 0:
-            case 1:
-              t = op;
-              break;
-            case 4:
-              _2.label++;
-              return { value: op[1], done: false };
-            case 5:
-              _2.label++;
-              y = op[1];
-              op = [0];
-              continue;
-            case 7:
-              op = _2.ops.pop();
-              _2.trys.pop();
-              continue;
-            default:
-              if (!(t = _2.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
-                _2 = 0;
-                continue;
-              }
-              if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
-                _2.label = op[1];
-                break;
-              }
-              if (op[0] === 6 && _2.label < t[1]) {
-                _2.label = t[1];
-                t = op;
-                break;
-              }
-              if (t && _2.label < t[2]) {
-                _2.label = t[2];
-                _2.ops.push(op);
-                break;
-              }
-              if (t[2])
-                _2.ops.pop();
-              _2.trys.pop();
-              continue;
-          }
-          op = body2.call(thisArg, _2);
-        } catch (e) {
-          op = [6, e];
-          y = 0;
-        } finally {
-          f = t = 0;
-        }
-      if (op[0] & 5)
-        throw op[1];
-      return { value: op[0] ? op[1] : void 0, done: true };
-    }
-  }
-  function __read(o, n) {
-    var m2 = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m2)
-      return o;
-    var i2 = m2.call(o), r2, ar = [], e;
-    try {
-      while ((n === void 0 || n-- > 0) && !(r2 = i2.next()).done)
-        ar.push(r2.value);
-    } catch (error) {
-      e = { error };
-    } finally {
-      try {
-        if (r2 && !r2.done && (m2 = i2["return"]))
-          m2.call(i2);
-      } finally {
-        if (e)
-          throw e.error;
-      }
-    }
-    return ar;
-  }
-  function __spreadArray(to, from2, pack) {
-    if (pack || arguments.length === 2)
-      for (var i2 = 0, l = from2.length, ar; i2 < l; i2++) {
-        if (ar || !(i2 in from2)) {
-          if (!ar)
-            ar = Array.prototype.slice.call(from2, 0, i2);
-          ar[i2] = from2[i2];
-        }
-      }
-    return to.concat(ar || Array.prototype.slice.call(from2));
-  }
-  typeof SuppressedError === "function" ? SuppressedError : function(error, suppressed, message) {
-    var e = new Error(message);
-    return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-  };
-  var COMMON_MIME_TYPES = /* @__PURE__ */ new Map([
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
-    ["aac", "audio/aac"],
-    ["abw", "application/x-abiword"],
-    ["arc", "application/x-freearc"],
-    ["avif", "image/avif"],
-    ["avi", "video/x-msvideo"],
-    ["azw", "application/vnd.amazon.ebook"],
-    ["bin", "application/octet-stream"],
-    ["bmp", "image/bmp"],
-    ["bz", "application/x-bzip"],
-    ["bz2", "application/x-bzip2"],
-    ["cda", "application/x-cdf"],
-    ["csh", "application/x-csh"],
-    ["css", "text/css"],
-    ["csv", "text/csv"],
-    ["doc", "application/msword"],
-    ["docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
-    ["eot", "application/vnd.ms-fontobject"],
-    ["epub", "application/epub+zip"],
-    ["gz", "application/gzip"],
-    ["gif", "image/gif"],
-    ["heic", "image/heic"],
-    ["heif", "image/heif"],
-    ["htm", "text/html"],
-    ["html", "text/html"],
-    ["ico", "image/vnd.microsoft.icon"],
-    ["ics", "text/calendar"],
-    ["jar", "application/java-archive"],
-    ["jpeg", "image/jpeg"],
-    ["jpg", "image/jpeg"],
-    ["js", "text/javascript"],
-    ["json", "application/json"],
-    ["jsonld", "application/ld+json"],
-    ["mid", "audio/midi"],
-    ["midi", "audio/midi"],
-    ["mjs", "text/javascript"],
-    ["mp3", "audio/mpeg"],
-    ["mp4", "video/mp4"],
-    ["mpeg", "video/mpeg"],
-    ["mpkg", "application/vnd.apple.installer+xml"],
-    ["odp", "application/vnd.oasis.opendocument.presentation"],
-    ["ods", "application/vnd.oasis.opendocument.spreadsheet"],
-    ["odt", "application/vnd.oasis.opendocument.text"],
-    ["oga", "audio/ogg"],
-    ["ogv", "video/ogg"],
-    ["ogx", "application/ogg"],
-    ["opus", "audio/opus"],
-    ["otf", "font/otf"],
-    ["png", "image/png"],
-    ["pdf", "application/pdf"],
-    ["php", "application/x-httpd-php"],
-    ["ppt", "application/vnd.ms-powerpoint"],
-    ["pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
-    ["rar", "application/vnd.rar"],
-    ["rtf", "application/rtf"],
-    ["sh", "application/x-sh"],
-    ["svg", "image/svg+xml"],
-    ["swf", "application/x-shockwave-flash"],
-    ["tar", "application/x-tar"],
-    ["tif", "image/tiff"],
-    ["tiff", "image/tiff"],
-    ["ts", "video/mp2t"],
-    ["ttf", "font/ttf"],
-    ["txt", "text/plain"],
-    ["vsd", "application/vnd.visio"],
-    ["wav", "audio/wav"],
-    ["weba", "audio/webm"],
-    ["webm", "video/webm"],
-    ["webp", "image/webp"],
-    ["woff", "font/woff"],
-    ["woff2", "font/woff2"],
-    ["xhtml", "application/xhtml+xml"],
-    ["xls", "application/vnd.ms-excel"],
-    ["xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
-    ["xml", "application/xml"],
-    ["xul", "application/vnd.mozilla.xul+xml"],
-    ["zip", "application/zip"],
-    ["7z", "application/x-7z-compressed"],
-    // Others
-    ["mkv", "video/x-matroska"],
-    ["mov", "video/quicktime"],
-    ["msg", "application/vnd.ms-outlook"]
-  ]);
-  function toFileWithPath(file, path) {
-    var f = withMimeType(file);
-    if (typeof f.path !== "string") {
-      var webkitRelativePath = file.webkitRelativePath;
-      Object.defineProperty(f, "path", {
-        value: typeof path === "string" ? path : typeof webkitRelativePath === "string" && webkitRelativePath.length > 0 ? webkitRelativePath : file.name,
-        writable: false,
-        configurable: false,
-        enumerable: true
-      });
-    }
-    return f;
-  }
-  function withMimeType(file) {
-    var name2 = file.name;
-    var hasExtension = name2 && name2.lastIndexOf(".") !== -1;
-    if (hasExtension && !file.type) {
-      var ext = name2.split(".").pop().toLowerCase();
-      var type = COMMON_MIME_TYPES.get(ext);
-      if (type) {
-        Object.defineProperty(file, "type", {
-          value: type,
-          writable: false,
-          configurable: false,
-          enumerable: true
-        });
-      }
-    }
-    return file;
-  }
-  var FILES_TO_IGNORE = [
-    // Thumbnail cache files for macOS and Windows
-    ".DS_Store",
-    "Thumbs.db"
-    // Windows
-  ];
-  function fromEvent(evt) {
-    return __awaiter(this, void 0, void 0, function() {
-      return __generator(this, function(_a2) {
-        if (isObject(evt) && isDataTransfer(evt.dataTransfer)) {
-          return [2, getDataTransferFiles(evt.dataTransfer, evt.type)];
-        } else if (isChangeEvt(evt)) {
-          return [2, getInputFiles(evt)];
-        } else if (Array.isArray(evt) && evt.every(function(item) {
-          return "getFile" in item && typeof item.getFile === "function";
-        })) {
-          return [2, getFsHandleFiles(evt)];
-        }
-        return [2, []];
-      });
-    });
-  }
-  function isDataTransfer(value) {
-    return isObject(value);
-  }
-  function isChangeEvt(value) {
-    return isObject(value) && isObject(value.target);
-  }
-  function isObject(v) {
-    return typeof v === "object" && v !== null;
-  }
-  function getInputFiles(evt) {
-    return fromList(evt.target.files).map(function(file) {
-      return toFileWithPath(file);
-    });
-  }
-  function getFsHandleFiles(handles) {
-    return __awaiter(this, void 0, void 0, function() {
-      var files;
-      return __generator(this, function(_a2) {
-        switch (_a2.label) {
-          case 0:
-            return [4, Promise.all(handles.map(function(h) {
-              return h.getFile();
-            }))];
-          case 1:
-            files = _a2.sent();
-            return [2, files.map(function(file) {
-              return toFileWithPath(file);
-            })];
-        }
-      });
-    });
-  }
-  function getDataTransferFiles(dt, type) {
-    return __awaiter(this, void 0, void 0, function() {
-      var items, files;
-      return __generator(this, function(_a2) {
-        switch (_a2.label) {
-          case 0:
-            if (!dt.items)
-              return [3, 2];
-            items = fromList(dt.items).filter(function(item) {
-              return item.kind === "file";
-            });
-            if (type !== "drop") {
-              return [2, items];
-            }
-            return [4, Promise.all(items.map(toFilePromises))];
-          case 1:
-            files = _a2.sent();
-            return [2, noIgnoredFiles(flatten(files))];
-          case 2:
-            return [2, noIgnoredFiles(fromList(dt.files).map(function(file) {
-              return toFileWithPath(file);
-            }))];
-        }
-      });
-    });
-  }
-  function noIgnoredFiles(files) {
-    return files.filter(function(file) {
-      return FILES_TO_IGNORE.indexOf(file.name) === -1;
-    });
-  }
-  function fromList(items) {
-    if (items === null) {
-      return [];
-    }
-    var files = [];
-    for (var i2 = 0; i2 < items.length; i2++) {
-      var file = items[i2];
-      files.push(file);
-    }
-    return files;
-  }
-  function toFilePromises(item) {
-    if (typeof item.webkitGetAsEntry !== "function") {
-      return fromDataTransferItem(item);
-    }
-    var entry = item.webkitGetAsEntry();
-    if (entry && entry.isDirectory) {
-      return fromDirEntry(entry);
-    }
-    return fromDataTransferItem(item);
-  }
-  function flatten(items) {
-    return items.reduce(function(acc, files) {
-      return __spreadArray(__spreadArray([], __read(acc), false), __read(Array.isArray(files) ? flatten(files) : [files]), false);
-    }, []);
-  }
-  function fromDataTransferItem(item) {
-    var file = item.getAsFile();
-    if (!file) {
-      return Promise.reject("".concat(item, " is not a File"));
-    }
-    var fwp = toFileWithPath(file);
-    return Promise.resolve(fwp);
-  }
-  function fromEntry(entry) {
-    return __awaiter(this, void 0, void 0, function() {
-      return __generator(this, function(_a2) {
-        return [2, entry.isDirectory ? fromDirEntry(entry) : fromFileEntry(entry)];
-      });
-    });
-  }
-  function fromDirEntry(entry) {
-    var reader = entry.createReader();
-    return new Promise(function(resolve, reject) {
-      var entries = [];
-      function readEntries() {
-        var _this = this;
-        reader.readEntries(function(batch2) {
-          return __awaiter(_this, void 0, void 0, function() {
-            var files, err_1, items;
-            return __generator(this, function(_a2) {
-              switch (_a2.label) {
-                case 0:
-                  if (!!batch2.length)
-                    return [3, 5];
-                  _a2.label = 1;
-                case 1:
-                  _a2.trys.push([1, 3, , 4]);
-                  return [4, Promise.all(entries)];
-                case 2:
-                  files = _a2.sent();
-                  resolve(files);
-                  return [3, 4];
-                case 3:
-                  err_1 = _a2.sent();
-                  reject(err_1);
-                  return [3, 4];
-                case 4:
-                  return [3, 6];
-                case 5:
-                  items = Promise.all(batch2.map(fromEntry));
-                  entries.push(items);
-                  readEntries();
-                  _a2.label = 6;
-                case 6:
-                  return [
-                    2
-                    /*return*/
-                  ];
-              }
-            });
-          });
-        }, function(err) {
-          reject(err);
-        });
-      }
-      readEntries();
-    });
-  }
-  function fromFileEntry(entry) {
-    return __awaiter(this, void 0, void 0, function() {
-      return __generator(this, function(_a2) {
-        return [2, new Promise(function(resolve, reject) {
-          entry.file(function(file) {
-            var fwp = toFileWithPath(file, entry.fullPath);
-            resolve(fwp);
-          }, function(err) {
-            reject(err);
-          });
-        })];
-      });
-    });
-  }
-  var _default$c = function(file, acceptedFiles) {
-    if (file && acceptedFiles) {
-      var acceptedFilesArray = Array.isArray(acceptedFiles) ? acceptedFiles : acceptedFiles.split(",");
-      var fileName = file.name || "";
-      var mimeType = (file.type || "").toLowerCase();
-      var baseMimeType = mimeType.replace(/\/.*$/, "");
-      return acceptedFilesArray.some(function(type) {
-        var validType = type.trim().toLowerCase();
-        if (validType.charAt(0) === ".") {
-          return fileName.toLowerCase().endsWith(validType);
-        } else if (validType.endsWith("/*")) {
-          return baseMimeType === validType.replace(/\/.*$/, "");
-        }
-        return mimeType === validType;
-      });
-    }
-    return true;
-  };
-  function _toConsumableArray$1(arr) {
-    return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread$1();
-  }
-  function _nonIterableSpread$1() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _iterableToArray$1(iter) {
-    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-      return Array.from(iter);
-  }
-  function _arrayWithoutHoles$1(arr) {
-    if (Array.isArray(arr))
-      return _arrayLikeToArray$1(arr);
-  }
-  function ownKeys$1(object, enumerableOnly) {
-    var keys = Object.keys(object);
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      })), keys.push.apply(keys, symbols);
-    }
-    return keys;
-  }
-  function _objectSpread$1(target) {
-    for (var i2 = 1; i2 < arguments.length; i2++) {
-      var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys$1(Object(source), true).forEach(function(key) {
-        _defineProperty$1(target, key, source[key]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function(key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
-    }
-    return target;
-  }
-  function _defineProperty$1(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true });
-    } else {
-      obj[key] = value;
-    }
-    return obj;
-  }
-  function _slicedToArray$1(arr, i2) {
-    return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i2) || _unsupportedIterableToArray$1(arr, i2) || _nonIterableRest$1();
-  }
-  function _nonIterableRest$1() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _unsupportedIterableToArray$1(o, minLen) {
-    if (!o)
-      return;
-    if (typeof o === "string")
-      return _arrayLikeToArray$1(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor)
-      n = o.constructor.name;
-    if (n === "Map" || n === "Set")
-      return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-      return _arrayLikeToArray$1(o, minLen);
-  }
-  function _arrayLikeToArray$1(arr, len) {
-    if (len == null || len > arr.length)
-      len = arr.length;
-    for (var i2 = 0, arr2 = new Array(len); i2 < len; i2++) {
-      arr2[i2] = arr[i2];
-    }
-    return arr2;
-  }
-  function _iterableToArrayLimit$1(arr, i2) {
-    var _i2 = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-    if (_i2 == null)
-      return;
-    var _arr = [];
-    var _n = true;
-    var _d2 = false;
-    var _s, _e2;
-    try {
-      for (_i2 = _i2.call(arr); !(_n = (_s = _i2.next()).done); _n = true) {
-        _arr.push(_s.value);
-        if (i2 && _arr.length === i2)
-          break;
-      }
-    } catch (err) {
-      _d2 = true;
-      _e2 = err;
-    } finally {
-      try {
-        if (!_n && _i2["return"] != null)
-          _i2["return"]();
-      } finally {
-        if (_d2)
-          throw _e2;
-      }
-    }
-    return _arr;
-  }
-  function _arrayWithHoles$1(arr) {
-    if (Array.isArray(arr))
-      return arr;
-  }
-  var FILE_INVALID_TYPE = "file-invalid-type";
-  var FILE_TOO_LARGE = "file-too-large";
-  var FILE_TOO_SMALL = "file-too-small";
-  var TOO_MANY_FILES = "too-many-files";
-  var getInvalidTypeRejectionErr = function getInvalidTypeRejectionErr2(accept) {
-    accept = Array.isArray(accept) && accept.length === 1 ? accept[0] : accept;
-    var messageSuffix = Array.isArray(accept) ? "one of ".concat(accept.join(", ")) : accept;
-    return {
-      code: FILE_INVALID_TYPE,
-      message: "File type must be ".concat(messageSuffix)
-    };
-  };
-  var getTooLargeRejectionErr = function getTooLargeRejectionErr2(maxSize) {
-    return {
-      code: FILE_TOO_LARGE,
-      message: "File is larger than ".concat(maxSize, " ").concat(maxSize === 1 ? "byte" : "bytes")
-    };
-  };
-  var getTooSmallRejectionErr = function getTooSmallRejectionErr2(minSize) {
-    return {
-      code: FILE_TOO_SMALL,
-      message: "File is smaller than ".concat(minSize, " ").concat(minSize === 1 ? "byte" : "bytes")
-    };
-  };
-  var TOO_MANY_FILES_REJECTION = {
-    code: TOO_MANY_FILES,
-    message: "Too many files"
-  };
-  function fileAccepted(file, accept) {
-    var isAcceptable = file.type === "application/x-moz-file" || _default$c(file, accept);
-    return [isAcceptable, isAcceptable ? null : getInvalidTypeRejectionErr(accept)];
-  }
-  function fileMatchSize(file, minSize, maxSize) {
-    if (isDefined(file.size)) {
-      if (isDefined(minSize) && isDefined(maxSize)) {
-        if (file.size > maxSize)
-          return [false, getTooLargeRejectionErr(maxSize)];
-        if (file.size < minSize)
-          return [false, getTooSmallRejectionErr(minSize)];
-      } else if (isDefined(minSize) && file.size < minSize)
-        return [false, getTooSmallRejectionErr(minSize)];
-      else if (isDefined(maxSize) && file.size > maxSize)
-        return [false, getTooLargeRejectionErr(maxSize)];
-    }
-    return [true, null];
-  }
-  function isDefined(value) {
-    return value !== void 0 && value !== null;
-  }
-  function allFilesAccepted(_ref) {
-    var files = _ref.files, accept = _ref.accept, minSize = _ref.minSize, maxSize = _ref.maxSize, multiple = _ref.multiple, maxFiles = _ref.maxFiles, validator2 = _ref.validator;
-    if (!multiple && files.length > 1 || multiple && maxFiles >= 1 && files.length > maxFiles) {
-      return false;
-    }
-    return files.every(function(file) {
-      var _fileAccepted = fileAccepted(file, accept), _fileAccepted2 = _slicedToArray$1(_fileAccepted, 1), accepted = _fileAccepted2[0];
-      var _fileMatchSize = fileMatchSize(file, minSize, maxSize), _fileMatchSize2 = _slicedToArray$1(_fileMatchSize, 1), sizeMatch = _fileMatchSize2[0];
-      var customErrors = validator2 ? validator2(file) : null;
-      return accepted && sizeMatch && !customErrors;
-    });
-  }
-  function isPropagationStopped(event) {
-    if (typeof event.isPropagationStopped === "function") {
-      return event.isPropagationStopped();
-    } else if (typeof event.cancelBubble !== "undefined") {
-      return event.cancelBubble;
-    }
-    return false;
-  }
-  function isEvtWithFiles(event) {
-    if (!event.dataTransfer) {
-      return !!event.target && !!event.target.files;
-    }
-    return Array.prototype.some.call(event.dataTransfer.types, function(type) {
-      return type === "Files" || type === "application/x-moz-file";
-    });
-  }
-  function onDocumentDragOver(event) {
-    event.preventDefault();
-  }
-  function isIe(userAgent) {
-    return userAgent.indexOf("MSIE") !== -1 || userAgent.indexOf("Trident/") !== -1;
-  }
-  function isEdge(userAgent) {
-    return userAgent.indexOf("Edge/") !== -1;
-  }
-  function isIeOrEdge() {
-    var userAgent = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : window.navigator.userAgent;
-    return isIe(userAgent) || isEdge(userAgent);
-  }
-  function composeEventHandlers() {
-    for (var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) {
-      fns[_key] = arguments[_key];
-    }
-    return function(event) {
-      for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        args[_key2 - 1] = arguments[_key2];
-      }
-      return fns.some(function(fn) {
-        if (!isPropagationStopped(event) && fn) {
-          fn.apply(void 0, [event].concat(args));
-        }
-        return isPropagationStopped(event);
-      });
-    };
-  }
-  function canUseFileSystemAccessAPI() {
-    return "showOpenFilePicker" in window;
-  }
-  function pickerOptionsFromAccept(accept) {
-    if (isDefined(accept)) {
-      var acceptForPicker = Object.entries(accept).filter(function(_ref2) {
-        var _ref3 = _slicedToArray$1(_ref2, 2), mimeType = _ref3[0], ext = _ref3[1];
-        var ok2 = true;
-        if (!isMIMEType(mimeType)) {
-          console.warn('Skipped "'.concat(mimeType, '" because it is not a valid MIME type. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types for a list of valid MIME types.'));
-          ok2 = false;
-        }
-        if (!Array.isArray(ext) || !ext.every(isExt)) {
-          console.warn('Skipped "'.concat(mimeType, '" because an invalid file extension was provided.'));
-          ok2 = false;
-        }
-        return ok2;
-      }).reduce(function(agg, _ref4) {
-        var _ref5 = _slicedToArray$1(_ref4, 2), mimeType = _ref5[0], ext = _ref5[1];
-        return _objectSpread$1(_objectSpread$1({}, agg), {}, _defineProperty$1({}, mimeType, ext));
-      }, {});
-      return [{
-        // description is required due to https://crbug.com/1264708
-        description: "Files",
-        accept: acceptForPicker
-      }];
-    }
-    return accept;
-  }
-  function acceptPropAsAcceptAttr(accept) {
-    if (isDefined(accept)) {
-      return Object.entries(accept).reduce(function(a, _ref6) {
-        var _ref7 = _slicedToArray$1(_ref6, 2), mimeType = _ref7[0], ext = _ref7[1];
-        return [].concat(_toConsumableArray$1(a), [mimeType], _toConsumableArray$1(ext));
-      }, []).filter(function(v) {
-        return isMIMEType(v) || isExt(v);
-      }).join(",");
-    }
-    return void 0;
-  }
-  function isAbort(v) {
-    return v instanceof DOMException && (v.name === "AbortError" || v.code === v.ABORT_ERR);
-  }
-  function isSecurityError(v) {
-    return v instanceof DOMException && (v.name === "SecurityError" || v.code === v.SECURITY_ERR);
-  }
-  function isMIMEType(v) {
-    return v === "audio/*" || v === "video/*" || v === "image/*" || v === "text/*" || /\w+\/[-+.\w]+/g.test(v);
-  }
-  function isExt(v) {
-    return /^.*\.[\w]+$/.test(v);
-  }
-  var _excluded = ["children"], _excluded2 = ["open"], _excluded3 = ["refKey", "role", "onKeyDown", "onFocus", "onBlur", "onClick", "onDragEnter", "onDragOver", "onDragLeave", "onDrop"], _excluded4 = ["refKey", "onChange", "onClick"];
-  function _toConsumableArray(arr) {
-    return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
-  }
-  function _nonIterableSpread() {
-    throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _iterableToArray(iter) {
-    if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-      return Array.from(iter);
-  }
-  function _arrayWithoutHoles(arr) {
-    if (Array.isArray(arr))
-      return _arrayLikeToArray(arr);
-  }
-  function _slicedToArray(arr, i2) {
-    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i2) || _unsupportedIterableToArray(arr, i2) || _nonIterableRest();
-  }
-  function _nonIterableRest() {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-  }
-  function _unsupportedIterableToArray(o, minLen) {
-    if (!o)
-      return;
-    if (typeof o === "string")
-      return _arrayLikeToArray(o, minLen);
-    var n = Object.prototype.toString.call(o).slice(8, -1);
-    if (n === "Object" && o.constructor)
-      n = o.constructor.name;
-    if (n === "Map" || n === "Set")
-      return Array.from(o);
-    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-      return _arrayLikeToArray(o, minLen);
-  }
-  function _arrayLikeToArray(arr, len) {
-    if (len == null || len > arr.length)
-      len = arr.length;
-    for (var i2 = 0, arr2 = new Array(len); i2 < len; i2++) {
-      arr2[i2] = arr[i2];
-    }
-    return arr2;
-  }
-  function _iterableToArrayLimit(arr, i2) {
-    var _i2 = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-    if (_i2 == null)
-      return;
-    var _arr = [];
-    var _n = true;
-    var _d2 = false;
-    var _s, _e2;
-    try {
-      for (_i2 = _i2.call(arr); !(_n = (_s = _i2.next()).done); _n = true) {
-        _arr.push(_s.value);
-        if (i2 && _arr.length === i2)
-          break;
-      }
-    } catch (err) {
-      _d2 = true;
-      _e2 = err;
-    } finally {
-      try {
-        if (!_n && _i2["return"] != null)
-          _i2["return"]();
-      } finally {
-        if (_d2)
-          throw _e2;
-      }
-    }
-    return _arr;
-  }
-  function _arrayWithHoles(arr) {
-    if (Array.isArray(arr))
-      return arr;
-  }
-  function ownKeys(object, enumerableOnly) {
-    var keys = Object.keys(object);
-    if (Object.getOwnPropertySymbols) {
-      var symbols = Object.getOwnPropertySymbols(object);
-      enumerableOnly && (symbols = symbols.filter(function(sym) {
-        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
-      })), keys.push.apply(keys, symbols);
-    }
-    return keys;
-  }
-  function _objectSpread(target) {
-    for (var i2 = 1; i2 < arguments.length; i2++) {
-      var source = null != arguments[i2] ? arguments[i2] : {};
-      i2 % 2 ? ownKeys(Object(source), true).forEach(function(key) {
-        _defineProperty(target, key, source[key]);
-      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
-        Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
-      });
-    }
-    return target;
-  }
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, { value, enumerable: true, configurable: true, writable: true });
-    } else {
-      obj[key] = value;
-    }
-    return obj;
-  }
-  function _objectWithoutProperties(source, excluded) {
-    if (source == null)
-      return {};
-    var target = _objectWithoutPropertiesLoose(source, excluded);
-    var key, i2;
-    if (Object.getOwnPropertySymbols) {
-      var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-      for (i2 = 0; i2 < sourceSymbolKeys.length; i2++) {
-        key = sourceSymbolKeys[i2];
-        if (excluded.indexOf(key) >= 0)
-          continue;
-        if (!Object.prototype.propertyIsEnumerable.call(source, key))
-          continue;
-        target[key] = source[key];
-      }
-    }
-    return target;
-  }
-  function _objectWithoutPropertiesLoose(source, excluded) {
-    if (source == null)
-      return {};
-    var target = {};
-    var sourceKeys = Object.keys(source);
-    var key, i2;
-    for (i2 = 0; i2 < sourceKeys.length; i2++) {
-      key = sourceKeys[i2];
-      if (excluded.indexOf(key) >= 0)
-        continue;
-      target[key] = source[key];
-    }
-    return target;
-  }
-  var Dropzone = /* @__PURE__ */ reactExports.forwardRef(function(_ref, ref) {
-    var children = _ref.children, params = _objectWithoutProperties(_ref, _excluded);
-    var _useDropzone = useDropzone(params), open = _useDropzone.open, props = _objectWithoutProperties(_useDropzone, _excluded2);
-    reactExports.useImperativeHandle(ref, function() {
-      return {
-        open
-      };
-    }, [open]);
-    return /* @__PURE__ */ React$1.createElement(reactExports.Fragment, null, children(_objectSpread(_objectSpread({}, props), {}, {
-      open
-    })));
-  });
-  Dropzone.displayName = "Dropzone";
-  var defaultProps = {
-    disabled: false,
-    getFilesFromEvent: fromEvent,
-    maxSize: Infinity,
-    minSize: 0,
-    multiple: true,
-    maxFiles: 0,
-    preventDropOnDocument: true,
-    noClick: false,
-    noKeyboard: false,
-    noDrag: false,
-    noDragEventsBubbling: false,
-    validator: null,
-    useFsAccessApi: true,
-    autoFocus: false
-  };
-  Dropzone.defaultProps = defaultProps;
-  Dropzone.propTypes = {
-    /**
-     * Render function that exposes the dropzone state and prop getter fns
-     *
-     * @param {object} params
-     * @param {Function} params.getRootProps Returns the props you should apply to the root drop container you render
-     * @param {Function} params.getInputProps Returns the props you should apply to hidden file input you render
-     * @param {Function} params.open Open the native file selection dialog
-     * @param {boolean} params.isFocused Dropzone area is in focus
-     * @param {boolean} params.isFileDialogActive File dialog is opened
-     * @param {boolean} params.isDragActive Active drag is in progress
-     * @param {boolean} params.isDragAccept Dragged files are accepted
-     * @param {boolean} params.isDragReject Some dragged files are rejected
-     * @param {File[]} params.acceptedFiles Accepted files
-     * @param {FileRejection[]} params.fileRejections Rejected files and why they were rejected
-     */
-    children: PropTypes.func,
-    /**
-     * Set accepted file types.
-     * Checkout https://developer.mozilla.org/en-US/docs/Web/API/window/showOpenFilePicker types option for more information.
-     * Keep in mind that mime type determination is not reliable across platforms. CSV files,
-     * for example, are reported as text/plain under macOS but as application/vnd.ms-excel under
-     * Windows. In some cases there might not be a mime type set at all (https://github.com/react-dropzone/react-dropzone/issues/276).
-     */
-    accept: PropTypes.objectOf(PropTypes.arrayOf(PropTypes.string)),
-    /**
-     * Allow drag 'n' drop (or selection from the file dialog) of multiple files
-     */
-    multiple: PropTypes.bool,
-    /**
-     * If false, allow dropped items to take over the current browser window
-     */
-    preventDropOnDocument: PropTypes.bool,
-    /**
-     * If true, disables click to open the native file selection dialog
-     */
-    noClick: PropTypes.bool,
-    /**
-     * If true, disables SPACE/ENTER to open the native file selection dialog.
-     * Note that it also stops tracking the focus state.
-     */
-    noKeyboard: PropTypes.bool,
-    /**
-     * If true, disables drag 'n' drop
-     */
-    noDrag: PropTypes.bool,
-    /**
-     * If true, stops drag event propagation to parents
-     */
-    noDragEventsBubbling: PropTypes.bool,
-    /**
-     * Minimum file size (in bytes)
-     */
-    minSize: PropTypes.number,
-    /**
-     * Maximum file size (in bytes)
-     */
-    maxSize: PropTypes.number,
-    /**
-     * Maximum accepted number of files
-     * The default value is 0 which means there is no limitation to how many files are accepted.
-     */
-    maxFiles: PropTypes.number,
-    /**
-     * Enable/disable the dropzone
-     */
-    disabled: PropTypes.bool,
-    /**
-     * Use this to provide a custom file aggregator
-     *
-     * @param {(DragEvent|Event)} event A drag event or input change event (if files were selected via the file dialog)
-     */
-    getFilesFromEvent: PropTypes.func,
-    /**
-     * Cb for when closing the file dialog with no selection
-     */
-    onFileDialogCancel: PropTypes.func,
-    /**
-     * Cb for when opening the file dialog
-     */
-    onFileDialogOpen: PropTypes.func,
-    /**
-     * Set to true to use the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API
-     * to open the file picker instead of using an `<input type="file">` click event.
-     */
-    useFsAccessApi: PropTypes.bool,
-    /**
-     * Set to true to focus the root element on render
-     */
-    autoFocus: PropTypes.bool,
-    /**
-     * Cb for when the `dragenter` event occurs.
-     *
-     * @param {DragEvent} event
-     */
-    onDragEnter: PropTypes.func,
-    /**
-     * Cb for when the `dragleave` event occurs
-     *
-     * @param {DragEvent} event
-     */
-    onDragLeave: PropTypes.func,
-    /**
-     * Cb for when the `dragover` event occurs
-     *
-     * @param {DragEvent} event
-     */
-    onDragOver: PropTypes.func,
-    /**
-     * Cb for when the `drop` event occurs.
-     * Note that this callback is invoked after the `getFilesFromEvent` callback is done.
-     *
-     * Files are accepted or rejected based on the `accept`, `multiple`, `minSize` and `maxSize` props.
-     * `accept` must be a valid [MIME type](http://www.iana.org/assignments/media-types/media-types.xhtml) according to [input element specification](https://www.w3.org/wiki/HTML/Elements/input/file) or a valid file extension.
-     * If `multiple` is set to false and additional files are dropped,
-     * all files besides the first will be rejected.
-     * Any file which does not have a size in the [`minSize`, `maxSize`] range, will be rejected as well.
-     *
-     * Note that the `onDrop` callback will always be invoked regardless if the dropped files were accepted or rejected.
-     * If you'd like to react to a specific scenario, use the `onDropAccepted`/`onDropRejected` props.
-     *
-     * `onDrop` will provide you with an array of [File](https://developer.mozilla.org/en-US/docs/Web/API/File) objects which you can then process and send to a server.
-     * For example, with [SuperAgent](https://github.com/visionmedia/superagent) as a http/ajax library:
-     *
-     * ```js
-     * function onDrop(acceptedFiles) {
-     *   const req = request.post('/upload')
-     *   acceptedFiles.forEach(file => {
-     *     req.attach(file.name, file)
-     *   })
-     *   req.end(callback)
-     * }
-     * ```
-     *
-     * @param {File[]} acceptedFiles
-     * @param {FileRejection[]} fileRejections
-     * @param {(DragEvent|Event)} event A drag event or input change event (if files were selected via the file dialog)
-     */
-    onDrop: PropTypes.func,
-    /**
-     * Cb for when the `drop` event occurs.
-     * Note that if no files are accepted, this callback is not invoked.
-     *
-     * @param {File[]} files
-     * @param {(DragEvent|Event)} event
-     */
-    onDropAccepted: PropTypes.func,
-    /**
-     * Cb for when the `drop` event occurs.
-     * Note that if no files are rejected, this callback is not invoked.
-     *
-     * @param {FileRejection[]} fileRejections
-     * @param {(DragEvent|Event)} event
-     */
-    onDropRejected: PropTypes.func,
-    /**
-     * Cb for when there's some error from any of the promises.
-     *
-     * @param {Error} error
-     */
-    onError: PropTypes.func,
-    /**
-     * Custom validation function. It must return null if there's no errors.
-     * @param {File} file
-     * @returns {FileError|FileError[]|null}
-     */
-    validator: PropTypes.func
-  };
-  var initialState$2 = {
-    isFocused: false,
-    isFileDialogActive: false,
-    isDragActive: false,
-    isDragAccept: false,
-    isDragReject: false,
-    acceptedFiles: [],
-    fileRejections: []
-  };
-  function useDropzone() {
-    var props = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {};
-    var _defaultProps$props = _objectSpread(_objectSpread({}, defaultProps), props), accept = _defaultProps$props.accept, disabled = _defaultProps$props.disabled, getFilesFromEvent = _defaultProps$props.getFilesFromEvent, maxSize = _defaultProps$props.maxSize, minSize = _defaultProps$props.minSize, multiple = _defaultProps$props.multiple, maxFiles = _defaultProps$props.maxFiles, onDragEnter = _defaultProps$props.onDragEnter, onDragLeave = _defaultProps$props.onDragLeave, onDragOver = _defaultProps$props.onDragOver, onDrop = _defaultProps$props.onDrop, onDropAccepted = _defaultProps$props.onDropAccepted, onDropRejected = _defaultProps$props.onDropRejected, onFileDialogCancel = _defaultProps$props.onFileDialogCancel, onFileDialogOpen = _defaultProps$props.onFileDialogOpen, useFsAccessApi = _defaultProps$props.useFsAccessApi, autoFocus = _defaultProps$props.autoFocus, preventDropOnDocument = _defaultProps$props.preventDropOnDocument, noClick = _defaultProps$props.noClick, noKeyboard = _defaultProps$props.noKeyboard, noDrag = _defaultProps$props.noDrag, noDragEventsBubbling = _defaultProps$props.noDragEventsBubbling, onError = _defaultProps$props.onError, validator2 = _defaultProps$props.validator;
-    var acceptAttr = reactExports.useMemo(function() {
-      return acceptPropAsAcceptAttr(accept);
-    }, [accept]);
-    var pickerTypes = reactExports.useMemo(function() {
-      return pickerOptionsFromAccept(accept);
-    }, [accept]);
-    var onFileDialogOpenCb = reactExports.useMemo(function() {
-      return typeof onFileDialogOpen === "function" ? onFileDialogOpen : noop;
-    }, [onFileDialogOpen]);
-    var onFileDialogCancelCb = reactExports.useMemo(function() {
-      return typeof onFileDialogCancel === "function" ? onFileDialogCancel : noop;
-    }, [onFileDialogCancel]);
-    var rootRef = reactExports.useRef(null);
-    var inputRef = reactExports.useRef(null);
-    var _useReducer = reactExports.useReducer(reducer, initialState$2), _useReducer2 = _slicedToArray(_useReducer, 2), state = _useReducer2[0], dispatch = _useReducer2[1];
-    var isFocused = state.isFocused, isFileDialogActive = state.isFileDialogActive;
-    var fsAccessApiWorksRef = reactExports.useRef(typeof window !== "undefined" && window.isSecureContext && useFsAccessApi && canUseFileSystemAccessAPI());
-    var onWindowFocus = function onWindowFocus2() {
-      if (!fsAccessApiWorksRef.current && isFileDialogActive) {
-        setTimeout(function() {
-          if (inputRef.current) {
-            var files = inputRef.current.files;
-            if (!files.length) {
-              dispatch({
-                type: "closeDialog"
-              });
-              onFileDialogCancelCb();
-            }
-          }
-        }, 300);
-      }
-    };
-    reactExports.useEffect(function() {
-      window.addEventListener("focus", onWindowFocus, false);
-      return function() {
-        window.removeEventListener("focus", onWindowFocus, false);
-      };
-    }, [inputRef, isFileDialogActive, onFileDialogCancelCb, fsAccessApiWorksRef]);
-    var dragTargetsRef = reactExports.useRef([]);
-    var onDocumentDrop = function onDocumentDrop2(event) {
-      if (rootRef.current && rootRef.current.contains(event.target)) {
-        return;
-      }
-      event.preventDefault();
-      dragTargetsRef.current = [];
-    };
-    reactExports.useEffect(function() {
-      if (preventDropOnDocument) {
-        document.addEventListener("dragover", onDocumentDragOver, false);
-        document.addEventListener("drop", onDocumentDrop, false);
-      }
-      return function() {
-        if (preventDropOnDocument) {
-          document.removeEventListener("dragover", onDocumentDragOver);
-          document.removeEventListener("drop", onDocumentDrop);
-        }
-      };
-    }, [rootRef, preventDropOnDocument]);
-    reactExports.useEffect(function() {
-      if (!disabled && autoFocus && rootRef.current) {
-        rootRef.current.focus();
-      }
-      return function() {
-      };
-    }, [rootRef, autoFocus, disabled]);
-    var onErrCb = reactExports.useCallback(function(e) {
-      if (onError) {
-        onError(e);
-      } else {
-        console.error(e);
-      }
-    }, [onError]);
-    var onDragEnterCb = reactExports.useCallback(function(event) {
-      event.preventDefault();
-      event.persist();
-      stopPropagation(event);
-      dragTargetsRef.current = [].concat(_toConsumableArray(dragTargetsRef.current), [event.target]);
-      if (isEvtWithFiles(event)) {
-        Promise.resolve(getFilesFromEvent(event)).then(function(files) {
-          if (isPropagationStopped(event) && !noDragEventsBubbling) {
-            return;
-          }
-          var fileCount = files.length;
-          var isDragAccept = fileCount > 0 && allFilesAccepted({
-            files,
-            accept: acceptAttr,
-            minSize,
-            maxSize,
-            multiple,
-            maxFiles,
-            validator: validator2
-          });
-          var isDragReject = fileCount > 0 && !isDragAccept;
-          dispatch({
-            isDragAccept,
-            isDragReject,
-            isDragActive: true,
-            type: "setDraggedFiles"
-          });
-          if (onDragEnter) {
-            onDragEnter(event);
-          }
-        }).catch(function(e) {
-          return onErrCb(e);
-        });
-      }
-    }, [getFilesFromEvent, onDragEnter, onErrCb, noDragEventsBubbling, acceptAttr, minSize, maxSize, multiple, maxFiles, validator2]);
-    var onDragOverCb = reactExports.useCallback(function(event) {
-      event.preventDefault();
-      event.persist();
-      stopPropagation(event);
-      var hasFiles = isEvtWithFiles(event);
-      if (hasFiles && event.dataTransfer) {
-        try {
-          event.dataTransfer.dropEffect = "copy";
-        } catch (_unused) {
-        }
-      }
-      if (hasFiles && onDragOver) {
-        onDragOver(event);
-      }
-      return false;
-    }, [onDragOver, noDragEventsBubbling]);
-    var onDragLeaveCb = reactExports.useCallback(function(event) {
-      event.preventDefault();
-      event.persist();
-      stopPropagation(event);
-      var targets = dragTargetsRef.current.filter(function(target) {
-        return rootRef.current && rootRef.current.contains(target);
-      });
-      var targetIdx = targets.indexOf(event.target);
-      if (targetIdx !== -1) {
-        targets.splice(targetIdx, 1);
-      }
-      dragTargetsRef.current = targets;
-      if (targets.length > 0) {
-        return;
-      }
-      dispatch({
-        type: "setDraggedFiles",
-        isDragActive: false,
-        isDragAccept: false,
-        isDragReject: false
-      });
-      if (isEvtWithFiles(event) && onDragLeave) {
-        onDragLeave(event);
-      }
-    }, [rootRef, onDragLeave, noDragEventsBubbling]);
-    var setFiles = reactExports.useCallback(function(files, event) {
-      var acceptedFiles = [];
-      var fileRejections = [];
-      files.forEach(function(file) {
-        var _fileAccepted = fileAccepted(file, acceptAttr), _fileAccepted2 = _slicedToArray(_fileAccepted, 2), accepted = _fileAccepted2[0], acceptError = _fileAccepted2[1];
-        var _fileMatchSize = fileMatchSize(file, minSize, maxSize), _fileMatchSize2 = _slicedToArray(_fileMatchSize, 2), sizeMatch = _fileMatchSize2[0], sizeError = _fileMatchSize2[1];
-        var customErrors = validator2 ? validator2(file) : null;
-        if (accepted && sizeMatch && !customErrors) {
-          acceptedFiles.push(file);
-        } else {
-          var errors2 = [acceptError, sizeError];
-          if (customErrors) {
-            errors2 = errors2.concat(customErrors);
-          }
-          fileRejections.push({
-            file,
-            errors: errors2.filter(function(e) {
-              return e;
-            })
-          });
-        }
-      });
-      if (!multiple && acceptedFiles.length > 1 || multiple && maxFiles >= 1 && acceptedFiles.length > maxFiles) {
-        acceptedFiles.forEach(function(file) {
-          fileRejections.push({
-            file,
-            errors: [TOO_MANY_FILES_REJECTION]
-          });
-        });
-        acceptedFiles.splice(0);
-      }
-      dispatch({
-        acceptedFiles,
-        fileRejections,
-        type: "setFiles"
-      });
-      if (onDrop) {
-        onDrop(acceptedFiles, fileRejections, event);
-      }
-      if (fileRejections.length > 0 && onDropRejected) {
-        onDropRejected(fileRejections, event);
-      }
-      if (acceptedFiles.length > 0 && onDropAccepted) {
-        onDropAccepted(acceptedFiles, event);
-      }
-    }, [dispatch, multiple, acceptAttr, minSize, maxSize, maxFiles, onDrop, onDropAccepted, onDropRejected, validator2]);
-    var onDropCb = reactExports.useCallback(function(event) {
-      event.preventDefault();
-      event.persist();
-      stopPropagation(event);
-      dragTargetsRef.current = [];
-      if (isEvtWithFiles(event)) {
-        Promise.resolve(getFilesFromEvent(event)).then(function(files) {
-          if (isPropagationStopped(event) && !noDragEventsBubbling) {
-            return;
-          }
-          setFiles(files, event);
-        }).catch(function(e) {
-          return onErrCb(e);
-        });
-      }
-      dispatch({
-        type: "reset"
-      });
-    }, [getFilesFromEvent, setFiles, onErrCb, noDragEventsBubbling]);
-    var openFileDialog = reactExports.useCallback(function() {
-      if (fsAccessApiWorksRef.current) {
-        dispatch({
-          type: "openDialog"
-        });
-        onFileDialogOpenCb();
-        var opts = {
-          multiple,
-          types: pickerTypes
-        };
-        window.showOpenFilePicker(opts).then(function(handles) {
-          return getFilesFromEvent(handles);
-        }).then(function(files) {
-          setFiles(files, null);
-          dispatch({
-            type: "closeDialog"
-          });
-        }).catch(function(e) {
-          if (isAbort(e)) {
-            onFileDialogCancelCb(e);
-            dispatch({
-              type: "closeDialog"
-            });
-          } else if (isSecurityError(e)) {
-            fsAccessApiWorksRef.current = false;
-            if (inputRef.current) {
-              inputRef.current.value = null;
-              inputRef.current.click();
-            } else {
-              onErrCb(new Error("Cannot open the file picker because the https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API is not supported and no <input> was provided."));
-            }
-          } else {
-            onErrCb(e);
-          }
-        });
-        return;
-      }
-      if (inputRef.current) {
-        dispatch({
-          type: "openDialog"
-        });
-        onFileDialogOpenCb();
-        inputRef.current.value = null;
-        inputRef.current.click();
-      }
-    }, [dispatch, onFileDialogOpenCb, onFileDialogCancelCb, useFsAccessApi, setFiles, onErrCb, pickerTypes, multiple]);
-    var onKeyDownCb = reactExports.useCallback(function(event) {
-      if (!rootRef.current || !rootRef.current.isEqualNode(event.target)) {
-        return;
-      }
-      if (event.key === " " || event.key === "Enter" || event.keyCode === 32 || event.keyCode === 13) {
-        event.preventDefault();
-        openFileDialog();
-      }
-    }, [rootRef, openFileDialog]);
-    var onFocusCb = reactExports.useCallback(function() {
-      dispatch({
-        type: "focus"
-      });
-    }, []);
-    var onBlurCb = reactExports.useCallback(function() {
-      dispatch({
-        type: "blur"
-      });
-    }, []);
-    var onClickCb = reactExports.useCallback(function() {
-      if (noClick) {
-        return;
-      }
-      if (isIeOrEdge()) {
-        setTimeout(openFileDialog, 0);
-      } else {
-        openFileDialog();
-      }
-    }, [noClick, openFileDialog]);
-    var composeHandler = function composeHandler2(fn) {
-      return disabled ? null : fn;
-    };
-    var composeKeyboardHandler = function composeKeyboardHandler2(fn) {
-      return noKeyboard ? null : composeHandler(fn);
-    };
-    var composeDragHandler = function composeDragHandler2(fn) {
-      return noDrag ? null : composeHandler(fn);
-    };
-    var stopPropagation = function stopPropagation2(event) {
-      if (noDragEventsBubbling) {
-        event.stopPropagation();
-      }
-    };
-    var getRootProps = reactExports.useMemo(function() {
-      return function() {
-        var _ref2 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, _ref2$refKey = _ref2.refKey, refKey = _ref2$refKey === void 0 ? "ref" : _ref2$refKey, role = _ref2.role, onKeyDown = _ref2.onKeyDown, onFocus = _ref2.onFocus, onBlur = _ref2.onBlur, onClick = _ref2.onClick, onDragEnter2 = _ref2.onDragEnter, onDragOver2 = _ref2.onDragOver, onDragLeave2 = _ref2.onDragLeave, onDrop2 = _ref2.onDrop, rest = _objectWithoutProperties(_ref2, _excluded3);
-        return _objectSpread(_objectSpread(_defineProperty({
-          onKeyDown: composeKeyboardHandler(composeEventHandlers(onKeyDown, onKeyDownCb)),
-          onFocus: composeKeyboardHandler(composeEventHandlers(onFocus, onFocusCb)),
-          onBlur: composeKeyboardHandler(composeEventHandlers(onBlur, onBlurCb)),
-          onClick: composeHandler(composeEventHandlers(onClick, onClickCb)),
-          onDragEnter: composeDragHandler(composeEventHandlers(onDragEnter2, onDragEnterCb)),
-          onDragOver: composeDragHandler(composeEventHandlers(onDragOver2, onDragOverCb)),
-          onDragLeave: composeDragHandler(composeEventHandlers(onDragLeave2, onDragLeaveCb)),
-          onDrop: composeDragHandler(composeEventHandlers(onDrop2, onDropCb)),
-          role: typeof role === "string" && role !== "" ? role : "presentation"
-        }, refKey, rootRef), !disabled && !noKeyboard ? {
-          tabIndex: 0
-        } : {}), rest);
-      };
-    }, [rootRef, onKeyDownCb, onFocusCb, onBlurCb, onClickCb, onDragEnterCb, onDragOverCb, onDragLeaveCb, onDropCb, noKeyboard, noDrag, disabled]);
-    var onInputElementClick = reactExports.useCallback(function(event) {
-      event.stopPropagation();
-    }, []);
-    var getInputProps = reactExports.useMemo(function() {
-      return function() {
-        var _ref3 = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {}, _ref3$refKey = _ref3.refKey, refKey = _ref3$refKey === void 0 ? "ref" : _ref3$refKey, onChange = _ref3.onChange, onClick = _ref3.onClick, rest = _objectWithoutProperties(_ref3, _excluded4);
-        var inputProps = _defineProperty({
-          accept: acceptAttr,
-          multiple,
-          type: "file",
-          style: {
-            display: "none"
-          },
-          onChange: composeHandler(composeEventHandlers(onChange, onDropCb)),
-          onClick: composeHandler(composeEventHandlers(onClick, onInputElementClick)),
-          tabIndex: -1
-        }, refKey, inputRef);
-        return _objectSpread(_objectSpread({}, inputProps), rest);
-      };
-    }, [inputRef, accept, multiple, onDropCb, disabled]);
-    return _objectSpread(_objectSpread({}, state), {}, {
-      isFocused: isFocused && !disabled,
-      getRootProps,
-      getInputProps,
-      rootRef,
-      inputRef,
-      open: composeHandler(openFileDialog)
-    });
-  }
-  function reducer(state, action) {
-    switch (action.type) {
-      case "focus":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          isFocused: true
-        });
-      case "blur":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          isFocused: false
-        });
-      case "openDialog":
-        return _objectSpread(_objectSpread({}, initialState$2), {}, {
-          isFileDialogActive: true
-        });
-      case "closeDialog":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          isFileDialogActive: false
-        });
-      case "setDraggedFiles":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          isDragActive: action.isDragActive,
-          isDragAccept: action.isDragAccept,
-          isDragReject: action.isDragReject
-        });
-      case "setFiles":
-        return _objectSpread(_objectSpread({}, state), {}, {
-          acceptedFiles: action.acceptedFiles,
-          fileRejections: action.fileRejections
-        });
-      case "reset":
-        return _objectSpread({}, initialState$2);
-      default:
-        return state;
-    }
-  }
-  function noop() {
-  }
-  var UploadFile = {};
-  var _interopRequireDefault$b = interopRequireDefaultExports;
-  Object.defineProperty(UploadFile, "__esModule", {
-    value: true
-  });
-  var default_1$b = UploadFile.default = void 0;
-  var _createSvgIcon$b = _interopRequireDefault$b(requireCreateSvgIcon());
-  var _jsxRuntime$b = jsxRuntimeExports;
-  var _default$b = (0, _createSvgIcon$b.default)(/* @__PURE__ */ (0, _jsxRuntime$b.jsx)("path", {
-    d: "M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11z"
-  }), "UploadFile");
-  default_1$b = UploadFile.default = _default$b;
-  const Wrap$1 = styled$1("div")(() => ({
-    marginTop: "1.25em"
-  }));
-  const TextWrap = styled$1("div")(({ theme: theme2 }) => ({
-    padding: "2.7em 1em",
-    border: `1px dashed ${theme2.palette.divider}`,
-    boxShadow: "none",
-    textAlign: "center",
-    cursor: "pointer",
-    span: {
-      color: theme2.palette.primary.main,
-      transition: "color 0.2s ease"
-    },
-    "&:hover span": {
-      color: theme2.palette.primary.dark,
-      textDecoration: "underline"
-    },
-    svg: {
-      marginBottom: theme2.spacing(2),
-      color: theme2.palette.primary.main
-    }
-  }));
-  const TextFiletypes = styled$1(Typography$1)(({ theme: theme2 }) => ({
-    marginTop: theme2.spacing(2),
-    color: theme2.palette.text.secondary
-  }));
-  var Close = {};
-  var _interopRequireDefault$a = interopRequireDefaultExports;
-  Object.defineProperty(Close, "__esModule", {
-    value: true
-  });
-  var default_1$a = Close.default = void 0;
-  var _createSvgIcon$a = _interopRequireDefault$a(requireCreateSvgIcon());
-  var _jsxRuntime$a = jsxRuntimeExports;
-  var _default$a = (0, _createSvgIcon$a.default)(/* @__PURE__ */ (0, _jsxRuntime$a.jsx)("path", {
-    d: "M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-  }), "Close");
-  default_1$a = Close.default = _default$a;
-  const FileWrap = styled$1(Paper$1, {
-    shouldForwardProp: (prop) => prop !== "error"
-  })(({ theme: theme2, error }) => ({
-    margin: `${theme2.spacing(1)} 0`,
-    padding: theme2.spacing(2),
-    border: `1px solid ${theme2.palette.divider}`,
-    boxShadow: "none",
-    ".MuiSvgIcon-root:first-of-type": {
-      padding: theme2.spacing(1)
-    },
-    ...error && {
-      color: theme2.palette.error.main
-    }
-  }));
-  const FileName = styled$1("span")(() => ({
-    display: "block",
-    textOverflow: "ellipsis",
-    overflow: "hidden",
-    whiteSpace: "nowrap",
-    color: "currentColor"
-  }));
-  const FileInfo = styled$1("div")(({ theme: theme2 }) => ({
-    display: "flex",
-    gap: theme2.spacing(1),
-    fontSize: "0.875rem",
-    "& ul": {
-      margin: 0,
-      padding: 0,
-      listStyle: "none"
-    }
-  }));
-  function getReadableFilesize(bytes) {
-    let size2 = bytes / 1024;
-    let unit = "kb";
-    if (size2 > 1e3) {
-      size2 = size2 / 1024;
-      unit = "mb";
-    }
-    return `${size2.toFixed(2)}${unit}`;
-  }
-  function randomInt(max2) {
-    return Math.ceil(Math.random() * max2);
-  }
-  const FilePreview = ({ id, file, onFileRemove, onFileUploaded }) => {
-    const [progress, setProgress] = reactExports.useState(0);
-    const hasErrors = "errors" in file;
-    reactExports.useEffect(() => {
-      if (hasErrors) {
-        return;
-      }
-      if (progress < 100) {
-        setTimeout(() => {
-          setProgress(Math.min(progress + randomInt(15), 100));
-        }, 300);
-      } else {
-        onFileUploaded && onFileUploaded(file.name);
-      }
-    }, [progress, hasErrors, onFileUploaded, file]);
-    const name2 = !hasErrors ? file.name : "Upload failed";
-    const color2 = !hasErrors ? "primary" : "error";
-    const status = !hasErrors ? progress === 100 ? "Complete" : "Loading" : "Failed";
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(FileWrap, { error: hasErrors, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { direction: "row", gap: 2, alignItems: "center", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, { sx: { flexShrink: 0 }, color: color2 }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Stack$1, { gap: 1, direction: "column", sx: { minWidth: 0, flexGrow: 1 }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(FileName, { children: name2 }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(FileInfo, { children: [
-          !hasErrors ? /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: getReadableFilesize(file.size) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { children: file.errors.map((e) => {
-            let message = e.message;
-            if (e.code === "file-too-large") {
-              message = "File too large";
-            }
-            return /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: message }, e.code);
-          }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "•" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: status })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          LinearProgress$1,
-          {
-            variant: "determinate",
-            value: hasErrors ? 0 : progress,
-            color: color2
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        IconButton$1,
-        {
-          sx: { flexShrink: 0 },
-          "aria-label": "Remove file",
-          size: "medium",
-          onClick: () => onFileRemove && onFileRemove(id),
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {})
-        }
-      )
-    ] }) });
-  };
-  const FileUploader = ({
-    maxFiles = 2,
-    maxSize = 315e4,
-    accept,
-    fileTypeMessage,
-    files,
-    onFilesDrop,
-    addFile,
-    removeFile
-  }) => {
-    const { getRootProps, getInputProps } = useDropzone({
-      onDrop: (acceptedFiles, rejectedFiles) => {
-        onFilesDrop([...acceptedFiles, ...rejectedFiles]);
-      },
-      accept,
-      maxFiles,
-      maxSize
-    });
-    const { ref, ...rootProps } = getRootProps();
-    let displayFiles = null;
-    if (files.length) {
-      displayFiles = /* @__PURE__ */ jsxRuntimeExports.jsx(jsxRuntimeExports.Fragment, { children: files.map((file, idx) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-        FilePreview,
-        {
-          id: idx,
-          file,
-          onFileRemove: removeFile,
-          onFileUploaded: addFile
-        },
-        idx
-      )) });
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsx(Wrap$1, { ref, children: displayFiles || /* @__PURE__ */ jsxRuntimeExports.jsxs(TextWrap, { ...rootProps, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ...getInputProps() }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$b, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(Typography$1, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Click to upload" }),
-          " or drag and drop"
-        ] }),
-        fileTypeMessage && /* @__PURE__ */ jsxRuntimeExports.jsx(TextFiletypes, { children: fileTypeMessage })
-      ] })
-    ] }) });
-  };
-  const initialState$1 = {
-    whitelisted: [],
-    queued: []
-  };
-  function ImportNodesDialog() {
-    const { show, onClose } = useDialog(DIALOG_TYPE.IMPORT_NODES);
-    const [state, setState] = reactExports.useState(initialState$1);
-    const { whitelisted, queued } = state;
-    const uploadableFiles = queued.filter((file) => "name" in file);
-    const disableSubmit = whitelisted.length === 0 || whitelisted.length !== uploadableFiles.length;
-    const onUploadableFileComplete = reactExports.useCallback((name2) => {
-      setState(
-        produce((draft) => {
-          if (!draft.whitelisted.includes(name2)) {
-            draft.whitelisted.push(name2);
-          }
-        })
-      );
-    }, []);
-    const onFilesDrop = (files) => {
-      setState(
-        produce((draft) => {
-          draft.queued = files;
-        })
-      );
-    };
-    const onFileRemove = reactExports.useCallback((index) => {
-      setState(
-        produce((draft) => {
-          const removedFile = draft.queued[index];
-          if ("name" in removedFile) {
-            draft.whitelisted.splice(
-              draft.whitelisted.indexOf(removedFile.name),
-              1
-            );
-          }
-          draft.queued.splice(index, 1);
-        })
-      );
-    }, []);
-    function resetData() {
-      setState(initialState$1);
-    }
-    function onSubmit() {
-      console.log("submitting Import Nodes with files", uploadableFiles);
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      StyledDialog,
-      {
-        open: !!show,
-        fullWidth: true,
-        maxWidth: "sm",
-        onClose,
-        TransitionProps: {
-          onExited: resetData
-        },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Import nodes" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: "Drag and drop your .xls or .csv file below to import. The importing process may take few minutes. Please do not edit the workflow while the import process is ongoing." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              FileUploader,
-              {
-                fileTypeMessage: "XLS or CSV (max 3MB)",
-                accept: {
-                  "application/vnd.ms-excel": [".xls"],
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
-                  "text/csv": [".csv"]
-                },
-                files: state.queued,
-                onFilesDrop,
-                addFile: onUploadableFileComplete,
-                removeFile: onFileRemove
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: "Cancel" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, disabled: disableSubmit, children: "Import nodes" })
-          ] })
-        ]
-      }
-    );
-  }
-  const initialState = {
-    whitelisted: [],
-    queued: []
-  };
-  function ImportOutcomesDialog() {
-    const { show, onClose } = useDialog(DIALOG_TYPE.IMPORT_OUTCOMES);
-    const [state, setState] = reactExports.useState(initialState);
-    const { whitelisted, queued } = state;
-    const uploadableFiles = queued.filter((file) => "name" in file);
-    const disableSubmit = whitelisted.length === 0 || whitelisted.length !== uploadableFiles.length;
-    const onUploadableFileComplete = reactExports.useCallback((name2) => {
-      setState(
-        produce((draft) => {
-          if (!draft.whitelisted.includes(name2)) {
-            draft.whitelisted.push(name2);
-          }
-        })
-      );
-    }, []);
-    const onFilesDrop = (files) => {
-      setState(
-        produce((draft) => {
-          draft.queued = files;
-        })
-      );
-    };
-    const onFileRemove = reactExports.useCallback((index) => {
-      setState(
-        produce((draft) => {
-          const removedFile = draft.queued[index];
-          if ("name" in removedFile) {
-            draft.whitelisted.splice(
-              draft.whitelisted.indexOf(removedFile.name),
-              1
-            );
-          }
-          draft.queued.splice(index, 1);
-        })
-      );
-    }, []);
-    function resetData() {
-      setState(initialState);
-    }
-    function onSubmit() {
-      console.log("submitting Import Dialog with files", uploadableFiles);
-    }
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-      StyledDialog,
-      {
-        open: !!show,
-        fullWidth: true,
-        maxWidth: "sm",
-        onClose,
-        TransitionProps: {
-          onExited: resetData
-        },
-        children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: "Import outcomes" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogContent$1, { dividers: true, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { gutterBottom: true, children: "Drag and drop your .xls or .csv file below to import. The importing process may take few minutes. Please do not edit the workflow while the import process is ongoing." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              FileUploader,
-              {
-                fileTypeMessage: "XLS or CSV (max 3MB)",
-                accept: {
-                  "application/vnd.ms-excel": [".xls"],
-                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
-                  "text/csv": [".csv"]
-                },
-                files: state.queued,
-                onFilesDrop,
-                addFile: onUploadableFileComplete,
-                removeFile: onFileRemove
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(DialogActions$1, { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", color: "secondary", onClick: onClose, children: "Cancel" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button$1, { variant: "contained", onClick: onSubmit, disabled: disableSubmit, children: "Import outcomes" })
-          ] })
-        ]
-      }
-    );
-  }
   const SectionDialogs = () => {
     const { dispatch } = useDialog();
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
@@ -99756,8 +99646,8 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ImportOutcomesDialog, {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(ImportNodesDialog, {})
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ImportOutcomesDialog, { workflowID: 1 }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(ImportNodesDialog, { workflowID: 1 })
       ] })
     ] });
   };
@@ -99811,14 +99701,15 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
     }
   }
-  function searchAllObjectsQuery(filter, data2, callBackFunction = (_data2) => console.log("success")) {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data2)
-    }).done(function(_data2) {
-      callBackFunction(_data2);
-    }).fail(function(error) {
-      window.fail_function();
+  function searchAllObjectsQuery(filter, data2, callBackFunction = (_data) => console.log("success")) {
+    API_POST(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter,
+      additional_data: data2
+    }).then((response) => {
+      if (response.action == VERB.POSTED)
+        callBackFunction(response);
+      else
+        window.fail_function(response.action);
     });
   }
   class WorkflowFilter extends reactExports.Component {
@@ -100589,11 +100480,11 @@ Please use another name.` : formatMuiErrorMessage(18));
       { value: "csv", label: "CSV" }
     ]
   };
-  function ExportProjectDialog({ project }) {
+  function ExportProjectDialog({ data: data2 }) {
     const [state, setState] = reactExports.useState({
       type: "outcome",
       format: "excel",
-      sets: []
+      sets: data2.object_sets.map((set2) => set2.id)
     });
     const { show, onClose } = useDialog(DIALOG_TYPE.EXPORT_PROJECT);
     function onRadioChange(field, value) {
@@ -100617,18 +100508,15 @@ Please use another name.` : formatMuiErrorMessage(18));
     }
     function onSubmit(e) {
       const postData = {
-        objectID: project.id,
-        objectType: project.type,
+        objectID: data2.id,
+        objectType: data2.type,
         exportType: state.type,
         exportFormat: state.format,
         objectSets: state.sets
       };
-      console.log(
-        "export submit",
-        postData,
-        "posting to",
-        COURSEFLOW_APP.config.post_paths.get_export
-      );
+      API_POST(COURSEFLOW_APP.config.post_paths.get_export, postData).then((resp) => {
+        console.log("response", resp);
+      }).catch((error) => console.log("errors", error));
     }
     function onDialogClose() {
       setState(
@@ -100639,7 +100527,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
       onClose();
     }
-    const projectType = project.type;
+    const projectType = data2.type;
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledDialog, { open: show, onClose: onDialogClose, fullWidth: true, maxWidth: "sm", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogTitle$1, { children: window.gettext(`Export ${projectType}`) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(DialogContent$1, { dividers: true, children: /* @__PURE__ */ jsxRuntimeExports.jsxs(StyledForm, { component: "form", children: [
@@ -100688,9 +100576,9 @@ Please use another name.` : formatMuiErrorMessage(18));
             }
           )
         ] }),
-        project.object_sets.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
+        data2.object_sets.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(FormControl$1, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(FormLabel$1, { id: "export-sets-group-label", children: window.gettext("Object set visibility") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(FormGroup$1, { children: project.object_sets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+          /* @__PURE__ */ jsxRuntimeExports.jsx(FormGroup$1, { children: data2.object_sets.map((set2, index) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             FormControlLabel$1,
             {
               value: set2.id,
@@ -100875,7 +100763,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       }
       return null;
     };
-    const CopyButton = () => {
+    const CopyButton2 = () => {
       if (userId) {
         return /* @__PURE__ */ jsxRuntimeExports.jsx(
           "div",
@@ -100909,7 +100797,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
       overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(ExportButton, {}));
-      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(CopyButton, {}));
+      overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(CopyButton2, {}));
       if (project2.author_id === userId) {
         overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx("hr", {}));
         overflow_links.push(/* @__PURE__ */ jsxRuntimeExports.jsx(DeleteProjectButton, {}));
@@ -101069,7 +100957,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(EditDialog, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsx(ShareDialog, {}),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(ExportProjectDialog, { project: state.project }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(ExportProjectDialog, { data: state.project }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(ArchiveProjectModal, { onSubmit: deleteProject })
     ] });
   }
@@ -101103,16 +100991,16 @@ Please use another name.` : formatMuiErrorMessage(18));
       );
     }
   }
-  function getLibraryQuery(callBackFunction = (_data2) => console.log("success")) {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(data2) {
-      callBackFunction(data2);
+  function getLibraryQuery(callBackFunction = (_data) => console.log("success")) {
+    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function(response) {
+      callBackFunction(response);
     }).fail(function(error) {
       window.fail_function();
     });
   }
-  function getFavouritesQuery(callBackFunction = (_data2) => console.log("success")) {
-    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(data2) {
-      callBackFunction(data2);
+  function getFavouritesQuery(callBackFunction = (_data) => console.log("success")) {
+    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function(response) {
+      callBackFunction(response);
     }).fail(function(error) {
       window.fail_function();
     });
@@ -101237,8 +101125,6 @@ Please use another name.` : formatMuiErrorMessage(18));
      * RENDER
      *******************************************************/
     render() {
-      console.log("this.state.project_data");
-      console.log(this.state.project_data);
       return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "project-menu", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
         WorkflowFilter,
         {
@@ -101278,7 +101164,7 @@ Please use another name.` : formatMuiErrorMessage(18));
       return null;
     }
     return /* @__PURE__ */ jsxRuntimeExports.jsxs(Wrap, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {}) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(CloseButton, { "aria-label": "close", onClick: handleClose, children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$f, {}) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { variant: "h4", children: window.gettext("Welcome to CourseFlow") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(Typography$1, { sx: { mt: 2 }, children: window.gettext(
         "Tell us a bit more about your goals so that we can help you get started."
@@ -104583,7 +104469,7 @@ Please use another name.` : formatMuiErrorMessage(18));
               "aria-haspopup": "true",
               color: "primary",
               onClick: handleAddMenuOpen,
-              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$c, {})
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(default_1$a, {})
             }
           ) : null,
           /* @__PURE__ */ jsxRuntimeExports.jsx(

@@ -15,6 +15,7 @@ import { DIALOG_TYPE, useDialog } from '..'
 import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
 import { EProject } from '@cfModule/XMLHTTP/types/entity'
+import { API_POST } from '@XMLHTTP/PostFunctions'
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -55,11 +56,11 @@ const fields = {
   ]
 }
 
-function ExportProjectDialog({ project }: { project: EProject }) {
+function ExportProjectDialog({ data }: { data: EProject }) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
-    sets: []
+    sets: data.object_sets.map(set=>set.id)
   })
   const { show, onClose } = useDialog(DIALOG_TYPE.EXPORT_PROJECT)
 
@@ -89,26 +90,20 @@ function ExportProjectDialog({ project }: { project: EProject }) {
 
   function onSubmit(e: MouseEvent<HTMLButtonElement>) {
     const postData = {
-      objectID: project.id,
-      objectType: project.type,
+      objectID: data.id,
+      objectType: data.type,
       exportType: state.type,
       exportFormat: state.format,
       objectSets: state.sets
     }
 
-    console.log(
-      'export submit',
-      postData,
-      'posting to',
-      COURSEFLOW_APP.config.post_paths.get_export
-    )
 
     // TODO: handle success/failure appropriately
-    // API_POST(COURSEFLOW_APP.config.post_paths.get_export, postData)
-    //   .then((resp) => {
-    //     console.log('response', resp)
-    //   })
-    //   .catch((error) => console.log('errors', error))
+    API_POST(COURSEFLOW_APP.config.post_paths.get_export, postData)
+      .then((resp) => {
+        console.log('response', resp)
+      })
+      .catch((error) => console.log('errors', error))
   }
 
   function onDialogClose() {
@@ -121,7 +116,7 @@ function ExportProjectDialog({ project }: { project: EProject }) {
     onClose()
   }
 
-  const projectType = project.type
+  const projectType = data.type
 
   return (
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
@@ -176,13 +171,13 @@ function ExportProjectDialog({ project }: { project: EProject }) {
             </RadioGroup>
           </FormControl>
 
-          {project.object_sets.length > 0 && (
+          {data.object_sets.length > 0 && (
             <FormControl>
               <FormLabel id="export-sets-group-label">
                 {window.gettext('Object set visibility')}
               </FormLabel>
               <FormGroup>
-                {project.object_sets.map((set, index) => (
+                {data.object_sets.map((set, index) => (
                   <FormControlLabel
                     key={index}
                     value={set.id}

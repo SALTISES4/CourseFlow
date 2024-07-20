@@ -12,6 +12,33 @@ import { CfObjectType } from '@cfModule/types/enum'
 import { ReactElement, ReactPortal } from 'react'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
+import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
+import { VERB } from '@cfModule/types/enum'
+import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
+import Button from '@mui/material/Button'
+import LinkWorkflowModal from '@cfModule/components/common/dialog/LinkWorkflow'
+
+const LinkedWorkflowButton = (id: any) => {
+  const { dispatch } = useDialog()
+
+  return (
+    <Button onClick={() => {
+      dispatch(DIALOG_TYPE.LINK_WORKFLOW)}}>
+      {window.gettext('Change')}
+    </Button>
+  )
+}
+
+/**
+ *
+ */
+// function openLinkedWorkflowMenu(response, updateFunction) {
+//   if (response.action === VERB.POSTED) {
+//     renderMessageBox(response, 'linked_workflow_menu', updateFunction)
+//   } else {
+//     alert('Failed to find the parent project. Is this workflow in a project?')
+//   }
+// }
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -35,6 +62,7 @@ class EditableComponent<
 > extends ComponentWithToggleDrop<P, S> {
   static contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
+
 
   //Makes the item selectable
 
@@ -443,7 +471,8 @@ class EditableComponent<
       <div>
         <h4>{window.gettext('Linked Workflow')}</h4>
         <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
-        <button
+        <LinkedWorkflowButton id={data.id}/>
+        {/*<button
           className="primary-button"
           disabled={readOnly}
           id="linked-workflow-editor"
@@ -451,17 +480,20 @@ class EditableComponent<
             COURSEFLOW_APP.tinyLoader.startLoad()
             getLinkedWorkflowMenuQuery(
               data,
-              (response_data) => {
-                console.log('linked a workflow')
-              },
-              () => {
+              (response_data)=>{
+                openLinkedWorkflowMenu(
+                  response_data,
+                  (_response_data) => {
+                    console.log('linked a workflow')
+                  },
+                )
                 COURSEFLOW_APP.tinyLoader.endLoad()
-              }
+              },
             )
           }}
         >
           {window.gettext('Change')}
-        </button>
+        </button>*/}
         <input
           disabled={readOnly}
           type="checkbox"
@@ -644,7 +676,10 @@ class EditableComponent<
         )}
 
         {type === CfObjectType.NODE && data.node_type !== 0 && (
-          <this.LinkedWorkflow data={data} readOnly={read_only} />
+          <>
+            <LinkWorkflowModal id={data.id}/>
+            <this.LinkedWorkflow data={data} readOnly={read_only} />
+          </>
         )}
 
         {type == CfObjectType.NODE && data.node_type != 2 && (

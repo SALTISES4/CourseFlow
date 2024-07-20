@@ -1,6 +1,7 @@
 //Removes the specified comment from the object
 import { EmptyPostResp, CommentsForObjectQueryResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
+import { API_POST } from '../PostFunctions'
 
 export function removeComment(
   objectID,
@@ -8,18 +9,14 @@ export function removeComment(
   commentPk,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.remove_comment, {
-    objectID: JSON.stringify(objectID),
-    commentPk: JSON.stringify(commentPk),
-    objectType: JSON.stringify(objectType)
+  API_POST(COURSEFLOW_APP.config.post_paths.remove_comment, {
+    objectID: objectID,
+    commentPk: commentPk,
+    objectType: objectType
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -29,17 +26,13 @@ export function removeAllComments(
   objectType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType)
+  API_POST(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
+    objectID: objectID,
+    objectType: objectType
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -50,18 +43,14 @@ export function addComment(
   text,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.add_comment, {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    text: JSON.stringify(text)
+  API_POST(COURSEFLOW_APP.config.post_paths.add_comment, {
+    objectID: objectID,
+    objectType: objectType,
+    text: text
   })
-    .done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }
 
@@ -72,18 +61,12 @@ export function getCommentsForObjectQuery(
   callBackFunction = (_data: CommentsForObjectQueryResp) =>
     console.log('success')
 ) {
-  $.post(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType)
+  API_POST(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
+    objectID: objectID,
+    objectType: objectType
   })
-    .done(function (data: CommentsForObjectQueryResp) {
-      console.log('getCommentsForObject data')
-      console.log(data)
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
-    })
-    .fail(function (error) {
-      // Handle error specific to the AJAX request
-      window.fail_function()
+    .then((response:CommentsForObjectQueryResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
 }

@@ -1,5 +1,6 @@
 import { LibraryQueryResp, FavouritesQueryResp } from '@XMLHTTP/types/query'
 import { EDiscipline } from '@XMLHTTP/types/entity'
+import { API_POST } from '../PostFunctions'
 
 /**
  * Get the library projects
@@ -9,8 +10,8 @@ export function getLibraryQuery(
   callBackFunction = (_data: LibraryQueryResp) => console.log('success')
 ) {
   $.get(COURSEFLOW_APP.config.get_paths.get_library)
-    .done(function (data: LibraryQueryResp) {
-      callBackFunction(data)
+    .done(function (response: LibraryQueryResp) {
+      callBackFunction(response)
     })
     .fail(function (error) {
       // Handle error specific to the AJAX request
@@ -26,8 +27,8 @@ export function getFavouritesQuery(
   callBackFunction = (_data: FavouritesQueryResp) => console.log('success')
 ) {
   $.get(COURSEFLOW_APP.config.get_paths.get_favourites)
-    .done(function (data: FavouritesQueryResp) {
-      callBackFunction(data)
+    .done(function (response: FavouritesQueryResp) {
+      callBackFunction(response)
     })
     .fail(function (error) {
       // Handle error specific to the AJAX request
@@ -40,8 +41,8 @@ export function getDisciplines(
   callBackFunction = (_data: EDiscipline[]) => console.log('success')
 ) {
   $.get(COURSEFLOW_APP.config.get_paths.get_disciplines)
-    .done(function (data: EDiscipline[]) {
-      callBackFunction(data)
+    .done(function (response: EDiscipline[]) {
+      callBackFunction(response)
     })
     .fail(function (error) {
       // Handle error specific to the AJAX request

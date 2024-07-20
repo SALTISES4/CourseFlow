@@ -1,27 +1,12 @@
 //  TEMP FILE FOR AJAX FUNCTIONS UNTIL WE SOLVE CIRC DEPS
-import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 import { dragAction } from '@XMLHTTP/API/update'
 import { VERB } from '@cfModule/types/enum'
+import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
+
 // import $ from 'jquery'
 
-/**
- *
- */
-function openLinkedWorkflowMenu(response, updateFunction) {
-  if (response.action === VERB.POSTED) {
-    renderMessageBox(response, 'linked_workflow_menu', updateFunction)
-  } else {
-    alert('Failed to find the parent project. Is this workflow in a project?')
-  }
-}
 
-function openAddedWorkflowMenu(response, updateFunction) {
-  if (response.action === VERB.POSTED) {
-    renderMessageBox(response, 'added_workflow_menu', updateFunction)
-  } else {
-    alert('Failed to find your workflows.')
-  }
-}
+
 
 export function openWorkflowSelectMenu(response, updateFunction) {
   if (response.action === VERB.POSTED) {
@@ -31,28 +16,7 @@ export function openWorkflowSelectMenu(response, updateFunction) {
   }
 }
 
-//Get a list of possible workflows we can add to this project
-export function getAddedWorkflowMenu(
-  projectPk,
-  type_filter,
-  get_strategies,
-  self_only,
-  updateFunction
-) {
-  $.post(
-    COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
-    {
-      projectPk: JSON.stringify(projectPk),
-      type_filter: JSON.stringify(type_filter),
-      get_strategies: JSON.stringify(get_strategies),
-      self_only: JSON.stringify(self_only)
-    },
-    (data) => {
-      // @TODO call to react render
-      //   openAddedWorkflowMenu(data, updateFunction)
-    }
-  )
-}
+
 
 //Called when a node should have its column changed
 export function columnChanged(renderer, objectID, columnID) {
@@ -62,10 +26,10 @@ export function columnChanged(renderer, objectID, columnID) {
 
   renderer.dragAction['nodeweek'] = {
     ...renderer.dragAction['nodeweek'],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify('node'),
-    columnPk: JSON.stringify(columnID),
-    columnChange: JSON.stringify(true)
+    objectID: objectID,
+    objectType: 'node',
+    columnPk: columnID,
+    columnChange: true
   }
 
   $(document).off('nodeweek-dropped')
@@ -91,13 +55,13 @@ export function insertedAt(
   if (!renderer.dragAction[throughType]) renderer.dragAction[throughType] = {}
   renderer.dragAction[throughType] = {
     ...renderer.dragAction[throughType],
-    objectID: JSON.stringify(objectID),
-    objectType: JSON.stringify(objectType),
-    parentID: JSON.stringify(parentID),
-    parentType: JSON.stringify(parentType),
-    newPosition: JSON.stringify(newPosition),
-    throughType: JSON.stringify(throughType),
-    inserted: JSON.stringify(true)
+    objectID: objectID,
+    objectType: objectType,
+    parentID: parentID,
+    parentType: parentType,
+    newPosition: newPosition,
+    throughType: throughType,
+    inserted: true
   }
   $(document).off(throughType + '-dropped')
   if (objectID)

@@ -28,7 +28,6 @@ def course_flow_patterns():
         ),
         path("logout/", views.logout_view, name="logout"),
         path("mylibrary/", views.mylibrary_view, name="my-library"),
-        # path("myprojects/", views.myprojects_view, name="my-projects"),
         # path("mytemplates/", views.mytemplates_view, name="my-templates"),
         # path("myshared/", views.myshared_view, name="my-shared"),
         path("myfavourites/", views.myfavourites_view, name="my-favourites"),

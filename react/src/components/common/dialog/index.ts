@@ -10,6 +10,8 @@ export enum DIALOG_TYPE {
   RESET_PASSWORD = 'reset_password',
   EXPORT_PROJECT = 'export_project',
   ARCHIVE_PROJECT = 'archive_project',
+  LINK_WORKFLOW = 'link_workflow',
+  TARGET_PROJECT = 'target_project',
   IMPORT_OUTCOMES = 'import_outcomes',
   IMPORT_NODES = 'import_nodes',
 

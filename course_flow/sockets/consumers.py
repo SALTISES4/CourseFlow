@@ -52,7 +52,6 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         if not self.EDIT:
             return
         text_data_json = json.loads(text_data)
-
         if text_data_json["type"] == "micro_update":
             action = text_data_json["action"]
             async_to_sync(self.channel_layer.group_send)(

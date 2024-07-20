@@ -64,8 +64,8 @@ const SectionDialogs = () => {
           </Button>
         </Stack>
 
-        <ImportOutcomes />
-        <ImportNodes />
+        <ImportOutcomes workflowID={1}/>
+        <ImportNodes workflowID={1}/>
       </Section>
     </>
   )

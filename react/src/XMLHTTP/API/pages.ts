@@ -5,12 +5,13 @@ import {
 } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
 import { ToDefine } from '@cfModule/types/common'
+import { API_POST } from '../PostFunctions'
 
 /*******************************************************
  * LIBRARY PAGES
  *******************************************************/
 
-//Add an outcome to a node
+//Toggle whether a project or activity is a favourite for the user
 export function toggleFavourite(
   objectID,
   objectType,
@@ -18,14 +19,15 @@ export function toggleFavourite(
   callBackFunction = (_data: ToDefine) => console.log('success')
 ) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      favourite: JSON.stringify(favourite)
-    }).done(function (data) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+    API_POST(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
+      objectID: objectID,
+      objectType: objectType,
+      favourite: favourite
     })
+      .then((response:ToDefine)=>{
+        if(response.action == VERB.POSTED)callBackFunction(response)
+        else window.fail_function(response.action)
+      })
   } catch (err) {
     window.fail_function()
   }
@@ -45,12 +47,14 @@ export function searchAllObjectsQuery(
     console.log('success')
 ) {
   try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function (_data: SearchAllObjectsQueryResp) {
-      callBackFunction(_data)
+    API_POST(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+      filter: filter,
+      additional_data: data
     })
+      .then((response:SearchAllObjectsQueryResp)=>{
+        if(response.action == VERB.POSTED)callBackFunction(response)
+        else window.fail_function(response.action)
+      })
   } catch (err) {
     window.fail_function()
   }
@@ -65,9 +69,9 @@ export function getLibraryQuery(
 ) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function (
-      data: LibraryQueryResp
+      response: LibraryQueryResp
     ) {
-      callBackFunction(data)
+      callBackFunction(response)
     })
   } catch (err) {
     window.fail_function()
@@ -83,9 +87,9 @@ export function getFavouritesQuery(
 ) {
   try {
     $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function (
-      data: FavouritesQueryResp
+      response: FavouritesQueryResp
     ) {
-      callBackFunction(data)
+      callBackFunction(response)
     })
   } catch (err) {
     window.fail_function()
