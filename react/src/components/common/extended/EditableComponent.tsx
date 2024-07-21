@@ -6,14 +6,11 @@ import * as Utility from '@cfUtility'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import QuillDiv from '@cfParentComponents/components/QuillDiv'
 import { toggleStrategyQuery } from '@XMLHTTP/API/update'
-import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
 import { updateObjectSet } from '@XMLHTTP/API/update'
 import { CfObjectType } from '@cfModule/types/enum'
 import { ReactElement, ReactPortal } from 'react'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
-import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
-import { VERB } from '@cfModule/types/enum'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 import Button from '@mui/material/Button'
 import LinkWorkflowModal from '@cfModule/components/common/dialog/LinkWorkflow'
@@ -253,7 +250,7 @@ class EditableComponent<
         <QuillDiv
           disabled={override || readOnly}
           text={description}
-          maxlength={500}
+          // maxlength={500}
           textChangeFunction={this.valueChanged.bind(this, 'description')}
           placeholder="Insert description here"
           readOnly={this.context.read_only}

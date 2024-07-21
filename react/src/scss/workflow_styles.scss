@@ -1930,6 +1930,13 @@ circle.mouseover {
   min-height: 140px;
   position: unset;
 }
+.ql-snow .ql-tooltip.ql-editing input[type=text] {
+    display: block;
+}
+.ql-snow .ql-tooltip {
+    position: initial;
+    transform: translateY(10px);
+}
 
 .side-bar #title-editor {
   min-height: 60px;
