@@ -54,17 +54,18 @@ const QuillDiv: React.FC<PropsType> = (props) => {
 
     if (quillInstance) {
       const handleTextChange = () => {
+        console.log("text change")
         const quillContainer = quillInstance.root
         const text = quillContainer.innerHTML.replace(
           /\<p\>\<br\>\<\/p\>\<ul\>/g,
           '<ul>'
         )
+        console.log(text)
+        
 
         if (text !== props.text) {
-          // @todo the linked component is currently throwing a handled error, which is stealing focus from quill
-          // uncomment the textChange function below when ready to debug the node link issue
 
-          // props.textChangeFunction(text);
+          props.textChangeFunction(text);
           setCharLength(text.length)
         }
       }
