@@ -31,93 +31,51 @@ export class NodePorts extends React.Component<PropsType, StateType> {
 
   componentDidMount() {
     const thisComponent = this
-    if (!this.context.read_only) {
-      d3.selectAll<SVGCircleElement, any>(
-        'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
-      ).call(
-        d3
-          .drag<SVGCircleElement, any>()
-          .on('start', function (d) {
-            $('.workflow-canvas').addClass('creating-node-link')
-            const canvas_offset = $('.workflow-canvas').offset()
-
-            d3.select('.workflow-canvas')
-              .append('line')
-              .attr('class', 'node-link-creator')
-              .attr('x1', d3.event.x - canvas_offset.left)
-              .attr('y1', d3.event.y - canvas_offset.top)
-              .attr('x2', d3.event.x - canvas_offset.left)
-              .attr('y2', d3.event.y - canvas_offset.top)
-              .attr('stroke', 'red')
-              .attr('stroke-width', '2')
-          })
-          .on('drag', function (d) {
-            const canvas_offset = $('.workflow-canvas').offset()
-            d3.select('.node-link-creator')
-              .attr('x2', d3.event.x - canvas_offset.left)
-              .attr('y2', d3.event.y - canvas_offset.top)
-          })
-          .on('end', function (d) {
-            $('.workflow-canvas').removeClass('creating-node-link')
-            const target = d3.select(d3.event.target)
-
-            if (target.attr('data-port-type') == 'target') {
-              thisComponent.nodeLinkAdded(
-                target.attr('data-node-id'),
-                d3.select(this).attr('data-port'),
-                target.attr('data-port')
-              )
-            }
-
-            d3.select('.node-link-creator').remove()
-          })
-      )
-    }
-    // d3.selectAll(
-    //   'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
-    // ).call(
-    //   d3
-    //     .drag()
-    //     .on('start', function (d) {
-    //       $('.workflow-canvas').addClass('creating-node-link')
-    //
-    //       const canvas_offset = $('.workflow-canvas').offset()
-    //
-    //       d3.select('.node-link-creator').remove()
-    //
-    //       d3.select('.workflow-canvas')
-    //         .append('line')
-    //         .attr('class', 'node-link-creator')
-    //         .attr('x1', event.x - canvas_offset.left)
-    //         .attr('y1', event.y - canvas_offset.top)
-    //         .attr('x2', event.x - canvas_offset.left)
-    //         .attr('y2', event.y - canvas_offset.top)
-    //         .attr('stroke', 'red')
-    //         .attr('stroke-width', '2')
-    //     })
-    //
-    //     .on('drag', function (d) {
-    //       const canvas_offset = $('.workflow-canvas').offset()
-    //       d3.select('.node-link-creator')
-    //         .attr('x2', event.x - canvas_offset.left)
-    //         .attr('y2', event.y - canvas_offset.top)
-    //     })
-    //     .on('end', function (d) {
-    //       $('.workflow-canvas').removeClass('creating-node-link')
-    //
-    //       const target = d3.select(event.target)
-    //
-    //       if (target.attr('data-port-type') == 'target') {
-    //         thisComponent.nodeLinkAdded(
-    //           target.attr('data-node-id'),
-    //           d3.select(this).attr('data-port'),
-    //           target.attr('data-port')
-    //         )
-    //       }
-    //
-    //       d3.select('.node-link-creator').remove()
-    //     })
-    // )
+    if (!this.context.read_only)d3.selectAll<SVGCircleElement, any>(
+      'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
+    ).call(
+      d3
+        .drag<SVGCircleElement, any>()
+        .on('start', function (d) {
+          $('.workflow-canvas').addClass('creating-node-link')
+    
+          const canvas_offset = $('.workflow-canvas').offset()
+    
+          d3.select('.node-link-creator').remove()
+    
+          d3.select('.workflow-canvas')
+            .append('line')
+            .attr('class', 'node-link-creator')
+            .attr('x1', d3.event.sourceEvent.x - canvas_offset.left)
+            .attr('y1', d3.event.sourceEvent.y - canvas_offset.top)
+            .attr('x2', d3.event.sourceEvent.x - canvas_offset.left)
+            .attr('y2', d3.event.sourceEvent.y - canvas_offset.top)
+            .attr('stroke', 'red')
+            .attr('stroke-width', '2')
+        })
+    
+        .on('drag', function (d) {
+          const canvas_offset = $('.workflow-canvas').offset()
+          d3.select('.node-link-creator')
+            .attr('x2', d3.event.sourceEvent.x - canvas_offset.left)
+            .attr('y2', d3.event.sourceEvent.y - canvas_offset.top)
+        })
+        .on('end', function (d) {
+          $('.workflow-canvas').removeClass('creating-node-link')
+    
+          const target = d3.select(d3.event.sourceEvent.target)
+    
+          if (target.attr('data-port-type') == 'target') {
+            thisComponent.nodeLinkAdded(
+              target.attr('data-node-id'),
+              d3.select(this).attr('data-port'),
+              target.attr('data-port')
+            )
+          }
+    
+          d3.select('.node-link-creator').remove()
+        })
+    )
 
     this.updatePorts()
 

@@ -54,14 +54,12 @@ const QuillDiv: React.FC<PropsType> = (props) => {
 
     if (quillInstance) {
       const handleTextChange = () => {
-        console.log("text change")
         const quillContainer = quillInstance.root
         const text = quillContainer.innerHTML.replace(
           /\<p\>\<br\>\<\/p\>\<ul\>/g,
           '<ul>'
         )
-        console.log(text)
-        
+
 
         if (text !== props.text) {
 

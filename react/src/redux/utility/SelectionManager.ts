@@ -3,7 +3,7 @@ import { EventUnion } from '@cfModule/types/common'
 
 /**
  * Manages the current selection
- * provably the right sidebar (?)
+ * probably the right sidebar (?)
  * what else is it doing besides being the active tab manageer?
  * need to define responsibilities
  */

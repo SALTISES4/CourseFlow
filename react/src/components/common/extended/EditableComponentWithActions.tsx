@@ -148,18 +148,6 @@ class EditableComponentWithActions<
     )
   }
 
-  //Adds a button that inserts a sibling below the item.
-  DeleteForSidebar = ({ data }) => {
-    return (
-      <ActionButton
-        buttonIcon="add_new.svg"
-        buttonClass="insert-sibling-button"
-        titleText={window.gettext('Insert Below')}
-        handleClick={this.insertSibling.bind(this, data)}
-      />
-    )
-  }
-
   //Adds a button that inserts a child to them item
   AddInsertChild = ({ data }) => {
     return (
