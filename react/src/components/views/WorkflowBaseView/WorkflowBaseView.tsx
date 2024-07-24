@@ -176,12 +176,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     super(props, context)
 
     this.context = context
+    console.log("This is context for workflowbaseview",context)
     this.data = this.props.data
     this.project = this.context.project
 
     // used in parentworkflowindicator
 
     // used in connectionBar, but websocket status shouldn't go in the same context
+    this.websocket=this.props.websocket
 
     // @todo important: change this to state update control
     // issues with loss of scope of this if assigned to local method in this
@@ -751,7 +753,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           user_id={this.context.user_id}
           websocket={this.websocket}
           // connection_update_receive={this.context.connection_update_received}
-          // renderer={renderer}
+          context={this.context}
         />
       )
     }

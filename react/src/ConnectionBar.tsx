@@ -33,6 +33,7 @@ type ConnectedUserType = {
 type PropsType = {
   user_id: number
   websocket: WebSocket
+  context: any
   //  renderer: any
 }
 
@@ -49,21 +50,15 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
     this.state = {
       connected_users: []
     }
-    // this.user_id = props.renderer.user_id
-    // this.user_name = props.renderer.user_name
 
     // @ts-ignore
     this.user_name = COURSEFLOW_APP.contextData.user_name
-    // this.myColour = props.renderer.myColour
-
     // @ts-ignore
-    this.myColour = COURSEFLOW_APP.contextData.user_name
+    this.myColour = COURSEFLOW_APP.contextData.myColour
 
     // @todo not sure what the intention is here, but it needs to be removed
     // watch for side effects
-    // this.props.renderer.connection_update_received = (user_data) => {
-    //   this.connection_update_received(user_data)
-    // }
+    this.props.context.connection_update_received = this.connection_update_received.bind(this)
   }
 
   render() {
@@ -125,21 +120,20 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
         JSON.stringify({
           type: 'connection_update',
           user_data: {
-            // user_id: this.user_id,
-            // user_name: this.user_name, // why?
-            // user_colour: this.myColour, // why?
             user_id: this.props.user_id,
-            user_name: this.user_name, // why?
-            user_colour: this.myColour, // why?
+            user_name: this.user_name,
+            user_colour: this.myColour,
             connected: connected
           }
         })
       )
+      console.log("tried to send a connection update",this.props.user_id,this.user_name,this.myColour,connected)
     }
     setTimeout(cache, 30000)
   }
 
   connection_update_received(user_data) {
+    console.log("received a connection update")
     if (user_data.connected) {
       const connected_users = this.state.connected_users.slice()
       let found_user = false
