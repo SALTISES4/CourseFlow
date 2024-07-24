@@ -84,6 +84,7 @@ class Workflow {
   add_comments: boolean
   is_student: boolean
   selection_manager: SelectionManager
+  connection_update_receiver: null | ((data:any)=> void)
   private child_data_completed: number
   private child_data_needed: any[]
   private fetching_child_data: boolean
@@ -131,6 +132,7 @@ class Workflow {
 
     this.message_queue = []
     this.messages_queued = true
+    this.connection_update_receiver = null
 
     this.public_view = propsConfig.public_view
     this.workflowID = propsConfig.workflow_model_id
@@ -364,7 +366,7 @@ class Workflow {
         this.lock_update_received(data.action)
         break
       case DATA_TYPE.CONNECTION_UPDATE:
-        this.connection_update_received(data)
+        this.connection_update_received(data.action)
         break
       case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
         // this.parent_workflow_updated(data.edit_count) // @todo function takes no args
@@ -414,7 +416,15 @@ class Workflow {
   // @todo this is weird becuase connection_update_received is called in
   // connectedUsers but expects data to be well defined
   connection_update_received(data) {
-    console.log('A connection update was received, but not handled.')
+    if(this.connection_update_receiver){
+      this.connection_update_receiver(data)
+    }else{
+      console.log('A connection update was received, but not handled.')
+    }
+  }
+
+  connect_user_bar(connection_update_receiver){
+    this.connection_update_receiver = connection_update_receiver
   }
 
   parent_workflow_updated() {

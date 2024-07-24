@@ -15,7 +15,7 @@ const ConnectedUser = ({
       }}
       title={user_name}
     >
-      {user_name}
+      {user_name[0]}
     </div>
   )
 }
@@ -58,12 +58,10 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
 
     // @todo not sure what the intention is here, but it needs to be removed
     // watch for side effects
-    this.props.context.connection_update_received = this.connection_update_received.bind(this)
+    this.props.context.connect_user_bar(this.connection_update_received.bind(this))
   }
 
   render() {
-    console.log('this.props.websocket')
-    console.log(this.props.websocket)
 
     if (!this.props.websocket) return <></>
     if (this.props.websocket.readyState === 1) {
@@ -127,13 +125,11 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
           }
         })
       )
-      console.log("tried to send a connection update",this.props.user_id,this.user_name,this.myColour,connected)
     }
     setTimeout(cache, 30000)
   }
 
   connection_update_received(user_data) {
-    console.log("received a connection update")
     if (user_data.connected) {
       const connected_users = this.state.connected_users.slice()
       let found_user = false

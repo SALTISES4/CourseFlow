@@ -176,7 +176,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     super(props, context)
 
     this.context = context
-    console.log("This is context for workflowbaseview",context)
     this.data = this.props.data
     this.project = this.context.project
 
