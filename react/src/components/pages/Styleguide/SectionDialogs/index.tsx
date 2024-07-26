@@ -9,8 +9,7 @@ import editProjectData from '../dumb/dialog/EditProject/data'
 import { DIALOG_TYPE, useDialog } from '@cfComponents/common/dialog'
 import ProjectDialog from '../dumb/dialog/Project'
 
-import ImportNodes from '@cfCommonComponents/dialog/ImportNodes'
-import ImportOutcomes from '@cfCommonComponents/dialog/ImportOutcomes'
+import ImportDialog from '@cfCommonComponents/dialog/Import'
 
 const SectionDialogs = () => {
   // used to trigger the corresponding dialog
@@ -61,8 +60,7 @@ const SectionDialogs = () => {
           </Button>
         </Stack>
 
-        <ImportOutcomes workflowID={1} />
-        <ImportNodes workflowID={1} />
+        <ImportDialog workflowID={1} />
       </Section>
     </>
   )

@@ -38,13 +38,11 @@ import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { EventUnion } from '@cfModule/types/common'
-import Button from '@mui/material/Button'
 import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@cfMUI/theme'
 import TargetProjectModal from '@cfModule/components/common/dialog/TargetProject'
-import ImportNodesModal from '@cfModule/components/common/dialog/ImportNodes'
-import ImportOutcomesModal from '@cfModule/components/common/dialog/ImportOutcomes'
+import ImportModal from '@cfModule/components/common/dialog/Import'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -1082,8 +1080,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                 }
               }}
             />
-            <ImportNodesModal workflowID={this.data.id} />
-            <ImportOutcomesModal workflowID={this.data.id} />
+            <ImportModal workflowID={this.data.id} />
             <this.ShareDialog />
           </div>
         </ThemeProvider>

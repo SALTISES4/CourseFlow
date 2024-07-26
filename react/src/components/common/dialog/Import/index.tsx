@@ -7,9 +7,14 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Typography from '@mui/material/Typography'
 import FileUploader from '@cfCommonComponents/components/FileUploader'
+import { importData } from '@XMLHTTP/API/export_import'
 
 import { StyledDialog } from '../styles'
 import { DIALOG_TYPE, useDialog } from '../'
+
+type PropsType = {
+  workflowID: number
+}
 
 type StateType = {
   whitelisted: string[]
@@ -21,7 +26,7 @@ const initialState: StateType = {
   queued: []
 }
 
-function ImportDialog() {
+function ImportDialog({ workflowID }: PropsType) {
   const { type, show, onClose } = useDialog([
     DIALOG_TYPE.IMPORT_OUTCOMES,
     DIALOG_TYPE.IMPORT_NODES
@@ -79,7 +84,7 @@ function ImportDialog() {
   }
 
   function onSubmit() {
-    console.log('submitting Import Dialog with files', uploadableFiles)
+    importData(workflowID, 'workflow', 'nodes', uploadableFiles[0], onClose)
   }
 
   return (
