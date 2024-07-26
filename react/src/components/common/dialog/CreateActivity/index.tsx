@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '../'
 
 function CreateActivityDialog() {
-  const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_ACTIVITY)
+  const { show, onClose } = useDialog(DIALOG_TYPE.ACTIVITY_CREATE)
   return (
     <Dialog open={show} onClose={onClose}>
       <DialogTitle>Activity dialog</DialogTitle>

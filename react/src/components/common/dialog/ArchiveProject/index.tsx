@@ -12,7 +12,7 @@ type PropsType = {
 }
 
 const ArchiveProjectModal = ({ onSubmit }: PropsType) => {
-  const { show, onClose } = useDialog(DIALOG_TYPE.ARCHIVE_PROJECT)
+  const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_ARCHIVE)
 
   return (
     <StyledDialog

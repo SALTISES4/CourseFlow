@@ -60,9 +60,9 @@ function ExportProjectDialog({ data }: { data: EProject }) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
-    sets: data.object_sets.map(set=>set.id)
+    sets: data.object_sets.map((set) => set.id)
   })
-  const { show, onClose } = useDialog(DIALOG_TYPE.EXPORT_PROJECT)
+  const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_EXPORT)
 
   function onRadioChange(
     field: 'type' | 'format',
@@ -96,7 +96,6 @@ function ExportProjectDialog({ data }: { data: EProject }) {
       exportFormat: state.format,
       objectSets: state.sets
     }
-
 
     // TODO: handle success/failure appropriately
     API_POST(COURSEFLOW_APP.config.post_paths.get_export, postData)

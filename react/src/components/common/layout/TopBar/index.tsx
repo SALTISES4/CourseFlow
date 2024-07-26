@@ -110,16 +110,16 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       open={isAddMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_PROJECT)}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.PROJECT_CREATE)}>
         {COURSEFLOW_APP.strings.project}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_PROGRAM)}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.PROGRAM_CREATE)}>
         {COURSEFLOW_APP.strings.program}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_COURSE)}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.COURSE_CREATE)}>
         {COURSEFLOW_APP.strings.course}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_ACTIVITY)}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.ACTIVITY_CREATE)}>
         {COURSEFLOW_APP.strings.activity}
       </MenuItem>
     </StyledMenu>
@@ -203,7 +203,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       <MenuItem component="a" href={menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
-      <MenuItem onClick={() => dispatch(DIALOG_TYPE.RESET_PASSWORD)}>
+      <MenuItem onClick={() => dispatch(DIALOG_TYPE.PASSWORD_RESET)}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
       <MenuItem component="a" href={menus.account.notificationsSettingsUrls}>

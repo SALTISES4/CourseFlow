@@ -25,13 +25,13 @@ const SectionDialogs = () => {
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE)}
+            onClick={() => dispatch(DIALOG_TYPE.PROJECT_CREATE)}
           >
             Create Project
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT)}
+            onClick={() => dispatch(DIALOG_TYPE.PROJECT_EDIT)}
           >
             Edit Project
           </Button>
@@ -39,13 +39,10 @@ const SectionDialogs = () => {
 
         <ProjectDialog
           {...createProjectData}
-          type={DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE}
+          type={DIALOG_TYPE.PROJECT_CREATE}
         />
 
-        <ProjectDialog
-          {...editProjectData}
-          type={DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT}
-        />
+        <ProjectDialog {...editProjectData} type={DIALOG_TYPE.PROJECT_EDIT} />
       </Section>
 
       <Section header={{ title: 'Import' }}>
@@ -64,8 +61,8 @@ const SectionDialogs = () => {
           </Button>
         </Stack>
 
-        <ImportOutcomes workflowID={1}/>
-        <ImportNodes workflowID={1}/>
+        <ImportOutcomes workflowID={1} />
+        <ImportNodes workflowID={1} />
       </Section>
     </>
   )

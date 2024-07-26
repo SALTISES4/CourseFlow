@@ -62,19 +62,19 @@ const Welcome = ({ hide }: PropsType) => {
       <Actions>
         <Button
           variant="contained"
-          onClick={() => dispatch(DIALOG_TYPE.CREATE_PROGRAM)}
+          onClick={() => dispatch(DIALOG_TYPE.PROGRAM_CREATE)}
         >
           {window.gettext('I want to create a program')}
         </Button>
         <Button
           variant="contained"
-          onClick={() => dispatch(DIALOG_TYPE.CREATE_COURSE)}
+          onClick={() => dispatch(DIALOG_TYPE.COURSE_CREATE)}
         >
           {window.gettext('I want to create a course')}
         </Button>
         <Button
           variant="contained"
-          onClick={() => dispatch(DIALOG_TYPE.CREATE_ACTIVITY)}
+          onClick={() => dispatch(DIALOG_TYPE.ACTIVITY_CREATE)}
         >
           {window.gettext('I want to create an activity')}
         </Button>

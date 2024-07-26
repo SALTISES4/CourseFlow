@@ -67,9 +67,7 @@ const ProjectDialog = ({
   formFields,
   type
 }: PropsType & {
-  type:
-    | DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE
-    | DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT
+  type: DIALOG_TYPE.PROJECT_CREATE | DIALOG_TYPE.PROJECT_EDIT
 }) => {
   // set the inital state based on inputs
   const initialState: StateType = {
@@ -200,7 +198,7 @@ const ProjectDialog = ({
   }
 
   // Render the corresponding dialog variation with respective submit handler
-  return type === DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE ? (
+  return type === DIALOG_TYPE.PROJECT_CREATE ? (
     <CreateProjectDialog {...dialogProps} onSubmit={onCreateProjectSubmit} />
   ) : (
     <EditProjectDialog {...dialogProps} onSubmit={onEditProjectSubmit} />

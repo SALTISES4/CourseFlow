@@ -47,7 +47,7 @@ function CreateProjectDialog({
     objectSetsExpanded: false
   })
   const [errors, setErrors] = useState({})
-  const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_PROJECT)
+  const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_CREATE)
   const [selectOpenStates, setSelectOpenStates] = useState({})
 
   function onSubmit() {

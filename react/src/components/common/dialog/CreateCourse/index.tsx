@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '../'
 
 function CreateCourseDialog() {
-  const { show, onClose } = useDialog(DIALOG_TYPE.CREATE_COURSE)
+  const { show, onClose } = useDialog(DIALOG_TYPE.COURSE_CREATE)
 
   return (
     <Dialog open={show} onClose={onClose}>

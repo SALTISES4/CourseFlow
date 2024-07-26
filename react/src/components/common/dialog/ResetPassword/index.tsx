@@ -12,7 +12,7 @@ type PropsType = {
 }
 
 const ResetPasswordModal = ({ onSubmit }: PropsType) => {
-  const { show, onClose } = useDialog(DIALOG_TYPE.RESET_PASSWORD)
+  const { show, onClose } = useDialog(DIALOG_TYPE.PASSWORD_RESET)
 
   return (
     <StyledDialog
