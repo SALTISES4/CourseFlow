@@ -152,7 +152,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   static contextType = WorkFlowConfigContext
 
   // Constants
-  protected objectType = CfObjectType.WORKFLOW
+  objectType = CfObjectType.WORKFLOW
   private allowed_tabs = [0, 1, 2, 3, 4]
 
   private readOnly: any

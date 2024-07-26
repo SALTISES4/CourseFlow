@@ -57,7 +57,7 @@ class EditableComponent<
   P extends EditableComponentProps,
   S extends StateType
 > extends ComponentWithToggleDrop<P, S> {
-  static contextType = WorkFlowConfigContext
+  contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
 
