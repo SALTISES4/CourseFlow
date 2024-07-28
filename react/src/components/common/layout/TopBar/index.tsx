@@ -18,10 +18,11 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import { getNameInitials } from '@cfModule/utility/utilityFunctions'
-import ProgramCreateModal from '@cfModule/components/common/dialog/ProgramCreate'
 import ProjectCreateModal from '@cfModule/components/common/dialog/ProjectCreate'
-import CourseCreateModal from '@cfModule/components/common/dialog/CourseCreate'
-import ActivityCreateModal from '@cfModule/components/common/dialog/ActivityCreate'
+// TODO: implement
+// import ProgramCreateModal from '@cfModule/components/common/dialog/ProgramCreate'
+// import CourseCreateModal from '@cfModule/components/common/dialog/CourseCreate'
+// import ActivityCreateModal from '@cfModule/components/common/dialog/ActivityCreate'
 import PasswordResetModal from '@cfModule/components/common/dialog/PasswordReset'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 
@@ -33,26 +34,6 @@ import {
   NotificationsList
 } from './styles'
 import { TopBarProps } from '@cfModule/types/common'
-
-// TODO: clean up and move into create modals functionality
-function openCreateActionModal(type: 'program' | 'activity' | 'course') {
-  const createUrl = COURSEFLOW_APP.config.create_path[type]
-  COURSEFLOW_APP.tinyLoader.startLoad()
-  // getTargetProjectMenu<{ parentID: number }>(
-  //   -1,
-  //   (response_data) => {
-  //     if (response_data.parentID !== null) {
-  //       window.location.href = createUrl.replace(
-  //         '/0/',
-  //         '/' + response_data.parentID + '/'
-  //       )
-  //     }
-  //   },
-  //   () => {
-  //     COURSEFLOW_APP.tinyLoader.endLoad()
-  //   }
-  // )
-}
 
 const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   const { dispatch } = useDialog()
@@ -278,9 +259,10 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
         formFields={forms.createProject.formFields}
         disciplines={forms.createProject.disciplines}
       />
-      <ProgramCreateModal />
+      {/* TODO: implement */}
+      {/* <ProgramCreateModal />
       <CourseCreateModal />
-      <ActivityCreateModal />
+      <ActivityCreateModal /> */}
     </TopBarWrap>
   )
 }
