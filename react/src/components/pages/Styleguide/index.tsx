@@ -1,9 +1,15 @@
-import { OuterContentWrap } from '@cfModule/mui/helper'
+import { OuterContentWrap } from '@cfMUI/helper'
+
+import SectionDialogs from './SectionDialogs'
+import { Typography } from '@mui/material'
 
 const Styleguide = () => {
   return (
     <OuterContentWrap>
-      <h1>Courseflow Styleguide</h1>
+      <Typography variant="h3" sx={{ mb: 4 }}>
+        Courseflow Styleguide
+      </Typography>
+      <SectionDialogs />
     </OuterContentWrap>
   )
 }
