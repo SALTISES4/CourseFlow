@@ -41,7 +41,7 @@ import { EventUnion } from '@cfModule/types/common'
 import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@cfMUI/theme'
-import TargetProjectModal from '@cfModule/components/common/dialog/TargetProject'
+import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget'
 import ImportModal from '@cfModule/components/common/dialog/Import'
 
 type ConnectedProps = {
@@ -1061,7 +1061,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               />
             </div>
 
-            <TargetProjectModal
+            <ProjectTargetModal
               id={this.data.id}
               actionFunction={(response_data) => {
                 if (response_data.parentID != null) {

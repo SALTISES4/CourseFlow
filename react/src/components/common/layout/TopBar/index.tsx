@@ -18,12 +18,11 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import { getNameInitials } from '@cfModule/utility/utilityFunctions'
-import CreateProgramModal from '@cfModule/components/common/dialog/CreateProgram'
-import CreateProjectModal from '@cfModule/components/common/dialog/CreateProject'
-import CreateCourseModal from '@cfModule/components/common/dialog/CreateCourse'
-import CreateActivityModal from '@cfModule/components/common/dialog/CreateActivity'
-import ResetPasswordModal from '@cfModule/components/common/dialog/ResetPassword'
-import LinkWorkflowModal from '@cfModule/components/common/dialog/LinkWorkflow'
+import ProgramCreateModal from '@cfModule/components/common/dialog/ProgramCreate'
+import ProjectCreateModal from '@cfModule/components/common/dialog/ProjectCreate'
+import CourseCreateModal from '@cfModule/components/common/dialog/CourseCreate'
+import ActivityCreateModal from '@cfModule/components/common/dialog/ActivityCreate'
+import PasswordResetModal from '@cfModule/components/common/dialog/PasswordReset'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 
 import {
@@ -271,17 +270,17 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       {notificationsMenu}
       {accountMenu}
 
-      <ResetPasswordModal
+      <PasswordResetModal
         onSubmit={() => (window.location.href = menus.account.resetPasswordUrl)}
       />
-      <CreateProjectModal
+      <ProjectCreateModal
         showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
         formFields={forms.createProject.formFields}
         disciplines={forms.createProject.disciplines}
       />
-      <CreateProgramModal />
-      <CreateCourseModal />
-      <CreateActivityModal />
+      <ProgramCreateModal />
+      <CourseCreateModal />
+      <ActivityCreateModal />
     </TopBarWrap>
   )
 }

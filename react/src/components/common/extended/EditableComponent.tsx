@@ -13,14 +13,13 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 import Button from '@mui/material/Button'
-import LinkWorkflowModal from '@cfModule/components/common/dialog/LinkWorkflow'
+import WorkflowLinkModal from '@cfModule/components/common/dialog/WorkflowLink'
 
 const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()
 
   return (
-    <Button onClick={() => {
-      dispatch(DIALOG_TYPE.LINK_WORKFLOW)}}>
+    <Button onClick={() => dispatch(DIALOG_TYPE.LINK_WORKFLOW)}>
       {window.gettext('Change')}
     </Button>
   )
@@ -59,7 +58,6 @@ class EditableComponent<
 > extends ComponentWithToggleDrop<P, S> {
   static contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
-
 
   //Makes the item selectable
 
@@ -468,7 +466,7 @@ class EditableComponent<
       <div>
         <h4>{window.gettext('Linked Workflow')}</h4>
         <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
-        <LinkedWorkflowButton id={data.id}/>
+        <LinkedWorkflowButton id={data.id} />
         {/*<button
           className="primary-button"
           disabled={readOnly}
@@ -674,7 +672,7 @@ class EditableComponent<
 
         {type === CfObjectType.NODE && data.node_type !== 0 && (
           <>
-            <LinkWorkflowModal id={data.id}/>
+            <WorkflowLinkModal id={data.id} />
             <this.LinkedWorkflow data={data} readOnly={read_only} />
           </>
         )}
@@ -709,7 +707,7 @@ class EditableComponent<
   /*******************************************************
    * PORTAL (RENDER)
    *******************************************************/
-  addEditable(data, noDelete = false): React.ReactPortal | ReactElement {
+  addEditable(data, noDelete = false): ReactPortal | ReactElement {
     if (!this.state.selected) {
       return <></>
     }
@@ -718,7 +716,7 @@ class EditableComponent<
     return ReactDOM.createPortal(
       <this.EditForm data={data} noDelete={noDelete} />,
       document.getElementById('edit-menu')
-    ) as unknown as React.ReactPortal
+    ) as unknown as ReactPortal
   }
 }
 
