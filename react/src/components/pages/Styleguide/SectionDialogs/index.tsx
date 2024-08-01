@@ -20,6 +20,9 @@ import CourseEditDialog from '@cfCommonComponents/dialog/CourseEdit'
 import editCourseData from '@cfCommonComponents/dialog/CourseEdit/data'
 import CourseArchiveDialog from '@cfCommonComponents/dialog/CourseArchive'
 
+import ContributorAddDialog from '@cfCommonComponents/dialog/ContributorAdd'
+import contributorAddData from '@cfCommonComponents/dialog/ContributorAdd/data'
+
 const SectionDialogs = () => {
   const { dispatch } = useDialog()
 
@@ -109,6 +112,19 @@ const SectionDialogs = () => {
         <CourseArchiveDialog
           onSubmit={() => console.log('archive project submit')}
         />
+      </Section>
+
+      <Section header={{ title: 'Add contributor' }}>
+        <Stack direction="row" gap={1}>
+          <Button
+            variant="contained"
+            onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
+          >
+            Add Contributor
+          </Button>
+        </Stack>
+
+        <ContributorAddDialog {...contributorAddData} />
       </Section>
     </>
   )
