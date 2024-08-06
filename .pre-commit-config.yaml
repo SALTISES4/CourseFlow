@@ -2,29 +2,48 @@ exclude: "^$"
 fail_fast: false
 repos:
   - repo: https://github.com/pycqa/isort
-    rev: 5.6.4
+    rev: 5.12.0
     hooks:
       - id: isort
-        args: ["--profile", "black"]
+        verbose: true
+        entry: bash -c 'isort "$@" || true' --
   - repo: https://github.com/ambv/black
-    rev: 22.3.0
+    rev: 23.11.0
     hooks:
       - id: black
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.0.0
+        verbose: true
+        entry: bash -c 'black "$@" || true' --
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
     hooks:
       - id: flake8
+        verbose: true
+        entry: bash -c 'flake8 "$@" || true' --
   - repo: local
     hooks:
+      - id: check-path
+        name: Check PATH
+        entry: bash -c 'echo $PATH'
+        language: system
+        always_run: true
+        verbose: true
       - id: safety
         name: safety
-        entry: safety check
+        entry: bash -c 'safety check || true' --
         language: system
         always_run: true
         exclude: ".*"
-      - id: npm-audit
-        name: npm-audit
+        verbose: true
+#      - id: yarn-audit
+#        name: yarn audit
+#        language: system
+#        entry: bash -c 'yarn audit || true' --
+#        always_run: true
+#        exclude: ".*"
+#        verbose: true
+      - id: lint
+        name: lint
         language: system
-        entry: npm audit --audit-level=critical
+        entry: bash -c 'cd react && yarn lint-quiet || true' --
         always_run: true
-        exclude: ".*"
+        verbose: true

@@ -58,9 +58,11 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.humanize",
     "daphne",
     "django.contrib.staticfiles",
     "channels",
+    "django_extensions",
 ]
 
 
@@ -108,7 +110,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "course_flow.context_processors.update_notifications",
+                "course_flow.context_processors.add_global_context",
             ]
         },
     }
@@ -285,3 +287,9 @@ if DEBUG:
     MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     ]
+
+
+GRAPH_MODELS = {
+    "all_applications": True,
+    "graph_models": True,
+}

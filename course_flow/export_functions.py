@@ -5,16 +5,14 @@ from django.db.models import Q
 from django.utils.translation import gettext as _
 
 from course_flow import analytics
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.relations.weekWorkflow import WeekWorkflow
 
-from .models import (
-    Course,
-    Node,
-    OutcomeNode,
-    OutcomeWorkflow,
-    Program,
-    Week,
-    WeekWorkflow,
-)
+from .models.course import Course
+from .models.node import Node
+from .models.program import Program
+from .models.week import Week
 from .serializers import (
     NodeExportSerializer,
     NodeExportSerializerWithTime,
@@ -289,7 +287,7 @@ def get_outcomes_export(
                 for workflow in workflows:
                     df = get_workflow_outcomes_table(workflow, allowed_sets)
                     sheet_name = (
-                        get_alphanum(workflow.title) + "_" + str(workflow.pk)
+                        get_alphanum(str(workflow)) + "_" + str(workflow.pk)
                     )[:30]
                     df.to_excel(
                         writer,
@@ -328,7 +326,6 @@ def get_course_frameworks_export(
         if export_format == "excel":
             with pd.ExcelWriter(b, engine="xlsxwriter") as writer:
                 workbook = writer.book
-                header_format = workbook.add_format({"bg_color": "#b5fbbb"})
                 bold_format = workbook.add_format(
                     {"bold": True, "bg_color": "#04BA74", "color": "white"}
                 )
@@ -341,7 +338,7 @@ def get_course_frameworks_export(
                         workflow, allowed_sets
                     )
                     sheet_name = (
-                        get_alphanum(workflow.title) + "_" + str(workflow.pk)
+                        get_alphanum(str(workflow)) + "_" + str(workflow.pk)
                     )[:30]
                     df.to_excel(
                         writer,
@@ -415,7 +412,7 @@ def get_program_matrix_export(
                 for workflow in workflows:
                     df = get_program_matrix(workflow, True, allowed_sets)
                     sheet_name = (
-                        get_alphanum(workflow.title) + "_" + str(workflow.pk)
+                        get_alphanum(str(workflow)) + "_" + str(workflow.pk)
                     )[:30]
                     df.to_excel(
                         writer,
@@ -448,7 +445,6 @@ def get_sobec_export(model_object, object_type, export_format, allowed_sets):
         if export_format == "excel":
             with pd.ExcelWriter(b, engine="xlsxwriter") as writer:
                 workbook = writer.book
-                header_format = workbook.add_format({"bg_color": "#b5fbbb"})
                 bold_format = workbook.add_format(
                     {"bold": True, "bg_color": "#04BA74", "color": "white"}
                 )
@@ -458,7 +454,7 @@ def get_sobec_export(model_object, object_type, export_format, allowed_sets):
                 for workflow in workflows:
                     df = get_sobec(workflow, allowed_sets)
                     sheet_name = (
-                        get_alphanum(workflow.title) + "_" + str(workflow.pk)
+                        get_alphanum(str(workflow)) + "_" + str(workflow.pk)
                     )[:30]
                     df.to_excel(
                         writer,
@@ -498,7 +494,7 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
                 for workflow in workflows:
                     df = get_workflow_nodes_table(workflow, allowed_sets)
                     sheet_name = (
-                        get_alphanum(workflow.title) + "_" + str(workflow.pk)
+                        get_alphanum(str(workflow)) + "_" + str(workflow.pk)
                     )[:30]
                     df.to_excel(
                         writer,
@@ -793,7 +789,6 @@ def get_sobec(workflow, allowed_sets):
 
 
 def get_saltise_analytics():
-
     df = analytics.get_base_dataframe()
 
     with BytesIO() as b:

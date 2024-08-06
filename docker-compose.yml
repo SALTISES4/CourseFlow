@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  courseflow-django:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    container_name: "courseflow-django"
+    shm_size: 2G
+    tty: true
+    volumes:
+      - ./:/app/src
+      - ./docker/setup-data.sh:/app/src/setup-data.sh
+    ports:
+      - "8000:8000"
+    networks:
+      - cf-network
+    entrypoint: ["python", "course_flow.py", "runserver", "0.0.0.0:8000"]
+
+    # use this entrypoint override if the servber crashes and we need to debug it
+    # entrypoint: ["/bin/bash"]
+
+
+#  test-data:
+#    platform: linux/amd64
+#    build:
+#      context: .
+#      dockerfile: ./docker/Dockerfile
+#    restart: on-failure
+#    container_name: "courseflow-django-data"
+#    shm_size: 2G
+#    tty: true
+#    volumes:
+#      - ./:/app/src
+#      - ./docker/setup-data.sh:/app/src/setup-data.sh
+#    command: cd /app/src/setup-data.sh
+#    depends_on:
+#      - courseflow-django
+#    networks:
+#      - cf-network
+
+  cache:
+    container_name: "cf-redis"
+    image: redis:5.0
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --loglevel warning
+    networks:
+      - cf-network
+  helper:
+    image: alpine
+    command: sh -c "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
+    privileged: true
+
+networks:
+  cf-network:
+    driver: bridge

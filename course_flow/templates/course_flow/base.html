@@ -1,577 +1,68 @@
-{% load static compress i18n %} {% get_current_language as LANGUAGE_CODE %} {% load course_flow_templatetags %}
+{% load static compress i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% load course_flow_templatetags %}
+
 <!DOCTYPE html>
-<html lang="{{LANGUAGE_CODE}}">
-  <head>
-    <title>{% block title %}{% endblock %}</title>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="{% block metadescription %}{% endblock %}"
-    />
-    <meta name="theme-color" content="#1976BC" />
-    
-    <!-- External resources -->
-    <!-- * Fonts and icons -->
-
-    <!-- * Scripts -->
-    <!-- Matomo -->
-    <!-- <script>
-      var _paq = window._paq = window._paq || [];
-      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-      _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
-      (function() {
-        var u="//matomo-analytics-staging.mydalite.org/";
-        _paq.push(['setTrackerUrl', u+'matomo.php']);
-        _paq.push(['setSiteId', '2']);
-        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-      })();
-    </script> -->
-    <!-- End Matomo Code -->
-    
-    <!-- ** Preloads -->
-    <!-- ** Polyfills for non-awesome browsers-->
-    <script
-      src="https://cdn.polyfill.io/v2/polyfill.min.js"
-      rel="preload"
-      integrity="sha384-83CYOGXsi59YYxBeS/ag/t615snxzc9UUt0t4ApSQHHKYmbmlQj/MuS9QywJHVDN"
-      crossorigin="anonymous"
-    ></script>
-    <!-- ** jquery -->
-    <script
-      src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"
-      integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
-      integrity="sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX"
-      crossorigin="anonymous"
-    ></script>
-    <!-- ** d3 -->
-    <script
-      src="https://d3js.org/d3.v5.min.js"
-      integrity="sha384-M06Cb6r/Yrkprjr7ngOrJlzgekrkkdmGZDES/SUnkUpUol0/qjsaQWQfLzq0mcfg"
-      crossorigin="anonymous"
-    ></script>
-    <!-- Quill Stylesheet-->
-    <link
-      rel="stylesheet"
-      href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
-      integrity="sha384-07UbSXbd8HpaOfxZsiO6Y8H1HTX6v0J96b5qP6PKSpYEuSZSYD4GFFHlLRjvjVrL"
-      crossorigin="anonymous"
-    />
-    <!-- Include the Quill library -->
-    <script
-      src="https://cdn.quilljs.com/1.3.6/quill.min.js"
-      integrity="sha384-AOnYUgW6MQR78EvTqtkbNavz7dVI7dtLm7QdcIMBoy06adLIzNT40hHPYl9Rr5m5"
-      crossorigin="anonymous"
-    ></script>
-    <!-- fonts -->
-    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,300,600,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <!-- * Icons -->
-    <link rel="icon" type="image/x-icon" href="{% static 'course_flow/img/courseflow-favicon.png' %}";>
-    <!-- ** Preloads -->
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded&display=swap"
-      as="style"
-    />
-    <link
-      rel="preload"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined&display=swap"
-      as="style"
-    />
-    <!-- ** Loads -->
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded&display=swap"
-      type="text/css"
-    />
-
-    <script nonce="{{ request.csp_nonce }}">
-      // HACK(keanulee): The Redux package assumes `process` exists - mock it here before
-      // the module is loaded.
-      window.process = {
-        env: {
-          NODE_ENV: "production"
-        }
-      };
-    </script>
-
-    <!-- Internal resources -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/scripts.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/scripts-wf-redux.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/scripts-live.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
-      src="{% static 'course_flow/js/scripts-library.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <script nonce="{{ request.csp_nonce }}"
-      src="{% url 'course_flow:javascript-catalog' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    <!-- * CSS -->
-    {% compress css %}
-    <link
-      rel="stylesheet"
-      href="{% static 'course_flow/css/preact_styles.css' %}"
-    />
-    {% endcompress %}
-    <!--  -->
-    {% compress css %}
-    <link
-      rel="stylesheet"
-      href="{% static 'course_flow/js/course_flow.css' %}"
-    />
-    {% endcompress %}
-    {% block header %}{% endblock %}
-  </head>
-  <body id="site">
-    <div class="main-wrapper">
-      <div class="left-panel collapsed hide-print">
-        <div class="left-panel-toggle hover-shade">
-          <!-- <img src="{% static 'course_flow/img/images_svg/arrowright_white.svg' %}"/> -->
-          <span id="left-panel-collapse" class="material-symbols-rounded">
-            menu_open
-          </span>
-          <span id="left-panel-expand" class="material-symbols-rounded">
-            menu
-          </span>
-        </div>
-        <img class="title-image" src="{% static 'course_flow/img/logo-courseflow.svg' %}"/>
-        <a id="panel-home" class="panel-item hover-shade no-underline" href="{% url 'course_flow:home' %}">
-          <span class="material-symbols-rounded">home</span>
-          <div>{% trans 'Home' %}</div>
-        </a>
-        {% if user|has_group:"Teacher" %}
-        <a id="panel-my-library" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-library' %}">
-          <span class="material-symbols-rounded">collections_bookmark</span>
-          <div>{% trans 'My library' %}</div>
-        </a>
-        <a id="panel-explore" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}">
-          <span class="material-symbols-rounded">manage_search</span>
-          <div>{% trans 'Explore' %}</div>
-        </a>
-        {% endif %}
-        {% if not user.is_anonymous %}
-        {% if user|get_classrooms|length > 0 %}
-        <a id="panel-my-live-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-live-projects' %}">
-          <span class="material-symbols-rounded">calendar_month</span>
-          <div>{% trans 'My classrooms' %}</div>
-        </a>
-        {% endif %}
-        {% endif %}
-
-        {% if user|has_group:"Teacher" %}
-        <hr>
-        {% endif %}
-        <div class="left-panel-extra">
-          {% if user|has_group:"Teacher" %}
-            <a id="my-favourites" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-favourites' %}">
-              <span class="material-symbols-rounded">star</span>
-              <div>{% trans 'My favourites' %}</div>
-            </a>
-              {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
-                <a title="{{ favourite.content_object | safe }}" class="panel-favourite hover-shade"
-                   {% if favourite.content_object.type == "project" %}
-                      id="project{{favourite.object_id}}" href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
-                   {% else %}
-                      id="workflow{{favourite.object_id}}" href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
-                   {% endif %}
-                   >
-                  {{ favourite.content_object | safe }}
-                </a>
-              {% endfor %}
-            <a class="panel-favourite hover-shade collapsed-text-show-more" href="{% url 'course_flow:my-favourites' %}">{% trans 'See all' %}</a>
-          {% endif %}
-        </div>
-        {% if user|has_group:"Teacher" %}
-        <!-- <hr>
-        <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a> -->
-        {% endif %}
-        <a id="user-feedback" target="_blank" class="panel-item hover-shade no-underline" href="https://courseflow.freshdesk.com/support/home">
-          <span class="green filled material-symbols-rounded">help</span>
-          <div>
-            {% trans "Help and support" %}
-          </div>
-        </a>
-      </div>
-      <div class="main-block">
-        <div class="topnav hide-print">
-          <div class="titlebar">
-            <div class="title">
-            </div>
-            <div class="floatbar">
-              {% if user|has_group:"Teacher" %}
-              <div id="create-options">
-                <div class="hover-shade">
-                  <span class="material-symbols-rounded filled">add_circle</span>
-                </div>
-                <div id="create-links" class="create-dropdown">
-                  <a id="project-create" class="hover-shade" href="{% url 'course_flow:project-create' %}">{% trans 'Project' %}</a>
-                  <a id="activity-create" class="hover-shade">{% trans 'Activity' %}</a>
-                  <a id="course-create" class="hover-shade">{% trans 'Course' %}</a>
-                  <a id="program-create" class="hover-shade">{% trans 'Program' %}</a>
-                </div>
-              </div>
-              {% endif %}
-              {% if user.username %}
-              <div id="notifications">
-                <div class="hover-shade">
-                  <span class="material-symbols-rounded filled">notifications</span>
-                </div>
-                <div id="notifications-dropdown" class="create-dropdown">
-                  <a href="{% url 'course_flow:user-notifications' %}" class="collapsed-text-show-more">{% trans "See all" %}</a>
-                  {% for notification in user.notifications.all|slice:":7" %}
-                    <a class="list-notification hover-shade
-                      {% if notification.is_unread %}
-                        unread
-                      {% endif %}
-                    " href="
-                      {% if notification.content_object.type == 'project' %}
-                        {% url 'course_flow:project-update' pk=notification.content_object.pk %}
-                      {% else %}
-                        {% url 'course_flow:workflow-update' pk=notification.content_object.pk %}
-                      {% endif %}
-                    "><div class="created-on">{{ notification.created_on }}</div>{{ notification.text }}</a>
-                  {% endfor %}
-                </div>
-              </div>
-              <div id="account-options">
-                <div class="hover-shade">
-                  <span class="material-symbols-rounded filled">account_circle</span>
-                </div>
-                <div id="account-links" class="create-dropdown">
-                  <a id="profile" class="hover-shade" href="{% url 'course_flow:user-update' %}">{% trans 'Profile' %}</a>
-                  <a id="reset-password" class="hover-shade" href={% course_flow_password_change_url %}>{% trans 'Reset my password' %}</a>
-                  <a id="notification-settings" class="hover-shade" href="{% url 'course_flow:user-update' %}">{% trans 'Notification settings' %}</a>
-                  <hr>
-                  <a id="return-my-dalite" class="hover-shade" href={% course_flow_return_url %}>{% course_flow_return_title %}</a>
-                  <a id="logout" class="hover-shade">{% trans 'Sign out' %}</a>
-                </div>
-              </div>
-              {% endif %}
-            </div>
-          </div>
-            <div id="update-notifications"></div>
-            <div class="menubar hidden">
-                <div id="floatbar" class="floatbar">
-                  <div id="visible-icons"></div>
-                  <div id="overflow-options">
-                    <span class="hover-shade green material-symbols-rounded">more_horiz</span>
-                    <div id="overflow-links" class="create-dropdown">
-                      
-                    </div>
-                  </div>
-                </div>
-                <div id="userbar" class="floatbar">
-                </div>
-                <div id="viewbar" class="floatbar">
-                </div>
-              </div>
-        </div>
-        <div class="right-panel-wrapper">
-          <div id="container" class="body-wrapper"></div>
-          <div id="sidebar-container"></div>
-        </div>
-      </div>
-    </div>
-    <div id="popup-container"></div>
-    {% block body %}
-    {% endblock %}
-    <footer>{% block foot %}{% endblock %}</footer>
-    {% csrf_token %}
-  </body>
-
-  {% block common_scripts %}
-  <script nonce="{{request.csp_nonce}}">
-    //global paths for post/get
-    const post_paths = {
-      get_possible_linked_workflows:
-        "{% url 'course_flow:get-possible-linked-workflows' %}",
-      get_possible_added_workflows:
-        "{% url 'course_flow:get-possible-added-workflows' %}",
-      get_workflow_context:
-        "{% url 'course_flow:get-workflow-context' %}",
-      get_target_projects:
-        "{% url 'course_flow:get-target-projects' %}",
-      set_linked_workflow: "{% url 'course_flow:set-linked-workflow' %}",
-      update_value: "{% url 'course_flow:update-value' %}",
-      new_node: "{% url 'course_flow:new-node' %}",
-      new_outcome: "{% url 'course_flow:new-outcome-for-workflow' %}",
-      add_strategy: "{% url 'course_flow:add-strategy' %}",
-      toggle_strategy: "{% url 'course_flow:toggle-strategy' %}",
-      new_node_link: "{% url 'course_flow:new-node-link' %}",
-      delete_self: "{% url 'course_flow:delete-self' %}",
-      delete_self_live: "{% url 'course_flow:delete-self-live' %}",
-      restore_self: "{% url 'course_flow:restore-self' %}",
-      delete_self_soft: "{% url 'course_flow:delete-self-soft' %}",
-      duplicate_self: "{% url 'course_flow:duplicate-self' %}",
-      insert_sibling: "{% url 'course_flow:insert-sibling' %}",
-      insert_child: "{% url 'course_flow:insert-child' %}",
-      inserted_at: "{% url 'course_flow:inserted-at' %}",
-      update_outcomehorizontallink_degree: "{% url 'course_flow:update-outcomehorizontallink-degree' %}",
-      update_outcomenode_degree:
-        "{% url 'course_flow:update-outcomenode-degree' %}",
-      duplicate_project_ajax: "{% url 'course_flow:duplicate-project' %}",
-      duplicate_workflow_ajax: "{% url 'course_flow:duplicate-workflow' %}",
-      duplicate_strategy_ajax: "{% url 'course_flow:duplicate-strategy' %}",
-      toggle_favourite: "{% url 'course_flow:toggle-favourite' %}",
-      get_workflow_data: "{% url 'course_flow:get-workflow-data' %}",
-      get_workflow_parent_data: "{% url 'course_flow:get-workflow-parent-data' %}",
-      get_workflow_child_data: "{% url 'course_flow:get-workflow-child-data' %}",
-      get_project_data: "{% url 'course_flow:get-project-data' %}",
-      get_users_for_object: "{% url 'course_flow:get-users-for-object' %}",
-      get_users_for_liveproject: "{% url 'course_flow:get-users-for-liveproject' %}",
-      get_user_list: "{% url 'course_flow:get-user-list' %}",
-      search_all_objects: "{% url 'course_flow:search-all-objects' %}",
-      set_permission: "{% url 'course_flow:set-permission' %}",
-      set_liveproject_role: "{% url 'course_flow:set-liveproject-role' %}",
-      get_comments_for_object: "{% url 'course_flow:get-comments-for-object' %}",
-      add_terminology: "{% url 'course_flow:add-terminology' %}",
-      update_object_set: "{% url 'course_flow:update-object-set' %}",
-      add_comment: "{% url 'course_flow:add-comment' %}",
-      remove_comment: "{% url 'course_flow:remove-comment' %}",
-      remove_all_comments: "{% url 'course_flow:remove-all-comments' %}",
-      get_parent_workflow_info: "{% url 'course_flow:get-parent-workflow-info' %}",
-      get_export: "{% url 'course_flow:get-export' %}",
-      get_export_download: "{% url 'course_flow:get-export-download' %}",
-      import_data: "{% url 'course_flow:import-data' %}",
-      make_project_live: "{% url 'course_flow:make-project-live' %}",
-      set_workflow_visibility: "{% url 'course_flow:set-workflow-visibility' %}",
-      get_live_project_data: "{% url 'course_flow:get-live-project-data' %}",
-      get_live_project_data_student: "{% url 'course_flow:get-live-project-data-student' %}",
-      get_assignment_data: "{% url 'course_flow:get-assignment-data' %}",
-      get_assignment_data_student: "{% url 'course_flow:get-assignment-data-student' %}",
-      get_workflow_nodes: "{% url 'course_flow:get-workflow-nodes' %}",
-      create_live_assignment: "{% url 'course_flow:create-live-assignment' %}",
-      add_users_to_assignment: "{% url 'course_flow:add-users-to-assignment' %}",
-      update_liveproject_value: "{% url 'course_flow:update-liveproject-value' %}",
-      set_assignment_completion: "{% url 'course_flow:set-assignment-completion' %}",
-      get_assignments_for_node: "{% url 'course_flow:get-assignments-for-node' %}",
-      get_workflows_for_project: "{% url 'course_flow:get-workflows-for-project' %}",
-    };
-    const get_paths = {
-      get_disciplines: "{% url 'course_flow:get-disciplines' %}",
-      get_library: "{% url 'course_flow:get-library' %}",
-      get_favourites: "{% url 'course_flow:get-favourites' %}",
-      get_home: "{% url 'course_flow:get-home' %}",
-      import: "{% url 'course_flow:import' %}",
-      get_public_workflow_data: "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
-      get_public_workflow_parent_data: "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
-      get_public_workflow_child_data: "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
-      get_public_parent_workflow_info: "{% url 'course_flow:get-public-parent-workflow-info' pk='0' %}",
-    };
-    const create_path = {
-        activity_strategy:"{% url 'course_flow:activity-strategy-create' %}",
-        course_strategy:"{% url 'course_flow:course-strategy-create' %}",
-        project:"{% url 'course_flow:project-create' %}",
-        activity:"{% url 'course_flow:activity-create' projectPk='0' %}",
-        course:"{% url 'course_flow:course-create' projectPk='0' %}",
-        program:"{% url 'course_flow:program-create' projectPk='0' %}"
-    }
-
-    const update_path = {
-        project:"{% url 'course_flow:project-update' pk='0'%}",
-        activity:"{% url 'course_flow:workflow-update' pk='0'%}",
-        course:"{% url 'course_flow:workflow-update' pk='0'%}",
-        program:"{% url 'course_flow:workflow-update' pk='0'%}",
-        workflow:"{% url 'course_flow:workflow-update' pk='0'%}",
-        liveproject:"{% url 'course_flow:live-project-update' pk='0'%}",
-        liveassignment:"{% url 'course_flow:assignment-update' pk='0'%}"
-    };
-    const public_update_path = {
-        activity:"{% url 'course_flow:workflow-public' pk='0'%}",
-        course:"{% url 'course_flow:workflow-public' pk='0'%}",
-        program:"{% url 'course_flow:workflow-public' pk='0'%}",
-        workflow:"{% url 'course_flow:workflow-public' pk='0'%}"
-    };
-    const home_path = "{% url 'course_flow:home' %}"
-    const my_library_path = "{% url 'course_flow:my-library' %}"
-    const my_favourites_path = "{% url 'course_flow:my-favourites' %}"
-    const my_liveprojects_path = "{% url 'course_flow:my-live-projects' %}"
-    const registration_path = "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}";
-
-    $("#logout").on("click",()=>{
-        window.location.replace("{% url 'course_flow:logout' %}");
-    });
-
-    const debounce = (func,timeout=300)=>{
-      let timer;
-      return(...args)=>{
-        clearTimeout(timer);
-        timer = setTimeout(()=>{func.apply(this,args);},timeout);
-      };
-    }
-
-    const makeActiveSidebar = function(id){
-      $(id).addClass("active");
-    }
-
-    const makeDropdown = (click_element)=>{
-      let checkPosition = ()=>{
-        let width = $(click_element).children(".create-dropdown").outerWidth(true);
-        let left = $(click_element).offset().left;
-        if(left+width > $(window).width())$(click_element).children(".create-dropdown").addClass("position-right");
-        else $(click_element).children(".create-dropdown").removeClass("position-right");
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta
+    name="description"
+    content="{% block metadescription %}{% endblock %}"
+  />
+  <meta name="theme-color" content="#1976BC"/>
+  <script nonce="{{ request.csp_nonce }}">
+    // HACK(keanulee): The Redux package assumes `process` exists - mock it here before
+    // the module is loaded.
+    // @todo we should not be hardcoding this
+    window.process = {
+      env: {
+        //  NODE_ENV: "production"
       }
+    };
 
-      $(click_element).on("click",(evt)=>{
-        if($(click_element).attr("disabled")!="disabled"){
-          $(click_element).children(".create-dropdown").toggleClass("active");
-          checkPosition();
-        }
-      });
-      document.addEventListener("click",(evt)=>{
-        if(! $(evt.target).closest(click_element)[0])$(click_element).children(".create-dropdown").removeClass("active");
-      });
-
-      // check_position();
-      // window.addEventListener("resize",check_position);
-    }
-    makeDropdown("#overflow-options","#overflow-links");
-    makeDropdown("#account-options","#account-links");
-    makeDropdown("#notifications","#notifications-dropdown");
-    makeDropdown("#create-options","#create-links");
-
-    //reload if we got here using forward or back button
-    if (
-      window.performance &&
-      window.performance.navigation.type ===
-        window.performance.navigation.TYPE_BACK_FORWARD
-    ) {
-      location.reload();
-    }
-
-    let show_notification_request={{ show_notification_request }};
-
-    $(window).on("load",()=>{
-      $("#create-links #activity-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:activity-create' projectPk='0' %}"));
-      $("#create-links #course-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:course-create' projectPk='0' %}"));
-      $("#create-links #program-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:program-create' projectPk='0' %}"));
-
-      if(show_notification_request){
-        if(window.confirm(
-          "{% trans 'Hi there! Would you like to receive emails about updates to CourseFlow? You can always change your mind by viewing your profile.' %}"
-        )){
-          $.post("{% url 'course_flow:select-notifications' %}",{"notifications":JSON.stringify(true)});
-        }else{
-          $.post("{% url 'course_flow:select-notifications' %}",{"notifications":JSON.stringify(false)});
-        }
-      }
-
-      if($(".create-dropdown .list-notification.unread").length>0)$("#notifications").addClass("unread");
-    });
-
-    //Fix Quilljs's link sanitization
-    const Link = Quill.import('formats/link')
-    // Override the existing property on the Quill global object and add custom protocols
-    Link.PROTOCOL_WHITELIST = ['http', 'https'];
-
-    class CustomLinkSanitizer extends Link {
-      static sanitize(url) {
-        // Run default sanitize method from Quill
-        const sanitizedUrl = super.sanitize(url);
-
-        // Not whitelisted URL based on protocol so, let's return `blank`
-        if (!sanitizedUrl || sanitizedUrl === 'about:blank') return sanitizedUrl;
-
-        // Verify if the URL already have a whitelisted protocol
-        const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(function(protocol) {
-          return sanitizedUrl.startsWith(protocol);
-        })
-
-        if (hasWhitelistedProtocol) return sanitizedUrl;
-
-        // if not, then append only 'http' to not to be a relative URL
-        return `http://${sanitizedUrl}`;
-      }
-    }
-
-    Quill.register(CustomLinkSanitizer, true)
-
+    // create our global CF namespace
+    const cf = {}
+    const COURSEFLOW_APP = {}
 
   </script>
-  {% endblock %} {% block read_only_scripts %} {% endblock %}
-  <!-- -->
-    {% block scripts %}
-    <script nonce="{{ request.csp_nonce }}">
-        window.addEventListener("beforeprint",()=>{
-        $(".hide-print").hide();
-        $(".workflow-wrapper, #container, body").addClass("printing");
-    });
-    window.addEventListener("afterprint",()=>{
-        $(".hide-print").show()
-        $(".workflow-wrapper, #container, body").removeClass("printing");
-    });
 
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isTablet = /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(userAgent);
-    const isMobile = (/android|iphone/i.test(userAgent));
-    const isTouch = (isMobile || isTablet);
-    if(isTouch){
-      if(!sessionStorage.getItem("unsupported_alerted")){
-          sessionStorage.setItem("unsupported_alerted",true);
-          alert("{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}");
-      }
-    }
+  <script nonce="{{ request.csp_nonce }}">
+      window.cf_nonce = "{{ request.csp_nonce }}"
+  </script>
 
-    update_notifications =  {{ update_notifications |safe }}
-    if(update_notifications.title && update_notifications.id != localStorage.getItem("last_hidden_notification")){
-      $("#update-notifications").html(
-        "<div id='notification-inner'>"+
-          "<span class='material-symbols-rounded filled'>campaign</span>"+
-          update_notifications.title+
-        "</div>"+
-        "<div id='close-notification' class='window-close-button'>"+
-          "<span class='material-symbols-rounded green'>close</span>"+
-        "</div>"
-      );
-    }
-    $("#close-notification").on("click", ()=>{
-      localStorage.setItem("last_hidden_notification",update_notifications.id);
-      $("#update-notifications").css({display:"none"})
-    });
+  {% include 'course_flow/base/static_scripts.html' %}
+  {% include 'course_flow/base/scripts.html' %}
 
-    $(".left-panel-toggle").on("click",()=>{
-      $(".left-panel").toggleClass("collapsed");
-      if($(".left-panel").hasClass("collapsed"))sessionStorage.setItem("collapsed_sidebar",true);
-      else sessionStorage.removeItem("collapsed_sidebar");
-    });
-    if(!sessionStorage.getItem("collapsed_sidebar"))$(".left-panel").removeClass("collapsed");
+  {% block header %}{% endblock %}
+
+</head>
+
+<body id="site">
+
+<div id="reactRoot">
+  <!--react app placeholder -->
+</div>
 
 
-    </script>
-    {% endblock %}
+{% block body %} {% endblock %}
+{% block container %} {% endblock %}
+
+{% csrf_token %}
+</body>
+
+{% block common_scripts %}
+  {% include 'course_flow/base/config_js.html' %}
+  <script src="{% static 'course_flow/js/templates/base-common.js' %}"></script>
+{% endblock %}
+
+{% block react_scripts %} {% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'course_flow/js/templates/base.js' %}"></script>
+{% endblock %}
+
 </html>

@@ -4,15 +4,15 @@ import pandas as pd
 from celery import shared_task
 from django.conf import settings
 from django.core.cache import cache
-from django.core.files.storage import default_storage
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
 from course_flow import export_functions, import_functions
-from course_flow import redux_actions as actions
+from course_flow.models import User
+from course_flow.sockets.celery import logger, try_async
 
-from .celery import logger, try_async
-from .models import ObjectSet, User
+from .models.objectset import ObjectSet
+from .sockets import redux_actions as actions
 from .utils import dateTimeFormatNoSpace, get_model_from_str
 
 
@@ -60,7 +60,6 @@ def async_send_export_email(
         file_ext = "xlsx"
     elif export_format == "csv":
         file_ext = "csv"
-
     filename = (
         object_type
         + "_"

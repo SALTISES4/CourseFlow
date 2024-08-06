@@ -1,0 +1,51 @@
+// TODO: Re-evaluate the need for so many seemingly very similar greys
+// generic colors
+$color-black: #000;
+$color-gray-black: #222;
+$color-gray-dark: #3f4041;
+$color-gray: #808080;
+$color-disabled-gray: #959699;
+$color-disabled-gray-light: #bababa;
+
+$color-white: #fff;
+$color-white-gray-light: #f5f5f5;
+$color-white-gray: #e9ebf2;
+$color-white-gray-alt: #e0e0e0;
+$color-white-green: #eefff8;
+
+$color-body-bg: #eeeeee;
+$color-text: $color-gray-dark;
+
+$color-permission-edit: #d3dae6;
+$color-permission-view: #e5eff8;
+$color-permission-comment: #e7ebf1;
+
+$color-scrollbar-thumb: $color-gray;
+$color-scrollbar-thumb-hover: #6e6e6e;
+
+// main colors
+$color-primary-green: #04ba74;
+$color-primary-green-dark: #027a4c;
+$color-primary-purple: #660385;
+$color-primary-red: #ff0000;
+$color-primary-blue: #1976bc;
+$color-primary-blue-light: #54c0db;
+$color-primary-yellow: #f7ba2a;
+$color-primary-yellow-light: #ffff80;
+
+$color-courseflow-activity: #0e5bb6; // was #11b3d4
+$color-courseflow-course: #c54a30;   // was #ff5f3d
+$color-courseflow-program: #327b77;  // was #04ba74
+$color-courseflow-project: #b59c1b;  // was #d6bb30
+
+$color-outcome-green: #167016;
+$color-outcome-green-alt: #2ca02c;
+$color-outcome-green-light: #11ca11;
+
+$color-green-50: #eeffee;
+$color-green-100: #99ee99;
+$color-green-200: #77cc77;
+$color-green-300: #55bb55;
+
+$color-loader-bg: rgba(128, 128, 128, 0.376);
+$color-loader-bg-dark: rgba(128, 128, 128, 0.063);

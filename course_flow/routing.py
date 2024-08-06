@@ -1,6 +1,6 @@
 from django.urls import re_path
 
-from course_flow import consumers
+from course_flow.sockets import consumers
 
 websocket_urlpatterns = [
     re_path(

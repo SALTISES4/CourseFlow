@@ -1,12 +1,11 @@
 import calendar
-import time
 
 import pandas as pd
 from django.core.cache import cache
 
-from course_flow.models import Project, Workflow
+from course_flow.models.project import Project
+from course_flow.models.workflow import Workflow
 from course_flow.serializers import AnalyticsSerializer
-from course_flow.utils import benchmark
 
 
 def month_replace(x):
@@ -23,7 +22,6 @@ def fix_months(df):
 
 
 def get_base_dataframe():
-
     df = cache.get("COURSEFLOW_ANALYTICS_DATAFRAME", None)
     if df is not None:
         return df
