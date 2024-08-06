@@ -300,34 +300,6 @@ h3.big-space {
   display: inline;
 }
 
-#update-notifications {
-  position: relative;
-  background: $color-white-green;
-  margin: 0px 15px 15px 15px;
-}
-
-#update-notifications:empty {
-  display: none;
-}
-
-#update-notifications .window-close-button {
-  top: 3px;
-}
-
-#notification-inner {
-  height: 32px;
-  box-sizing: border-box;
-  padding: 5px;
-}
-
-#notification-inner > * {
-  vertical-align: middle;
-}
-
-#notification-inner > span {
-  padding-right: 10px;
-}
-
 .menubar {
   display: flex;
   justify-content: space-between;
@@ -1124,16 +1096,6 @@ h3.big-space {
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-}
-
-.workflow-title {
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 6px;
-  flex-grow: 1;
-  white-space: normal;
-  text-decoration: none;
-  color: $color-text;
 }
 
 .workflow-buttons {
@@ -2041,4 +2003,8 @@ table tr.total-row {
   right: 8px;
   position: absolute;
   text-align: left;
+}
+
+#reactRoot {
+  height: 100%;
 }

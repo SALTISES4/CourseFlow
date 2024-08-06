@@ -68,11 +68,6 @@ export type DuplicateBaseItemQueryResp = {
  * menu.ts
  *******************************************************/
 
-export type HomeQueryResp = {
-  favourites: Workflow[]
-  projects: Workflow[]
-}
-
 export type LibraryQueryResp = {
   data_package: Workflow[]
 }
@@ -106,6 +101,8 @@ export type UsersForObjectQueryResp = {
   published: boolean
   public_view: boolean
   cannot_change: number[]
+  saltise_user: boolean
+  is_template: boolean
 }
 
 export type UserListResp = {
@@ -158,6 +155,7 @@ export type ParentWorkflowInfoQueryResp = {
 }
 
 export type WorkflowsForProjectQueryResp = {
+  action: VERB
   data_package: Workflow[]
 }
 

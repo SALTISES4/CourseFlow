@@ -2,7 +2,9 @@ import datetime
 import re
 
 import bleach
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -659,6 +661,7 @@ class ProjectSerializerShallow(
             "author_id",
             "published",
             "created_on",
+            "is_template",
             "last_modified",
             "workflowproject_set",
             "disciplines",
@@ -723,6 +726,16 @@ class ProjectSerializerShallow(
             "last_viewed": object_permission.last_viewed,
         }
 
+    def validate_is_template(self, value):
+        user = self.context.get("user")
+        try:
+            if Group.objects.get(name="SALTISE_Staff") in user.groups.all():
+                return value
+            else:
+                return False
+        except ObjectDoesNotExist:
+            return False
+
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
@@ -733,6 +746,9 @@ class ProjectSerializerShallow(
         )
         instance.disciplines.set(
             validated_data.get("disciplines", instance.disciplines.all())
+        )
+        instance.is_template = validated_data.get(
+            "is_template", instance.is_template
         )
         instance.save()
         return instance
@@ -907,6 +923,7 @@ class WorkflowSerializerShallow(
             "outcomeworkflow_set",
             "author_id",
             "is_strategy",
+            "is_template",
             "strategy_icon",
             "published",
             "time_required",
@@ -992,6 +1009,16 @@ class WorkflowSerializerShallow(
         ).order_by("rank")
         return list(map(linkIDMap, links))
 
+    def validate_is_template(self, value):
+        user = self.context.get("user")
+        try:
+            if Group.objects.get(name="SALTISE_Staff") in user.groups.all():
+                return value
+            else:
+                return False
+        except ObjectDoesNotExist:
+            return False
+
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
@@ -1034,6 +1061,9 @@ class WorkflowSerializerShallow(
         instance.public_view = validated_data.get(
             "public_view", instance.public_view
         )
+        instance.is_template = validated_data.get(
+            "is_template", instance.is_template
+        )
         instance.save()
         return instance
 
@@ -1062,6 +1092,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "outcomes_sort",
             "outcomeworkflow_set",
             "is_strategy",
+            "is_template",
             "published",
             "type",
             "DEFAULT_COLUMNS",
@@ -1116,6 +1147,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "outcomes_sort",
             "outcomeworkflow_set",
             "is_strategy",
+            "is_template",
             "published",
             "type",
             "DEFAULT_COLUMNS",
@@ -1170,6 +1202,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "outcomes_type",
             "outcomeworkflow_set",
             "is_strategy",
+            "is_template",
             "published",
             "type",
             "DEFAULT_COLUMNS",
@@ -1266,6 +1299,7 @@ class InfoBoxSerializer(
     object_permission = serializers.SerializerMethodField()
     workflow_count = serializers.SerializerMethodField()
     is_linked = serializers.SerializerMethodField()
+    is_template = serializers.ReadOnlyField()
 
     def get_workflow_count(self, instance):
         if instance.type == "project":
@@ -1645,6 +1679,8 @@ class FormFieldsSerializer:
                 return "select"
             elif widget_type == "RadioSelect":
                 return "radio"
+        elif field_type == "ModelMultipleChoiceField":
+            return "multiselect"
         elif field_type == "BooleanField":
             if widget_type == "CheckboxInput":
                 return "checkbox"
@@ -1666,6 +1702,7 @@ class FormFieldsSerializer:
         # in order for cleaned_data to become available
         if self.form_instance.is_valid():
             for field_name, field in self.form_instance.fields.items():
+                # TODO: use camelCase
                 fields.append(
                     {
                         "name": field_name,

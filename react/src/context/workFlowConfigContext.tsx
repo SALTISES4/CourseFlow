@@ -2,6 +2,12 @@ import React, { ReactNode, useState } from 'react'
 import WorkflowClass from '@cfPages/Workflow/Workflow'
 import { ViewType } from '@cfModule/types/enum'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
+import {
+  AnyAction,
+  EmptyObject,
+  Store
+} from '@reduxjs/toolkit'
+import { AppState } from '@cfRedux/types/type'
 
 export const WorkFlowConfigContext = React.createContext<ChildRenderer>(
   {} as ChildRenderer
@@ -16,6 +22,7 @@ type ChildRenderer = {
   outcome_sort_choices: any
   strategy_classification_choices: any
   change_field: any
+  project:any
   workflowID: number
   unread_comments: any
   add_comments: any
@@ -74,6 +81,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       strategy_classification_choices:
         workflowInstance.strategy_classification_choices,
 
+      project:workflowInstance.project,
       workflowID: workflowInstance.workflowID,
       unread_comments: workflowInstance.unread_comments,
       add_comments: workflowInstance.add_comments,
@@ -82,6 +90,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       is_strategy: workflowInstance.is_strategy,
       // show_assignments: workflowInstance.show_assignments,
       column_choices: workflowInstance.column_choices,
+      store: workflowInstance.store,
 
       // functions
       lock_update: workflowInstance.lock_update,

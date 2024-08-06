@@ -33,6 +33,7 @@ class TableOutcomeOutcomeUnconnected extends React.Component<PropsType> {
   render() {
     const data = this.props.data
 
+    //Child outcomes. See comment in models/outcome.py for more info.
     return (
       // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> this.mainDiv is not defined
       <div className="outcome-outcome" id={String(data.id)}>

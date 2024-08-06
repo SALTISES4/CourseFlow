@@ -19,9 +19,10 @@ from course_flow.utils import get_model_from_str, make_user_notification
 
 @user_can_edit(False)
 def json_api_post_remove_comment(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    comment_id = json.loads(request.POST.get("commentPk"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
+    comment_id = body.get("commentPk")
 
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
@@ -36,8 +37,9 @@ def json_api_post_remove_comment(request: HttpRequest) -> JsonResponse:
 
 @user_can_edit(False)
 def json_api_post_remove_all_comments(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
 
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
@@ -51,9 +53,10 @@ def json_api_post_remove_all_comments(request: HttpRequest) -> JsonResponse:
 
 @user_can_comment(False)
 def json_api_post_add_comment(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    text = bleach.clean(json.loads(request.POST.get("text")))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
+    text = bleach.clean(body.get("text"))
     try:
         obj = get_model_from_str(object_type).objects.get(id=object_id)
 
@@ -97,8 +100,9 @@ def json_api_post_add_comment(request: HttpRequest) -> JsonResponse:
 def json_api_post_get_comments_for_object(
     request: HttpRequest,
 ) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
     try:
         comments = (
             get_model_from_str(object_type)

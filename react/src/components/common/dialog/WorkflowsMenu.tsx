@@ -3,6 +3,7 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { setLinkedWorkflow } from '@XMLHTTP/API/update'
+import { GridWrap } from '@cfModule/mui/helper'
 // import $ from 'jquery'
 
 /*
@@ -23,7 +24,6 @@ type PropsType = {
   type: any
   data: any
   actionFunction: any
-  dispatch: any
 }
 
 class WorkflowsMenu extends React.Component<PropsType, StateProps> {
@@ -104,7 +104,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
         <button
           id="set-linked-workflow-cancel"
           className="secondary-button"
-          onClick={closeMessageBox}
+          onClick={this.props.actionFunction}
         >
           {window.gettext('Cancel')}
         </button>
@@ -119,7 +119,6 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
               -1,
               this.props.actionFunction
             )
-            closeMessageBox()
           }}
         >
           {window.gettext('Set to None')}
@@ -136,7 +135,6 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
               this.state.selected,
               this.props.actionFunction
             )
-            closeMessageBox()
           }}
         >
           {text}
@@ -249,16 +247,16 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
     const current_project = this.current_project ? (
       <>
         <h4 className={'big-space'}>{window.gettext('Current project')}</h4>,
-        <div className="menu-grid">
+        <GridWrap>
           <WorkflowCard
             workflowData={this.current_project}
             selected={this.state.selected === this.current_project.id}
             noHyperlink={no_hyperlink}
             type={this.props.type} // @todo i don't think this is used
-            dispatch={this.props.dispatch} // @todo i don't think this is used
+            dispatch={null} // @todo i don't think this is used
             selectAction={this.workflowSelected.bind(this)}
           />
-        </div>
+        </GridWrap>
         <hr className={'big-space'} />,
         <h4 className={'big-space'}>
           {window.gettext('Or select from your projects')}
@@ -267,9 +265,11 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
     ) : (
       <></>
     )
-
+    //@todo: I don't think the evt.stopPropagation should be here, I think
+    //it should be on the Dialog component, but idk how to add it to that.
+    //Needed to prevent clicks on dialog from unselecting workflow components.
     return (
-      <div className="message-wrap">
+      <div className="message-wrap" onMouseDown={(evt)=>{evt.stopPropagation();}}>
         <this.Title />
         {current_project}
         <div className="home-tabs" id="workflow-tabs">

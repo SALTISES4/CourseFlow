@@ -1,110 +1,129 @@
-//Quill div for inputs, as a React component
-import * as React from 'react'
-// import $ from 'jquery'
+import React, { useState, useEffect, useRef } from 'react'
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 
-type PropsType = {
+interface PropsType {
   text: string
+  readOnly: boolean
   placeholder: string
   disabled: boolean
   textChangeFunction: (text: string) => void
-  maxlength: number
-  readOnly: boolean
-}
-type StateType = {
-  charlength: number
 }
 
-class QuillDiv extends React.Component<PropsType, StateType> {
-  private mainDiv: React.RefObject<HTMLDivElement>
-  // @todo see below, referencing global quill object
-  // @ts-ignore
-  private quill: Quill
-  constructor(props) {
-    super(props)
-    this.mainDiv = React.createRef()
+// Quill modules to enable
+const modules = {
+  toolbar: [
+    ['bold', 'italic', 'underline'],
+    [{ script: 'sub' }, { script: 'super' }],
+    [{ list: 'bullet' }, { list: 'ordered' }],
+    ['link'] /*,['formula']*/
+  ]
+}
 
-    const charlength = this.props.text ? this.props.text.length : 0
-    this.state = {
-      charlength
+const QuillDiv: React.FC<PropsType> = (props) => {
+  /*******************************************************
+   * STATE
+   *******************************************************/
+  const [charLength, setCharLength] = useState(
+    props.text ? props.text.length : 0
+  )
+  /*******************************************************
+   * REF
+   *******************************************************/
+  const quillRef = useRef<ReactQuill>(null)
+
+  /*******************************************************
+   * LIFE CYCLE
+   *******************************************************/
+  //   Initialize and Update the Editor's Content
+  useEffect(() => {
+    const quillInstance = quillRef.current?.getEditor()
+
+    if (
+      quillInstance &&
+      props.text &&
+      props.text !== quillInstance.root.innerHTML
+    ) {
+      quillInstance.clipboard.dangerouslyPasteHTML(props.text, 'silent')
     }
-  }
+  }, [props.text])
 
-  componentDidMount() {
-    const quill_container = this.mainDiv.current
-    const readOnly = this.props.readOnly
+  // Handle Text Changes
+  useEffect(() => {
+    const quillInstance = quillRef.current?.getEditor()
 
-    const toolbarOptions = [
-      ['bold', 'italic', 'underline'],
-      [{ script: 'sub' }, { script: 'super' }],
-      [{ list: 'bullet' }, { list: 'ordered' }],
-      ['link'] /*,['formula']*/
-    ]
+    if (quillInstance) {
+      const handleTextChange = () => {
+        const quillContainer = quillInstance.root
+        const text = quillContainer.innerHTML.replace(
+          /\<p\>\<br\>\<\/p\>\<ul\>/g,
+          '<ul>'
+        )
 
-    // @todo where is quill coming from here?
-    // @ts-ignore
-    const quill = new Quill(quill_container, {
-      theme: 'snow',
-      modules: {
-        toolbar: toolbarOptions
-      },
-      placeholder: this.props.placeholder
-    })
-    this.quill = quill
+        if (text !== props.text) {
+          // @todo the linked component is currently throwing a handled error, which is stealing focus from quill
+          // uncomment the textChange function below when ready to debug the node link issue
 
-    if (this.props.text) {
-      quill.clipboard.dangerouslyPasteHTML(this.props.text)
-    }
-
-    quill.on('text-change', () => {
-      // @ts-ignore
-      const text = quill_container.childNodes[0].innerHTML.replace(
-        /\<p\>\<br\>\<\/p\>\<ul\>/g,
-        '<ul>'
-      )
-      this.props.textChangeFunction(text)
-      this.setState({ charlength: text.length })
-    })
-
-    const toolbar = quill.getModule('toolbar')
-
-    toolbar.defaultLinkFunction = toolbar.handlers['link']
-
-    toolbar.addHandler('link', function customLinkFunction(value) {
-      const select = quill.getSelection()
-      if (value && select['length'] == 0 && !readOnly) {
-        quill.insertText(select['index'], 'link')
-        quill.setSelection(select['index'], 4)
+          // props.textChangeFunction(text);
+          setCharLength(text.length)
+        }
       }
-      // @todo unclear this scope
-      // @ts-ignore
-      this.defaultLinkFunction(value)
-    })
-    this.quill.enable(!this.props.disabled)
-  }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.disabled != this.props.disabled) {
-      if (prevProps.text != this.props.text)
-        this.quill.clipboard.dangerouslyPasteHTML(this.props.text, 'silent')
-      this.quill.enable(!this.props.disabled)
+      quillInstance.on('text-change', handleTextChange)
+
+      return () => {
+        quillInstance.off('text-change', handleTextChange)
+      }
     }
-    $(this.mainDiv.current)
-      .find('a')
-      .click(() => {
-        $(this).attr('target', '_blank')
-      })
-  }
+  }, [props.text])
 
-  render() {
-    return (
-      <div>
-        <div ref={this.mainDiv} className="quill-div" />
-        <div className={'character-length'}>
-          {this.state.charlength + ' ' + window.gettext('characters')}
-        </div>
+  // Customize the Toolbar
+  useEffect(() => {
+    const quillInstance = quillRef.current?.getEditor()
+
+    if (quillInstance) {
+      const toolbar = quillInstance.getModule('toolbar')
+      const originalLinkHandler = toolbar.handlers['link']
+
+      toolbar.addHandler('link', function customLinkFunction(value) {
+        const select = quillInstance.getSelection()
+        if (value && select && select.length === 0 && !props.readOnly) {
+          quillInstance.insertText(select.index, 'link')
+          quillInstance.setSelection(select.index, 4)
+        } else {
+          // @ts-ignore
+          originalLinkHandler.call(this, value)
+        }
+      })
+    }
+  }, [props.readOnly])
+
+  // Enable or Disable the Editor
+  useEffect(() => {
+    const quillInstance = quillRef.current?.getEditor()
+
+    if (quillInstance) {
+      quillInstance.enable(!props.disabled)
+    }
+  }, [props.disabled])
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  return (
+    <div>
+      <ReactQuill
+        ref={quillRef}
+        theme="snow"
+        modules={modules}
+        placeholder={props.placeholder}
+        readOnly={props.readOnly}
+      />
+      <div className={'character-length'}>
+        {charLength + ' ' + window.gettext('characters')}
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 export default QuillDiv

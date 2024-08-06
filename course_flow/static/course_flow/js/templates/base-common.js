@@ -73,7 +73,7 @@ if (
 }
 
 $(window).on("load", () => {
-  $(document).ajaxError(window.fail_function);
+  // $(document).ajaxError(window.fail_function);
 
   // @todo does this do anything?
   waitUntilElementExists("#overflow-options").then((el) => {
@@ -92,7 +92,7 @@ $(window).on("load", () => {
     makeDropdown(el, "#create-links-project");
   });
 
-  if (COURSEFLOW_APP.show_notification_request) {
+  if (COURSEFLOW_APP.globalContextData.notifications.showNotificationRequest) {
     const confirmNotifications = window.confirm(
       COURSEFLOW_APP.strings.confirm_email_updates,
     );

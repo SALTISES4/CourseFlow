@@ -1,5 +1,6 @@
 import { EmptyPostResp, SearchAllObjectsQueryResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
+import { API_POST } from '../PostFunctions'
 
 /**
  * Search entire library
@@ -14,14 +15,12 @@ export function searchAllObjectsQuery(
   callBackFunction = (_data: SearchAllObjectsQueryResp) =>
     console.log('success')
 ) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: JSON.stringify(filter),
-      additional_data: JSON.stringify(data)
-    }).done(function (_data: SearchAllObjectsQueryResp) {
-      callBackFunction(_data)
+  API_POST(COURSEFLOW_APP.config.post_paths.search_all_objects, {
+    filter: filter,
+    additional_data: data
+  })
+    .then((response:SearchAllObjectsQueryResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
-  } catch (err) {
-    window.fail_function()
-  }
 }

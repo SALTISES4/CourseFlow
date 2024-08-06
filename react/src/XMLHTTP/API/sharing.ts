@@ -4,6 +4,7 @@ import {
   UserListResp
 } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
+import { API_POST } from '../PostFunctions'
 
 export function setUserPermission(
   user_id,
@@ -12,19 +13,16 @@ export function setUserPermission(
   permission_type,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.set_permission, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType),
-      permission_user: JSON.stringify(user_id),
-      permission_type: JSON.stringify(permission_type)
-    }).done(function (data: EmptyPostResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.error)
+  API_POST(COURSEFLOW_APP.config.post_paths.set_permission, {
+    objectID: objectID,
+    objectType: objectType,
+    permission_user: user_id,
+    permission_type: permission_type
+  })
+    .then((response:EmptyPostResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
-  } catch (err) {
-    window.fail_function()
-  }
 }
 
 /**
@@ -44,34 +42,27 @@ export function getUsersForObjectQuery(
 ) {
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
     objectType = 'workflow'
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
-      objectID: JSON.stringify(objectID),
-      objectType: JSON.stringify(objectType)
-    }).done(function (data: UsersForObjectQueryResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+  API_POST(COURSEFLOW_APP.config.post_paths.get_users_for_object, {
+    objectID: objectID,
+    objectType: objectType
+  })
+    .then((response:UsersForObjectQueryResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
-  } catch (err) {
-    console.log('err')
-    console.log(err)
-    window.fail_function()
-  }
 }
+
 
 //Get a list of users, filtered by name
 export function getUserListQuery(
   filter: any,
   callBackFunction = (_data: UserListResp) => console.log('success')
 ) {
-  try {
-    $.post(COURSEFLOW_APP.config.post_paths.get_user_list, {
-      filter: JSON.stringify(filter)
-    }).done(function (data: UserListResp) {
-      if (data.action === VERB.POSTED) callBackFunction(data)
-      else window.fail_function(data.action)
+  API_POST(COURSEFLOW_APP.config.post_paths.get_user_list, {
+    filter: filter
+  })
+    .then((response:UserListResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
     })
-  } catch (err) {
-    window.fail_function()
-  }
 }

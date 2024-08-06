@@ -98,17 +98,8 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         return context
 
 
-@login_required
-def myprojects_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_projects(request.user, True))
-        .decode("utf-8")
-    }
-    return render(request, "course_flow/myprojects.html", context)
 
-
-# HTTP FRAGMENT REQUEST
+# HTTP FRAGMENT REQUEST - TODO: Replaced by the Create Project modal
 class ProjectCreateView(
     LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
 ):

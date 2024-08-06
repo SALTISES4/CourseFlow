@@ -1,11 +1,12 @@
 <script nonce="{{ request.csp_nonce }}">
+  COURSEFLOW_APP.globalContextData = {{ globalContextData | safe }};
   COURSEFLOW_APP.path_id = "{{ path_id }}";
   const DTOContextData = {{ contextData | safe }};
 
   switch (COURSEFLOW_APP.path_id) {
-
     case 'explore':
     case 'home':
+    case 'styleguide':
     case 'favorites':
     case 'library':
     case 'notifications':
@@ -20,7 +21,7 @@
           program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
         }
       {% endif %}
-      COURSEFLOW_APP.contextData =  {
+      COURSEFLOW_APP.contextData = {
         ...DTOContextData,
         create_path_this_project
       }

@@ -5,6 +5,7 @@
   defer="true"
   charset="utf-8"
 ></script>
+
 <script
   id="script-redesign"
   nonce="{{ request.csp_nonce }}"
@@ -12,6 +13,7 @@
   defer="true"
   charset="utf-8"
 ></script>
+
 <script nonce="{{ request.csp_nonce }}"
         src="{% url 'course_flow:javascript-catalog' %}"
         defer="true"

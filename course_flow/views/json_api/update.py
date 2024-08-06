@@ -67,20 +67,22 @@ from course_flow.utils import (
 # non-foreign key fields on models
 @user_can_edit(False)
 def json_api_post_update_value(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
     try:
-        object_id = json.loads(request.POST.get("objectID"))
-        object_type = json.loads(request.POST.get("objectType"))
-        data = json.loads(request.POST.get("data"))
-        changeFieldID = request.POST.get("changeFieldID", False)
-        if changeFieldID:
-            changeFieldID = json.loads(changeFieldID)
+        object_id = body.get("objectID")
+        object_type = body.get("objectType")
+        data = body.get("data")
+        changeFieldID = body.get("changeFieldID", False)
         objects = get_model_from_str(object_type).objects
         if hasattr(objects, "get_subclass"):
             object_to_update = objects.get_subclass(pk=object_id)
         else:
             object_to_update = objects.get(pk=object_id)
         serializer = serializer_lookups_shallow[object_type](
-            object_to_update, data=data, partial=True
+            object_to_update,
+            data=data,
+            partial=True,
+            context={"user": request.user},
         )
         save_serializer(serializer)
     except ValidationError:
@@ -103,21 +105,22 @@ def json_api_post_update_value(request: HttpRequest) -> JsonResponse:
 
 
 # Insert a model via its throughmodel to reorder it
-@user_can_edit(False)
-@user_can_edit_or_none(False, get_parent=True)
-@user_can_edit_or_none("columnPk")
-@from_same_workflow(False, False, get_parent=True)
-@from_same_workflow(False, "columnPk")
+# @user_can_edit(False)
+# @user_can_edit_or_none(False, get_parent=True)
+# @user_can_edit_or_none("columnPk")
+# @from_same_workflow(False, False, get_parent=True)
+# @from_same_workflow(False, "columnPk")
 def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    inserted = json.loads(request.POST.get("inserted", "false"))
-    column_change = json.loads(request.POST.get("columnChange", "false"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
+    inserted = body.get("inserted", False)
+    column_change = body.get("columnChange", False)
     changing_workflow = False
     try:
         with transaction.atomic():
             if column_change:
-                new_column_id = json.loads(request.POST.get("columnPk"))
+                new_column_id = body.get("columnPk")
                 model = get_model_from_str(object_type).objects.get(
                     id=object_id
                 )
@@ -125,10 +128,10 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                 model.column = new_column
                 model.save()
             if inserted:
-                parent_id = json.loads(request.POST.get("parentID"))
-                parent_type = json.loads(request.POST.get("parentType"))
-                new_position = json.loads(request.POST.get("newPosition"))
-                through_type = json.loads(request.POST.get("throughType"))
+                parent_id = body.get("parentID")
+                parent_type = body.get("parentType")
+                new_position = body.get("newPosition")
+                through_type = body.get("throughType")
                 model = get_model_from_str(object_type).objects.get(
                     id=object_id
                 )
@@ -352,9 +355,10 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
 def json_api_post_update_outcomenode_degree(
     request: HttpRequest,
 ) -> JsonResponse:
-    node_id = json.loads(request.POST.get("nodePk"))
-    outcome_id = json.loads(request.POST.get("outcomePk"))
-    degree = json.loads(request.POST.get("degree"))
+    body = json.loads(request.body)
+    node_id = body.get("nodePk")
+    outcome_id = body.get("outcomePk")
+    degree = body.get("degree")
 
     try:
         node = Node.objects.get(id=node_id)
@@ -408,10 +412,10 @@ def json_api_post_update_outcomenode_degree(
 def json_api_post_update_outcomehorizontallink_degree(
     request: HttpRequest,
 ) -> JsonResponse:
-    outcome_id = json.loads(request.POST.get("outcomePk"))
-    object_type = json.loads(request.POST.get("objectType"))
-    parent_id = json.loads(request.POST.get("objectID"))
-    degree = json.loads(request.POST.get("degree"))
+    outcome_id = body.get("outcomePk")
+    object_type = body.get("objectType")
+    parent_id = body.get("objectID")
+    degree = body.get("degree")
     try:
         outcome = Outcome.objects.get(id=outcome_id)
         parent_outcome = get_model_from_str(object_type).objects.get(
@@ -473,10 +477,11 @@ def json_api_post_update_outcomehorizontallink_degree(
 @user_can_edit("nodePk")
 @user_can_view_or_none("workflowPk")
 def json_api_post_set_linked_workflow(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
     # last_time = time.time()
     try:
-        node_id = json.loads(request.POST.get("nodePk"))
-        workflow_id = json.loads(request.POST.get("workflowPk"))
+        node_id = body.get("nodePk")
+        workflow_id = body.get("workflowPk")
         node = Node.objects.get(pk=node_id)
         parent_workflow = node.get_workflow()
         original_workflow = node.linked_workflow
@@ -520,9 +525,10 @@ def json_api_post_set_linked_workflow(request: HttpRequest) -> JsonResponse:
 # Creates strategy from week or turns strategy into week
 @user_can_edit("weekPk")
 def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
     try:
-        object_id = json.loads(request.POST.get("weekPk"))
-        is_strategy = json.loads(request.POST.get("is_strategy"))
+        object_id = body.get("weekPk")
+        is_strategy = body.get("is_strategy")
         week = Week.objects.get(id=object_id)
         workflow = WeekWorkflow.objects.get(week=week).workflow
         # This check is to prevent people from spamming the button, which would
@@ -567,11 +573,12 @@ def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
 @user_can_edit(False)
 @user_can_view("objectsetPk")
 def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
     try:
-        object_id = json.loads(request.POST.get("objectID"))
-        object_type = json.loads(request.POST.get("objectType"))
-        objectset_id = json.loads(request.POST.get("objectsetPk"))
-        add = json.loads(request.POST.get("add"))
+        object_id = body.get("objectID")
+        object_type = body.get("objectType")
+        objectset_id = body.get("objectsetPk")
+        add = body.get("add")
         objects = get_model_from_str(object_type).objects
         if hasattr(objects, "get_subclass"):
             objects_to_update = [objects.get_subclass(pk=object_id)]
@@ -629,9 +636,10 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
 # favourite/unfavourite a project or workflow for a user
 @user_can_view(False)
 def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    objectType = json.loads(request.POST.get("objectType"))
-    favourite = json.loads(request.POST.get("favourite"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    objectType = body.get("objectType")
+    favourite = body.get("favourite")
     response = {}
     if objectType in ["activity", "course", "program"]:
         objectType = "workflow"

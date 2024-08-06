@@ -52,8 +52,9 @@ from course_flow.utils import get_all_outcomes_for_outcome, get_model_from_str
 @user_can_view("workflowPk")
 @user_can_edit("projectPk")
 def json_api_post_duplicate_workflow(request: HttpRequest) -> JsonResponse:
-    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
-    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    body = json.loads(request.body)
+    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
+    project = Project.objects.get(pk=body.get("projectPk"))
 
     try:
         with transaction.atomic():
@@ -91,7 +92,8 @@ def json_api_post_duplicate_workflow(request: HttpRequest) -> JsonResponse:
 
 @user_can_view("workflowPk")
 def json_api_post_duplicate_strategy(request: HttpRequest) -> JsonResponse:
-    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    body = json.loads(request.body)
+    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
     try:
         with transaction.atomic():
             clone = fast_duplicate_workflow(workflow, request.user, None)
@@ -116,7 +118,8 @@ def json_api_post_duplicate_strategy(request: HttpRequest) -> JsonResponse:
 
 @user_can_view("projectPk")
 def json_api_post_duplicate_project(request: HttpRequest) -> JsonResponse:
-    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    body = json.loads(request.body)
+    project = Project.objects.get(pk=body.get("projectPk"))
     try:
         with transaction.atomic():
             clone = fast_duplicate_project(project, request.user)
@@ -143,11 +146,12 @@ def json_api_post_duplicate_project(request: HttpRequest) -> JsonResponse:
 @user_can_view(False)
 @user_can_edit(False, get_parent=True)
 def json_api_post_duplicate_self(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    parent_id = json.loads(request.POST.get("parentID"))
-    parent_type = json.loads(request.POST.get("parentType"))
-    through_type = json.loads(request.POST.get("throughType"))  # noqa F841
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
+    parent_id = body.get("parentID")
+    parent_type = body.get("parentType")
+    through_type = body.get("throughType")
     node_updates = []
     try:
         with transaction.atomic():

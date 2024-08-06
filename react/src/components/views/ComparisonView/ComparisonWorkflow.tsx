@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { EditableComponentWithSorting } from '@cfParentComponents'
+import EditableComponentWithSorting from '@cfParentComponents/EditableComponentWithSorting'
 import * as Utility from '@cfUtility'
 
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'

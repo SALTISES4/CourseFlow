@@ -1,14 +1,15 @@
-import * as React from 'react'
-import { CollapsibleText, WorkflowTitle } from '@cfUIComponents/index.js'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
+import CollapsibleText from '@cfCommonComponents/UIComponents/CollapsibleText'
 import { Discipline } from '@cfModule/types/common'
 import Users from '@cfPages/Library/ProjectDetail/components/Users'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import { EProject } from '@cfModule/XMLHTTP/types/entity'
 
 type PropsTypes = {
   allDisciplines: Discipline[]
   description: string
   disciplines: Discipline[]
-  data: any
+  project: EProject
   users: UsersForObjectQueryResp
   readOnly: boolean
   openShareDialog: () => void
@@ -18,7 +19,7 @@ const Header = ({
   allDisciplines,
   description,
   disciplines,
-  data,
+  project,
   users,
   readOnly,
   openShareDialog
@@ -29,7 +30,7 @@ const Header = ({
   return (
     <div className="project-header">
       <WorkflowTitle
-        data={data}
+        data={project}
         no_hyperlink={true}
         class_name="project-title"
       />

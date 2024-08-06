@@ -1,5 +1,5 @@
 import { WorkflowType } from '@cfModule/types/enum'
-import * as React from 'react'
+import { MouseEvent } from 'react'
 
 export type ToDefine = any
 
@@ -9,12 +9,12 @@ export interface Workflow {
   author: string
   created_on: string
   deleted: boolean
-  description: string | null
   favourite: boolean
   has_liveproject: boolean
   is_linked: boolean
   is_owned: boolean
   is_strategy: boolean
+  is_template: boolean
   is_visible: boolean
   last_modified: string
   object_permission: ObjectPermission
@@ -22,7 +22,7 @@ export interface Workflow {
   published: boolean
   title: string
   type: WorkflowType
-  workflow_count: null
+  workflow_count: null | number
 }
 
 export type ObjectPermission = {
@@ -43,6 +43,12 @@ export type Discipline = {
   title: string
 }
 
+// TODO: Consolidate with the types in CreateProject/type
+export type ObjectSet = {
+  id: number | string
+  title: string
+}
+
 export type ObjectLock = {
   user_id: number
   user_colour: string
@@ -60,7 +66,61 @@ export type Lock = {
   user_id: string
 }
 
+export type SidebarProps = {
+  isAnonymous: boolean
+  isTeacher: boolean
+  favourites: {
+    title: string
+    url: string
+  }[]
+}
+
+export type TopBarProps = {
+  isTeacher: boolean
+  notifications: {
+    url: string
+    unread: number
+    items: {
+      unread: boolean
+      url: string
+      from: string
+      text: string
+      date: string
+    }[]
+  }
+  forms: {
+    createProject: {
+      showNoProjectsAlert: boolean
+      disciplines: Discipline[]
+      formFields: FormFieldSerialized[]
+    }
+  }
+  menus: {
+    add: {
+      projectUrl: string
+    }
+    account: {
+      notificationsSettingsUrls: string
+      profileUrl: string
+      resetPasswordUrl: string
+      daliteUrl: string
+      daliteText: string
+    }
+  }
+}
+
+export type FormFieldSerialized = {
+  name: string
+  label?: string
+  type: string
+  required?: boolean
+  options?: { value: string; label: string }[]
+  max_length?: number
+  help_text?: string
+  value?: string
+}
+
 export type EventUnion =
-  | React.MouseEvent<HTMLDivElement, MouseEvent>
+  | MouseEvent<HTMLDivElement>
   | JQuery.Event
-  | React.MouseEvent<Element, MouseEvent>
+  | MouseEvent<Element>

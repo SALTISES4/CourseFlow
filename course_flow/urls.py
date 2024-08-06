@@ -13,6 +13,8 @@ app_name = "course_flow"
 
 def course_flow_patterns():
     return [
+        # React component styleguide / dumb components preview page
+        path("styleguide/", views.html.styleguide_home, name="styleguide"),
         path("home/", views.home_view, name="home"),
         path(
             "saltise-admin/",
@@ -26,7 +28,6 @@ def course_flow_patterns():
         ),
         path("logout/", views.logout_view, name="logout"),
         path("mylibrary/", views.mylibrary_view, name="my-library"),
-        # path("myprojects/", views.myprojects_view, name="my-projects"),
         # path("mytemplates/", views.mytemplates_view, name="my-templates"),
         # path("myshared/", views.myshared_view, name="my-shared"),
         path("myfavourites/", views.myfavourites_view, name="my-favourites"),
@@ -113,6 +114,11 @@ def course_flow_patterns():
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
         # Register create JSON routes
+        path(
+            "json-api-post-create-project/",
+            views.json_api.create.json_api_post_create_project,
+            name="json-api-post-create-project",
+        ),
         path(
             "json-api-post-update-profile-settings/",
             views.json_api.update.json_api_post_profile_settings,
@@ -302,24 +308,9 @@ def course_flow_patterns():
         ),
         # Register "API" JSON routes
         path(
-            "json-api-get-top-bar/",
-            views.json_api.menu.json_api_get_top_bar,
-            name="json-api-get-top-bar",
-        ),
-        path(
-            "json-api-get-sidebar/",
-            views.json_api.menu.json_api_get_sidebar,
-            name="json-api-get-sidebar",
-        ),
-        path(
             "mylibrary/get-projects/",
             views.json_api.menu.json_api_get_library,
             name="json-api-get-library",
-        ),
-        path(
-            "home/get-projects/",
-            views.json_api.menu.json_api_get_home,
-            name="json-api-get-home",
         ),
         path(
             "favourites/get-projects/",

@@ -2,7 +2,8 @@ import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import * as Constants from '@cfConstants'
-import { Slider, LegendLine } from '@cfUIComponents'
+import Slider from '@cfCommonComponents/UIComponents/Slider'
+import LegendLine from '@cfCommonComponents/UIComponents/LegendLine'
 // import $ from 'jquery'
 import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
@@ -56,14 +57,15 @@ export class WorkflowLegendUnconnected<
 
   getSlider() {
     if (this.state.show_slider) {
+      // dynamic react/src/components/common/components/MenuBar.tsx
       return reactDom.createPortal(
-        [
+        <>
           <div>{window.gettext('Legend')}</div>,
           <Slider
             checked={this.state.show_legend}
             toggleAction={this.toggle.bind(this)}
           />
-        ],
+        </>,
         $('#viewbar')[0]
       )
     }

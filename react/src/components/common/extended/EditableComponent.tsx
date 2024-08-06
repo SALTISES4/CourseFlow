@@ -6,12 +6,35 @@ import * as Utility from '@cfUtility'
 import ComponentWithToggleDrop from '@cfParentComponents/ComponentWithToggleDrop'
 import QuillDiv from '@cfParentComponents/components/QuillDiv'
 import { toggleStrategyQuery } from '@XMLHTTP/API/update'
-import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
 import { updateObjectSet } from '@XMLHTTP/API/update'
 import { CfObjectType } from '@cfModule/types/enum'
 import { ReactElement, ReactPortal } from 'react'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
+import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
+import Button from '@mui/material/Button'
+import WorkflowLinkModal from '@cfModule/components/common/dialog/WorkflowLink'
+
+const LinkedWorkflowButton = (id: any) => {
+  const { dispatch } = useDialog()
+
+  return (
+    <Button onClick={() => dispatch(DIALOG_TYPE.LINK_WORKFLOW)}>
+      {window.gettext('Change')}
+    </Button>
+  )
+}
+
+/**
+ *
+ */
+// function openLinkedWorkflowMenu(response, updateFunction) {
+//   if (response.action === VERB.POSTED) {
+//     renderMessageBox(response, 'linked_workflow_menu', updateFunction)
+//   } else {
+//     alert('Failed to find the parent project. Is this workflow in a project?')
+//   }
+// }
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -225,7 +248,7 @@ class EditableComponent<
         <QuillDiv
           disabled={override || readOnly}
           text={description}
-          maxlength={500}
+          // maxlength={500}
           textChangeFunction={this.valueChanged.bind(this, 'description')}
           placeholder="Insert description here"
           readOnly={this.context.read_only}
@@ -443,7 +466,8 @@ class EditableComponent<
       <div>
         <h4>{window.gettext('Linked Workflow')}</h4>
         <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
-        <button
+        <LinkedWorkflowButton id={data.id} />
+        {/*<button
           className="primary-button"
           disabled={readOnly}
           id="linked-workflow-editor"
@@ -451,17 +475,20 @@ class EditableComponent<
             COURSEFLOW_APP.tinyLoader.startLoad()
             getLinkedWorkflowMenuQuery(
               data,
-              (response_data) => {
-                console.log('linked a workflow')
-              },
-              () => {
+              (response_data)=>{
+                openLinkedWorkflowMenu(
+                  response_data,
+                  (_response_data) => {
+                    console.log('linked a workflow')
+                  },
+                )
                 COURSEFLOW_APP.tinyLoader.endLoad()
-              }
+              },
             )
           }}
         >
           {window.gettext('Change')}
-        </button>
+        </button>*/}
         <input
           disabled={readOnly}
           type="checkbox"
@@ -644,7 +671,10 @@ class EditableComponent<
         )}
 
         {type === CfObjectType.NODE && data.node_type !== 0 && (
-          <this.LinkedWorkflow data={data} readOnly={read_only} />
+          <>
+            <WorkflowLinkModal id={data.id} />
+            <this.LinkedWorkflow data={data} readOnly={read_only} />
+          </>
         )}
 
         {type == CfObjectType.NODE && data.node_type != 2 && (
@@ -677,15 +707,16 @@ class EditableComponent<
   /*******************************************************
    * PORTAL (RENDER)
    *******************************************************/
-  addEditable(data, noDelete = false): React.ReactPortal | ReactElement {
+  addEditable(data, noDelete = false): ReactPortal | ReactElement {
     if (!this.state.selected) {
       return <></>
     }
 
+    // #edit-menu dynamic, in RightSideBar component
     return ReactDOM.createPortal(
       <this.EditForm data={data} noDelete={noDelete} />,
       document.getElementById('edit-menu')
-    ) as unknown as React.ReactPortal
+    ) as unknown as ReactPortal
   }
 }
 

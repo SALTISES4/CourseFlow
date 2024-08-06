@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 // @components
-import { OutcomeTitle } from '@cfUIComponents'
-import { EditableComponentWithSorting } from '@cfParentComponents'
+import { OutcomeTitle } from '@cfCommonComponents/UIComponents/Titles'
+import EditableComponentWithSorting from '@cfParentComponents/EditableComponentWithSorting'
 import OutcomeOutcome from './OutcomeOutcome'
 import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 
@@ -186,6 +186,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     const mouseover_actions = []
 
     if (Utility.checkSetHidden(data, this.props.object_sets)) return null
+    //Child outcomes. See comment in models/outcome.py for more info.
     if (data.is_dropped)
       children = data.child_outcome_links.map((outcomeoutcome) => (
         <OutcomeOutcome

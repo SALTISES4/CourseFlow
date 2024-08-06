@@ -48,7 +48,7 @@ class Workflow(models.Model):
     public_view = models.BooleanField(default=False)
 
     is_strategy = models.BooleanField(default=False)
-
+    is_template = models.BooleanField(default=False)
     from_saltise = models.BooleanField(default=False)
 
     condensed = models.BooleanField(default=False)

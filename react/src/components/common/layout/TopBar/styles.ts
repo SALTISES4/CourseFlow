@@ -6,7 +6,8 @@ import List from '@mui/material/List'
 
 export const TopBarWrap = styled(Box)(({ theme }) => ({
   '& .MuiPaper-root': {
-    backgroundColor: theme.palette.common.white
+    backgroundColor: theme.palette.common.white,
+    boxShadow: 'none'
   }
 }))
 

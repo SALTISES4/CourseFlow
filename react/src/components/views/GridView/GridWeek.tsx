@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { TitleText } from '@cfUIComponents'
-import { EditableComponentWithComments } from '@cfParentComponents'
+import { TitleText } from '@cfCommonComponents/UIComponents/Titles'
+import EditableComponentWithComments from '@cfParentComponents/EditableComponentWithComments'
 import { getNodeByID } from '@cfFindState'
 import GridNode from './GridNode'
 

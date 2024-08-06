@@ -35,13 +35,14 @@ class ProjectPage extends React.Component<ProjectViewDTO> {
   }
 
   render() {
-    // this.container = container @todo how is container used if at all, need clarification
+    // this.container = container
+    // TODO: how is container used if at all, need clarification
     return (
       <ProjectMenu
         projectPaths={this.projectPaths}
         allDisciplines={this.allDisciplines}
         readOnly={this.readOnly}
-        data={this.projectData}
+        project={this.projectData}
         userId={this.userId}
       />
     )

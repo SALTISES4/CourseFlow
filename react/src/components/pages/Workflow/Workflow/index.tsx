@@ -10,7 +10,7 @@ import {
   Store
 } from '@reduxjs/toolkit'
 import * as Reducers from '@cfReducers'
-import WorkflowLoader from '@cfUIComponents/WorkflowLoader'
+import WorkflowLoader from '@cfCommonComponents/UIComponents/WorkflowLoader'
 import WorkflowBaseView from '@cfViews/WorkflowBaseView/WorkflowBaseView'
 import { WorkflowDetailViewDTO } from '@cfPages/Workflow/Workflow/types'
 import {
@@ -103,7 +103,7 @@ class Workflow {
   private has_disconnected: boolean
   private has_rendered: boolean
   private is_static: boolean
-  protected store: Store<EmptyObject & AppState, AnyAction>
+  store: Store<EmptyObject & AppState, AnyAction>
 
   // NOTE: this is not yet a React component, so its misleading to use the same
   // 'props' value in the constructor since they behave differently
@@ -307,7 +307,6 @@ class Workflow {
   }
 
   connection_opened(reconnect = false) {
-    console.log('connection_opened')
     this.getWorkflowData(this.workflowID, (response) => {
       this.unread_comments = response.data_package?.unread_comments // @todo explicit typing
 
@@ -496,6 +495,7 @@ class Workflow {
    * REACT TO MOVE
    *******************************************************/
   render(container, view_type: ViewType = ViewType.WORKFLOW) {
+    console.log("THIS IS THE WORKFLOW",this.project)
     this.locks = {}
 
     this.selection_manager = new SelectionManager(this.read_only)

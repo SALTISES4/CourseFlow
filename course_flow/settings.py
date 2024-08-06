@@ -110,7 +110,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "course_flow.context_processors.update_notifications",
+                "course_flow.context_processors.add_global_context",
             ]
         },
     }

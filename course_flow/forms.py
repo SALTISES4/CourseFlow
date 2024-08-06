@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 
 from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.discipline import Discipline
+from course_flow.models.project import Project
+from course_flow.serializers import DisciplineSerializer
 
 
 class RegistrationForm(UserCreationForm):
@@ -33,13 +36,11 @@ class ProfileSettings(forms.ModelForm):
     first_name = forms.CharField(
         label=_("First name"),
         max_length=300,
-        help_text=_("This field is required."),
     )
 
     last_name = forms.CharField(
         label=_("Last name"),
         max_length=300,
-        help_text=_("This field is required."),
     )
 
     class Meta:
@@ -58,3 +59,29 @@ class NotificationsSettings(forms.ModelForm):
     class Meta:
         model = CourseFlowUser
         fields = ("notifications",)
+
+
+class DisciplineIterator(forms.models.ModelChoiceIterator):
+    def choice(self, obj):
+        return (
+            str(obj.id),
+            self.field.label_from_instance(obj),
+        )
+
+
+class CreateProject(forms.ModelForm):
+    title = forms.CharField(
+        label=_("Title"),
+        max_length=200,
+    )
+
+    disciplines = forms.ModelMultipleChoiceField(
+        label=_("Discipline"),
+        required=False,
+        queryset=Discipline.objects.all(),
+    )
+    disciplines.iterator = DisciplineIterator
+
+    class Meta:
+        model = Project
+        fields = ("title", "description", "disciplines")

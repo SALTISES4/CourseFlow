@@ -18,8 +18,9 @@ from course_flow.utils import get_model_from_str, get_relevance
 
 @user_is_teacher()
 def json_api_post_search_all_objects(request: HttpRequest) -> JsonResponse:
-    name_filter = json.loads(request.POST.get("filter")).lower()
-    data = json.loads(request.POST.get("additional_data", "{}"))
+    body = json.loads(request.body)
+    name_filter = body.get("filter").lower()
+    data = body.get("additional_data", "{}")
     nresults = data.get("nresults", 10)
     full_search = data.get("full_search", False)
     published = data.get("published", False)
@@ -87,8 +88,8 @@ def get_explore_objects(user, name_filter, nresults, published, data):
     types = data.get("types", [])
     disciplines = data.get("disciplines", [])
     sort = data.get("sort", None)
-    from_saltise = data.get("from_saltise", False)
-    content_rich = data.get("content_rich", False)
+    from_saltise = data.get("fromSaltise", False)
+    content_rich = data.get("contentRich", False)
     sort_reversed = data.get("sort_reversed", False)
     page = data.get("page", 1)
 

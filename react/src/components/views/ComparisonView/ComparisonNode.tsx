@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { EditableComponentWithActions } from '@cfParentComponents'
-import { NodeTitle, TitleText } from '@cfUIComponents'
+import EditableComponentWithActions from '@cfParentComponents/EditableComponentWithActions'
+import { NodeTitle, TitleText } from '@cfCommonComponents/UIComponents/Titles'
 import { getNodeByID, TGetNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
@@ -179,7 +179,6 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
           id={data.id}
           ref={this.mainDiv}
           onClick={(evt) => {
-            console.log('clicked')
             return () => selection_manager.changeSelection(evt, this)
           }}
         >

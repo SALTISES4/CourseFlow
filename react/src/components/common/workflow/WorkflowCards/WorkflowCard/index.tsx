@@ -1,7 +1,11 @@
-import * as React from 'react'
+import { Component, RefObject, createRef, MouseEvent, ReactNode } from 'react'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import { WorkflowTitle } from '@cfUIComponents/Titles'
+import WorkflowCardDumb, {
+  CHIP_TYPE,
+  WorklowCardChipType
+} from '../WorkflowCardDumb'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
@@ -26,8 +30,8 @@ export type WorkflowCardState = StateType
 class WorkflowCard<
   P extends WorkflowCardProps,
   S extends StateType
-> extends React.Component<P, S> {
-  protected readonly mainDiv: React.RefObject<HTMLDivElement>
+> extends Component<P, S> {
+  protected readonly mainDiv: RefObject<HTMLDivElement>
   private readonly workflow: Workflow
 
   constructor(props: P) {
@@ -36,7 +40,7 @@ class WorkflowCard<
       favourite: props.workflowData.favourite
     } as S
     this.workflow = this.props.workflowData
-    this.mainDiv = React.createRef()
+    this.mainDiv = createRef()
   }
 
   /*******************************************************
@@ -44,8 +48,10 @@ class WorkflowCard<
    *******************************************************/
 
   clickAction() {
-    if (this.props.selectAction) {
-      this.props.selectAction(this.workflow.id)
+    const { selectAction } = this.props
+
+    if (selectAction) {
+      selectAction(this.workflow.id)
     } else {
       window.location.href = COURSEFLOW_APP.config.update_path[
         this.workflow.type
@@ -53,69 +59,76 @@ class WorkflowCard<
     }
   }
 
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  TypeIndicator = () => {
+  getTypeChip = (): WorklowCardChipType => {
     const { type, is_strategy } = this.workflow
-    let type_text = window.gettext(type)
+    let typeText = window.gettext(type)
+
     if (type === WorkflowType.LIVE_PROJECT) {
-      type_text = window.gettext('classroom')
+      typeText = window.gettext('classroom')
     }
+
     if (is_strategy) {
-      type_text += window.gettext(' strategy')
-    }
-    return (
-      <div className={'workflow-type-indicator ' + type}>
-        {Utility.capWords(type_text)}
-      </div>
-    )
-  }
-
-  FavouriteButton = () => {
-    const favourite = this.state.favourite
-    const workflow = this.workflow
-
-    if (workflow.type === WorkflowType.LIVE_PROJECT) return null
-
-    const favClass = favourite ? ' filled' : ''
-    const toggleFavouriteAction = (evt) => {
-      toggleFavourite(workflow.id, workflow.type, !favourite)
-      this.setState({ favourite: !favourite })
-      evt.stopPropagation()
+      typeText += ` ${window.gettext('strategy')}`
     }
 
-    return (
-      <div
-        key="btn-workflow-toggle-favourite"
-        className="workflow-toggle-favourite hover-shade"
-        onClick={toggleFavouriteAction}
-      >
-        <span
-          className={`material-symbols-outlined${favClass}`}
-          title={window.gettext('Favourite')}
-        >
-          star
-        </span>
-      </div>
-    )
+    const chipType =
+      type === WorkflowType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
+
+    return {
+      type: chipType as CHIP_TYPE,
+      label: Utility.capWords(typeText)
+    }
   }
 
-  WorkflowDetails = () => {
-    const details = []
-    const workflow = this.workflow
+  getTemplateChip = (): WorklowCardChipType => {
+    const is_template = this.workflow.is_template
+    if(is_template)return {
+      type:CHIP_TYPE.TEMPLATE,
+      label: window.gettext("Template")
+    }
+  }
 
-    // Workflow count
+  getWorkflowCountChip = (): WorklowCardChipType => {
+    const { workflow } = this
+
     if (
       workflow.type === WorkflowType.PROJECT &&
-      workflow.workflow_count != null
+      workflow.workflow_count !== null &&
+      workflow.workflow_count > 0
     ) {
-      details.push(
-        <div key="workflow-created-count" className="workflow-created">
-          {`${workflow.workflow_count} ${window.gettext('workflows')}`}
-        </div>
-      )
+      return {
+        type: CHIP_TYPE.DEFAULT,
+        label: `${workflow.workflow_count} ${window.gettext(
+          `workflow` + (workflow.workflow_count > 1 ? 's' : '')
+        )}`
+      }
     }
+  }
+
+  getFavouriteOptions = () => {
+    const { favourite } = this.state
+    const { workflow } = this
+
+    if (workflow.type === WorkflowType.LIVE_PROJECT) {
+      return null
+    }
+
+    const toggleFavouriteAction = (evt: MouseEvent<HTMLButtonElement>) => {
+      evt.stopPropagation()
+      toggleFavourite(workflow.id, workflow.type, !favourite)
+      this.setState({ favourite: !favourite })
+    }
+
+    return {
+      isFavourite: favourite,
+      onFavourite: toggleFavouriteAction
+    }
+  }
+
+  // TODO: Determine where this is used and how to refactor it
+  getWorkflowInfo = (): ReactNode[] => {
+    const details: ReactNode[] = []
+    const { workflow } = this
 
     // Live classroom indicator
     if (
@@ -156,71 +169,38 @@ class WorkflowCard<
     return details
   }
 
-  Buttons = () => {
-    return (
-      <div className="workflow-buttons-row">
-        <div>
-          <this.FavouriteButton />
-        </div>
-        <div>
-          <this.WorkflowDetails />
-        </div>
-      </div>
-    )
-  }
-
   /*******************************************************
    * RENDER
    *******************************************************/
-  renderCreationText(data) {
-    let creationText = window.gettext('Created')
-    if (data.author && data.author !== 'None') {
-      creationText += ` ${window.gettext('by')} ${data.author}`
-    }
-    creationText += `${window.gettext(' on ')}${data.created_on}`
-    return creationText
-  }
-
-  renderDescription(description: string) {
-    if (!description) {
-      return <div className="workflow-description" />
-    }
-    return (
-      <div
-        className="workflow-description collapsible-text"
-        dangerouslySetInnerHTML={{ __html: description }}
-      />
-    )
-  }
-
   render() {
     const { selected, noHyperlink } = this.props
-
-    const cssClass = `workflow-for-menu hover-shade ${this.workflow.type} ${
-      selected ? ' selected' : ''
-    }`
-    const creationText = this.renderCreationText(this.workflow)
-    const description = this.renderDescription(this.workflow.description)
+    const favouriteOptions = this.getFavouriteOptions()
 
     return (
-      <div
-        ref={this.mainDiv}
-        className={cssClass}
-        onClick={this.clickAction.bind(this)}
-        onMouseDown={(evt) => evt.preventDefault()}
-      >
-        <div className="workflow-top-row">
+      <WorkflowCardDumb
+        title={
           <WorkflowTitle
             no_hyperlink={noHyperlink}
             class_name="workflow-title"
             data={this.workflow}
           />
-          <this.TypeIndicator />
-        </div>
-        <div className="workflow-created">{creationText}</div>
-        {description}
-        <this.Buttons />
-      </div>
+        }
+        caption={
+          this.workflow.author &&
+          `${window.gettext('Owned by')} ${this.workflow.author}`
+        }
+        isSelected={selected}
+        isFavourite={favouriteOptions.isFavourite}
+        onFavourite={favouriteOptions.onFavourite}
+        onClick={this.clickAction.bind(this)}
+        onMouseDown={(evt) => evt.preventDefault()}
+        chips={[
+          this.getTemplateChip(),
+          this.getTypeChip(),
+          this.getWorkflowInfo(),
+          this.getWorkflowCountChip(),
+        ]}
+      />
     )
   }
 }

@@ -27,25 +27,3 @@ if (isTouch) {
     alert(COURSEFLOW_APP.strings.unsuported_device);
   }
 }
-
-const { update_notifications } = COURSEFLOW_APP;
-
-if (
-  update_notifications.title &&
-  update_notifications.id !== localStorage.getItem("last_hidden_notification")
-) {
-  $("#update-notifications").html(
-    "<div id='notification-inner'>" +
-      "<span class='material-symbols-rounded filled'>campaign</span>" +
-      update_notifications.title +
-      "</div>" +
-      "<div id='close-notification' class='window-close-button'>" +
-      "<span class='material-symbols-rounded green'>close</span>" +
-      "</div>",
-  );
-}
-
-$("#close-notification").on("click", () => {
-  localStorage.setItem("last_hidden_notification", update_notifications.id);
-  $("#update-notifications").css({ display: "none" });
-});
