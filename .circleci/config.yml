@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.8-node-browsers
+      - image: circleci/python:3.9-node-browsers
       - image: circleci/redis:5.0
     steps:
       - checkout
@@ -13,8 +13,13 @@ jobs:
             python3 -m venv test_venv
             . test_venv/bin/activate
             pip install -r requirements/requirements.txt
-            npm install
-            npx gulp build-js
+            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+            nvm install v18
+            yarn install
+            yarn build-js
       - run:
           name: Tests
           command: |

@@ -1,7 +1,5 @@
 import datetime
 import re
-import time
-from functools import wraps
 
 import bleach
 from django.contrib.contenttypes.models import ContentType
@@ -12,45 +10,38 @@ from html2text import html2text
 from rest_framework import serializers
 
 # from .decorators import check_object_permission
-from .models import (
-    Activity,
-    Column,
-    ColumnWorkflow,
-    Comment,
-    Course,
-    CourseFlowUser,
-    Discipline,
-    Favourite,
-    LiveAssignment,
-    LiveProject,
-    LiveProjectUser,
-    Node,
-    NodeLink,
-    NodeWeek,
-    ObjectPermission,
-    ObjectSet,
-    Outcome,
+from course_flow.models.relations.columnWorkflow import ColumnWorkflow
+from course_flow.models.relations.nodeLink import NodeLink
+from course_flow.models.relations.nodeWeek import NodeWeek
+from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    Program,
-    Project,
-    User,
-    UserAssignment,
-    Week,
-    WeekWorkflow,
-    Workflow,
-    title_max_length,
 )
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
+from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
+from course_flow.models.relations.weekWorkflow import WeekWorkflow
+
+from .models import Project, User, title_max_length
+from .models.activity import Activity
+from .models.column import Column
+from .models.comment import Comment
+from .models.course import Course
+from .models.courseFlowUser import CourseFlowUser
+from .models.discipline import Discipline
+from .models.favourite import Favourite
+from .models.node import Node
+from .models.objectPermission import ObjectPermission
+from .models.objectset import ObjectSet
+from .models.outcome import Outcome
+from .models.program import Program
+from .models.week import Week
+from .models.workflow import Workflow
 from .utils import (
-    benchmark,
     dateTimeFormat,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
-    get_user_permission,
-    get_user_role,
     linkIDMap,
+    user_project_url,
     user_workflow_url,
 )
 
@@ -81,23 +72,6 @@ bleach_allowed_tags_title = [
     "em",
     "i",
 ]
-
-
-# timing_results = {}
-# def timing(f):
-#     @wraps(f)
-#     def wrap(*args, **kw):
-#         ts = time.time()
-#         result = f(*args, **kw)
-#         te = time.time()
-#         #print(f'Function {f.__name__} took {te-ts:2.4f} seconds')
-#         if timing_results.get(f.__name__) is None:
-#             timing_results[f.__name__] = te - ts
-#         else:
-#             timing_results[f.__name__] = timing_results[f.__name__] + te - ts
-#         print(f'Function {f.__name__} has taken {timing_results[f.__name__]:2.4f} seconds')
-#         return result
-#     return wrap
 
 
 def bleach_sanitizer(value, **kwargs):
@@ -317,14 +291,12 @@ class NodeSerializerShallow(
     DescriptionSerializerMixin,
     TimeRequiredSerializerMixin,
 ):
-
     outgoing_links = serializers.SerializerMethodField()
     outcomenode_set = serializers.SerializerMethodField()
     outcomenode_unique_set = serializers.SerializerMethodField()
     columnworkflow = serializers.SerializerMethodField()
     column = serializers.SerializerMethodField()
     linked_workflow_data = serializers.SerializerMethodField()
-    has_assignment = serializers.SerializerMethodField()
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -359,7 +331,6 @@ class NodeSerializerShallow(
             # "is_dropped",
             "comments",
             "sets",
-            "has_assignment",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -436,20 +407,6 @@ class NodeSerializerShallow(
                 linked_workflow,
                 context={"user": self.context.get("user", None)},
             ).data
-
-    def get_has_assignment(self, instance):
-        user = self.context.get("user", None)
-        if user is None or not user.is_authenticated:
-            return False
-        assignments = instance.liveassignment_set.all()
-        if assignments.exists():
-            return instance.liveassignment_set.filter(
-                Q(userassignment__user=user)
-                | Q(
-                    liveproject__liveprojectuser__role_type=LiveProjectUser.ROLE_TEACHER
-                )
-            ).exists()
-        return False
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -546,7 +503,6 @@ class NodeWeekSerializerShallow(serializers.ModelSerializer):
 class ColumnSerializerShallow(
     serializers.ModelSerializer, TitleSerializerMixin
 ):
-
     column_type_display = serializers.CharField(
         source="get_column_type_display"
     )
@@ -587,7 +543,6 @@ class WeekSerializerShallow(
     TitleSerializerMixin,
     DescriptionSerializerMixin,
 ):
-
     nodeweek_set = serializers.SerializerMethodField()
 
     week_type_display = serializers.CharField(source="get_week_type_display")
@@ -640,7 +595,6 @@ class WeekSerializerShallow(
 
 
 class WeekWorkflowSerializerShallow(serializers.ModelSerializer):
-
     week_type = serializers.SerializerMethodField()
 
     class Meta:
@@ -711,7 +665,6 @@ class ProjectSerializerShallow(
             "type",
             "object_sets",
             "favourite",
-            "liveproject",
             "object_permission",
         ]
 
@@ -931,7 +884,6 @@ class WorkflowSerializerShallow(
     DescriptionSerializerMixin,
     AuthorSerializerMixin,
 ):
-
     author_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -1087,7 +1039,6 @@ class WorkflowSerializerShallow(
 
 
 class ProgramSerializerShallow(WorkflowSerializerShallow):
-
     author_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -1142,7 +1093,6 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
 
 
 class CourseSerializerShallow(WorkflowSerializerShallow):
-
     author_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -1197,7 +1147,6 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
 
 
 class ActivitySerializerShallow(WorkflowSerializerShallow):
-
     author_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -1271,13 +1220,32 @@ class ObjectSetSerializerShallow(
         return instance
 
 
+class FavouriteSerializer(
+    serializers.Serializer,
+    TitleSerializerMixin,
+):
+    title = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+
+    def get_url(self, instance):
+        user = self.context.get("user", None)
+        if instance.type == "project":
+            return user_project_url(instance, user)
+        return user_workflow_url(instance, user)
+
+    def get_title(self, instance):
+        title = super().get_title(instance)
+        if title is None or title == "":
+            return _("Untitled ") + instance._meta.verbose_name
+        return title
+
+
 class InfoBoxSerializer(
     serializers.Serializer,
     TitleSerializerMixin,
     DescriptionSerializerMixin,
     AuthorSerializerMixin,
 ):
-
     deleted = serializers.ReadOnlyField()
     id = serializers.ReadOnlyField()
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -1296,10 +1264,8 @@ class InfoBoxSerializer(
     # url = serializers.SerializerMethodField()
     # can_edit = serializers.SerializerMethodField()
     object_permission = serializers.SerializerMethodField()
-    has_liveproject = serializers.SerializerMethodField()
     workflow_count = serializers.SerializerMethodField()
     is_linked = serializers.SerializerMethodField()
-    is_visible = serializers.SerializerMethodField()
 
     def get_workflow_count(self, instance):
         if instance.type == "project":
@@ -1307,13 +1273,13 @@ class InfoBoxSerializer(
         return None
 
     def get_url(self, instance):
-        if instance.type in ["project", "liveproject"]:
+        if instance.type == "project":
             return None
         user = self.context.get("user", None)
         return user_workflow_url(instance, user)
 
     def get_project_title(self, instance):
-        if instance.type in ["project", "liveproject"]:
+        if instance.type == "project":
             return None
         if instance.get_project() is None:
             return None
@@ -1352,34 +1318,20 @@ class InfoBoxSerializer(
             ),
             object_id=instance.id,
         ).first()
-        object_role = get_user_role(instance, user)
         if object_permission is None:
             return {
                 "permission_type": ObjectPermission.PERMISSION_VIEW,
                 "last_viewed": None,
-                "role_type": object_role,
             }
         return {
             "permission_type": object_permission.permission_type,
             "last_viewed": object_permission.last_viewed,
-            "role_type": object_role,
         }
 
-    def get_has_liveproject(self, instance):
-        if instance.type == "project":
-            if LiveProject.objects.filter(project=instance).count() > 0:
-                return True
-        return False
-
     def get_is_linked(self, instance):
-        if instance.type not in ["project", "liveproject"]:
+        if instance.type != "project":
             return len(Node.objects.filter(linked_workflow=instance)) > 0
         return False
-
-    def get_is_visible(self, instance):
-        if instance.type in ["project", "liveproject"]:
-            return False
-        return len(LiveProject.objects.filter(visible_workflows=instance)) > 0
 
 
 def analyticsDateTimeFormat():
@@ -1419,56 +1371,6 @@ class AnalyticsSerializer(
             return instance.author.email
 
 
-# class RefreshSerializerWeek(serializers.Serializer):
-#    class Meta:
-#        model = Week
-#        fields = [
-#            "id",
-#            "nodeweek_set",
-#        ]
-#
-#    nodeweek_set = serializers.SerializerMethodField()
-#
-#    def get_nodeweek_set(self, instance):
-#        links = instance.nodeweek_set.filter(node__deleted=False).order_by("rank")
-#        return list(map(linkIDMap, links))
-#
-#
-#
-# class RefreshSerializerWorkflow(serializers.ModelSerializer):
-#
-#    author_id = serializers.SerializerMethodField()
-#
-#    class Meta:
-#        model = Workflow
-#        fields = [
-#            "id",
-#            "columnworkflow_set",
-#            "weekworkflow_set",
-#            "outcomeworkflow_set",
-#        ]
-#
-#    weekworkflow_set = serializers.SerializerMethodField()
-#    columnworkflow_set = serializers.SerializerMethodField()
-#    outcomeworkflow_set = serializers.SerializerMethodField()
-#
-#
-#
-#    def get_weekworkflow_set(self, instance):
-#        links = instance.weekworkflow_set.filter(week__deleted=False).order_by("rank")
-#        return list(map(linkIDMap, links))
-#
-#    def get_columnworkflow_set(self, instance):
-#        links = instance.columnworkflow_set.filter(column__deleted=False).order_by("rank")
-#        return list(map(linkIDMap, links))
-#
-#    def get_outcomeworkflow_set(self, instance):
-#        links = instance.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank")
-#        return list(map(linkIDMap, links))
-#
-#
-
-
 class RefreshSerializerOutcome(serializers.ModelSerializer):
     class Meta:
         model = Outcome
@@ -1506,7 +1408,6 @@ class RefreshSerializerOutcome(serializers.ModelSerializer):
 
 
 class RefreshSerializerNode(serializers.ModelSerializer):
-
     outcomenode_set = serializers.SerializerMethodField()
     outcomenode_unique_set = serializers.SerializerMethodField()
 
@@ -1722,414 +1623,72 @@ class UpdateNotificationSerializer(
         ]
 
 
-"""
-Live Project Serializers
-"""
+class FormFieldsSerializer:
+    def __init__(self, form_instance):
+        self.form_instance = form_instance
 
+    # figure out the appropriate html element input type
+    # based on combination of field and widget type
+    def get_field_type(self, field):
+        field_type = field.__class__.__name__
+        widget_type = field.widget.__class__.__name__
 
-class LiveProjectSerializer(
-    serializers.ModelSerializer,
-    TitleSerializerMixin,
-    DescriptionSerializerMixin,
-):
-    class Meta:
-        model = LiveProject
-        fields = [
-            "title",
-            "description",
-            "pk",
-            "type",
-            "created_on",
-            "default_self_reporting",
-            "default_assign_to_all",
-            "default_single_completion",
-            "default_all_workflows_visible",
-            "registration_hash",
-            "id",
-        ]
+        if field_type == "CharField":
+            if getattr(field, "choices", None):
+                return "select" if widget_type == "Select" else "radio"
+        elif field_type == "TypedChoiceField":
+            return "radio" if widget_type == "RadioSelect" else "select"
+        elif field_type == "IntegerField":
+            return "number"
+        elif field_type == "ChoiceField":
+            if widget_type == "Select":
+                return "select"
+            elif widget_type == "RadioSelect":
+                return "radio"
+        elif field_type == "BooleanField":
+            if widget_type == "CheckboxInput":
+                return "checkbox"
 
-    title = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
-    id = serializers.SerializerMethodField()
+        return "text"
 
-    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    # generate the list of choices for fields which have them
+    def get_field_choices(self, field):
+        choices = []
+        if hasattr(field, "choices"):
+            for choice in field.choices:
+                choices.append({"label": str(choice[1]), "value": choice[0]})
+        return choices if len(choices) > 0 else None
 
-    registration_hash = serializers.SerializerMethodField()
+    def prepare_fields(self):
+        fields = []
 
-    def get_registration_hash(self, instance):
-        user = self.context.get("user", None)
-        if user is None:
-            return None
-        if instance.project.author == user:
-            return instance.project.registration_hash()
-        return None
-
-    def get_title(self, instance):
-        return super().get_title(instance.project)
-
-    def get_description(self, instance):
-        return super().get_description(instance.project)
-
-    def get_id(self, instance):
-        return instance.pk
-
-    def update(self, instance, validated_data):
-        instance.default_self_reporting = validated_data.get(
-            "default_self_reporting", instance.default_self_reporting
-        )
-        instance.default_assign_to_all = validated_data.get(
-            "default_assign_to_all", instance.default_assign_to_all
-        )
-        instance.default_single_completion = validated_data.get(
-            "default_single_completion", instance.default_single_completion
-        )
-        instance.default_all_workflows_visible = validated_data.get(
-            "default_all_workflows_visible",
-            instance.default_all_workflows_visible,
-        )
-
-        instance.save()
-        return instance
-
-
-class LiveAssignmentSerializer(
-    serializers.ModelSerializer,
-    AuthorSerializerMixin,
-):
-    class Meta:
-        model = LiveAssignment
-        fields = [
-            "id",
-            "author",
-            "created_on",
-            "self_reporting",
-            "single_completion",
-            "task",
-            "start_date",
-            "end_date",
-            "parent_workflow_id",
-            "workflow_access",
-            "linked_workflow_access",
-            "user_assignment",
-            "liveproject",
-        ]
-
-    task = serializers.SerializerMethodField()
-    user_assignment = serializers.SerializerMethodField()
-    workflow_access = serializers.SerializerMethodField()
-    linked_workflow_access = serializers.SerializerMethodField()
-    parent_workflow_id = serializers.SerializerMethodField()
-    created_on = serializers.DateTimeField(format=dateTimeFormat())
-
-    def get_task(self, instance):
-        node = instance.task
-        if node is not None:
-            return NodeSerializerForAssignments(
-                node, context={"user": self.context.get("user", None)}
-            ).data
-
-    def get_workflow_access(self, instance):
-        try:
-            workflow = instance.task.get_workflow()
-            if workflow in instance.liveproject.visible_workflows.all():
-                return True
-        except AttributeError:
-            return False
-        return False
-
-    def get_linked_workflow_access(self, instance):
-        try:
-            linked_workflow = instance.task.linked_workflow
-            if linked_workflow in instance.liveproject.visible_workflows.all():
-                return True
-        except AttributeError:
-            return False
-        return False
-
-    def get_parent_workflow_id(self, instance):
-        try:
-            parent_workflow = instance.task.get_workflow()
-            return parent_workflow.id
-        except AttributeError:
-            return False
-        return False
-
-    def get_user_assignment(self, instance):
-        if instance.single_completion:
-            if instance.userassignment_set.filter(completed=True).count() > 0:
-                userassignment = (
-                    instance.userassignment_set.filter(completed=True)
-                    .order_by("completed_on")
-                    .first()
+        # have to check if the form instance is valid
+        # in order for cleaned_data to become available
+        if self.form_instance.is_valid():
+            for field_name, field in self.form_instance.fields.items():
+                fields.append(
+                    {
+                        "name": field_name,
+                        "label": field.label
+                        if hasattr(field, "label")
+                        else None,
+                        "type": self.get_field_type(field),
+                        "required": field.required,
+                        "options": self.get_field_choices(field),
+                        "max_length": field.max_length
+                        if hasattr(field, "max_length")
+                        else None,
+                        "help_text": field.help_text
+                        if hasattr(field, "help_text")
+                        else None,
+                        "value": self.form_instance.cleaned_data.get(
+                            field_name, None
+                        ),
+                    }
                 )
-                return UserAssignmentSerializerWithUser(userassignment).data
-        try:
-            userassignment = UserAssignment.objects.filter(
-                user=self.context["user"], assignment=instance
-            ).first()
-            if userassignment is not None:
-                return UserAssignmentSerializerWithUser(userassignment).data
-        except AttributeError:
-            return None
-        return None
-
-    def update(self, instance, validated_data):
-        instance.self_reporting = validated_data.get(
-            "self_reporting", instance.self_reporting
-        )
-        instance.single_completion = validated_data.get(
-            "single_completion", instance.single_completion
-        )
-        instance.start_date = validated_data.get(
-            "start_date", instance.start_date
-        )
-        instance.end_date = validated_data.get("end_date", instance.end_date)
-        instance.save()
-        return instance
+        return fields
 
 
-class LiveAssignmentWithCompletionSerializer(LiveAssignmentSerializer):
-    class Meta:
-        model = LiveAssignment
-        fields = [
-            "id",
-            "author",
-            "created_on",
-            "self_reporting",
-            "single_completion",
-            "task",
-            "start_date",
-            "end_date",
-            "parent_workflow_id",
-            "workflow_access",
-            "linked_workflow_access",
-            "liveproject",
-            "completion_info",
-        ]
-
-    completion_info = serializers.SerializerMethodField()
-
-    def get_completion_info(self, instance):
-        userassignments = UserAssignment.objects.filter(assignment=instance)
-        num_total = userassignments.count()
-        num_completed = userassignments.filter(completed=True).count()
-        if instance.single_completion and num_completed > 0:
-            return str(num_total) + "/" + str(num_total)
-        return str(num_completed) + "/" + str(num_total)
-
-
-class UserAssignmentSerializer(
-    serializers.ModelSerializer,
-):
-    class Meta:
-        model = UserAssignment
-        fields = [
-            "id",
-            "user",
-            "assignment",
-            "completed",
-        ]
-
-
-class UserAssignmentSerializerWithUser(
-    serializers.ModelSerializer,
-):
-    class Meta:
-        model = UserAssignment
-        fields = [
-            "id",
-            "liveprojectuser",
-            "assignment",
-            "completed",
-            "completed_on",
-        ]
-
-    liveprojectuser = serializers.SerializerMethodField()
-
-    def get_liveprojectuser(self, instance):
-        return LiveProjectUserSerializer(
-            LiveProjectUser.objects.filter(
-                user=instance.user, liveproject=instance.assignment.liveproject
-            ).first()
-        ).data
-
-
-class LiveProjectUserSerializer(
-    serializers.ModelSerializer,
-):
-    class Meta:
-        model = LiveProjectUser
-        fields = [
-            "id",
-            "user",
-            "role_type",
-            "role_type_display",
-        ]
-
-    role_type_display = serializers.CharField(source="get_role_type_display")
-    user = serializers.SerializerMethodField()
-
-    def get_user(self, instance):
-        return UserSerializer(instance.user).data
-
-
-class LiveProjectUserSerializerWithCompletion(
-    LiveProjectUserSerializer,
-):
-    class Meta:
-        model = LiveProjectUser
-        fields = [
-            "id",
-            "user",
-            "role_type",
-            "role_type_display",
-            "completion",
-        ]
-
-    completion = serializers.SerializerMethodField()
-
-    def get_completion(self, instance):
-        assignments = UserAssignment.objects.filter(
-            assignment__liveproject=instance.liveproject,
-            user=instance.user,
-        )
-        return (
-            str(
-                assignments.filter(
-                    Q(completed=True)
-                    | Q(
-                        assignment__single_completion=True,
-                        assignment__userassignment__completed=True,
-                    )
-                )
-                .distinct()
-                .count()
-            )
-            + "/"
-            + str(assignments.count())
-        )
-
-
-class WorkflowSerializerForAssignments(
-    serializers.ModelSerializer,
-    TitleSerializerMixin,
-    DescriptionSerializerMixin,
-    AuthorSerializerMixin,
-):
-    class Meta:
-        model = Workflow
-        fields = [
-            "id",
-            "title",
-            "description",
-            "author",
-            "created_on",
-            "code",
-            "type",
-            "deleted",
-            "weeks",
-            "url",
-        ]
-
-    created_on = serializers.DateTimeField(format=dateTimeFormat())
-    author = serializers.SerializerMethodField()
-    title = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
-    weeks = serializers.SerializerMethodField()
-    url = serializers.SerializerMethodField()
-
-    def get_url(self, instance):
-        user = self.context.get("user", None)
-        return user_workflow_url(instance, user)
-
-    def get_type(self, instance):
-        return instance.type
-
-    def get_weeks(self, instance):
-        return WeekSerializerForAssignments(
-            Week.objects.filter(workflow=instance, deleted=False).order_by(
-                "weekworkflow__rank"
-            ),
-            context={"user": self.context.get("user", None)},
-            many=True,
-        ).data
-
-
-class WeekSerializerForAssignments(
-    serializers.ModelSerializer,
-    TitleSerializerMixin,
-):
-    class Meta:
-        model = Week
-        fields = [
-            "id",
-            "title",
-            "deleted",
-            "nodes",
-            "week_type",
-            "week_type_display",
-        ]
-
-    title = serializers.SerializerMethodField()
-    nodes = serializers.SerializerMethodField()
-    week_type_display = serializers.CharField(source="get_week_type_display")
-
-    def get_type(self, instance):
-        return instance.type
-
-    def get_nodes(self, instance):
-        return NodeSerializerForAssignments(
-            Node.objects.filter(week=instance, deleted=False).order_by(
-                "nodeweek__rank"
-            ),
-            context={"user": self.context.get("user", None)},
-            many=True,
-        ).data
-
-
-class NodeSerializerForAssignments(
-    serializers.ModelSerializer,
-    TitleSerializerMixin,
-    DescriptionSerializerMixin,
-):
-    class Meta:
-        model = Node
-        fields = [
-            "id",
-            "title",
-            "description",
-            "deleted",
-            "linked_workflow",
-            "linked_workflow_data",
-            "colour",
-            "column_type",
-        ]
-
-    title = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
-    linked_workflow_data = serializers.SerializerMethodField()
-    colour = serializers.SerializerMethodField()
-    column_type = serializers.SerializerMethodField()
-
-    def get_colour(self, instance):
-        return instance.column.colour
-
-    def get_column_type(self, instance):
-        return instance.column.column_type
-
-    def get_type(self, instance):
-        return instance.type
-
-    def get_linked_workflow_data(self, instance):
-        linked_workflow = instance.linked_workflow
-        if linked_workflow is not None:
-            return LinkedWorkflowSerializerShallow(
-                linked_workflow,
-                context={"user": self.context.get("user", None)},
-            ).data
-
-
-#
 # serializer_lookups = {
 #    "node": NodeSerializer,
 #    "week": WeekSerializer,
@@ -2157,6 +1716,4 @@ serializer_lookups_shallow = {
     "outcomeoutcome": OutcomeOutcomeSerializerShallow,
     "outcomeworkflow": OutcomeWorkflowSerializerShallow,
     "objectset": ObjectSetSerializerShallow,
-    "liveassignment": LiveAssignmentSerializer,
-    "liveproject": LiveProjectSerializer,
 }

@@ -1,90 +1,60 @@
 version: '3'
 
 services:
-  bb-app:
+  courseflow-django:
     platform: linux/amd64
-    profiles: ["app"]
     build:
       context: .
       dockerfile: ./docker/Dockerfile
     restart: always
-    container_name: "bb-app"
+    container_name: "courseflow-django"
     shm_size: 2G
     tty: true
     volumes:
-      - ./src:/app/src
-      - ./.env:/app/.env
-      - ./store:/app/store
+      - ./:/app/src
+      - ./docker/setup-data.sh:/app/src/setup-data.sh
     ports:
-      - "3000"
-      - "6789"
-      - "4433"
+      - "8000:8000"
     networks:
-      - bb-network
-    entrypoint: ["/docker-entrypoint.sh"]
+      - cf-network
+    entrypoint: ["python", "course_flow.py", "runserver", "0.0.0.0:8000"]
 
-  bb-cron:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile
-    restart: always
-    container_name: "bb-cron"
-    shm_size: 2G
-    tty: true
-    volumes:
-      - ./src:/app/src
-      - ./.env:/app/.env
-      - ./store:/app/store
-    ports:
-      - "3001"
-    networks:
-      - bb-network
-    entrypoint: ["/docker-cron-entrypoint.sh"]
+    # use this entrypoint override if the servber crashes and we need to debug it
+    # entrypoint: ["/bin/bash"]
 
-  ib-rest:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.IB.REST
-    restart: always
-    container_name: "ib-rest"
-    ports:
-      - "4003"
-      - "5901:5900"
-      - "5000"
-    volumes:
-      - ./ib/clientportal.gw:/root/clientportal.gw
-    networks:
-      - bb-network
 
-  bb-mongo:
-    container_name: "bb-mongo"
-    image: mongo:latest
+#  test-data:
+#    platform: linux/amd64
+#    build:
+#      context: .
+#      dockerfile: ./docker/Dockerfile
+#    restart: on-failure
+#    container_name: "courseflow-django-data"
+#    shm_size: 2G
+#    tty: true
+#    volumes:
+#      - ./:/app/src
+#      - ./docker/setup-data.sh:/app/src/setup-data.sh
+#    command: cd /app/src/setup-data.sh
+#    depends_on:
+#      - courseflow-django
+#    networks:
+#      - cf-network
+
+  cache:
+    container_name: "cf-redis"
+    image: redis:5.0
     restart: always
     ports:
-      - "27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo_user
-      MONGO_INITDB_ROOT_PASSWORD: mongo_secret
+      - '6379:6379'
+    command: redis-server --loglevel warning
     networks:
-      - bb-network
-    volumes:
-      - ./docker/mongodata:/data/db
-
-  bb-client:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.CLIENT
-    container_name: "bb-client"
-    ports:
-      - "8080"
-    environment:
-      - ENV=development
-    volumes:
-      - ./client/scripts/server.js:/app/scripts/server.js
-    networks:
-      - bb-network
-
+      - cf-network
+  helper:
+    image: alpine
+    command: sh -c "echo never > /sys/kernel/mm/transparent_hugepage/enabled"
+    privileged: true
 
 networks:
-  bb-network:
+  cf-network:
     driver: bridge

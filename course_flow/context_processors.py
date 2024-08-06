@@ -2,7 +2,8 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from rest_framework.renderers import JSONRenderer
 
-from course_flow.models import CourseFlowUser, UpdateNotification
+from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.updateNotification import UpdateNotification
 from course_flow.serializers import UpdateNotificationSerializer
 
 

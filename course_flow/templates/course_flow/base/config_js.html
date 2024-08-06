@@ -1,0 +1,159 @@
+{% load static i18n %}
+{% load course_flow_templatetags %}
+
+<script nonce="{{ request.csp_nonce }}">
+
+  COURSEFLOW_APP.config = {
+    post_paths: {
+      get_possible_linked_workflows:
+        "{% url 'course_flow:json-api-post-get-possible-linked-workflows' %}",
+      get_possible_added_workflows:
+        "{% url 'course_flow:json-api-post-get-possible-added-workflows' %}",
+      get_workflow_context:
+        "{% url 'course_flow:json-api-post-get-workflow-context' %}",
+      get_target_projects:
+        "{% url 'course_flow:json-api-post-get-target-projects' %}",
+      set_linked_workflow: "{% url 'course_flow:json-api-post-set-linked-workflow' %}",
+      update_value: "{% url 'course_flow:json-api-post-update-value' %}",
+      new_node: "{% url 'course_flow:json-api-post-new-node' %}",
+      new_outcome: "{% url 'course_flow:json-api-post-new-outcome-for-workflow' %}",
+      add_strategy: "{% url 'course_flow:json-api-post-add-strategy' %}",
+      toggle_strategy: "{% url 'course_flow:json-api-post-toggle-strategy' %}",
+      new_node_link: "{% url 'course_flow:json-api-post-new-node-link' %}",
+      delete_self: "{% url 'course_flow:json-api-post-delete-self' %}",
+      restore_self: "{% url 'course_flow:json-api-post-restore-self' %}",
+      delete_self_soft: "{% url 'course_flow:json-api-post-delete-self-soft' %}",
+      duplicate_self: "{% url 'course_flow:json-api-post-duplicate-self' %}",
+      insert_sibling: "{% url 'course_flow:json-api-post-insert-sibling' %}",
+      insert_child: "{% url 'course_flow:json-api-post-insert-child' %}",
+      inserted_at: "{% url 'course_flow:json-api-post-inserted-at' %}",
+      update_outcomehorizontallink_degree:
+        "{% url 'course_flow:json-api-post-update-outcomehorizontallink-degree' %}",
+      update_outcomenode_degree:
+        "{% url 'course_flow:json-api-post-update-outcomenode-degree' %}",
+      duplicate_project_ajax: "{% url 'course_flow:json-api-post-duplicate-project' %}",
+      duplicate_workflow_ajax: "{% url 'course_flow:json-api-post-duplicate-workflow' %}",
+      duplicate_strategy_ajax: "{% url 'course_flow:json-api-post-duplicate-strategy' %}",
+      toggle_favourite: "{% url 'course_flow:json-api-post-toggle-favourite' %}",
+      get_workflow_data: "{% url 'course_flow:json-api-post-get-workflow-data' %}",
+      get_workflow_parent_data: "{% url 'course_flow:json-api-post-get-workflow-parent-data' %}",
+      get_workflow_child_data: "{% url 'course_flow:json-api-post-get-workflow-child-data' %}",
+      get_project_data: "{% url 'course_flow:json-api-post-get-project-data' %}",
+      get_users_for_object: "{% url 'course_flow:json-api-post-get-users-for-object' %}",
+      get_user_list: "{% url 'course_flow:json-api-post-get-user-list' %}",
+      search_all_objects: "{% url 'course_flow:json-api-post-search-all-objects' %}",
+      set_permission: "{% url 'course_flow:json-api-post-set-permission' %}",
+      get_comments_for_object: "{% url 'course_flow:json-api-post-get-comments-for-object' %}",
+      add_terminology: "{% url 'course_flow:json-api-post-add-object-set' %}",
+      update_object_set: "{% url 'course_flow:json-api-post-update-object-set' %}",
+      add_comment: "{% url 'course_flow:json-api-post-add-comment' %}",
+      remove_comment: "{% url 'course_flow:json-api-post-remove-comment' %}",
+      remove_all_comments: "{% url 'course_flow:json-api-post-remove-all-comments' %}",
+      get_parent_workflow_info: "{% url 'course_flow:json-api-post-get-parent-workflow-info' %}",
+      get_export: "{% url 'course_flow:json-api-post-get-export' %}",
+      import_data: "{% url 'course_flow:json-api-post-import-data' %}",
+      get_workflows_for_project: "{% url 'course_flow:json-api-post-get-workflows-for-project' %}",
+      select_notifications: "{% url 'course_flow:json-api-post-select-notifications' %}",
+    },
+    get_paths: {
+      get_disciplines: "{% url 'course_flow:get-disciplines' %}",
+      get_library: "{% url 'course_flow:json-api-get-library' %}",
+      get_favourites: "{% url 'course_flow:json-api-get-favourites' %}",
+      get_home: "{% url 'course_flow:json-api-get-home' %}",
+      import: "{% url 'course_flow:import' %}",
+      get_public_workflow_data:
+        "{% url 'course_flow:json-api-get-public-workflow-data' pk='0' %}",
+      get_public_workflow_parent_data:
+        "{% url 'course_flow:json-api-get-public-workflow-parent-data' pk='0' %}",
+      get_public_workflow_child_data:
+        "{% url 'course_flow:json-api-get-public-workflow-child-data' pk='0' %}",
+      get_public_parent_workflow_info:
+        "{% url 'course_flow:json-api-get-public-parent-workflow-info' pk='0' %}",
+    },
+    create_path: {
+      activity_strategy: "{% url 'course_flow:activity-strategy-create' %}",
+      course_strategy: "{% url 'course_flow:course-strategy-create' %}",
+      project: "{% url 'course_flow:project-create' %}",
+      activity: "{% url 'course_flow:activity-create' projectPk='0' %}",
+      course: "{% url 'course_flow:course-create' projectPk='0' %}",
+      program: "{% url 'course_flow:program-create' projectPk='0' %}"
+    },
+    update_path: {
+      project: "{% url 'course_flow:project-update' pk='0'%}",
+      activity: "{% url 'course_flow:workflow-update' pk='0'%}",
+      course: "{% url 'course_flow:workflow-update' pk='0'%}",
+      program: "{% url 'course_flow:workflow-update' pk='0'%}",
+      workflow: "{% url 'course_flow:workflow-update' pk='0'%}",
+    },
+    public_update_path: {
+      activity: "{% url 'course_flow:workflow-public' pk='0'%}",
+      course: "{% url 'course_flow:workflow-public' pk='0'%}",
+      program: "{% url 'course_flow:workflow-public' pk='0'%}",
+      workflow: "{% url 'course_flow:workflow-public' pk='0'%}"
+    },
+    home_path: "{% url 'course_flow:home' %}",
+    explore_path: "{% url 'course_flow:explore' %}",
+    my_library_path: "{% url 'course_flow:my-library' %}",
+    my_favourites_path: "{% url 'course_flow:my-favourites' %}",
+    logout_path: "{% url 'course_flow:logout' %}",
+    icon_path: "{% static 'course_flow/img/images_svg/' %}",
+
+    // JSON API paths that
+    json_api_paths: {
+      get_top_bar: "{% url 'course_flow:json-api-get-top-bar' %}",
+      get_sidebar: "{% url 'course_flow:json-api-get-sidebar' %}",
+      update_profile: "{% url 'course_flow:json-api-post-update-profile-settings' %}",
+      update_notifications_settings: "{% url 'course_flow:json-api-post-notifications-settings' %}",
+      mark_all_notifications_as_read: "{% url 'course_flow:json-api-post-mark-all-notifications-as-read' %}",
+      delete_notification: "{% url 'course_flow:json-api-post-delete-notification' %}",
+    },
+  }
+
+
+  // NOTE: This is the place where we keep all variables
+  // injected by Django to be consumed by React
+  COURSEFLOW_APP.show_notification_request = {{ show_notification_request }};
+  COURSEFLOW_APP.update_notifications = {{ update_notifications|safe }};
+
+  COURSEFLOW_APP.home = {
+    user_id: {% firstof user.id -1 %},
+    is_teacher: {% if user|has_group:"Teacher" %}true{% else %}false{% endif %},
+  };
+
+  // common strings used across the app
+  COURSEFLOW_APP.strings = {
+    confirm_email_updates:
+      "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}",
+    unsupported_device:
+      "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}",
+    product_updates_agree: "{% trans 'I want to receive product updates emails' %}",
+    notifications: "{% trans 'Notifications' %}",
+    home: "{% trans 'Home' %}",
+    my_library: "{% trans 'My library' %}",
+    explore: "{% trans 'Explore' %}",
+    my_classrooms: "{% trans 'My classrooms' %}",
+    favourites: "{% trans 'Favourites' %}",
+    see_all: "{% trans 'See all' %}",
+    view_all: "{% trans 'View all' %}",
+    help_support: "{% trans 'Help and Support' %}",
+    cancel: "{% trans 'Cancel' %}",
+    password_reset: "{% trans 'Password reset' %}",
+    password_reset_msg: "{% trans 'By choosing to reset your password, you will be directed to the SALTISE lobby and will have to navigate to the myDALITE application to set a new password.' %}",
+    notification_settings: "{% trans 'Notification settings' %}",
+    sign_out: "{% trans 'Sign out' %}",
+    profile: "{% trans 'Profile' %}",
+    project: "{% trans 'Project' %}",
+    program: "{% trans 'Program' %}",
+    course: "{% trans 'Course' %}",
+    activity: "{% trans 'Activity' %}",
+    delete: "{% trans 'Delete' %}",
+    show_notifications_menu: "{% trans 'Show notifications menu' %}",
+    notification_options: "{% trans 'Notification options' %}",
+    mark_as_read: "{% trans 'Mark as read' %}",
+    mark_all_as_read: "{% trans 'Mark all as read' %}",
+    no_notifications_yet: "{% trans 'You have no notifications yet.' %}",
+    profile_settings: "{% trans 'Profile settings' %}",
+    update_profile: "{% trans 'Update profile' %}",
+    update_profile_success: "{% trans 'User details updated!' %}",
+  }
+</script>

@@ -1,15 +1,9 @@
 [flake8]
-ignore = E203 \  # whitespace before ':'
-         E501 \
-         W503 \  # linebreak before binary operator
-         F811 \  # redefining unused variable (thrown with pytest)
-         D100 \  # missing docstring in module
-         D101 \  # missing docstring in class
-         D102 \  # missing docstring in method
-         D103    # missing docstring in function
+ignore = E203,E501,W503,F811,D100,D101,D102,D103
 per-file-ignores =
-  create_saltise_strategies.py: E722
-  models.py: E501
-  test_functional.py: F841
-  test_models.py: F841
+    create_saltise_strategies.py: E722
+    models.py: E501
+    test_functional.py: F841
+    test_models.py: F841
+    __init__.py: F401, F403
 max-line-length = 88

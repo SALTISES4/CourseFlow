@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-from course_flow.models import Program
+from course_flow.models.program import Program
 
 
 def forwards_func(apps, schema_editor):
@@ -10,7 +10,6 @@ def forwards_func(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("course_flow", "0076_auto_20211217_2107"),
     ]

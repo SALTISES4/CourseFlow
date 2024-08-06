@@ -1,0 +1,114 @@
+{
+  "compilerOptions": {
+    // "explainFiles": true, // enable this for file inclusion debugging
+    "outDir": "./build",
+    // try to make TS ignore as much as possible for now
+    "noImplicitAny": false,
+    // allow 'any' types
+    "strictNullChecks": false,
+    // allow fuzziness in our null definitions
+    "strict": true,
+    // lol
+    "skipLibCheck": true,
+    // don't TS check the node modules and other defined libs
+    "allowJs": true,
+    // don't allow just TS/TSX files
+    "noEmitOnError": false,
+    // make TS still build even if we run into errors
+    "noEmit": false,
+    // forgot what this does
+    "target": "es2020",
+    // "useDefineForClassFields": false,
+    "useDefineForClassFields": true,
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "checkJs": false,
+    "esModuleInterop": false,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types/"
+    ],
+    "jsx": "react-jsx",
+    // This must be set if you're using "paths"
+    "baseUrl": "./src/",
+    /**
+    ALIASES
+    */
+    "paths": {
+//       "jquery":["node_modules/@types/jquery/index"],
+//      "jquery-ui":["node_modules/@types/jqueryui/index"],
+      "@cfModule/*": [
+        "./*"
+      ],
+      "@cfComponents/*": [
+        "./components/*"
+      ],
+      "@cfViews/*": [
+        "./components/views/*"
+      ],
+      "@cfPages/*": [
+        "./components/pages/*"
+      ],
+      "@cfCommonComponents/*": [
+        "./components/common/*"
+      ],
+      "@cfParentComponents": [
+        "./components/common/extended"
+      ],
+      "@cfParentComponents/*": [
+        "./components/common/extended/*"
+      ],
+      "@cfUIComponents/*": [
+        "./components/common/UIComponents/*"
+      ],
+      "@cfUIComponents": [
+        "./components/common/UIComponents"
+      ],
+      "@cfFindState": [
+        "./redux/findState.ts"
+      ],
+      "@cfRedux/*": [
+        "./redux/*"
+      ],
+      "@cfReducers": [
+        "./redux/Reducers.ts"
+      ],
+      "@cfUtility": [
+        "./utility/utilityFunctions.jsx"
+      ],
+      "@cfConstants": [
+        "./constants.js"
+      ],
+      "@XMLHTTP/*": [
+        "./XMLHTTP/*"
+      ],
+      "@cfSCSS/*": [
+        "./scss/*"
+      ],
+      "@cfMUI/*": [
+        "./mui/*"
+      ]
+    }
+  },
+  "include": [
+    "./**/*"
+  ],
+  "exclude": [
+    "./build/**/*",
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}

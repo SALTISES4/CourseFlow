@@ -14,12 +14,9 @@ from django.http import (
 from django.views.decorators.http import require_GET, require_POST
 from ratelimit.decorators import ratelimit
 
-from course_flow.models import (
-    LiveProjectUser,
-    ObjectPermission,
-    User,
-    Workflow,
-)
+from course_flow.models import User
+from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.workflow import Workflow
 from course_flow.utils import get_model_from_str
 
 
@@ -163,7 +160,9 @@ def check_special_case_delete_permission(model_data, user):
     else:
         if instance.get_project() is None:
             return instance.author == user
-        return instance.author == user or check_object_permission(instance.get_project(),user,ObjectPermission.PERMISSION_EDIT)
+        return instance.author == user or check_object_permission(
+            instance.get_project(), user, ObjectPermission.PERMISSION_EDIT
+        )
 
 
 def get_model_from_request(model, request, **kwargs):
@@ -539,6 +538,27 @@ def user_is_teacher():
     return wrapped_view
 
 
+def public_access(**outer_kwargs):
+    rate_per_min = outer_kwargs.get("rate", 5)
+
+    def wrapped_view(fct):
+        @require_GET
+        @ratelimit(key="ip", rate=str(rate_per_min) + "/m", method=["GET"])
+        @wraps(fct)
+        def _wrapped_view(request, outer_kwargs=outer_kwargs, *args, **kwargs):
+            ratelimited = getattr(request, "limited", False)
+            if ratelimited:
+                response = JsonResponse({"action": "ratelimited"})
+                response.status_code = 429
+                return response
+            return fct(request, *args, **kwargs)
+
+        return _wrapped_view
+
+    return wrapped_view
+
+
+# @todo more explanation on this decorator business purpose
 def public_model_access(model, **outer_kwargs):
     rate_per_min = outer_kwargs.get("rate", 5)
 
@@ -564,199 +584,6 @@ def public_model_access(model, **outer_kwargs):
                 response.status_code = 403
                 return response
             if check_objects_public(permission_objects):
-                return fct(request, *args, **kwargs)
-            else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-
-        return _wrapped_view
-
-    return wrapped_view
-
-
-# Live project decorators
-
-
-def get_enrollment_objects(model, request, **kwargs):
-    model_data = get_model_from_request(model, request, **kwargs)
-    object_type = get_model_from_str(model_data["model"])
-    permission_objects = [
-        object_type.objects.get(pk=model_data["pk"]).get_live_project()
-    ]
-    return permission_objects
-
-
-def check_object_enrollment(instance, user, role):
-    if instance.type == "liveproject":
-        liveproject = instance
-    elif instance.type == "project":
-        liveproject = instance.liveproject
-    elif instance.type in ["activity", "course", "program"]:
-        try:
-            liveproject = instance.get_project().liveproject
-        except AttributeError:
-            return False
-        if user != liveproject.project.author:
-            if (
-                liveproject.visible_workflows.filter(
-                    pk=instance.pk, deleted=False
-                ).count()
-                == 0
-            ):
-                return False
-    if liveproject is None:
-        return False
-    if liveproject.project.author == user:
-        return True
-
-    if role == LiveProjectUser.ROLE_STUDENT:
-        permission_check = Q(role_type=LiveProjectUser.ROLE_STUDENT) | Q(
-            role_type=LiveProjectUser.ROLE_TEACHER
-        )
-    else:
-        permission_check = Q(role_type=role)
-    if (
-        LiveProjectUser.objects.filter(user=user, liveproject=liveproject)
-        .filter(permission_check)
-        .count()
-        > 0
-    ):
-        return True
-
-
-def check_objects_enrollment(instances, user, role):
-    object_permissions = [
-        check_object_enrollment(x, user, role) for x in instances
-    ]
-    return reduce(lambda a, b: a | b, object_permissions)
-
-
-def user_enrolled_as_teacher(model, **outer_kwargs):
-    def wrapped_view(fct):
-        @require_POST
-        @ajax_login_required
-        @wraps(fct)
-        def _wrapped_view(
-            request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
-        ):
-            try:
-                permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
-                )
-            except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-            if check_objects_enrollment(
-                permission_objects,
-                User.objects.get(pk=request.user.pk),
-                LiveProjectUser.ROLE_TEACHER,
-            ):
-                return fct(request, *args, **kwargs)
-            else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-
-        return _wrapped_view
-
-    return wrapped_view
-
-
-def user_enrolled_as_student(model, **outer_kwargs):
-    def wrapped_view(fct):
-        @require_POST
-        @ajax_login_required
-        @wraps(fct)
-        def _wrapped_view(
-            request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
-        ):
-            try:
-                permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
-                )
-            except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-            if check_objects_enrollment(
-                permission_objects,
-                User.objects.get(pk=request.user.pk),
-                LiveProjectUser.ROLE_STUDENT,
-            ):
-                return fct(request, *args, **kwargs)
-            else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-
-        return _wrapped_view
-
-    return wrapped_view
-
-
-def user_can_view_or_enrolled_as_student(model, **outer_kwargs):
-    def wrapped_view(fct):
-        @require_POST
-        @ajax_login_required
-        @wraps(fct)
-        def _wrapped_view(
-            request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
-        ):
-            try:
-                permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
-                )
-            except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-            if check_objects_enrollment(
-                permission_objects,
-                User.objects.get(pk=request.user.pk),
-                LiveProjectUser.ROLE_STUDENT,
-            ) or check_objects_permission(
-                permission_objects,
-                User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_VIEW,
-            ):
-                return fct(request, *args, **kwargs)
-            else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-
-        return _wrapped_view
-
-    return wrapped_view
-
-
-def user_can_view_or_enrolled_as_teacher(model, **outer_kwargs):
-    def wrapped_view(fct):
-        @require_POST
-        @ajax_login_required
-        @wraps(fct)
-        def _wrapped_view(
-            request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
-        ):
-            try:
-                permission_objects = get_permission_objects(
-                    model, request, **outer_kwargs
-                )
-            except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-            if check_objects_enrollment(
-                permission_objects,
-                User.objects.get(pk=request.user.pk),
-                LiveProjectUser.ROLE_TEACHER,
-            ) or check_objects_permission(
-                permission_objects,
-                User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_VIEW,
-            ):
                 return fct(request, *args, **kwargs)
             else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})

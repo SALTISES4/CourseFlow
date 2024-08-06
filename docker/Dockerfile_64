@@ -114,12 +114,6 @@ COPY ./docker/config/terminfo/* /etc/terminfo/
 
 
 
-
-
-
-
-
-
 ENTRYPOINT ["/usr/local/bin/python"]
 CMD ["/app/src/Web.py"]
 EXPOSE 4433

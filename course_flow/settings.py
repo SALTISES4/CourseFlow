@@ -58,9 +58,11 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.humanize",
     "daphne",
     "django.contrib.staticfiles",
     "channels",
+    "django_extensions",
 ]
 
 
@@ -285,3 +287,9 @@ if DEBUG:
     MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     ]
+
+
+GRAPH_MODELS = {
+    "all_applications": True,
+    "graph_models": True,
+}

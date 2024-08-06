@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import (
+from course_flow.models import (
     Activity,
     Column,
     ColumnWorkflow,
