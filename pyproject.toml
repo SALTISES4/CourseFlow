@@ -26,12 +26,7 @@ classifiers = [
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
-
-[project.urls]
-homepage = "https://www.example.com/"
-
-[project.optional-dependencies]
-default = [
+dependencies = [
     "asgiref",
     "bleach",
     "celery[redis]",
@@ -50,6 +45,9 @@ default = [
     "xlrd",
     "xlsxwriter"
 ]
+
+[project.urls]
+homepage = "https://www.example.com/"
 
 [tool.tox]
 legacy_tox_ini = """

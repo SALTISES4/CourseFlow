@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.8-node-browsers
+      - image: circleci/python:3.9-node-browsers
       - image: circleci/redis:5.0
     steps:
       - checkout
@@ -23,5 +23,5 @@ jobs:
           name: Tests
           command: |
             . test_venv/bin/activate
-            python3 course_flow.py migrate
+            python3 manage.py migrate
             python3 -m pytest
