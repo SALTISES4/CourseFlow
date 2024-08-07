@@ -40,11 +40,15 @@ jobs:
             . .venv/bin/activate
       - run:
           name: Install pip v23x
+
           command: |
+            python -m venv .venv
             pip install pip==23
       - run:
           name: Install Pip Requirements
-          command: pip install -r requirements/requirements.txt
+          command: |
+            python -m venv .venv
+            pip install -r requirements/requirements.txt
       - save_cache:  # Save the virtual environment to cache
           key: deps-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
           paths:
