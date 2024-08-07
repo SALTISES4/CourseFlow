@@ -59,9 +59,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
         (dev_venv) pytest
 
-13. To package a version:
 
-        tox --recreate
 
 14. When using in another project:
 
