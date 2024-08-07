@@ -18,7 +18,7 @@ jobs:
           name: Install via Yarn
           command: |
             cd react
-            cd yarn install
+            yarn install
             yarn build-js
       - persist_to_workspace:
           root: ~/repo/react
