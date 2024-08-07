@@ -52,7 +52,6 @@ dependencies = [
 [project.urls]
 homepage = "https://www.example.com/"
 
-
 [tool.black]
 line_length = 79
 include = '\.pyi?$'

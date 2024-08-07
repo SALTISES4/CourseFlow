@@ -72,7 +72,7 @@ jobs:
           at: ~/repo
       - run:
           name: Upload to PyPI
-          command: twine upload dist/*
+          command: twine upload --repository-url https://test.pypi.org/legacy/ dist/*  --non-interactive
 
 workflows:
   version: 2
@@ -82,12 +82,32 @@ workflows:
       - install-pip-requirements:
           requires:
             - build-node
+          filters:
+            branches:
+              only:
+                - staging
+                - master
       - run-tests:
           requires:
             - install-pip-requirements
+          filters:
+            branches:
+              only:
+                - staging
+                - master
       - package-app:
           requires:
             - run-tests
+          filters:
+            branches:
+              only:
+                - staging
+                - master
       - upload-to-pypi:
           requires:
             - package-app
+          filters:
+            branches:
+              only:
+                - staging
+                - master
