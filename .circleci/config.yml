@@ -40,9 +40,8 @@ jobs:
             . .venv/bin/activate
       - run:
           name: Install pip v23x
-
           command: |
-            python -m venv .venv
+            . .venv/bin/activate
             pip install pip==23
       - run:
           name: Install Pip Requirements
