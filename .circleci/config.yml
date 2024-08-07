@@ -21,10 +21,10 @@ jobs:
             yarn install
             yarn build
       - persist_to_workspace:
-          root: ~/repo/react
+          root: ~/repo
           paths:
-            - node_modules
-            - build
+            - react/node_modules
+            - react/build
 
   install-pip-requirements:
     executor: python_node
