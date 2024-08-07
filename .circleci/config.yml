@@ -34,11 +34,21 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run:
-          name: downgrade pip
-          command: pip install pip==23
+          name: Create virtualenv and activate
+          command: |
+            python -m venv .venv
+            . .venv/bin/activate
+      - run:
+          name: Install pip v23x
+          command: |
+            pip install pip==23
       - run:
           name: Install Pip Requirements
           command: pip install -r requirements/requirements.txt
+      - save_cache:  # Save the virtual environment to cache
+          key: deps-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
+          paths:
+            - "~/repo/.venv"
 
   run-tests:
     executor: python_node
@@ -46,17 +56,27 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
+      - restore_cache:  # Restoring the packages from cache
+          key: deps-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
       - run:
           name: Run Tests
-          command: python manage.py test
+          command: |
+            . .venv/bin/activate
+            python manage.py test
 
   package-app:
     executor: python_node
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/repo
+      - restore_cache:  # Restoring the packages from cache
+          key: deps-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
       - run:
           name: Package Application
-          command: python -m build
+          command: |
+            . .venv/bin/activate
+            python -m build
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -68,19 +88,26 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/repo
+      - restore_cache:  # Restoring the packages from cache
+          key: deps-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
       - run:
           name: Upload to PyPI
 #          command: twine upload --repository-url https://test.pypi.org/legacy/ dist/*  --non-interactive
-          command: twine upload --repository-url https://test.pypi.org/legacy/ dist/*  --non-interactive
+          command: |
+            . .venv/bin/activate
+            twine upload --repository-url https://test.pypi.org/legacy/ dist/*  --non-interactive
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build-node
+      - build-node:
+          filters:
+            branches:
+              only:
+                - staging
+                - master
       - install-pip-requirements:
-          requires:
-            - build-node
           filters:
             branches:
               only:
@@ -96,6 +123,7 @@ workflows:
                 - master
       - package-app:
           requires:
+            - build-node
             - run-tests
           filters:
             branches:
