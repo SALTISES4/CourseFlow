@@ -48,7 +48,7 @@ jobs:
           at: ~/repo
       - run:
           name: Run Tests
-          command: pytest
+          command: python manage.py test
 
   package-app:
     executor: python_node
@@ -70,6 +70,7 @@ jobs:
           at: ~/repo
       - run:
           name: Upload to PyPI
+#          command: twine upload --repository-url https://test.pypi.org/legacy/ dist/*  --non-interactive
           command: twine upload --repository-url https://test.pypi.org/legacy/ dist/*  --non-interactive
 
 workflows:
