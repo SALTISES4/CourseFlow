@@ -10,28 +10,21 @@ executors:
 
 jobs:
   build-node:
-    executor: python_node
+    docker:
+      - image: circleci/node:18.15
     steps:
       - checkout
       - run:
-          name: Get NVM
-          command: |
-            wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            nvm install v18
-            npm install -g yarn
-      - run:
           name: Install Yarn
           command: |
+            npm install -g yarn
             yarn install
             yarn build-js
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - node_modules  # Example: persist node_modules if needed
-            - build         # Assuming 'npm run build' outputs to a 'build' directory
+            - node_modules
+            - build
 
   install-pip-requirements:
     executor: python_node
