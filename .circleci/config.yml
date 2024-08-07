@@ -15,9 +15,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Install Yarn
+          name: Install via Yarn
           command: |
-            npm install -g yarn
             yarn install
             yarn build-js
       - persist_to_workspace:
