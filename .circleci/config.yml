@@ -115,6 +115,7 @@ workflows:
                 - master
       - run-tests:
           requires:
+            - build-node
             - install-pip-requirements
           filters:
             branches:
@@ -123,7 +124,6 @@ workflows:
                 - master
       - package-app:
           requires:
-            - build-node
             - run-tests
           filters:
             branches:
