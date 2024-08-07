@@ -21,11 +21,10 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
             nvm install v18
+            npm install -g yarn
       - run:
           name: Install Yarn
           command: |
-            source $BASH_ENV
-            npm install -g yarn
             yarn install
             yarn build-js
       - persist_to_workspace:
