@@ -13,4 +13,4 @@ py manage.py graph_models -a > erd.dot
 py manage.py graph_models -a
 py manage.py graph_models -a > erd.dot && py manage.py graph_models --pydot -a -g -o erd.png
 
-python course_flow.py graph_models -a > erd.dot && python course_flow.py graph_models --pydot -a -g -o erd.svg
+python manage.py graph_models -a > erd.dot && python manage.py graph_models --pydot -a -g -o erd.svg

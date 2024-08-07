@@ -1,28 +1,113 @@
-version: 2
-jobs:
-  build:
+# notes: CCI manages the virtual envs for us
+
+version: 2.1
+executors:
+  python_node:
     docker:
-      - image: circleci/python:3.9-node-browsers
+      - image: cimg/python:3.9.0
       - image: circleci/redis:5.0
+    working_directory: ~/repo
+
+jobs:
+  build-node:
+    executor: python_node
     steps:
       - checkout
       - run:
-          name: Build
+          name: Get NVM
           command: |
-            python3 --version 
-            python3 -m venv test_venv
-            . test_venv/bin/activate
-            pip install -r requirements/requirements.txt
             wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
             nvm install v18
+      - run:
+          name: Install Yarn
+          command: |
             yarn install
             yarn build-js
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - node_modules  # Example: persist node_modules if needed
+            - build         # Assuming 'npm run build' outputs to a 'build' directory
+
+  install-pip-requirements:
+    executor: python_node
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
       - run:
-          name: Tests
-          command: |
-            . test_venv/bin/activate
-            python3 course_flow.py migrate
-            python3 -m pytest
+          name: Install Pip Requirements
+          command: pip install -r requirements/requirements.txt
+
+  run-tests:
+    executor: python_node
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Run Tests
+          command: pytest
+
+  package-app:
+    executor: python_node
+    steps:
+      - checkout
+      - run:
+          name: Package Application
+          command: python -m build
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - dist
+
+  upload-to-pypi:
+    executor: python_node
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Upload to PyPI
+          command: twine upload --repository-url https://test.pypi.org/legacy/ dist/*  --non-interactive
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build-node
+      - install-pip-requirements:
+          requires:
+            - build-node
+          filters:
+            branches:
+              only:
+                - staging
+                - master
+      - run-tests:
+          requires:
+            - install-pip-requirements
+          filters:
+            branches:
+              only:
+                - staging
+                - master
+      - package-app:
+          requires:
+            - run-tests
+          filters:
+            branches:
+              only:
+                - staging
+                - master
+      - upload-to-pypi:
+          requires:
+            - package-app
+          filters:
+            branches:
+              only:
+                - staging
+                - master

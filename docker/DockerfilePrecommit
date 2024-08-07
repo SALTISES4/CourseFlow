@@ -10,7 +10,7 @@ WORKDIR /app
 ########################
 # COPY FILES
 ########################
-COPY ./course_flow.py ./src/
+COPY ./manage.py ./src/
 COPY ./pyproject.toml ./src/
 COPY ./SALTISE_course_flow.egg-info ./src/SALTISE_course_flow.egg-info
 COPY ./course_flow/ ./src/course_flow

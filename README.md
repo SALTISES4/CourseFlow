@@ -32,7 +32,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 7.  Migrate
 
-        (dev_venv) python3 course_flow.py migrate
+        (dev_venv) python3 manage.py migrate
 
 8.  If you don't have a local_settings.py set up, change line 25 in settings.py to:
 
@@ -40,7 +40,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 9.  Run the Django development server.
 
-        (dev_venv) python3 course_flow.py runserver
+        (dev_venv) python3 manage.py runserver
 
 10. Register at:
 
@@ -48,20 +48,18 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 11. Create default strategies and disciplines.
 
-        (dev_venv) python3 course_flow.py create_saltise_strategies
-        (dev_venv) python3 course_flow.py create_base_disciplines
+        (dev_venv) python3 manage.py create_saltise_strategies
+        (dev_venv) python3 manage.py create_base_disciplines
 
 12. For testing before commits, run:
 
-        (dev_venv) python3 course_flow.py test
+        (dev_venv) python3 manage.py test
 
     or:
 
         (dev_venv) pytest
 
-13. To package a version:
 
-        tox --recreate
 
 14. When using in another project:
 
