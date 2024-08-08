@@ -99,7 +99,7 @@ jobs:
           name: Upload to PyPI
           command: |
             . .venv/bin/activate
-            twine upload dist/*  --non-interactive
+            twine upload dist/*  --non-interactive --verbose
 
 workflows:
   version: 2

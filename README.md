@@ -59,8 +59,6 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
         (dev_venv) pytest
 
-
-
 14. When using in another project:
 
         add a COURSE_FLOW_RETURN_URL value to your settings.py

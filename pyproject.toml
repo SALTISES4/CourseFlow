@@ -7,7 +7,7 @@ packages = { find = { include = ["react*", "course_flow*"] } }
 
 [project]
 name = "SALTISE_course_flow"
-version = "0.8.21"
+version = "0.8.22"
 description = "CourseFlow"
 readme = "README.rst"
 authors = [
