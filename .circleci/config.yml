@@ -101,6 +101,25 @@ jobs:
             . .venv/bin/activate
             twine upload dist/*  --non-interactive --verbose
 
+  # https://pypi.org/pypi/SALTISE-course-flow/json
+  get-packageversion:
+    executor: python_node
+    steps:
+      - checkout
+      - run:
+          name: Tappity Tip Tap
+          command: |
+            version=$(python ./scripts/get_latest_version_number.py)
+      - run:
+          name: Tappity Tip Tap
+          command: |
+            curl -u ${CIRCLE_TOKEN}: -X POST --header "Content-Type: application/json" -d '{
+              "parameters": {
+                "package_version": "$version"
+              }
+            }' https://circleci.com/api/v2/project/:project_slug/pipeline
+
+
 workflows:
   version: 2
   build-and-deploy:
