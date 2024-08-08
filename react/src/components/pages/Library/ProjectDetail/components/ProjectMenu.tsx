@@ -15,8 +15,8 @@ import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
 import { EProject } from '@XMLHTTP/types/entity'
-import ExportProjectModal from '@cfModule/components/common/dialog/ExportProject'
-import ArchiveProjectModal from '@cfModule/components/common/dialog/ArchiveProject'
+import ProjectExportModal from '@cfModule/components/common/dialog/ProjectExport'
+import ProjectArchiveModal from '@cfModule/components/common/dialog/ProjectArchive'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 // import $ from 'jquery'
 
@@ -172,7 +172,7 @@ function ProjectMenu({
       return (
         <div
           className="hover-shade"
-          onClick={() => dispatch(DIALOG_TYPE.ARCHIVE_PROJECT)}
+          onClick={() => dispatch(DIALOG_TYPE.PROJECT_ARCHIVE)}
         >
           <div>{window.gettext('Archive project')}</div>
         </div>
@@ -196,7 +196,7 @@ function ProjectMenu({
         <div
           id="export-button"
           className="hover-shade"
-          onClick={() => dispatch(DIALOG_TYPE.EXPORT_PROJECT)}
+          onClick={() => dispatch(DIALOG_TYPE.PROJECT_EXPORT)}
           // onClick={openExportDialog}
         >
           <div>{window.gettext('Export')}</div>
@@ -414,8 +414,8 @@ function ProjectMenu({
       </div>
       <EditDialog />
       <ShareDialog />
-      <ExportProjectModal project={state.project} />
-      <ArchiveProjectModal onSubmit={deleteProject} />
+      <ProjectExportModal data={state.project} />
+      <ProjectArchiveModal onSubmit={deleteProject} />
     </div>
   )
 }

@@ -35,8 +35,9 @@ from course_flow.utils import get_descendant_outcomes, get_model_from_str
 # about it being deleted.
 @user_can_delete(False)
 def json_api_post_delete_self(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
         workflow = None
@@ -158,8 +159,9 @@ def json_api_post_delete_self(request: HttpRequest) -> JsonResponse:
 # workflows are kept up to date via their websocket connections.
 @user_can_delete(False)
 def json_api_post_restore_self(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
         workflow = None
@@ -326,8 +328,9 @@ def json_api_post_restore_self(request: HttpRequest) -> JsonResponse:
 # about it being deleted.
 @user_can_delete(False)
 def json_api_post_delete_self_soft(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
         workflow = None

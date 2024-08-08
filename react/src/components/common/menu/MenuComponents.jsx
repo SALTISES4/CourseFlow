@@ -1,6 +1,8 @@
 import { Component } from 'react'
 import reactDom from 'react-dom'
 import WorkflowsMenu from '../dialog/WorkflowsMenu'
+import { ThemeProvider } from '@mui/material/styles'
+import theme from '@cfMUI/theme'
 // import $ from 'jquery'
 
 /**
@@ -81,11 +83,13 @@ export class MessageBox extends Component {
  */
 export function renderMessageBox(data, type, updateFunction) {
   reactDom.render(
-    <MessageBox
-      message_data={data}
-      message_type={type}
-      actionFunction={updateFunction}
-    />,
+    <ThemeProvider theme={theme}>
+      <MessageBox
+        message_data={data}
+        message_type={type}
+        actionFunction={updateFunction}
+      />
+    </ThemeProvider>,
     $('#popup-container')[0]
   )
 }

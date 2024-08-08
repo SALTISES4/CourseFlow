@@ -1,6 +1,5 @@
 import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
-import { getAddedWorkflowMenu } from '@XMLHTTP/postTemp'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { GridWrap } from '@cfModule/mui/helper'
@@ -74,35 +73,7 @@ class MenuSection extends React.Component<PropsType> {
         let import_text =
           window.gettext('Import ') + window.gettext(section_type)
         if (is_strategy) import_text += window.gettext(' strategy')
-        adds.push(
-          <a
-            className="hover-shade"
-            onClick={() => {
-              getAddedWorkflowMenu(
-                parentID,
-                section_type,
-                is_strategy,
-                false,
-                (response_data) => {
-                  if (response_data.workflowID != null) {
-                    const loader = new UtilityLoader('body')
-                    duplicateBaseItemQuery(
-                      response_data.workflowID,
-                      section_type,
-                      parentID,
-                      (_duplication_response_data) => {
-                        loader.endLoad()
-                        location.reload()
-                      }
-                    )
-                  }
-                }
-              )
-            }}
-          >
-            {import_text}
-          </a>
-        )
+        
       }
       add_button = (
         <div className="menu-create hover-shade" ref={this.dropdownDiv}>
@@ -120,7 +91,6 @@ class MenuSection extends React.Component<PropsType> {
         </div>
       )
     }
-
     return (
       <div className={'section-' + this.props.section_data.object_type}>
         {add_button}

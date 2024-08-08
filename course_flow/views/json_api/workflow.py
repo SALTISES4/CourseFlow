@@ -68,7 +68,8 @@ from course_flow.view_utils import (
 
 @user_can_view("workflowPk")
 def json_api_post_get_workflow_data(request: HttpRequest) -> JsonResponse:
-    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    body = json.loads(request.body)
+    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
     try:
         data_package = get_workflow_data_flat(
             workflow.get_subclass(), request.user
@@ -83,7 +84,8 @@ def json_api_post_get_workflow_data(request: HttpRequest) -> JsonResponse:
 def json_api_post_get_workflow_parent_data(
     request: HttpRequest,
 ) -> JsonResponse:
-    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    body = json.loads(request.body)
+    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
     try:
         data_package = get_parent_outcome_data(
             workflow.get_subclass(), request.user
@@ -97,7 +99,8 @@ def json_api_post_get_workflow_parent_data(
 def json_api_post_get_workflow_child_data(
     request: HttpRequest,
 ) -> JsonResponse:
-    node = Node.objects.get(pk=request.POST.get("nodePk"))
+    body = json.loads(request.body)
+    node = Node.objects.get(pk=body.get("nodePk"))
     try:
         data_package = get_child_outcome_data(
             node.linked_workflow, request.user, node.get_workflow()
@@ -160,7 +163,8 @@ def json_api_get_public_workflow_parent_data(
 
 @user_can_view("workflowPk")
 def json_api_post_get_workflow_context(request: HttpRequest) -> JsonResponse:
-    workflowPk = request.POST.get("workflowPk", False)
+    body = json.loads(request.body)
+    workflowPk = body.get("workflowPk", False)
     try:
         workflow = Workflow.objects.get(pk=workflowPk)
         data_package = get_workflow_context_data(
@@ -181,10 +185,9 @@ def json_api_post_get_workflow_context(request: HttpRequest) -> JsonResponse:
 
 @user_is_teacher()
 def json_api_post_get_target_projects(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
     try:
-        workflow_id = Workflow.objects.get(
-            pk=request.POST.get("workflowPk")
-        ).id
+        workflow_id = Workflow.objects.get(pk=body.get("workflowPk")).id
     except ObjectDoesNotExist:
         workflow_id = 0
     try:
@@ -221,7 +224,8 @@ def json_api_get_public_parent_workflow_info(
 def json_api_post_get_parent_workflow_info(
     request: HttpRequest,
 ) -> JsonResponse:
-    workflow_id = json.loads(request.POST.get("workflowPk"))
+    body = json.loads(request.body)
+    workflow_id = body.get("workflowPk")
     try:
         parent_workflows = [
             node.get_workflow()
@@ -239,17 +243,24 @@ def json_api_post_get_parent_workflow_info(
 def json_api_post_get_workflows_for_project(
     request: HttpRequest,
 ) -> JsonResponse:
-    user = request.user
-    project = Project.objects.get(pk=request.POST.get("projectPk"))
-    workflows_serialized = InfoBoxSerializer(
-        project.workflows.all(), many=True, context={"user": user}
-    ).data
-    return JsonResponse({"data_package": workflows_serialized})
+    body = json.loads(request.body)
+    try:
+        user = request.user
+        project = Project.objects.get(pk=body.get("projectPk"))
+        workflows_serialized = InfoBoxSerializer(
+            project.workflows.all(), many=True, context={"user": user}
+        ).data
+        return JsonResponse(
+            {"action": "posted", "data_package": workflows_serialized}
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
 
 
 @user_can_view("projectPk")
 def json_api_post_get_project_data(request: HttpRequest) -> JsonResponse:
-    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    body = json.loads(request.body)
+    project = Project.objects.get(pk=body.get("projectPk"))
     try:
         project_data = (
             JSONRenderer()
@@ -274,7 +285,8 @@ def json_api_post_get_project_data(request: HttpRequest) -> JsonResponse:
 def json_api_post_get_possible_linked_workflows(
     request: HttpRequest,
 ) -> JsonResponse:
-    node = Node.objects.get(pk=request.POST.get("nodePk"))
+    body = json.loads(request.body)
+    node = Node.objects.get(pk=body.get("nodePk"))
     try:
         project = node.get_workflow().get_project()
         data_package = get_workflow_data_package(
@@ -293,12 +305,13 @@ def json_api_post_get_possible_linked_workflows(
 def json_api_post_get_possible_added_workflows(
     request: HttpRequest,
 ) -> JsonResponse:
-    type_filter = json.loads(request.POST.get("type_filter"))
-    get_strategies = json.loads(request.POST.get("get_strategies", "false"))
-    projectPk = request.POST.get("projectPk", False)
-    self_only = json.loads(request.POST.get("self_only", "false"))
+    body = json.loads(request.body)
+    type_filter = body.get("type_filter")
+    get_strategies = body.get("get_strategies", "false")
+    projectPk = body.get("projectPk", False)
+    self_only = body.get("self_only", "false")
     if projectPk:
-        project = Project.objects.get(pk=request.POST.get("projectPk"))
+        project = Project.objects.get(pk=body.get("projectPk"))
     else:
         project = None
     try:

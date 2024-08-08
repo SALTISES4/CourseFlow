@@ -17,7 +17,7 @@ services:
       - "8000:8000"
     networks:
       - cf-network
-    entrypoint: ["python", "course_flow.py", "runserver", "0.0.0.0:8000"]
+    entrypoint: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
     # use this entrypoint override if the servber crashes and we need to debug it
     # entrypoint: ["/bin/bash"]

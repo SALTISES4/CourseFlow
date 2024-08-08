@@ -35,8 +35,6 @@ class Favourites extends React.Component<JSX.IntrinsicAttributes, StateType> {
    * RENDER
    *******************************************************/
   render() {
-    console.log('this.state.project_data')
-    console.log(this.state.project_data)
     return (
       <div className="project-menu">
         <WorkflowFilter

@@ -91,7 +91,8 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
     }
 
     try:
-        json_data = json.loads(request.POST.get("jsonData"))
+        body = json.loads(request.body)
+        json_data = body.get("jsonData")
         id_dict = {
             "project": {},
             "workflow": {},

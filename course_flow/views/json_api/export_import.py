@@ -17,10 +17,11 @@ from course_flow.decorators import user_can_edit, user_can_view
 
 @user_can_edit(False)
 def json_api_post_import_data(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    task_type = request.POST.get("importType")
-    file = request.FILES.get("myFile")
+    body = json.loads(request.POST["body"])
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
+    task_type = body.get("importType")
+    file = request.FILES.get("file")
     try:
         if file.size < 1024 * 1024:
             file_type = file.content_type
@@ -52,11 +53,12 @@ def json_api_post_import_data(request: HttpRequest) -> JsonResponse:
 
 @user_can_view(False)
 def json_api_post_get_export(request: HttpRequest) -> JsonResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    export_type = request.POST.get("export_type")
-    export_format = request.POST.get("export_format")
-    allowed_sets = request.POST.getlist("object_sets[]", [])
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
+    export_type = body.get("exportType")
+    export_format = body.get("exportFormat")
+    allowed_sets = body.get("objectSets", [])
     try:
         subject = _("Your CourseFlow Export")
         text = _("Hi there! Here are the results of your recent export.")
