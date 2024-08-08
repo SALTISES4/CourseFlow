@@ -51,7 +51,7 @@ jobs:
             . .venv/bin/activate
             pip install -r requirements/requirements.txt
       - save_cache:  # Save the virtual environment to cache
-          key: deps2-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
+          key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
           paths:
             - "~/repo/.venv"
 
@@ -62,7 +62,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - restore_cache:  # Restoring the packages from cache
-          key: deps2-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
+          key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
       - run:
           name: Run Tests
           command: |
@@ -76,7 +76,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - restore_cache:  # Restoring the packages from cache
-          key: deps2-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
+          key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
       - run:
           name: Package Application
           command: |
@@ -94,7 +94,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - restore_cache:  # Restoring the packages from cache
-          key: deps2-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
+          key: deps3-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
       - run:
           name: Upload to PyPI
           command: |
