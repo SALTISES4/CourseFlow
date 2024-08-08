@@ -95,7 +95,6 @@ jobs:
           key: deps2-{{ .Branch }}-{{ checksum "requirements/requirements.txt" }}
       - run:
           name: Upload to PyPI
-#          command: twine upload --repository-url https://test.pypi.org/legacy/ dist/*  --non-interactive
           command: |
             . .venv/bin/activate
 #            twine upload --repository-url https://test.pypi.org/legacy/ dist/*  --non-interactive
