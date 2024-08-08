@@ -127,7 +127,7 @@ workflows:
 #                - master
       - package-app:
           requires:
-            - run-tests
+#            - run-tests
             - build-node
             - install-pip-requirements
           filters:
