@@ -1,4 +1,5 @@
 # notes: CCI manages the virtual envs for us
+# wrapping each job in a venv allows pip persistence
 
 version: 2.1
 executors:
@@ -43,6 +44,7 @@ jobs:
           command: |
             . .venv/bin/activate
             pip install pip==23
+            pip install pip-tools
       - run:
           name: Install Pip Requirements
           command: |
