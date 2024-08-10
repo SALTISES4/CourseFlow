@@ -6,12 +6,14 @@ All functions for API calls.
 // @todo intermixed calls to DOM via jQuery
 */
 
-// Uses Fetch to POST data to a corresponding URL and
-// interact with our "API" endpoints that fetch JSON data.
-// Returns a Promise that can be then chained upon/consumed
-// Rejects if the 'action' in JSON response hasn't 'posted'
-// which can be caught and acted upon for error handling
 
+/**
+ *  Uses Fetch to POST data to a corresponding URL and
+ *  interact with our "API" endpoints that fetch JSON data.
+ *  Returns a Promise that can be then chained upon/consumed
+ *  Rejects if the 'action' in JSON response hasn't 'posted'
+ *  which can be caught and acted upon for error handling
+ */
 import { VERB } from '@cfModule/types/enum'
 
 export function API_POST<T>(url = '', data = {}): Promise<any> {
@@ -46,14 +48,17 @@ export function API_POST<T>(url = '', data = {}): Promise<any> {
   })
 }
 
-
-export function API_POST_FILE<T>(url = '', data = {}, file=null): Promise<any> {
+export function API_POST_FILE<T>(
+  url = '',
+  data = {},
+  file = null
+): Promise<any> {
   if (!url) {
     return Promise.reject('You need to specify an URL in for API_POST to run.')
   }
-  var form_data = new FormData()
-  form_data.set('body',JSON.stringify(data))
-  form_data.set('file',file)
+  const form_data = new FormData()
+  form_data.set('body', JSON.stringify(data))
+  form_data.set('file', file)
   return new Promise((res, rej) => {
     fetch(url, {
       method: 'POST',

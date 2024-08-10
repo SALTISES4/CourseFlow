@@ -4,8 +4,13 @@ from .delete import *
 from .duplication import *
 from .export_import import *
 from .menu import *
+from .node import *
+from .node_link import *
 from .old_courseflow_import import *
+from .page import *
+from .project import *
 from .search import *
 from .sharing import *
+from .strategy import *
 from .update import *
 from .workflow import *

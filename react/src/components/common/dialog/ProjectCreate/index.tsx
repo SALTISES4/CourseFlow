@@ -54,7 +54,7 @@ function CreateProjectDialog({
     }
 
     API_POST<{ redirect: string }>(
-      COURSEFLOW_APP.config.json_api_paths.create_project,
+      COURSEFLOW_APP.config.json_api_paths.project.create,
       {
         ...state.fields,
         objectSets: state.objectSets

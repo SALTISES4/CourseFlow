@@ -49,5 +49,6 @@ export enum OBJECT_TYPE {
 
 export enum VERB {
   POSTED = 'posted',
-  ERROR = 'error'
+  ERROR = 'error',
+  GET = 'get'
 }

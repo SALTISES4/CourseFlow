@@ -64,6 +64,8 @@ interface Config {
   registration_path: string
   logout_path: string
   icon_path: string
+  /* SORTED */
+  html_paths: HTMLPaths
   json_api_paths: JSONAPIPaths
 }
 
@@ -87,13 +89,27 @@ interface GetPaths {
   get_public_parent_workflow_info: string
 }
 
+interface HTMLPaths {
+  pages: {
+    home: string
+    explore: string
+  }
+}
+
 interface JSONAPIPaths {
-  create_project: string
+  pages: {
+    home: string
+    explore: string
+  }
+  project: {
+    create: string
+  }
   update_profile: string
   get_notifications_page: string
   update_notifications_settings: string
   mark_all_notifications_as_read: string
   delete_notification: string
+  // new pages
 }
 
 interface PublicUpdatePath {

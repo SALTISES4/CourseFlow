@@ -23,18 +23,25 @@ from course_flow.serializers import (
 from course_flow.sockets import redux_actions as actions
 from course_flow.utils import get_descendant_outcomes, get_model_from_str
 
-####################################
-# JSON API for deleting workflows,
-# projects, and workflow objects.
-####################################
+#########################################################
+#
+#  JSON API for deleting workflows,
+#  projects, and workflow objects.
+#
+#########################################################
 
 
-# Hard delete. Actually deletes the object. Tend not to use
-# this very often. Most of this method is just ensuring
-# that workflows that use the object are kept up to date
-# about it being deleted.
 @user_can_delete(False)
 def json_api_post_delete_self(request: HttpRequest) -> JsonResponse:
+    """
+     Hard delete. Actually deletes the object. Tend not to use
+    this very often. Most of this method is just ensuring
+    that workflows that use the object are kept up to date
+    about it being deleted.
+    :param request:
+    :return:
+    """
+
     body = json.loads(request.body)
     object_id = body.get("objectID")
     object_type = body.get("objectType")
@@ -155,10 +162,14 @@ def json_api_post_delete_self(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"action": "posted"})
 
 
-# Restore an object that was soft-deleted, and ensure all relevant
-# workflows are kept up to date via their websocket connections.
 @user_can_delete(False)
 def json_api_post_restore_self(request: HttpRequest) -> JsonResponse:
+    """
+    Restore an object that was soft-deleted, and ensure all relevant
+    workflows are kept up to date via their websocket connections.
+    :param request:
+    :return:
+    """
     body = json.loads(request.body)
     object_id = body.get("objectID")
     object_type = body.get("objectType")

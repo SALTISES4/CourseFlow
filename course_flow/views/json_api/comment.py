@@ -1,20 +1,23 @@
 import json
-import traceback
+import re
 
 import bleach
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import ProtectedError
 from django.http import HttpRequest, JsonResponse
-from rest_framework.renderers import JSONRenderer
 
-from course_flow.decorators import user_can_comment, user_can_edit
-from course_flow.models import Comment, Notification, User
+from course_flow.decorators import (
+    check_object_permission,
+    user_can_comment,
+    user_can_edit,
+)
+from course_flow.models import Notification, ObjectPermission, User
 from course_flow.serializers import CommentSerializer
 from course_flow.utils import get_model_from_str, make_user_notification
 
-#################################################
-# API for comments
-#################################################
+"""
+API for comments
+"""
 
 
 @user_can_edit(False)

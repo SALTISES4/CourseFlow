@@ -1,5 +1,7 @@
 import {
+  ExploreQueryResp,
   FavouritesQueryResp,
+  HomeQueryResp,
   LibraryQueryResp,
   SearchAllObjectsQueryResp
 } from '@XMLHTTP/types/query'
@@ -8,9 +10,33 @@ import { ToDefine } from '@cfModule/types/common'
 import { API_POST } from '../PostFunctions'
 
 /*******************************************************
+ * HOME PAGE
+ *******************************************************/
+export async function fetchHomeContext(): Promise<HomeQueryResp> {
+  try {
+    const response = await $.get(
+      COURSEFLOW_APP.config.json_api_paths.pages.home
+    ).promise()
+    return response // Automatically returned as a promise
+  } catch (error) {
+    throw new Error('Failed to fetch data')
+  }
+}
+
+export async function fetchExploreContext(): Promise<ExploreQueryResp> {
+  try {
+    const response = await $.get(
+      COURSEFLOW_APP.config.json_api_paths.pages.explore
+    ).promise()
+    return response // Automatically returned as a promise
+  } catch (error) {
+    throw new Error('Failed to fetch data')
+  }
+}
+
+/*******************************************************
  * LIBRARY PAGES
  *******************************************************/
-
 //Toggle whether a project or activity is a favourite for the user
 export function toggleFavourite(
   objectID,
@@ -23,11 +49,10 @@ export function toggleFavourite(
       objectID: objectID,
       objectType: objectType,
       favourite: favourite
+    }).then((response: ToDefine) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
+      else window.fail_function(response.action)
     })
-      .then((response:ToDefine)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
   } catch (err) {
     window.fail_function()
   }
@@ -50,11 +75,10 @@ export function searchAllObjectsQuery(
     API_POST(COURSEFLOW_APP.config.post_paths.search_all_objects, {
       filter: filter,
       additional_data: data
+    }).then((response: SearchAllObjectsQueryResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
+      else window.fail_function(response.action)
     })
-      .then((response:SearchAllObjectsQueryResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
   } catch (err) {
     window.fail_function()
   }

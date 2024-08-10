@@ -28,7 +28,7 @@ from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.routing import websocket_urlpatterns
+from course_flow.routes.routing import websocket_urlpatterns
 from course_flow.utils import get_model_from_str
 
 from ...models.activity import Activity
@@ -1258,9 +1258,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         # View the favourites
-        selenium.get(
-            self.live_server_url + reverse("course_flow:my-favourites")
-        )
+        selenium.get(self.live_server_url + reverse("course_flow:favourites"))
         time.sleep(2)
         self.assertEqual(
             len(
@@ -1985,9 +1983,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                     By.CSS_SELECTOR, ".strategy-bar-strategy div"
                 ).text
             )
-            selenium.get(
-                self.live_server_url + reverse("course_flow:my-library")
-            )
+            selenium.get(self.live_server_url + reverse("course_flow:library"))
             time.sleep(1)
             selenium.find_element(
                 By.CSS_SELECTOR, "." + workflow_type + " .workflow-title"

@@ -1,7 +1,7 @@
 import React from 'react'
 
-const WorkflowLoader = () => {
+const Loader = () => {
   return <div className="load-screen" />
 }
 
-export default WorkflowLoader
+export default Loader

@@ -64,9 +64,10 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
             <ListItemButton
               component="a"
               data-test-id="panel-home"
-              href={COURSEFLOW_APP.config.home_path}
+              href={COURSEFLOW_APP.config.html_paths.pages.home}
               selected={
-                window.location.pathname === COURSEFLOW_APP.config.home_path
+                window.location.pathname ===
+                COURSEFLOW_APP.config.html_paths.pages.home
               }
             >
               <ListItemIcon>
@@ -80,7 +81,7 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
               <ListItem disablePadding dense>
                 <ListItemButton
                   component="a"
-                  data-test-id="panel-my-library"
+                  data-test-id="panel-library"
                   href={COURSEFLOW_APP.config.my_library_path}
                   selected={
                     window.location.pathname ===

@@ -1,8 +1,21 @@
+#########################################################
+# Aggregated URLS
+#
+# pull in URLs from
+# -- json api
+# -- html renders
+# -- admin etc
+# and pass them to the django router
+#########################################################
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from rest_framework import routers
 
-from . import settings, urls, views
+from course_flow import settings, views
+from course_flow.routes import html_urls, json_api_urls
+
+router = routers.SimpleRouter()
 
 app_name = "course_flow"
 
@@ -29,14 +42,24 @@ def app_patterns():
         path(
             "course-flow/",
             include(
-                (urls.urlpatterns, urls.app_name),
+                (html_urls.patterns, app_name),
                 namespace="course_flow",
             ),
         ),
-        # path(
-        #     "feedback/",
-        #     include("user_feedback.urls", namespace="user_feedback"),
-        # ),
+        path(
+            "course-flow/",
+            include(
+                (router.urls, app_name),
+                namespace="course_flow",
+            ),
+        ),
+        path(
+            "course-flow/json-api/v1/",
+            include(
+                (json_api_urls.patterns, app_name),
+                namespace="json_api",
+            ),
+        ),
         path("admin/", admin.site.urls),
     ]
     if settings.DEBUG:

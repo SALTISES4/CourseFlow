@@ -16,6 +16,9 @@ from course_flow.serializers import InfoBoxSerializer
 from course_flow.utils import get_model_from_str, get_relevance
 
 
+#########################################################
+# @todo fix response shape
+#########################################################
 @user_is_teacher()
 def json_api_post_search_all_objects(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)

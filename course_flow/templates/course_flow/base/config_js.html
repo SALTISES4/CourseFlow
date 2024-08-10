@@ -4,70 +4,94 @@
 <script nonce="{{ request.csp_nonce }}">
 
   COURSEFLOW_APP.config = {
+    {% comment %}
+    LEGACY
+    {% endcomment %}
     post_paths: {
+
+      // workflow
       get_possible_linked_workflows:
-        "{% url 'course_flow:json-api-post-get-possible-linked-workflows' %}",
+        "{% url 'json_api:json-api-post-get-possible-linked-workflows' %}",
       get_possible_added_workflows:
-        "{% url 'course_flow:json-api-post-get-possible-added-workflows' %}",
+        "{% url 'json_api:json-api-post-get-possible-added-workflows' %}",
       get_workflow_context:
-        "{% url 'course_flow:json-api-post-get-workflow-context' %}",
+        "{% url 'json_api:json-api-post-get-workflow-context' %}",
+      set_linked_workflow: "{% url 'json_api:json-api-post-set-linked-workflow' %}",
+      duplicate_workflow_ajax: "{% url 'json_api:json-api-post-duplicate-workflow' %}",
+      get_workflow_data: "{% url 'json_api:json-api-post-get-workflow-data' %}",
+      get_workflow_parent_data: "{% url 'json_api:json-api-post-get-workflow-parent-data' %}",
+      get_workflow_child_data: "{% url 'json_api:json-api-post-get-workflow-child-data' %}",
+
+      // project
       get_target_projects:
-        "{% url 'course_flow:json-api-post-get-target-projects' %}",
-      set_linked_workflow: "{% url 'course_flow:json-api-post-set-linked-workflow' %}",
-      update_value: "{% url 'course_flow:json-api-post-update-value' %}",
-      new_node: "{% url 'course_flow:json-api-post-new-node' %}",
-      new_outcome: "{% url 'course_flow:json-api-post-new-outcome-for-workflow' %}",
-      add_strategy: "{% url 'course_flow:json-api-post-add-strategy' %}",
-      toggle_strategy: "{% url 'course_flow:json-api-post-toggle-strategy' %}",
-      new_node_link: "{% url 'course_flow:json-api-post-new-node-link' %}",
-      delete_self: "{% url 'course_flow:json-api-post-delete-self' %}",
-      restore_self: "{% url 'course_flow:json-api-post-restore-self' %}",
-      delete_self_soft: "{% url 'course_flow:json-api-post-delete-self-soft' %}",
-      duplicate_self: "{% url 'course_flow:json-api-post-duplicate-self' %}",
-      insert_sibling: "{% url 'course_flow:json-api-post-insert-sibling' %}",
-      insert_child: "{% url 'course_flow:json-api-post-insert-child' %}",
-      inserted_at: "{% url 'course_flow:json-api-post-inserted-at' %}",
+        "{% url 'json_api:json-api-post-get-target-projects' %}",
+      update_value: "{% url 'json_api:json-api-post-update-value' %}", // ??
+      duplicate_project_ajax: "{% url 'json_api:json-api-post-duplicate-project' %}",
+
+      // node
+      new_node: "{% url 'json_api:json-api-post-new-node' %}",
+
+      // outcome
+      new_outcome: "{% url 'json_api:json-api-post-new-outcome-for-workflow' %}",
+
+      // stratdgy
+      add_strategy: "{% url 'json_api:json-api-post-add-strategy' %}",
+      duplicate_strategy_ajax: "{% url 'json_api:json-api-post-duplicate-strategy' %}",
+
+      toggle_strategy: "{% url 'json_api:json-api-post-toggle-strategy' %}",
+      new_node_link: "{% url 'json_api:json-api-post-new-node-link' %}",
+
+      delete_self: "{% url 'json_api:json-api-post-delete-self' %}", // ??
+      restore_self: "{% url 'json_api:json-api-post-restore-self' %}", // ??
+      delete_self_soft: "{% url 'json_api:json-api-post-delete-self-soft' %}", // ??
+      duplicate_self: "{% url 'json_api:json-api-post-duplicate-self' %}", // ??
+
+      insert_sibling: "{% url 'json_api:json-api-post-insert-sibling' %}", // ??
+      insert_child: "{% url 'json_api:json-api-post-insert-child' %}", // ??
+      inserted_at: "{% url 'json_api:json-api-post-inserted-at' %}", // ??
+
       update_outcomehorizontallink_degree:
-        "{% url 'course_flow:json-api-post-update-outcomehorizontallink-degree' %}",
+        "{% url 'json_api:json-api-post-update-outcomehorizontallink-degree' %}",
       update_outcomenode_degree:
-        "{% url 'course_flow:json-api-post-update-outcomenode-degree' %}",
-      duplicate_project_ajax: "{% url 'course_flow:json-api-post-duplicate-project' %}",
-      duplicate_workflow_ajax: "{% url 'course_flow:json-api-post-duplicate-workflow' %}",
-      duplicate_strategy_ajax: "{% url 'course_flow:json-api-post-duplicate-strategy' %}",
-      toggle_favourite: "{% url 'course_flow:json-api-post-toggle-favourite' %}",
-      get_workflow_data: "{% url 'course_flow:json-api-post-get-workflow-data' %}",
-      get_workflow_parent_data: "{% url 'course_flow:json-api-post-get-workflow-parent-data' %}",
-      get_workflow_child_data: "{% url 'course_flow:json-api-post-get-workflow-child-data' %}",
-      get_project_data: "{% url 'course_flow:json-api-post-get-project-data' %}",
-      get_users_for_object: "{% url 'course_flow:json-api-post-get-users-for-object' %}",
-      get_user_list: "{% url 'course_flow:json-api-post-get-user-list' %}",
-      search_all_objects: "{% url 'course_flow:json-api-post-search-all-objects' %}",
-      set_permission: "{% url 'course_flow:json-api-post-set-permission' %}",
-      get_comments_for_object: "{% url 'course_flow:json-api-post-get-comments-for-object' %}",
-      add_terminology: "{% url 'course_flow:json-api-post-add-object-set' %}",
-      update_object_set: "{% url 'course_flow:json-api-post-update-object-set' %}",
-      add_comment: "{% url 'course_flow:json-api-post-add-comment' %}",
-      remove_comment: "{% url 'course_flow:json-api-post-remove-comment' %}",
-      remove_all_comments: "{% url 'course_flow:json-api-post-remove-all-comments' %}",
-      get_parent_workflow_info: "{% url 'course_flow:json-api-post-get-parent-workflow-info' %}",
-      get_export: "{% url 'course_flow:json-api-post-get-export' %}",
-      import_data: "{% url 'course_flow:json-api-post-import-data' %}",
-      get_workflows_for_project: "{% url 'course_flow:json-api-post-get-workflows-for-project' %}",
-      select_notifications: "{% url 'course_flow:json-api-post-select-notifications' %}",
+        "{% url 'json_api:json-api-post-update-outcomenode-degree' %}",
+
+
+      toggle_favourite: "{% url 'json_api:json-api-post-toggle-favourite' %}", // ??
+      get_project_data: "{% url 'json_api:json-api-post-get-project-data' %}",
+      get_users_for_object: "{% url 'json_api:json-api-post-get-users-for-object' %}",
+      get_user_list: "{% url 'json_api:json-api-post-get-user-list' %}",
+      search_all_objects: "{% url 'json_api:json-api-post-search-all-objects' %}",
+      set_permission: "{% url 'json_api:json-api-post-set-permission' %}",
+      add_terminology: "{% url 'json_api:json-api-post-add-object-set' %}",
+      update_object_set: "{% url 'json_api:json-api-post-update-object-set' %}",
+
+      // comments
+      get_comments_for_object: "{% url 'json_api:json-api-post-get-comments-for-object' %}", // does this go in comment or object
+      add_comment: "{% url 'json_api:json-api-post-add-comment' %}",
+      remove_comment: "{% url 'json_api:json-api-post-remove-comment' %}",
+      remove_all_comments: "{% url 'json_api:json-api-post-remove-all-comments' %}",
+
+      get_parent_workflow_info: "{% url 'json_api:json-api-post-get-parent-workflow-info' %}",
+
+      // export / import
+      get_export: "{% url 'json_api:json-api-post-get-export' %}",
+      import_data: "{% url 'json_api:json-api-post-import-data' %}",
+      get_workflows_for_project: "{% url 'json_api:json-api-post-get-workflows-for-project' %}",
+      select_notifications: "{% url 'json_api:json-api-post-select-notifications' %}",
     },
     get_paths: {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
-      get_library: "{% url 'course_flow:json-api-get-library' %}",
-      get_favourites: "{% url 'course_flow:json-api-get-favourites' %}",
+      get_library: "{% url 'json_api:json-api-get-library' %}",
+      get_favourites: "{% url 'json_api:json-api-get-favourites' %}",
       import: "{% url 'course_flow:import' %}",
       get_public_workflow_data:
-        "{% url 'course_flow:json-api-get-public-workflow-data' pk='0' %}",
+        "{% url 'json_api:json-api-get-public-workflow-data' pk='0' %}",
       get_public_workflow_parent_data:
-        "{% url 'course_flow:json-api-get-public-workflow-parent-data' pk='0' %}",
+        "{% url 'json_api:json-api-get-public-workflow-parent-data' pk='0' %}",
       get_public_workflow_child_data:
-        "{% url 'course_flow:json-api-get-public-workflow-child-data' pk='0' %}",
+        "{% url 'json_api:json-api-get-public-workflow-child-data' pk='0' %}",
       get_public_parent_workflow_info:
-        "{% url 'course_flow:json-api-get-public-parent-workflow-info' pk='0' %}",
+        "{% url 'json_api:json-api-get-public-parent-workflow-info' pk='0' %}",
     },
     create_path: {
       activity_strategy: "{% url 'course_flow:activity-strategy-create' %}",
@@ -90,20 +114,33 @@
       program: "{% url 'course_flow:workflow-public' pk='0'%}",
       workflow: "{% url 'course_flow:workflow-public' pk='0'%}"
     },
-    home_path: "{% url 'course_flow:home' %}",
-    explore_path: "{% url 'course_flow:explore' %}",
-    my_library_path: "{% url 'course_flow:my-library' %}",
-    my_favourites_path: "{% url 'course_flow:my-favourites' %}",
+
     logout_path: "{% url 'course_flow:logout' %}",
     icon_path: "{% static 'course_flow/img/images_svg/' %}",
 
-    // JSON API paths that
+    {% comment %}
+    SORTED
+    {% endcomment %}
+    html_paths: {
+      pages: {
+        home: "{% url 'course_flow:home' %}",
+        explore: "{% url 'course_flow:explore' %}",
+        library: "{% url 'course_flow:library' %}",
+        favourites: "{% url 'course_flow:favourites' %}",
+      },
+    },
     json_api_paths: {
-      create_project: "{% url 'course_flow:json-api-post-create-project' %}",
-      update_profile: "{% url 'course_flow:json-api-post-update-profile-settings' %}",
-      update_notifications_settings: "{% url 'course_flow:json-api-post-notifications-settings' %}",
-      mark_all_notifications_as_read: "{% url 'course_flow:json-api-post-mark-all-notifications-as-read' %}",
-      delete_notification: "{% url 'course_flow:json-api-post-delete-notification' %}",
+      pages: {
+        home: "{% url 'json_api:json-api--page--home' %}",
+        explore: "{% url 'json_api:json-api--page--explore' %}",
+      },
+      project: {
+        create: "{% url 'json_api:project--create--post' %}"
+      },
+      update_profile: "{% url 'json_api:json-api-post-update-profile-settings' %}",
+      update_notifications_settings: "{% url 'json_api:json-api-post-notifications-settings' %}",
+      mark_all_notifications_as_read: "{% url 'json_api:json-api-post-mark-all-notifications-as-read' %}",
+      delete_notification: "{% url 'json_api:json-api-post-delete-notification' %}",
     },
   }
 

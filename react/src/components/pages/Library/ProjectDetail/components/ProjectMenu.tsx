@@ -100,7 +100,7 @@ function ProjectMenu({
       )
     ) {
       deleteSelfQuery(project.id, 'project', false, () => {
-        window.location.href = COURSEFLOW_APP.config.home_path
+        window.location.href = COURSEFLOW_APP.config.html_paths.pages.home
       })
     }
   }

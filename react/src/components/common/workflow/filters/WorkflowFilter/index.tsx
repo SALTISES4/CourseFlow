@@ -1,6 +1,6 @@
 import * as React from 'react'
 import WorkflowCardCondensed from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardCondensed/index.jsx'
-import WorkflowLoader from '@cfCommonComponents/UIComponents/WorkflowLoader.jsx'
+import Loader from '@cfCommonComponents/UIComponents/Loader.js'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/index.jsx'
 import { debounce } from '@cfUtility'
 import { Workflow } from '@cfModule/types/common'
@@ -353,7 +353,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
   }
 
   WorkflowCards = () => {
-    if (!this.state.workflows) return <WorkflowLoader />
+    if (!this.state.workflows) return <Loader />
 
     const sortedAndFilteredWorkflows = this.sortWorkflows(
       this.filterWorkflows(this.state.workflows)

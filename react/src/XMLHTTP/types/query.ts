@@ -1,4 +1,4 @@
-import { QueryPages, Workflow } from '@cfModule/types/common'
+import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
 import { VERB } from '@cfModule/types/enum'
 import { TWorkflow } from '@cfRedux/types/type'
 import {
@@ -15,6 +15,28 @@ import {
   EObjectSet,
   ESectionGroup
 } from '@XMLHTTP/types/entity'
+
+/*******************************************************
+ * Pages
+ *******************************************************/
+export type HomeQueryResp = {
+  action: VERB
+  data: {
+    projects: Workflow[]
+    templates: Workflow[]
+    isTeacher: boolean
+  }
+}
+
+export type ExploreQueryResp = {
+  action: VERB
+  data: {
+    initial_workflows: Workflow[]
+    initial_pages: QueryPages
+    disciplines: Discipline[]
+    user_id: number
+  }
+}
 
 /*******************************************************
  * EmptyPostResp

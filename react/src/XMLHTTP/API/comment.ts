@@ -13,11 +13,10 @@ export function removeComment(
     objectID: objectID,
     commentPk: commentPk,
     objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Removes all comments from the object
@@ -29,11 +28,10 @@ export function removeAllComments(
   API_POST(COURSEFLOW_APP.config.post_paths.remove_all_comments, {
     objectID: objectID,
     objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //add a comment to an object
@@ -47,11 +45,10 @@ export function addComment(
     objectID: objectID,
     objectType: objectType,
     text: text
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Get the comments for a particular object
@@ -64,9 +61,8 @@ export function getCommentsForObjectQuery(
   API_POST(COURSEFLOW_APP.config.post_paths.get_comments_for_object, {
     objectID: objectID,
     objectType: objectType
+  }).then((response: CommentsForObjectQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:CommentsForObjectQueryResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
