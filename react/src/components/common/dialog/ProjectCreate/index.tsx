@@ -18,7 +18,7 @@ import { DIALOG_TYPE, useDialog } from '..'
 import { StyledDialog, StyledForm } from '../styles'
 import ObjectSets from './components/ObjectSets'
 import { TopBarProps } from '@cfModule/types/common'
-import { API_POST } from '@XMLHTTP/PostFunctions'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 import { OBJECT_SET_TYPE, ObjectSetType } from './type'
 
 export type OnUpdateType = {
@@ -54,7 +54,7 @@ function CreateProjectDialog({
     }
 
     API_POST<{ redirect: string }>(
-      COURSEFLOW_APP.config.json_api_paths.project.create,
+      COURSEFLOW_APP.path.json_api.project.create,
       {
         ...state.fields,
         objectSets: state.objectSets

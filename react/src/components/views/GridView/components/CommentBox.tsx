@@ -217,7 +217,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
           className={indicator_class}
           onClick={this.props.parent.commentClick.bind(this.props.parent)}
         >
-          <img src={COURSEFLOW_APP.config.icon_path + 'comment_new.svg'} />
+          <img src={COURSEFLOW_APP.path.static_assets.icon + 'comment_new.svg'} />
         </div>,
         render_div
       )
@@ -256,7 +256,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
                   title={window.gettext('Delete Comment')}
                   onClick={this.removeComment.bind(this, comment.id)}
                 >
-                  <img src={COURSEFLOW_APP.config.icon_path + 'rubbish.svg'} />
+                  <img src={COURSEFLOW_APP.path.static_assets.icon + 'rubbish.svg'} />
                 </div>
               </div>
             )}
@@ -271,7 +271,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
         title={window.gettext('Close')}
         onClick={this.props.parent.commentClick.bind(this.props.parent)}
       >
-        <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
+        <img src={COURSEFLOW_APP.path.static_assets.icon + 'close.svg'} />
       </div>
     )
     if (!this.props.read_only && comments.length > 1)
@@ -281,7 +281,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
           title={window.gettext('Clear All Comments')}
           onClick={this.removeAllComments.bind(this)}
         >
-          <img src={COURSEFLOW_APP.config.icon_path + 'rubbish.svg'} />
+          <img src={COURSEFLOW_APP.path.static_assets.icon + 'rubbish.svg'} />
         </div>
       )
 
@@ -326,7 +326,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
               />
               <img
                 ref={this.submit}
-                src={COURSEFLOW_APP.config.icon_path + 'add_new.svg'}
+                src={COURSEFLOW_APP.path.static_assets.icon + 'add_new.svg'}
                 className="add-comment-button hidden hover-shade"
                 onClick={this.appendComment.bind(this)}
                 title={window.gettext('Submit')}

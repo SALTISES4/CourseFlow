@@ -4,8 +4,8 @@ import Loader from '@cfCommonComponents/UIComponents/Loader.js'
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/index.jsx'
 import { debounce } from '@cfUtility'
 import { Workflow } from '@cfModule/types/common'
-import { searchAllObjectsQuery } from '@XMLHTTP/API/search'
 import { GridWrap } from '@cfModule/mui/helper'
+import {searchAllObjectsQuery} from "@XMLHTTP/API/pages";
 
 /*******************************************************
  * workflow filter is a shared component that

@@ -41,7 +41,7 @@ class ImportMenu extends React.Component<PropsType> {
         </p>
         <form
           encType="multipart/form-data"
-          action={COURSEFLOW_APP.config.post_paths.import_data}
+          action={COURSEFLOW_APP.path.post_paths.import_data}
           method="POST"
           id="upload-form"
           target="redirect-iframe"
@@ -89,7 +89,7 @@ class ImportMenu extends React.Component<PropsType> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
+          <img src={COURSEFLOW_APP.path.static_assets.icon + 'close.svg'} />
         </div>
       </div>
     )

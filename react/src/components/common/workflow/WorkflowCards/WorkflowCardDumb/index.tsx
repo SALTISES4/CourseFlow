@@ -11,7 +11,7 @@ import {
   CardTitle,
   CardCaption,
   CardChip,
-  CardFavoriteBtn
+  CardFavouriteBtn
 } from './styles'
 
 export enum CHIP_TYPE {
@@ -87,7 +87,7 @@ const WorkflowCardDumb = ({
         </CardFooterTags>
       )}
       <CardFooterActions>
-        <CardFavoriteBtn
+        <CardFavouriteBtn
           aria-label={window.gettext('Favourite')}
           sx={{
             color: isFavourite
@@ -97,7 +97,7 @@ const WorkflowCardDumb = ({
           onClick={onFavourite}
         >
           {isFavourite ? <StarIcon /> : <StarOutlineIcon />}
-        </CardFavoriteBtn>
+        </CardFavouriteBtn>
       </CardFooterActions>
     </CardFooter>
   </CardWrap>

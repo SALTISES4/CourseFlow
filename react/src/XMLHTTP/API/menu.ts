@@ -1,6 +1,5 @@
 import { LibraryQueryResp, FavouritesQueryResp } from '@XMLHTTP/types/query'
 import { EDiscipline } from '@XMLHTTP/types/entity'
-import { API_POST } from '../PostFunctions'
 
 /**
  * Get the library projects
@@ -9,7 +8,7 @@ import { API_POST } from '../PostFunctions'
 export function getLibraryQuery(
   callBackFunction = (_data: LibraryQueryResp) => console.log('success')
 ) {
-  $.get(COURSEFLOW_APP.config.get_paths.get_library)
+  $.get(COURSEFLOW_APP.path.get_paths.get_library)
     .done(function (response: LibraryQueryResp) {
       callBackFunction(response)
     })
@@ -26,7 +25,7 @@ export function getLibraryQuery(
 export function getFavouritesQuery(
   callBackFunction = (_data: FavouritesQueryResp) => console.log('success')
 ) {
-  $.get(COURSEFLOW_APP.config.get_paths.get_favourites)
+  $.get(COURSEFLOW_APP.path.json_api.library.library__favourites__projects)
     .done(function (response: FavouritesQueryResp) {
       callBackFunction(response)
     })
@@ -40,7 +39,7 @@ export function getFavouritesQuery(
 export function getDisciplines(
   callBackFunction = (_data: EDiscipline[]) => console.log('success')
 ) {
-  $.get(COURSEFLOW_APP.config.get_paths.get_disciplines)
+  $.get(COURSEFLOW_APP.path.get_paths.get_disciplines)
     .done(function (response: EDiscipline[]) {
       callBackFunction(response)
     })

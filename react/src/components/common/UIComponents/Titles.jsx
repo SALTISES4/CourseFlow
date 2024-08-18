@@ -44,7 +44,7 @@ export class WorkflowTitle extends React.Component {
     const data = this.props.data
 
     const href = !data.url
-      ? COURSEFLOW_APP.config.update_path[data.type].replace('0', data.id)
+      ? COURSEFLOW_APP.path.update_path[data.type].replace('0', data.id)
       : data.url
 
     if (

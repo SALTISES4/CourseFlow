@@ -53,7 +53,7 @@ class WorkflowCard<
     if (selectAction) {
       selectAction(this.workflow.id)
     } else {
-      window.location.href = COURSEFLOW_APP.config.update_path[
+      window.location.href = COURSEFLOW_APP.path.update_path[
         this.workflow.type
       ].replace('0', String(this.workflow.id))
     }

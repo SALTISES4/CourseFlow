@@ -6,7 +6,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { OuterContentWrap } from '@cfModule/mui/helper'
-import { API_POST } from '@XMLHTTP/PostFunctions'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 
 const PageTitle = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -18,7 +18,7 @@ const PageTitle = styled(Box)(({ theme }) => ({
   }
 }))
 
-// NOTE: Using reducer here in anitipation of more complex settings page
+// NOTE: Using reducer here in anticipation of more complex settings page
 // with various different controls
 function reducer(state, action) {
   switch (action.type) {
@@ -45,7 +45,7 @@ const NotificationsSettingsPage = ({ formData }) => {
 
     // post to the appropriate URL
     API_POST(
-      COURSEFLOW_APP.config.json_api_paths.update_notifications_settings,
+      COURSEFLOW_APP.path.json_api.update_notifications_settings,
       newState
     ).then(() => {
       // and if successful, dispatch the action to update local state

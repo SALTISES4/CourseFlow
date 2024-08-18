@@ -1,6 +1,6 @@
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
-import { API_POST } from '../PostFunctions'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 
 export function deleteSelfQuery(
   objectID: number,
@@ -9,8 +9,8 @@ export function deleteSelfQuery(
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   let path
-  if (soft) path = COURSEFLOW_APP.config.post_paths.delete_self_soft
-  else path = COURSEFLOW_APP.config.post_paths.delete_self
+  if (soft) path = COURSEFLOW_APP.path.post_paths.delete_self_soft
+  else path = COURSEFLOW_APP.path.post_paths.delete_self
 
   API_POST(path, {
     objectID: objectID,
@@ -28,7 +28,7 @@ export function restoreSelfQuery(
   objectType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.restore_self, {
+  API_POST(COURSEFLOW_APP.path.post_paths.restore_self, {
     objectID: objectID,
     objectType: objectType
   })

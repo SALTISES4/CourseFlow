@@ -3,7 +3,7 @@ import { useRef, useEffect, useState } from 'react'
 import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
 import { getLibraryQuery } from '@XMLHTTP/API/menu'
 import { useQuery } from '@tanstack/react-query'
-import { ExploreQueryResp } from '@XMLHTTP/types/query'
+import { PageExploreQueryResp } from '@XMLHTTP/types/query'
 import { fetchExploreContext } from '@XMLHTTP/API/pages'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
 
@@ -16,7 +16,7 @@ const ExplorePage = () => {
   ) // Specify the type if known
   const createDiv = useRef<HTMLDivElement>(null)
 
-  const { data, error, isLoading, isError } = useQuery<ExploreQueryResp>({
+  const { data, error, isLoading, isError } = useQuery<PageExploreQueryResp>({
     queryKey: ['fetchExploreContext'],
     queryFn: fetchExploreContext
   })

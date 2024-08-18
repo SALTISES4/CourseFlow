@@ -1,21 +1,33 @@
 <script nonce="{{ request.csp_nonce }}">
   console.log('COURSEFLOW_APP')
   COURSEFLOW_APP.globalContextData = {{ globalContextData | safe }};
-  COURSEFLOW_APP.path_id = "{{ path_id }}";
+  COURSEFLOW_APP.path_id = "{{ path_id }}"
   const DTOContextData = {{ contextData | safe }};
   console.log(COURSEFLOW_APP)
 
   switch (COURSEFLOW_APP.path_id) {
-    case 'explore':
-    case 'styleguide':
-    case 'favorites':
-    case 'library':
-    case 'notifications':
+    // case 'explore':
+    // case 'styleguide':
+    // case 'favourites':
+    // case 'library':
+    // case 'notifications':
     case 'notificationsSettings':
+      // still has a form in contextdata
     case 'profileSettings':
+    // profile has form in contextdata
+    {
+
+      COURSEFLOW_APP.contextData = DTOContextData
+    }
+      break
+
     case 'projectDetail': {
-       let create_path_this_project = {}
+      let create_path_this_project = {}
       {% if object %}
+
+        console.log('object')
+        // object can be project in project details
+        // it can be
         create_path_this_project = {
           activity: "{% url 'course_flow:activity-create' projectPk=object.pk %}",
           course: "{% url 'course_flow:course-create' projectPk=object.pk %}",
@@ -26,7 +38,8 @@
         ...DTOContextData,
         create_path_this_project
       }
-      break;
+
+      break
     }
 
     /*******************************************************
@@ -43,7 +56,7 @@
         // }
       {% endif %}
       COURSEFLOW_APP.contextData = DTOContextData
-      break;
+      break
     }
     case "workflowDetailView": {
       COURSEFLOW_APP.contextData = {
@@ -52,7 +65,7 @@
           'hsl(' + (((DTOContextData.user_id * 5) % 360) + 1) + ',50%,50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
       }
-      break;
+      break
     }
   }
 </script>

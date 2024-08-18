@@ -13,6 +13,9 @@ def is_teacher(user):
     return Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all()
 
 
+#########################################################
+# LIBRARY
+#########################################################
 @login_required
 def home_view(request):
     context = {
@@ -34,8 +37,8 @@ def explore_view(request):
 @login_required
 def favourites_view(request):
     context = {
-        "title": "My Favorites",
-        "path_id": "favorites",
+        "title": "My Favourites",
+        "path_id": "favourites",
         "contextData": {},
     }
     return render(request, "course_flow/react/common_entrypoint.html", context)
@@ -44,15 +47,4 @@ def favourites_view(request):
 @login_required
 def library_view(request):
     context = {"title": "My Library", "path_id": "library", "contextData": {}}
-    return render(request, "course_flow/react/common_entrypoint.html", context)
-
-
-@login_required
-def styleguide_home(request):
-    context = {
-        "title": "Styleguide",
-        "path_id": "styleguide",
-        "contextData": {},
-    }
-
     return render(request, "course_flow/react/common_entrypoint.html", context)

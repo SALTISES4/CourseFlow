@@ -164,7 +164,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     const public_link =
       'https://' +
       window.location.host +
-      COURSEFLOW_APP.config.public_update_path['workflow'].replace('0', data.id)
+      COURSEFLOW_APP.path.public_update_path['workflow'].replace('0', data.id)
 
     if (data.type !== 'project') {
       const public_view = this.state.public_view

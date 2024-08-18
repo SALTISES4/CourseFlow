@@ -3,7 +3,7 @@
 // app and a place where all the code will be refactored/consolidated into
 // so that we end up with a single entry point into the frontend\
 import Comparison from '@cfPages/Workflow/Comparison'
-import ReactDOM from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -54,7 +54,7 @@ import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComp
 // @LIBRARY
 import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
-import Favourites from '@cfModule/components/pages/Library/Favorites'
+import Favourites from '@cfModule/components/pages/Library/Favourites'
 import Home from '@cfModule/components/pages/Library/Home'
 import Explore from '@cfModule/components/pages/Library/Explore'
 import Workflow from '@cfModule/components/pages/Workflow/Workflow'
@@ -71,6 +71,34 @@ const cache = createCache({
   nonce: window.cf_nonce
 })
 
+const domain = 'course-flow'
+const router = createBrowserRouter([
+  {
+    path: `${domain}/home`,
+    element: <Home />
+  },
+  {
+    path: `${domain}/styleguide`,
+    element: <Styleguide />
+  },
+  {
+    path: `${domain}/favourites`,
+    element: <Favourites />
+  },
+  {
+    path: `${domain}/library`,
+    element: <Library />
+  },
+  {
+    path: `${domain}/explore`,
+    element: <Explore />
+  },
+  {
+    path: `${domain}/user/notifications`,
+    element: <NotificationsPage />
+  }
+])
+
 /**
  * contextData
  * set in python views and prepped in react_renderer.html
@@ -81,25 +109,19 @@ const getAppComponent = () => {
      * LIBRARY
      *******************************************************/
     case 'styleguide':
-      return <Styleguide />
     case 'home':
-      return <Home {...COURSEFLOW_APP.contextData} />
-    case 'favorites':
-      return <Favourites />
+    case 'favourites':
     case 'library':
-      // if this complains about user_id add it to
-      // contextData and pass that to LibraryRenderer
-      return <Library />
     case 'explore':
-      return <Explore {...COURSEFLOW_APP.contextData} />
+    case 'notifications':
+      return <RouterProvider router={router} />
+
     case 'projectDetail':
       return <ProjectDetail {...COURSEFLOW_APP.contextData} />
 
     /*******************************************************
      * USER / PROFILE
      *******************************************************/
-    case 'notifications':
-      return <NotificationsPage {...COURSEFLOW_APP.contextData} />
     case 'notificationsSettings':
       return <NotificationsSettingsPage {...COURSEFLOW_APP.contextData} />
     case 'profileSettings':

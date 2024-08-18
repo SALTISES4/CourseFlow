@@ -11,16 +11,11 @@ from rest_framework.renderers import JSONRenderer
 
 from course_flow.models import Project
 from course_flow.models.discipline import Discipline
-from course_flow.models.liveprojectmodels.liveProjectUser import (
-    LiveProjectUser,
-)
 from course_flow.serializers import (
     DisciplineSerializer,
     ProjectSerializerShallow,
 )
 from course_flow.utils import get_user_permission
-from course_flow.view_utils import get_my_projects
-from course_flow.views.HTTP.HTTP import CreateView_No_Autocomplete
 from course_flow.views.mixins import UserCanViewMixin
 
 

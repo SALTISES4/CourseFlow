@@ -100,7 +100,7 @@ function ProjectMenu({
       )
     ) {
       deleteSelfQuery(project.id, 'project', false, () => {
-        window.location.href = COURSEFLOW_APP.config.html_paths.pages.home
+        window.location.href = COURSEFLOW_APP.path.html.pages.home
       })
     }
   }
@@ -221,7 +221,7 @@ function ProjectMenu({
               null,
               (response_data) => {
                 loader.endLoad()
-                window.location = COURSEFLOW_APP.config.update_path[
+                window.location = COURSEFLOW_APP.path.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }

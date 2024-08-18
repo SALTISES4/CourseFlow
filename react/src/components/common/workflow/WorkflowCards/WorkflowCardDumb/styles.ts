@@ -96,7 +96,7 @@ CardChip.defaultProps = {
   variant: 'filled'
 }
 
-export const CardFavoriteBtn = styled(IconButton)({
+export const CardFavouriteBtn = styled(IconButton)({
   marginTop: '-12px',
   marginBottom: '-8px',
   marginRight: '-8px'

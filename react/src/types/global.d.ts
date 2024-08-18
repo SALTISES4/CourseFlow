@@ -32,7 +32,7 @@ declare global {
 }
 
 interface CourseflowAppGlobals {
-  config: Config
+  path: Path
   strings: Strings
   path_id: string
 
@@ -49,7 +49,7 @@ interface CourseflowAppGlobals {
   ) => void
 }
 
-interface Config {
+interface Path {
   post_paths: { [key: string]: string }
   get_paths: GetPaths
 
@@ -63,10 +63,10 @@ interface Config {
   my_liveprojects_path: string
   registration_path: string
   logout_path: string
-  icon_path: string
   /* SORTED */
-  html_paths: HTMLPaths
-  json_api_paths: JSONAPIPaths
+  html: HTMLPaths
+  json_api: JSONAPIPaths
+  static_assets: GenericPath
 }
 
 interface CreatePath {
@@ -93,16 +93,38 @@ interface HTMLPaths {
   pages: {
     home: string
     explore: string
+    library: string
+    favourites: string
   }
 }
 
+interface GenericPath {
+  [key: string]: string
+}
+
 interface JSONAPIPaths {
-  pages: {
+  library: {
     home: string
     explore: string
+    library__objects_search: string
+    library__favourites__projects: string
+  }
+  user: {
+    notification: string
+    list: string
   }
   project: {
     create: string
+  }
+  comment: {
+    list_by_object: string
+    create: string
+    delete: string
+    delete_all: string
+  }
+  notification: {
+    delete: string
+    mark_all_as_read: string
   }
   update_profile: string
   get_notifications_page: string

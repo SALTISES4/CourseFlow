@@ -13,7 +13,7 @@ import Button from '@mui/material/Button'
 import Snackbar from '@mui/material/Snackbar'
 import Typography from '@mui/material/Typography'
 import { OuterContentWrap } from '@cfModule/mui/helper'
-import { API_POST } from '@XMLHTTP/PostFunctions'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 
 const PageTitle = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -40,7 +40,7 @@ const ProfileSettingsPage = ({ formData }) => {
     const formData = {}
     state.map((field) => (formData[field.name] = field.value))
 
-    API_POST(COURSEFLOW_APP.config.json_api_paths.update_profile, formData)
+    API_POST(COURSEFLOW_APP.path.json_api.update_profile, formData)
       .then(() => setShowSnackbar(true))
       .catch((error) => setErrors(error.data.errors))
   }

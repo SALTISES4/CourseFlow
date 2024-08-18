@@ -17,9 +17,9 @@ import {
 } from '@XMLHTTP/types/entity'
 
 /*******************************************************
- * Pages
+ * Page
  *******************************************************/
-export type HomeQueryResp = {
+export type PageHomeQueryResp = {
   action: VERB
   data: {
     projects: Workflow[]
@@ -28,13 +28,23 @@ export type HomeQueryResp = {
   }
 }
 
-export type ExploreQueryResp = {
+export type PageExploreQueryResp = {
   action: VERB
   data: {
     initial_workflows: Workflow[]
     initial_pages: QueryPages
     disciplines: Discipline[]
     user_id: number
+  }
+}
+/*******************************************************
+ *  Notification
+ *******************************************************/
+export type NotificationQueryResp = {
+  action: VERB
+  data: {
+    notifications: any
+    unreadCount: number
   }
 }
 

@@ -64,7 +64,7 @@ const CopyButton = (data: any) => {
         if (data.is_strategy) {
           duplicateBaseItemQuery(data.id, data.type, null, (response_data) => {
             loader.endLoad()
-            window.location = COURSEFLOW_APP.config.update_path[
+            window.location = COURSEFLOW_APP.path.update_path[
               response_data.new_item.type
             ].replace('0', response_data.new_item.id)
           })
@@ -252,7 +252,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       )
     ) {
       deleteSelfQuery(this.data.id, 'workflow', false, () => {
-        const newPath = COURSEFLOW_APP.config.update_path['project'].replace(
+        const newPath = COURSEFLOW_APP.path.update_path['project'].replace(
           '0',
           this.project.id.toString()
         )
@@ -483,7 +483,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={COURSEFLOW_APP.config.update_path['project'].replace(
+          href={COURSEFLOW_APP.path.update_path['project'].replace(
             String(0),
             this.project.id
           )}
@@ -505,7 +505,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={COURSEFLOW_APP.config.update_path['project'].replace(
+          href={COURSEFLOW_APP.path.update_path['project'].replace(
             String(0),
             this.project.id
           )}
@@ -843,7 +843,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               this.project.id,
               (response_data) => {
                 loader.endLoad()
-                window.location = COURSEFLOW_APP.config.update_path[
+                window.location = COURSEFLOW_APP.path.update_path[
                   response_data.new_item.type
                 ].replace('0', response_data.new_item.id)
               }
@@ -1072,7 +1072,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                     response_data.parentID,
                     (response_data) => {
                       utilLoader.endLoad()
-                      window.location = COURSEFLOW_APP.config.update_path[
+                      window.location = COURSEFLOW_APP.path.update_path[
                         response_data.new_item.type
                       ].replace('0', response_data.new_item.id)
                     }

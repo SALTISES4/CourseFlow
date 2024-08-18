@@ -197,7 +197,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       <a
         className="hover-shade no-underline"
         id="project-return"
-        href={COURSEFLOW_APP.config.update_path['project'].replace(
+        href={COURSEFLOW_APP.path.update_path['project'].replace(
           String(0),
           String(data.id)
         )}
@@ -273,7 +273,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
             closeMessageBox
           )}
         >
-          <img src={COURSEFLOW_APP.config.icon_path + 'add_person.svg'} />
+          <img src={COURSEFLOW_APP.path.static_assets.icon + 'add_person.svg'} />
         </div>
       )
   }

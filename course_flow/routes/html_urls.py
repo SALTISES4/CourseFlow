@@ -11,19 +11,39 @@ from course_flow import views
 def html_patterns():
     return [
         #########################################################
-        # PAGES
+        # Library, may not be the best namespace
+        # but we'll keep it for now
+        # general collectoin of different views for user to see
+        # items which belong to them or they can explore
         #########################################################
         #  Page: Styleguide
         #  React component styleguide / dumb components preview page
+        path("home/", views.html.library.home_view, name="home"),
+        path("explore/", views.html.library.explore_view, name="explore"),
+        path("library/", views.html.library.library_view, name="library"),
         path(
-            "styleguide/", views.html.pages.styleguide_home, name="styleguide"
+            "favourites/",
+            views.html.library.favourites_view,
+            name="favourites",
         ),
-        path("home/", views.html.pages.home_view, name="home"),
-        path("explore/", views.html.pages.explore_view, name="explore"),
+        #########################################################
+        # USER
+        #########################################################
         path(
-            "favourites/", views.html.pages.favourites_view, name="favourites"
+            "user/profile-settings/",
+            views.html.user.profile_settings_view,
+            name="user-update",
         ),
-        path("library/", views.html.pages.library_view, name="library"),
+        path(
+            "user/notifications-settings/",
+            views.html.user.notifications_settings_view,
+            name="user-notifications-settings",
+        ),
+        path(
+            "user/notifications/",
+            views.html.user.notifications_view,
+            name="user-notifications",
+        ),
         #########################################################
         # WORKFLOW
         #########################################################
@@ -57,26 +77,6 @@ def html_patterns():
             views.DisciplineListView.as_view(),
             name="get-disciplines",
         ),
-        #########################################################
-        # USER
-        #########################################################
-        path(
-            "user/update/",
-            views.user.profile_settings_view,
-            name="user-update",
-        ),
-        path(
-            "user/notifications/",
-            views.user.notifications_view,
-            name="user-notifications",
-        ),
-        path(
-            "user/notifications-settings/",
-            views.user.notifications_settings_view,
-            name="user-notifications-settings",
-        ),
-        # todo is this for dev only or this is the same path for dalite embed?
-        path("logout/", views.logout_view, name="logout"),
         #########################################################
         # PROGRAM
         #########################################################
@@ -124,6 +124,13 @@ def html_patterns():
         #########################################################
         # UTILITY
         #########################################################
+        path(
+            "styleguide/",
+            views.html.utility.styleguide_home_view,
+            name="styleguide",
+        ),
+        # todo is this for dev only or this is the same path for dalite embed?
+        path("logout/", views.logout_view, name="logout"),
         path("import/", views.import_view, name="import"),
         path(
             "downloads/saltise/get/",

@@ -4,7 +4,7 @@ import { GridWrap, OuterContentWrap } from '@cfModule/mui/helper'
 import Welcome from './components/Welcome'
 import Section from './components/Section'
 import { fetchHomeContext } from '@XMLHTTP/API/pages'
-import { HomeQueryResp } from '@XMLHTTP/types/query'
+import { PageHomeQueryResp } from '@XMLHTTP/types/query'
 import { useQuery } from '@tanstack/react-query'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
 
@@ -13,7 +13,7 @@ import Loader from '@cfCommonComponents/UIComponents/Loader'
  * @constructor
  */
 const Home = () => {
-  const { data, error, isLoading, isError } = useQuery<HomeQueryResp>({
+  const { data, error, isLoading, isError } = useQuery<PageHomeQueryResp>({
     queryKey: ['fetchHomeContext'],
     queryFn: fetchHomeContext
   })
@@ -34,14 +34,14 @@ const Home = () => {
                   title: window.gettext('Recent projects'),
                   seeAll: {
                     text: 'View all projects',
-                    href: COURSEFLOW_APP.config.my_library_path
+                    href: COURSEFLOW_APP.path.my_library_path
                   }
                 }
               : {
                   title: window.gettext('Recent classrooms'),
                   seeAll: {
                     text: 'View all classrooms',
-                    href: COURSEFLOW_APP.config.my_liveprojects_path
+                    href: COURSEFLOW_APP.path.my_liveprojects_path
                   }
                 }
           }
