@@ -13,6 +13,7 @@ import {
   EObjectSet,
   ESectionGroup
 } from '@XMLHTTP/types/entity'
+import { ProjectViewDTO } from '@cfPages/Library/ProjectDetail/types'
 
 /*******************************************************
  * Primitives
@@ -192,8 +193,12 @@ export type UserListResp = {
 }
 
 /*******************************************************
- * update.ts
+ * project.ts
  *******************************************************/
+export type GetProjectByIdQueryResp = {
+  action: VERB
+  data_package: ProjectViewDTO
+}
 
 /*******************************************************
  * workflow.ts

@@ -27,7 +27,7 @@ import { NotificationQueryResp } from '@XMLHTTP/types/query'
  * @returns {JSX.Element}
  * @constructor
  */
-const NotificationsPage = () => {
+const NotificationsPage = (): JSX.Element => {
   /*******************************************************
    * HOOKS
    *******************************************************/

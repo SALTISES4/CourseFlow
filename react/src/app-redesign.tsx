@@ -104,6 +104,10 @@ const router = createBrowserRouter([
   {
     path: `${domain}/user/profile-settings`,
     element: <ProfileSettingsPage />
+  },
+  {
+    path: `${domain}/project/:id`,
+    element: <ProjectDetail />
   }
 ])
 
@@ -124,24 +128,20 @@ const getAppComponent = () => {
     case 'notifications':
     case 'notificationsSettings':
     case 'profileSettings':
-      return <RouterProvider router={router} />
-
     case 'projectDetail':
-      return <ProjectDetail {...COURSEFLOW_APP.contextData} />
-
-      return
+      return <RouterProvider router={router} />
 
     /*******************************************************
      * REDUX
      *******************************************************/
     case 'projectComparison': {
       /**
-       * @todo for myColour, changeFieldID decide whether these should go in
+       * @todo for changeFieldID decide whether these should go in
        * the DTO from django, or in a subcomponent, if not from django, define as explicit props
        */
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
-        changeFieldID: Math.floor(Math.random() * 10000)
+        changeFieldID: Math.floor(Math.random() * 10000) // @todo why
       }
       // not sure yet because the render method is taking arguments
       const workflowComparisonWrapper = new Comparison(thisContextData)
@@ -159,7 +159,7 @@ const getAppComponent = () => {
 }
 
 // Register all the components that we're loading ourselves on load
-// using the event listner is non-standard but we'll keep it since we are using other legact scripts right now (see belpow)
+// using the event listener is non-standard but we'll keep it since we are using other legact scripts right now (see belpow)
 window.addEventListener('load', () => {
   const reactQueryClient = new QueryClient()
 

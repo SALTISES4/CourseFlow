@@ -273,7 +273,9 @@ class ComparisonView extends React.Component<PropsType, StateType> {
             closeMessageBox
           )}
         >
-          <img src={COURSEFLOW_APP.path.static_assets.icon + 'add_person.svg'} />
+          <img
+            src={COURSEFLOW_APP.path.static_assets.icon + 'add_person.svg'}
+          />
         </div>
       )
   }

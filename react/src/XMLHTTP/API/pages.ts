@@ -7,7 +7,6 @@ import {
   DisciplineQueryResp
 } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
-import { ToDefine } from '@cfModule/types/common'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 import { EDiscipline } from '@XMLHTTP/types/entity'
 
@@ -81,23 +80,6 @@ export const getFavouritesQuery = (
   const url = COURSEFLOW_APP.path.json_api.library.library__favourites__projects
 
   API_GET<FavouritesQueryResp>(url)
-    .then((response) => {
-      callBackFunction(response)
-    })
-    .catch((error) => {
-      console.error('Error fetching library data:', error)
-      window.fail_function()
-    })
-}
-
-//Get the list of possible disciplines
-// @todo not used
-export function getDisciplines(
-  callBackFunction = (_data: EDiscipline[]) => console.log('success')
-) {
-  const url = COURSEFLOW_APP.path.get_paths.get_disciplines
-
-  API_GET<DisciplineQueryResp>(url)
     .then((response) => {
       callBackFunction(response)
     })

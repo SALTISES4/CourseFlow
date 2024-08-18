@@ -125,9 +125,6 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
         JSON.stringify({
           type: 'connection_update',
           user_data: {
-            // user_id: this.user_id,
-            // user_name: this.user_name, // why?
-            // user_colour: this.myColour, // why?
             user_id: this.props.user_id,
             user_name: this.user_name, // why?
             user_colour: this.myColour, // why?

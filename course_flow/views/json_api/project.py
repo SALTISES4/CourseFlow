@@ -7,12 +7,57 @@ from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.duplication_functions import fast_duplicate_project
 from course_flow.forms import CreateProject
 from course_flow.models import Project
-from course_flow.serializers import InfoBoxSerializer, ProjectSerializerShallow
+from course_flow.models.discipline import Discipline
+from course_flow.serializers import (
+    DisciplineSerializer,
+    InfoBoxSerializer,
+    ProjectSerializerShallow,
+)
+from course_flow.utils import get_user_permission
+from course_flow.views import UserCanViewMixin
+
+
+#########################################################
+#
+#########################################################
+@permission_classes([UserCanViewMixin])
+@api_view(["GET"])
+@login_required
+def json_api__project__detail__get(request):
+    project_pk = request.GET.get("id")
+    try:
+        project = Project.objects.get(pk=project_pk)
+
+    except Project.DoesNotExist:
+        return Response({"detail": "Not found."}, status=404)
+
+    serializer = ProjectSerializerShallow(
+        project, context={"request": request}
+    )
+    disciplines = DisciplineSerializer(
+        Discipline.objects.order_by("title"), many=True
+    ).data
+    user_permission = get_user_permission(
+        project, request.user
+    )  # Adjust according to your permission logic
+
+    response_data = {
+        "user_id": request.user.id,
+        "user_permission": user_permission,
+        "project_data": serializer.data,
+        "disciplines": disciplines,
+        "create_path_this_project": get_project_urls_by_pk(project_pk),
+    }
+
+    return JsonResponse({"action": "GET", "data_package": response_data})
 
 
 #########################################################
@@ -104,3 +149,29 @@ def json_api_post_add_object_set(request: HttpRequest) -> JsonResponse:
             "new_dict": ProjectSerializerShallow(project).data["object_sets"],
         }
     )
+
+
+@login_required
+@api_view(["GET"])
+def json_api__project__discipline__list(request):
+    if request.method == "GET":
+        disciplines = Discipline.objects.order_by("title")
+        serializer = DisciplineSerializer(disciplines, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+#########################################################
+# HELPERS
+#########################################################
+def get_project_urls_by_pk(project_pk):
+    return {
+        "activity": reverse(
+            "course_flow:activity-create", kwargs={"projectPk": project_pk}
+        ),
+        "course": reverse(
+            "course_flow:course-create", kwargs={"projectPk": project_pk}
+        ),
+        "program": reverse(
+            "course_flow:program-create", kwargs={"projectPk": project_pk}
+        ),
+    }

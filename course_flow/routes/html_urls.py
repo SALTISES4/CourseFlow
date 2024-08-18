@@ -16,32 +16,62 @@ def html_patterns():
         # general collectoin of different views for user to see
         # items which belong to them or they can explore
         #########################################################
-        #  Page: Styleguide
-        #  React component styleguide / dumb components preview page
-        path("home/", views.html.library.home_view, name="home"),
-        path("explore/", views.html.library.explore_view, name="explore"),
-        path("library/", views.html.library.library_view, name="library"),
+        path(
+            "home/",
+            views.html.library.default_react_view,
+            {
+                "title": "Home",
+                "path_id": "home",
+            },
+            name="home",
+        ),
+        path(
+            "library/",
+            views.html.library.default_react_view,
+            {
+                "title": "My Library",
+                "path_id": "library",
+            },
+            name="library",
+        ),
         path(
             "favourites/",
-            views.html.library.favourites_view,
+            views.html.library.default_react_view,
+            {
+                "title": "My Favourites",
+                "path_id": "favourites",
+            },
             name="favourites",
         ),
+        path("explore/", views.html.library.explore_view, name="explore"),
         #########################################################
         # USER
         #########################################################
         path(
             "user/profile-settings/",
-            views.html.user.profile_settings_view,
+            views.html.library.default_react_view,
+            {
+                "title": "Profile Settings",
+                "path_id": "profileSettings",
+            },
             name="user-update",
         ),
         path(
             "user/notifications-settings/",
-            views.html.user.notifications_settings_view,
+            views.html.library.default_react_view,
+            {
+                "title": "Notifications Settings",
+                "path_id": "notificationsSettings",
+            },
             name="user-notifications-settings",
         ),
         path(
             "user/notifications/",
-            views.html.user.notifications_view,
+            views.html.library.default_react_view,
+            {
+                "title": "Notifications",
+                "path_id": "notifications",
+            },
             name="user-notifications",
         ),
         #########################################################
@@ -71,11 +101,6 @@ def html_patterns():
             "project/<int:pk>/comparison",
             views.ProjectComparisonView.as_view(),
             name="project-comparison",
-        ),
-        path(
-            "project/get-disciplines/",
-            views.DisciplineListView.as_view(),
-            name="get-disciplines",
         ),
         #########################################################
         # PROGRAM

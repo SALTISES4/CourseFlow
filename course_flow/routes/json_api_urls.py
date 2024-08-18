@@ -173,14 +173,14 @@ def json_api_patterns():
         # Project
         #########################################################
         path(
+            "project/detail",
+            views.json_api.project.json_api__project__detail__get,
+            name="project--detail--get",
+        ),
+        path(
             "project/create",
             views.json_api.project.project__create__post,
             name="project--create--post",
-        ),
-        path(
-            "project/duplicate-strategy",
-            views.json_api.strategy.json_api_post_duplicate_strategy,
-            name="json-api-post-duplicate-strategy",
         ),
         path(
             "project/duplicate-project",
@@ -206,6 +206,17 @@ def json_api_patterns():
             "project/from-json",
             views.json_api.old_courseflow_import.json_api_post_project_from_json,
             name="json-api-post-project-from-json",
+        ),
+        path(
+            "project/duplicate-strategy",
+            views.json_api.strategy.json_api_post_duplicate_strategy,
+            name="json-api-post-duplicate-strategy",
+        ),
+        # not used anywhere
+        path(
+            "project/discipline/list",
+            views.json_api.project.json_api__project__discipline__list,
+            name="project--discipline--list",
         ),
         #########################################################
         # import / export

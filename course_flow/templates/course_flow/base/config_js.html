@@ -70,7 +70,6 @@
       import_data: "{% url 'json_api:json-api-post-import-data' %}",
     },
     get_paths: {
-      get_disciplines: "{% url 'course_flow:get-disciplines' %}",
       import: "{% url 'course_flow:import' %}",
       get_public_workflow_data:
         "{% url 'json_api:json-api-get-public-workflow-data' pk='0' %}",
@@ -123,10 +122,11 @@
         library__objects_search: "{% url 'json_api:library--library--objects-search--post' %}",
         library__favourites__projects: "{% url 'json_api:library--favourites--projects--get' %}",
         library__library__projects: "{% url 'json_api:library--library--projects--get' %}",
-
       },
       project: {
-        create: "{% url 'json_api:project--create--post' %}"
+        detail:  "{% url 'json_api:project--detail--get' %}",
+        create: "{% url 'json_api:project--create--post' %}",
+        discipline_list: "{% url 'json_api:project--discipline--list' %}",
       },
       user: {
         list: "{% url 'json_api:user--list--post' %}",

@@ -79,7 +79,6 @@ interface CreatePath {
 }
 
 interface GetPaths {
-  get_disciplines: string
   get_library: string
   get_favourites: string
   import: string
@@ -119,7 +118,9 @@ interface JSONAPIPaths {
     favourite_toggle: string
   }
   project: {
+    detail: string
     create: string
+    discipline__list: string
   }
   comment: {
     list_by_object: string
