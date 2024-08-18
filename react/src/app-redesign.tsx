@@ -96,6 +96,14 @@ const router = createBrowserRouter([
   {
     path: `${domain}/user/notifications`,
     element: <NotificationsPage />
+  },
+  {
+    path: `${domain}/user/notifications-settings`,
+    element: <NotificationsSettingsPage />
+  },
+  {
+    path: `${domain}/user/profile-settings`,
+    element: <ProfileSettingsPage />
   }
 ])
 
@@ -114,18 +122,14 @@ const getAppComponent = () => {
     case 'library':
     case 'explore':
     case 'notifications':
+    case 'notificationsSettings':
+    case 'profileSettings':
       return <RouterProvider router={router} />
 
     case 'projectDetail':
       return <ProjectDetail {...COURSEFLOW_APP.contextData} />
 
-    /*******************************************************
-     * USER / PROFILE
-     *******************************************************/
-    case 'notificationsSettings':
-      return <NotificationsSettingsPage {...COURSEFLOW_APP.contextData} />
-    case 'profileSettings':
-      return <ProfileSettingsPage {...COURSEFLOW_APP.contextData} />
+      return
 
     /*******************************************************
      * REDUX
@@ -137,10 +141,6 @@ const getAppComponent = () => {
        */
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
-        myColour:
-          'hsl(' +
-          (((COURSEFLOW_APP.contextData.user_id * 5) % 360) + 1) +
-          ', 50%, 50%)',
         changeFieldID: Math.floor(Math.random() * 10000)
       }
       // not sure yet because the render method is taking arguments

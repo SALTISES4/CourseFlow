@@ -57,11 +57,12 @@ export function updateValueQuery(
   }
 
   document.lastUpdateCallFunction = () => {
-    API_POST(COURSEFLOW_APP.path.post_paths.update_value, post_object)
-      .then((response:EmptyPostResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
+    API_POST(COURSEFLOW_APP.path.post_paths.update_value, post_object).then(
+      (response: EmptyPostResp) => {
+        if (response.action == VERB.POSTED) callBackFunction(response)
         else window.fail_function(response.action)
-      })
+      }
+    )
   }
   document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
 }
@@ -77,11 +78,10 @@ export function updateValueInstantQuery(
     objectID: objectID,
     objectType: objectType,
     data: json
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //When the drag is complete, this is called to actually update the back-end
@@ -92,13 +92,14 @@ export function dragAction(
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
 
-  API_POST(COURSEFLOW_APP.path.post_paths.inserted_at, action_data)
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
+  API_POST(COURSEFLOW_APP.path.post_paths.inserted_at, action_data).then(
+    (response: EmptyPostResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
       else window.fail_function(response.action)
       $('.ui-draggable').draggable('enable')
       COURSEFLOW_APP.tinyLoader.endLoad()
-    })
+    }
+  )
 }
 
 //Called when an object in a list is reordered
@@ -111,7 +112,7 @@ export function insertedAtInstant(
   throughType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  console.log(parentType);
+  console.log(parentType)
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
   API_POST(COURSEFLOW_APP.path.post_paths.inserted_at, {
@@ -123,13 +124,12 @@ export function insertedAtInstant(
     throughType: throughType,
     inserted: true,
     allowDifferent: true
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+    $('.ui-draggable').draggable('enable')
+    COURSEFLOW_APP.tinyLoader.endLoad()
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-      $('.ui-draggable').draggable('enable')
-      COURSEFLOW_APP.tinyLoader.endLoad()
-    })
 }
 
 //Causes the specified throughmodel to update its degree
@@ -143,11 +143,10 @@ export function updateOutcomenodeDegree(
     nodePk: nodeID,
     outcomePk: outcomeID,
     degree: value
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Add an outcome from the parent workflow to an outcome from the current one
@@ -162,12 +161,10 @@ export function updateOutcomehorizontallinkDegree(
     objectID: outcome2Pk,
     objectType: 'outcome',
     degree: degree
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
 }
 
 //Set the linked workflow for the node
@@ -179,12 +176,10 @@ export function setLinkedWorkflow(
   API_POST(COURSEFLOW_APP.path.post_paths.set_linked_workflow, {
     nodePk: node_id,
     workflowPk: workflow_id
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
 }
 
 /**
@@ -202,12 +197,10 @@ export function toggleStrategyQuery(
   API_POST(COURSEFLOW_APP.path.post_paths.toggle_strategy, {
     weekPk: weekPk,
     is_strategy: is_strategy
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
 }
 
 export function updateObjectSet(
@@ -222,29 +215,9 @@ export function updateObjectSet(
     objectType: objectType,
     objectsetPk: objectsetPk,
     add: add
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
 }
 
-//Toggle whether an item belongs to a user's favourites
-export function toggleFavourite(
-  objectID,
-  objectType,
-  favourite,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
-) {
-  API_POST(COURSEFLOW_APP.path.post_paths.toggle_favourite, {
-    objectID: objectID,
-    objectType: objectType,
-    favourite: favourite
-  })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
-}

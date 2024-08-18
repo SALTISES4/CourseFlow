@@ -3,11 +3,13 @@ import {
   FavouritesQueryResp,
   PageHomeQueryResp,
   LibraryQueryResp,
-  SearchAllObjectsQueryResp
+  LibraryObjectsSearchQueryResp,
+  DisciplineQueryResp
 } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
 import { ToDefine } from '@cfModule/types/common'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
+import { EDiscipline } from '@XMLHTTP/types/entity'
 
 /*******************************************************
  * HOME PAGE
@@ -27,56 +29,25 @@ export async function fetchExploreContext(): Promise<PageExploreQueryResp> {
 }
 
 /**
- *  Toggle whether a project or activity is a favourite for the user
- * @param objectID
- * @param objectType
- * @param favourite
- * @param callBackFunction
- */
-export function toggleFavourite(
-  objectID,
-  objectType,
-  favourite,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  try {
-    API_POST(COURSEFLOW_APP.path.post_paths.toggle_favourite, {
-      objectID: objectID,
-      objectType: objectType,
-      favourite: favourite
-    }).then((response: ToDefine) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
-
-/**
  * Search entire library
  *
  * @param filter
  * @param data
  * @param callBackFunction
  */
-export function searchAllObjectsQuery(
+export function libraryObjectsSearchQuery(
   filter,
   data,
-  callBackFunction = (_data: SearchAllObjectsQueryResp) =>
+  callBackFunction = (_data: LibraryObjectsSearchQueryResp) =>
     console.log('success')
 ) {
-  try {
-    API_POST(COURSEFLOW_APP.path.json_api.library.library__objects_search, {
-      filter: filter,
-      additional_data: data
-    }).then((response: SearchAllObjectsQueryResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
+  API_POST(COURSEFLOW_APP.path.json_api.library.library__objects_search, {
+    filter: filter,
+    additional_data: data
+  }).then((response: LibraryObjectsSearchQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+  })
 }
 
 /**
@@ -84,10 +55,10 @@ export function searchAllObjectsQuery(
  * @param callBackFunction
  * this uses a callback because not yet used in hook
  */
-export function getLibraryQuery(
+export const getLibraryQuery = (
   callBackFunction = (_data: LibraryQueryResp) => console.log('success')
-) {
-  const url = COURSEFLOW_APP.path.get_paths.get_library
+) => {
+  const url = COURSEFLOW_APP.path.json_api.library.library__library__projects
 
   API_GET<LibraryQueryResp>(url)
     .then((response) => {
@@ -104,18 +75,34 @@ export function getLibraryQuery(
  * @param callBackFunction
  * this uses a callback because not yet used in hook
  */
-export function getFavouritesQuery(
+export const getFavouritesQuery = (
   callBackFunction = (_data: FavouritesQueryResp) => console.log('success')
-) {
-  const url = COURSEFLOW_APP.path.get_paths.get_favourites
+) => {
+  const url = COURSEFLOW_APP.path.json_api.library.library__favourites__projects
 
   API_GET<FavouritesQueryResp>(url)
     .then((response) => {
-      // This assumes the API_GET resolves with the expected response directly
       callBackFunction(response)
     })
     .catch((error) => {
       console.error('Error fetching library data:', error)
-      window.fail_function() // Assuming this is your error handling function
+      window.fail_function()
+    })
+}
+
+//Get the list of possible disciplines
+// @todo not used
+export function getDisciplines(
+  callBackFunction = (_data: EDiscipline[]) => console.log('success')
+) {
+  const url = COURSEFLOW_APP.path.get_paths.get_disciplines
+
+  API_GET<DisciplineQueryResp>(url)
+    .then((response) => {
+      callBackFunction(response)
+    })
+    .catch((error) => {
+      console.error('Error fetching library data:', error)
+      window.fail_function()
     })
 }

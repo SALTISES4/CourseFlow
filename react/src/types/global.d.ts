@@ -90,7 +90,7 @@ interface GetPaths {
 }
 
 interface HTMLPaths {
-  pages: {
+  library: {
     home: string
     explore: string
     library: string
@@ -108,10 +108,15 @@ interface JSONAPIPaths {
     explore: string
     library__objects_search: string
     library__favourites__projects: string
+    library__library__projects: string
   }
   user: {
-    notification: string
     list: string
+    profile_settings: string
+    profile_settings__update: string
+    notification_settings: string
+    notification_settings__update: string
+    favourite_toggle: string
   }
   project: {
     create: string
@@ -123,15 +128,10 @@ interface JSONAPIPaths {
     delete_all: string
   }
   notification: {
+    list: string
     delete: string
     mark_all_as_read: string
   }
-  update_profile: string
-  get_notifications_page: string
-  update_notifications_settings: string
-  mark_all_notifications_as_read: string
-  delete_notification: string
-  // new pages
 }
 
 interface PublicUpdatePath {

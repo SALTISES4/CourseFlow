@@ -123,9 +123,10 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
             <ListItemButton
               component="a"
               data-test-id="panel-home"
-              href={COURSEFLOW_APP.path.html.pages.home}
+              href={COURSEFLOW_APP.path.html.library.home}
               selected={
-                window.location.pathname === COURSEFLOW_APP.path.html.pages.home
+                window.location.pathname ===
+                COURSEFLOW_APP.path.html.library.home
               }
             >
               <ListItemIcon>
@@ -140,10 +141,10 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
                 <ListItemButton
                   component="a"
                   data-test-id="panel-library"
-                  href={COURSEFLOW_APP.path.html.pages.library}
+                  href={COURSEFLOW_APP.path.html.library.library}
                   selected={
                     window.location.pathname ===
-                    COURSEFLOW_APP.path.html.pages.library
+                    COURSEFLOW_APP.path.html.library.library
                   }
                 >
                   <ListItemIcon>
@@ -156,10 +157,10 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
                 <ListItemButton
                   component="a"
                   data-test-id="panel-explore"
-                  href={COURSEFLOW_APP.path.html.pages.explore}
+                  href={COURSEFLOW_APP.path.html.library.explore}
                   selected={
                     window.location.pathname ===
-                    COURSEFLOW_APP.path.html.pages.explore
+                    COURSEFLOW_APP.path.html.library.explore
                   }
                 >
                   <ListItemIcon>
@@ -211,7 +212,7 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
                               px: 2,
                               py: 1
                             }}
-                            href={COURSEFLOW_APP.path.html.pages.favourites}
+                            href={COURSEFLOW_APP.path.html.library.favourites}
                           >
                             {COURSEFLOW_APP.strings.view_all}
                           </SeeAllLink>

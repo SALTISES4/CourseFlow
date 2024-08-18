@@ -5,7 +5,7 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import { debounce } from '@cfUtility'
 import { Workflow } from '@cfModule/types/common'
 import { GridWrap } from '@cfModule/mui/helper'
-import {searchAllObjectsQuery} from "@XMLHTTP/API/pages";
+import {libraryObjectsSearchQuery} from "@XMLHTTP/API/pages";
 
 /*******************************************************
  * workflow filter is a shared component that
@@ -172,7 +172,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
     COURSEFLOW_APP.tinyLoader.startLoad()
     const { searchFilter } = this.state
 
-    searchAllObjectsQuery(searchFilter, { nresults: 0 }, (responseData) => {
+    libraryObjectsSearchQuery(searchFilter, { nresults: 0 }, (responseData) => {
       this.setState({
         ...this.state,
         workflows: responseData.workflow_list,
@@ -235,7 +235,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
   }
 
   searchWithout(request, response_function) {
-    searchAllObjectsQuery(
+    libraryObjectsSearchQuery(
       request,
       {
         nresults: 10

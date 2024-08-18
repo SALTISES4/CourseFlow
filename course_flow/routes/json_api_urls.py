@@ -274,9 +274,19 @@ def json_api_patterns():
         # User: profile settings
         #########################################################
         path(
+            "user/profile-settings",
+            views.json_api.user.json_api__user__profile_settings__get,
+            name="user--profile-settings--get",
+        ),
+        path(
             "user/profile-settings/update",
             views.json_api.user.json_api__user__profile_settings__update__post,
             name="user--profile-settings--update--post",
+        ),
+        path(
+            "user/notifications-settings",
+            views.json_api.user.json_api__user__notification_settings__get,
+            name="user--notification-settings--get",
         ),
         path(
             "user/notifications-settings/update",

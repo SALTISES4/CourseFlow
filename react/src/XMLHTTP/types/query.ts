@@ -1,6 +1,5 @@
 import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
 import { VERB } from '@cfModule/types/enum'
-import { TWorkflow } from '@cfRedux/types/type'
 import {
   WorkflowDataPackage,
   WorkflowParentDataPackage,
@@ -9,12 +8,30 @@ import {
 } from '@XMLHTTP/types'
 import {
   ENewItem,
-  ESection,
   EUser,
   EComment,
   EObjectSet,
   ESectionGroup
 } from '@XMLHTTP/types/entity'
+
+/*******************************************************
+ * Primitives
+ *******************************************************/
+type FieldOption = {
+  label: string
+  value: string
+}
+
+export type ProfileField = {
+  name: string
+  label: string
+  type: string
+  required: boolean
+  options: FieldOption[] | null
+  max_length: number | null
+  help_text: string
+  value: string | number
+}
 
 /*******************************************************
  * Page
@@ -37,6 +54,35 @@ export type PageExploreQueryResp = {
     user_id: number
   }
 }
+
+/*******************************************************
+ * User
+ *******************************************************/
+export type NotificationSettingsQueryResp = {
+  action: VERB
+  data_package: {
+    formData: {
+      receiveNotifications: boolean
+    }
+  }
+}
+
+export type NotificationSettingsUpdateQueryResp = {
+  action: VERB
+  data_package: {
+    formData: {
+      receiveNotifications: boolean
+    }
+  }
+}
+
+export type ProfileSettingsQueryResp = {
+  action: VERB
+  data_package: {
+    formData: ProfileField[]
+  }
+}
+
 /*******************************************************
  *  Notification
  *******************************************************/
@@ -63,7 +109,6 @@ export type EmptyPostResp = {
 /*******************************************************
  * comment.ts
  *******************************************************/
-
 export type CommentsForObjectQueryResp = {
   action: VERB
   data_package: EComment[]
@@ -72,7 +117,6 @@ export type CommentsForObjectQueryResp = {
 /*******************************************************
  * create.ts
  *******************************************************/
-
 export type AddTerminologyQueryResp = {
   action: VERB
   new_dict: EObjectSet[]
@@ -109,11 +153,16 @@ export type FavouritesQueryResp = {
   data_package: Workflow[]
 }
 
+export type DisciplineQueryResp = {
+  action: VERB
+  data_package: Workflow[]
+}
+
 /*******************************************************
  * search.ts
  *******************************************************/
 
-export type SearchAllObjectsQueryResp = {
+export type LibraryObjectsSearchQueryResp = {
   action: VERB
   workflow_list: Workflow[]
   pages: QueryPages

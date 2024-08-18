@@ -1,10 +1,9 @@
 import * as React from 'react'
 import { useRef, useEffect, useState } from 'react'
 import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
-import { getLibraryQuery } from '@XMLHTTP/API/menu'
 import { useQuery } from '@tanstack/react-query'
 import { PageExploreQueryResp } from '@XMLHTTP/types/query'
-import { fetchExploreContext } from '@XMLHTTP/API/pages'
+import { fetchExploreContext, getLibraryQuery } from '@XMLHTTP/API/pages'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
 
 const ExplorePage = () => {
@@ -30,7 +29,6 @@ const ExplorePage = () => {
     if (createDiv.current) {
       COURSEFLOW_APP.makeDropdown(createDiv.current)
     }
-    // COURSEFLOW_APP.makeDropdown(this.createDiv.current) // @todo double check in git history these were both correct
   }, [])
 
   /*******************************************************

@@ -4,7 +4,7 @@ import { debounce } from '@cfUtility'
 // import $ from 'jquery'
 import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
 import { GridWrap } from '@cfModule/mui/helper'
-import {searchAllObjectsQuery} from "@XMLHTTP/API/pages";
+import { libraryObjectsSearchQuery } from '@XMLHTTP/API/pages'
 
 type Filter = {
   name: string
@@ -208,7 +208,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
       hasSearched: true
     })
     COURSEFLOW_APP.tinyLoader.startLoad()
-    searchAllObjectsQuery(
+    libraryObjectsSearchQuery(
       request,
       {
         nresults: 20,

@@ -7,9 +7,6 @@ from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.serializers import FormFieldsSerializer
 
 
-#########################################################
-# USER
-#########################################################
 @login_required
 def notifications_view(request):
     context = {
@@ -20,6 +17,9 @@ def notifications_view(request):
     return render(request, "course_flow/react/common_entrypoint.html", context)
 
 
+#########################################################
+# NOTIFICATION SETTINGS
+#########################################################
 @login_required
 def notifications_settings_view(request):
     user = CourseFlowUser.objects.filter(user=request.user).first()
@@ -33,6 +33,9 @@ def notifications_settings_view(request):
     return render(request, "course_flow/react/common_entrypoint.html", context)
 
 
+#########################################################
+# PROFILE SETTINGS
+#########################################################
 @login_required
 def profile_settings_view(request):
     user = CourseFlowUser.objects.filter(user=request.user).first()

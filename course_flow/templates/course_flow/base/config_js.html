@@ -118,17 +118,21 @@
     },
     json_api: {
       library: {
-        home: "{% url 'json_api:page--home' %}",
-        explore: "{% url 'json_api:page--explore' %}",
-        library__objects_search: "{% url 'json_api:library--library--objects_search--post' %}",
+        home: "{% url 'json_api:library--home' %}",
+        explore: "{% url 'json_api:library--explore' %}",
+        library__objects_search: "{% url 'json_api:library--library--objects-search--post' %}",
         library__favourites__projects: "{% url 'json_api:library--favourites--projects--get' %}",
+        library__library__projects: "{% url 'json_api:library--library--projects--get' %}",
+
       },
       project: {
         create: "{% url 'json_api:project--create--post' %}"
       },
       user: {
         list: "{% url 'json_api:user--list--post' %}",
+        profile_settings: "{% url 'json_api:user--profile-settings--get' %}",
         profile_settings__update: "{% url 'json_api:user--profile-settings--update--post' %}",
+        notification_settings: "{% url 'json_api:user--notification-settings--get' %}",
         notification_settings__update: "{% url 'json_api:user--notification-settings--update--post' %}",
         favourite_toggle: "{% url 'json_api:favourite--toggle--post' %}", // ??
       },

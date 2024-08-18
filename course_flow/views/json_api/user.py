@@ -14,8 +14,30 @@ from course_flow.forms import NotificationsSettings, ProfileSettings
 from course_flow.models import User
 from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.models.favourite import Favourite
-from course_flow.serializers import UserSerializer
+from course_flow.serializers import FormFieldsSerializer, UserSerializer
 from course_flow.utils import get_model_from_str
+
+
+#########################################################
+# PROFILE SETTINGS
+#########################################################
+@login_required
+def json_api__user__profile_settings__get(request):
+    user = CourseFlowUser.objects.filter(user=request.user).first()
+    form = ProfileSettings(
+        {
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "language": user.language,
+        }
+    )
+    return JsonResponse(
+        {
+            "data_package": {
+                "formData": FormFieldsSerializer(form).prepare_fields()
+            }
+        }
+    )
 
 
 @login_required
@@ -36,6 +58,21 @@ def json_api__user__profile_settings__update__post(
     return JsonResponse({"action": "error", "errors": form.errors})
 
 
+#########################################################
+# NOTIFICATION SETTINGS
+#########################################################
+@login_required
+def json_api__user__notification_settings__get(request):
+    user = CourseFlowUser.objects.filter(user=request.user).first()
+    return JsonResponse(
+        {
+            "data_package": {
+                "formData": {"receiveNotifications": user.notifications}
+            }
+        }
+    )
+
+
 @login_required
 @require_POST
 def json_api__user__notification_settings__post(
@@ -52,6 +89,11 @@ def json_api__user__notification_settings__post(
 
     # otherwise, return the errors so UI can display errors accordingly
     return JsonResponse({"action": "error", "errors": form.errors})
+
+
+#########################################################
+# FAVS
+#########################################################
 
 
 # favourite/unfavourite a project or workflow for a user

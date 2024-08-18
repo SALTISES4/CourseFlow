@@ -1,21 +1,21 @@
 import * as React from 'react'
 
 const ConnectedUser = ({
-  user_colour,
-  user_name
+  userColour,
+  userName
 }: {
-  user_colour: string
-  user_name: string
+  userColour: string
+  userName: string
 }) => {
   return (
     <div
       className="user-indicator"
       style={{
-        backgroundColor: user_colour
+        backgroundColor: userColour
       }}
-      title={user_name}
+      title={userName}
     >
-      {user_name}
+      {userName}
     </div>
   )
 }
@@ -40,6 +40,9 @@ type StateType = {
   connected_users: ConnectedUserType[]
 }
 
+const calcColor = (id: number) =>
+  'hsl(' + (((id * 5) % 360) + 1) + ', 50%, 50%)'
+
 export class ConnectionBar extends React.Component<PropsType, StateType> {
   private user_name: string
   private myColour: string
@@ -49,15 +52,12 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
     this.state = {
       connected_users: []
     }
-    // this.user_id = props.renderer.user_id
-    // this.user_name = props.renderer.user_name
 
     // @ts-ignore
     this.user_name = COURSEFLOW_APP.contextData.user_name
-    // this.myColour = props.renderer.myColour
 
     // @ts-ignore
-    this.myColour = COURSEFLOW_APP.contextData.user_name
+    this.myColour = calcColor(COURSEFLOW_APP.contextData.user_id)
 
     // @todo not sure what the intention is here, but it needs to be removed
     // watch for side effects
@@ -75,8 +75,8 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
       const users = this.state.connected_users.map((user) => {
         return (
           <ConnectedUser
-            user_colour={user.user_colour}
-            user_name={user.user_name}
+            userColour={user.user_colour}
+            userName={user.user_name}
           />
         )
       })
