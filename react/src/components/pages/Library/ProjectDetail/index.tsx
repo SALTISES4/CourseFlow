@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
-import ProjectMenu from '@cfModule/components/pages/Library/ProjectDetail/components/ProjectMenu'
+import ProjectDetailContent from '@cfPages/Library/ProjectDetail/components/ProjectDetailContent'
 import { useQuery } from '@tanstack/react-query'
 import { getProjectById } from '@XMLHTTP/API/project'
 import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
@@ -86,7 +86,7 @@ const ProjectPage = () => {
   }
 
   return (
-    <ProjectMenu
+    <ProjectDetailContent
       projectPaths={data.data_package.create_path_this_project}
       allDisciplines={data.data_package.disciplines}
       readOnly={calcIsReadOnly()}

@@ -43,15 +43,16 @@
 
 <body id="site">
 
-<div id="reactRoot">
-  <!--react app placeholder -->
-</div>
+  <div id="reactRoot">
+    <!--react app placeholder -->
+  </div>
 
 
-{% block body %} {% endblock %}
-{% block container %} {% endblock %}
+  {% block body %} {% endblock %}
+  {% block container %} {% endblock %}
 
-{% csrf_token %}
+  {% csrf_token %}
+
 </body>
 
 {% block common_scripts %}
@@ -60,9 +61,5 @@
 {% endblock %}
 
 {% block react_scripts %} {% endblock %}
-
-{% block scripts %}
-  <script src="{% static 'course_flow/js/templates/base.js' %}"></script>
-{% endblock %}
 
 </html>

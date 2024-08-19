@@ -54,7 +54,6 @@ interface Path {
   get_paths: GetPaths
 
   create_path: CreatePath
-  update_path: UpdatePath
   public_update_path: PublicUpdatePath
   home_path: string
   explore_path: string
@@ -89,6 +88,7 @@ interface GetPaths {
 }
 
 interface HTMLPaths {
+  update_path_temp: string
   library: {
     home: string
     explore: string

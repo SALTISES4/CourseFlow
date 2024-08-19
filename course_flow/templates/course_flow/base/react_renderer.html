@@ -8,22 +8,21 @@
 
   switch (COURSEFLOW_APP.path_id) {
 
-    case 'projectDetail': {
-      let create_path_this_project = {}
-      {% if object %}
-        // object can be project in project details
-        create_path_this_project = {
-          activity: "{% url 'course_flow:activity-create' projectPk=object.pk %}",
-          course: "{% url 'course_flow:course-create' projectPk=object.pk %}",
-          program: "{% url 'course_flow:program-create' projectPk=object.pk %}"
-        }
-      {% endif %}
-      COURSEFLOW_APP.contextData = {
-        ...DTOContextData,
-        create_path_this_project
-      }
-      break
-    }
+    {#case 'projectDetail': {#}
+    {#  let create_path_this_project = {}#}
+    {#  {% if object %}#}
+    {#    // object can be project in project details#}
+    {#    create_path_this_project = {#}
+    {#      activity: "{% url 'course_flow:activity-create' projectPk=object.pk %}",#}
+    {#      course: "{% url 'course_flow:course-create' projectPk=object.pk %}",#}
+    {#      program: "{% url 'course_flow:program-create' projectPk=object.pk %}"#}
+    {#    }#}
+    {#  {% endif %}#}
+    {#  COURSEFLOW_APP.contextData = {#}
+    {#    ...DTOContextData,#}
+    {#    create_path_this_project#}
+    {#  }#}
+    {#  break#}
 
     /*******************************************************
      * REDUX STUFF

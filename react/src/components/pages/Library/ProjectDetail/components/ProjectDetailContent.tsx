@@ -5,7 +5,7 @@ import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
 import { ProjectMenuProps } from '@cfPages/Library/ProjectDetail/types'
 import { Workflow } from '@cfModule/types/common'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
-import { Dialog, DialogTitle } from '@mui/material'
+import { Box, Dialog, DialogTitle } from '@mui/material'
 import Header from '@cfPages/Library/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
@@ -35,7 +35,7 @@ interface StateType {
   openShareDialog?: boolean
 }
 
-function ProjectMenu({
+function ProjectDetailContent({
   project,
   userId,
   projectPaths,
@@ -221,9 +221,13 @@ function ProjectMenu({
               null,
               (response_data) => {
                 loader.endLoad()
-                window.location = COURSEFLOW_APP.path.update_path[
-                  response_data.new_item.type
-                ].replace('0', response_data.new_item.id)
+                // @ts-ignore
+                window.location =
+                  COURSEFLOW_APP.path.html.update_path_temp.replace(
+                    '0',
+                  // @ts-ignore
+                    response_data.new_item.id
+                  )
               }
             )
           }}
@@ -400,7 +404,7 @@ function ProjectMenu({
         visibleButtons={() => <VisibleButtons />}
       />
 
-      <div className="project-menu">
+      <Box>
         <Header
           disciplines={state.project.disciplines}
           description={state.project.description}
@@ -411,7 +415,8 @@ function ProjectMenu({
           readOnly={readOnly}
         />
         <Content />
-      </div>
+      </Box>
+
       <EditDialog />
       <ShareDialog />
       <ProjectExportModal data={state.project} />
@@ -420,4 +425,4 @@ function ProjectMenu({
   )
 }
 
-export default ProjectMenu
+export default ProjectDetailContent

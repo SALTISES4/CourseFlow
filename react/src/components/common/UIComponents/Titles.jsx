@@ -1,5 +1,4 @@
 import * as React from 'react'
-import * as Constants from '@cfConstants'
 
 //Text that can be passed a default value. HTML is dangerously set.
 export class TitleText extends React.Component {
@@ -21,9 +20,11 @@ export class TitleText extends React.Component {
   }
 }
 
-//Title text for a workflow
+// Title text for a workflow
 export class WorkflowTitle extends React.Component {
   render() {
+    const data = this.props.data
+
     const getText = () => {
       let text = data.title || window.gettext('Untitled')
 
@@ -41,10 +42,8 @@ export class WorkflowTitle extends React.Component {
       return text
     }
 
-    const data = this.props.data
-
     const href = !data.url
-      ? COURSEFLOW_APP.path.update_path[data.type].replace('0', data.id)
+      ? COURSEFLOW_APP.path.html.update_path_temp.replace('0', data.id)
       : data.url
 
     if (
@@ -60,18 +59,18 @@ export class WorkflowTitle extends React.Component {
           dangerouslySetInnerHTML={{ __html: getText() }}
         />
       )
-    } else {
-      return (
-        <a
-          onClick={(evt) => evt.stopPropagation()}
-          href={href}
-          className={this.props.class_name}
-          data-test-id={this.props.test_id}
-          title={getText()}
-          dangerouslySetInnerHTML={{ __html: getText() }}
-        />
-      )
     }
+
+    return (
+      <a
+        onClick={(evt) => evt.stopPropagation()}
+        href={href}
+        className={this.props.class_name}
+        data-test-id={this.props.test_id}
+        title={getText()}
+        dangerouslySetInnerHTML={{ __html: getText() }}
+      />
+    )
   }
 }
 

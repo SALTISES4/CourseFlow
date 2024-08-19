@@ -61,9 +61,13 @@ const CopyButton = (data: any) => {
         if (data.is_strategy) {
           duplicateBaseItemQuery(data.id, data.type, null, (response_data) => {
             loader.endLoad()
-            window.location = COURSEFLOW_APP.path.update_path[
-              response_data.new_item.type
-            ].replace('0', response_data.new_item.id)
+            // @todo no
+            // @ts-ignore
+            window.location = COURSEFLOW_APP.path.html.update_path_temp.replace(
+              '0',
+              // @ts-ignore
+              response_data.new_item.id
+            )
           })
         } else {
           dispatch(DIALOG_TYPE.TARGET_PROJECT)
@@ -249,7 +253,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       )
     ) {
       deleteSelfQuery(this.data.id, 'workflow', false, () => {
-        const newPath = COURSEFLOW_APP.path.update_path['project'].replace(
+        // @todo no
+        const newPath = COURSEFLOW_APP.path.html.update_path_temp.replace(
           '0',
           this.project.id.toString()
         )
@@ -480,7 +485,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={COURSEFLOW_APP.path.update_path['project'].replace(
+          href={COURSEFLOW_APP.path.html.update_path_temp.replace(
             String(0),
             this.project.id
           )}
@@ -502,7 +507,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={COURSEFLOW_APP.path.update_path['project'].replace(
+          // @todo no
+          href={COURSEFLOW_APP.path.html.update_path_temp.replace(
             String(0),
             this.project.id
           )}
@@ -840,9 +846,13 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               this.project.id,
               (response_data) => {
                 loader.endLoad()
-                window.location = COURSEFLOW_APP.path.update_path[
-                  response_data.new_item.type
-                ].replace('0', response_data.new_item.id)
+                // @ts-ignore
+                window.location =
+                  COURSEFLOW_APP.path.html.update_path_temp.replace(
+                    '0',
+                    // @ts-ignore
+                    response_data.new_item.id
+                  )
               }
             )
           }}
@@ -1069,9 +1079,13 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                     response_data.parentID,
                     (response_data) => {
                       utilLoader.endLoad()
-                      window.location = COURSEFLOW_APP.path.update_path[
-                        response_data.new_item.type
-                      ].replace('0', response_data.new_item.id)
+                      // @ts-ignore
+                      window.location =
+                        COURSEFLOW_APP.path.html.update_path_temp.replace(
+                          '0',
+                          // @ts-ignore
+                          response_data.new_item.id
+                        )
                     }
                   )
                 }

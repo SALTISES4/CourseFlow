@@ -7,6 +7,7 @@
     {% comment %}
     LEGACY
     {% endcomment %}
+
     post_paths: {
 
       // workflow
@@ -88,13 +89,6 @@
       course_strategy: "{% url 'course_flow:course-strategy-create' %}",
       project: "https://legacy-prpject-create-url",
     },
-    update_path: {
-      activity: "{% url 'course_flow:workflow-update' pk='0'%}",
-      course: "{% url 'course_flow:workflow-update' pk='0'%}",
-      program: "{% url 'course_flow:workflow-update' pk='0'%}",
-      workflow: "{% url 'course_flow:workflow-update' pk='0'%}",
-      project: "{% url 'course_flow:project-update' pk='0'%}",
-    },
     public_update_path: {
       activity: "{% url 'course_flow:workflow-public' pk='0'%}",
       course: "{% url 'course_flow:workflow-public' pk='0'%}",
@@ -114,6 +108,8 @@
         library: "{% url 'course_flow:library' %}",
         favourites: "{% url 'course_flow:favourites' %}",
       },
+      project: "{% url 'course_flow:project-detail' _='path' %}",
+      update_path_temp: "{% url 'course_flow:workflow-update' pk='0'%}"
     },
     json_api: {
       library: {
@@ -124,7 +120,7 @@
         library__library__projects: "{% url 'json_api:library--library--projects--get' %}",
       },
       project: {
-        detail:  "{% url 'json_api:project--detail--get' %}",
+        detail: "{% url 'json_api:project--detail--get' %}",
         create: "{% url 'json_api:project--create--post' %}",
         discipline_list: "{% url 'json_api:project--discipline--list' %}",
       },
