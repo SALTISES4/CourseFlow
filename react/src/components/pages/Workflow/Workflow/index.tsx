@@ -354,11 +354,9 @@ class Workflow {
   parsemessage(e) {
     const data = JSON.parse(e.data)
 
-    console.log('parsemessage')
-    console.log(data)
-
     switch (data.type) {
       case DATA_TYPE.WORKFLOW_ACTION:
+        console.log("an action just came in",data)
         this.store.dispatch(data.action)
         break
       case DATA_TYPE.LOCK_UPDATE:
@@ -380,7 +378,6 @@ class Workflow {
   }
 
   lock_update_received(data) {
-    console.log("I have received a lock update")
     const object_type = data.object_type
     const object_id = data.object_id
 
@@ -487,10 +484,7 @@ class Workflow {
   //lock an object, indicating it should not be selectable
   //by any other users
   lock_update(obj, time, lock) {
-    console.log("I am sending a lock update")
-    console.log(this.websocket)
     if (this.websocket) {
-      console.log("yes we have a websocket")
       this.websocket.send(
         JSON.stringify({
           type: 'lock_update',

@@ -41,7 +41,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
     const nodebarColumnWorkflows = data.columnworkflow_set.map(
       (columnWorkflow: number, index: number) => (
         <NodeBarColumnWorkflow
-          key={`NodeBarColumnWorkflow-${index}`}
+          key={`NodeBarColumnWorkflow-${columnWorkflow}`}
           objectID={columnWorkflow}
           columnChoices={this.props.columnChoices}
         />

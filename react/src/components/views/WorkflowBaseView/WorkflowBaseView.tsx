@@ -656,7 +656,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const nodebarweekworkflows = this.data.weekworkflow_set.map(
       (weekworkflow, index) => (
         <JumpToWeekWorkflow
-          key={`weekworkflow-${index}`}
+          key={`weekworkflow-${weekworkflow}`}
           order={this.data.weekworkflow_set}
           // renderer={this.props.renderer}
           objectID={weekworkflow}

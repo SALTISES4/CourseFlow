@@ -65,7 +65,7 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected<
     ) {
       insertedAt(
         // @ts-ignore
-        this.props.renderer, // @todo context has replaced renderer and so 'drag action' is not available
+        this.context.selection_manager, // @todo context has replaced renderer and so 'drag action' is not available
         null,
         'outcome',
         this.props.workflow.id,
