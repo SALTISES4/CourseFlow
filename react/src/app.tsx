@@ -120,16 +120,15 @@ const getAppComponent = () => {
     /*******************************************************
      * LIBRARY
      *******************************************************/
-    case 'styleguide':
-    case 'home':
-    case 'favourites':
-    case 'library':
-    case 'explore':
-    case 'notifications':
-    case 'notificationsSettings':
-    case 'profileSettings':
-    case 'projectDetail':
-      return <RouterProvider router={router} />
+    // case 'styleguide':
+    // case 'home':
+    // case 'favourites':
+    // case 'library':
+    // case 'explore':
+    // case 'notifications':
+    // case 'notificationsSettings':
+    // case 'profileSettings':
+    // case 'projectDetail':
 
     /*******************************************************
      * REDUX
@@ -154,8 +153,9 @@ const getAppComponent = () => {
       workflowWrapper.init()
       return true
     }
+    default:
+      return <RouterProvider router={router} />
   }
-  return null
 }
 
 // Register all the components that we're loading ourselves on load
@@ -168,7 +168,7 @@ window.addEventListener('load', () => {
     const content = getAppComponent()
     if (!content) return
 
-    const target = document.querySelector('#reactRoot')
+    const target = document.querySelector('#root')
     if (target) {
       const componentRoot = createRoot(target)
       componentRoot.render(

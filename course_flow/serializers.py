@@ -1294,8 +1294,6 @@ class InfoBoxSerializer(
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     project_title = serializers.SerializerMethodField()
-    # url = serializers.SerializerMethodField()
-    # can_edit = serializers.SerializerMethodField()
     object_permission = serializers.SerializerMethodField()
     workflow_count = serializers.SerializerMethodField()
     is_linked = serializers.SerializerMethodField()
@@ -1388,7 +1386,6 @@ class AnalyticsSerializer(
             ).count()
         else:
             return Node.objects.filter(week__workflow=instance.id).count()
-        return 0
 
     def get_User(self, instance):
         if instance.author is not None:
@@ -1724,16 +1721,6 @@ class FormFieldsSerializer:
                     }
                 )
         return fields
-
-
-# serializer_lookups = {
-#    "node": NodeSerializer,
-#    "week": WeekSerializer,
-#    "column": ColumnSerializer,
-#    "activity": ActivitySerializer,
-#    "course": CourseSerializer,
-#    "program": ProgramSerializer,
-# }
 
 
 serializer_lookups_shallow = {

@@ -12,6 +12,7 @@
   "scripts": {
     "test": "jest",
     "dev": "VITE_BUILD_WATCH=true vite --config vite.config.dev.js",
+    "dev-vite": "vite",
     "prettier": "prettier --write './src/**/*.{js,ts,jsx,tsx}' '!course_flow/static/**/dist/**/*.{js,ts,jsx,tsx}'",
     "build": "tsc && vite --config vite.config.dev.js build",
     "tsc-watch": "tsc-watch --onSuccess \"npm run vite-build\"",
@@ -50,6 +51,7 @@
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react-refresh": "^1.3.6",
     "@welldone-software/why-did-you-render": "^7.0.1",
     "concurrently": "^8.2.2",
     "decimal.js": "^10.4.3",
@@ -76,7 +78,9 @@
     "tsc-watch": "^6.2.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.10",
+    "vite-plugin-compression": "^0.5.1",
     "vite-plugin-eslint": "^1.8.1",
+    "vite-plugin-pwa": "^0.20.1",
     "vite-tsconfig-paths": "^4.2.2",
     "wait-on": "^7.2.0",
     "yarn": "^1.22.19"

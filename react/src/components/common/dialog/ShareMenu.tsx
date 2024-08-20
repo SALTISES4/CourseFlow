@@ -7,7 +7,6 @@ import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
 import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/sharing'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import { EUser } from '@XMLHTTP/types/entity'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 
 type PropsType = {
   data: any
@@ -42,7 +41,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       userlist: [],
       cannot_change: [],
       saltise_user: false,
-      is_template: false,
+      is_template: false
     }
   }
 
@@ -64,7 +63,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
           public_view: response.public_view,
           cannot_change: response.cannot_change,
           saltise_user: response.saltise_user,
-          is_template: response.is_template,
+          is_template: response.is_template
         })
       }
     )
@@ -120,7 +119,6 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     }
   }
 
-
   toggleTemplate() {
     const component = this
     const is_template = !this.state.is_template
@@ -164,7 +162,10 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     const public_link =
       'https://' +
       window.location.host +
-      COURSEFLOW_APP.path.public_update_path['workflow'].replace('0', data.id)
+      COURSEFLOW_APP.path.html.public_update_path_temp.replace(
+        '0',
+        String(data.id)
+      )
 
     if (data.type !== 'project') {
       const public_view = this.state.public_view
@@ -400,13 +401,20 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
   }
 
   IsTemplate = () => {
-    if (this.state.published && this.state.saltise_user){
+    if (this.state.published && this.state.saltise_user) {
       return [
-        <input id="toggle-is-template" type="checkbox" checked={this.state.is_template} onClick={this.toggleTemplate.bind(this)}/>,
-        <label htmlFor="toggle-is-template">{window.gettext("Make Available As Template")}</label>
-      ];
+        <input
+          id="toggle-is-template"
+          type="checkbox"
+          checked={this.state.is_template}
+          onClick={this.toggleTemplate.bind(this)}
+        />,
+        <label htmlFor="toggle-is-template">
+          {window.gettext('Make Available As Template')}
+        </label>
+      ]
     }
-    return null;
+    return null
   }
 
   /*******************************************************
