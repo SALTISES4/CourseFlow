@@ -10,15 +10,6 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 import os
 
-
-def show_toolbar(request):
-    return (
-        DEBUG
-        and request.META.get("REMOTE_ADDR") in INTERNAL_IPS
-        and SHOW_TOOLBAR
-    )
-
-
 #########################################################
 # PATHS
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -271,7 +262,6 @@ COURSE_FLOW_RETURN_URL = {"name": "course_flow:home", "title": "myDalite"}
 
 RATELIMIT_VIEW = "course_flow.views.ratelimited_view"
 
-
 try:
     from .local_settings import *  # noqa F403
 
@@ -300,6 +290,7 @@ if DEBUG:
 
     MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
+        "course_flow.middleware.DynamicInternalIPSMiddleware.DynamicInternalIPSMiddleware",
     ]
 
 DEBUG_TOOLBAR_CONFIG = {
@@ -313,21 +304,20 @@ GRAPH_MODELS = {
 }
 
 #########################################################
-# VITE
+# VITE via VENV
 #########################################################
 # Needed for 'debug' to be available inside templates.
 # https://docs.djangoproject.com/en/3.2/ref/templates/api/#django-template-context-processors-debug
 INTERNAL_IPS = ["127.0.0.1"]
-#
-# # Vite App Dir: point it to the folder your vite app is in.
+
+# Vite App Dir: point it to the folder your vite app is in.
 VITE_APP_DIR = os.path.join(BASE_DIR, "react")
 
-# # Static files (CSS, JavaScript, Images)
-# # https://docs.djangoproject.com/en/3.1/howto/static-files/
-#
-# # You may change these, but it's important that the dist folder is includedself.
-# # If it's not, collectstatic won't copy your bundle to production.
-#
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.1/howto/static-files/
+
+# You may change these, but it's important that the dist folder is includedself.
+# If it's not, collectstatic won't copy your bundle to production.
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "dist"),
@@ -346,3 +336,14 @@ LTI_CLIENT_SECRET = "course_flow"  # verify, seems unused
 TEACHER_GROUP = "Teacher"  # verify, seems unused
 
 CHROMEDRIVER_PATH = None
+
+
+#########################################################
+# HELPER FUNCTIONS
+#########################################################
+def show_toolbar(request):
+    return (
+        DEBUG
+        and request.META.get("REMOTE_ADDR") in INTERNAL_IPS
+        and SHOW_TOOLBAR
+    )
