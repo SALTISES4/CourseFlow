@@ -1,6 +1,5 @@
-import { QueryPages, Workflow } from '@cfModule/types/common'
+import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
 import { VERB } from '@cfModule/types/enum'
-import { TWorkflow } from '@cfRedux/types/type'
 import {
   WorkflowDataPackage,
   WorkflowParentDataPackage,
@@ -9,12 +8,92 @@ import {
 } from '@XMLHTTP/types'
 import {
   ENewItem,
-  ESection,
   EUser,
   EComment,
   EObjectSet,
   ESectionGroup
 } from '@XMLHTTP/types/entity'
+import { ProjectViewDTO } from '@cfPages/Library/ProjectDetail/types'
+
+/*******************************************************
+ * Primitives
+ *******************************************************/
+type FieldOption = {
+  label: string
+  value: string
+}
+
+export type ProfileField = {
+  name: string
+  label: string
+  type: string
+  required: boolean
+  options: FieldOption[] | null
+  max_length: number | null
+  help_text: string
+  value: string | number
+}
+
+/*******************************************************
+ * Page
+ *******************************************************/
+export type PageHomeQueryResp = {
+  action: VERB
+  data: {
+    projects: Workflow[]
+    templates: Workflow[]
+    isTeacher: boolean
+  }
+}
+
+export type PageExploreQueryResp = {
+  action: VERB
+  data: {
+    initial_workflows: Workflow[]
+    initial_pages: QueryPages
+    disciplines: Discipline[]
+    user_id: number
+  }
+}
+
+/*******************************************************
+ * User
+ *******************************************************/
+export type NotificationSettingsQueryResp = {
+  action: VERB
+  data_package: {
+    formData: {
+      receiveNotifications: boolean
+    }
+  }
+}
+
+export type NotificationSettingsUpdateQueryResp = {
+  action: VERB
+  data_package: {
+    formData: {
+      receiveNotifications: boolean
+    }
+  }
+}
+
+export type ProfileSettingsQueryResp = {
+  action: VERB
+  data_package: {
+    formData: ProfileField[]
+  }
+}
+
+/*******************************************************
+ *  Notification
+ *******************************************************/
+export type NotificationQueryResp = {
+  action: VERB
+  data: {
+    notifications: any
+    unreadCount: number
+  }
+}
 
 /*******************************************************
  * EmptyPostResp
@@ -31,7 +110,6 @@ export type EmptyPostResp = {
 /*******************************************************
  * comment.ts
  *******************************************************/
-
 export type CommentsForObjectQueryResp = {
   action: VERB
   data_package: EComment[]
@@ -40,7 +118,6 @@ export type CommentsForObjectQueryResp = {
 /*******************************************************
  * create.ts
  *******************************************************/
-
 export type AddTerminologyQueryResp = {
   action: VERB
   new_dict: EObjectSet[]
@@ -77,11 +154,16 @@ export type FavouritesQueryResp = {
   data_package: Workflow[]
 }
 
+export type DisciplineQueryResp = {
+  action: VERB
+  data_package: Workflow[]
+}
+
 /*******************************************************
  * search.ts
  *******************************************************/
 
-export type SearchAllObjectsQueryResp = {
+export type LibraryObjectsSearchQueryResp = {
   action: VERB
   workflow_list: Workflow[]
   pages: QueryPages
@@ -111,8 +193,12 @@ export type UserListResp = {
 }
 
 /*******************************************************
- * update.ts
+ * project.ts
  *******************************************************/
+export type GetProjectByIdQueryResp = {
+  action: VERB
+  data_package: ProjectViewDTO
+}
 
 /*******************************************************
  * workflow.ts

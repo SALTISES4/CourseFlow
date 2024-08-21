@@ -56,7 +56,7 @@ class MenuSection extends React.Component<PropsType> {
     ))
     if (this.props.replacement_text) objects = this.props.replacement_text
 
-    if (COURSEFLOW_APP.config.create_path && this.props.add) {
+    if (COURSEFLOW_APP.path.create_path && this.props.add) {
       let types
       if (section_type === 'workflow') types = ['program', 'course', 'activity']
       else types = [section_type]
@@ -65,7 +65,7 @@ class MenuSection extends React.Component<PropsType> {
         adds = types.map((this_type) => (
           <a
             className="hover-shade"
-            href={COURSEFLOW_APP.config.create_path[this_type]}
+            href={COURSEFLOW_APP.path.create_path[this_type]}
           >
             {window.gettext('Create new ') + window.gettext(this_type)}
           </a>
@@ -73,7 +73,7 @@ class MenuSection extends React.Component<PropsType> {
         let import_text =
           window.gettext('Import ') + window.gettext(section_type)
         if (is_strategy) import_text += window.gettext(' strategy')
-        
+
       }
       add_button = (
         <div className="menu-create hover-shade" ref={this.dropdownDiv}>
@@ -84,7 +84,7 @@ class MenuSection extends React.Component<PropsType> {
               ' link-image'
             }
             title={window.gettext('Add New')}
-            src={COURSEFLOW_APP.config.icon_path + 'add_new_white.svg'}
+            src={COURSEFLOW_APP.path.static_assets.icon + 'add_new_white.svg'}
           />
           <div>{this.props.section_data.title}</div>
           <div className="create-dropdown">{adds}</div>

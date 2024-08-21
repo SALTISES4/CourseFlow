@@ -63,6 +63,7 @@ COURSEFLOW_APP.makeDropdown = makeDropdown;
  *  // makeDropdown
  *******************************************************/
 
+// @todo hack, this needs to be moved into browser history listener or disabled completely
 // reload if we got here using forward or back button
 if (
   window.performance &&
@@ -72,6 +73,7 @@ if (
   location.reload();
 }
 
+// @todo hack, move into mutation observer, or remove completely
 $(window).on("load", () => {
   // $(document).ajaxError(window.fail_function);
 
@@ -97,7 +99,7 @@ $(window).on("load", () => {
       COURSEFLOW_APP.strings.confirm_email_updates,
     );
 
-    $.post(COURSEFLOW_APP.config.post_paths.select_notifications, {
+    $.post(COURSEFLOW_APP.path.post_paths.select_notifications, {
       notifications: JSON.stringify(!!confirmNotifications),
     });
   }
@@ -107,67 +109,75 @@ $(window).on("load", () => {
   }
 });
 
-// @todo imports go at top
+// @todo quill is not global anymore, and quill may or may not be loaded into JS scope
+// this piece needs to be moved, hack this for now with try/catch
+try {
 // Fix Quilljs's link sanitization
-const QuillLink = Quill.import("formats/link");
+  const QuillLink = Quill.import("formats/link");
+
 // Override the existing property on the Quill global object and add custom protocols
-QuillLink.PROTOCOL_WHITELIST = ["http", "https"];
+  QuillLink.PROTOCOL_WHITELIST = ["http", "https"];
 
-class CustomLinkSanitizer extends QuillLink {
-  static sanitize(url) {
-    // Run default sanitize method from Quill
-    const sanitizedUrl = super.sanitize(url);
+  class CustomLinkSanitizer extends QuillLink {
+    static sanitize(url) {
+      // Run default sanitize method from Quill
+      const sanitizedUrl = super.sanitize(url);
 
-    // Not whitelisted URL based on protocol so, let's return `blank`
-    if (!sanitizedUrl || sanitizedUrl === "about:blank") return sanitizedUrl;
+      // Not whitelisted URL based on protocol so, let's return `blank`
+      if (!sanitizedUrl || sanitizedUrl === "about:blank") return sanitizedUrl;
 
-    // Verify if the URL already have a whitelisted protocol
-    const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(
-      function (protocol) {
-        return sanitizedUrl.startsWith(protocol);
-      },
-    );
+      // Verify if the URL already have a whitelisted protocol
+      const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(
+        function (protocol) {
+          return sanitizedUrl.startsWith(protocol);
+        },
+      );
 
-    if (hasWhitelistedProtocol) return sanitizedUrl;
+      if (hasWhitelistedProtocol) return sanitizedUrl;
 
-    // if not, then append only 'http' to not to be a relative URL
-    return `http://${sanitizedUrl}`;
+      // if not, then append only 'http' to not to be a relative URL
+      return `http://${sanitizedUrl}`;
+    }
   }
-}
 
 // @todo scope issue
-Quill.register(CustomLinkSanitizer, true);
+  Quill.register(CustomLinkSanitizer, true);
 
-function fail_function(a, b, c, d) {
-  if (typeof a === "string") {
-    alert(b);
-    alert(
-      a +
-        " - " +
-        window.gettext("Something went wrong. Please reload the page."),
-    );
-  } else if (a && a.type === "ajaxError") {
-    if (b.status === 429) {
-      alert(
-        window.gettext(
-          "Too many requests from your IP address. Please wait and try again later.",
-        ),
-      );
-    } else if (b.status === 403 || b.status === 401 || b.status === 500) {
-      alert(b.status + " " + window.gettext("error at ") + " " + c.url);
-    } else
+  function fail_function(a, b, c, d) {
+    if (typeof a === "string") {
+      alert(b);
       alert(
         a +
+        " - " +
+        window.gettext("Something went wrong. Please reload the page."),
+      );
+    } else if (a && a.type === "ajaxError") {
+      if (b.status === 429) {
+        alert(
+          window.gettext(
+            "Too many requests from your IP address. Please wait and try again later.",
+          ),
+        );
+      } else if (b.status === 403 || b.status === 401 || b.status === 500) {
+        alert(b.status + " " + window.gettext("error at ") + " " + c.url);
+      } else
+        alert(
+          a +
           b.status +
           c +
           window.gettext("final Something went wrong. Please reload the page."),
-      );
-  } else {
-    alert(
-      a +
+        );
+    } else {
+      alert(
+        a +
         b.status +
         c +
         window.gettext("final Something went wrong. Please reload the page."),
-    );
+      );
+    }
   }
+}
+catch(e){
+  console.log('quill not loaded')
+
 }

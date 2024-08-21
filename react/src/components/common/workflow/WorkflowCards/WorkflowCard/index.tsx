@@ -9,7 +9,7 @@ import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
-import { toggleFavourite } from '@XMLHTTP/API/update'
+import { toggleFavourite } from '@XMLHTTP/API/user'
 
 /*******************************************************
  * A workflow card for a menu
@@ -53,9 +53,10 @@ class WorkflowCard<
     if (selectAction) {
       selectAction(this.workflow.id)
     } else {
-      window.location.href = COURSEFLOW_APP.config.update_path[
-        this.workflow.type
-      ].replace('0', String(this.workflow.id))
+      window.location.href = COURSEFLOW_APP.path.html.update_path_temp.replace(
+        '0',
+        String(this.workflow.id)
+      )
     }
   }
 
@@ -82,10 +83,11 @@ class WorkflowCard<
 
   getTemplateChip = (): WorklowCardChipType => {
     const is_template = this.workflow.is_template
-    if(is_template)return {
-      type:CHIP_TYPE.TEMPLATE,
-      label: window.gettext("Template")
-    }
+    if (is_template)
+      return {
+        type: CHIP_TYPE.TEMPLATE,
+        label: window.gettext('Template')
+      }
   }
 
   getWorkflowCountChip = (): WorklowCardChipType => {
@@ -198,7 +200,7 @@ class WorkflowCard<
           this.getTemplateChip(),
           this.getTypeChip(),
           this.getWorkflowInfo(),
-          this.getWorkflowCountChip(),
+          this.getWorkflowCountChip()
         ]}
       />
     )

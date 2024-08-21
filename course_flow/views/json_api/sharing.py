@@ -3,32 +3,16 @@ import json
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.humanize.templatetags import humanize
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
-from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
 
-from course_flow.decorators import (
-    ajax_login_required,
-    user_can_edit,
-    user_can_view,
-    user_is_teacher,
-)
+from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.models import User
 from course_flow.models.notification import Notification
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.serializers import UserSerializer
 from course_flow.utils import get_model_from_str, make_user_notification
-
-# import time
-
-
-#####################################################
-# JSON API for all things sharing and notifications
-#####################################################
 
 
 # change permissions on an object for a user
@@ -181,85 +165,3 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
             "is_template": is_template,
         }
     )
-
-
-@user_is_teacher()
-def json_api_post_get_user_list(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    name_filter = body.get("filter")
-    names = name_filter.split(" ")
-    length = len(names)
-    filters = [[name_filter, ""], ["", name_filter]]
-    for i, name in enumerate(names):
-        if i < length - 1:
-            filters += [
-                [" ".join(names[0 : i + 1]), " ".join(names[i + 1 : length])]
-            ]
-    try:
-        q_objects = Q(username__istartswith=name_filter)
-        for q_filter in filters:
-            q_objects |= Q(
-                first_name__istartswith=q_filter[0],
-                last_name__istartswith=q_filter[1],
-            )
-
-        teacher_group = Group.objects.get(name=settings.TEACHER_GROUP)
-
-        user_list = User.objects.filter(q_objects, groups=teacher_group)[:10]
-        count = len(user_list)
-        if count < 10:
-            user_list = list(user_list)
-            q_objects = Q(username__icontains=name_filter)
-            for q_filter in filters:
-                q_objects |= Q(
-                    first_name__icontains=q_filter[0],
-                    last_name__icontains=q_filter[1],
-                )
-            user_list += list(
-                User.objects.filter(q_objects, groups=teacher_group).exclude(
-                    id__in=[user.id for user in user_list]
-                )[: 10 - count]
-            )
-
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "user_list": UserSerializer(user_list, many=True).data,
-        }
-    )
-
-
-@ajax_login_required
-@require_POST
-def json_api_post_mark_all_notifications_as_read(request):
-    post_data = json.loads(request.body)
-
-    if "notification_id" in post_data:
-        # if a notification_id is passed as post data
-        # then we're updating that specific notification object
-        notification_id = post_data["notification_id"]
-        request.user.notifications.filter(id=notification_id).update(
-            is_unread=False
-        )
-    else:
-        # otherwise, we're updating all the notifications to be read
-        request.user.notifications.filter(is_unread=True).update(
-            is_unread=False
-        )
-
-    return JsonResponse({"action": "posted"})
-
-
-@ajax_login_required
-@require_POST
-def json_api_post_delete_notification(request):
-    post_data = json.loads(request.body)
-    if "notification_id" in post_data:
-        notification_id = post_data["notification_id"]
-        request.user.notifications.filter(id=notification_id).delete()
-        return JsonResponse({"action": "posted"})
-
-    return JsonResponse({"action": "error"})

@@ -1,19 +1,29 @@
-import Typography from '@mui/material/Typography'
 import Section from '@cfComponents/pages/Library/Home/components/Section'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { DIALOG_TYPE, useDialog } from '@cfCommonComponents/dialog'
 
-import createProjectData from '../dumb/dialog/CreateProject/data'
-import editProjectData from '../dumb/dialog/EditProject/data'
+import ActivityCreateDialog from '@cfCommonComponents/dialog/ActivityCreate'
+import createActivityData from '@cfCommonComponents/dialog/ActivityCreate/data'
+import ActivityEditDialog from '@cfCommonComponents/dialog/ActivityEdit'
+import editActivityData from '@cfCommonComponents/dialog/ActivityEdit/data'
 
-import { DIALOG_TYPE, useDialog } from '@cfComponents/common/dialog'
-import ProjectDialog from '../dumb/dialog/Project'
+import ProgramCreateDialog from '@cfCommonComponents/dialog/ProgramCreate'
+import createProgramData from '@cfCommonComponents/dialog/ProgramCreate/data'
+import ProgramEditDialog from '@cfCommonComponents/dialog/ProgramEdit'
+import editProgramData from '@cfCommonComponents/dialog/ProgramEdit/data'
 
-import ImportNodes from '@cfCommonComponents/dialog/ImportNodes'
-import ImportOutcomes from '@cfCommonComponents/dialog/ImportOutcomes'
+import CourseCreateDialog from '@cfCommonComponents/dialog/CourseCreate'
+import createCourseData from '@cfCommonComponents/dialog/CourseCreate/data'
+import CourseEditDialog from '@cfCommonComponents/dialog/CourseEdit'
+import editCourseData from '@cfCommonComponents/dialog/CourseEdit/data'
+import CourseArchiveDialog from '@cfCommonComponents/dialog/CourseArchive'
+
+import ContributorAddDialog from '@cfCommonComponents/dialog/ContributorAdd'
+import contributorAddData from '@cfCommonComponents/dialog/ContributorAdd/data'
 
 const SectionDialogs = () => {
-  // used to trigger the corresponding dialog
   const { dispatch } = useDialog()
 
   return (
@@ -21,51 +31,100 @@ const SectionDialogs = () => {
       <Typography variant="h4" sx={{ mb: 3 }}>
         Dialogs
       </Typography>
-      <Section header={{ title: 'Project' }}>
+
+      <Section header={{ title: 'Activity' }}>
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE)}
+            onClick={() => dispatch(DIALOG_TYPE.ACTIVITY_CREATE)}
           >
-            Create Project
+            Create Activity
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT)}
+            onClick={() => dispatch(DIALOG_TYPE.ACTIVITY_EDIT)}
           >
-            Edit Project
+            Edit Activity
           </Button>
         </Stack>
 
-        <ProjectDialog
-          {...createProjectData}
-          type={DIALOG_TYPE.STYLEGUIDE_PROJECT_CREATE}
+        <ActivityCreateDialog
+          {...createActivityData}
+          units={editActivityData.units}
         />
 
-        <ProjectDialog
-          {...editProjectData}
-          type={DIALOG_TYPE.STYLEGUIDE_PROJECT_EDIT}
+        <ActivityEditDialog {...editActivityData} />
+      </Section>
+
+      <Section header={{ title: 'Program' }}>
+        <Stack direction="row" gap={1}>
+          <Button
+            variant="contained"
+            onClick={() => dispatch(DIALOG_TYPE.PROGRAM_CREATE)}
+          >
+            Create Program
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => dispatch(DIALOG_TYPE.PROGRAM_EDIT)}
+          >
+            Edit Program
+          </Button>
+        </Stack>
+
+        <ProgramCreateDialog
+          {...createProgramData}
+          units={editProgramData.units}
+        />
+
+        <ProgramEditDialog {...editProgramData} />
+      </Section>
+
+      <Section header={{ title: 'Course' }}>
+        <Stack direction="row" gap={1}>
+          <Button
+            variant="contained"
+            onClick={() => dispatch(DIALOG_TYPE.COURSE_CREATE)}
+          >
+            Create Course
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => dispatch(DIALOG_TYPE.COURSE_EDIT)}
+          >
+            Edit Course
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => dispatch(DIALOG_TYPE.COURSE_ARCHIVE)}
+          >
+            Archive Course
+          </Button>
+        </Stack>
+
+        <CourseCreateDialog
+          {...createCourseData}
+          units={editCourseData.units}
+        />
+
+        <CourseEditDialog {...editCourseData} />
+
+        <CourseArchiveDialog
+          onSubmit={() => console.log('archive project submit')}
         />
       </Section>
 
-      <Section header={{ title: 'Import' }}>
+      <Section header={{ title: 'Add contributor' }}>
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.IMPORT_OUTCOMES)}
+            onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
           >
-            Import Outcomes
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.IMPORT_NODES)}
-          >
-            Import Nodes
+            Add Contributor
           </Button>
         </Stack>
 
-        <ImportOutcomes workflowID={1}/>
-        <ImportNodes workflowID={1}/>
+        <ContributorAddDialog {...contributorAddData} />
       </Section>
     </>
   )

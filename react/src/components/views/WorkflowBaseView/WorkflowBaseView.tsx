@@ -3,21 +3,18 @@ import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar.jsx'
-import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
-import ConnectionBar from '@cfModule/ConnectionBar'
+import ConnectionBar from '@cfViews/WorkflowBaseView/components/ConnectionBar'
 
 import WorkflowView from '@cfViews/WorkflowView/WorkflowView'
 import OutcomeEditView from '@cfViews/OutcomeEditView/OutcomeEditView'
-import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import JumpToWeekWorkflow from '@cfViews/WorkflowBaseView/JumpToWeekWorkflow'
 import ParentWorkflowIndicator from '@cfViews/WorkflowBaseView/ParentWorkflowIndicator'
 import WorkflowTableView from '@cfViews/WorkflowBaseView/WorkflowTableView'
 import { Dialog, DialogTitle } from '@mui/material'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
-import ImportMenu from '@cfCommonComponents/dialog/ImportMenu.jsx'
 import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import CollapsibleText from '@cfCommonComponents/UIComponents/CollapsibleText'
 import { AppState } from '@cfRedux/types/type'
@@ -38,13 +35,11 @@ import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { EventUnion } from '@cfModule/types/common'
-import Button from '@mui/material/Button'
 import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@cfMUI/theme'
-import TargetProjectModal from '@cfModule/components/common/dialog/TargetProject'
-import ImportNodesModal from '@cfModule/components/common/dialog/ImportNodes'
-import ImportOutcomesModal from '@cfModule/components/common/dialog/ImportOutcomes'
+import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget'
+import ImportModal from '@cfModule/components/common/dialog/Import'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -57,7 +52,6 @@ type ConnectedProps = {
 const CopyButton = (data: any) => {
   const { dispatch } = useDialog()
 
-
   return (
     <div
       id="copy-button"
@@ -65,17 +59,16 @@ const CopyButton = (data: any) => {
       onClick={() => {
         const loader = COURSEFLOW_APP.tinyLoader
         if (data.is_strategy) {
-          duplicateBaseItemQuery(
-            data.id,
-            data.type,
-            null,
-            (response_data) => {
-              loader.endLoad()
-              window.location = COURSEFLOW_APP.config.update_path[
-                response_data.new_item.type
-              ].replace('0', response_data.new_item.id)
-            }
-          )
+          duplicateBaseItemQuery(data.id, data.type, null, (response_data) => {
+            loader.endLoad()
+            // @todo no
+            // @ts-ignore
+            window.location = COURSEFLOW_APP.path.html.update_path_temp.replace(
+              '0',
+              // @ts-ignore
+              response_data.new_item.id
+            )
+          })
         } else {
           dispatch(DIALOG_TYPE.TARGET_PROJECT)
         }
@@ -86,23 +79,24 @@ const CopyButton = (data: any) => {
   )
 }
 
-const ImportButtons = ({aClass}: {aClass:string})=>{
+const ImportButtons = ({ aClass }: { aClass: string }) => {
   const { dispatch } = useDialog()
 
   return (
     <>
       <hr />
-      <a className={aClass} onClick={()=>dispatch(DIALOG_TYPE.IMPORT_OUTCOMES)}>
+      <a
+        className={aClass}
+        onClick={() => dispatch(DIALOG_TYPE.IMPORT_OUTCOMES)}
+      >
         {window.gettext('Import Outcomes')}
       </a>
-      <a className={aClass} onClick={()=>dispatch(DIALOG_TYPE.IMPORT_NODES)}>
+      <a className={aClass} onClick={() => dispatch(DIALOG_TYPE.IMPORT_NODES)}>
         {window.gettext('Import Nodes')}
       </a>
     </>
   )
 }
-
-
 
 /***
  * @TODO NEED TO CLEAN UP TYPES
@@ -260,7 +254,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       )
     ) {
       deleteSelfQuery(this.data.id, 'workflow', false, () => {
-        const newPath = COURSEFLOW_APP.config.update_path['project'].replace(
+        // @todo no
+        const newPath = COURSEFLOW_APP.path.html.update_path_temp.replace(
           '0',
           this.project.id.toString()
         )
@@ -491,7 +486,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={COURSEFLOW_APP.config.update_path['project'].replace(
+          href={COURSEFLOW_APP.path.html.update_path_temp.replace(
             String(0),
             this.project.id
           )}
@@ -513,7 +508,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={COURSEFLOW_APP.config.update_path['project'].replace(
+          // @todo no
+          href={COURSEFLOW_APP.path.html.update_path_temp.replace(
             String(0),
             this.project.id
           )}
@@ -833,13 +829,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   CopyButton = () => {
     if (!this.user_id) return null
-    const copy_to_button = [
-      <CopyButton data={this.data}/>
-    ]
+    const copy_to_button = [<CopyButton data={this.data} />]
     if (
       !this.data.is_strategy &&
       this.project_permission === Constants.permission_keys.edit
-    ){
+    ) {
       copy_to_button.unshift(
         <div
           id="copy-to-project-button"
@@ -853,9 +847,13 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               this.project.id,
               (response_data) => {
                 loader.endLoad()
-                window.location = COURSEFLOW_APP.config.update_path[
-                  response_data.new_item.type
-                ].replace('0', response_data.new_item.id)
+                // @ts-ignore
+                window.location =
+                  COURSEFLOW_APP.path.html.update_path_temp.replace(
+                    '0',
+                    // @ts-ignore
+                    response_data.new_item.id
+                  )
               }
             )
           }}
@@ -872,10 +870,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const disabled = !!this.data.importing
     const aClass = disabled ? ' disabled' : 'hover-shade'
 
-    return (
-      <ImportButtons aClass={aClass}/>
-    )
-
+    return <ImportButtons aClass={aClass} />
   }
 
   DeleteWorkflowButton = () => {
@@ -1043,9 +1038,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       <DialogContextProvider>
         <ThemeProvider theme={theme}>
           {this.addEditable(this.props.data)}
-          <>
-            {this.getReturnLinksPortal()}
-          </>
+          <>{this.getReturnLinksPortal()}</>
           <div className="main-block">
             <MenuBar
               overflowLinks={this.OverflowLinks}
@@ -1076,25 +1069,30 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               />
             </div>
 
-            <TargetProjectModal id={this.data.id} actionFunction={(response_data) => {
-              if (response_data.parentID != null) {
-                const utilLoader = new UtilityLoader('body')
-                duplicateBaseItemQuery(
-                  this.data.id,
-                  this.data.type,
-                  response_data.parentID,
-                  (response_data) => {
-                    utilLoader.endLoad()
-                    window.location = COURSEFLOW_APP.config.update_path[
-                      response_data.new_item.type
-                    ].replace('0', response_data.new_item.id)
-                  }
-                )
-              }
-            }}
+            <ProjectTargetModal
+              id={this.data.id}
+              actionFunction={(response_data) => {
+                if (response_data.parentID != null) {
+                  const utilLoader = new UtilityLoader('body')
+                  duplicateBaseItemQuery(
+                    this.data.id,
+                    this.data.type,
+                    response_data.parentID,
+                    (response_data) => {
+                      utilLoader.endLoad()
+                      // @ts-ignore
+                      window.location =
+                        COURSEFLOW_APP.path.html.update_path_temp.replace(
+                          '0',
+                          // @ts-ignore
+                          response_data.new_item.id
+                        )
+                    }
+                  )
+                }
+              }}
             />
-            <ImportNodesModal workflowID={this.data.id}/>
-            <ImportOutcomesModal workflowID={this.data.id}/>
+            <ImportModal workflowID={this.data.id} />
             <this.ShareDialog />
           </div>
         </ThemeProvider>

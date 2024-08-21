@@ -1,6 +1,6 @@
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
-import { API_POST, API_POST_FILE } from '../PostFunctions'
+import { API_POST, API_POST_FILE } from '@XMLHTTP/CallWrapper'
 
 
 //get exported data
@@ -10,7 +10,7 @@ export function getExport(
   exportType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.get_export, {
+  API_POST(COURSEFLOW_APP.path.post_paths.get_export, {
     objectID: objectID,
     objectType: objectType,
     exportType: exportType
@@ -29,7 +29,7 @@ export function importData(
   myFile,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST_FILE(COURSEFLOW_APP.config.post_paths.import_data, {
+  API_POST_FILE(COURSEFLOW_APP.path.post_paths.import_data, {
     objectID: objectID,
     objectType: objectType,
     importType: importType,

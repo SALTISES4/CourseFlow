@@ -18,12 +18,12 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import { getNameInitials } from '@cfModule/utility/utilityFunctions'
-import CreateProgramModal from '@cfModule/components/common/dialog/CreateProgram'
-import CreateProjectModal from '@cfModule/components/common/dialog/CreateProject'
-import CreateCourseModal from '@cfModule/components/common/dialog/CreateCourse'
-import CreateActivityModal from '@cfModule/components/common/dialog/CreateActivity'
-import ResetPasswordModal from '@cfModule/components/common/dialog/ResetPassword'
-import LinkWorkflowModal from '@cfModule/components/common/dialog/LinkWorkflow'
+import ProjectCreateModal from '@cfModule/components/common/dialog/ProjectCreate'
+// TODO: implement
+// import ProgramCreateModal from '@cfModule/components/common/dialog/ProgramCreate'
+// import CourseCreateModal from '@cfModule/components/common/dialog/CourseCreate'
+// import ActivityCreateModal from '@cfModule/components/common/dialog/ActivityCreate'
+import PasswordResetModal from '@cfModule/components/common/dialog/PasswordReset'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 
 import {
@@ -34,26 +34,6 @@ import {
   NotificationsList
 } from './styles'
 import { TopBarProps } from '@cfModule/types/common'
-
-// TODO: clean up and move into create modals functionality
-function openCreateActionModal(type: 'program' | 'activity' | 'course') {
-  const createUrl = COURSEFLOW_APP.config.create_path[type]
-  COURSEFLOW_APP.tinyLoader.startLoad()
-  // getTargetProjectMenu<{ parentID: number }>(
-  //   -1,
-  //   (response_data) => {
-  //     if (response_data.parentID !== null) {
-  //       window.location.href = createUrl.replace(
-  //         '/0/',
-  //         '/' + response_data.parentID + '/'
-  //       )
-  //     }
-  //   },
-  //   () => {
-  //     COURSEFLOW_APP.tinyLoader.endLoad()
-  //   }
-  // )
-}
 
 const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   const { dispatch } = useDialog()
@@ -80,7 +60,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   }
 
   const handleLogout = () => [
-    window.location.replace(COURSEFLOW_APP.config.logout_path)
+    window.location.replace(COURSEFLOW_APP.path.logout_path)
   ]
 
   const closeAllMenus = () => {
@@ -110,16 +90,16 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       open={isAddMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_PROJECT)}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.PROJECT_CREATE)}>
         {COURSEFLOW_APP.strings.project}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_PROGRAM)}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.PROGRAM_CREATE)}>
         {COURSEFLOW_APP.strings.program}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_COURSE)}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.COURSE_CREATE)}>
         {COURSEFLOW_APP.strings.course}
       </MenuItem>
-      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.CREATE_ACTIVITY)}>
+      <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.ACTIVITY_CREATE)}>
         {COURSEFLOW_APP.strings.activity}
       </MenuItem>
     </StyledMenu>
@@ -203,7 +183,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       <MenuItem component="a" href={menus.account.profileUrl}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
-      <MenuItem onClick={() => dispatch(DIALOG_TYPE.RESET_PASSWORD)}>
+      <MenuItem onClick={() => dispatch(DIALOG_TYPE.PASSWORD_RESET)}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
       <MenuItem component="a" href={menus.account.notificationsSettingsUrls}>
@@ -271,17 +251,18 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       {notificationsMenu}
       {accountMenu}
 
-      <ResetPasswordModal
+      <PasswordResetModal
         onSubmit={() => (window.location.href = menus.account.resetPasswordUrl)}
       />
-      <CreateProjectModal
+      <ProjectCreateModal
         showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
         formFields={forms.createProject.formFields}
         disciplines={forms.createProject.disciplines}
       />
-      <CreateProgramModal />
-      <CreateCourseModal />
-      <CreateActivityModal />
+      {/* TODO: implement */}
+      {/* <ProgramCreateModal />
+      <CourseCreateModal />
+      <ActivityCreateModal /> */}
     </TopBarWrap>
   )
 }

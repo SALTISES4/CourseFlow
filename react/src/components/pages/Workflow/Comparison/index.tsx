@@ -1,6 +1,6 @@
 import React from 'react'
 import * as reactDom from 'react-dom'
-import WorkflowLoader from '@cfCommonComponents/UIComponents/WorkflowLoader.jsx'
+import Loader from '@cfCommonComponents/UIComponents/Loader.js'
 import * as Constants from '@cfConstants'
 import { ViewType } from '@cfModule/types/enum.js'
 import ComparisonView from '@cfViews/ComparisonView/ComparisonView'
@@ -41,7 +41,7 @@ export class Comparison {
     this.container = container
     this.view_type = view_type
 
-    reactDom.render(<WorkflowLoader />, container[0])
+    reactDom.render(<Loader />, container[0])
 
     switch (this.userPermission) {
       case Constants.permission_keys['none']:

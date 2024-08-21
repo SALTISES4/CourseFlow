@@ -37,7 +37,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
       this.ctrlKey = true
       // @ts-ignore @todo what is action ?
       $('#export-form')[0].action =
-        COURSEFLOW_APP.config.post_paths.get_export_download
+        COURSEFLOW_APP.path.post_paths.get_export_download
     }
   }
 
@@ -163,7 +163,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
         <form
           id="export-form"
           encType="multipart/form-data"
-          action={COURSEFLOW_APP.config.post_paths.get_export}
+          action={COURSEFLOW_APP.path.post_paths.get_export}
           method="POST"
           target="redirect-iframe"
           onSubmit={this.submit.bind(this)}
@@ -204,7 +204,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
+          <img src={COURSEFLOW_APP.path.static_assets.icon + 'close.svg'} />
         </div>
       </div>
     )

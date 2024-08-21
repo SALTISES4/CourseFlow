@@ -138,7 +138,7 @@ export class WorkflowLegendUnconnected<
         )}
 
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
-          <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
+          <img src={COURSEFLOW_APP.path.static_assets.icon + 'close.svg'} />
         </div>
       </div>
     )

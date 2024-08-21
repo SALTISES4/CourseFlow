@@ -10,7 +10,7 @@ import {
   Store
 } from '@reduxjs/toolkit'
 import * as Reducers from '@cfReducers'
-import WorkflowLoader from '@cfCommonComponents/UIComponents/WorkflowLoader'
+import Loader from '@cfCommonComponents/UIComponents/Loader'
 import WorkflowBaseView from '@cfViews/WorkflowBaseView/WorkflowBaseView'
 import { WorkflowDetailViewDTO } from '@cfPages/Workflow/Workflow/types'
 import {
@@ -517,7 +517,7 @@ class Workflow {
 
     this.view_type = view_type // @todo where is view_type set?
 
-    reactDom.render(<WorkflowLoader />, container[0])
+    reactDom.render(<Loader />, container[0])
 
     this.container = container // @todo where is view_type set?
     // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager

@@ -1,3 +1,6 @@
+#########################################################
+# @todo what is this file doing
+#########################################################
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group
@@ -37,7 +40,9 @@ def registration_view(request):
     else:
         form = RegistrationForm()
     return render(
-        request, "course_flow/html/registration/registration.html", {"form": form}
+        request,
+        "course_flow/html/registration/registration.html",
+        {"form": form},
     )
 
 
@@ -64,6 +69,7 @@ def register_as_student(request: HttpRequest, project_hash) -> HttpResponse:
         return HttpResponseForbidden(
             "Couldn't find a classroom associated with that link"
         )
+    # @todo shouldn't this be gone?
     if project.liveproject is not None and not project.deleted:
         user = request.user
         if (

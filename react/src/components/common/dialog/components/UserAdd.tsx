@@ -2,7 +2,7 @@ import * as React from 'react'
 // import $ from 'jquery'
 import * as Constants from '@cfConstants'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
-import { getUserListQuery } from '@XMLHTTP/API/sharing'
+import {getUserListQuery} from "@XMLHTTP/API/user";
 
 type StateProps = {
   selected: number
