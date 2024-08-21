@@ -69,6 +69,7 @@ def register_as_student(request: HttpRequest, project_hash) -> HttpResponse:
         return HttpResponseForbidden(
             "Couldn't find a classroom associated with that link"
         )
+    # @todo shouldn't this be gone?
     if project.liveproject is not None and not project.deleted:
         user = request.user
         if (

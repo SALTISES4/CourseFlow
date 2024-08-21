@@ -24,4 +24,6 @@ def styleguide_home_view(request):
         "contextData": {},
     }
 
-    return render(request, "course_flow/react/common_entrypoint.html", context)
+    return render(
+        request, "course_flow/html/react_common_entrypoint.html", context
+    )

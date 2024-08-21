@@ -24,7 +24,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     # how are these fields being used?
     fields = ["title", "description", "published"]
 
-    template_name: str = "course_flow/react/common_entrypoint.html"
+    template_name: str = "course_flow/html/react_common_entrypoint.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
@@ -61,7 +61,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Project
     fields: List[str] = ["title", "description", "published"]
-    template_name = "course_flow/react/common_entrypoint.html"
+    template_name = "course_flow/html/react_common_entrypoint.html"
 
     def get_context_data(self, **kwargs):
         public_view = False  # moved from template layer

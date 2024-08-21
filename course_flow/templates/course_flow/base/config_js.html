@@ -45,14 +45,14 @@
 
       new_node_link: "{% url 'json_api:json-api-post-new-node-link' %}",
 
-      delete_self: "{% url 'json_api:json-api-post-delete-self' %}", // ??
-      restore_self: "{% url 'json_api:json-api-post-restore-self' %}", // ??
-      delete_self_soft: "{% url 'json_api:json-api-post-delete-self-soft' %}", // ??
-      duplicate_self: "{% url 'json_api:json-api-post-duplicate-self' %}", // ??
+      delete_self: "{% url 'json_api:json-api-post-delete-self' %}",
+      restore_self: "{% url 'json_api:json-api-post-restore-self' %}",
+      delete_self_soft: "{% url 'json_api:json-api-post-delete-self-soft' %}",
+      duplicate_self: "{% url 'json_api:json-api-post-duplicate-self' %}",
 
-      insert_sibling: "{% url 'json_api:json-api-post-insert-sibling' %}", // ??
-      insert_child: "{% url 'json_api:json-api-post-insert-child' %}", // ??
-      inserted_at: "{% url 'json_api:json-api-post-inserted-at' %}", // ??
+      insert_sibling: "{% url 'json_api:json-api-post-insert-sibling' %}",
+      insert_child: "{% url 'json_api:json-api-post-insert-child' %}",
+      inserted_at: "{% url 'json_api:json-api-post-inserted-at' %}",
 
       update_outcomehorizontallink_degree:
         "{% url 'json_api:json-api-post-update-outcomehorizontallink-degree' %}",
@@ -89,12 +89,6 @@
       course_strategy: "{% url 'course_flow:course-strategy-create' %}",
       project: "https://legacy-prpject-create-url",
     },
-    public_update_path: {
-      activity: "{% url 'course_flow:workflow-public' pk='0'%}",
-      course: "{% url 'course_flow:workflow-public' pk='0'%}",
-      program: "{% url 'course_flow:workflow-public' pk='0'%}",
-      workflow: "{% url 'course_flow:workflow-public' pk='0'%}"
-    },
 
     logout_path: "{% url 'course_flow:logout' %}",
 
@@ -108,8 +102,9 @@
         library: "{% url 'course_flow:library' %}",
         favourites: "{% url 'course_flow:favourites' %}",
       },
-      project: "{% url 'course_flow:project-detail' _='path' %}",
-      update_path_temp: "{% url 'course_flow:workflow-update' pk='0'%}"
+      project: "{% url 'course_flow:project-detail' pk='path' %}",
+      update_path_temp: "{% url 'course_flow:workflow-update' pk='0'%}",
+      public_update_path_temp: "{% url 'course_flow:workflow-update' pk='0'%}"
     },
     json_api: {
       library: {

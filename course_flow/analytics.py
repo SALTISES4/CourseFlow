@@ -40,19 +40,12 @@ def get_base_dataframe():
 
     df = df.loc[df["nodes"] >= 3]
 
-    # df["content_rich"] = df["nodes"]>=3
-    # df["content_rich"]=pd.Categorical(df["content_rich"])
-    # for cat in [True,False]:
-    #   if cat not in df["content_rich"].cat.categories:
-    #     df["content_rich"] = df["content_rich"].cat.add_categories(cat)
     df["type"] = pd.Categorical(df["type"])
     for cat in ["activity", "course", "program", "project"]:
         if cat not in df["type"].cat.categories:
             df["type"] = df["type"].cat.add_categories(cat)
 
     df["Institution"] = df["email"].str.rsplit("@", expand=True, n=1)[1]
-
-    # df["Month"] = df["Month"].apply(lambda x: calendar.month_abbr[int(x)])
 
     cache.set("COURSEFLOW_ANALYTICS_DATAFRAME", df, 600)
 

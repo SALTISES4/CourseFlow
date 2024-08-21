@@ -21,11 +21,13 @@ def is_teacher(user):
 #########################################################
 # LIBRARY
 #########################################################
-# @ignore_extra_args
 @login_required
-def default_react_view(request, title, path_id, _):
+@ignore_extra_args
+def default_react_view(request, title, path_id, *args, **kwargs):
     context = {"title": title, "path_id": path_id}
-    return render(request, "course_flow/react/common_entrypoint.html", context)
+    return render(
+        request, "course_flow/html/react_common_entrypoint.html", context
+    )
 
 
 @login_required
@@ -33,4 +35,6 @@ def default_react_view(request, title, path_id, _):
 def explore_view(request):
     context = {"path_id": "explore", "title": "Explore"}
 
-    return render(request, "course_flow/react/common_entrypoint.html", context)
+    return render(
+        request, "course_flow/html/react_common_entrypoint.html", context
+    )

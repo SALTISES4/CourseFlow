@@ -12,30 +12,20 @@
 .data/
 .pytest_cache/
 .tern-port
-.tox/
-.venv
 *venv*/
-/CACHE
 /course_flow/local_settings.py
-/htmlcov
 /log
 /media
 /sent_emails
 /static
 /server_static
 /*venv*/
-last_export.*
-locust*
 logs
-mysql_scripts/
-partner*.png
 pytest-logs.txt
 !/course_flow/static/course_flow/js/other/src/
 /course_flow/static/course_flow/js/other/dist/_virtual
-tags
 
 # Django stuff:
-*.log
 *.sqlite3
 *.sqlite3-journal
 db.sqlite3
@@ -47,6 +37,6 @@ local_settings.py
 /.env
 /react/node_modules/
 /react/build/
-*.map
-/dist/
+/react/dist/
+dist
 /course_flow/static/course_flow/js/react/dist/

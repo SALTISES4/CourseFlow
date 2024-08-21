@@ -13,7 +13,7 @@ from course_flow.serializers import UserSerializer
 
 
 @login_required
-def json_api__notification__list__get(request):
+def json_api__notification__list__get(request: HttpRequest):
     user = request.user
 
     # get total count of unread notifications
@@ -63,7 +63,7 @@ def json_api__notification__list__get(request):
 
 @ajax_login_required
 @require_POST
-def json_api__notification__delete__post(request):
+def json_api__notification__delete__post(request: HttpRequest):
     post_data = json.loads(request.body)
     if "notification_id" in post_data:
         notification_id = post_data["notification_id"]

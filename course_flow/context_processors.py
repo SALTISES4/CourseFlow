@@ -27,8 +27,12 @@ from course_flow.templatetags.course_flow_templatetags import (
 )
 
 
-# global processors are not for commomn html content data
 def add_global_context(request: HttpRequest):
+    """
+    # global processors are not for common html content data
+    :param request:
+    :return:
+    """
     return {
         "globalContextData": JSONRenderer()
         .render(
@@ -67,7 +71,8 @@ def get_sidebar(request: HttpRequest):
             "isAnonymous": user.is_anonymous,
             "favourites": favourites,
         }
-    except Exception:
+    except Exception as e:
+        print(f"An error occurred in get_sidebar: {e}")
         pass
 
     return {}
@@ -116,10 +121,6 @@ def get_topbar(request: HttpRequest):
                 }
             )
 
-        # disciplines = DisciplineSerializer(
-        #     Discipline.objects.order_by("title"), many=True
-        # ).data
-
         form = CreateProject(
             {
                 "title": "New project name",
@@ -140,12 +141,10 @@ def get_topbar(request: HttpRequest):
                     # TODO: count the number of current user's projects
                     "showNoProjectsAlert": True,
                     "formFields": FormFieldsSerializer(form).prepare_fields(),
-                    # "disciplines": disciplines,
                 }
             },
             "menus": {
                 "add": {
-                    # "projectUrl": reverse("course_flow:project-create"),
                     "projectUrl": "#legacy-project-create-url",
                 },
                 "account": {
@@ -159,7 +158,8 @@ def get_topbar(request: HttpRequest):
                 },
             },
         }
-    except Exception:
+    except Exception as e:
+        print(f"An error occurred in get_topbar: {e}")
         pass
 
     return {}
@@ -186,8 +186,10 @@ def get_update_notifications(request: HttpRequest):
                     ).data,
                     "showNotificationRequest": show_notification_request,
                 }
-    except Exception:
+    except Exception as e:
+        print(f"An error occurred: {e}")
         pass
+
     return {
         "updateNotifications": {},
         "showNotificationRequest": False,

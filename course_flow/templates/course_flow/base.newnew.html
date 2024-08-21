@@ -5,16 +5,21 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!--
+  For this base.html to work in dev and in production,
+  you'll need to set a couple of keys inside your settings.py.
+  Another file in this gist shows which ones you'll really need.
+-->
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}{% endblock %}</title>
   <meta
     name="description"
     content="{% block metadescription %}{% endblock %}"
   />
   <meta name="theme-color" content="#1976BC"/>
-
   <script nonce="{{ request.csp_nonce }}">
     // HACK(keanulee): The Redux package assumes `process` exists - mock it here before
     // the module is loaded.
@@ -23,7 +28,7 @@
       env: {
         //  NODE_ENV: "production"
       }
-    }
+    };
 
     // create our global CF namespace
     const cf = {}
@@ -32,7 +37,7 @@
   </script>
 
   <script nonce="{{ request.csp_nonce }}">
-    window.cf_nonce = "{{ request.csp_nonce }}"
+      window.cf_nonce = "{{ request.csp_nonce }}"
   </script>
 
   {% include 'course_flow/base/vendor_scripts.html' %}
@@ -41,24 +46,15 @@
   {% block header %}{% endblock %}
 
 
-  {% if debug %}
-    <script
-      type="module"
-      src="http://localhost:3000/@vite/client"
-      nonce="{{ request.csp_nonce }}">
-    </script>
+  {% if 1 %}
+    <script type="module" src="http://localhost:3000/@vite/client"></script>
 
     <!-- If you're using vite with React, this next script will be needed for HMR -->
-    <script
-      type="module"
-      nonce="{{ request.csp_nonce }}"
-    >
+    <script type="module">
       import RefreshRuntime from 'http://localhost:3000/@react-refresh'
-
       if (RefreshRuntime) {
         RefreshRuntime.injectIntoGlobalHook(window)
-        window.$RefreshReg$ = () => {
-        }
+        window.$RefreshReg$ = () => { }
         window.$RefreshSig$ = () => (type) => type
         window.__vite_plugin_react_preamble_installed__ = true
       }
@@ -70,29 +66,22 @@
 <body id="site">
 
   <div id="root"></div>
-
-  {% block body %} {% endblock %}
+    {% block body %} {% endblock %}
   {% block container %} {% endblock %}
+
   {% csrf_token %}
 
-  {% if debug %}
-    <script
-      type="module"
-      src="http://localhost:3000/src/app.tsx"
-      nonce="{{ request.csp_nonce }}"
-    ></script>
+  {% if 1 %}
+  <!-- This url will be different for each type of app. Point it to your main js file. -->
+  <script type="module" src="http://localhost:3000/src/app.tsx"></script>
   {% else %}
-    {% render_vite_bundle %}
+  {% render_vite_bundle %}
   {% endif %}
-
 </body>
 
 {% block common_scripts %}
   {% include 'course_flow/base/config_js.html' %}
-  <script
-      src="{% static 'course_flow/js/templates/base-common.js' %}"
-      nonce="{{ request.csp_nonce }}"
-  ></script>
+  <script src="{% static 'course_flow/js/templates/base-common.js' %}"></script>
 {% endblock %}
 
 {% block react_scripts %} {% endblock %}
