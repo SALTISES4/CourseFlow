@@ -18,6 +18,9 @@ import TemplateSearch from '@cfCommonComponents/dialog/CreateWizard/components/T
 import ProjectSearch from '@cfCommonComponents/dialog/CreateWizard/components/ProjectSearch'
 import { CREATE_RESOURCE_TYPE } from '@cfCommonComponents/dialog/CreateWizard/types'
 import { CreateProgramDataType } from './data'
+import { PropsType as ProjectType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
+import { PropsType as TemplateType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
+
 
 type PropsType = CreateProgramDataType & Pick<ProgramFormDataType, 'units'>
 
@@ -44,12 +47,12 @@ const initialState: StateType = {
 
 const CreateProgramDialog = ({
   steps,
-  projects,
-  templates,
   units
 }: PropsType) => {
   const [state, setState] = useState<StateType>(initialState)
   const { show, onClose } = useDialog(DIALOG_TYPE.PROGRAM_CREATE)
+  const [projects,setProjectData] = useState<ProjectType[]>(null)
+  const [templates,setTemplateData] = useState<TemplateType[]>(null)
 
   // dynamic dialog title for each step
   const dialogTitle = [
@@ -167,6 +170,7 @@ const CreateProgramDialog = ({
             <ProjectSearch
               selected={state.project}
               projects={projects}
+              setProjectData={setProjectData}
               onProjectSelect={onProjectSelect}
             />
           )}
@@ -189,8 +193,10 @@ const CreateProgramDialog = ({
           {state.step === 2 && state.type === CREATE_RESOURCE_TYPE.TEMPLATE && (
             <TemplateSearch
               selected={state.template}
+              setTemplateData={setTemplateData}
               templates={templates}
               onTemplateSelect={onTemplateSelect}
+              template_type={"course"}
             />
           )}
         </StyledForm>

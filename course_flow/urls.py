@@ -120,6 +120,11 @@ def course_flow_patterns():
             name="json-api-post-create-project",
         ),
         path(
+            "json-api-post-create-workflow/",
+            views.json_api.create.json_api_post_create_workflow,
+            name="json-api-post-create-workflow",
+        ),
+        path(
             "json-api-post-update-profile-settings/",
             views.json_api.update.json_api_post_profile_settings,
             name="json-api-post-update-profile-settings",
@@ -362,6 +367,16 @@ def course_flow_patterns():
             "workflow/get-target-projects/",
             views.json_api.workflow.json_api_post_get_target_projects,
             name="json-api-post-get-target-projects",
+        ),
+        path(
+            "workflow/get-projects-projects-for-create/",
+            views.json_api.workflow.json_api_post_get_projects_for_create,
+            name="json-api-post-get-projects-for-create",
+        ),
+        path(
+            "workflow/get-templates/",
+            views.json_api.workflow.json_api_post_get_templates,
+            name="json-api-post-get-templates",
         ),
         path(
             "comments/get/",

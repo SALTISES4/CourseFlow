@@ -4,7 +4,7 @@
 {% get_current_language as LANGUAGE_CODE %}
 
 {% block title %}
-  {%if title != "" %}
+  {%if title != "" and title != None %}
     {% trans title %}
   {% else %}
     {% trans "Untitled" %}

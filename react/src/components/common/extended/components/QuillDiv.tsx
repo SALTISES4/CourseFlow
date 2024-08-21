@@ -60,11 +60,10 @@ const QuillDiv: React.FC<PropsType> = (props) => {
           '<ul>'
         )
 
-        if (text !== props.text) {
-          // @todo the linked component is currently throwing a handled error, which is stealing focus from quill
-          // uncomment the textChange function below when ready to debug the node link issue
 
-          // props.textChangeFunction(text);
+        if (text !== props.text) {
+
+          props.textChangeFunction(text);
           setCharLength(text.length)
         }
       }

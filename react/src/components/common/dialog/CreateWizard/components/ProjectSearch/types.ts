@@ -1,13 +1,11 @@
-import { CHIP_TYPE } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
+// import { CHIP_TYPE, WorkflowCardChipType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
+// import { ReactNode } from 'react'
 
-export type ProjectType = {
-  id: number
-  title: string
-  caption: string
-  isSelected: boolean
-  isFavourite: boolean
-  chips: {
-    type: CHIP_TYPE
-    label: string
-  }[]
-}
+// export type ProjectType = {
+//   id: number
+//   title: string | ReactNode
+//   description?: string
+//   isSelected?: boolean
+//   isFavourite?: boolean
+//   chips: (ReactNode | WorkflowCardChipType)[]
+// }

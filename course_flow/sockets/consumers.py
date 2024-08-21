@@ -49,6 +49,8 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         # self.close()
 
     def receive(self, text_data):
+        print("got a message")
+        print(text_data)
         if not self.EDIT:
             return
         text_data_json = json.loads(text_data)

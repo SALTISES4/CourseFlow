@@ -25,16 +25,6 @@ const LinkedWorkflowButton = (id: any) => {
   )
 }
 
-/**
- *
- */
-// function openLinkedWorkflowMenu(response, updateFunction) {
-//   if (response.action === VERB.POSTED) {
-//     renderMessageBox(response, 'linked_workflow_menu', updateFunction)
-//   } else {
-//     alert('Failed to find the parent project. Is this workflow in a project?')
-//   }
-// }
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -56,7 +46,7 @@ class EditableComponent<
   P extends EditableComponentProps,
   S extends StateType
 > extends ComponentWithToggleDrop<P, S> {
-  static contextType = WorkFlowConfigContext
+  contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   //Makes the item selectable
@@ -467,28 +457,6 @@ class EditableComponent<
         <h4>{window.gettext('Linked Workflow')}</h4>
         <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
         <LinkedWorkflowButton id={data.id} />
-        {/*<button
-          className="primary-button"
-          disabled={readOnly}
-          id="linked-workflow-editor"
-          onClick={() => {
-            COURSEFLOW_APP.tinyLoader.startLoad()
-            getLinkedWorkflowMenuQuery(
-              data,
-              (response_data)=>{
-                openLinkedWorkflowMenu(
-                  response_data,
-                  (_response_data) => {
-                    console.log('linked a workflow')
-                  },
-                )
-                COURSEFLOW_APP.tinyLoader.endLoad()
-              },
-            )
-          }}
-        >
-          {window.gettext('Change')}
-        </button>*/}
         <input
           disabled={readOnly}
           type="checkbox"

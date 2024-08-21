@@ -15,6 +15,7 @@ from course_flow.decorators import (
     user_can_edit,
     user_can_view,
     user_can_view_or_none,
+    user_is_teacher,
 )
 from course_flow.duplication_functions import (
     duplicate_column,
@@ -28,6 +29,7 @@ from course_flow.models import (
     ObjectPermission,
     ObjectSet,
     Outcome,
+    Project,
     User,
     Week,
     Workflow,
@@ -448,8 +450,7 @@ def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"action": "posted"})
 
 
-@login_required
-@require_POST
+@user_is_teacher()
 def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
     # instantiate the form with the JSON params
     data = json.loads(request.body)
@@ -481,6 +482,23 @@ def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
 
     # otherwise, return the errors so UI can display errors accordingly
     return JsonResponse({"action": "error", "errors": form.errors})
+
+
+# Create a new workflow in a project
+@user_can_edit("projectPk")
+def json_api_post_create_workflow(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    project = Project.objects.get(pk=body.get("projectPk"))
+    workflow_type = body.get("workflow_type")
+    try:
+        print(body)
+        print(workflow_type)
+    except AttributeError:
+        return JsonResponse(
+            {
+                "action": "error",
+            }
+        )
 
 
 # Add an object set to a project

@@ -15,7 +15,7 @@ const ConnectedUser = ({
       }}
       title={user_name}
     >
-      {user_name}
+      {user_name[0]}
     </div>
   )
 }
@@ -33,6 +33,7 @@ type ConnectedUserType = {
 type PropsType = {
   user_id: number
   websocket: WebSocket
+  context: any
   //  renderer: any
 }
 
@@ -49,26 +50,18 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
     this.state = {
       connected_users: []
     }
-    // this.user_id = props.renderer.user_id
-    // this.user_name = props.renderer.user_name
 
     // @ts-ignore
     this.user_name = COURSEFLOW_APP.contextData.user_name
-    // this.myColour = props.renderer.myColour
-
     // @ts-ignore
-    this.myColour = COURSEFLOW_APP.contextData.user_name
+    this.myColour = COURSEFLOW_APP.contextData.myColour
 
     // @todo not sure what the intention is here, but it needs to be removed
     // watch for side effects
-    // this.props.renderer.connection_update_received = (user_data) => {
-    //   this.connection_update_received(user_data)
-    // }
+    this.props.context.connect_user_bar(this.connection_update_received.bind(this))
   }
 
   render() {
-    console.log('this.props.websocket')
-    console.log(this.props.websocket)
 
     if (!this.props.websocket) return <></>
     if (this.props.websocket.readyState === 1) {
@@ -125,12 +118,9 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
         JSON.stringify({
           type: 'connection_update',
           user_data: {
-            // user_id: this.user_id,
-            // user_name: this.user_name, // why?
-            // user_colour: this.myColour, // why?
             user_id: this.props.user_id,
-            user_name: this.user_name, // why?
-            user_colour: this.myColour, // why?
+            user_name: this.user_name,
+            user_colour: this.myColour,
             connected: connected
           }
         })

@@ -82,7 +82,7 @@ export class OutcomeEditViewUnconnected<
     )
     insertedAt(
       // @ts-ignore
-      this.props.renderer, // to remove
+      this.context.selection_manager,
       child_id,
       'outcome',
       this.props.workflow.id,

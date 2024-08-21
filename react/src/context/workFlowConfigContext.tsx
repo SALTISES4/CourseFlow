@@ -34,6 +34,7 @@ type ChildRenderer = {
   is_strategy?: any
   // show_assignments?: any
   column_choices: any
+  websocket: WebSocket
 
   // new
   user_id: number
@@ -97,6 +98,8 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       micro_update: workflowInstance.micro_update,
       change_field: workflowInstance.change_field,
       selection_manager: workflowInstance.selection_manager,
+      connect_user_bar: workflowInstance.connect_user_bar.bind(workflowInstance),
+      websocket: workflowInstance.websocket,
 
       //new
       user_id: workflowInstance.user_id,

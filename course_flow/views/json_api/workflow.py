@@ -18,6 +18,7 @@ from course_flow.models import (
     Course,
     Node,
     Notification,
+    ObjectPermission,
     ObjectSet,
     Project,
     Workflow,
@@ -50,6 +51,7 @@ from course_flow.serializers import (
 )
 from course_flow.utils import (
     get_all_outcomes_for_workflow,
+    get_model_from_str,
     get_parent_nodes_for_workflow,
 )
 from course_flow.view_utils import (
@@ -199,6 +201,63 @@ def json_api_post_get_target_projects(request: HttpRequest) -> JsonResponse:
             "action": "posted",
             "data_package": data_package,
             "workflow_id": workflow_id,
+        }
+    )
+
+
+@user_is_teacher()
+def json_api_post_get_projects_for_create(
+    request: HttpRequest,
+) -> JsonResponse:
+    user = request.user
+    try:
+        projects = list(Project.objects.filter(author=user, deleted=False)) + [
+            user_permission.content_object
+            for user_permission in ObjectPermission.objects.filter(
+                user=user,
+                content_type=ContentType.objects.get_for_model(Project),
+                project__deleted=False,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+            )
+        ]
+        projects_serialized = InfoBoxSerializer(
+            projects,
+            many=True,
+            context={"user": user},
+        ).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": projects_serialized,
+        }
+    )
+
+
+@user_is_teacher()
+def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    print(body)
+    try:
+        workflow_type = body.get("workflowType")
+        model = get_model_from_str(workflow_type)
+        templates_serialized = InfoBoxSerializer(
+            model.objects.filter(
+                deleted=False,
+                is_template=True,
+                published=True,
+                is_strategy=False,
+            ),
+            many=True,
+            context={"user": request.user},
+        ).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": templates_serialized,
         }
     )
 

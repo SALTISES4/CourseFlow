@@ -2,6 +2,12 @@ import { Fragment, MouseEvent, ReactNode, RefObject } from 'react'
 import StarIcon from '@mui/icons-material/Star'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
 
+import { WorkflowType } from '@cfModule/types/enum'
+import * as Utility from '@cfUtility'
+import {
+  ESectionObject,
+} from '@XMLHTTP/types/entity'
+
 import {
   CardWrap,
   CardHeader,
@@ -23,26 +29,90 @@ export enum CHIP_TYPE {
   DEFAULT = 'default'
 }
 
-export type WorklowCardChipType = {
+export type WorkflowCardChipType = {
   type: CHIP_TYPE
   label: string
 }
 
 export type PropsType = {
+  id: number
   ref?: RefObject<HTMLDivElement>
   className?: string
   title: string | ReactNode
-  caption?: string
+  description?: string
   isSelected?: boolean
   isFavourite?: boolean
   onClick?: () => void
   onMouseDown?: (evt: MouseEvent<HTMLDivElement>) => void
   onFavourite?: (evt: MouseEvent<HTMLButtonElement>) => void
-  chips: (WorklowCardChipType | ReactNode)[]
+  chips: (WorkflowCardChipType | ReactNode)[]
 }
 
-// Type guard function to check if an item is of type WorklowCardChipType
-function isWorkflowCardChipType(chip: any): chip is WorklowCardChipType {
+
+const getTypeChip = (workflow): WorkflowCardChipType => {
+  const { type, is_strategy } = workflow
+  let typeText = window.gettext(type)
+
+  if (type === WorkflowType.LIVE_PROJECT) {
+    typeText = window.gettext('classroom')
+  }
+
+  if (is_strategy) {
+    typeText += ` ${window.gettext('strategy')}`
+  }
+
+  const chipType =
+    type === WorkflowType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
+
+  return {
+    type: chipType as CHIP_TYPE,
+    label: Utility.capWords(typeText)
+  }
+}
+
+const getTemplateChip = (workflow): WorkflowCardChipType => {
+  const is_template = workflow.is_template
+  if(is_template)return {
+    type:CHIP_TYPE.TEMPLATE,
+    label: window.gettext("Template")
+  }
+  return null
+}
+
+const getWorkflowCountChip = (workflow): WorkflowCardChipType => {
+
+  if (
+    workflow.type === WorkflowType.PROJECT &&
+    workflow.workflow_count !== null &&
+    workflow.workflow_count > 0
+  ) {
+    return {
+      type: CHIP_TYPE.DEFAULT,
+      label: `${workflow.workflow_count} ${window.gettext(
+        `workflow` + (workflow.workflow_count > 1 ? 's' : '')
+      )}`
+    }
+  }
+  return null
+}
+
+
+export function PrepareBackendDataForWorkflowCardDumb(workflow:ESectionObject):PropsType {
+  let type_chip = getTypeChip(workflow)
+  let template_chip = getTemplateChip(workflow)
+  let count_chip = getWorkflowCountChip(workflow)
+  console.log("workflow",{
+    ...workflow,
+    chips:[type_chip,template_chip,count_chip].filter(entry=>entry!=null)
+  })
+  return {
+    ...workflow,
+    chips:[type_chip,template_chip,count_chip].filter(entry=>entry!=null)
+  }
+}
+
+// Type guard function to check if an item is of type WorkflowCardChipType
+function isWorkflowCardChipType(chip: any): chip is WorkflowCardChipType {
   return (
     typeof chip === 'object' &&
     chip !== null &&
@@ -53,7 +123,7 @@ function isWorkflowCardChipType(chip: any): chip is WorklowCardChipType {
 
 const WorkflowCardDumb = ({
   title,
-  caption,
+  description,
   isSelected,
   isFavourite,
   onFavourite,
@@ -68,7 +138,7 @@ const WorkflowCardDumb = ({
   >
     <CardHeader>
       <CardTitle>{title}</CardTitle>
-      {caption && <CardCaption>{caption}</CardCaption>}
+      {description && <CardCaption>{description}</CardCaption>}
     </CardHeader>
     <CardFooter>
       {chips.length && (

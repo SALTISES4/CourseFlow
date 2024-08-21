@@ -96,11 +96,12 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     child_id: number
   ) {
     if (type === 'columnworkflow') {
+      console.log("columnworkflow sortablemoved",id)
       this.context.micro_update(
         ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
-        this.context,
+        this.context.selection_manager,
         child_id,
         'column',
         new_parent,
@@ -114,7 +115,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
         ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
-        this.context,
+        this.context.selection_manager,
         child_id,
         'week',
         new_parent,
@@ -133,7 +134,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     const columnworkflows = data.columnworkflow_set.map(
       (columnworkflow, index) => (
         <ColumnWorkflow
-          key={`columnworkflow-${index}`}
+          key={`columnworkflow-${columnworkflow}`}
           objectID={columnworkflow}
           parentID={data.id}
           // renderer={renderer}
@@ -143,7 +144,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     const weekworkflows = data.weekworkflow_set.map((weekworkflow, index) => (
       <WeekWorkflow
         condensed={data.condensed}
-        key={`weekworkflow-${index}`}
+        key={`weekworkflow-${weekworkflow}`}
         objectID={weekworkflow}
         parentID={data.id}
         // renderer={renderer}

@@ -13,6 +13,10 @@
         "{% url 'course_flow:json-api-post-get-workflow-context' %}",
       get_target_projects:
         "{% url 'course_flow:json-api-post-get-target-projects' %}",
+      get_projects_for_create:
+        "{% url 'course_flow:json-api-post-get-projects-for-create' %}",
+      get_templates:
+        "{% url 'course_flow:json-api-post-get-templates' %}",
       set_linked_workflow: "{% url 'course_flow:json-api-post-set-linked-workflow' %}",
       update_value: "{% url 'course_flow:json-api-post-update-value' %}",
       new_node: "{% url 'course_flow:json-api-post-new-node' %}",
@@ -100,6 +104,7 @@
     // JSON API paths that
     json_api_paths: {
       create_project: "{% url 'course_flow:json-api-post-create-project' %}",
+      create_workflow: "{% url 'course_flow:json-api-post-create-workflow' %}",
       update_profile: "{% url 'course_flow:json-api-post-update-profile-settings' %}",
       update_notifications_settings: "{% url 'course_flow:json-api-post-notifications-settings' %}",
       mark_all_notifications_as_read: "{% url 'course_flow:json-api-post-mark-all-notifications-as-read' %}",

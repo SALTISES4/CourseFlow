@@ -12,6 +12,7 @@ import {
   WorkflowContextQueryResp,
   TargetProjectQueryResp,
   WorkflowGroupsDataPackage,
+  ProjectsForCreateQueryResp,
 } from '@XMLHTTP/types/query'
 import { CfObjectType, VERB } from '@cfModule/types/enum'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
@@ -184,7 +185,6 @@ export function getWorkflowContextQuery(
 /**
  * Get possible projects that can be a target for the workflow to be duplicated into
  * @param workflowPk
- * @param updateFunction
  * @param callBackFunction
  */
 export function getTargetProjectMenuQuery<T>(
@@ -198,6 +198,44 @@ export function getTargetProjectMenuQuery<T>(
     }
   )
     .then((response:TargetProjectQueryResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
+    })
+}
+
+/**
+ * Get possible projects to add a workflow to
+ * @param callBackFunction
+ */
+export function getProjectsForCreate<T>(
+  callBackFunction = (_data: ProjectsForCreateQueryResp) => console.log('success')
+) {
+  API_POST(
+    COURSEFLOW_APP.config.post_paths.get_projects_for_create,
+    {
+    }
+  )
+    .then((response:ProjectsForCreateQueryResp)=>{
+      if(response.action == VERB.POSTED)callBackFunction(response)
+      else window.fail_function(response.action)
+    })
+}
+
+/**
+ * Get all templates of a given type
+ * @param callBackFunction
+ */
+export function getTemplates<T>(
+  workflowType,
+  callBackFunction = (_data: ProjectsForCreateQueryResp) => console.log('success')
+) {
+  API_POST(
+    COURSEFLOW_APP.config.post_paths.get_templates,
+    {
+      workflowType:workflowType
+    }
+  )
+    .then((response:ProjectsForCreateQueryResp)=>{
       if(response.action == VERB.POSTED)callBackFunction(response)
       else window.fail_function(response.action)
     })

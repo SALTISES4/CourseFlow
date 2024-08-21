@@ -85,7 +85,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       ActionCreator.moveOutcomeOutcome(id, new_position, new_parent, child_id)
     )
     insertedAt(
-      this.context,
+      this.context.selection_manager,
       child_id,
       'outcome',
       new_parent,

@@ -130,10 +130,34 @@ class EditableComponentWithSorting<
         )
       },
       drag: (e, ui) => {
+        // console.log("in drag")
+        // console.log(ui.helper)
+        // console.log(ui.helper.offset())
         if (draggable_type == 'nodeweek') {
           const new_target = $(
             '#' + $(e.target).attr('id') + draggable_selector
           )
+          // console.log("is nodeweek",
+          //   handle,
+          //   e.target,
+          //   draggable_selector,
+          //   $('#' + $(e.target).attr('id') + draggable_selector),
+          //   $('#' + $(e.target).attr('id') + draggable_selector)
+          //       // @ts-ignore
+          //       .children(handle),
+          //   $('#' + $(e.target).attr('id') + draggable_selector)
+          //       // @ts-ignore
+          //       .children(handle).first()
+          // )
+          // console.log("here is the handle:",handle,"that was the handle")
+          // console.log("here is the selector:",draggable_selector,"that was the selector")
+          // console.log(
+          //   $('#' + $(e.target).attr('id') + draggable_selector)
+          //       // @ts-ignore
+          //       .children(handle)
+          //       .first()
+          //       .offset()
+          // )
           const delta_x = Math.round(
             (ui.helper.offset().left -
               $('#' + $(e.target).attr('id') + draggable_selector)
@@ -198,6 +222,7 @@ class EditableComponentWithSorting<
             } else {
               drag_item.attr('data-old-parent-id', new_parent_id)
               drag_item.attr('data-old-index', new_index)
+              console.log("About to call sortablemovedfunction, here's the drag item",drag_item)
               this.sortableMovedFunction(
                 parseInt(drag_item.attr('id')),
                 new_index,

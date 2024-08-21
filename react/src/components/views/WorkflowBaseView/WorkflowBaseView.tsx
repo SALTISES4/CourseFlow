@@ -145,7 +145,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   static contextType = WorkFlowConfigContext
 
   // Constants
-  protected objectType = CfObjectType.WORKFLOW
+  objectType = CfObjectType.WORKFLOW
   private allowed_tabs = [0, 1, 2, 3, 4]
 
   private readOnly: any
@@ -175,6 +175,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     // used in parentworkflowindicator
 
     // used in connectionBar, but websocket status shouldn't go in the same context
+    this.websocket=this.props.websocket
 
     // @todo important: change this to state update control
     // issues with loss of scope of this if assigned to local method in this
@@ -648,7 +649,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const nodebarweekworkflows = this.data.weekworkflow_set.map(
       (weekworkflow, index) => (
         <JumpToWeekWorkflow
-          key={`weekworkflow-${index}`}
+          key={`weekworkflow-${weekworkflow}`}
           order={this.data.weekworkflow_set}
           // renderer={this.props.renderer}
           objectID={weekworkflow}
@@ -744,7 +745,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           user_id={this.context.user_id}
           websocket={this.websocket}
           // connection_update_receive={this.context.connection_update_received}
-          // renderer={renderer}
+          context={this.context}
         />
       )
     }

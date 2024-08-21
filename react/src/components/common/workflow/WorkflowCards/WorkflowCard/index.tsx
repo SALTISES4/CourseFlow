@@ -3,7 +3,7 @@ import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import WorkflowCardDumb, {
   CHIP_TYPE,
-  WorklowCardChipType
+  WorkflowCardChipType
 } from '../WorkflowCardDumb'
 import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard/type'
@@ -59,7 +59,7 @@ class WorkflowCard<
     }
   }
 
-  getTypeChip = (): WorklowCardChipType => {
+  getTypeChip = (): WorkflowCardChipType => {
     const { type, is_strategy } = this.workflow
     let typeText = window.gettext(type)
 
@@ -80,7 +80,7 @@ class WorkflowCard<
     }
   }
 
-  getTemplateChip = (): WorklowCardChipType => {
+  getTemplateChip = (): WorkflowCardChipType => {
     const is_template = this.workflow.is_template
     if(is_template)return {
       type:CHIP_TYPE.TEMPLATE,
@@ -88,7 +88,7 @@ class WorkflowCard<
     }
   }
 
-  getWorkflowCountChip = (): WorklowCardChipType => {
+  getWorkflowCountChip = (): WorkflowCardChipType => {
     const { workflow } = this
 
     if (
@@ -178,6 +178,7 @@ class WorkflowCard<
 
     return (
       <WorkflowCardDumb
+        id={this.workflow.id}
         title={
           <WorkflowTitle
             no_hyperlink={noHyperlink}
@@ -185,7 +186,7 @@ class WorkflowCard<
             data={this.workflow}
           />
         }
-        caption={
+        description={
           this.workflow.author &&
           `${window.gettext('Owned by')} ${this.workflow.author}`
         }

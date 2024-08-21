@@ -329,7 +329,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
       return {
         ...this.props.style,
         // @ts-ignore
-        stroke: myColour ?? '', // @todo find out where this comes from
+        stroke: COURSEFLOW_APP.contextData.myColour ?? '', // @todo find out where this comes from
         opacity: 0.4
       }
     }
@@ -337,7 +337,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
       return {
         ...this.props.style,
         // @ts-ignore
-        stroke: myColour ?? '', // @todo find out where this comes from
+        stroke: COURSEFLOW_APP.contextData.myColour ?? '', // @todo find out where this comes from
         opacity: 1
       }
     }
@@ -475,6 +475,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
       )
     } catch (err) {
       console.log('could not draw a node link')
+      console.log(err)
       return null
     }
   }

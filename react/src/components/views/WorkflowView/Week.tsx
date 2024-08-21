@@ -130,8 +130,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     )
     insertedAt(
-      // @ts-ignore missing dragaction issued
-      this.props.renderer, // @todo again dragaction needs to be designed and is not on renderer (context) any more
+      this.context.selection_manager,
       child_id,
       'node',
       new_parent,
