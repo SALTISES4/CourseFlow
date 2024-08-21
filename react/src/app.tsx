@@ -49,8 +49,6 @@ import '@cfSCSS/workflow_styles.scss'
 
 // React dumb components styleguide page
 import Styleguide from '@cfModule/components/pages/Styleguide'
-// @WORKFLOW
-import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComparison'
 // @LIBRARY
 import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'

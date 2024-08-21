@@ -196,7 +196,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       openExportDialog: false,
       openImportDialog: false
     } as StateType
-
+    console.log('this.context')
+    console.log(this.context)
     this.readOnly = this.context.read_only
     this.workflowId = this.context.workflowID
     this.selection_manager = this.context.selection_manager
@@ -220,8 +221,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     COURSEFLOW_APP.makeDropdown('#jump-to')
     COURSEFLOW_APP.makeDropdown('#expand-collapse-all')
   }
-
-  componentDidUpdate(_prev_props) {}
 
   /*******************************************************
    * FUNCTIONS
@@ -311,7 +310,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   // @todo what are all the view types?
   changeView(type: ViewType) {
-    // this.context.render(this.container, type)
     this.renderMethod(this.container, type)
   }
 
@@ -334,7 +332,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   //   )
   // }
 
-  // @todo it this ViewType or cfobjecttype
+  // @todo is this ViewType or cfobjecttype
   expandAll(type: CfObjectType) {
     // this is weird, not defined in propstype
     this.props[type].forEach((week) =>
@@ -524,6 +522,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     return reactDom.createPortal(return_links, $('.titlebar .title')[0])
   }
 
+  // @todo these will be our tab buttons
   ViewButtons = () => {
     const view_buttons = [
       {
@@ -580,17 +579,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         )
       })
 
-    const view_buttons_sorted = view_buttons.slice(0, 2)
-    view_buttons_sorted.push(
-      <div
-        className="hover-shade other-views"
-        onClick={() => $('.views-dropdown')[0].classList.toggle('toggled')}
-      >
-        {window.gettext('Other Views')}
-        <div className="views-dropdown">{view_buttons.slice(2)}</div>
-      </div>
-    )
-    return view_buttons_sorted
+    return view_buttons
   }
 
   WorkflowContent = () => {
@@ -1065,7 +1054,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                 context="workflow"
                 // legacyRenderer={this.props.legacyRenderer}
                 data={this.props.data}
-                parentRender={this.renderMethod}
+                readOnly={this.readOnly}
+               //  parentRender={this.renderMethod}
               />
             </div>
 

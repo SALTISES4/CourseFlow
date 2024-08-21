@@ -56,12 +56,9 @@ enum DATA_TYPE {
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
 /****************************************
- * this is a copy of the original Workflow/Workflow
- * workflow needs to be overhauled, but Comparison/ calls ComparisonView calls, WorkflowComparisonRendererComponent calls WorkflowComparison
- * which extends the original Workflow/Workflow....
- * the hope is that there unpacking this will be less work when Workflow/Workflow is revised first
+ *
  * ****************************************/
-class WorkflowLegacy {
+class Workflow {
   private message_queue: any[]
   private messages_queued: boolean
   private outcome_type_choices: FieldChoice[]
@@ -509,8 +506,6 @@ class WorkflowLegacy {
    *******************************************************/
   render(container, view_type: ViewType = ViewType.WORKFLOW) {
     console.log('THIS IS THE WORKFLOW TI', this.project)
-
-
     this.locks = {}
 
     this.selection_manager = new SelectionManager(this.read_only)
@@ -587,4 +582,4 @@ class WorkflowLegacy {
   }
 }
 
-export default WorkflowLegacy
+export default Workflow

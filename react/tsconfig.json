@@ -53,7 +53,7 @@
         "./components/*"
       ],
       "@cfViews/*": [
-        "./components/views/*"
+        "./components/workflowViews/*"
       ],
       "@cfPages/*": [
         "./components/pages/*"

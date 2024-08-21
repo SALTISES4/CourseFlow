@@ -11,6 +11,7 @@ import { ViewType } from '@cfModule/types/enum.js'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { EWorkflowDataPackage } from '@XMLHTTP/types'
 import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
+import WorkflowLegacy from '@cfPages/Workflow/WorkflowLegacy'
 
 type WorkflowComparisonParams = {
   workflowID: number
@@ -25,7 +26,7 @@ type WorkflowComparisonParams = {
  *  @WorkflowComparisonRenderer
  *  @todo this is possibly where the channel leak is
  * ****************************************/
-export class WorkflowComparison extends Workflow {
+export class WorkflowComparison extends WorkflowLegacy {
   private initial_object_sets: any
   constructor({
     workflowID,
@@ -44,6 +45,34 @@ export class WorkflowComparison extends Workflow {
     this.container = container
     this.view_type = viewType
     this.initial_object_sets = initial_object_sets
+  }
+
+  connection_opened(reconnect = false) {
+    const loader = new UtilityLoader(this.container)
+
+    this.getWorkflowData(this.workflowID, (response) => {
+      let data_flat = response.data_package
+      if (this.initial_object_sets) {
+        data_flat = {
+          ...data_flat,
+          objectset: this.initial_object_sets
+        }
+      }
+
+      // @todo mismatch on workflow todo data stoe
+      // @ts-ignore
+      this.store = createStore(Reducers.rootWorkflowReducer, data_flat)
+
+      this.render(this.view_type)
+      this.clear_queue(data_flat.workflow.edit_count)
+
+      loader.endLoad()
+
+      if (reconnect) {
+        // @ts-ignore
+        this.attempt_reconnect() // @todo where is this defined
+      }
+    })
   }
 
   render(view_type = ViewType.WORKFLOW) {
@@ -90,34 +119,6 @@ export class WorkflowComparison extends Workflow {
         el
       )
     }
-  }
-
-  connection_opened(reconnect = false) {
-    const loader = new UtilityLoader(this.container)
-
-    this.getWorkflowData(this.workflowID, (response) => {
-      let data_flat = response.data_package
-      if (this.initial_object_sets) {
-        data_flat = {
-          ...data_flat,
-          objectset: this.initial_object_sets
-        }
-      }
-
-      // @todo mismatch on workflow todo data stoe
-      // @ts-ignore
-      this.store = createStore(Reducers.rootWorkflowReducer, data_flat)
-
-      this.render(this.view_type)
-      this.clear_queue(data_flat.workflow.edit_count)
-
-      loader.endLoad()
-
-      if (reconnect) {
-        // @ts-ignore
-        this.attempt_reconnect() // @todo where is this defined
-      }
-    })
   }
 }
 

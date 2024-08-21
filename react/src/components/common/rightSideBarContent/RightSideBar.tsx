@@ -24,8 +24,9 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 type PropsType = {
   // renderer: ChildRenderer
   context: any
-  parentRender: (container: any, view_type: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
+  // parentRender: (container: any, view_type: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
   data: any
+  readOnly: boolean
   object_sets?: any
   toggleObjectSet?: any
 }
@@ -100,8 +101,8 @@ class RightSideBar extends React.Component<PropsType> {
     return (
       <OutcomeBar
         // renderer={renderer}
-        renderMethod={this.props.parentRender}
-        readOnly={true}
+       // renderMethod={this.props.parentRender}
+        readOnly={this.props.readOnly} // @todo, verify business logic
       />
     )
   }

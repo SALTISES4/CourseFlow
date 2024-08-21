@@ -344,7 +344,8 @@ class ComparisonView extends React.Component<PropsType, StateType> {
 
             <RightSideBar
               context="comparison"
-              parentRender={this.props.parentRender}
+              // parentRender={this.props.parentRender}
+              readOnly={this.props.read_only}
               data={data}
               toggleObjectSet={this.toggleObjectSet.bind(this)}
               object_sets={this.state.object_sets}

@@ -1,5 +1,8 @@
 import { Enum } from '@cfModule/utility/utilityFunctions'
 
+// this is guidelines for our wofklow tabs
+// each view type is more or less a tab
+
 export enum ViewType {
   WORKFLOW = 'workflowview',
   OUTCOME_EDIT = 'outcomeedit',
