@@ -220,4 +220,3 @@ export function updateObjectSet(
     else window.fail_function(response.action)
   })
 }
-

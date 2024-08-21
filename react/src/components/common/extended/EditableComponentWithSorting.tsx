@@ -222,7 +222,10 @@ class EditableComponentWithSorting<
             } else {
               drag_item.attr('data-old-parent-id', new_parent_id)
               drag_item.attr('data-old-index', new_index)
-              console.log("About to call sortablemovedfunction, here's the drag item",drag_item)
+              console.log(
+                "About to call sortablemovedfunction, here's the drag item",
+                drag_item
+              )
               this.sortableMovedFunction(
                 parseInt(drag_item.attr('id')),
                 new_index,

@@ -217,7 +217,9 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
           className={indicator_class}
           onClick={this.props.parent.commentClick.bind(this.props.parent)}
         >
-          <img src={COURSEFLOW_APP.path.static_assets.icon + 'comment_new.svg'} />
+          <img
+            src={COURSEFLOW_APP.path.static_assets.icon + 'comment_new.svg'}
+          />
         </div>,
         render_div
       )
@@ -256,7 +258,9 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
                   title={window.gettext('Delete Comment')}
                   onClick={this.removeComment.bind(this, comment.id)}
                 >
-                  <img src={COURSEFLOW_APP.path.static_assets.icon + 'rubbish.svg'} />
+                  <img
+                    src={COURSEFLOW_APP.path.static_assets.icon + 'rubbish.svg'}
+                  />
                 </div>
               </div>
             )}

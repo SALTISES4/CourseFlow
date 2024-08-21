@@ -157,7 +157,9 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
                 <img
-                  src={COURSEFLOW_APP.path.static_assets.icon + dropIcon + '.svg'}
+                  src={
+                    COURSEFLOW_APP.path.static_assets.icon + dropIcon + '.svg'
+                  }
                 />
               </div>
               <div className="outcome-drop-text">{droptext}</div>

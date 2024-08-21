@@ -225,7 +225,7 @@ function ProjectDetailContent({
                 window.location =
                   COURSEFLOW_APP.path.html.update_path_temp.replace(
                     '0',
-                  // @ts-ignore
+                    // @ts-ignore
                     response_data.new_item.id
                   )
               }

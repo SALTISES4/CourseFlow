@@ -15,11 +15,10 @@ export function newNodeQuery(
     position: position,
     columnPk: column,
     columnType: column_type
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 /**
@@ -41,11 +40,10 @@ export function newOutcomeQuery(
   API_POST(COURSEFLOW_APP.path.post_paths.new_outcome, {
     workflowPk: workflowPk,
     objectsetPk: object_set_id
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Add a strategy to the workflow
@@ -60,11 +58,10 @@ export function addStrategyQuery(
     position: position,
     objectID: strategyPk,
     objectType: 'workflow'
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 export function newNodeLink(
@@ -80,11 +77,10 @@ export function newNodeLink(
     objectType: 'node',
     sourcePort: source_port,
     targetPort: target_port
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Causes the specified object to insert a child to itself
@@ -96,11 +92,10 @@ export function insertChildQuery(
   API_POST(COURSEFLOW_APP.path.post_paths.insert_child, {
     objectID: objectID,
     objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Causes the specified object to insert a sibling after itself
@@ -118,11 +113,10 @@ export function insertSiblingQuery(
     objectID: objectID,
     objectType: objectType,
     throughType: throughType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 /**
@@ -146,9 +140,8 @@ export function addTerminologyQuery(
     term: term,
     title: title,
     translation_plural: translation_plural
+  }).then((response: AddTerminologyQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:AddTerminologyQueryResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }

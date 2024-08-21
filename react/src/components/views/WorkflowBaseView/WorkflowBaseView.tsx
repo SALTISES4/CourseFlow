@@ -176,7 +176,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     // used in parentworkflowindicator
 
     // used in connectionBar, but websocket status shouldn't go in the same context
-    this.websocket=this.props.websocket
+    this.websocket = this.props.websocket
 
     // @todo important: change this to state update control
     // issues with loss of scope of this if assigned to local method in this

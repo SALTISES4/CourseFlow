@@ -96,7 +96,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     child_id: number
   ) {
     if (type === 'columnworkflow') {
-      console.log("columnworkflow sortablemoved",id)
+      console.log('columnworkflow sortablemoved', id)
       this.context.micro_update(
         ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
       )

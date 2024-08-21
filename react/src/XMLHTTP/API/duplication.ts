@@ -22,13 +22,12 @@ export function duplicateBaseItemQuery(
   callBackFunction = (_data: DuplicateBaseItemQueryResp) =>
     console.log('success')
 ) {
-  console.log("duplicating base item")
+  console.log('duplicating base item')
   const sendPostRequest = (url, data) => {
-    API_POST(url, data)
-      .then((response:DuplicateBaseItemQueryResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
+    API_POST(url, data).then((response: DuplicateBaseItemQueryResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
+      else window.fail_function(response.action)
+    })
   }
 
   const itemPkString = itemPk
@@ -65,9 +64,8 @@ export function duplicateSelfQuery(
     objectID: objectID,
     objectType: objectType,
     throughType: throughType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }

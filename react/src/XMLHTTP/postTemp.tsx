@@ -5,9 +5,6 @@ import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 
 // import $ from 'jquery'
 
-
-
-
 export function openWorkflowSelectMenu(response, updateFunction) {
   if (response.action === VERB.POSTED) {
     renderMessageBox(response, 'workflow_select_menu', updateFunction)
@@ -16,13 +13,12 @@ export function openWorkflowSelectMenu(response, updateFunction) {
   }
 }
 
-
-
 //Called when a node should have its column changed
 export function columnChanged(selection_manager, objectID, columnID) {
   // @todo ?? dragAction is never defined outside this file
   if (!selection_manager.dragAction) selection_manager.dragAction = {}
-  if (!selection_manager.dragAction['nodeweek']) selection_manager.dragAction['nodeweek'] = {}
+  if (!selection_manager.dragAction['nodeweek'])
+    selection_manager.dragAction['nodeweek'] = {}
 
   selection_manager.dragAction['nodeweek'] = {
     ...selection_manager.dragAction['nodeweek'],
@@ -51,7 +47,8 @@ export function insertedAt(
   throughType
 ) {
   if (!selection_manager.dragAction) selection_manager.dragAction = {}
-  if (!selection_manager.dragAction[throughType]) selection_manager.dragAction[throughType] = {}
+  if (!selection_manager.dragAction[throughType])
+    selection_manager.dragAction[throughType] = {}
   selection_manager.dragAction[throughType] = {
     ...selection_manager.dragAction[throughType],
     objectID: objectID,

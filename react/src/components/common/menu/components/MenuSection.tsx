@@ -73,7 +73,6 @@ class MenuSection extends React.Component<PropsType> {
         let import_text =
           window.gettext('Import ') + window.gettext(section_type)
         if (is_strategy) import_text += window.gettext(' strategy')
-
       }
       add_button = (
         <div className="menu-create hover-shade" ref={this.dropdownDiv}>

@@ -60,10 +60,8 @@ const QuillDiv: React.FC<PropsType> = (props) => {
           '<ul>'
         )
 
-
         if (text !== props.text) {
-
-          props.textChangeFunction(text);
+          props.textChangeFunction(text)
           setCharLength(text.length)
         }
       }

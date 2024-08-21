@@ -58,16 +58,16 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
     this.user_name = COURSEFLOW_APP.contextData.user_name
 
     // @ts-ignore
-    this.myColour = COURSEFLOW_APP.contextData.myColour
     this.myColour = calcColor(COURSEFLOW_APP.contextData.user_id)
 
     // @todo not sure what the intention is here, but it needs to be removed
     // watch for side effects
-    this.props.context.connect_user_bar(this.connection_update_received.bind(this))
+    this.props.context.connect_user_bar(
+      this.connection_update_received.bind(this)
+    )
   }
 
   render() {
-
     if (!this.props.websocket) return <></>
     if (this.props.websocket.readyState === 1) {
       const users = this.state.connected_users.map((user) => {

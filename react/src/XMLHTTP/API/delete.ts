@@ -15,11 +15,10 @@ export function deleteSelfQuery(
   API_POST(path, {
     objectID: objectID,
     objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Causes the specified object to undelete itself
@@ -31,9 +30,8 @@ export function restoreSelfQuery(
   API_POST(COURSEFLOW_APP.path.post_paths.restore_self, {
     objectID: objectID,
     objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }

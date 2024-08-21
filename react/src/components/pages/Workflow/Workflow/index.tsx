@@ -84,7 +84,7 @@ class Workflow {
   add_comments: boolean
   is_student: boolean
   selection_manager: SelectionManager
-  connection_update_receiver: null | ((data:any)=> void)
+  connection_update_receiver: null | ((data: any) => void)
   private child_data_completed: number
   private child_data_needed: any[]
   private fetching_child_data: boolean
@@ -356,7 +356,7 @@ class Workflow {
 
     switch (data.type) {
       case DATA_TYPE.WORKFLOW_ACTION:
-        console.log("an action just came in",data)
+        console.log('an action just came in', data)
         this.store.dispatch(data.action)
         break
       case DATA_TYPE.LOCK_UPDATE:
@@ -413,14 +413,14 @@ class Workflow {
   // @todo this is weird becuase connection_update_received is called in
   // connectedUsers but expects data to be well defined
   connection_update_received(data) {
-    if(this.connection_update_receiver){
+    if (this.connection_update_receiver) {
       this.connection_update_receiver(data)
-    }else{
+    } else {
       console.log('A connection update was received, but not handled.')
     }
   }
 
-  connect_user_bar(connection_update_receiver){
+  connect_user_bar(connection_update_receiver) {
     this.connection_update_receiver = connection_update_receiver
   }
 
@@ -505,7 +505,7 @@ class Workflow {
    * REACT TO MOVE
    *******************************************************/
   render(container, view_type: ViewType = ViewType.WORKFLOW) {
-    console.log("THIS IS THE WORKFLOW",this.project)
+    console.log('THIS IS THE WORKFLOW', this.project)
     this.locks = {}
 
     this.selection_manager = new SelectionManager(this.read_only)
