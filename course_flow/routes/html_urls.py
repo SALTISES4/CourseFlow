@@ -93,6 +93,11 @@ def html_patterns():
         # PROJECT
         #########################################################
         path(
+            "project/<int:pk>/",
+            views.ProjectDetailView.as_view(),
+            name="project-update",
+        ),
+        path(
             "project/<path:pk>/",
             views.html.library.default_react_view,
             {
