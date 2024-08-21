@@ -1,6 +1,6 @@
 import { EmptyPostResp, AddTerminologyQueryResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
-import { API_POST } from '../PostFunctions'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 
 //Add a new node to a week
 export function newNodeQuery(
@@ -10,7 +10,7 @@ export function newNodeQuery(
   column_type = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.new_node, {
+  API_POST(COURSEFLOW_APP.path.post_paths.new_node, {
     weekPk: weekPk,
     position: position,
     columnPk: column,
@@ -38,7 +38,7 @@ export function newOutcomeQuery(
   object_set_id: number,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.new_outcome, {
+  API_POST(COURSEFLOW_APP.path.post_paths.new_outcome, {
     workflowPk: workflowPk,
     objectsetPk: object_set_id
   })
@@ -55,7 +55,7 @@ export function addStrategyQuery(
   strategyPk = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.add_strategy, {
+  API_POST(COURSEFLOW_APP.path.post_paths.add_strategy, {
     workflowPk: workflowPk,
     position: position,
     objectID: strategyPk,
@@ -74,7 +74,7 @@ export function newNodeLink(
   target_port,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.new_node_link, {
+  API_POST(COURSEFLOW_APP.path.post_paths.new_node_link, {
     nodePk: source_node,
     objectID: target_node,
     objectType: 'node',
@@ -93,7 +93,7 @@ export function insertChildQuery(
   objectType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.insert_child, {
+  API_POST(COURSEFLOW_APP.path.post_paths.insert_child, {
     objectID: objectID,
     objectType: objectType
   })
@@ -112,7 +112,7 @@ export function insertSiblingQuery(
   throughType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.insert_sibling, {
+  API_POST(COURSEFLOW_APP.path.post_paths.insert_sibling, {
     parentID: parentID,
     parentType: parentType,
     objectID: objectID,
@@ -141,7 +141,7 @@ export function addTerminologyQuery(
   translation_plural: any,
   callBackFunction = (_data: AddTerminologyQueryResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.add_terminology, {
+  API_POST(COURSEFLOW_APP.path.post_paths.add_terminology, {
     projectPk: projectPk,
     term: term,
     title: title,

@@ -63,7 +63,7 @@ class TableCell extends React.Component<TableCellPropsType> {
 
   Contents = ({ completionStatus, selfCompletion }) => {
     if (completionStatus === 0) {
-      return <img src={`${COURSEFLOW_APP.config.icon_path}nocheck.svg`} />
+      return <img src={`${COURSEFLOW_APP.path.static_assets.icon}nocheck.svg`} />
     } else if (!completionStatus) {
       return ''
     }
@@ -73,7 +73,7 @@ class TableCell extends React.Component<TableCellPropsType> {
       return (
         <img
           className={selfCompletion ? 'self-completed' : ''}
-          src={`${COURSEFLOW_APP.config.icon_path}${icon}`}
+          src={`${COURSEFLOW_APP.path.static_assets.icon}${icon}`}
         />
       )
     }
@@ -250,7 +250,7 @@ export class OutcomeUnconnected<
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
                 <img
-                  src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'}
+                  src={COURSEFLOW_APP.path.static_assets.icon + dropIcon + '.svg'}
                 />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
@@ -345,7 +345,7 @@ export default Outcome
 //     let divclass = ''
 //
 //     if (completionStatus === 0) {
-//       return <img src={COURSEFLOW_APP.config.icon_path + 'nocheck.svg'} />
+//       return <img src={COURSEFLOW_APP.path.static_assets.icon + 'nocheck.svg'} />
 //     } else if (!completionStatus) {
 //       return ''
 //     }
@@ -354,10 +354,10 @@ export default Outcome
 //         return (
 //           <img
 //             className="self-completed"
-//             src={COURSEFLOW_APP.config.icon_path + 'solid_check.svg'}
+//             src={COURSEFLOW_APP.path.static_assets.icon + 'solid_check.svg'}
 //           />
 //         )
-//       else return <img src={COURSEFLOW_APP.config.icon_path + 'check.svg'} />
+//       else return <img src={COURSEFLOW_APP.path.static_assets.icon + 'check.svg'} />
 //     }
 //
 //     // @todo why is bitwise being used here? needs explanation comments

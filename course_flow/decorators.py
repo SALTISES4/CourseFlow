@@ -601,3 +601,16 @@ def public_model_access(model, **outer_kwargs):
         return _wrapped_view
 
     return wrapped_view
+
+
+def ignore_extra_args(view_func):
+    @wraps(view_func)
+    def _decorated(request, *args, **kwargs):
+        # Filter kwargs to only include those accepted by the view function
+        func_args = view_func.__code__.co_varnames[
+            : view_func.__code__.co_argcount
+        ]
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k in func_args}
+        return view_func(request, **filtered_kwargs)
+
+    return _decorated

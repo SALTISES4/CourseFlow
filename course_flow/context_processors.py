@@ -1,3 +1,7 @@
+"""
+@todo what is this file doing
+"""
+
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.humanize.templatetags import humanize
@@ -8,10 +12,8 @@ from rest_framework.renderers import JSONRenderer
 
 from course_flow.forms import CreateProject
 from course_flow.models.courseFlowUser import CourseFlowUser
-from course_flow.models.discipline import Discipline
 from course_flow.models.updateNotification import UpdateNotification
 from course_flow.serializers import (
-    DisciplineSerializer,
     FavouriteSerializer,
     FormFieldsSerializer,
     UpdateNotificationSerializer,
@@ -25,6 +27,7 @@ from course_flow.templatetags.course_flow_templatetags import (
 )
 
 
+# global processors are not for commomn html content data
 def add_global_context(request: HttpRequest):
     return {
         "globalContextData": JSONRenderer()
@@ -142,7 +145,8 @@ def get_topbar(request: HttpRequest):
             },
             "menus": {
                 "add": {
-                    "projectUrl": reverse("course_flow:project-create"),
+                    # "projectUrl": reverse("course_flow:project-create"),
+                    "projectUrl": "#legacy-project-create-url",
                 },
                 "account": {
                     "notificationsSettingsUrls": reverse(

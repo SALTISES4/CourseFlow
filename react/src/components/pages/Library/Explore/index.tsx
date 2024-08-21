@@ -1,40 +1,53 @@
 import * as React from 'react'
-import { ExploreViewContextDataDTO } from '@cfPages/Library/Explore/types'
+import { useRef, useEffect, useState } from 'react'
 import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
-import { getLibraryQuery } from '@XMLHTTP/API/menu'
+import { useQuery } from '@tanstack/react-query'
+import { PageExploreQueryResp } from '@XMLHTTP/types/query'
+import { fetchExploreContext, getLibraryQuery } from '@XMLHTTP/API/pages'
+import Loader from '@cfCommonComponents/UIComponents/Loader'
 
-/*******************************************************
- * @ExploreRenderer
- *******************************************************/
-class ExplorePage extends React.Component<ExploreViewContextDataDTO> {
-  private createDiv: React.RefObject<HTMLDivElement>
-  constructor(props: ExploreViewContextDataDTO) {
-    super(props)
-    this.createDiv = React.createRef()
-  }
+const ExplorePage = () => {
+  /*******************************************************
+   * HOOKS
+   *******************************************************/
+  const [projectData, setProjectData] = useState<{ data_package: any } | null>(
+    null
+  ) // Specify the type if known
+  const createDiv = useRef<HTMLDivElement>(null)
 
-  componentDidMount() {
-    getLibraryQuery((data) => {
-      this.setState({
-        project_data: data.data_package
-      })
+  const { data, error, isLoading, isError } = useQuery<PageExploreQueryResp>({
+    queryKey: ['fetchExploreContext'],
+    queryFn: fetchExploreContext
+  })
+
+  useEffect(() => {
+    getLibraryQuery((data: { data_package: any }) => {
+      // Adjust the type of `data_package` if its structure is known
+      // ??
+      setProjectData(data)
     })
-    COURSEFLOW_APP.makeDropdown(this.createDiv.current)
-    // COURSEFLOW_APP.makeDropdown(this.createDiv.current) // @todo double check in git hitstory these were both correct
-  }
+    if (createDiv.current) {
+      COURSEFLOW_APP.makeDropdown(createDiv.current)
+    }
+  }, [])
 
-  render() {
-    return (
-      <div className="project-menu">
-        <ExploreFilter
-          disciplines={this.props.disciplines}
-          workflows={this.props.initial_workflows}
-          pages={this.props.initial_pages}
-          context="library"
-        />
-      </div>
-    )
-  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  if (isLoading) return <Loader />
+  if (isError) return <div>An error occurred: {error.message}</div>
+
+  const { disciplines, initial_workflows, initial_pages } = data.data
+  return (
+    <div className="project-menu" ref={createDiv}>
+      <ExploreFilter
+        disciplines={disciplines}
+        workflows={initial_workflows}
+        pages={initial_pages}
+        context="library"
+      />
+    </div>
+  )
 }
 
 export default ExplorePage

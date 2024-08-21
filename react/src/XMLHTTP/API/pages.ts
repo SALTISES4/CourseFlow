@@ -1,36 +1,30 @@
 import {
+  PageExploreQueryResp,
   FavouritesQueryResp,
+  PageHomeQueryResp,
   LibraryQueryResp,
-  SearchAllObjectsQueryResp
+  LibraryObjectsSearchQueryResp,
+  DisciplineQueryResp
 } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
-import { ToDefine } from '@cfModule/types/common'
-import { API_POST } from '../PostFunctions'
+import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
+import { EDiscipline } from '@XMLHTTP/types/entity'
+
+/*******************************************************
+ * HOME PAGE
+ *******************************************************/
+export async function fetchHomeContext(): Promise<PageHomeQueryResp> {
+  const url = COURSEFLOW_APP.path.json_api.library.home
+  return API_GET<PageHomeQueryResp>(url)
+}
 
 /*******************************************************
  * LIBRARY PAGES
  *******************************************************/
 
-//Toggle whether a project or activity is a favourite for the user
-export function toggleFavourite(
-  objectID,
-  objectType,
-  favourite,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  try {
-    API_POST(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-      objectID: objectID,
-      objectType: objectType,
-      favourite: favourite
-    })
-      .then((response:ToDefine)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
-  } catch (err) {
-    window.fail_function()
-  }
+export async function fetchExploreContext(): Promise<PageExploreQueryResp> {
+  const url = COURSEFLOW_APP.path.json_api.library.explore
+  return API_GET<PageExploreQueryResp>(url)
 }
 
 /**
@@ -40,58 +34,57 @@ export function toggleFavourite(
  * @param data
  * @param callBackFunction
  */
-export function searchAllObjectsQuery(
+export function libraryObjectsSearchQuery(
   filter,
   data,
-  callBackFunction = (_data: SearchAllObjectsQueryResp) =>
+  callBackFunction = (_data: LibraryObjectsSearchQueryResp) =>
     console.log('success')
 ) {
-  try {
-    API_POST(COURSEFLOW_APP.config.post_paths.search_all_objects, {
-      filter: filter,
-      additional_data: data
-    })
-      .then((response:SearchAllObjectsQueryResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
-  } catch (err) {
-    window.fail_function()
-  }
+  API_POST(COURSEFLOW_APP.path.json_api.library.library__objects_search, {
+    filter: filter,
+    additional_data: data
+  }).then((response: LibraryObjectsSearchQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+  })
 }
 
 /**
  * Get the library projects
  * @param callBackFunction
+ * this uses a callback because not yet used in hook
  */
-export function getLibraryQuery(
+export const getLibraryQuery = (
   callBackFunction = (_data: LibraryQueryResp) => console.log('success')
-) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_library).done(function (
-      response: LibraryQueryResp
-    ) {
+) => {
+  const url = COURSEFLOW_APP.path.json_api.library.library__library__projects
+
+  API_GET<LibraryQueryResp>(url)
+    .then((response) => {
       callBackFunction(response)
     })
-  } catch (err) {
-    window.fail_function()
-  }
+    .catch((error) => {
+      console.error('Error fetching library data:', error)
+      window.fail_function()
+    })
 }
 
 /**
  * Get the library projects
  * @param callBackFunction
+ * this uses a callback because not yet used in hook
  */
-export function getFavouritesQuery(
+export const getFavouritesQuery = (
   callBackFunction = (_data: FavouritesQueryResp) => console.log('success')
-) {
-  try {
-    $.get(COURSEFLOW_APP.config.get_paths.get_favourites).done(function (
-      response: FavouritesQueryResp
-    ) {
+) => {
+  const url = COURSEFLOW_APP.path.json_api.library.library__favourites__projects
+
+  API_GET<FavouritesQueryResp>(url)
+    .then((response) => {
       callBackFunction(response)
     })
-  } catch (err) {
-    window.fail_function()
-  }
+    .catch((error) => {
+      console.error('Error fetching library data:', error)
+      window.fail_function()
+    })
 }

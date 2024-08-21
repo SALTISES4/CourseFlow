@@ -3,7 +3,7 @@
 // app and a place where all the code will be refactored/consolidated into
 // so that we end up with a single entry point into the frontend\
 import Comparison from '@cfPages/Workflow/Comparison'
-import ReactDOM from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -54,7 +54,7 @@ import WorkflowComparison from '@cfModule/components/pages/Workflow/WorkflowComp
 // @LIBRARY
 import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
-import Favourites from '@cfModule/components/pages/Library/Favorites'
+import Favourites from '@cfModule/components/pages/Library/Favourites'
 import Home from '@cfModule/components/pages/Library/Home'
 import Explore from '@cfModule/components/pages/Library/Explore'
 import Workflow from '@cfModule/components/pages/Workflow/Workflow'
@@ -71,6 +71,46 @@ const cache = createCache({
   nonce: window.cf_nonce
 })
 
+const domain = 'course-flow'
+const router = createBrowserRouter([
+  {
+    path: `${domain}/home`,
+    element: <Home />
+  },
+  {
+    path: `${domain}/styleguide`,
+    element: <Styleguide />
+  },
+  {
+    path: `${domain}/favourites`,
+    element: <Favourites />
+  },
+  {
+    path: `${domain}/library`,
+    element: <Library />
+  },
+  {
+    path: `${domain}/explore`,
+    element: <Explore />
+  },
+  {
+    path: `${domain}/user/notifications`,
+    element: <NotificationsPage />
+  },
+  {
+    path: `${domain}/user/notifications-settings`,
+    element: <NotificationsSettingsPage />
+  },
+  {
+    path: `${domain}/user/profile-settings`,
+    element: <ProfileSettingsPage />
+  },
+  {
+    path: `${domain}/project/:id`,
+    element: <ProjectDetail />
+  }
+])
+
 /**
  * contextData
  * set in python views and prepped in react_renderer.html
@@ -81,45 +121,27 @@ const getAppComponent = () => {
      * LIBRARY
      *******************************************************/
     case 'styleguide':
-      return <Styleguide />
     case 'home':
-      return <Home {...COURSEFLOW_APP.contextData} />
-    case 'favorites':
-      return <Favourites />
+    case 'favourites':
     case 'library':
-      // if this complains about user_id add it to
-      // contextData and pass that to LibraryRenderer
-      return <Library />
     case 'explore':
-      return <Explore {...COURSEFLOW_APP.contextData} />
-    case 'projectDetail':
-      return <ProjectDetail {...COURSEFLOW_APP.contextData} />
-
-    /*******************************************************
-     * USER / PROFILE
-     *******************************************************/
     case 'notifications':
-      return <NotificationsPage {...COURSEFLOW_APP.contextData} />
     case 'notificationsSettings':
-      return <NotificationsSettingsPage {...COURSEFLOW_APP.contextData} />
     case 'profileSettings':
-      return <ProfileSettingsPage {...COURSEFLOW_APP.contextData} />
+    case 'projectDetail':
+      return <RouterProvider router={router} />
 
     /*******************************************************
      * REDUX
      *******************************************************/
     case 'projectComparison': {
       /**
-       * @todo for myColour, changeFieldID decide whether these should go in
+       * @todo for changeFieldID decide whether these should go in
        * the DTO from django, or in a subcomponent, if not from django, define as explicit props
        */
       const thisContextData = {
         ...COURSEFLOW_APP.contextData,
-        myColour:
-          'hsl(' +
-          (((COURSEFLOW_APP.contextData.user_id * 5) % 360) + 1) +
-          ', 50%, 50%)',
-        changeFieldID: Math.floor(Math.random() * 10000)
+        changeFieldID: Math.floor(Math.random() * 10000) // @todo why
       }
       // not sure yet because the render method is taking arguments
       const workflowComparisonWrapper = new Comparison(thisContextData)
@@ -137,7 +159,7 @@ const getAppComponent = () => {
 }
 
 // Register all the components that we're loading ourselves on load
-// using the event listner is non-standard but we'll keep it since we are using other legact scripts right now (see belpow)
+// using the event listener is non-standard but we'll keep it since we are using other legact scripts right now (see belpow)
 window.addEventListener('load', () => {
   const reactQueryClient = new QueryClient()
 

@@ -15,7 +15,7 @@ import { DIALOG_TYPE, useDialog } from '..'
 import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
 import { EProject } from '@cfModule/XMLHTTP/types/entity'
-import { API_POST } from '@XMLHTTP/PostFunctions'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -98,7 +98,7 @@ function ExportProjectDialog({ data }: { data: EProject }) {
     }
 
     // TODO: handle success/failure appropriately
-    API_POST(COURSEFLOW_APP.config.post_paths.get_export, postData)
+    API_POST(COURSEFLOW_APP.path.post_paths.get_export, postData)
       .then((resp) => {
         console.log('response', resp)
       })
