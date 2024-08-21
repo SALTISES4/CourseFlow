@@ -10,6 +10,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 import os
 
+from django.http import HttpRequest
+
 #########################################################
 # PATHS
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -341,7 +343,7 @@ CHROMEDRIVER_PATH = None
 #########################################################
 # HELPER FUNCTIONS
 #########################################################
-def show_toolbar(request):
+def show_toolbar(request: HttpRequest):
     return (
         DEBUG
         and request.META.get("REMOTE_ADDR") in INTERNAL_IPS

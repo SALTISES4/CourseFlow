@@ -102,7 +102,7 @@
         library: "{% url 'course_flow:library' %}",
         favourites: "{% url 'course_flow:favourites' %}",
       },
-      project: "{% url 'course_flow:project-detail' _='path' %}",
+      project: "{% url 'course_flow:project-detail' pk='path' %}",
       update_path_temp: "{% url 'course_flow:workflow-update' pk='0'%}",
       public_update_path_temp: "{% url 'course_flow:workflow-update' pk='0'%}"
     },

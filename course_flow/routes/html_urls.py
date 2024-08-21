@@ -93,7 +93,7 @@ def html_patterns():
         # PROJECT
         #########################################################
         path(
-            "project/<path:_>/",
+            "project/<path:pk>/",
             views.html.library.default_react_view,
             {
                 "title": "Project",
