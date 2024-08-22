@@ -28,7 +28,10 @@
      * REDUX STUFF
      *******************************************************/
     case 'projectComparison': {
-      COURSEFLOW_APP.contextData = DTOContextData
+       COURSEFLOW_APP.contextData = {
+        ...DTOContextData,
+        changeFieldID: Math.floor(Math.random() * 10000)
+      }
       break
     }
     case "workflowDetailView": {

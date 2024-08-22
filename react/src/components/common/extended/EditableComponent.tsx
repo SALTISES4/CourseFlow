@@ -467,28 +467,6 @@ class EditableComponent<
         <h4>{window.gettext('Linked Workflow')}</h4>
         <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
         <LinkedWorkflowButton id={data.id} />
-        {/*<button
-          className="primary-button"
-          disabled={readOnly}
-          id="linked-workflow-editor"
-          onClick={() => {
-            COURSEFLOW_APP.tinyLoader.startLoad()
-            getLinkedWorkflowMenuQuery(
-              data,
-              (response_data)=>{
-                openLinkedWorkflowMenu(
-                  response_data,
-                  (_response_data) => {
-                    console.log('linked a workflow')
-                  },
-                )
-                COURSEFLOW_APP.tinyLoader.endLoad()
-              },
-            )
-          }}
-        >
-          {window.gettext('Change')}
-        </button>*/}
         <input
           disabled={readOnly}
           type="checkbox"

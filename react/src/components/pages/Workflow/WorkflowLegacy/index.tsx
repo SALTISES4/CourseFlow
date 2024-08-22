@@ -58,7 +58,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 /****************************************
  *
  * ****************************************/
-class Workflow {
+class WorkflowLegacy {
   private message_queue: any[]
   private messages_queued: boolean
   private outcome_type_choices: FieldChoice[]
@@ -535,7 +535,7 @@ class Workflow {
               <Provider store={this.store}>
                 <WorkFlowConfigProvider initialValue={this}>
                   <WorkflowBaseView
-                    view_type={view_type}
+                    viewType={view_type}
                     parentRender={this.workflowRender}
                     config={{
                       canView: this.can_view,
@@ -561,7 +561,7 @@ class Workflow {
               <Provider store={this.store}>
                 <WorkFlowConfigProvider initialValue={this}>
                   <WorkflowBaseView
-                    view_type={view_type}
+                    viewType={view_type}
                     parentRender={this.workflowRender}
                     config={{
                       canView: this.can_view,
@@ -582,4 +582,4 @@ class Workflow {
   }
 }
 
-export default Workflow
+export default WorkflowLegacy

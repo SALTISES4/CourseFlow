@@ -47,6 +47,10 @@ export class OutcomeEditViewUnconnected<
    *******************************************************/
   componentDidMount() {
     this.makeDragAndDrop()
+
+
+
+
   }
 
   componentDidUpdate() {
@@ -93,6 +97,8 @@ export class OutcomeEditViewUnconnected<
   }
 
   addNewWrapper(objectset) {
+    console.log('objectset')
+    console.log(objectset)
     newOutcomeQuery(this.props.workflow.id, objectset.id)
   }
 
@@ -129,7 +135,7 @@ export class OutcomeEditViewUnconnected<
             'Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.'
           )}
         </div>
-        <this.AddNew />
+        <this.AddNew objectset={{}} />
       </>
     )
 

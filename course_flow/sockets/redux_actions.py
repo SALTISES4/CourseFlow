@@ -68,46 +68,6 @@ def dispatch_wf_lock(workflow, action):
     )
 
 
-# def dispatch_wf(workflow, action):
-#    workflow.edit_count = F("edit_count") + 1
-#    workflow.save()
-#    workflow.refresh_from_db()
-#    channel_layer = get_channel_layer()
-#    channel_layer.group_send(
-#        "workflow_" + str(workflow.pk),
-#        {
-#            "type": "workflow_action",
-#            "action": action,
-#            "edit_count": str(workflow.edit_count),
-#        },
-#    )
-#
-#
-# def dispatch_to_parent_wf(workflow, action):
-#    channel_layer = get_channel_layer()
-#    for parent_node in Node.objects.filter(linked_workflow=workflow):
-#        parent_workflow = parent_node.get_workflow()
-#        parent_workflow.edit_count = F("edit_count") + 1
-#        parent_workflow.save()
-#        parent_workflow.refresh_from_db()
-#        channel_layer.group_send(
-#            "workflow_" + str(parent_workflow.pk),
-#            {
-#                "type": "workflow_action",
-#                "action": action,
-#                "edit_count": parent_workflow.edit_count,
-#            },
-#        )
-#
-#
-# def dispatch_wf_lock(workflow, action):
-#    channel_layer = get_channel_layer()
-#    channel_layer.group_send(
-#        "workflow_" + str(workflow.pk),
-#        {"type": "lock_update", "action": action},
-#    )
-
-
 # Actions for reduers
 def unlock(object_id, object_type):
     return {

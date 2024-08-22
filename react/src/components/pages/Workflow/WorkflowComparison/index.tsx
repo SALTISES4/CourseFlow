@@ -11,7 +11,6 @@ import { ViewType } from '@cfModule/types/enum.js'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { EWorkflowDataPackage } from '@XMLHTTP/types'
 import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
-import WorkflowLegacy from '@cfPages/Workflow/WorkflowLegacy'
 
 type WorkflowComparisonParams = {
   workflowID: number

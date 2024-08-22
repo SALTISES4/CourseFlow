@@ -132,24 +132,15 @@ const getAppComponent = () => {
      * REDUX
      *******************************************************/
     case 'projectComparison': {
-      /**
-       * @todo for changeFieldID decide whether these should go in
-       * the DTO from django, or in a subcomponent, if not from django, define as explicit props
-       */
-      const thisContextData = {
-        ...COURSEFLOW_APP.contextData,
-        changeFieldID: Math.floor(Math.random() * 10000) // @todo why
-      }
-      // not sure yet because the render method is taking arguments
-      const workflowComparisonWrapper = new Comparison(thisContextData)
+      const workflowComparisonWrapper = new Comparison(
+        COURSEFLOW_APP.contextData
+      )
       workflowComparisonWrapper.render($('#container'))
 
       return true
     }
     case 'workflowDetailView': {
-      const workflowWrapper = new Workflow(COURSEFLOW_APP.contextData)
-      workflowWrapper.init()
-      return true
+      return <Workflow {...COURSEFLOW_APP.contextData} />
     }
     default:
       return <RouterProvider router={router} />

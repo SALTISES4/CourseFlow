@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { connect } from 'react-redux'
+import { connect, DispatchProp } from 'react-redux'
 
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar.jsx'
 import * as Constants from '@cfConstants'
@@ -23,7 +23,7 @@ import EditableComponent, {
   EditableComponentStateType
 } from '@cfParentComponents/EditableComponent'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
-import { CfObjectType, ViewType } from '@cfModule/types/enum'
+import { CfObjectType, ViewType, WFContext } from '@cfModule/types/enum'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
@@ -40,6 +40,12 @@ import { ThemeProvider } from '@mui/material/styles'
 import theme from '@cfMUI/theme'
 import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget'
 import ImportModal from '@cfModule/components/common/dialog/Import'
+import ActionCreator from '@cfRedux/ActionCreator'
+import {
+  getPublicWorkflowParentDataQuery,
+  getWorkflowParentDataQuery
+} from '@XMLHTTP/API/workflow'
+import { compose } from '@reduxjs/toolkit'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -110,8 +116,8 @@ const ImportButtons = ({ aClass }: { aClass: string }) => {
  */
 
 type OwnProps = {
-  view_type: ViewType // doese this live in context or do we pass it?
-  parentRender: (container, view_type: ViewType) => void // @todo delete his after converrting to state mgmt
+  viewType: ViewType // doese this live in context or do we pass it?
+  parentRender: (viewType: ViewType) => void // @todo delete his after converrting to state mgmt
   config: {
     canView: boolean
     isStudent: boolean
@@ -121,7 +127,7 @@ type OwnProps = {
   websocket: WebSocket
 } & EditableComponentProps
 
-type PropsType = ConnectedProps & OwnProps
+type PropsType = DispatchProp & ConnectedProps & OwnProps
 type StateType = {
   users: any
   openShareDialog: boolean
@@ -130,6 +136,7 @@ type StateType = {
   openEditDialog: boolean
   data?: any
 } & EditableComponentStateType
+
 /**
  * The base component of our workflow view. This renders the menu bar
  * above itself, the right sidebar, the header (description, sharing etc),
@@ -154,15 +161,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private data: ConnectedProps['data']
   private project: any
   private selection_manager: SelectionManager
-  private renderMethod: (container, view_type: ViewType) => void
-  private container: any
+  private renderMethod: (viewType: ViewType) => void
   private websocket: any
   private always_static: boolean
   private user_id: any
   private project_permission: number
   private object_sets: any
   private workflowId: any
-  private view_type: any
+  private viewType: ViewType
   private can_view: boolean
 
   constructor(props: PropsType, context) {
@@ -180,7 +186,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
     // @todo important: change this to state update control
     // issues with loss of scope of this if assigned to local method in this
-    this.renderMethod = this.props.parentRender
+    // this.renderMethod = () => this.props.parentRender(this.props.viewType)
 
     // not used in other components
     // @todo what is the definition of canView ? since both these values are assigned in parent, figure it out there
@@ -196,17 +202,15 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       openExportDialog: false,
       openImportDialog: false
     } as StateType
-    console.log('this.context')
-    console.log(this.context)
     this.readOnly = this.context.read_only
     this.workflowId = this.context.workflowID
     this.selection_manager = this.context.selection_manager
 
     // this should be a state type, but leave in context for now
-    this.container = this.context.container
+    // this.container = this.context.container
 
     // to be added
-    this.view_type = this.context.view_type
+    this.viewType = this.props.viewType
     this.user_id = this.context.user_id
     this.public_view = this.context.public_view
   }
@@ -220,6 +224,19 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     // @ts-ignore
     COURSEFLOW_APP.makeDropdown('#jump-to')
     COURSEFLOW_APP.makeDropdown('#expand-collapse-all')
+
+    if (this.viewType === ViewType.OUTCOME_EDIT) {
+      const getWorkflowParentData = this.public_view
+        ? getPublicWorkflowParentDataQuery
+        : getWorkflowParentDataQuery
+
+      getWorkflowParentData(this.workflowId, (response) => {
+        //
+        this.props.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        )
+      })
+    }
   }
 
   /*******************************************************
@@ -310,7 +327,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   // @todo what are all the view types?
   changeView(type: ViewType) {
-    this.renderMethod(this.container, type)
+    this.props.parentRender(type)
   }
 
   openEditMenu(evt: EventUnion) {
@@ -566,7 +583,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       .filter((item) => item.disabled.indexOf(this.data.type) == -1)
       .map((item, index) => {
         let view_class = 'hover-shade'
-        if (item.type === this.view_type) view_class += ' active'
+        if (item.type === this.viewType) view_class += ' active'
         return (
           <a
             key={index}
@@ -582,11 +599,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     return view_buttons
   }
 
-  WorkflowContent = () => {
-    switch (this.view_type) {
+  WorkflowContent = ({ viewType }: { viewType: ViewType }) => {
+    switch (viewType) {
       case ViewType.OUTCOMETABLE: {
         this.allowed_tabs = [3]
-        return <WorkflowTableView data={this.data} view_type={this.view_type} />
+        return <WorkflowTableView data={this.data} view_type={this.viewType} />
       }
       case ViewType.OUTCOME_EDIT: {
         if (this.data.type == 'program') {
@@ -594,17 +611,16 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         } else {
           this.allowed_tabs = [2, 3]
         }
-
         return <OutcomeEditView />
       }
       case ViewType.ALIGNMENTANALYSIS: {
         this.allowed_tabs = [3]
-        return <AlignmentView view_type={this.view_type} />
+        return <AlignmentView view_type={this.viewType} />
       }
 
       case ViewType.GRID: {
         this.allowed_tabs = [3]
-        return <GridView view_type={this.view_type} />
+        return <GridView view_type={this.viewType} />
       }
       default: {
         this.allowed_tabs = [1, 2, 3, 4]
@@ -616,9 +632,10 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     }
   }
 
-  Content = () => {
+  Content = ({ viewType }: { viewType: ViewType }) => {
+    console.log('rendering content')
     if (this.data.is_strategy) {
-      return <this.WorkflowContent />
+      return <this.WorkflowContent viewType={viewType} />
     }
 
     return (
@@ -626,7 +643,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <div className="workflow-view-select hide-print">
           <this.ViewButtons />
         </div>
-        <this.WorkflowContent />
+        <this.WorkflowContent viewType={viewType} />
       </>
     )
   }
@@ -635,7 +652,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * VIEW BAR
    *******************************************************/
   Jump = () => {
-    if (this.view_type !== ViewType.WORKFLOW) {
+    if (this.viewType !== ViewType.WORKFLOW) {
       return null
     }
     const nodebarweekworkflows = this.data.weekworkflow_set.map(
@@ -1025,67 +1042,65 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   render() {
     return (
       <DialogContextProvider>
-        <ThemeProvider theme={theme}>
-          {this.addEditable(this.props.data)}
-          <>{this.getReturnLinksPortal()}</>
-          <div className="main-block">
-            <MenuBar
-              overflowLinks={this.OverflowLinks}
-              visibleButtons={this.VisibleButtons}
-              viewbar={this.ViewBar}
-              userbar={this.UserBar}
-            />
-            <div className="right-panel-wrapper">
-              <div className="body-wrapper">
-                <div id="workflow-wrapper" className="workflow-wrapper">
-                  {<this.Header />}
-                  <div className="workflow-container">
-                    <this.Content />
-                  </div>
-
-                  <ParentWorkflowIndicator
-                    // renderer={this.props.renderer}
-                    // legacyRenderer={this.props.legacyRenderer}
-                    workflow_id={this.workflowId}
-                  />
+        {this.addEditable(this.props.data)}
+        <>{this.getReturnLinksPortal()}</>
+        <div className="main-block">
+          <MenuBar
+            overflowLinks={this.OverflowLinks}
+            visibleButtons={this.VisibleButtons}
+            viewbar={this.ViewBar}
+            userbar={this.UserBar}
+          />
+          <div className="right-panel-wrapper">
+            <div className="body-wrapper">
+              <div id="workflow-wrapper" className="workflow-wrapper">
+                <this.Header />
+                <div className="workflow-container">
+                  <this.Content viewType={this.props.viewType} />
                 </div>
-              </div>
-              <RightSideBar
-                context="workflow"
-                // legacyRenderer={this.props.legacyRenderer}
-                data={this.props.data}
-                readOnly={this.readOnly}
-               //  parentRender={this.renderMethod}
-              />
-            </div>
 
-            <ProjectTargetModal
-              id={this.data.id}
-              actionFunction={(response_data) => {
-                if (response_data.parentID != null) {
-                  const utilLoader = new UtilityLoader('body')
-                  duplicateBaseItemQuery(
-                    this.data.id,
-                    this.data.type,
-                    response_data.parentID,
-                    (response_data) => {
-                      utilLoader.endLoad()
-                      // @ts-ignore
-                      window.location =
-                        COURSEFLOW_APP.path.html.update_path_temp.replace(
-                          '0',
-                          // @ts-ignore
-                          response_data.new_item.id
-                        )
-                    }
-                  )
-                }
-              }}
+                <ParentWorkflowIndicator
+                  // renderer={this.props.renderer}
+                  // legacyRenderer={this.props.legacyRenderer}
+                  workflow_id={this.workflowId}
+                />
+              </div>
+            </div>
+            <RightSideBar
+              wfcontext={WFContext.WORKFLOW}
+              // legacyRenderer={this.props.legacyRenderer}
+              data={this.props.data}
+              readOnly={this.readOnly}
+              //  parentRender={this.renderMethod}
             />
-            <ImportModal workflowID={this.data.id} />
-            <this.ShareDialog />
           </div>
-        </ThemeProvider>
+
+          <ProjectTargetModal
+            id={this.data.id}
+            actionFunction={(response_data) => {
+              if (response_data.parentID != null) {
+                const utilLoader = new UtilityLoader('body')
+                duplicateBaseItemQuery(
+                  this.data.id,
+                  this.data.type,
+                  response_data.parentID,
+                  (response_data) => {
+                    utilLoader.endLoad()
+                    // @ts-ignore
+                    window.location =
+                      COURSEFLOW_APP.path.html.update_path_temp.replace(
+                        '0',
+                        // @ts-ignore
+                        response_data.new_item.id
+                      )
+                  }
+                )
+              }
+            }}
+          />
+          <ImportModal workflowID={this.data.id} />
+          <this.ShareDialog />
+        </div>
       </DialogContextProvider>
     )
   }
@@ -1101,7 +1116,12 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
   }
 }
 
-const WorkflowBaseView = connect<ConnectedProps, object, OwnProps, AppState>(
+const WorkflowBaseView = connect<
+  ConnectedProps,
+  DispatchProp,
+  OwnProps,
+  AppState
+>(
   mapStateToProps,
   null
 )(WorkflowBaseViewUnconnected)

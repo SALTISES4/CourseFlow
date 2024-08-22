@@ -52,6 +52,12 @@ enum DATA_TYPE {
   WORKFLOW_CHILD_UPDATED = 'workflow_child_updated'
 }
 
+type StateProps = {
+  ready: boolean
+  viewType: ViewType
+}
+type PropsType = WorkflowDetailViewDTO
+
 // @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
@@ -61,7 +67,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
  * which extends the original Workflow/Workflow....
  * the hope is that there unpacking this will be less work when Workflow/Workflow is revised first
  * ****************************************/
-class WorkflowLegacy {
+class Workflow extends React.Component<PropsType, StateProps> {
   private message_queue: any[]
   private messages_queued: boolean
   private outcome_type_choices: FieldChoice[]
@@ -114,13 +120,13 @@ class WorkflowLegacy {
   unread_comments: any
   container: any
   view_type: any
-  private workflowRender: OmitThisParameter<
-    (container, view_type?: ViewType) => void
-  >
+  private workflowRender: (viewType: ViewType) => void
   private locks: any
   silent_connect_fail: any
 
   constructor(propsConfig: WorkflowDetailViewDTO) {
+    super(propsConfig)
+
     const {
       column_choices,
       context_choices,
@@ -155,7 +161,7 @@ class WorkflowLegacy {
     this.user_permission = propsConfig.user_permission
     this.user_id = propsConfig.user_id
     this.read_only = true
-    this.workflowRender = this.render.bind(this)
+    this.workflowRender = this.updateView.bind(this)
 
     if (this.public_view) {
       this.always_static = true
@@ -199,12 +205,23 @@ class WorkflowLegacy {
     this.getWorkflowData = this.public_view
       ? getPublicWorkflowDataQuery
       : getWorkflowDataQuery
+
     this.getWorkflowParentData = this.public_view
       ? getPublicWorkflowParentDataQuery
       : getWorkflowParentDataQuery
+
     this.getWorkflowChildData = this.public_view
       ? getPublicWorkflowChildDataQuery
       : getWorkflowChildDataQuery
+
+    this.state = {
+      ready: false,
+      viewType: ViewType.WORKFLOW
+    }
+  }
+
+  componentDidMount() {
+    this.init()
   }
 
   //
@@ -212,8 +229,15 @@ class WorkflowLegacy {
     if (!this.always_static) {
       this.connect()
     } else {
-      this.connection_opened()
+      this.onConnectionOpened()
     }
+  }
+
+  updateView(viewType: ViewType) {
+    this.setState({
+      ...this.state,
+      viewType
+    })
   }
 
   /*******************************************************
@@ -236,12 +260,12 @@ class WorkflowLegacy {
 
     this.websocket.onopen = () => {
       this.has_rendered = true
-      this.connection_opened()
+      this.onConnectionOpened()
     }
 
     // @todo why?
     if (this.websocket.readyState === 1) {
-      this.connection_opened()
+      this.onConnectionOpened()
     }
 
     this.websocket.onclose = (e) => this.handleSocketClose(e)
@@ -251,7 +275,7 @@ class WorkflowLegacy {
     if (e.code === 1000) return
 
     if (!this.has_rendered) {
-      this.connection_opened(true)
+      this.onConnectionOpened(true)
     } else {
       this.attemptReconnect()
     }
@@ -274,7 +298,7 @@ class WorkflowLegacy {
   }
 
   onMessageReceived(e: MessageEvent) {
-    this.parsemessage(e)
+    this.parseMessage(e)
   }
 
   /*******************************************************
@@ -311,7 +335,7 @@ class WorkflowLegacy {
     }
   }
 
-  connection_opened(reconnect = false) {
+  onConnectionOpened(reconnect = false) {
     this.getWorkflowData(this.workflowID, (response) => {
       this.unread_comments = response.data_package?.unread_comments // @todo explicit typing
 
@@ -321,7 +345,11 @@ class WorkflowLegacy {
         response.data_package,
         composeEnhancers()
       )
-      this.render($('#container'))
+      // this.render($('#container'))
+      this.setState({
+        ...this.state,
+        ready: true
+      })
 
       // @ts-ignore
       this.clear_queue(response.data_package?.workflow.edit_count) // @todo why would there be a queue if we're not using pubsub?
@@ -338,7 +366,7 @@ class WorkflowLegacy {
     while (this.message_queue.length > 0) {
       const message = this.message_queue[0]
       if (started_edits) {
-        this.parsemessage(message)
+        this.parseMessage(message)
       } else if (
         message.edit_count &&
         parseInt(message.edit_count) >= edit_count
@@ -354,7 +382,7 @@ class WorkflowLegacy {
   /*******************************************************
    * THESE ARE UPDATES FROM PUB MESSAGE
    *******************************************************/
-  parsemessage(e) {
+  parseMessage(e) {
     const data = JSON.parse(e.data)
 
     switch (data.type) {
@@ -363,24 +391,24 @@ class WorkflowLegacy {
         this.store.dispatch(data.action)
         break
       case DATA_TYPE.LOCK_UPDATE:
-        this.lock_update_received(data.action)
+        this.lockUpdateReceived(data.action)
         break
       case DATA_TYPE.CONNECTION_UPDATE:
-        this.connection_update_received(data.action)
+        this.connectionUpdateReceived(data.action)
         break
       case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
         // this.parent_workflow_updated(data.edit_count) // @todo function takes no args
-        this.parent_workflow_updated()
+        this.parentWorkflowUpdated()
         break
       case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
-        this.child_workflow_updated(data.edit_count, data.child_workflow_id)
+        this.childWorkflowUpdated(data.edit_count, data.child_workflow_id)
         break
       default:
         break
     }
   }
 
-  lock_update_received(data) {
+  lockUpdateReceived(data) {
     const object_type = data.object_type
     const object_id = data.object_id
 
@@ -507,10 +535,7 @@ class WorkflowLegacy {
   /*******************************************************
    * REACT TO MOVE
    *******************************************************/
-  render(container, view_type: ViewType = ViewType.WORKFLOW) {
-    console.log('THIS IS THE WORKFLOW TI', this.project)
-
-
+  render() {
     this.locks = {}
 
     this.selection_manager = new SelectionManager(this.read_only)
@@ -520,71 +545,31 @@ class WorkflowLegacy {
     this.child_data_completed = -1
     this.fetching_child_data = false
 
-    this.view_type = view_type // @todo where is view_type set?
-
-    reactDom.render(<Loader />, container[0])
-
-    this.container = container // @todo where is view_type set?
     // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager
 
-    if (view_type === ViewType.OUTCOME_EDIT) {
-      // get additional data about parent workflow prior to render
-      this.getWorkflowParentData(this.workflowID, (response) => {
-        this.store.dispatch(
-          ActionCreator.refreshStoreData(response.data_package)
-        )
-        const theme = createTheme({})
-        reactDom.render(
-          <CacheProvider value={cache}>
-            <ThemeProvider theme={theme}>
-              <Provider store={this.store}>
-                <WorkFlowConfigProvider initialValue={this}>
-                  <WorkflowBaseView
-                    view_type={view_type}
-                    parentRender={this.workflowRender}
-                    config={{
-                      canView: this.can_view,
-                      isStudent: this.is_student,
-                      projectPermission: this.project_permission,
-                      alwaysStatic: this.always_static
-                    }}
-                    websocket={this.websocket}
-                  />
-                </WorkFlowConfigProvider>
-              </Provider>
-            </ThemeProvider>
-          </CacheProvider>,
-          container[0]
-        )
-      })
-    } else {
-      setTimeout(() => {
-        const theme = createTheme({})
-        reactDom.render(
-          <CacheProvider value={cache}>
-            <ThemeProvider theme={theme}>
-              <Provider store={this.store}>
-                <WorkFlowConfigProvider initialValue={this}>
-                  <WorkflowBaseView
-                    view_type={view_type}
-                    parentRender={this.workflowRender}
-                    config={{
-                      canView: this.can_view,
-                      isStudent: this.is_student,
-                      projectPermission: this.project_permission,
-                      alwaysStatic: this.always_static
-                    }}
-                    websocket={this.websocket}
-                  />
-                </WorkFlowConfigProvider>
-              </Provider>
-            </ThemeProvider>
-          </CacheProvider>,
-          container[0]
-        )
-      }, 50)
+    if (!this.state.ready) {
+      return <Loader />
     }
+
+
+    return (
+      <Provider store={this.store}>
+        <WorkFlowConfigProvider initialValue={this}>
+          <WorkflowBaseView
+            viewType={this.state.viewType}
+            parentRender={this.workflowRender}
+            config={{
+              canView: this.can_view,
+              isStudent: this.is_student,
+              projectPermission: this.project_permission,
+              alwaysStatic: this.always_static
+            }}
+            websocket={this.websocket}
+          />
+        </WorkFlowConfigProvider>
+      </Provider>
+    )
   }
 }
 
-export default WorkflowLegacy
+export default Workflow

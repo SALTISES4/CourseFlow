@@ -3,20 +3,17 @@ import * as reactDom from 'react-dom'
 import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar'
-import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
+import {WorkflowTitle} from '@cfCommonComponents/UIComponents/Titles'
 
-import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
+import {renderMessageBox} from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
-import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
+import {CfObjectType, ViewType, WFContext} from '@cfModule/types/enum.js'
 import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent'
-import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
-import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
-import {
-  GetWorkflowSelectQueryResp,
-  GetWorkflowSelectMenuResp
-} from '@XMLHTTP/types/query'
-import { EProject } from '@cfModule/XMLHTTP/types/entity'
-import { ObjectSet } from '@cfModule/types/common'
+import {getWorkflowSelectMenuQuery} from '@XMLHTTP/API/workflow'
+import {openWorkflowSelectMenu} from '@XMLHTTP/postTemp'
+import {GetWorkflowSelectMenuResp, GetWorkflowSelectQueryResp} from '@XMLHTTP/types/query'
+import {EProject} from '@cfModule/XMLHTTP/types/entity'
+import {ObjectSet} from '@cfModule/types/common'
 // import $ from 'jquery'
 
 /**
@@ -343,7 +340,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
             </div>
 
             <RightSideBar
-              context="comparison"
+              wfcontext={WFContext.COMPARISON}
               // parentRender={this.props.parentRender}
               readOnly={this.props.read_only}
               data={data}
