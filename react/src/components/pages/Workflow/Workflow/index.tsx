@@ -69,6 +69,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
   is_strategy: boolean
   project: EProject
   user_id: number
+  user_name: string
   read_only: boolean
   always_static: boolean // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
   project_permission: number
@@ -84,16 +85,16 @@ class Workflow extends React.Component<PropsType, StateProps> {
   websocket: WebSocket
   private has_disconnected: boolean
   private has_rendered: boolean
-  private is_static: boolean
   store: Store<EmptyObject & AppState, AnyAction>
 
   // NOTE: this is not yet a React component, so its misleading to use the same
   // 'props' value in the constructor since they behave differently
   unread_comments: any
   container: any
-  view_type: any
+  view_type: ViewType
   private locks: any
   silent_connect_fail: any
+  is_static: boolean
 
   constructor(props) {
     super(props)
@@ -113,6 +114,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
       viewType: ViewType.WORKFLOW
     }
     this.updateView = this.updateView.bind(this)
+    this.workflowID = 18
   }
 
   componentDidMount() {
@@ -124,6 +126,8 @@ class Workflow extends React.Component<PropsType, StateProps> {
   }
 
   setupData(response: WorkflowDetailViewDTO) {
+    console.log('response')
+    console.log(response)
     const {
       column_choices,
       context_choices,
@@ -155,12 +159,17 @@ class Workflow extends React.Component<PropsType, StateProps> {
     this.project = project
 
     this.user_id = response.user_id
+    this.user_name = response.user_name
 
     // permissions
     this.user_permission = response.user_permission
     this.read_only = true
-    this.always_static = true
+    this.always_static = false
     this.public_view = response.public_view
+
+    if (this.public_view) {
+      this.always_static = true
+    }
 
     if (!this.is_strategy && this.project.object_permission) {
       this.project_permission = this.project.object_permission.permission_type
@@ -189,6 +198,8 @@ class Workflow extends React.Component<PropsType, StateProps> {
   }
 
   init() {
+    console.log('this.always_static')
+    console.log(this.always_static)
     if (!this.always_static) {
       this.connect()
     } else {
@@ -207,9 +218,10 @@ class Workflow extends React.Component<PropsType, StateProps> {
    * WEBSOCKET MANAGER
    *******************************************************/
   connect() {
-    this.websocket = new WebSocket(
-      `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
-    )
+    const url = `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
+    console.log('my cool us url')
+    console.log(url)
+    this.websocket = new WebSocket(url)
 
     this.websocket.onmessage = (e) => {
       if (this.messages_queued) {

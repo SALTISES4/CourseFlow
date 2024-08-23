@@ -15,7 +15,8 @@ const ConnectedUser = ({
       }}
       title={userName}
     >
-      {userName[0]}
+      {/*{userName[0]}*/}
+      {''}
     </div>
   )
 }
@@ -25,13 +26,14 @@ const ConnectedUser = ({
 //Container for common elements for workflows
 type ConnectedUserType = {
   user_name: string
-  user_colour: string
   user_id: string
+  user_colour: string
   timeout: string
 }
 
 type PropsType = {
   user_id: number
+  user_name: string
   websocket: WebSocket
   context: any
   //  renderer: any
@@ -54,11 +56,7 @@ export class ConnectionBar extends React.Component<PropsType, StateType> {
       connected_users: []
     }
 
-    // @ts-ignore
-    this.user_name = COURSEFLOW_APP.contextData.user_name
-
-    // @ts-ignore
-    this.myColour = calcColor(COURSEFLOW_APP.contextData.user_id)
+    this.myColour = calcColor(props.user_id)
 
     // @todo not sure what the intention is here, but it needs to be removed
     // watch for side effects

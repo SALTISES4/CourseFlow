@@ -36,8 +36,6 @@ import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { EventUnion } from '@cfModule/types/common'
 import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
-import { ThemeProvider } from '@mui/material/styles'
-import theme from '@cfMUI/theme'
 import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget'
 import ImportModal from '@cfModule/components/common/dialog/Import'
 import ActionCreator from '@cfRedux/ActionCreator'
@@ -45,7 +43,6 @@ import {
   getPublicWorkflowParentDataQuery,
   getWorkflowParentDataQuery
 } from '@XMLHTTP/API/workflow'
-import { compose } from '@reduxjs/toolkit'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -69,11 +66,12 @@ const CopyButton = (data: any) => {
             loader.endLoad()
             // @todo no
             // @ts-ignore
-            window.location = COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-              '0',
-              // @ts-ignore
-              response_data.new_item.id
-            )
+            window.location =
+              COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
+                '0',
+                // @ts-ignore
+                response_data.new_item.id
+              )
           })
         } else {
           dispatch(DIALOG_TYPE.TARGET_PROJECT)
@@ -172,6 +170,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private can_view: boolean
 
   constructor(props: PropsType, context) {
+    console.log('props')
+    console.log(context)
+
     // @ts-ignore
     super(props, context)
 
@@ -271,10 +272,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     ) {
       deleteSelfQuery(this.data.id, 'workflow', false, () => {
         // @todo no
-        const newPath = COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-          '0',
-          this.project.id.toString()
-        )
+        const newPath =
+          COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
+            '0',
+            this.project.id.toString()
+          )
         window.location.href = newPath
       })
     }
@@ -752,6 +754,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       return (
         <ConnectionBar
           user_id={this.context.user_id}
+          user_name={this.context.user_name}
           websocket={this.websocket}
           // connection_update_receive={this.context.connection_update_received}
           context={this.context}

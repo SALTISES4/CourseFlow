@@ -76,6 +76,7 @@ class WorkflowLegacy {
   is_strategy: boolean
   project: EProject
   user_id: number
+  user_name: string
   read_only: boolean
   always_static: boolean // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
   project_permission: number

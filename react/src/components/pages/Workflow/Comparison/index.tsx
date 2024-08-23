@@ -41,8 +41,6 @@ export class Comparison {
     this.container = container
     this.view_type = view_type
 
-    console.log('container')
-    console.log(container)
 
     reactDom.render(<Loader />, container[0])
 

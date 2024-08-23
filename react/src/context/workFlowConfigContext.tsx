@@ -35,6 +35,7 @@ type ChildRenderer = {
 
   // new
   user_id: number
+  user_name: string
   view_type: ViewType
 
   // new new
@@ -47,16 +48,6 @@ const initialWorkFlowConfig: ChildRenderer = {
   // Initialize all required fields
   // ...
 } as ChildRenderer
-
-// export type LegacyRendererProps = {
-//   task_choices: any
-//   time_choices: any
-//   read_only: any
-//   context_choices: any
-//   outcome_type_choices: any
-//   strategy_classification_choices: any
-//   change_field: any
-// }
 
 type PropsType = {
   children: ReactNode
@@ -101,6 +92,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
 
       //new
       user_id: workflowInstance.user_id,
+      user_name: workflowInstance.user_name,
       view_type: workflowInstance.view_type,
       public_view: workflowInstance.public_view,
 

@@ -217,7 +217,6 @@ def json_api_post_get_workflow_context(request: HttpRequest) -> JsonResponse:
         workflow = Workflow.objects.get(pk=workflowPk)
         data_package = get_workflow_context_data(
             workflow,
-            {},
             request.user,
         )
     except AttributeError:

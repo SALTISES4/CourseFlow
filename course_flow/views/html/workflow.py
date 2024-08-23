@@ -30,7 +30,7 @@ class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
         workflow = self.get_object()
         user_permission = get_user_permission(workflow, current_user)
 
-        context = get_workflow_context_data(workflow, context, current_user)
+        context = get_workflow_context_data(workflow, current_user)
         context_data = {
             "public_view": True,
             "user_id": current_user.id if current_user else 0,

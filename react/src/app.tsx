@@ -11,7 +11,17 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
  *******************************************************/
 const originalConsoleWarn = console.error
 console.error = (message, ...args) => {
+  // temp do not leave in
   if (/unique "key" prop/.test(message)) {
+    return
+  }
+
+  // temp do not leave in
+  if (/Warning/.test(message)) {
+    return
+  }
+  // temp do not leave in
+  if (/Cannot read properties of null/.test(message)) {
     return
   }
   originalConsoleWarn(message, ...args)
@@ -118,7 +128,8 @@ const router = createBrowserRouter([
  * set in python views and prepped in react_renderer.html
  */
 const getAppComponent = () => {
-  switch (COURSEFLOW_APP.globalContextData.path_id) {
+  console.log(COURSEFLOW_APP.path_id)
+  switch (COURSEFLOW_APP.path_id) {
     /*******************************************************
      * REDUX
      *******************************************************/
