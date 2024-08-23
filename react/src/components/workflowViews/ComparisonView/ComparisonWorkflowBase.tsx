@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { connect } from 'react-redux'
+import { connect, DispatchProp } from 'react-redux'
 import EditableComponent from '@cfParentComponents/EditableComponent'
 
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
@@ -10,7 +10,7 @@ import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import { AppState } from '@cfRedux/types/type'
 import { EditableComponentStateType } from '@cfParentComponents/EditableComponent'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
-// import $ from 'jquery'
+import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
 
 type ConnectedProps = {
   data: any
@@ -19,10 +19,9 @@ type ConnectedProps = {
 type OwnProps = {
   view_type: ViewType
   rank?: number
-  // dispatch: any
 }
 type StateProps = EditableComponentStateType
-type PropsType = ConnectedProps & OwnProps
+type PropsType = DispatchProp & ConnectedProps & OwnProps
 
 //Container for common elements for workflows
 class ComparisonWorkflowBaseUnconnected extends EditableComponent<
@@ -61,7 +60,6 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
     const props = this.props
     $(document).off('object_set_toggled.' + this.props.data.id)
     $(document).on('object_set_toggled.' + this.props.data.id, (evt, data) => {
-      // @ts-ignore @todo where is dispatch defined
       props.dispatch(ActionCreator.toggleObjectSet(data.id, data.hidden))
     })
   }
@@ -83,6 +81,11 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
 
   Content = () => {
     if (this.context.view_type === ViewType.OUTCOME_EDIT) {
+      getWorkflowParentDataQuery(this.props.data.id, (response) => {
+        this.props.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        )
+      })
       return <OutcomeEdit objectID={this.props.data.id} />
     }
     return <ComparisonWorkflow objectID={this.props.data.id} />
@@ -93,8 +96,6 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    *******************************************************/
   render() {
     const data = this.props.data
-    //  const renderer = this.props.renderer
-    // const selection_manager = renderer.selection_manager
 
     const style: React.CSSProperties = {
       border: data.lock ? '2px solid ' + data.lock.user_colour : undefined // @todo not sure what the best default state is for this
@@ -127,7 +128,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
 
 const ComparisonWorkflowBase = connect<
   ConnectedProps,
-  object,
+  DispatchProp,
   OwnProps,
   AppState
 >(

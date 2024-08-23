@@ -30,32 +30,32 @@ def json_api_patterns():
             name="workflow--detail--get",
         ),
         path(
-            "workflow/node/new",
+            "workflow/node/create",
             views.json_api.create.json_api_post_new_node,
             name="json-api-post-new-node",
         ),
         path(
-            "workflow/outcome/new",
+            "workflow/outcome/create",
             views.json_api.create.json_api_post_new_outcome_for_workflow,
             name="json-api-post-new-outcome-for-workflow",
         ),
         path(
-            "workflow/strategy/add",
+            "workflow/strategy/create",
             views.json_api.strategy.json_api_post_add_strategy,
             name="json-api-post-add-strategy",
         ),
         path(
-            "workflow/node-link/new",
+            "workflow/node-link/create",
             views.json_api.node_link.json_api_post_new_node_link,
             name="json-api-post-new-node-link",
         ),
         path(
-            "workflow/insert-sibling",
+            "workflow/insert-sibling",  # ??
             views.json_api.create.json_api_post_insert_sibling,
             name="json-api-post-insert-sibling",
         ),
         path(
-            "workflow/insert-child",
+            "workflow/insert-child",  ## ??
             views.json_api.create.json_api_post_insert_child,
             name="json-api-post-insert-child",
         ),
@@ -182,13 +182,20 @@ def json_api_patterns():
             views.json_api.project.json_api__project__detail__get,
             name="project--detail--get",
         ),
+        # @todo document different between project detail
+        # and project 'data'
+        path(
+            "project/get-project-data",
+            views.json_api.workflow.json_api_post_get_project_data,
+            name="json-api-post-get-project-data",
+        ),
         path(
             "project/create",
             views.json_api.project.project__create__post,
             name="project--create--post",
         ),
         path(
-            "project/duplicate-project",
+            "project/duplicate",
             views.json_api.project.json_api_post_duplicate_project,
             name="json-api-post-duplicate-project",
         ),
@@ -196,11 +203,6 @@ def json_api_patterns():
             "project/get-workflows-for-project",
             views.json_api.workflow.json_api_post_get_workflows_for_project,
             name="json-api-post-get-workflows-for-project",
-        ),
-        path(
-            "project/get-project-data",
-            views.json_api.workflow.json_api_post_get_project_data,
-            name="json-api-post-get-project-data",
         ),
         path(
             "project/get-users-for-object",

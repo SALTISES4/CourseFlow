@@ -1,10 +1,8 @@
-import React, { ReactNode, useState } from 'react'
-import WorkflowClassLegacy from '@cfPages/Workflow/WorkflowLegacy'
+import React, { ReactNode  } from 'react'
 import WorkflowClass from '@cfPages/Workflow/Workflow'
 import { ViewType } from '@cfModule/types/enum'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
-import { AppState } from '@cfRedux/types/type'
 
 export const WorkFlowConfigContext = React.createContext<ChildRenderer>(
   {} as ChildRenderer
@@ -51,12 +49,12 @@ const initialWorkFlowConfig: ChildRenderer = {
 
 type PropsType = {
   children: ReactNode
-  initialValue: WorkflowClass | WorkflowClassLegacy
+  initialValue: WorkflowClass
 }
 
 const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
   const formatInitialValue = (
-    workflowInstance: WorkflowClass | WorkflowClassLegacy
+    workflowInstance: WorkflowClass
   ): ChildRenderer => {
     // Process and format the workflowInstance
     // Return an object of type ChildRenderer

@@ -53,6 +53,9 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
       }
     }
 
+    // @todo
+    // not sure, i think it's attempting to attach the parent as eaach row in the comparions
+    // leave for now
     getWorkflowContextQuery(this.props.workflowID, (context_response_data) => {
       const context_data = context_response_data.data_package
 
@@ -79,7 +82,10 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
 
   componentDidUpdate(prevProps: OwnProps) {
     if (prevProps.view_type != this.props.view_type)
+      // no this doesn't work any more
+      //
       // @ts-ignore
+      // @todo create a stable view of the workflow
       this.workflowComparison.render(this.props.view_type)
   }
 
@@ -123,7 +129,12 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
           className="window-close-button"
           onClick={this.props.removeFunction}
         >
-          <img src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'close.svg'} />
+          <img
+            src={
+              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+              'close.svg'
+            }
+          />
         </div>
       </div>
     )

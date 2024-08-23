@@ -87,27 +87,15 @@ class Workflow extends React.Component<PropsType, StateProps> {
   private has_rendered: boolean
   store: Store<EmptyObject & AppState, AnyAction>
 
-  // NOTE: this is not yet a React component, so its misleading to use the same
-  // 'props' value in the constructor since they behave differently
   unread_comments: any
   container: any
   view_type: ViewType
-  private locks: any
+  protected locks: any
   silent_connect_fail: any
   is_static: boolean
 
   constructor(props) {
     super(props)
-
-    /*******************************************************
-     * here is a switch which seems to call the same REST endpoint
-     * with the same data response
-     * but a 'public version' which has some sorts of retrictions put on it
-     * access (?) / rate limiting by IP  (?)
-     *
-     * this can stay for now, but the logic should be transparent to the client
-     *
-     *******************************************************/
 
     this.state = {
       ready: false,
@@ -126,8 +114,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
   }
 
   setupData(response: WorkflowDetailViewDTO) {
-    console.log('response')
-    console.log(response)
     const {
       column_choices,
       context_choices,
@@ -139,6 +125,8 @@ class Workflow extends React.Component<PropsType, StateProps> {
       is_strategy,
       project
     } = response.workflow_data_package
+
+    this.selection_manager = new SelectionManager(this.read_only)
 
     this.message_queue = []
     this.messages_queued = true
@@ -198,8 +186,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
   }
 
   init() {
-    console.log('this.always_static')
-    console.log(this.always_static)
     if (!this.always_static) {
       this.connect()
     } else {
@@ -219,8 +205,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
    *******************************************************/
   connect() {
     const url = `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
-    console.log('my cool us url')
-    console.log(url)
     this.websocket = new WebSocket(url)
 
     this.websocket.onmessage = (e) => {
@@ -318,7 +302,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
         response.data_package,
         composeEnhancers()
       )
-      // this.render($('#container'))
+
       this.setState({
         ...this.state,
         ready: true
@@ -360,7 +344,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
 
     switch (data.type) {
       case DATA_TYPE.WORKFLOW_ACTION:
-        console.log('an action just came in', data)
         this.store.dispatch(data.action)
         break
       case DATA_TYPE.LOCK_UPDATE:
@@ -510,8 +493,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
    *******************************************************/
   render() {
     this.locks = {}
-
-    this.selection_manager = new SelectionManager(this.read_only)
 
     // In case we need to get child workflows
     this.child_data_needed = []

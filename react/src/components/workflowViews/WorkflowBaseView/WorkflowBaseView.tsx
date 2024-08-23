@@ -170,9 +170,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private can_view: boolean
 
   constructor(props: PropsType, context) {
-    console.log('props')
-    console.log(context)
-
     // @ts-ignore
     super(props, context)
 
@@ -227,12 +224,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     COURSEFLOW_APP.makeDropdown('#expand-collapse-all')
 
     if (this.viewType === ViewType.OUTCOME_EDIT) {
-      const getWorkflowParentData = this.public_view
-        ? getPublicWorkflowParentDataQuery
-        : getWorkflowParentDataQuery
-
-      getWorkflowParentData(this.workflowId, (response) => {
-        //
+      getWorkflowParentDataQuery(this.workflowId, (response) => {
         this.props.dispatch(
           ActionCreator.refreshStoreData(response.data_package)
         )
@@ -635,7 +627,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   }
 
   Content = ({ viewType }: { viewType: ViewType }) => {
-    console.log('rendering content')
     if (this.data.is_strategy) {
       return <this.WorkflowContent viewType={viewType} />
     }
