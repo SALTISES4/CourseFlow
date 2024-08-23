@@ -60,7 +60,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   }
 
   const handleLogout = () => [
-    window.location.replace(COURSEFLOW_APP.path.logout_path)
+    window.location.replace(COURSEFLOW_APP.globalContextData.path.logout_path)
   ]
 
   const closeAllMenus = () => {
@@ -91,16 +91,16 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       onClose={closeAllMenus}
     >
       <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.PROJECT_CREATE)}>
-        {COURSEFLOW_APP.strings.project}
+        {COURSEFLOW_APP.globalContextData.strings.project}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.PROGRAM_CREATE)}>
-        {COURSEFLOW_APP.strings.program}
+        {COURSEFLOW_APP.globalContextData.strings.program}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.COURSE_CREATE)}>
-        {COURSEFLOW_APP.strings.course}
+        {COURSEFLOW_APP.globalContextData.strings.course}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.ACTIVITY_CREATE)}>
-        {COURSEFLOW_APP.strings.activity}
+        {COURSEFLOW_APP.globalContextData.strings.activity}
       </MenuItem>
     </StyledMenu>
   )
@@ -123,10 +123,10 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
     >
       <NotificationsHeader>
         <Typography variant="h5">
-          {COURSEFLOW_APP.strings.notifications}
+          {COURSEFLOW_APP.globalContextData.strings.notifications}
         </Typography>
         <Link href={notifications.url} underline="always">
-          {COURSEFLOW_APP.strings.see_all}
+          {COURSEFLOW_APP.globalContextData.strings.see_all}
         </Link>
       </NotificationsHeader>
 
@@ -181,20 +181,20 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       onClose={closeAllMenus}
     >
       <MenuItem component="a" href={menus.account.profileUrl}>
-        {COURSEFLOW_APP.strings.profile}
+        {COURSEFLOW_APP.globalContextData.strings.profile}
       </MenuItem>
       <MenuItem onClick={() => dispatch(DIALOG_TYPE.PASSWORD_RESET)}>
-        {COURSEFLOW_APP.strings.password_reset}
+        {COURSEFLOW_APP.globalContextData.strings.password_reset}
       </MenuItem>
       <MenuItem component="a" href={menus.account.notificationsSettingsUrls}>
-        {COURSEFLOW_APP.strings.notification_settings}
+        {COURSEFLOW_APP.globalContextData.strings.notification_settings}
       </MenuItem>
       <Divider />
       <MenuItem component="a" href={menus.account.daliteUrl}>
         Go to {menus.account.daliteText}
       </MenuItem>
       <MenuItem onClick={handleLogout}>
-        <LogoutIcon /> {COURSEFLOW_APP.strings.sign_out}
+        <LogoutIcon /> {COURSEFLOW_APP.globalContextData.strings.sign_out}
       </MenuItem>
     </StyledMenu>
   )

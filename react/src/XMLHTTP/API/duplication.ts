@@ -34,15 +34,15 @@ export function duplicateBaseItemQuery(
   const projectPkString = projectID
 
   if (objectType === OBJECT_TYPE.PROJECT) {
-    sendPostRequest(COURSEFLOW_APP.path.post_paths.duplicate_project_ajax, {
+    sendPostRequest(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_project_ajax, {
       projectPk: itemPkString
     })
   } else if (objectType === OBJECT_TYPE.STRATEGY) {
-    sendPostRequest(COURSEFLOW_APP.path.post_paths.duplicate_strategy_ajax, {
+    sendPostRequest(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_strategy_ajax, {
       workflowPk: itemPkString
     })
   } else {
-    sendPostRequest(COURSEFLOW_APP.path.post_paths.duplicate_workflow_ajax, {
+    sendPostRequest(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_workflow_ajax, {
       workflowPk: itemPkString,
       projectPk: projectPkString
     })
@@ -58,7 +58,7 @@ export function duplicateSelfQuery(
   throughType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.duplicate_self, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_self, {
     parentID: parentID,
     parentType: parentType,
     objectID: objectID,

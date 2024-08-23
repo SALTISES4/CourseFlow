@@ -14,6 +14,7 @@ import {
   ESectionGroup
 } from '@XMLHTTP/types/entity'
 import { ProjectViewDTO } from '@cfPages/Library/ProjectDetail/types'
+import {WorkflowDetailViewDTO} from "@cfPages/Workflow/Workflow/types";
 
 /*******************************************************
  * Primitives
@@ -203,6 +204,10 @@ export type GetProjectByIdQueryResp = {
 /*******************************************************
  * workflow.ts
  *******************************************************/
+export type GetWorkflowByIdQueryResp = {
+  action: VERB
+  data_package: WorkflowDetailViewDTO
+}
 
 export type WorkflowDataQueryResp = {
   action: VERB

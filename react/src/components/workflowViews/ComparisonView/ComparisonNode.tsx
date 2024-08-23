@@ -124,7 +124,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
             ).name
           }
           src={
-            COURSEFLOW_APP.path.static_assets.icon +
+            COURSEFLOW_APP.globalContextData.path.static_assets.icon +
             Constants.context_keys[data.context_classification] +
             '.svg'
           }
@@ -141,7 +141,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
             ).name
           }
           src={
-            COURSEFLOW_APP.path.static_assets.icon +
+            COURSEFLOW_APP.globalContextData.path.static_assets.icon +
             Constants.task_keys[data.task_classification] +
             '.svg'
           }

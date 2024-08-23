@@ -1,6 +1,7 @@
 import json
 import traceback
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 
 # from duplication
@@ -8,7 +9,9 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 
 from course_flow.decorators import (
     public_model_access,
@@ -61,12 +64,14 @@ from course_flow.sockets import redux_actions as actions
 from course_flow.utils import (
     get_all_outcomes_for_workflow,
     get_parent_nodes_for_workflow,
+    get_user_permission,
 )
 from course_flow.view_utils import (
     get_my_projects,
     get_workflow_context_data,
     get_workflow_data_package,
 )
+from course_flow.views import UserCanViewMixin
 
 """
 # Bulk data API for workflows
@@ -74,6 +79,39 @@ from course_flow.view_utils import (
 # view to fetch all the base JSON that can be
 # placed into the redux state
 """
+
+
+#########################################################
+#
+#########################################################
+@permission_classes([UserCanViewMixin])
+@api_view(["GET"])
+@login_required
+def json_api__workflow__detail__get(request: HttpRequest):
+    workflows_pk = request.GET.get("id")
+    try:
+        workflow = Workflow.objects.get(pk=workflows_pk)
+
+    except Workflow.DoesNotExist:
+        return Response({"detail": "Not found."}, status=404)
+
+    current_user = request.user
+
+    user_permission = get_user_permission(workflow, current_user)
+
+    context = get_workflow_context_data(workflow, current_user)
+
+    response_data = {
+        "user_id": current_user.id if current_user else 0,
+        "user_name": current_user.username,
+        "user_permission": user_permission,
+        "public_view": False,
+        "workflow_data_package": context.get("data_package"),
+        "workflow_type": workflow.type,
+        "workflow_model_id": workflow.id,
+    }
+
+    return JsonResponse({"action": "GET", "data_package": response_data})
 
 
 @user_can_view("workflowPk")

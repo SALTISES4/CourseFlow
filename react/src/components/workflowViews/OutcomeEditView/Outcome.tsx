@@ -320,7 +320,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
               <div className="outcome-drop-img">
                 <img
                   src={
-                    COURSEFLOW_APP.path.static_assets.icon + dropIcon + '.svg'
+                    COURSEFLOW_APP.globalContextData.path.static_assets.icon + dropIcon + '.svg'
                   }
                 />
               </div>

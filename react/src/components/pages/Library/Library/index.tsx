@@ -58,7 +58,7 @@ class LibraryPage extends React.Component<PropsType, StateType> {
         <div id="create-links-project" className="create-dropdown">
           <a
             id="project-create-library"
-            href={COURSEFLOW_APP.path.create_path.project}
+            href={COURSEFLOW_APP.globalContextData.path.create_path.project}
             className="hover-shade"
           >
             {window.gettext('New project')}
@@ -66,14 +66,14 @@ class LibraryPage extends React.Component<PropsType, StateType> {
           <hr />
           <a
             id="activity-strategy-create"
-            href={COURSEFLOW_APP.path.create_path.activity_strategy}
+            href={COURSEFLOW_APP.globalContextData.path.create_path.activity_strategy}
             className="hover-shade"
           >
             {window.gettext('New activity strategy')}
           </a>
           <a
             id="course-strategy-create"
-            href={COURSEFLOW_APP.path.create_path.course_strategy}
+            href={COURSEFLOW_APP.globalContextData.path.create_path.course_strategy}
             className="hover-shade"
           >
             {window.gettext('New course strategy')}
@@ -88,7 +88,7 @@ class LibraryPage extends React.Component<PropsType, StateType> {
       <a
         id="import-old"
         className="hover-shade"
-        href={COURSEFLOW_APP.path.get_paths.import}
+        href={COURSEFLOW_APP.globalContextData.path.get_paths.import}
       >
         {window.gettext('Import from old CourseFlow')}
       </a>

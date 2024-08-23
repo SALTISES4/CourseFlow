@@ -38,7 +38,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     return (
       <img
         src={
-          COURSEFLOW_APP.path.static_assets.icon +
+          COURSEFLOW_APP.globalContextData.path.static_assets.icon +
           Constants.default_column_settings[this.props.data.column_type].icon +
           '.svg'
         }

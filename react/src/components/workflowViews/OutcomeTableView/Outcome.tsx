@@ -64,7 +64,7 @@ class TableCell extends React.Component<TableCellPropsType> {
   Contents = ({ completionStatus, selfCompletion }) => {
     if (completionStatus === 0) {
       return (
-        <img src={`${COURSEFLOW_APP.path.static_assets.icon}nocheck.svg`} />
+        <img src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}nocheck.svg`} />
       )
     } else if (!completionStatus) {
       return ''
@@ -75,7 +75,7 @@ class TableCell extends React.Component<TableCellPropsType> {
       return (
         <img
           className={selfCompletion ? 'self-completed' : ''}
-          src={`${COURSEFLOW_APP.path.static_assets.icon}${icon}`}
+          src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}${icon}`}
         />
       )
     }
@@ -253,7 +253,7 @@ export class OutcomeUnconnected<
               <div className="outcome-drop-img">
                 <img
                   src={
-                    COURSEFLOW_APP.path.static_assets.icon + dropIcon + '.svg'
+                    COURSEFLOW_APP.globalContextData.path.static_assets.icon + dropIcon + '.svg'
                   }
                 />
               </div>
@@ -349,7 +349,7 @@ export default Outcome
 //     let divclass = ''
 //
 //     if (completionStatus === 0) {
-//       return <img src={COURSEFLOW_APP.path.static_assets.icon + 'nocheck.svg'} />
+//       return <img src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'nocheck.svg'} />
 //     } else if (!completionStatus) {
 //       return ''
 //     }
@@ -358,10 +358,10 @@ export default Outcome
 //         return (
 //           <img
 //             className="self-completed"
-//             src={COURSEFLOW_APP.path.static_assets.icon + 'solid_check.svg'}
+//             src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'solid_check.svg'}
 //           />
 //         )
-//       else return <img src={COURSEFLOW_APP.path.static_assets.icon + 'check.svg'} />
+//       else return <img src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'check.svg'} />
 //     }
 //
 //     // @todo why is bitwise being used here? needs explanation comments

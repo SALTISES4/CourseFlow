@@ -100,7 +100,7 @@ function ProjectDetailContent({
       )
     ) {
       deleteSelfQuery(project.id, 'project', false, () => {
-        window.location.href = COURSEFLOW_APP.path.html.library.home
+        window.location.href = COURSEFLOW_APP.globalContextData.path.html.library.home
       })
     }
   }
@@ -223,7 +223,7 @@ function ProjectDetailContent({
                 loader.endLoad()
                 // @ts-ignore
                 window.location =
-                  COURSEFLOW_APP.path.html.update_path_temp.replace(
+                  COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
                     '0',
                     // @ts-ignore
                     response_data.new_item.id

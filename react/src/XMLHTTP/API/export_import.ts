@@ -9,7 +9,7 @@ export function getExport(
   exportType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.get_export, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_export, {
     objectID: objectID,
     objectType: objectType,
     exportType: exportType
@@ -28,7 +28,7 @@ export function importData(
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST_FILE(
-    COURSEFLOW_APP.path.post_paths.import_data,
+    COURSEFLOW_APP.globalContextData.path.post_paths.import_data,
     {
       objectID: objectID,
       objectType: objectType,

@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import ComparisonWorkflowBase from '@cfViews/ComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
 import Workflow from '@cfPages/Workflow/Workflow'
+import WorkflowLegacy from '@cfPages/Workflow/WorkflowLegacy'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum.js'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
@@ -79,6 +80,7 @@ export class WorkflowComparison extends WorkflowLegacy {
     const store = this.store
     // @ts-ignore
     this.locks = {}
+    console.log('this.container')
     const el = this.container[0]
 
     reactDom.render(<Loader />, el)

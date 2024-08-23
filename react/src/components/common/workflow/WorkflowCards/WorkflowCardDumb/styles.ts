@@ -69,24 +69,27 @@ CardCaption.defaultProps = {
 
 export const CardChip = styled(Chip)(({ theme }) => ({
   '&.project': {
-    backgroundColor: theme.palette.courseflow.project,
+    // @todo these are undefined often, like in this comparison view
+    // do not remove these optional operators until
+    // 'rendermessagebox' is fixed
+    backgroundColor: theme.palette.courseflow?.project ?? '',
     color: theme.palette.common.white
   },
   '&.program': {
-    backgroundColor: theme.palette.courseflow.program,
+    backgroundColor: theme.palette.courseflow?.program ?? '',
     color: theme.palette.common.white
   },
   '&.activity': {
-    backgroundColor: theme.palette.courseflow.activity,
+    backgroundColor: theme.palette.courseflow?.activity ?? '',
     color: theme.palette.common.white
   },
   '&.course': {
-    backgroundColor: theme.palette.courseflow.course,
+    backgroundColor: theme.palette.courseflow?.course ?? '',
     color: theme.palette.common.white
   },
   '&.template': {
     backgroundColor: 'transparent',
-    color: theme.palette.courseflow.template,
+    color: theme.palette.courseflow?.template ?? '',
     border: '1px solid currentColor'
   }
 }))

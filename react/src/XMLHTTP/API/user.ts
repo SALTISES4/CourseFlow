@@ -19,7 +19,7 @@ export function getUserListQuery(
   filter: any,
   callBackFunction = (_data: UserListResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.json_api.user.list, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.user.list, {
     filter: filter
   }).then((response: UserListResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
@@ -31,13 +31,13 @@ export function getUserListQuery(
  * NOTIFICATIONS SETTINGS
  *******************************************************/
 export async function fetchNotificationSettings(): Promise<NotificationSettingsQueryResp> {
-  const url = COURSEFLOW_APP.path.json_api.user.notification_settings
+  const url = COURSEFLOW_APP.globalContextData.path.json_api.user.notification_settings
   return API_GET<NotificationSettingsQueryResp>(url)
 }
 
 export async function updateNotificationSettings(data: any) {
   return API_POST(
-    COURSEFLOW_APP.path.json_api.user.notification_settings__update,
+    COURSEFLOW_APP.globalContextData.path.json_api.user.notification_settings__update,
     data
   )
 }
@@ -46,7 +46,7 @@ export async function updateNotificationSettings(data: any) {
  * PROFILE SETTINGS
  *******************************************************/
 export async function fetchProfileSettings(): Promise<ProfileSettingsQueryResp> {
-  const url = COURSEFLOW_APP.path.json_api.user.profile_settings
+  const url = COURSEFLOW_APP.globalContextData.path.json_api.user.profile_settings
   return API_GET<ProfileSettingsQueryResp>(url)
 }
 
@@ -63,7 +63,7 @@ export function toggleFavourite(
   favourite,
   callBackFunction = (_data: ToDefine) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.toggle_favourite, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.toggle_favourite, {
     objectID: objectID,
     objectType: objectType,
     favourite: favourite

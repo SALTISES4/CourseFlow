@@ -69,7 +69,7 @@ const CopyButton = (data: any) => {
             loader.endLoad()
             // @todo no
             // @ts-ignore
-            window.location = COURSEFLOW_APP.path.html.update_path_temp.replace(
+            window.location = COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
               '0',
               // @ts-ignore
               response_data.new_item.id
@@ -271,7 +271,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     ) {
       deleteSelfQuery(this.data.id, 'workflow', false, () => {
         // @todo no
-        const newPath = COURSEFLOW_APP.path.html.update_path_temp.replace(
+        const newPath = COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
           '0',
           this.project.id.toString()
         )
@@ -501,7 +501,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <a
           className="hover-shade no-underline"
           id="project-return"
-          href={COURSEFLOW_APP.path.html.update_path_temp.replace(
+          href={COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
             String(0),
             this.project.id
           )}
@@ -524,7 +524,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           className="hover-shade no-underline"
           id="project-return"
           // @todo no
-          href={COURSEFLOW_APP.path.html.update_path_temp.replace(
+          href={COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
             String(0),
             this.project.id
           )}
@@ -855,7 +855,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                 loader.endLoad()
                 // @ts-ignore
                 window.location =
-                  COURSEFLOW_APP.path.html.update_path_temp.replace(
+                  COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
                     '0',
                     // @ts-ignore
                     response_data.new_item.id
@@ -1088,7 +1088,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                     utilLoader.endLoad()
                     // @ts-ignore
                     window.location =
-                      COURSEFLOW_APP.path.html.update_path_temp.replace(
+                      COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
                         '0',
                         // @ts-ignore
                         response_data.new_item.id

@@ -3,17 +3,20 @@ import * as reactDom from 'react-dom'
 import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfCommonComponents/rightSideBarContent/RightSideBar'
-import {WorkflowTitle} from '@cfCommonComponents/UIComponents/Titles'
+import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 
-import {renderMessageBox} from '@cfCommonComponents/menu/MenuComponents'
+import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
-import {CfObjectType, ViewType, WFContext} from '@cfModule/types/enum.js'
+import { CfObjectType, ViewType, WFContext } from '@cfModule/types/enum.js'
 import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent'
-import {getWorkflowSelectMenuQuery} from '@XMLHTTP/API/workflow'
-import {openWorkflowSelectMenu} from '@XMLHTTP/postTemp'
-import {GetWorkflowSelectMenuResp, GetWorkflowSelectQueryResp} from '@XMLHTTP/types/query'
-import {EProject} from '@cfModule/XMLHTTP/types/entity'
-import {ObjectSet} from '@cfModule/types/common'
+import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
+import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
+import {
+  GetWorkflowSelectMenuResp,
+  GetWorkflowSelectQueryResp
+} from '@XMLHTTP/types/query'
+import { EProject } from '@cfModule/XMLHTTP/types/entity'
+import { ObjectSet } from '@cfModule/types/common'
 // import $ from 'jquery'
 
 /**
@@ -193,7 +196,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       <a
         className="hover-shade no-underline"
         id="project-return"
-        href={COURSEFLOW_APP.path.html.update_path_temp['project'].replace(
+        href={COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
           String(0),
           String(data.id)
         )}
@@ -270,7 +273,10 @@ class ComparisonView extends React.Component<PropsType, StateType> {
           )}
         >
           <img
-            src={COURSEFLOW_APP.path.static_assets.icon + 'add_person.svg'}
+            src={
+              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+              'add_person.svg'
+            }
           />
         </div>
       )

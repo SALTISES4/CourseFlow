@@ -265,7 +265,7 @@ def user_workflow_url(workflow, user):
         can_view = True
     if can_view:
         return reverse(
-            "course_flow:workflow-update", kwargs={"pk": workflow.pk}
+            "course_flow:workflow-detail", kwargs={"pk": workflow.pk}
         )
     if is_public:
         return reverse(

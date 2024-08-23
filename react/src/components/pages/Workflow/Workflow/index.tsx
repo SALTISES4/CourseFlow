@@ -1,5 +1,4 @@
 import React from 'react'
-import * as reactDom from 'react-dom'
 import { Provider } from 'react-redux'
 import * as Constants from '@cfConstants'
 import {
@@ -13,21 +12,11 @@ import * as Reducers from '@cfReducers'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
 import WorkflowBaseView from '@cfViews/WorkflowBaseView/WorkflowBaseView'
 import { WorkflowDetailViewDTO } from '@cfPages/Workflow/Workflow/types'
-import {
-  WorkflowDataQueryResp,
-  WorkflowChildDataQueryResp,
-  WorkflowParentDataQueryResp
-} from '@XMLHTTP/types/query'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { CacheProvider } from '@emotion/react'
-import createCache from '@emotion/cache'
 import { AppState } from '@cfRedux/types/type'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum'
 import {
-  getPublicWorkflowChildDataQuery,
-  getPublicWorkflowDataQuery,
-  getPublicWorkflowParentDataQuery,
+  getWorkflowById,
   getWorkflowChildDataQuery,
   getWorkflowDataQuery,
   getWorkflowParentDataQuery
@@ -37,12 +26,6 @@ import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { EProject } from '@XMLHTTP/types/entity'
 import { FieldChoice } from '@cfModule/types/common'
-// import $ from 'jquery'
-
-const cache = createCache({
-  key: 'emotion',
-  nonce: window.cf_nonce
-})
 
 enum DATA_TYPE {
   WORKFLOW_ACTION = 'workflow_action',
@@ -56,10 +39,11 @@ type StateProps = {
   ready: boolean
   viewType: ViewType
 }
-type PropsType = WorkflowDetailViewDTO
+type PropsType = Record<string, never>
 
 // @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+const websocket_prefix = window.location.protocol === 'https:' ? 'wss' : 'ws'
 
 /****************************************
  * this is a copy of the original Workflow/Workflow
@@ -97,18 +81,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
   private child_data_completed: number
   private child_data_needed: any[]
   private fetching_child_data: boolean
-  protected getWorkflowData: (
-    workflowPk,
-    callBackFunction?: (data: WorkflowDataQueryResp) => void
-  ) => void
-  protected getWorkflowParentData: (
-    workflowPk,
-    callBackFunction?: (data: WorkflowParentDataQueryResp) => void
-  ) => void
-  private getWorkflowChildData: (
-    workflowPk,
-    callBackFunction?: (data: WorkflowChildDataQueryResp) => void
-  ) => void
   websocket: WebSocket
   private has_disconnected: boolean
   private has_rendered: boolean
@@ -120,13 +92,38 @@ class Workflow extends React.Component<PropsType, StateProps> {
   unread_comments: any
   container: any
   view_type: any
-  private workflowRender: (viewType: ViewType) => void
   private locks: any
   silent_connect_fail: any
 
-  constructor(propsConfig: WorkflowDetailViewDTO) {
-    super(propsConfig)
+  constructor(props) {
+    super(props)
 
+    /*******************************************************
+     * here is a switch which seems to call the same REST endpoint
+     * with the same data response
+     * but a 'public version' which has some sorts of retrictions put on it
+     * access (?) / rate limiting by IP  (?)
+     *
+     * this can stay for now, but the logic should be transparent to the client
+     *
+     *******************************************************/
+
+    this.state = {
+      ready: false,
+      viewType: ViewType.WORKFLOW
+    }
+    this.updateView = this.updateView.bind(this)
+  }
+
+  componentDidMount() {
+    const id = '18'
+    getWorkflowById(id).then((response) => {
+      this.setupData(response.data_package)
+      this.init()
+    })
+  }
+
+  setupData(response: WorkflowDetailViewDTO) {
     const {
       column_choices,
       context_choices,
@@ -137,14 +134,13 @@ class Workflow extends React.Component<PropsType, StateProps> {
       strategy_classification_choices,
       is_strategy,
       project
-    } = propsConfig.workflow_data_package
+    } = response.workflow_data_package
 
     this.message_queue = []
     this.messages_queued = true
     this.connection_update_receiver = null
 
-    this.public_view = propsConfig.public_view
-    this.workflowID = propsConfig.workflow_model_id
+    this.workflowID = response.workflow_model_id
 
     // Data package
     this.column_choices = column_choices
@@ -158,20 +154,19 @@ class Workflow extends React.Component<PropsType, StateProps> {
     this.is_strategy = is_strategy
     this.project = project
 
-    this.user_permission = propsConfig.user_permission
-    this.user_id = propsConfig.user_id
-    this.read_only = true
-    this.workflowRender = this.updateView.bind(this)
+    this.user_id = response.user_id
 
-    if (this.public_view) {
-      this.always_static = true
-    }
+    // permissions
+    this.user_permission = response.user_permission
+    this.read_only = true
+    this.always_static = true
+    this.public_view = response.public_view
 
     if (!this.is_strategy && this.project.object_permission) {
       this.project_permission = this.project.object_permission.permission_type
     }
 
-    switch (propsConfig.user_permission) {
+    switch (response.user_permission) {
       case Constants.permission_keys['view']:
         this.can_view = true
         break
@@ -191,40 +186,8 @@ class Workflow extends React.Component<PropsType, StateProps> {
 
       // No default case needed here if these are the only options
     }
-
-    /*******************************************************
-     * here is a switch which seems to call the same REST endpoint
-     * with the same data response
-     * but a 'public version' which has some sorts of retrictions put on it
-     * access (?) / rate limiting by IP  (?)
-     *
-     * this can stay for now, but the logic should be transparent to the client
-     *
-     *******************************************************/
-
-    this.getWorkflowData = this.public_view
-      ? getPublicWorkflowDataQuery
-      : getWorkflowDataQuery
-
-    this.getWorkflowParentData = this.public_view
-      ? getPublicWorkflowParentDataQuery
-      : getWorkflowParentDataQuery
-
-    this.getWorkflowChildData = this.public_view
-      ? getPublicWorkflowChildDataQuery
-      : getWorkflowChildDataQuery
-
-    this.state = {
-      ready: false,
-      viewType: ViewType.WORKFLOW
-    }
   }
 
-  componentDidMount() {
-    this.init()
-  }
-
-  //
   init() {
     if (!this.always_static) {
       this.connect()
@@ -244,8 +207,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
    * WEBSOCKET MANAGER
    *******************************************************/
   connect() {
-    const websocket_prefix =
-      window.location.protocol === 'https:' ? 'wss' : 'ws'
     this.websocket = new WebSocket(
       `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
     )
@@ -314,7 +275,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
 
     this.fetching_child_data = true
     this.child_data_completed++
-    this.getWorkflowChildData(
+    getWorkflowChildDataQuery(
       this.child_data_needed[this.child_data_completed],
       (response) => {
         this.store.dispatch(
@@ -336,7 +297,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
   }
 
   onConnectionOpened(reconnect = false) {
-    this.getWorkflowData(this.workflowID, (response) => {
+    getWorkflowDataQuery(this.workflowID, (response) => {
       this.unread_comments = response.data_package?.unread_comments // @todo explicit typing
 
       this.store = createStore(
@@ -394,14 +355,14 @@ class Workflow extends React.Component<PropsType, StateProps> {
         this.lockUpdateReceived(data.action)
         break
       case DATA_TYPE.CONNECTION_UPDATE:
-        this.connectionUpdateReceived(data.action)
+        this.connection_update_received(data.action)
         break
       case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
         // this.parent_workflow_updated(data.edit_count) // @todo function takes no args
-        this.parentWorkflowUpdated()
+        this.parent_workflow_updated()
         break
       case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
-        this.childWorkflowUpdated(data.edit_count, data.child_workflow_id)
+        this.child_workflow_updated(data.edit_count, data.child_workflow_id)
         break
       default:
         break
@@ -457,7 +418,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
 
   parent_workflow_updated() {
     this.messages_queued = true
-    this.getWorkflowParentData(this.workflowID, (response) => {
+    getWorkflowParentDataQuery(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data
       this.store.dispatch(
         ActionCreator.replaceStoreData({
@@ -481,7 +442,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
       return
     }
 
-    this.getWorkflowChildData(node.id, (response) => {
+    getWorkflowChildDataQuery(node.id, (response) => {
       this.store.dispatch(ActionCreator.refreshStoreData(response.data_package))
       this.clear_queue(0)
     })
@@ -545,19 +506,16 @@ class Workflow extends React.Component<PropsType, StateProps> {
     this.child_data_completed = -1
     this.fetching_child_data = false
 
-    // this.selection_manager.renderer = this // @todo explicit props, renderer does not exist on selection_manager
-
     if (!this.state.ready) {
       return <Loader />
     }
-
 
     return (
       <Provider store={this.store}>
         <WorkFlowConfigProvider initialValue={this}>
           <WorkflowBaseView
             viewType={this.state.viewType}
-            parentRender={this.workflowRender}
+            parentRender={this.updateView}
             config={{
               canView: this.can_view,
               isStudent: this.is_student,

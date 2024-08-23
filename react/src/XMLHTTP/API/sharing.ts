@@ -9,7 +9,7 @@ export function setUserPermission(
   permission_type,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.set_permission, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.set_permission, {
     objectID: objectID,
     objectType: objectType,
     permission_user: user_id,
@@ -37,7 +37,7 @@ export function getUsersForObjectQuery(
 ) {
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
     objectType = 'workflow'
-  API_POST(COURSEFLOW_APP.path.post_paths.get_users_for_object, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object, {
     objectID: objectID,
     objectType: objectType
   }).then((response: UsersForObjectQueryResp) => {

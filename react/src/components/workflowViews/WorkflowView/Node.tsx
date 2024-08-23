@@ -299,7 +299,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
               ).name
             }
             src={
-              COURSEFLOW_APP.path.static_assets.icon +
+              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
               Constants.context_keys[data.context_classification] +
               '.svg'
             }
@@ -316,7 +316,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
               ).name
             }
             src={
-              COURSEFLOW_APP.path.static_assets.icon +
+              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
               Constants.task_keys[data.task_classification] +
               '.svg'
             }
@@ -356,7 +356,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     if (data.linked_workflow)
       linkIcon = (
         <div className={link_class} onClick={clickfunc}>
-          <img src={COURSEFLOW_APP.path.static_assets.icon + 'wflink.svg'} />
+          <img src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
       )
@@ -435,7 +435,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
             <div className="node-drop-side node-drop-left">{dropText}</div>
             <div className="node-drop-middle">
               <img
-                src={COURSEFLOW_APP.path.static_assets.icon + dropIcon + '.svg'}
+                src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + dropIcon + '.svg'}
               />
             </div>
             <div className="node-drop-side node-drop-right">

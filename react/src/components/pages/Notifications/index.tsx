@@ -100,7 +100,7 @@ const NotificationsPage = (): JSX.Element => {
     const { notification } = pageState
 
     // fire the post request
-    API_POST(COURSEFLOW_APP.path.json_api.notification.mark_all_as_read, {
+    API_POST(COURSEFLOW_APP.globalContextData.path.json_api.notification.mark_all_as_read, {
       notification_id: notification.id
     })
       .then(() => {
@@ -126,7 +126,7 @@ const NotificationsPage = (): JSX.Element => {
   function onDeleteClick() {
     const { notification } = pageState
 
-    API_POST(COURSEFLOW_APP.path.json_api.notification.delete, {
+    API_POST(COURSEFLOW_APP.globalContextData.path.json_api.notification.delete, {
       notification_id: notification.id
     })
       .then(() => {
@@ -153,7 +153,7 @@ const NotificationsPage = (): JSX.Element => {
   function onMarkAllAsReadClick(e) {
     e.preventDefault()
 
-    API_POST(COURSEFLOW_APP.path.json_api.notification.mark_all_as_read)
+    API_POST(COURSEFLOW_APP.globalContextData.path.json_api.notification.mark_all_as_read)
       .then(() => {
         setPageState({
           ...pageState,
@@ -192,7 +192,7 @@ const NotificationsPage = (): JSX.Element => {
         <Styled.NotificationsWrap>
           <Styled.NotificationsHeader>
             <Typography variant="h1">
-              {COURSEFLOW_APP.strings.notifications}
+              {COURSEFLOW_APP.globalContextData.strings.notifications}
             </Typography>
             {unreadCount > 0 && !pageState?.allRead && (
               <Styled.MarkAsRead>
@@ -201,7 +201,7 @@ const NotificationsPage = (): JSX.Element => {
                   underline="always"
                   onClick={onMarkAllAsReadClick}
                 >
-                  {COURSEFLOW_APP.strings.mark_all_as_read}
+                  {COURSEFLOW_APP.globalContextData.strings.mark_all_as_read}
                 </Link>
               </Styled.MarkAsRead>
             )}
@@ -224,7 +224,7 @@ const NotificationsPage = (): JSX.Element => {
                     <IconButton
                       onClick={(e) => handleMenuOpen(e, n)}
                       aria-label={
-                        COURSEFLOW_APP.strings.show_notifications_menu
+                        COURSEFLOW_APP.globalContextData.strings.show_notifications_menu
                       }
                       aria-haspopup="true"
                     >
@@ -271,16 +271,16 @@ const NotificationsPage = (): JSX.Element => {
             open={!!pageState.menuAnchor}
             onClose={handleMenuClose}
             MenuListProps={{
-              'aria-label': COURSEFLOW_APP.strings.notification_options
+              'aria-label': COURSEFLOW_APP.globalContextData.strings.notification_options
             }}
           >
             {pageState.notification?.unread && !pageState.allRead && (
               <MenuItem onClick={onMarkAsReadClick}>
-                {COURSEFLOW_APP.strings.mark_as_read}
+                {COURSEFLOW_APP.globalContextData.strings.mark_as_read}
               </MenuItem>
             )}
             <MenuItem onClick={onDeleteClick}>
-              {COURSEFLOW_APP.strings.delete}
+              {COURSEFLOW_APP.globalContextData.strings.delete}
             </MenuItem>
           </Menu>
         </Styled.NotificationsWrap>
@@ -303,10 +303,10 @@ const NotificationsPage = (): JSX.Element => {
       <Styled.NotificationsWrap>
         <Styled.NotificationsHeader>
           <Typography variant="h1">
-            {COURSEFLOW_APP.strings.notifications}
+            {COURSEFLOW_APP.globalContextData.strings.notifications}
           </Typography>
           <Typography sx={{ marginTop: 3 }}>
-            {COURSEFLOW_APP.strings.no_notifications_yet}
+            {COURSEFLOW_APP.globalContextData.strings.no_notifications_yet}
           </Typography>
         </Styled.NotificationsHeader>
       </Styled.NotificationsWrap>

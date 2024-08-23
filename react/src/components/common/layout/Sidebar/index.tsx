@@ -126,15 +126,18 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
             <ListItemButton
               component={'a'}
               data-test-id="panel-home"
-              href={COURSEFLOW_APP.path.html.library.home}
+              href={COURSEFLOW_APP.globalContextData.path.html.library.home}
               selected={
-                location.pathname === COURSEFLOW_APP.path.html.library.home
+                location.pathname ===
+                COURSEFLOW_APP.globalContextData.path.html.library.home
               }
             >
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
-              <ListItemText primary={COURSEFLOW_APP.strings.home} />
+              <ListItemText
+                primary={COURSEFLOW_APP.globalContextData.strings.home}
+              />
             </ListItemButton>
           </ListItem>
           {isTeacher ? (
@@ -143,32 +146,42 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
                 <ListItemButton
                   component={'a'}
                   data-test-id="panel-library"
-                  href={COURSEFLOW_APP.path.html.library.library}
+                  href={
+                    COURSEFLOW_APP.globalContextData.path.html.library.library
+                  }
                   selected={
                     location.pathname ===
-                    COURSEFLOW_APP.path.html.library.library
+                    COURSEFLOW_APP.globalContextData.path.html.library.library
                   }
                 >
                   <ListItemIcon>
                     <FolderCopyIcon />
                   </ListItemIcon>
-                  <ListItemText primary={COURSEFLOW_APP.strings.my_library} />
+                  <ListItemText
+                    primary={
+                      COURSEFLOW_APP.globalContextData.strings.my_library
+                    }
+                  />
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding dense>
                 <ListItemButton
                   component={'a'}
-                  href={COURSEFLOW_APP.path.html.library.explore}
+                  href={
+                    COURSEFLOW_APP.globalContextData.path.html.library.explore
+                  }
                   data-test-id="panel-explore"
                   selected={
                     location.pathname ===
-                    COURSEFLOW_APP.path.html.library.explore
+                    COURSEFLOW_APP.globalContextData.path.html.library.explore
                   }
                 >
                   <ListItemIcon>
                     <SearchIcon />
                   </ListItemIcon>
-                  <ListItemText primary={COURSEFLOW_APP.strings.explore} />
+                  <ListItemText
+                    primary={COURSEFLOW_APP.globalContextData.strings.explore}
+                  />
                 </ListItemButton>
               </ListItem>
             </>
@@ -180,7 +193,7 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
             <Divider />
             <FavouritesWrap>
               <FavouritesLabel variant="body1">
-                {COURSEFLOW_APP.strings.favourites}
+                {COURSEFLOW_APP.globalContextData.strings.favourites}
               </FavouritesLabel>
               <List>
                 {favourites.map((favourite, id) => (
@@ -214,9 +227,12 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
                               px: 2,
                               py: 1
                             }}
-                            href={COURSEFLOW_APP.path.html.library.favourites}
+                            href={
+                              COURSEFLOW_APP.globalContextData.path.html.library
+                                .favourites
+                            }
                           >
-                            {COURSEFLOW_APP.strings.view_all}
+                            {COURSEFLOW_APP.globalContextData.strings.view_all}
                           </SeeAllLink>
                         }
                       />
@@ -238,7 +254,9 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
               <ListItemIcon>
                 <HelpRoundedIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary={COURSEFLOW_APP.strings.help_support} />
+              <ListItemText
+                primary={COURSEFLOW_APP.globalContextData.strings.help_support}
+              />
             </ListItemButton>
           </ListItem>
         </HelpLink>

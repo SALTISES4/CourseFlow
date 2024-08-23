@@ -88,7 +88,7 @@
 </body>
 
 {% block common_scripts %}
-  {% include 'course_flow/base/config_js.html' %}
+  {% comment %}{% include 'course_flow/base/config_js.html' %}{% endcomment %}
   <script
       src="{% static 'course_flow/js/templates/base-common.js' %}"
       nonce="{{ request.csp_nonce }}"

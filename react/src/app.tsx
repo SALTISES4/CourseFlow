@@ -106,6 +106,10 @@ const router = createBrowserRouter([
   {
     path: `${domain}/project/:id`,
     element: <ProjectDetail />
+  },
+  {
+    path: `${domain}/workflow/:id`,
+    element: <Workflow />
   }
 ])
 
@@ -114,20 +118,7 @@ const router = createBrowserRouter([
  * set in python views and prepped in react_renderer.html
  */
 const getAppComponent = () => {
-  switch (COURSEFLOW_APP.path_id) {
-    /*******************************************************
-     * LIBRARY
-     *******************************************************/
-    // case 'styleguide':
-    // case 'home':
-    // case 'favourites':
-    // case 'library':
-    // case 'explore':
-    // case 'notifications':
-    // case 'notificationsSettings':
-    // case 'profileSettings':
-    // case 'projectDetail':
-
+  switch (COURSEFLOW_APP.globalContextData.path_id) {
     /*******************************************************
      * REDUX
      *******************************************************/
@@ -135,12 +126,11 @@ const getAppComponent = () => {
       const workflowComparisonWrapper = new Comparison(
         COURSEFLOW_APP.contextData
       )
-      workflowComparisonWrapper.render($('#container'))
+      setTimeout(() => {
+        workflowComparisonWrapper.render($('#container'))
+      }, 1000)
 
       return true
-    }
-    case 'workflowDetailView': {
-      return <Workflow {...COURSEFLOW_APP.contextData} />
     }
     default:
       return <RouterProvider router={router} />

@@ -13,7 +13,8 @@ import { API_GET } from '@XMLHTTP/CallWrapper'
 export async function getDisciplines(
   callBackFunction = (_data: EDiscipline[]) => console.log('success')
 ) {
-  const url = COURSEFLOW_APP.path.json_api.project.discipline__list
+  const url =
+    COURSEFLOW_APP.globalContextData.path.json_api.project.discipline__list
 
   API_GET<DisciplineQueryResp>(url)
     .then((response) => {
@@ -26,6 +27,6 @@ export async function getDisciplines(
 
 export async function getProjectById(id: string) {
   const params = new URLSearchParams({ id }).toString()
-  const url = `${COURSEFLOW_APP.path.json_api.project.detail}?${params}`
+  const url = `${COURSEFLOW_APP.globalContextData.path.json_api.project.detail}?${params}`
   return API_GET<GetProjectByIdQueryResp>(url)
 }

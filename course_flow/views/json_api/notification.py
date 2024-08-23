@@ -29,7 +29,7 @@ def json_api__notification__list__get(request: HttpRequest):
             )
         else:
             url = reverse(
-                "course_flow:workflow-update",
+                "course_flow:workflow-detail",
                 kwargs={"pk": notification.content_object.pk},
             )
 

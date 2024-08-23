@@ -14,7 +14,7 @@ import { EDiscipline } from '@XMLHTTP/types/entity'
  * HOME PAGE
  *******************************************************/
 export async function fetchHomeContext(): Promise<PageHomeQueryResp> {
-  const url = COURSEFLOW_APP.path.json_api.library.home
+  const url = COURSEFLOW_APP.globalContextData.path.json_api.library.home
   return API_GET<PageHomeQueryResp>(url)
 }
 
@@ -23,7 +23,7 @@ export async function fetchHomeContext(): Promise<PageHomeQueryResp> {
  *******************************************************/
 
 export async function fetchExploreContext(): Promise<PageExploreQueryResp> {
-  const url = COURSEFLOW_APP.path.json_api.library.explore
+  const url = COURSEFLOW_APP.globalContextData.path.json_api.library.explore
   return API_GET<PageExploreQueryResp>(url)
 }
 
@@ -40,10 +40,14 @@ export function libraryObjectsSearchQuery(
   callBackFunction = (_data: LibraryObjectsSearchQueryResp) =>
     console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.json_api.library.library__objects_search, {
-    filter: filter,
-    additional_data: data
-  }).then((response: LibraryObjectsSearchQueryResp) => {
+  API_POST(
+    COURSEFLOW_APP.globalContextData.path.json_api.library
+      .library__objects_search,
+    {
+      filter: filter,
+      additional_data: data
+    }
+  ).then((response: LibraryObjectsSearchQueryResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
     else window.fail_function(response.action)
   })
@@ -57,7 +61,9 @@ export function libraryObjectsSearchQuery(
 export const getLibraryQuery = (
   callBackFunction = (_data: LibraryQueryResp) => console.log('success')
 ) => {
-  const url = COURSEFLOW_APP.path.json_api.library.library__library__projects
+  const url =
+    COURSEFLOW_APP.globalContextData.path.json_api.library
+      .library__library__projects
 
   API_GET<LibraryQueryResp>(url)
     .then((response) => {
@@ -77,7 +83,9 @@ export const getLibraryQuery = (
 export const getFavouritesQuery = (
   callBackFunction = (_data: FavouritesQueryResp) => console.log('success')
 ) => {
-  const url = COURSEFLOW_APP.path.json_api.library.library__favourites__projects
+  const url =
+    COURSEFLOW_APP.globalContextData.path.json_api.library
+      .library__favourites__projects
 
   API_GET<FavouritesQueryResp>(url)
     .then((response) => {

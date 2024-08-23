@@ -42,9 +42,11 @@ def json_api__project__detail__get(request):
     serializer = ProjectSerializerShallow(
         project, context={"request": request}
     )
+
     disciplines = DisciplineSerializer(
         Discipline.objects.order_by("title"), many=True
     ).data
+
     user_permission = get_user_permission(
         project, request.user
     )  # Adjust according to your permission logic

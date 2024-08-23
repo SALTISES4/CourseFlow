@@ -100,7 +100,7 @@ const NotificationsSettingsPage = () => {
     <OuterContentWrap>
       <PageTitle>
         <Typography variant="h1">
-          {COURSEFLOW_APP.strings.notification_settings}
+          {COURSEFLOW_APP.globalContextData.strings.notification_settings}
         </Typography>
       </PageTitle>
 
@@ -112,7 +112,7 @@ const NotificationsSettingsPage = () => {
               onChange={onUpdatesSwitchChange}
             />
           }
-          label={COURSEFLOW_APP.strings.product_updates_agree}
+          label={COURSEFLOW_APP.globalContextData.strings.product_updates_agree}
         />
       </FormGroup>
     </OuterContentWrap>

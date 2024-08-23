@@ -25,6 +25,11 @@ def json_api_patterns():
         # Workflow
         #########################################################
         path(
+            "workflow/detail",
+            views.json_api.workflow.json_api__workflow__detail__get,
+            name="workflow--detail--get",
+        ),
+        path(
             "workflow/node/new",
             views.json_api.create.json_api_post_new_node,
             name="json-api-post-new-node",
