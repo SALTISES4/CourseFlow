@@ -140,7 +140,7 @@ class Term extends WeekUnconnected<PropsType> {
           >
             <div className="node-drop-side node-drop-left"></div>
             <div className="node-drop-middle">
-              <img src={COURSEFLOW_APP.config.icon_path + dropIcon + '.svg'} />
+              <img src={COURSEFLOW_APP.path.static_assets.icon + dropIcon + '.svg'} />
             </div>
             <div className="node-drop-side node-drop-right"></div>
           </div>

@@ -1,0 +1,17 @@
+{% extends "course_flow/base.html" %}
+
+{% load static compress i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+{% block title %}
+  {%if title != "" %}
+    {% trans title %}
+  {% else %}
+    {% trans "Untitled" %}
+  {% endif %}
+  - CourseFlow
+{% endblock %}
+
+{% block react_scripts %}
+  {% include 'course_flow/base/django_context_js.html' %}
+{% endblock %}

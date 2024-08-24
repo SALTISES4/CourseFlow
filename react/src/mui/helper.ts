@@ -1,13 +1,17 @@
-import Box, { BoxProps } from '@mui/material/Box'
-import { Theme, styled } from '@mui/material/styles'
+import Box, { BoxProps as MuiBoxProps } from '@mui/material/Box'
+import { styled } from '@mui/material/styles'
+
+interface BoxProps extends MuiBoxProps {
+  narrow?: boolean
+}
 
 export const OuterContentWrap = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'narrow'
-})(({ theme, narrow }: BoxProps & { theme: Theme; narrow?: boolean }) => ({
+})<BoxProps>(({ theme, narrow }) => ({
   padding: theme.spacing(8),
   paddingTop: 0,
   ...(narrow && {
-    maxWidth: '34.25rem',
+    maxWidth: '34.25rem', // This can be adjusted as per your design requirement
     marginLeft: 'auto',
     marginRight: 'auto',
     paddingLeft: theme.spacing(2),

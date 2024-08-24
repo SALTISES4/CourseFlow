@@ -1,17 +1,14 @@
 import json
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.db.models import ProtectedError
 from django.http import HttpRequest, JsonResponse
-from django.views.decorators.http import require_POST
 
 from course_flow.decorators import (
     from_same_workflow,
     user_can_edit,
-    user_can_edit_or_none,
     user_can_view,
     user_can_view_or_none,
 )
@@ -19,9 +16,7 @@ from course_flow.duplication_functions import (
     fast_create_strategy,
     fast_duplicate_workflow,
 )
-from course_flow.forms import NotificationsSettings, ProfileSettings
 from course_flow.models.column import Column
-from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.models.favourite import Favourite
 from course_flow.models.node import Node
 from course_flow.models.objectset import ObjectSet
@@ -631,64 +626,6 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
         pass
 
     return JsonResponse({"action": "posted"})
-
-
-# favourite/unfavourite a project or workflow for a user
-@user_can_view(False)
-def json_api_post_toggle_favourite(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    object_id = body.get("objectID")
-    objectType = body.get("objectType")
-    favourite = body.get("favourite")
-    response = {}
-    if objectType in ["activity", "course", "program"]:
-        objectType = "workflow"
-    try:
-        item = get_model_from_str(objectType).objects.get(pk=object_id)
-        Favourite.objects.filter(
-            user=request.user,
-            content_type=ContentType.objects.get_for_model(item),
-            object_id=object_id,
-        ).delete()
-        if favourite:
-            Favourite.objects.create(user=request.user, content_object=item)
-        response["action"] = "posted"
-    except ValidationError:
-        response["action"] = "error"
-
-    return JsonResponse(response)
-
-
-@login_required
-@require_POST
-def json_api_post_profile_settings(request: HttpRequest) -> JsonResponse:
-    user = CourseFlowUser.objects.filter(user=request.user).first()
-    # instantiate the form with the JSON params and the model instance
-    form = ProfileSettings(json.loads(request.body), instance=user)
-
-    # if the form is valid, save it and return a success response
-    if form.is_valid():
-        form.save()
-        return JsonResponse({"action": "posted"})
-
-    # otherwise, return the errors so UI can display errors accordingly
-    return JsonResponse({"action": "error", "errors": form.errors})
-
-
-@login_required
-@require_POST
-def json_api_post_notifications_settings(request: HttpRequest) -> JsonResponse:
-    user = CourseFlowUser.objects.filter(user=request.user).first()
-    # on POST, instantiate the form with the JSON params and the model instance
-    form = NotificationsSettings(json.loads(request.body), instance=user)
-
-    # if the form is valid, save it and return a success response
-    if form.is_valid():
-        form.save()
-        return JsonResponse({"action": "posted"})
-
-    # otherwise, return the errors so UI can display errors accordingly
-    return JsonResponse({"action": "error", "errors": form.errors})
 
 
 # A helper function to set the linked workflow.

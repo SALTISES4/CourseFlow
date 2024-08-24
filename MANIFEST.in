@@ -1,19 +1,33 @@
+# Used for package bundling
+# used for setuptools - would not be used in poetry, flit etc
+
+# Include the license and readme files
 include LICENSE
 include README.rst
 
+# Include pytest configuration
 include pytest.ini
+
+# Exclude local settings file that should not be distributed
 exclude course_flow/local_settings.py
 
+# Include all management commands and templates
 recursive-include course_flow/management/commands *
 recursive-include course_flow/templates *
+
+# Include localization files
 recursive-include course_flow/locale *
+
+# Exclude specific registration templates that are not needed
 recursive-exclude course_flow/templates/course_flow/registration *
 
+# Include tests and static resources
 graft course_flow/tests
 graft course_flow/static/course_flow/css
 graft course_flow/static/course_flow/img
 graft course_flow/static/course_flow/js/react/dist
 graft course_flow/static/course_flow/js/templates
 
+# Global exclusion rules for compiled Python files and caches
 global-exclude *.pyc
 global-exclude __pycache__

@@ -11,16 +11,11 @@ from rest_framework.renderers import JSONRenderer
 
 from course_flow.models import Project
 from course_flow.models.discipline import Discipline
-from course_flow.models.liveprojectmodels.liveProjectUser import (
-    LiveProjectUser,
-)
 from course_flow.serializers import (
     DisciplineSerializer,
     ProjectSerializerShallow,
 )
 from course_flow.utils import get_user_permission
-from course_flow.view_utils import get_my_projects
-from course_flow.views.HTTP.HTTP import CreateView_No_Autocomplete
 from course_flow.views.mixins import UserCanViewMixin
 
 
@@ -29,7 +24,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     # how are these fields being used?
     fields = ["title", "description", "published"]
 
-    template_name: str = "course_flow/react/common_entrypoint.html"
+    template_name: str = "course_flow/html/react_common_entrypoint.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
@@ -66,7 +61,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Project
     fields: List[str] = ["title", "description", "published"]
-    template_name = "course_flow/react/common_entrypoint.html"
+    template_name = "course_flow/html/react_common_entrypoint.html"
 
     def get_context_data(self, **kwargs):
         public_view = False  # moved from template layer
@@ -98,29 +93,28 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         return context
 
 
-
 # HTTP FRAGMENT REQUEST - TODO: Replaced by the Create Project modal
-class ProjectCreateView(
-    LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
-):
-    model = Project
-    fields = ["title", "description"]
-    template_name = "course_flow/html/workflow_create.html"
-
-    def workflow_type(self):
-        return "project"
-
-    def test_func(self):
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-        )
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super(ProjectCreateView, self).form_valid(form)
-
-    def get_success_url(self):
-        return reverse(
-            "course_flow:project-update", kwargs={"pk": self.object.pk}
-        )
+# class ProjectCreateView(
+#     LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
+# ):
+#     model = Project
+#     fields = ["title", "description"]
+#     template_name = "course_flow/html/workflow_create.html"
+#
+#     def workflow_type(self):
+#         return "project"
+#
+#     def test_func(self):
+#         return (
+#             Group.objects.get(name=settings.TEACHER_GROUP)
+#             in self.request.user.groups.all()
+#         )
+#
+#     def form_valid(self, form):
+#         form.instance.author = self.request.user
+#         return super(ProjectCreateView, self).form_valid(form)
+#
+#     def get_success_url(self):
+#         return reverse(
+#             "course_flow:project-update", kwargs={"pk": self.object.pk}
+#         )

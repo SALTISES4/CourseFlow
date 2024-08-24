@@ -13,7 +13,7 @@ class LegendLine extends React.Component<LegendLineProps> {
     if (this.props.icon) {
       return (
         <img
-          src={`${COURSEFLOW_APP.config.icon_path}${this.props.icon}.svg`}
+          src={`${COURSEFLOW_APP.path.static_assets.icon}${this.props.icon}.svg`}
           alt="icon"
         />
       )

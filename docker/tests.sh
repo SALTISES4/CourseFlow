@@ -1,4 +1,4 @@
 #!/bin/bash
 
-python3 course_flow.py test
+python3 manage.py  test
 # pytest

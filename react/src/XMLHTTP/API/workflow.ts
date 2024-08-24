@@ -11,11 +11,11 @@ import {
   WorkflowsForProjectQueryResp,
   WorkflowContextQueryResp,
   TargetProjectQueryResp,
-  WorkflowGroupsDataPackage,
+  WorkflowGroupsDataPackage
 } from '@XMLHTTP/types/query'
 import { CfObjectType, VERB } from '@cfModule/types/enum'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
-import { API_POST } from '../PostFunctions'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 
 /*******************************************************
  * Bulk data API for workflows.
@@ -37,14 +37,12 @@ export function getWorkflowDataQuery(
   callBackFunction = (_data: WorkflowDataQueryResp) => console.log('success')
 ) {
   try {
-    API_POST(COURSEFLOW_APP.config.post_paths.get_workflow_data, {
+    API_POST(COURSEFLOW_APP.path.post_paths.get_workflow_data, {
       workflowPk: workflowPk
+    }).then((response: WorkflowDataQueryResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
+      else window.fail_function(response.action)
     })
-      .then((response:WorkflowDataQueryResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
-
   } catch (err) {
     window.fail_function()
   }
@@ -57,14 +55,12 @@ export function getWorkflowParentDataQuery(
     console.log('success')
 ) {
   try {
-    API_POST(COURSEFLOW_APP.config.post_paths.get_workflow_parent_data, {
+    API_POST(COURSEFLOW_APP.path.post_paths.get_workflow_parent_data, {
       workflowPk: workflowPk
+    }).then((response: WorkflowParentDataQueryResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
+      else window.fail_function(response.action)
     })
-      .then((response:WorkflowParentDataQueryResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
-
   } catch (err) {
     window.fail_function()
   }
@@ -76,14 +72,12 @@ export function getWorkflowChildDataQuery(
     console.log('success')
 ) {
   try {
-    API_POST(COURSEFLOW_APP.config.post_paths.get_workflow_child_data, {
+    API_POST(COURSEFLOW_APP.path.post_paths.get_workflow_child_data, {
       nodePk: nodePk
+    }).then((response: WorkflowChildDataQueryResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
+      else window.fail_function(response.action)
     })
-      .then((response:WorkflowChildDataQueryResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
-
   } catch (err) {
     window.fail_function()
   }
@@ -96,7 +90,7 @@ export function getPublicWorkflowDataQuery(
 ) {
   try {
     $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_workflow_data.replace(
+      COURSEFLOW_APP.path.get_paths.get_public_workflow_data.replace(
         '0',
         workflowPk
       )
@@ -117,7 +111,7 @@ export function getPublicWorkflowParentDataQuery(
 ) {
   try {
     $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_workflow_parent_data.replace(
+      COURSEFLOW_APP.path.get_paths.get_public_workflow_parent_data.replace(
         '0',
         workflowPk
       )
@@ -138,7 +132,7 @@ export function getPublicWorkflowChildDataQuery(
 ) {
   try {
     $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_workflow_child_data.replace(
+      COURSEFLOW_APP.path.get_paths.get_public_workflow_child_data.replace(
         '0',
         nodePk
       )
@@ -167,19 +161,16 @@ export function getWorkflowContextQuery(
   callBackFunction = (_data: WorkflowContextQueryResp) => console.log('success')
 ) {
   try {
-    API_POST(COURSEFLOW_APP.config.post_paths.get_workflow_context, {
+    API_POST(COURSEFLOW_APP.path.post_paths.get_workflow_context, {
       workflowPk: workflowPk
+    }).then((response: WorkflowContextQueryResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
+      else window.fail_function(response.action)
     })
-      .then((response:WorkflowContextQueryResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
-
   } catch (err) {
     window.fail_function()
   }
 }
-
 
 /**
  * Get possible projects that can be a target for the workflow to be duplicated into
@@ -191,16 +182,12 @@ export function getTargetProjectMenuQuery<T>(
   workflowPk: number,
   callBackFunction = (_data: TargetProjectQueryResp) => console.log('success')
 ) {
-  API_POST(
-    COURSEFLOW_APP.config.post_paths.get_target_projects,
-    {
-      workflowPk: workflowPk
-    }
-  )
-    .then((response:TargetProjectQueryResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
+  API_POST(COURSEFLOW_APP.path.post_paths.get_target_projects, {
+    workflowPk: workflowPk
+  }).then((response: TargetProjectQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+  })
 }
 
 function openTargetProjectMenu(response, updateFunction) {
@@ -219,7 +206,7 @@ export function getPublicParentWorkflowInfo(
 ) {
   try {
     $.get(
-      COURSEFLOW_APP.config.get_paths.get_public_parent_workflow_info.replace(
+      COURSEFLOW_APP.path.get_paths.get_public_parent_workflow_info.replace(
         '0',
         workflowPk
       )
@@ -227,7 +214,6 @@ export function getPublicParentWorkflowInfo(
       if (response.action === VERB.POSTED) callBackFunction(response)
       else window.fail_function(response.action)
     })
-
   } catch (err) {
     window.fail_function()
   }
@@ -249,14 +235,12 @@ export function getParentWorkflowInfoQuery(
     console.log('success')
 ) {
   try {
-    API_POST(COURSEFLOW_APP.config.post_paths.get_parent_workflow_info, {
+    API_POST(COURSEFLOW_APP.path.post_paths.get_parent_workflow_info, {
       workflowPk: workflowPk
+    }).then((response: ParentWorkflowInfoQueryResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
+      else window.fail_function(response.action)
     })
-      .then((response:ParentWorkflowInfoQueryResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
-        else window.fail_function(response.action)
-      })
-
   } catch (err) {
     console.log('getParentWorkflowInfoQuery error in try/catc')
     console.log(err)
@@ -278,16 +262,13 @@ export function getWorkflowsForProjectQuery(
   callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
     console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.get_workflows_for_project, {
+  API_POST(COURSEFLOW_APP.path.post_paths.get_workflows_for_project, {
     projectPk: projectPk
+  }).then((response: WorkflowsForProjectQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:WorkflowsForProjectQueryResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
 }
-
 
 //@TODO this needs to be fixed to not rely on $.post
 /**
@@ -304,15 +285,12 @@ export function getLinkedWorkflowMenuQuery(
   callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
     console.log('success')
 ) {
-  API_POST(
-    COURSEFLOW_APP.config.post_paths.get_possible_linked_workflows,
-    {
-      nodePk: nodeID
-    }
-  ).then((response:LinkedWorkflowMenuQueryResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
+  API_POST(COURSEFLOW_APP.path.post_paths.get_possible_linked_workflows, {
+    nodePk: nodeID
+  }).then((response: LinkedWorkflowMenuQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+  })
 }
 
 //Get the workflows that can be selected for the project, shaped for a menu
@@ -326,7 +304,7 @@ export function getWorkflowSelectMenuQuery(
   //  receiptFunction
 ) {
   API_POST(
-    COURSEFLOW_APP.config.post_paths.get_possible_added_workflows,
+    COURSEFLOW_APP.path.post_paths.get_possible_added_workflows,
     {
       projectPk: projectPk,
       type_filter: type_filter,
@@ -337,10 +315,8 @@ export function getWorkflowSelectMenuQuery(
     //   // @TODO call to react render
     //   receiptFunction(data)
     // }
-  )
-    .then((response:GetWorkflowSelectQueryResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
+  ).then((response: GetWorkflowSelectQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+  })
 }

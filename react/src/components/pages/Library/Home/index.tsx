@@ -1,23 +1,31 @@
 import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
-import WorkflowCardDumb, {
-  PropsType as WorkflowCardDumbPropsType
-} from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
 import Alert from '@cfCommonComponents/components/Alert'
-import { Workflow } from '@cfModule/types/common'
 import { GridWrap, OuterContentWrap } from '@cfModule/mui/helper'
 import Welcome from './components/Welcome'
 import Section from './components/Section'
+import { fetchHomeContext } from '@XMLHTTP/API/pages'
+import { PageHomeQueryResp } from '@XMLHTTP/types/query'
+import { useQuery } from '@tanstack/react-query'
+import Loader from '@cfCommonComponents/UIComponents/Loader'
 
-type PropsType = {
-  projects: Workflow[]
-  templates: Workflow[]
-  isTeacher: boolean
-}
+/**
+ *
+ * @constructor
+ */
+const Home = () => {
+  const { data, error, isLoading, isError } = useQuery<PageHomeQueryResp>({
+    queryKey: ['fetchHomeContext'],
+    queryFn: fetchHomeContext
+  })
 
-const Home = ({ isTeacher, projects, templates }: PropsType) => {
+  if (isLoading) return <Loader />
+  if (isError) return <div>An error occurred: {error.message}</div>
+
+  const { projects, isTeacher, templates } = data.data
+
   return (
     <OuterContentWrap>
-      <Welcome hide={!!projects.length} />
+      <Welcome hide={!!data.data.projects.length} />
       {!!projects.length && (
         <Section
           header={
@@ -26,14 +34,14 @@ const Home = ({ isTeacher, projects, templates }: PropsType) => {
                   title: window.gettext('Recent projects'),
                   seeAll: {
                     text: 'View all projects',
-                    href: COURSEFLOW_APP.config.my_library_path
+                    href: COURSEFLOW_APP.path.my_library_path
                   }
                 }
               : {
                   title: window.gettext('Recent classrooms'),
                   seeAll: {
                     text: 'View all classrooms',
-                    href: COURSEFLOW_APP.config.my_liveprojects_path
+                    href: COURSEFLOW_APP.path.my_liveprojects_path
                   }
                 }
           }

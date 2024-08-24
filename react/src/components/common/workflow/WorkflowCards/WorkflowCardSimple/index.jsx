@@ -15,7 +15,7 @@ class WorkflowCardSimple extends React.Component {
     if (this.props.selectAction) {
       this.props.selectAction(this.props.workflow_data.id)
     } else {
-      window.location.href = COURSEFLOW_APP.config.update_path[
+      window.location.href = COURSEFLOW_APP.path.update_path[
         this.props.workflow_data.type
       ].replace('0', this.props.workflow_data.id)
     }

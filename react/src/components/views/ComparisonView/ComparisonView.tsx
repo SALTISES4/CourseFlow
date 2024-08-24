@@ -10,7 +10,6 @@ import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import WorkflowComparisonRendererComponent from '@cfViews/ComparisonView/components/WorkflowComparisonRendererComponent'
 import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
-import { AppState } from '@cfRedux/types/type'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
 import {
   GetWorkflowSelectQueryResp,
@@ -197,7 +196,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       <a
         className="hover-shade no-underline"
         id="project-return"
-        href={COURSEFLOW_APP.config.update_path['project'].replace(
+        href={COURSEFLOW_APP.path.html.update_path_temp['project'].replace(
           String(0),
           String(data.id)
         )}
@@ -273,7 +272,9 @@ class ComparisonView extends React.Component<PropsType, StateType> {
             closeMessageBox
           )}
         >
-          <img src={COURSEFLOW_APP.config.icon_path + 'add_person.svg'} />
+          <img
+            src={COURSEFLOW_APP.path.static_assets.icon + 'add_person.svg'}
+          />
         </div>
       )
   }

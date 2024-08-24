@@ -1,6 +1,6 @@
 import React from 'react'
 import * as reactDom from 'react-dom'
-import WorkflowLoader from '@cfCommonComponents/UIComponents/WorkflowLoader'
+import Loader from '@cfCommonComponents/UIComponents/Loader'
 import * as Reducers from '@cfReducers'
 import { Provider } from 'react-redux'
 import ComparisonWorkflowBase from '@cfViews/ComparisonView/ComparisonWorkflowBase'
@@ -53,7 +53,7 @@ export class WorkflowComparison extends Workflow {
     this.locks = {}
     const el = this.container[0]
 
-    reactDom.render(<WorkflowLoader />, el)
+    reactDom.render(<Loader />, el)
 
     if (view_type === ViewType.OUTCOME_EDIT) {
       // get additional data about parent workflow prior to render

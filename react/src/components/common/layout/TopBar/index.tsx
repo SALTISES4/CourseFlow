@@ -60,7 +60,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   }
 
   const handleLogout = () => [
-    window.location.replace(COURSEFLOW_APP.config.logout_path)
+    window.location.replace(COURSEFLOW_APP.path.logout_path)
   ]
 
   const closeAllMenus = () => {

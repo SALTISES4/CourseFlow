@@ -1,30 +1,14 @@
 # @todo alpine having problems
-# FROM python:alpine3.7 as service_deps
-#FROM python:3.9.18-bullseye as service_deps
 FROM python:3.9.18-bullseye as service_deps
-#ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-#FROM circleci/python:3.8-node-browsers as service_deps
-
 
 WORKDIR /app
-#RUN apt-get clean
-#RUN mv -i /etc/apt/trusted.gpg.d/debian-archive-*.asc  /root/
-#RUN ln -s /usr/share/keyrings/debian-archive-* /etc/apt/trusted.gpg.d/
-#RUN rm -rf /var/lib/apt/lists/*
-#RUN apt-get update
-#RUN apt-get install -y --reinstall ca-certificates
-#RUN apt-key adv --fetch-keys http://deb.debian.org/debian-archive-keyring.gpg
-#RUN apt-key adv --fetch-keys http://security.debian.org/debian-security-archive-keyring.gpg
-
 
 ########################
 # COPY FILES
 ########################
-COPY ./course_flow.py ./src/
+COPY ./manage.py ./src/
 COPY ./pyproject.toml ./src/
 COPY ./pytest.ini ./src/
-#COPY ./setup.py ./src/
-#COPY ./setup.cfg ./src/
 COPY ./SALTISE_course_flow.egg-inf[o] ./src/SALTISE_course_flow.egg-info
 COPY ./course_flow/ ./src/course_flow
 COPY ./requirements/ ./src/requirements
@@ -99,5 +83,5 @@ RUN chmod +x /docker-entrypoint.sh
 
 
 ENTRYPOINT ["/usr/local/bin/python"]
-CMD ["/app/src/course_flow.py","runserver"]
+CMD ["/app/src/manage.py","runserver"]
 EXPOSE 8000

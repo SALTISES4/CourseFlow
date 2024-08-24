@@ -66,10 +66,10 @@ export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
       default_text = data.week_type_display + ' ' + (this.props.rank + 1)
     }
 
-    let src = COURSEFLOW_APP.config.icon_path + 'plus.svg'
+    let src = COURSEFLOW_APP.path.static_assets.icon + 'plus.svg'
 
     if (data.is_dropped) {
-      src = COURSEFLOW_APP.config.icon_path + 'minus.svg'
+      src = COURSEFLOW_APP.path.static_assets.icon + 'minus.svg'
     }
     return (
       <div className="hover-shade" onClick={this.jumpTo.bind(this)}>

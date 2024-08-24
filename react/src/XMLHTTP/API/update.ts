@@ -1,6 +1,6 @@
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cfModule/types/enum'
-import { API_POST } from '../PostFunctions'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 
 //
 /**
@@ -57,11 +57,12 @@ export function updateValueQuery(
   }
 
   document.lastUpdateCallFunction = () => {
-    API_POST(COURSEFLOW_APP.config.post_paths.update_value, post_object)
-      .then((response:EmptyPostResp)=>{
-        if(response.action == VERB.POSTED)callBackFunction(response)
+    API_POST(COURSEFLOW_APP.path.post_paths.update_value, post_object).then(
+      (response: EmptyPostResp) => {
+        if (response.action == VERB.POSTED) callBackFunction(response)
         else window.fail_function(response.action)
-      })
+      }
+    )
   }
   document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
 }
@@ -73,15 +74,14 @@ export function updateValueInstantQuery(
   json: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.update_value, {
+  API_POST(COURSEFLOW_APP.path.post_paths.update_value, {
     objectID: objectID,
     objectType: objectType,
     data: json
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //When the drag is complete, this is called to actually update the back-end
@@ -92,13 +92,14 @@ export function dragAction(
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
 
-  API_POST(COURSEFLOW_APP.config.post_paths.inserted_at, action_data)
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
+  API_POST(COURSEFLOW_APP.path.post_paths.inserted_at, action_data).then(
+    (response: EmptyPostResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
       else window.fail_function(response.action)
       $('.ui-draggable').draggable('enable')
       COURSEFLOW_APP.tinyLoader.endLoad()
-    })
+    }
+  )
 }
 
 //Called when an object in a list is reordered
@@ -111,10 +112,10 @@ export function insertedAtInstant(
   throughType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  console.log(parentType);
+  console.log(parentType)
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
-  API_POST(COURSEFLOW_APP.config.post_paths.inserted_at, {
+  API_POST(COURSEFLOW_APP.path.post_paths.inserted_at, {
     objectID: objectID,
     objectType: objectType,
     parentID: parentID,
@@ -123,13 +124,12 @@ export function insertedAtInstant(
     throughType: throughType,
     inserted: true,
     allowDifferent: true
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+    $('.ui-draggable').draggable('enable')
+    COURSEFLOW_APP.tinyLoader.endLoad()
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-      $('.ui-draggable').draggable('enable')
-      COURSEFLOW_APP.tinyLoader.endLoad()
-    })
 }
 
 //Causes the specified throughmodel to update its degree
@@ -139,15 +139,14 @@ export function updateOutcomenodeDegree(
   value,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.update_outcomenode_degree, {
+  API_POST(COURSEFLOW_APP.path.post_paths.update_outcomenode_degree, {
     nodePk: nodeID,
     outcomePk: outcomeID,
     degree: value
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Add an outcome from the parent workflow to an outcome from the current one
@@ -157,17 +156,15 @@ export function updateOutcomehorizontallinkDegree(
   degree,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.update_outcomehorizontallink_degree, {
+  API_POST(COURSEFLOW_APP.path.post_paths.update_outcomehorizontallink_degree, {
     outcomePk: outcomePk,
     objectID: outcome2Pk,
     objectType: 'outcome',
     degree: degree
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
 }
 
 //Set the linked workflow for the node
@@ -176,15 +173,13 @@ export function setLinkedWorkflow(
   workflow_id,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.set_linked_workflow, {
+  API_POST(COURSEFLOW_APP.path.post_paths.set_linked_workflow, {
     nodePk: node_id,
     workflowPk: workflow_id
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
 }
 
 /**
@@ -199,15 +194,13 @@ export function toggleStrategyQuery(
   is_strategy: boolean,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.toggle_strategy, {
+  API_POST(COURSEFLOW_APP.path.post_paths.toggle_strategy, {
     weekPk: weekPk,
     is_strategy: is_strategy
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
 }
 
 export function updateObjectSet(
@@ -217,34 +210,14 @@ export function updateObjectSet(
   add,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.config.post_paths.update_object_set, {
+  API_POST(COURSEFLOW_APP.path.post_paths.update_object_set, {
     objectID: objectID,
     objectType: objectType,
     objectsetPk: objectsetPk,
     add: add
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
 }
 
-//Toggle whether an item belongs to a user's favourites
-export function toggleFavourite(
-  objectID,
-  objectType,
-  favourite,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
-) {
-  API_POST(COURSEFLOW_APP.config.post_paths.toggle_favourite, {
-    objectID: objectID,
-    objectType: objectType,
-    favourite: favourite
-  })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-
-}

@@ -12,7 +12,7 @@ from course_flow.views.mixins import ContentPublicViewMixin, UserCanViewMixin
 class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Workflow
     fields = ["id", "title", "description", "type"]
-    template_name = "course_flow/react/common_entrypoint.html"
+    template_name = "course_flow/html/react_common_entrypoint.html"
 
     def get_success_url(self):
         return reverse(
@@ -49,7 +49,7 @@ class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
     model = Workflow
     fields = ["id", "title", "description"]
-    template_name = "course_flow/react/common_entrypoint.html"
+    template_name = "course_flow/html/react_common_entrypoint.html"
 
     def get_queryset(self):
         return self.model.objects.select_subclasses()

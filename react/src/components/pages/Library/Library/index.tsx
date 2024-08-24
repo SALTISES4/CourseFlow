@@ -1,9 +1,9 @@
 import * as React from 'react'
 import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.jsx'
-import { getLibraryQuery } from '@XMLHTTP/API/menu'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { Workflow } from '@cfModule/types/common'
 import { LibraryQueryResp } from '@cfModule/XMLHTTP/types/query'
+import { getLibraryQuery } from '@XMLHTTP/API/pages'
 
 type PropsType = Record<string, never>
 type StateType = {
@@ -58,7 +58,7 @@ class LibraryPage extends React.Component<PropsType, StateType> {
         <div id="create-links-project" className="create-dropdown">
           <a
             id="project-create-library"
-            href={COURSEFLOW_APP.config.create_path.project}
+            href={COURSEFLOW_APP.path.create_path.project}
             className="hover-shade"
           >
             {window.gettext('New project')}
@@ -66,14 +66,14 @@ class LibraryPage extends React.Component<PropsType, StateType> {
           <hr />
           <a
             id="activity-strategy-create"
-            href={COURSEFLOW_APP.config.create_path.activity_strategy}
+            href={COURSEFLOW_APP.path.create_path.activity_strategy}
             className="hover-shade"
           >
             {window.gettext('New activity strategy')}
           </a>
           <a
             id="course-strategy-create"
-            href={COURSEFLOW_APP.config.create_path.course_strategy}
+            href={COURSEFLOW_APP.path.create_path.course_strategy}
             className="hover-shade"
           >
             {window.gettext('New course strategy')}
@@ -88,7 +88,7 @@ class LibraryPage extends React.Component<PropsType, StateType> {
       <a
         id="import-old"
         className="hover-shade"
-        href={COURSEFLOW_APP.config.get_paths.import}
+        href={COURSEFLOW_APP.path.get_paths.import}
       >
         {window.gettext('Import from old CourseFlow')}
       </a>
