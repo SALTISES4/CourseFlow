@@ -736,6 +736,7 @@ class ProjectSerializerShallow(
         except ObjectDoesNotExist:
             return False
 
+    # what does update do?
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(

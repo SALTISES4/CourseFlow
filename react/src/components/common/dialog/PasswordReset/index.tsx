@@ -22,19 +22,19 @@ const ResetPasswordModal = ({ onSubmit }: PropsType) => {
       aria-labelledby="reset-password-modal"
     >
       <DialogTitle id="reset-password-modal">
-        {COURSEFLOW_APP.strings.password_reset}
+        {COURSEFLOW_APP.globalContextData.strings.password_reset}
       </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          {COURSEFLOW_APP.strings.password_reset_msg}
+          {COURSEFLOW_APP.globalContextData.strings.password_reset_msg}
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
-          {COURSEFLOW_APP.strings.cancel}
+          {COURSEFLOW_APP.globalContextData.strings.cancel}
         </Button>
         <Button variant="contained" onClick={onSubmit}>
-          {COURSEFLOW_APP.strings.password_reset}
+          {COURSEFLOW_APP.globalContextData.strings.password_reset}
         </Button>
       </DialogActions>
     </StyledDialog>

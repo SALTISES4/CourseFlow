@@ -1,13 +1,8 @@
-import React, { ReactNode, useState } from 'react'
+import React, { ReactNode  } from 'react'
 import WorkflowClass from '@cfPages/Workflow/Workflow'
 import { ViewType } from '@cfModule/types/enum'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import {
-  AnyAction,
-  EmptyObject,
-  Store
-} from '@reduxjs/toolkit'
-import { AppState } from '@cfRedux/types/type'
+import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
 
 export const WorkFlowConfigContext = React.createContext<ChildRenderer>(
   {} as ChildRenderer
@@ -22,7 +17,7 @@ type ChildRenderer = {
   outcome_sort_choices: any
   strategy_classification_choices: any
   change_field: any
-  project:any
+  project: any
   workflowID: number
   unread_comments: any
   add_comments: any
@@ -34,9 +29,11 @@ type ChildRenderer = {
   is_strategy?: any
   // show_assignments?: any
   column_choices: any
+  websocket: WebSocket
 
   // new
   user_id: number
+  user_name: string
   view_type: ViewType
 
   // new new
@@ -49,16 +46,6 @@ const initialWorkFlowConfig: ChildRenderer = {
   // Initialize all required fields
   // ...
 } as ChildRenderer
-
-// export type LegacyRendererProps = {
-//   task_choices: any
-//   time_choices: any
-//   read_only: any
-//   context_choices: any
-//   outcome_type_choices: any
-//   strategy_classification_choices: any
-//   change_field: any
-// }
 
 type PropsType = {
   children: ReactNode
@@ -81,7 +68,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       strategy_classification_choices:
         workflowInstance.strategy_classification_choices,
 
-      project:workflowInstance.project,
+      project: workflowInstance.project,
       workflowID: workflowInstance.workflowID,
       unread_comments: workflowInstance.unread_comments,
       add_comments: workflowInstance.add_comments,
@@ -97,9 +84,13 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       micro_update: workflowInstance.micro_update,
       change_field: workflowInstance.change_field,
       selection_manager: workflowInstance.selection_manager,
+      connect_user_bar:
+        workflowInstance.connect_user_bar.bind(workflowInstance),
+      websocket: workflowInstance.websocket,
 
       //new
       user_id: workflowInstance.user_id,
+      user_name: workflowInstance.user_name,
       view_type: workflowInstance.view_type,
       public_view: workflowInstance.public_view,
 

@@ -131,7 +131,9 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
         {data.depth < 2 && data.child_outcome_links.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
-              <img src={COURSEFLOW_APP.path.static_assets.icon + dropIcon + '.svg'} />
+              <img
+                src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + dropIcon + '.svg'}
+              />
             </div>
             <div className="outcome-drop-text">{droptext}</div>
           </div>

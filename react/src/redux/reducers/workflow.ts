@@ -133,6 +133,8 @@ function workflowReducer(
           break
         }
       }
+      console.log(state.columnworkflow_set)
+      console.log(new_columnworkflow_set)
       return {
         ...state,
         columnworkflow_set: new_columnworkflow_set

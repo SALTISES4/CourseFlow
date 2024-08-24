@@ -79,8 +79,12 @@ def html_patterns():
         #########################################################
         path(
             "workflow/<int:pk>/",
-            views.WorkflowDetailView.as_view(),
-            name="workflow-update",
+            views.html.library.default_react_view,
+            {
+                "title": "Project",
+                "path_id": "workflowDetail",
+            },
+            name="workflow-detail",
         ),
         path(
             "workflow/public/<int:pk>/",

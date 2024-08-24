@@ -98,7 +98,7 @@ function ExportProjectDialog({ data }: { data: EProject }) {
     }
 
     // TODO: handle success/failure appropriately
-    API_POST(COURSEFLOW_APP.path.post_paths.get_export, postData)
+    API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_export, postData)
       .then((resp) => {
         console.log('response', resp)
       })

@@ -66,7 +66,7 @@ const ProfileSettingsPage = () => {
     state.map((field) => (formData[field.name] = field.value))
 
     API_POST(
-      COURSEFLOW_APP.path.json_api.user.profile_settings__update,
+      COURSEFLOW_APP.globalContextData.path.json_api.user.profile_settings__update,
       formData
     )
       .then(() => setShowSnackbar(true))
@@ -159,7 +159,7 @@ const ProfileSettingsPage = () => {
     <OuterContentWrap narrow>
       <PageTitle>
         <Typography variant="h1">
-          {COURSEFLOW_APP.strings.profile_settings}
+          {COURSEFLOW_APP.globalContextData.strings.profile_settings}
         </Typography>
       </PageTitle>
 
@@ -176,7 +176,7 @@ const ProfileSettingsPage = () => {
             onClick={onFormSubmit}
             disabled={showSnackbar || Object.keys(errors).length > 0}
           >
-            {COURSEFLOW_APP.strings.update_profile}
+            {COURSEFLOW_APP.globalContextData.strings.update_profile}
           </Button>
         </Box>
       </FormWrap>
@@ -191,7 +191,7 @@ const ProfileSettingsPage = () => {
         onClose={onSnackbarClose}
       >
         <Alert onClose={onSnackbarClose} variant="filled" severity="success">
-          {COURSEFLOW_APP.strings.update_profile_success}
+          {COURSEFLOW_APP.globalContextData.strings.update_profile_success}
         </Alert>
       </Snackbar>
     </OuterContentWrap>

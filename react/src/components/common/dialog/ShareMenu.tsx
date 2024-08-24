@@ -162,7 +162,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     const public_link =
       'https://' +
       window.location.host +
-      COURSEFLOW_APP.path.html.public_update_path_temp.replace(
+      COURSEFLOW_APP.globalContextData.path.html.public_update_path_temp.replace(
         '0',
         String(data.id)
       )

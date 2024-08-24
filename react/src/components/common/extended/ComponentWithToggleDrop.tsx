@@ -30,7 +30,7 @@ class ComponentWithToggleDrop<
   S = NonNullable<unknown>
 > extends React.Component<P, S> {
   mainDiv: React.RefObject<HTMLDivElement>
-  protected objectType: CfObjectType
+  objectType: CfObjectType
   protected objectClass: string
 
   constructor(props: P) {

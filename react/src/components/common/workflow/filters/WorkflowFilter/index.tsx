@@ -5,7 +5,7 @@ import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCar
 import { debounce } from '@cfUtility'
 import { Workflow } from '@cfModule/types/common'
 import { GridWrap } from '@cfModule/mui/helper'
-import {libraryObjectsSearchQuery} from "@XMLHTTP/API/pages";
+import { libraryObjectsSearchQuery } from '@XMLHTTP/API/pages'
 
 /*******************************************************
  * workflow filter is a shared component that

@@ -269,7 +269,12 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
     //it should be on the Dialog component, but idk how to add it to that.
     //Needed to prevent clicks on dialog from unselecting workflow components.
     return (
-      <div className="message-wrap" onMouseDown={(evt)=>{evt.stopPropagation();}}>
+      <div
+        className="message-wrap"
+        onMouseDown={(evt) => {
+          evt.stopPropagation()
+        }}
+      >
         <this.Title />
         {current_project}
         <div className="home-tabs" id="workflow-tabs">

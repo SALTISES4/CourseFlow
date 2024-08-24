@@ -38,7 +38,10 @@ const Section = ({ header, children }: PropsType) => (
         <Typography variant="h5">{window.gettext(header.title)}</Typography>
         {header.seeAll && (
           <Link href={header.seeAll.href}>
-            {window.gettext(header.seeAll.text || 'See all')}
+            {
+              // @todo need to fix paths here
+              window.gettext(header.seeAll.text || 'See all')
+            }
           </Link>
         )}
       </SectionHeader>

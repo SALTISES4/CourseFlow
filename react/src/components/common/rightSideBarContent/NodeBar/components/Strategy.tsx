@@ -79,7 +79,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
     const strategyIcon =
       data && data.strategy_icon ? (
         <img
-          src={`${COURSEFLOW_APP.path.static_assets.icon}${
+          src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}${
             Constants.strategy_keys[data.strategy_icon]
           }.svg`}
         />

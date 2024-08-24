@@ -31,7 +31,7 @@ class CourseCreateView(
 
     def get_success_url(self):
         return reverse(
-            "course_flow:workflow-update", kwargs={"pk": self.object.pk}
+            "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
         )
 
 
@@ -59,5 +59,5 @@ class CourseStrategyCreateView(
 
     def get_success_url(self):
         return reverse(
-            "course_flow:workflow-update", kwargs={"pk": self.object.pk}
+            "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
         )

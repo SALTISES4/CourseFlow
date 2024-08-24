@@ -21,7 +21,7 @@ class ActionButton extends React.Component<ActionButtonProps> {
 
   render() {
     const { buttonClass, titleText, buttonIcon } = this.props
-    const iconPath = COURSEFLOW_APP.path.static_assets.icon + buttonIcon
+    const iconPath = COURSEFLOW_APP.globalContextData.path.static_assets.icon + buttonIcon
 
     return (
       <div

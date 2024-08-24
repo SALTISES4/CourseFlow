@@ -19,7 +19,7 @@ from course_flow.serializers import InfoBoxSerializer, ProjectSerializerShallow
 from course_flow.utils import get_model_from_str, get_user_permission
 
 
-def get_workflow_context_data(workflow, context, user):
+def get_workflow_context_data(workflow, user):
     if not workflow.is_strategy:
         project = WorkflowProject.objects.get(workflow=workflow).project
     data_package = {}
@@ -71,14 +71,16 @@ def get_workflow_context_data(workflow, context, user):
 
     if not workflow.is_strategy:
         data_package["project"] = parent_project
-    context["is_strategy"] = (
-        JSONRenderer().render(workflow.is_strategy).decode("utf-8")
-    )
 
-    context["data_package"] = data_package
-    context["user_permission"] = user_permission
+    resp = {
+        "is_strategy": (
+            JSONRenderer().render(workflow.is_strategy).decode("utf-8")
+        ),
+        "data_package": data_package,
+        "user_permission": user_permission,
+    }
 
-    return context
+    return resp
 
 
 def get_my_projects(user, add, **kwargs):

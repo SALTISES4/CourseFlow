@@ -54,7 +54,7 @@ function CreateProjectDialog({
     }
 
     API_POST<{ redirect: string }>(
-      COURSEFLOW_APP.path.json_api.project.create,
+      COURSEFLOW_APP.globalContextData.path.json_api.project.create,
       {
         ...state.fields,
         objectSets: state.objectSets
@@ -248,7 +248,7 @@ function CreateProjectDialog({
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onDialogClose}>
-          {COURSEFLOW_APP.strings.cancel}
+          {COURSEFLOW_APP.globalContextData.strings.cancel}
         </Button>
         <Button
           variant="contained"

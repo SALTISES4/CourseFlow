@@ -6,8 +6,7 @@ import { ViewType } from '@cfModule/types/enum.js'
 import ComparisonView from '@cfViews/ComparisonView/ComparisonView'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { WorkflowComparisonViewDTO } from '@cfPages/Workflow/Comparison/types'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
-import { CacheProvider } from '@emotion/react'
+import { createTheme } from '@mui/material/styles'
 import createCache from '@emotion/cache'
 const cache = createCache({
   key: 'emotion',
@@ -18,9 +17,9 @@ export class Comparison {
   private readOnly: boolean
   private viewComments: boolean
   private addComments: boolean
-  private projectData: any
   private view_type: ViewType
   private container: JQuery
+  private projectData: any
   private userPermission: any
 
   constructor(props: WorkflowComparisonViewDTO) {
@@ -72,18 +71,14 @@ export class Comparison {
     ) {
       const theme = createTheme({})
       reactDom.render(
-        <CacheProvider value={cache}>
-          <ThemeProvider theme={theme}>
-            <ComparisonView
-              view_type={view_type}
-              container={this.container}
-              parentRender={(a, b) => this.render(a, b)}
-              read_only={this.readOnly}
-              projectData={this.projectData}
-              selection_manager={this.selection_manager}
-            />
-          </ThemeProvider>
-        </CacheProvider>,
+        <ComparisonView
+          view_type={view_type}
+          container={this.container}
+          parentRender={(a, b) => this.render(a, b)}
+          read_only={this.readOnly}
+          projectData={this.projectData}
+          selection_manager={this.selection_manager}
+        />,
         container[0]
       )
     } else {

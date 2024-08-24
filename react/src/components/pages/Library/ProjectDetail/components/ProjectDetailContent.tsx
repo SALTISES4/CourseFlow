@@ -5,7 +5,7 @@ import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
 import { ProjectMenuProps } from '@cfPages/Library/ProjectDetail/types'
 import { Workflow } from '@cfModule/types/common'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
-import { Box, Dialog, DialogTitle } from '@mui/material'
+import { Box, Dialog, DialogTitle, Link } from '@mui/material'
 import Header from '@cfPages/Library/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
@@ -18,7 +18,7 @@ import { EProject } from '@XMLHTTP/types/entity'
 import ProjectExportModal from '@cfModule/components/common/dialog/ProjectExport'
 import ProjectArchiveModal from '@cfModule/components/common/dialog/ProjectArchive'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
-// import $ from 'jquery'
+import { Link as RouterLink } from 'react-router-dom'
 
 /*******************************************************
  * The project library menu
@@ -100,7 +100,8 @@ function ProjectDetailContent({
       )
     ) {
       deleteSelfQuery(project.id, 'project', false, () => {
-        window.location.href = COURSEFLOW_APP.path.html.library.home
+        window.location.href =
+          COURSEFLOW_APP.globalContextData.path.html.library.home
       })
     }
   }
@@ -223,9 +224,9 @@ function ProjectDetailContent({
                 loader.endLoad()
                 // @ts-ignore
                 window.location =
-                  COURSEFLOW_APP.path.html.update_path_temp.replace(
+                  COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
                     '0',
-                  // @ts-ignore
+                    // @ts-ignore
                     response_data.new_item.id
                   )
               }
@@ -292,27 +293,30 @@ function ProjectDetailContent({
         >
           <span className="material-symbols-rounded filled">add_circle</span>
           <div id="create-links-project" className="create-dropdown">
-            <a
+            <Link
+              component={RouterLink}
               id="activity-create-project"
-              href={projectPaths.activity}
+              to={projectPaths.activity}
               className="hover-shade"
             >
               {window.gettext('New activity')}
-            </a>
-            <a
+            </Link>
+            <Link
+              component={RouterLink}
+              to={projectPaths.course}
               id="course-create-project"
-              href={projectPaths.course}
               className="hover-shade"
             >
               {window.gettext('New course')}
-            </a>
-            <a
+            </Link>
+            <Link
+              component={RouterLink}
               id="program-create-project"
-              href={projectPaths.program}
+              to={projectPaths.program}
               className="hover-shade"
             >
               {window.gettext('New program')}
-            </a>
+            </Link>
           </div>
         </div>
       )

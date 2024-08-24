@@ -23,9 +23,10 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 
 type PropsType = {
   // renderer: ChildRenderer
-  context: any
-  parentRender: (container: any, view_type: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
+  wfcontext: WFContext
+  // parentRender: (container: any, view_type: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
   data: any
+  readOnly: boolean
   object_sets?: any
   toggleObjectSet?: any
 }
@@ -78,7 +79,7 @@ class RightSideBar extends React.Component<PropsType> {
    * COMPONENTS
    *******************************************************/
   NodeBarWrapper = () => {
-    if (this.props.context === WFContext.WORKFLOW)
+    if (this.props.wfcontext === WFContext.WORKFLOW)
       return (
         <NodeBar
           // view_type={this.props.renderer.view_type}
@@ -91,28 +92,30 @@ class RightSideBar extends React.Component<PropsType> {
   }
 
   OutcomeBarWrapper = () => {
-    if (this.props.context === WFContext.COMPARISON) {
+    console.log('OutcomeBarWrapper')
+    console.log(this.props)
+    if (this.props.wfcontext === WFContext.COMPARISON) {
       return null
     }
-    if (this.props.context.view_type === ViewType.OUTCOME_EDIT) {
+    if (this.context.view_type === ViewType.OUTCOME_EDIT) {
       return <ParentOutcomeBar />
     }
     return (
       <OutcomeBar
         // renderer={renderer}
-        renderMethod={this.props.parentRender}
-        readOnly={true}
+        // renderMethod={this.props.parentRender}
+        readOnly={this.props.readOnly} // @todo, verify business logic
       />
     )
   }
 
   ViewBarWrapper = () => {
-    if (this.props.context === WFContext.WORKFLOW) {
+    if (this.props.wfcontext === WFContext.WORKFLOW) {
       return (
         <ViewBar data={this.props.data} /* renderer={this.props.renderer}*/ />
       )
     }
-    if (this.props.context === WFContext.COMPARISON) {
+    if (this.props.wfcontext === WFContext.COMPARISON) {
       return (
         <ComparisonViewBar
           toggleObjectSet={this.props.toggleObjectSet}
@@ -125,7 +128,7 @@ class RightSideBar extends React.Component<PropsType> {
   }
 
   RestoreBarWrapper = () => {
-    if (this.props.context === WFContext.WORKFLOW) return <RestoreBar />
+    if (this.props.wfcontext === WFContext.WORKFLOW) return <RestoreBar />
     return null
   }
 

@@ -39,22 +39,63 @@ def json_api__project__detail__get(request):
     except Project.DoesNotExist:
         return Response({"detail": "Not found."}, status=404)
 
+    current_user = request.user
+
     serializer = ProjectSerializerShallow(
-        project, context={"request": request}
+        project, context={"user": current_user, "request": request}
     )
+
     disciplines = DisciplineSerializer(
         Discipline.objects.order_by("title"), many=True
     ).data
-    user_permission = get_user_permission(
-        project, request.user
-    )  # Adjust according to your permission logic
+
+    user_permission = get_user_permission(project, current_user)
+
+    public_view = False  # moved from template layer
+    is_strategy = False
 
     response_data = {
-        "user_id": request.user.id,
-        "user_permission": user_permission,
         "project_data": serializer.data,
+        # @todo bad
+        "user_id": current_user.id if current_user else 0,
+        "user_name": current_user.username,
+        "user_permission": user_permission,
         "disciplines": disciplines,
         "create_path_this_project": get_project_urls_by_pk(project_pk),
+        "is_strategy": is_strategy,
+        "public_view": public_view,
+    }
+
+    return JsonResponse({"action": "GET", "data_package": response_data})
+
+
+@permission_classes([UserCanViewMixin])
+@api_view(["GET"])
+@login_required
+def json_api__project__detail__comparison__get(request):
+    project_pk = request.GET.get("id")
+    try:
+        project = Project.objects.get(pk=project_pk)
+
+    except Project.DoesNotExist:
+        return Response({"detail": "Not found."}, status=404)
+
+    # moved from template layer
+    public_view = False
+    is_strategy = False
+
+    current_user = request.user
+    user_permission = get_user_permission(project, current_user)
+
+    response_data = {
+        "project_data": ProjectSerializerShallow(
+            project, context={"user": current_user}
+        ).data,
+        "user_id": current_user.id if current_user else 0,
+        "is_strategy": is_strategy,
+        "user_permission": user_permission,
+        "public_view": public_view,
+        "user_name": current_user.username,
     }
 
     return JsonResponse({"action": "GET", "data_package": response_data})

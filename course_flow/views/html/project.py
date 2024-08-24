@@ -18,44 +18,43 @@ from course_flow.serializers import (
 from course_flow.utils import get_user_permission
 from course_flow.views.mixins import UserCanViewMixin
 
-
-class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model: Project = Project
-    # how are these fields being used?
-    fields = ["title", "description", "published"]
-
-    template_name: str = "course_flow/html/react_common_entrypoint.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        project = self.object
-        current_user = self.request.user
-
-        project_data = ProjectSerializerShallow(
-            project, context={"user": self.request.user}
-        ).data
-
-        user_permission = get_user_permission(project, self.request.user)
-        title = project.title
-
-        disciplines = DisciplineSerializer(
-            Discipline.objects.order_by("title"), many=True
-        ).data
-
-        context_data = {
-            "project_data": project_data,
-            "user_permission": user_permission,
-            "disciplines": disciplines,
-            "user_id": current_user.id if current_user else 0,
-        }
-
-        context["contextData"] = (
-            JSONRenderer().render(context_data).decode("utf-8")
-        )
-        context["path_id"] = "projectDetail"
-        context["title"] = title
-
-        return context
+# class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
+#     model: Project = Project
+#     # how are these fields being used?
+#     fields = ["title", "description", "published"]
+#
+#     template_name: str = "course_flow/html/react_common_entrypoint.html"
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(DetailView, self).get_context_data(**kwargs)
+#         project = self.object
+#         current_user = self.request.user
+#
+#         project_data = ProjectSerializerShallow(
+#             project, context={"user": self.request.user}
+#         ).data
+#
+#         user_permission = get_user_permission(project, self.request.user)
+#         title = project.title
+#
+#         disciplines = DisciplineSerializer(
+#             Discipline.objects.order_by("title"), many=True
+#         ).data
+#
+#         context_data = {
+#             "project_data": project_data,
+#             "user_permission": user_permission,
+#             "disciplines": disciplines,
+#             "user_id": current_user.id if current_user else 0,
+#         }
+#
+#         context["contextData"] = (
+#             JSONRenderer().render(context_data).decode("utf-8")
+#         )
+#         context["path_id"] = "projectDetail"
+#         context["title"] = title
+#
+#         return context
 
 
 class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):

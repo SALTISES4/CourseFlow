@@ -10,16 +10,15 @@ export function newNodeQuery(
   column_type = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.new_node, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_node, {
     weekPk: weekPk,
     position: position,
     columnPk: column,
     columnType: column_type
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 /**
@@ -38,14 +37,13 @@ export function newOutcomeQuery(
   object_set_id: number,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.new_outcome, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_outcome, {
     workflowPk: workflowPk,
     objectsetPk: object_set_id
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Add a strategy to the workflow
@@ -55,16 +53,15 @@ export function addStrategyQuery(
   strategyPk = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.add_strategy, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.add_strategy, {
     workflowPk: workflowPk,
     position: position,
     objectID: strategyPk,
     objectType: 'workflow'
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 export function newNodeLink(
@@ -74,17 +71,16 @@ export function newNodeLink(
   target_port,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.new_node_link, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_node_link, {
     nodePk: source_node,
     objectID: target_node,
     objectType: 'node',
     sourcePort: source_port,
     targetPort: target_port
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Causes the specified object to insert a child to itself
@@ -93,14 +89,13 @@ export function insertChildQuery(
   objectType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.insert_child, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.insert_child, {
     objectID: objectID,
     objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Causes the specified object to insert a sibling after itself
@@ -112,17 +107,16 @@ export function insertSiblingQuery(
   throughType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.insert_sibling, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.insert_sibling, {
     parentID: parentID,
     parentType: parentType,
     objectID: objectID,
     objectType: objectType,
     throughType: throughType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 /**
@@ -141,14 +135,13 @@ export function addTerminologyQuery(
   translation_plural: any,
   callBackFunction = (_data: AddTerminologyQueryResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.add_terminology, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.add_terminology, {
     projectPk: projectPk,
     term: term,
     title: title,
     translation_plural: translation_plural
+  }).then((response: AddTerminologyQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:AddTerminologyQueryResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }

@@ -1,3 +1,4 @@
+import React from 'react'
 import { Component } from 'react'
 import reactDom from 'react-dom'
 import WorkflowsMenu from '../dialog/WorkflowsMenu'

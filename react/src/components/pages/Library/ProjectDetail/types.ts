@@ -1,17 +1,24 @@
-import { Discipline } from '@cfModule/types/common'
-import { EProject } from '@XMLHTTP/types/entity'
+import {Discipline} from '@cfModule/types/common'
+import {EProject} from '@XMLHTTP/types/entity'
 
 export type ProjectViewDTO = {
   project_data: EProject
-  user_permission: number
+  user_permission: number // not always
   disciplines: Discipline[]
   user_id: number
+  user_role: number
+  user_name: string
+  is_strategy: boolean
+  public_view: boolean
+  changeFieldID: number
+  myColour: string
   create_path_this_project: {
     activity: string
     course: string
     program: string
   }
 }
+
 
 export type ObjectPermission = {
   permission_type: number

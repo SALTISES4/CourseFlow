@@ -10,7 +10,7 @@ export function getCommentsForObjectQuery(
   callBackFunction = (_data: CommentsForObjectQueryResp) =>
     console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.json_api.comment.list_by_object, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.list_by_object, {
     objectID: objectID,
     objectType: objectType
   }).then((response: CommentsForObjectQueryResp) => {
@@ -25,7 +25,7 @@ export function addComment(
   text,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.json_api.comment.create, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.create, {
     objectID: objectID,
     objectType: objectType,
     text: text
@@ -41,7 +41,7 @@ export function removeComment(
   commentPk,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.json_api.comment.delete, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.delete, {
     objectID: objectID,
     commentPk: commentPk,
     objectType: objectType
@@ -57,7 +57,7 @@ export function removeAllComments(
   objectType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.json_api.comment.delete_all, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.delete_all, {
     objectID: objectID,
     objectType: objectType
   }).then((response: EmptyPostResp) => {

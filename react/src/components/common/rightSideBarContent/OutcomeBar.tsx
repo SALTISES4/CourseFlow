@@ -23,7 +23,7 @@ type StateProps = ReturnType<typeof mapStateToProps>
 
 type SelfProps = {
   readOnly: boolean
-  renderMethod: (container, view_type: ViewType) => void
+  // renderMethod: (container, view_type: ViewType) => void
 }
 
 type PropsType = SelfProps & StateProps
@@ -36,8 +36,15 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
    * FUNCTIONS
    *******************************************************/
   editOutcomesClick() {
-    // @todo, manage view change with state update
-    this.props.renderMethod($('#container'), ViewType.OUTCOME_EDIT)
+    // @todo onclick, navigate to View 'Outcome edit tab"
+    // i.e. 'view course outcome'
+    // there is a deeply nested
+    // this.props.renderMethod(
+    // which is the initial render method from react/src/components/pages/Workflow/Workflow
+    // this.props.renderMethod($('#container'), ViewType.OUTCOME_EDIT)
+    // @todo, manage this with router or view change with state update
+    // Legacy code, prop drilled from     <WorkflowBaseView, now removed
+    // this.props.renderMethod($('#container'), ViewType.OUTCOME_EDIT)
   }
 
   /*******************************************************

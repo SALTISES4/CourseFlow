@@ -9,17 +9,16 @@ export function deleteSelfQuery(
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   let path
-  if (soft) path = COURSEFLOW_APP.path.post_paths.delete_self_soft
-  else path = COURSEFLOW_APP.path.post_paths.delete_self
+  if (soft) path = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self_soft
+  else path = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self
 
   API_POST(path, {
     objectID: objectID,
     objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }
 
 //Causes the specified object to undelete itself
@@ -28,12 +27,11 @@ export function restoreSelfQuery(
   objectType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.path.post_paths.restore_self, {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.restore_self, {
     objectID: objectID,
     objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
   })
-    .then((response:EmptyPostResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
 }

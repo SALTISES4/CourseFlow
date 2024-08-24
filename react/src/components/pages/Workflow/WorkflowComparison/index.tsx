@@ -6,19 +6,49 @@ import { Provider } from 'react-redux'
 import ComparisonWorkflowBase from '@cfViews/ComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
 import Workflow from '@cfPages/Workflow/Workflow'
-import ActionCreator from '@cfRedux/ActionCreator'
 import { ViewType } from '@cfModule/types/enum.js'
-import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { EWorkflowDataPackage } from '@XMLHTTP/types'
 import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
+import { getWorkflowDataQuery } from '@XMLHTTP/API/workflow'
+import * as Constants from '@cfModule/constants'
+import { getProjectById  } from '@XMLHTTP/API/project'
 
-type WorkflowComparisonParams = {
-  workflowID: number
-  selectionManager: any
-  container: string
-  viewType: any
-  initial_object_sets: any
-  dataPackage: EWorkflowDataPackage
+
+// @ts-ignore
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+
+const defaultPermissions = {
+  readOnly: false,
+  viewComments: false,
+  addComments: false
+}
+
+const getProjectPermissions = (userPermission) => {
+  switch (userPermission) {
+    case Constants.permission_keys['none']:
+    case Constants.permission_keys['view']:
+      return {
+        ...defaultPermissions,
+        readOnly: true
+      }
+    case Constants.permission_keys['comment']:
+      return {
+        ...defaultPermissions,
+        readOnly: true,
+        viewComments: true,
+        addComments: true
+      }
+
+    case Constants.permission_keys['edit']:
+      return {
+        ...defaultPermissions,
+        readOnly: false,
+        viewComments: true,
+        addComments: true
+      }
+    default:
+      return defaultPermissions
+  }
 }
 
 /****************************************
@@ -27,75 +57,52 @@ type WorkflowComparisonParams = {
  * ****************************************/
 export class WorkflowComparison extends Workflow {
   private initial_object_sets: any
-  constructor({
-    workflowID,
-    dataPackage,
-    container,
-    selectionManager,
-    viewType,
-    initial_object_sets
-  }: WorkflowComparisonParams) {
-    super({
-      workflow_data_package: dataPackage,
-      workflow_model_id: workflowID
-    })
+  private projectData: any
+  private userPermission: any
 
-    this.selection_manager = selectionManager
-    this.container = container
-    this.view_type = viewType
-    this.initial_object_sets = initial_object_sets
-  }
+  constructor(props) {
+    // need to get project data and use it here see
+    // legacy comparison
 
-  render(view_type = ViewType.WORKFLOW) {
-    this.view_type = view_type
-    const store = this.store
-    // @ts-ignore
-    this.locks = {}
-    const el = this.container[0]
+    //     this.projectData = props.project_data
+    // then swithc on the proejct permissiongs using
+    // getProjectPermissions
 
-    reactDom.render(<Loader />, el)
-
-    if (view_type === ViewType.OUTCOME_EDIT) {
-      // get additional data about parent workflow prior to render
-
-      /**
-       * @todo
-       * so it seems like this is structured as a callback on the API async request only because OUTCOME_EDIT
-       * is not the default 'view' state, see also the render function of the 'parent' workflow class
-       * note OUTCOME_EDIT assumes that the standard 'view' ViewType.WORKFLOW switch has been fired at least once
-       * 1 - this request could be fired here perhaps, but WorkflowBase is called regardless, WorkflowBase must handle awating data
-       * 2 - getWorkflowParentData (and all APIs) should have some async/await features, if we're not using react query hooks
-       * 3 - finally view_type should be used as a state manager, which it is sort of inside the  <WorkflowBase
-       * so that's fine, but not here where we decide to call queries
-       *
-       */
-      this.getWorkflowParentData(this.workflowID, (response) => {
-        store.dispatch(ActionCreator.refreshStoreData(response.data_package))
-        reactDom.render(
-          <Provider store={store}>
-            <WorkFlowConfigProvider initialValue={this}>
-              <ComparisonWorkflowBase view_type={view_type} />
-            </WorkFlowConfigProvider>
-          </Provider>,
-          el
-        )
-      })
-    } else if (view_type === ViewType.WORKFLOW) {
-      reactDom.render(
-        <Provider store={this.store}>
-          <WorkFlowConfigProvider initialValue={this}>
-            <ComparisonWorkflowBase view_type={view_type} />
-          </WorkFlowConfigProvider>
-        </Provider>,
-        el
-      )
+    super(props)
+    this.state = {
+      ready: false,
+      viewType: ViewType.WORKFLOW
     }
+    this.updateView = this.updateView.bind(this)
+    this.workflowID = 1
+
+    // this is the only place this occurs in the whole app now
+    // so probably still a hack
+    // makeActiveSidebar('#project' + this.projectData.id)
+
+    // this.initial_object_sets = initial_object_sets
+  }
+  componentDidMount() {
+    const id = '1'
+
+    getProjectById(id).then((response) => {
+      console.log('getProjectById')
+      console.log(response)
+      this.setupNewData(response.data_package)
+      this.init()
+    })
   }
 
-  connection_opened(reconnect = false) {
-    const loader = new UtilityLoader(this.container)
+  setupNewData(response) {
+    this.projectData = response.project_data
+    this.userPermission = response.user_permission // @todo double check we're getting this from data object
 
-    this.getWorkflowData(this.workflowID, (response) => {
+    //@todo this a jquery global function and needs to be refactored / removed
+    makeActiveSidebar('#project' + this.projectData.id)
+  }
+
+  onConnectionOpened(reconnect = false) {
+    getWorkflowDataQuery(this.workflowID, (response) => {
       let data_flat = response.data_package
       if (this.initial_object_sets) {
         data_flat = {
@@ -104,20 +111,56 @@ export class WorkflowComparison extends Workflow {
         }
       }
 
-      // @todo mismatch on workflow todo data stoe
-      // @ts-ignore
-      this.store = createStore(Reducers.rootWorkflowReducer, data_flat)
+      this.store = createStore(
+        Reducers.rootWorkflowReducer,
+        // @ts-ignore
+        data_flat,
+        composeEnhancers()
+      )
 
-      this.render(this.view_type)
+      this.setState({
+        ...this.state,
+        ready: true
+      })
+
       this.clear_queue(data_flat.workflow.edit_count)
-
-      loader.endLoad()
 
       if (reconnect) {
         // @ts-ignore
         this.attempt_reconnect() // @todo where is this defined
       }
     })
+  }
+
+  render() {
+    this.locks = {}
+
+    if (
+      this.state.viewType !== ViewType.WORKFLOW &&
+      this.state.viewType !== ViewType.OUTCOME_EDIT
+    ) {
+      return <>comparsion view not supported</>
+    }
+
+    if (!this.state.ready) {
+      return <Loader />
+    }
+
+    return (
+      <Provider store={this.store}>
+        <WorkFlowConfigProvider initialValue={this}>
+          {/*
+          see:
+            getWorkflowContextQuery(t
+            deep in react/src/components/workflowViews/ComparisonView/components/WorkflowComparisonRendererComponent.tsx
+
+            for why this is not rendering
+            don't bother troubleshooting this until you are ready to unpack that
+          */}
+          <ComparisonWorkflowBase view_type={this.state.viewType} />
+        </WorkFlowConfigProvider>
+      </Provider>
+    )
   }
 }
 

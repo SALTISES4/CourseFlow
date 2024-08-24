@@ -32,10 +32,7 @@ declare global {
 }
 
 interface CourseflowAppGlobals {
-  path: Path
-  strings: Strings
   path_id: string
-
   // global context data that's available that more general use
   // (sidebar, topbar, app notifications, etc)
   globalContextData: GlobalContextData
@@ -122,6 +119,9 @@ interface JSONAPIPaths {
     create: string
     discipline__list: string
   }
+  workflow: {
+    detail: string
+  }
   comment: {
     list_by_object: string
     create: string
@@ -155,7 +155,8 @@ interface UpdatePath {
 interface GlobalContextData {
   sidebar: SidebarProps
   topbar: TopBarProps
-
+  path: Path
+  strings: Strings
   notifications: {
     showNotificationRequest: boolean
     updateNotifications:

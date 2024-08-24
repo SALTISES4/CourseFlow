@@ -1,17 +1,24 @@
 import React from 'react'
 import { EventUnion } from '@cfModule/types/common'
+import * as Constants from '@cfConstants'
+import EditableComponent from '@cfParentComponents/EditableComponent'
+import {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cfParentComponents/EditableComponent'
 
 /**
- * Manages the current selection
- * provably the right sidebar (?)
- * what else is it doing besides being the active tab manageer?
- * need to define responsibilities
+ * Manages the current selection and locks it to prevent
+ * other users from editing it.
  */
 export class SelectionManager {
   private mouseClicked: boolean
   private readOnly: boolean
   private lastSidebarTab: number
-  private currentSelection: React.Component<any>
+  private currentSelection: null | EditableComponent<
+    EditableComponentProps,
+    EditableComponentStateType
+  >
 
   constructor(readOnly: boolean) {
     this.currentSelection = null
@@ -61,7 +68,13 @@ export class SelectionManager {
    * @param evt - The event that triggered the selection change.
    * @param newSelection - The new selection object.
    */
-  changeSelection(evt?: EventUnion, newSelection?: React.Component<any>): void {
+  changeSelection(
+    evt?: EventUnion,
+    newSelection?: null | EditableComponent<
+      EditableComponentProps,
+      EditableComponentStateType
+    >
+  ): void {
     if (evt) {
       evt.stopPropagation()
     }
@@ -118,13 +131,27 @@ export class SelectionManager {
   }
 
   private lockCurrentSelection(): void {
-    // Lock logic goes here, e.g.:
-    // this.currentSelection.props.renderer.lock_update(...);
+    this.currentSelection.context.lock_update(
+      {
+        object_id: this.currentSelection.props.data.id,
+        object_type:
+          Constants.object_dictionary[this.currentSelection.objectType]
+      },
+      60 * 1000,
+      true
+    )
   }
 
   private unlockCurrentSelection(): void {
-    // Unlock logic goes here, e.g.:
-    // this.currentSelection.props.renderer.lock_update(...);
+    this.currentSelection.context.lock_update(
+      {
+        object_id: this.currentSelection.props.data.id,
+        object_type:
+          Constants.object_dictionary[this.currentSelection.objectType]
+      },
+      60 * 1000,
+      false
+    )
   }
 
   /**

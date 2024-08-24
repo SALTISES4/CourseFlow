@@ -5,9 +5,6 @@ import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
 
 // import $ from 'jquery'
 
-
-
-
 export function openWorkflowSelectMenu(response, updateFunction) {
   if (response.action === VERB.POSTED) {
     renderMessageBox(response, 'workflow_select_menu', updateFunction)
@@ -16,16 +13,15 @@ export function openWorkflowSelectMenu(response, updateFunction) {
   }
 }
 
-
-
 //Called when a node should have its column changed
-export function columnChanged(renderer, objectID, columnID) {
+export function columnChanged(selection_manager, objectID, columnID) {
   // @todo ?? dragAction is never defined outside this file
-  if (!renderer.dragAction) renderer.dragAction = {}
-  if (!renderer.dragAction['nodeweek']) renderer.dragAction['nodeweek'] = {}
+  if (!selection_manager.dragAction) selection_manager.dragAction = {}
+  if (!selection_manager.dragAction['nodeweek'])
+    selection_manager.dragAction['nodeweek'] = {}
 
-  renderer.dragAction['nodeweek'] = {
-    ...renderer.dragAction['nodeweek'],
+  selection_manager.dragAction['nodeweek'] = {
+    ...selection_manager.dragAction['nodeweek'],
     objectID: objectID,
     objectType: 'node',
     columnPk: columnID,
@@ -34,16 +30,15 @@ export function columnChanged(renderer, objectID, columnID) {
 
   $(document).off('nodeweek-dropped')
   $(document).on('nodeweek-dropped', () => {
-    dragAction(renderer.dragAction['nodeweek'])
-    renderer.dragAction['nodeweek'] = null
+    dragAction(selection_manager.dragAction['nodeweek'])
+    selection_manager.dragAction['nodeweek'] = null
     $(document).off('nodeweek-dropped')
   })
 }
 
 //Called when an object in a list is reordered
-// @todo context has replaced renderer and so 'drag action' is not available
 export function insertedAt(
-  renderer,
+  selection_manager,
   objectID,
   objectType,
   parentID,
@@ -51,10 +46,11 @@ export function insertedAt(
   newPosition,
   throughType
 ) {
-  if (!renderer.dragAction) renderer.dragAction = {}
-  if (!renderer.dragAction[throughType]) renderer.dragAction[throughType] = {}
-  renderer.dragAction[throughType] = {
-    ...renderer.dragAction[throughType],
+  if (!selection_manager.dragAction) selection_manager.dragAction = {}
+  if (!selection_manager.dragAction[throughType])
+    selection_manager.dragAction[throughType] = {}
+  selection_manager.dragAction[throughType] = {
+    ...selection_manager.dragAction[throughType],
     objectID: objectID,
     objectType: objectType,
     parentID: parentID,
@@ -66,8 +62,8 @@ export function insertedAt(
   $(document).off(throughType + '-dropped')
   if (objectID)
     $(document).on(throughType + '-dropped', () => {
-      dragAction(renderer.dragAction[throughType])
-      renderer.dragAction[throughType] = null
+      dragAction(selection_manager.dragAction[throughType])
+      selection_manager.dragAction[throughType] = null
       $(document).off(throughType + '-dropped')
     })
 }
