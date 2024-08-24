@@ -13,7 +13,7 @@ import HelpRoundedIcon from '@mui/icons-material/HelpRounded'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import MenuIcon from '@mui/icons-material/Menu'
 import { SidebarProps } from '@cfModule/types/common'
-// import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import {
   LogoWrap,
@@ -87,7 +87,7 @@ const CFLogo = () => (
 )
 
 const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
-  const location = window.location
+  const location = useLocation()
 
   const [collapsed, setCollapsed] = useState(
     !!sessionStorage.getItem('collapsed_sidebar')
@@ -124,9 +124,9 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
         <MainMenuWrap sx={{ pt: 0 }}>
           <ListItem disablePadding dense>
             <ListItemButton
-              component={'a'}
+              component={Link}
               data-test-id="panel-home"
-              href={COURSEFLOW_APP.globalContextData.path.html.library.home}
+              to={COURSEFLOW_APP.globalContextData.path.html.library.home}
               selected={
                 location.pathname ===
                 COURSEFLOW_APP.globalContextData.path.html.library.home
@@ -144,9 +144,9 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
             <>
               <ListItem disablePadding dense>
                 <ListItemButton
-                  component={'a'}
+                  component={Link}
                   data-test-id="panel-library"
-                  href={
+                  to={
                     COURSEFLOW_APP.globalContextData.path.html.library.library
                   }
                   selected={
@@ -166,8 +166,8 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
               </ListItem>
               <ListItem disablePadding dense>
                 <ListItemButton
-                  component={'a'}
-                  href={
+                  component={Link}
+                  to={
                     COURSEFLOW_APP.globalContextData.path.html.library.explore
                   }
                   data-test-id="panel-explore"
@@ -199,8 +199,8 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
                 {favourites.map((favourite, id) => (
                   <ListItem disablePadding dense key={id}>
                     <ListItemButton
-                      component={'a'}
-                      href={favourite.url}
+                      component={Link}
+                      to={favourite.url}
                       data-test-id="panel-favourite"
                       selected={location.pathname === favourite.url}
                     >

@@ -15,7 +15,6 @@ type PropsType = {
 const { notifications, sidebar, topbar } = COURSEFLOW_APP.globalContextData
 
 const Base = ({ children }: PropsType) => {
-  console.log('base')
   return (
     <DialogContextProvider>
       <div className="main-wrapper">

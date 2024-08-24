@@ -48,7 +48,6 @@ import NotificationsPage from '@cfModule/components/pages/Notifications'
 import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsSettings'
 import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
 // Workflow
-import Comparison from '@cfPages/Workflow/Comparison'
 // React dumb components styleguide page
 import Styleguide from '@cfModule/components/pages/Styleguide'
 // @LIBRARY
@@ -81,47 +80,96 @@ const cache = createCache({
 const router = createBrowserRouter([
   {
     path: `${domain}/home`,
-    element: <Home />
+    element: (
+      <Base>
+        {' '}
+        <Home />
+      </Base>
+    )
   },
   {
     path: `${domain}/styleguide`,
-    element: <Styleguide />
+    element: (
+      <Base>
+        {' '}
+        <Styleguide />
+      </Base>
+    )
   },
   {
     path: `${domain}/favourites`,
-    element: <Favourites />
+    element: (
+      <Base>
+        <Favourites />
+      </Base>
+    )
   },
   {
     path: `${domain}/library`,
-    element: <Library />
+    element: (
+      <Base>
+        {' '}
+        <Library />
+      </Base>
+    )
   },
   {
     path: `${domain}/explore`,
-    element: <Explore />
+    element: (
+      <Base>
+        <Explore />
+      </Base>
+    )
   },
   {
     path: `${domain}/user/notifications`,
-    element: <NotificationsPage />
+    element: (
+      <Base>
+        <NotificationsPage />
+      </Base>
+    )
   },
   {
     path: `${domain}/user/notifications-settings`,
-    element: <NotificationsSettingsPage />
+    element: (
+      <Base>
+        {' '}
+        <NotificationsSettingsPage />
+      </Base>
+    )
   },
   {
     path: `${domain}/user/profile-settings`,
-    element: <ProfileSettingsPage />
+    element: (
+      <Base>
+        <ProfileSettingsPage />
+      </Base>
+    )
   },
   {
     path: `${domain}/project/:id/comparison`,
-    element: <WorkflowComparison />
+    element: (
+      <Base>
+        {' '}
+        <WorkflowComparison />
+      </Base>
+    )
   },
   {
     path: `${domain}/project/:id`,
-    element: <ProjectDetail />
+    element: (
+      <Base>
+        <ProjectDetail />
+      </Base>
+    )
   },
   {
     path: `${domain}/workflow/:id`,
-    element: <Workflow />
+    element: (
+      <Base>
+        <Workflow />
+      </Base>
+    )
   },
   {
     path: '*',
@@ -138,9 +186,7 @@ root.render(
     <CacheProvider value={cache}>
       <ThemeProvider theme={theme}>
         <ScopedCssBaseline sx={SidebarRootStyles}>
-          <Base>
-            <RouterProvider router={router} />
-          </Base>
+          <RouterProvider router={router} />
         </ScopedCssBaseline>
       </ThemeProvider>
     </CacheProvider>

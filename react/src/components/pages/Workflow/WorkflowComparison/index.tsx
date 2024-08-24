@@ -13,14 +13,6 @@ import { getWorkflowDataQuery } from '@XMLHTTP/API/workflow'
 import * as Constants from '@cfModule/constants'
 import { getProjectById  } from '@XMLHTTP/API/project'
 
-type WorkflowComparisonParams = {
-  workflowID: number
-  selectionManager: any
-  container: string
-  viewType: any
-  initial_object_sets: any
-  dataPackage: EWorkflowDataPackage
-}
 
 // @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
