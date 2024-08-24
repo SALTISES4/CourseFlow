@@ -51,6 +51,8 @@ interface Path {
   get_paths: GetPaths
 
   create_path: CreatePath
+  update_path: UpdatePath
+  public_update_path: PublicUpdatePath
   home_path: string
   explore_path: string
   my_library_path: string
@@ -99,6 +101,13 @@ interface GenericPath {
 }
 
 interface JSONAPIPaths {
+  create_project: string
+  create_workflow: string
+  update_profile: string
+  get_notifications_page: string
+  update_notifications_settings: string
+  mark_all_notifications_as_read: string
+  delete_notification: string
   library: {
     home: string
     explore: string

@@ -1,5 +1,6 @@
 import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
 import { VERB } from '@cfModule/types/enum'
+import { TWorkflow } from '@cfRedux/types/type'
 import {
   WorkflowDataPackage,
   WorkflowParentDataPackage,
@@ -11,7 +12,8 @@ import {
   EUser,
   EComment,
   EObjectSet,
-  ESectionGroup
+  ESectionGroup,
+  ESectionObject,
 } from '@XMLHTTP/types/entity'
 import { ProjectViewDTO } from '@cfPages/Library/ProjectDetail/types'
 import {WorkflowDetailViewDTO} from "@cfPages/Workflow/Workflow/types";
@@ -238,6 +240,11 @@ export type TargetProjectQueryResp = {
     deleted_projects?: ESectionGroup
   }
   workflow_id: number
+}
+
+export type ProjectsForCreateQueryResp = {
+  action: VERB
+  data_package: ESectionObject[]
 }
 
 export type ParentWorkflowInfoQueryResp = {

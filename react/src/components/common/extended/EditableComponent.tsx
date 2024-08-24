@@ -25,16 +25,6 @@ const LinkedWorkflowButton = (id: any) => {
   )
 }
 
-/**
- *
- */
-// function openLinkedWorkflowMenu(response, updateFunction) {
-//   if (response.action === VERB.POSTED) {
-//     renderMessageBox(response, 'linked_workflow_menu', updateFunction)
-//   } else {
-//     alert('Failed to find the parent project. Is this workflow in a project?')
-//   }
-// }
 
 //Extends the React component to add a few features that are used in a large number of components
 

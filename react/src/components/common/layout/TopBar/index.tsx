@@ -20,10 +20,16 @@ import Avatar from '@mui/material/Avatar'
 import Typography from '@mui/material/Typography'
 import { getNameInitials } from '@cfModule/utility/utilityFunctions'
 import ProjectCreateModal from '@cfModule/components/common/dialog/ProjectCreate'
-// TODO: implement
-// import ProgramCreateModal from '@cfModule/components/common/dialog/ProgramCreate'
-// import CourseCreateModal from '@cfModule/components/common/dialog/CourseCreate'
-// import ActivityCreateModal from '@cfModule/components/common/dialog/ActivityCreate'
+
+import ProgramCreateModal from '@cfModule/components/common/dialog/ProgramCreate'
+import editProgramData from '@cfCommonComponents/dialog/ProgramEdit/data'
+import createProgramData from '@cfCommonComponents/dialog/ProgramCreate/data'
+import CourseCreateModal from '@cfModule/components/common/dialog/CourseCreate'
+import createCourseData from '@cfCommonComponents/dialog/CourseCreate/data'
+import editCourseData from '@cfCommonComponents/dialog/CourseEdit/data'
+import ActivityCreateModal from '@cfModule/components/common/dialog/ActivityCreate'
+import editActivityData from '@cfCommonComponents/dialog/ActivityEdit/data'
+import createActivityData from '@cfCommonComponents/dialog/ActivityCreate/data'
 import PasswordResetModal from '@cfModule/components/common/dialog/PasswordReset'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 
@@ -263,10 +269,18 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
         formFields={forms.createProject.formFields}
         disciplines={forms.createProject.disciplines}
       />
-      {/* TODO: implement */}
-      {/* <ProgramCreateModal />
-      <CourseCreateModal />
-      <ActivityCreateModal /> */}
+      <ProgramCreateModal 
+        {...createProgramData}
+        units={editProgramData.units}
+      />
+      <CourseCreateModal 
+        {...createCourseData}
+        units={editCourseData.units}
+      />
+      <ActivityCreateModal 
+        {...createActivityData}
+        units={editActivityData.units}
+      />
     </TopBarWrap>
   )
 }
