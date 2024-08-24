@@ -227,6 +227,7 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
                               px: 2,
                               py: 1
                             }}
+                            // @todo convert this to a Link element
                             href={
                               COURSEFLOW_APP.globalContextData.path.html.library
                                 .favourites

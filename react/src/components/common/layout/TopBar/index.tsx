@@ -5,6 +5,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
+import { Link as RouterLink } from 'react-router-dom'
 import Badge from '@mui/material/Badge'
 import MenuItem from '@mui/material/MenuItem'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -125,7 +126,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
         <Typography variant="h5">
           {COURSEFLOW_APP.globalContextData.strings.notifications}
         </Typography>
-        <Link href={notifications.url} underline="always">
+        <Link component={RouterLink} to={notifications.url} underline="always">
           {COURSEFLOW_APP.globalContextData.strings.see_all}
         </Link>
       </NotificationsHeader>
@@ -139,7 +140,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
               backgroundColor: n.unread ? 'courseflow.lightest' : null
             }}
           >
-            <ListItemButton component="a" href={n.url}>
+            <ListItemButton component={RouterLink} to={n.url}>
               {n.unread && <Badge color="primary" variant="dot" />}
               <ListItemAvatar>
                 <Avatar alt={n.from}>{getNameInitials(n.from)}</Avatar>
@@ -180,17 +181,20 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       open={isMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem component="a" href={menus.account.profileUrl}>
+      <MenuItem component={RouterLink} to={menus.account.profileUrl}>
         {COURSEFLOW_APP.globalContextData.strings.profile}
       </MenuItem>
       <MenuItem onClick={() => dispatch(DIALOG_TYPE.PASSWORD_RESET)}>
         {COURSEFLOW_APP.globalContextData.strings.password_reset}
       </MenuItem>
-      <MenuItem component="a" href={menus.account.notificationsSettingsUrls}>
+      <MenuItem
+        component={RouterLink}
+        to={menus.account.notificationsSettingsUrls}
+      >
         {COURSEFLOW_APP.globalContextData.strings.notification_settings}
       </MenuItem>
       <Divider />
-      <MenuItem component="a" href={menus.account.daliteUrl}>
+      <MenuItem component={RouterLink} to={menus.account.daliteUrl}>
         Go to {menus.account.daliteText}
       </MenuItem>
       <MenuItem onClick={handleLogout}>
