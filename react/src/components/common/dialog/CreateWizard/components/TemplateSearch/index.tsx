@@ -7,18 +7,18 @@ import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
 import { debounce } from '@mui/material/utils'
-import {PrepareBackendDataForWorkflowCardDumb} from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
+import { PrepareBackendDataForWorkflowCardDumb } from '@cfCommonComponents/cards/WorkflowCardDumb'
 
 import { TemplateThumbnail } from './styles'
-import { PropsType as TemplateType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
-import { getTemplates} from '@XMLHTTP/API/workflow'
-import WorkflowLoader from '@cfCommonComponents/UIComponents/WorkflowLoader'
+import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { getTemplates } from '@XMLHTTP/API/workflow'
+import Loader from "@cfCommonComponents/UIComponents/Loader";
 
 type PropsType = {
   selected?: number
   templates: TemplateType[]
   onTemplateSelect: (id: number) => void
-  setTemplateData: (project_data:TemplateType[])=>void,
+  setTemplateData: (project_data: TemplateType[]) => void
   template_type: string
 }
 
@@ -29,10 +29,9 @@ const TemplateSearch = ({
   templates,
   onTemplateSelect,
   setTemplateData,
-  template_type,
+  template_type
 }: PropsType) => {
   const [results, setResults] = useState<StateType>(templates)
-
 
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
     const fuse = new Fuse(templates, {
@@ -48,50 +47,50 @@ const TemplateSearch = ({
     setResults(filtered)
   }
 
-  if(templates==null){
-    getTemplates(template_type,(response_data)=>{
-      const project_data = response_data.data_package.map(project=>{
+  if (templates === null) {
+    getTemplates(template_type, (response_data) => {
+      const project_data = response_data.data_package.map((project) => {
         return PrepareBackendDataForWorkflowCardDumb(project)
       })
       setTemplateData(project_data)
       setResults(project_data)
     })
-    return <WorkflowLoader/>
-  }else{
-    return (
-      <Box>
-        <TextField
-          variant="standard"
-          label="Search"
-          fullWidth
-          onChange={debounce(onSearchChange, 400)}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <SearchIcon />
-              </InputAdornment>
-            )
-          }}
-        />
-        <Box sx={{ mt: 4 }}>
-          <List>
-            {results.slice(0, 12).map((result) => (
-              <TemplateThumbnail
-                key={result.id}
-                selected={result.id === selected}
-                onClick={() => onTemplateSelect(result.id)}
-              >
-                <ListItemText
-                  primary={result.title}
-                  secondary={result.description}
-                />
-              </TemplateThumbnail>
-            ))}
-          </List>
-        </Box>
-      </Box>
-    )
+    return <Loader />
   }
+
+  return (
+    <Box>
+      <TextField
+        variant="standard"
+        label="Search"
+        fullWidth
+        onChange={debounce(onSearchChange, 400)}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <SearchIcon />
+            </InputAdornment>
+          )
+        }}
+      />
+      <Box sx={{ mt: 4 }}>
+        <List>
+          {results.slice(0, 12).map((result) => (
+            <TemplateThumbnail
+              key={result.id}
+              selected={result.id === selected}
+              onClick={() => onTemplateSelect(result.id)}
+            >
+              <ListItemText
+                primary={result.title}
+                secondary={result.description}
+              />
+            </TemplateThumbnail>
+          ))}
+        </List>
+      </Box>
+    </Box>
+  )
 }
 
 export default TemplateSearch

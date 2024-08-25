@@ -15,8 +15,8 @@ import {
   ESectionGroup,
   ESectionObject,
 } from '@XMLHTTP/types/entity'
-import { ProjectViewDTO } from '@cfPages/Library/ProjectDetail/types'
-import {WorkflowDetailViewDTO} from "@cfPages/Workflow/Workflow/types";
+import { ProjectViewDTO } from '@cfPages/ProjectDetail/types'
+import {WorkflowDetailViewDTO} from "@cfPages/Workspace/Workflow/types";
 
 /*******************************************************
  * Primitives

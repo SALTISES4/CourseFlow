@@ -1,4 +1,4 @@
-// import { CHIP_TYPE, WorkflowCardChipType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
+// import { CHIP_TYPE, WorkflowCardChipType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 // import { ReactNode } from 'react'
 
 // export type ProjectType = {

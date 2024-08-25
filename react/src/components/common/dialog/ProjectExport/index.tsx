@@ -1,5 +1,5 @@
 import { MouseEvent, useState } from 'react'
-import Alert from '@cfCommonComponents/components/Alert'
+import Alert from '@cfCommonComponents/UIComponents/Alert'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import RadioGroup from '@mui/material/RadioGroup'

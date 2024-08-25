@@ -1,5 +1,5 @@
 import * as React from 'react'
-import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
+import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { GridWrap } from '@cfModule/mui/helper'

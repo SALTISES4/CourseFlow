@@ -1,5 +1,5 @@
 import React, { ReactNode  } from 'react'
-import WorkflowClass from '@cfPages/Workflow/Workflow'
+import WorkflowClass from '@cfPages/Workspace/Workflow'
 import { ViewType } from '@cfModule/types/enum'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'

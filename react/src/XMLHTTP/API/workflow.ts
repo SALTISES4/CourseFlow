@@ -13,7 +13,7 @@ import {
   WorkflowContextQueryResp,
   TargetProjectQueryResp,
   WorkflowGroupsDataPackage,
-  ProjectsForCreateQueryResp,
+  ProjectsForCreateQueryResp
 } from '@XMLHTTP/types/query'
 import { CfObjectType, VERB } from '@cfModule/types/enum'
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
@@ -220,17 +220,16 @@ export function getTargetProjectMenuQuery<T>(
  * @param callBackFunction
  */
 export function getProjectsForCreate<T>(
-  callBackFunction = (_data: ProjectsForCreateQueryResp) => console.log('success')
+  callBackFunction = (_data: ProjectsForCreateQueryResp) =>
+    console.log('success')
 ) {
   API_POST(
-    COURSEFLOW_APP.config.post_paths.get_projects_for_create,
-    {
-    }
-  )
-    .then((response:ProjectsForCreateQueryResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
+    COURSEFLOW_APP.globalContextData.path.post_paths.get_projects_for_create,
+    {}
+  ).then((response: ProjectsForCreateQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+  })
 }
 
 /**
@@ -239,18 +238,15 @@ export function getProjectsForCreate<T>(
  */
 export function getTemplates<T>(
   workflowType,
-  callBackFunction = (_data: ProjectsForCreateQueryResp) => console.log('success')
+  callBackFunction = (_data: ProjectsForCreateQueryResp) =>
+    console.log('success')
 ) {
-  API_POST(
-    COURSEFLOW_APP.config.post_paths.get_templates,
-    {
-      workflowType:workflowType
-    }
-  )
-    .then((response:ProjectsForCreateQueryResp)=>{
-      if(response.action == VERB.POSTED)callBackFunction(response)
-      else window.fail_function(response.action)
-    })
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_templates, {
+    workflowType: workflowType
+  }).then((response: ProjectsForCreateQueryResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+  })
 }
 
 function openTargetProjectMenu(response, updateFunction) {

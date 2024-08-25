@@ -57,39 +57,39 @@ from course_flow.views.mixins import UserCanViewMixin
 #         return context
 
 
-class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = Project
-    fields: List[str] = ["title", "description", "published"]
-    template_name = "course_flow/html/react_common_entrypoint.html"
-
-    def get_context_data(self, **kwargs):
-        public_view = False  # moved from template layer
-        is_strategy = False
-
-        context = super(DetailView, self).get_context_data(**kwargs)
-        current_user = self.request.user
-
-        project = self.object
-        user_permission = get_user_permission(project, current_user)
-
-        context_data = {
-            "project_data": ProjectSerializerShallow(
-                project, context={"user": current_user}
-            ).data,
-            "is_strategy": is_strategy,
-            "user_permission": user_permission,
-            "public_view": public_view,
-            "user_name": current_user.username,
-            "user_id": current_user.id if current_user else 0,
-        }
-
-        context["contextData"] = (
-            JSONRenderer().render(context_data).decode("utf-8")
-        )
-        context["path_id"] = "projectComparison"
-        context["title"] = "Project Comparison"
-
-        return context
+# class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
+#     model = Project
+#     fields: List[str] = ["title", "description", "published"]
+#     template_name = "course_flow/html/react_common_entrypoint.html"
+#
+#     def get_context_data(self, **kwargs):
+#         public_view = False  # moved from template layer
+#         is_strategy = False
+#
+#         context = super(DetailView, self).get_context_data(**kwargs)
+#         current_user = self.request.user
+#
+#         project = self.object
+#         user_permission = get_user_permission(project, current_user)
+#
+#         context_data = {
+#             "project_data": ProjectSerializerShallow(
+#                 project, context={"user": current_user}
+#             ).data,
+#             "is_strategy": is_strategy,
+#             "user_permission": user_permission,
+#             "public_view": public_view,
+#             "user_name": current_user.username,
+#             "user_id": current_user.id if current_user else 0,
+#         }
+#
+#         context["contextData"] = (
+#             JSONRenderer().render(context_data).decode("utf-8")
+#         )
+#         context["path_id"] = "projectComparison"
+#         context["title"] = "Project Comparison"
+#
+#         return context
 
 
 # HTTP FRAGMENT REQUEST - TODO: Replaced by the Create Project modal

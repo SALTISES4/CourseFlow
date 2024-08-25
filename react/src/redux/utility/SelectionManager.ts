@@ -1,11 +1,11 @@
 import React from 'react'
 import { EventUnion } from '@cfModule/types/common'
 import * as Constants from '@cfConstants'
-import EditableComponent from '@cfParentComponents/EditableComponent'
+import EditableComponent from '@cfEditableComponents/EditableComponent'
 import {
   EditableComponentProps,
   EditableComponentStateType
-} from '@cfParentComponents/EditableComponent'
+} from '@cfEditableComponents/EditableComponent'
 
 /**
  * Manages the current selection and locks it to prevent

@@ -61,11 +61,11 @@
       "@cfCommonComponents/*": [
         "./components/common/*"
       ],
-      "@cfParentComponents": [
-        "./components/common/extended"
+      "@cfEditableComponents": [
+        "./components/workflowViews/EditableComponents"
       ],
-      "@cfParentComponents/*": [
-        "./components/common/extended/*"
+      "@cfEditableComponents/*": [
+        "./components/workflowViews/EditableComponents/*"
       ],
       "@cfFindState": [
         "./redux/findState.ts"

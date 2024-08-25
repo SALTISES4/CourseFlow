@@ -107,7 +107,11 @@ def html_patterns():
         ),
         path(
             "project/<int:pk>/comparison",
-            views.ProjectComparisonView.as_view(),
+            views.html.library.default_react_view,
+            {
+                "title": "Project Comparison",
+                "path_id": "projectComparison",
+            },
             name="project-comparison",
         ),
         #########################################################

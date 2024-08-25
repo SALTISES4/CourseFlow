@@ -1,5 +1,5 @@
 import * as React from 'react'
-import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
+import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
 import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { setLinkedWorkflow } from '@XMLHTTP/API/update'

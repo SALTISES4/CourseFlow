@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react'
 import { produce } from 'immer'
 import { SelectChangeEvent } from '@mui/material'
-import Alert from '@cfCommonComponents/components/Alert'
+import Alert from '@cfCommonComponents/UIComponents/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'

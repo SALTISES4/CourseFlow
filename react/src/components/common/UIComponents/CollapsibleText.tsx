@@ -2,7 +2,7 @@
 import * as React from 'react'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
-} from '@cfParentComponents/ComponentWithToggleDrop'
+} from '@cfEditableComponents/ComponentWithToggleDrop'
 
 type PropsType = {
   css_class?: string

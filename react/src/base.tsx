@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 import HtmlReactParser from 'html-react-parser'
 
 import { OuterContentWrap } from '@cfModule/mui/helper'
-import Alert from '@cfCommonComponents/components/Alert'
+import Alert from '@cfCommonComponents/UIComponents/Alert'
 import TopBar from '@cfCommonComponents/layout/TopBar'
 import Sidebar from '@cfCommonComponents/layout/Sidebar'
 

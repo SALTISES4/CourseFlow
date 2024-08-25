@@ -51,12 +51,12 @@ import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
 // React dumb components styleguide page
 import Styleguide from '@cfModule/components/pages/Styleguide'
 // @LIBRARY
-import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'
+import ProjectDetail from '@cfModule/components/pages/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
 import Favourites from '@cfModule/components/pages/Library/Favourites'
 import Home from '@cfModule/components/pages/Library/Home'
 import Explore from '@cfModule/components/pages/Library/Explore'
-import Workflow from '@cfModule/components/pages/Workflow/Workflow'
+import Workflow from '@cfModule/components/pages/Workspace/Workflow'
 import Base from '@cfModule/base'
 
 // components
@@ -65,7 +65,7 @@ import { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar/styles'
 // legacy, to remove it
 // see note in mouseCursorLoader.js
 import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
-import WorkflowComparison from '@cfPages/Workflow/WorkflowComparison'
+import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 const tinyLoader = new MouseCursorLoader($('body')[0])
 // @ts-ignore
 COURSEFLOW_APP.tinyLoader = tinyLoader

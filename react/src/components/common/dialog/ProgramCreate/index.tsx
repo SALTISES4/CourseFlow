@@ -18,8 +18,8 @@ import TemplateSearch from '@cfCommonComponents/dialog/CreateWizard/components/T
 import ProjectSearch from '@cfCommonComponents/dialog/CreateWizard/components/ProjectSearch'
 import { CREATE_RESOURCE_TYPE } from '@cfCommonComponents/dialog/CreateWizard/types'
 import { CreateProgramDataType } from './data'
-import { PropsType as ProjectType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
-import { PropsType as TemplateType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
+import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 
 
 type PropsType = CreateProgramDataType & Pick<ProgramFormDataType, 'units'>
