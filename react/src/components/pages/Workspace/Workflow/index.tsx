@@ -298,7 +298,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
 
       this.store = createStore(
         Reducers.rootWorkflowReducer,
-        // @ts-ignore @todo check out data_package type
         response.data_package,
         composeEnhancers()
       )
@@ -318,7 +317,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
     })
   }
 
-  clear_queue(edit_count) {
+  clear_queue(editCount: number) {
     let started_edits = false
     while (this.message_queue.length > 0) {
       const message = this.message_queue[0]
@@ -326,7 +325,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
         this.parseMessage(message)
       } else if (
         message.edit_count &&
-        parseInt(message.edit_count) >= edit_count
+        parseInt(message.edit_count) >= editCount
       ) {
         started_edits = true
         this.message_queue.splice(0, 1)

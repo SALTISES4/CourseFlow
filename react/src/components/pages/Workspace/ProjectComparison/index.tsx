@@ -83,8 +83,6 @@ export class ProjectComparison extends Workflow {
     const id = '1'
 
     getProjectById(id).then((response) => {
-      console.log('getProjectById')
-      console.log(response)
       this.setupNewData(response.data_package)
       this.init()
     })

@@ -77,7 +77,6 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       is_strategy: workflowInstance.is_strategy,
       // show_assignments: workflowInstance.show_assignments,
       column_choices: workflowInstance.column_choices,
-      store: workflowInstance.store,
 
       // functions
       lock_update: workflowInstance.lock_update,
