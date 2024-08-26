@@ -104,7 +104,7 @@ def get_topbar(request: HttpRequest):
         for notification in user.notifications.all()[:7]:
             if notification.content_object.type == "project":
                 url = reverse(
-                    "course_flow:project-update",
+                    "course_flow:project-detail",
                     kwargs={"pk": notification.content_object.pk},
                 )
             else:
