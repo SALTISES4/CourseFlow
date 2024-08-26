@@ -1,6 +1,5 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import * as Constants from '@cfConstants'
 import { AnyAction, configureStore, EmptyObject, Store } from '@reduxjs/toolkit'
 import * as Reducers from '@cfReducers'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
@@ -21,8 +20,6 @@ import {
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { EProject } from '@XMLHTTP/types/entity'
-import { FieldChoice } from '@cfModule/types/common'
 import { DATA_TYPE, WebSocketService } from '@cfModule/HTTP/WebSocketService'
 import legacyWithRouter from '@cfModule/HOC/legacyWithRouter'
 import { RouterProps } from 'react-router'
@@ -30,6 +27,7 @@ import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cfModule/HTTP/WebsocketServiceConnectedUserManager'
 import { PERMISSION_KEYS } from '@cfConstants'
+import { EProject } from '@XMLHTTP/types/entity'
 
 const defaultPermissions: WorkflowPermission = {
   readOnly: false,
@@ -78,46 +76,37 @@ const calcPermissions = (user_permission: number): WorkflowPermission => {
  * the hope is that there unpacking this will be less work when Workflow/Workflow is revised first
  * ****************************************/
 class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
-  private messageQueue: any[]
-  private isMessagesQueued: boolean
-  private outcome_type_choices: FieldChoice[]
-  outcome_sort_choices: FieldChoice[]
-  private user_permission: number
-  private user_role: number
-  private is_teacher: boolean
+  private workflowDetailResp: WorkflowDetailViewDTO
+
   public_view: boolean
-  workflowID: number
-  column_choices: FieldChoice[]
-  context_choices: FieldChoice[]
-  task_choices: FieldChoice[]
-  time_choices: FieldChoice[]
-  strategy_classification_choices: FieldChoice[]
-  is_strategy: boolean
+
+  // is_strategy: boolean
   project: EProject
+  is_strategy: boolean
   user_id: number
   user_name: string
-  read_only: boolean
-  always_static: boolean // refers to whether we are anonymous / public view or not so likely refers to the non pubsub based workflow
   project_permission: number
-  can_view: boolean
-  view_comments: boolean
-  add_comments: boolean
-  is_student: boolean
-  selection_manager: SelectionManager
-  private child_data_completed: number
-  private child_data_needed: any[]
-  private fetching_child_data: boolean
+
+  // def used
+  workflowID: number
+  private messageQueue: any[]
+  private isMessagesQueued: boolean
+  selectionManager: SelectionManager
   store: Store<EmptyObject & AppState, AnyAction>
+  viewType: ViewType
+  protected locks: any
+  private wsService: WebSocketService
+  workflowPermission: WorkflowPermission
 
   wsUserConnectedService: WebSocketServiceConnectedUserManager
 
-  unread_comments: any
-  container: any
-  view_type: ViewType
-  protected locks: any
-  private wsService: WebSocketService
+  // to validate
+  private child_data_completed: number
+  private child_data_needed: any[]
+  private fetching_child_data: boolean
 
-  workflowPermission: WorkflowPermission
+  // to validate removal
+  container: any
 
   constructor(props: PropsType & RouterProps) {
     super(props)
@@ -155,8 +144,10 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     )
 
     // fetch the basic workflow data by id set in URL
+    // @todo i think that we have everything we need in getWorkflowDataQuery
+    // except for 'choices' config lists TBD
     getWorkflowById(String(this.workflowID)).then((response) => {
-      this.setupData(response.data_package)
+      this.workflowDetailResp = response.data_package
 
       // as soon as we have a more stable place to get current user, move this to the beginning of onConnectionOpened
       this.wsUserConnectedService.startUserUpdates({
@@ -171,44 +162,13 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   }
 
   setupData(response: WorkflowDetailViewDTO) {
-    const {
-      column_choices,
-      context_choices,
-      task_choices,
-      time_choices,
-      outcome_type_choices,
-      outcome_sort_choices,
-      strategy_classification_choices,
-      is_strategy,
-      project
-    } = response.workflow_data_package
-
-    this.selection_manager = new SelectionManager(this.read_only)
-
-    // Data package
-    this.column_choices = column_choices
-    this.context_choices = context_choices
-    this.task_choices = task_choices
-    this.time_choices = time_choices
-    this.outcome_type_choices = outcome_type_choices
-    this.outcome_sort_choices = outcome_sort_choices
-    this.strategy_classification_choices = strategy_classification_choices
-
-    this.is_strategy = is_strategy
-    this.project = project
+    this.project = response.workflow_data_package.project
+    this.is_strategy = response.workflow_data_package.is_strategy
 
     this.user_id = response.user_id
     this.user_name = response.user_name
 
-    // permissions
-    this.user_permission = response.user_permission
-    this.read_only = true
-    this.always_static = false
     this.public_view = response.public_view
-
-    if (this.public_view) {
-      this.always_static = true
-    }
 
     if (!this.is_strategy && this.project.object_permission) {
       this.project_permission = this.project.object_permission.permission_type
@@ -239,7 +199,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     // Q: do we have race condition with main parent 'get workflow data'
     // Q: why are these separate, and how can they be better defined?
     getWorkflowDataQuery(this.workflowID, (response) => {
-      this.unread_comments = response.data_package?.unread_comments // @todo do not assign this explicitly here, not seeing this in data package yet
+      // this.unread_comments = response.data_package?.unread_comments // @todo do not assign this explicitly here, not seeing this in data package yet
 
       this.store = configureStore({
         reducer: Reducers.rootWorkflowReducer,
@@ -455,11 +415,11 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   }
 
   // @todo where used?
-  change_field(id, object_type, field, value) {
+  change_field(id, objectType, field, value) {
     const json = {}
     json[field] = value
-    this.store.dispatch(ActionCreator.changeField(id, object_type, json))
-    updateValueQuery(id, object_type, json, true)
+    this.store.dispatch(ActionCreator.changeField(id, objectType, json))
+    updateValueQuery(id, objectType, json, true)
   }
 
   // Called by the selection manager and during drag events to
@@ -486,9 +446,9 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
   // @todo...this is called in this.context.childWorkflowDataNeeded(
   // needs review
-  childWorkflowDataNeeded(node_id) {
-    if (this.child_data_needed.indexOf(node_id) < 0) {
-      this.child_data_needed.push(node_id)
+  childWorkflowDataNeeded(nodeId) {
+    if (this.child_data_needed.indexOf(nodeId) < 0) {
+      this.child_data_needed.push(nodeId)
       if (!this.fetching_child_data) {
         setTimeout(() => this.getDataForChildWorkflow(), 50) // why another timeout here
       }
@@ -512,16 +472,32 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
     return (
       <Provider store={this.store}>
-        <WorkFlowConfigProvider initialValue={this}>
+        <WorkFlowConfigProvider
+          // some of these could have been direct props to WorkflowBaseView
+          // but gor now it makes sense to keep them together and organized
+          initialValue={{
+            workflowDetailResp: this.workflowDetailResp,
+            selectionManager: this.selectionManager,
+            viewType: this.state.viewType,
+            editableMethods: {
+              lock_update: this.lock_update,
+              micro_update: this.micro_update,
+              change_field: this.change_field
+            },
+            ws: {
+              wsConnected: this.state.wsConnected,
+              connectedUsers: this.state.connectedUsers
+            },
+            permissions: {
+              projectPermission: this.project_permission,
+              workflowPermission: this.workflowPermission
+            }
+          }}
+        >
           <WorkflowBaseView
             // viewType={this.state.viewType}
+            // alwaysStatic: this.always_static use 'public view' unless the use case gets better defined
             updateView={this.updateView}
-            config={{
-              isStudent: this.is_student,
-              projectPermission: this.project_permission,
-              workflowPermission: this.workflowPermission,
-              alwaysStatic: this.always_static
-            }}
           />
         </WorkFlowConfigProvider>
       </Provider>

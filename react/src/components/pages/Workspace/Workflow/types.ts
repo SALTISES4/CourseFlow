@@ -13,7 +13,6 @@ export type WorkflowDetailViewDTO = {
   changeFieldID?: number
 }
 
-
 export type WorkflowPermission = {
   readOnly: boolean
   viewComments: boolean

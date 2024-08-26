@@ -13,7 +13,6 @@ import WorkflowView from '@cfViews/Workflow/WorkflowView/WorkflowView'
 import OutcomeEditView from '@cfViews/Workflow/OutcomeEditView/OutcomeEditView'
 import JumpToWeekWorkflow from '@cfViews/Workflow/WorkflowBaseView/JumpToWeekWorkflow'
 import ParentWorkflowIndicator from '@cfViews/Workflow/WorkflowBaseView/ParentWorkflowIndicator'
-import WorkflowTableView from '@cfViews/Workflow/WorkflowBaseView/WorkflowTableView'
 import AlignmentView from '@cfViews/Workflow/AlignmentView/AlignmentView'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
@@ -43,6 +42,8 @@ import ImportModal from '@cfModule/components/common/dialog/Import'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
 import { WorkflowPermission } from '@cfPages/Workspace/Workflow/types'
+import CompetencyMatrixView from '@cfViews/Workflow/CompetencyMatrixView/CompetencyMatrixView'
+import OutcomeTableView from '@cfViews/Workflow/OutcomeTableView/OutcomeTableView'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -115,12 +116,6 @@ const ImportButtons = ({ aClass }: { aClass: string }) => {
 
 type OwnProps = {
   updateView: (viewType: ViewType) => void
-  config: {
-    isStudent: boolean
-    projectPermission: number
-    workflowPermission: WorkflowPermission
-    alwaysStatic: boolean
-  }
 } & EditableComponentProps
 
 type PropsType = DispatchProp & ConnectedProps & OwnProps
@@ -182,9 +177,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       openImportDialog: false
     } as StateType
     this.selection_manager = context.selection_manager
-
-    // this should be a state type, but leave in context for now
-    // this.container = this.context.container
   }
 
   /*******************************************************
@@ -568,9 +560,17 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   WorkflowContent = ({ viewType }: { viewType: ViewType }) => {
     switch (viewType) {
+      case ViewType.ALIGNMENTANALYSIS: {
+        this.allowed_tabs = [3]
+        return <AlignmentView />
+      }
       case ViewType.OUTCOMETABLE: {
         this.allowed_tabs = [3]
-        return <WorkflowTableView data={this.data} />
+        // @ts-ignore figure out table type origin
+        if (this.data.table_type === 1) {
+          return <CompetencyMatrixView />
+        }
+        return <OutcomeTableView />
       }
       case ViewType.OUTCOME_EDIT: {
         if (this.data.type == 'program') {
@@ -580,21 +580,16 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         }
         return <OutcomeEditView />
       }
-      case ViewType.ALIGNMENTANALYSIS: {
-        this.allowed_tabs = [3]
-        return <AlignmentView  />
-      }
 
       case ViewType.GRID: {
         this.allowed_tabs = [3]
-        return <GridView view_type={this.context.viewType} />
+        return <GridView />
       }
       default: {
         this.allowed_tabs = [1, 2, 3, 4]
-        if (this.props.config.workflowPermission.readOnly)
+        if (this.props.config.workflowPermission.readOnly) {
           this.allowed_tabs = [2, 3]
-
-        // return <WorkflowView />
+        }
         return <WorkflowView />
       }
     }
