@@ -130,7 +130,7 @@ def project__create__post(request: HttpRequest) -> JsonResponse:
             {
                 "action": "posted",
                 "redirect": reverse(
-                    "course_flow:project-update", kwargs={"pk": project.pk}
+                    "course_flow:project-detail", kwargs={"pk": project.pk}
                 ),
             }
         )
