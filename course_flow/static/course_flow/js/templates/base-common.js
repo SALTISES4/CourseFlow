@@ -107,37 +107,6 @@ $(window).on("load", () => {
   }
 });
 
-// @todo imports go at top
-// Fix Quilljs's link sanitization
-const QuillLink = Quill.import("formats/link");
-// Override the existing property on the Quill global object and add custom protocols
-QuillLink.PROTOCOL_WHITELIST = ["http", "https"];
-
-class CustomLinkSanitizer extends QuillLink {
-  static sanitize(url) {
-    // Run default sanitize method from Quill
-    const sanitizedUrl = super.sanitize(url);
-
-    // Not whitelisted URL based on protocol so, let's return `blank`
-    if (!sanitizedUrl || sanitizedUrl === "about:blank") return sanitizedUrl;
-
-    // Verify if the URL already have a whitelisted protocol
-    const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(
-      function (protocol) {
-        return sanitizedUrl.startsWith(protocol);
-      },
-    );
-
-    if (hasWhitelistedProtocol) return sanitizedUrl;
-
-    // if not, then append only 'http' to not to be a relative URL
-    return `http://${sanitizedUrl}`;
-  }
-}
-
-// @todo scope issue
-Quill.register(CustomLinkSanitizer, true);
-
 function fail_function(a, b, c, d) {
   if (typeof a === "string") {
     alert(b);

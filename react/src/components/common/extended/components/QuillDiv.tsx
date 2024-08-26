@@ -1,6 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react'
-import ReactQuill from 'react-quill'
+import ReactQuill, {Quill} from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+
+// Fix Quilljs's link sanitization
+const QuillLink = Quill.import("formats/link");
+// Override the existing property on the Quill global object and add custom protocols
+QuillLink.PROTOCOL_WHITELIST = ["http", "https"];
+
+class CustomLinkSanitizer extends QuillLink {
+  static sanitize(url) {
+    // Run default sanitize method from Quill
+    const sanitizedUrl = super.sanitize(url);
+
+    // Not whitelisted URL based on protocol so, let's return `blank`
+    if (!sanitizedUrl || sanitizedUrl === "about:blank") return sanitizedUrl;
+
+    // Verify if the URL already have a whitelisted protocol
+    const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(
+      function (protocol) {
+        return sanitizedUrl.startsWith(protocol);
+      },
+    );
+
+    if (hasWhitelistedProtocol) return sanitizedUrl;
+
+    // if not, then append only 'http' to not to be a relative URL
+    return `https://${sanitizedUrl}`;
+  }
+}
+Quill.register(CustomLinkSanitizer, true);
 
 interface PropsType {
   text: string
