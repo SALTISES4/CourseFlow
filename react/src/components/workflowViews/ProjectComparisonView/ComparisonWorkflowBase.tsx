@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { connect, DispatchProp } from 'react-redux'
-import EditableComponent from '@cfEditableComponents/EditableComponent'
 
 import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
 import OutcomeEdit from './OutcomeEdit'
@@ -8,7 +7,9 @@ import ComparisonWorkflow from './ComparisonWorkflow'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import { AppState } from '@cfRedux/types/type'
-import { EditableComponentStateType } from '@cfEditableComponents/EditableComponent'
+import EditableComponent, {
+  EditableComponentStateType
+} from '@cfEditableComponents/EditableComponent'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
 

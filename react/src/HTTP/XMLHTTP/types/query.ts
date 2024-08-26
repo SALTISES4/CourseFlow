@@ -13,10 +13,10 @@ import {
   EComment,
   EObjectSet,
   ESectionGroup,
-  ESectionObject,
+  ESectionObject
 } from '@XMLHTTP/types/entity'
 import { ProjectViewDTO } from '@cfPages/ProjectDetail/types'
-import {WorkflowDetailViewDTO} from "@cfPages/Workspace/Workflow/types";
+import { WorkflowDetailViewDTO } from '@cfPages/Workspace/Workflow/types'
 
 /*******************************************************
  * Primitives

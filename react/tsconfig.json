@@ -83,7 +83,7 @@
         "./constants.js"
       ],
       "@XMLHTTP/*": [
-        "./XMLHTTP/*"
+        "./HTTP/XMLHTTP/*"
       ],
       "@cfSCSS/*": [
         "./scss/*"

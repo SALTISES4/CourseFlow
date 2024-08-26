@@ -1,5 +1,5 @@
-import {Discipline} from '@cfModule/types/common'
-import {EProject} from '@XMLHTTP/types/entity'
+import { Discipline } from '@cfModule/types/common'
+import { EProject } from '@XMLHTTP/types/entity'
 
 export type ProjectViewDTO = {
   project_data: EProject
@@ -18,7 +18,6 @@ export type ProjectViewDTO = {
     program: string
   }
 }
-
 
 export type ObjectPermission = {
   permission_type: number

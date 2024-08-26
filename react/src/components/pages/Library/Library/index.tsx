@@ -2,7 +2,7 @@ import * as React from 'react'
 import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter/index.jsx'
 import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { Workflow } from '@cfModule/types/common'
-import { LibraryQueryResp } from '@cfModule/XMLHTTP/types/query'
+import { LibraryQueryResp } from '@XMLHTTP/types/query'
 import { getLibraryQuery } from '@XMLHTTP/API/pages'
 
 type PropsType = Record<string, never>
@@ -66,14 +66,19 @@ class LibraryPage extends React.Component<PropsType, StateType> {
           <hr />
           <a
             id="activity-strategy-create"
-            href={COURSEFLOW_APP.globalContextData.path.create_path.activity_strategy}
+            href={
+              COURSEFLOW_APP.globalContextData.path.create_path
+                .activity_strategy
+            }
             className="hover-shade"
           >
             {window.gettext('New activity strategy')}
           </a>
           <a
             id="course-strategy-create"
-            href={COURSEFLOW_APP.globalContextData.path.create_path.course_strategy}
+            href={
+              COURSEFLOW_APP.globalContextData.path.create_path.course_strategy
+            }
             className="hover-shade"
           >
             {window.gettext('New course strategy')}

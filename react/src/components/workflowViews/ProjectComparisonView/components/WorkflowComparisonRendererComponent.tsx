@@ -3,7 +3,7 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
 import { getWorkflowContextQuery } from '@XMLHTTP/API/workflow'
-import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
+import { ProjectComparisonClass } from '@cfPages/Workspace/ProjectComparison'
 import { CfObjectType } from '@cfModule/types/enum'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 
@@ -20,7 +20,7 @@ type OwnProps = {
  * WorkflowBaseView for the comparison
  */
 class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnProps> {
-  private workflowComparison: WorkflowComparison
+  private workflowComparison: ProjectComparisonClass
   constructor(props: OwnProps) {
     super(props)
     this.mainDiv = React.createRef()
@@ -62,7 +62,7 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
       // @todo this will need to be unpacked, type unified with parent and called into parent
       // is there a reason #workflow-inner-wrapper is a real dom element?
       // this needs to be imported directly but that would cause   Circ D.
-      this.workflowComparison = new WorkflowComparison({
+      this.workflowComparison = new ProjectComparisonClass({
         workflowID: this.props.workflowID,
         selectionManager: this.props.selection_manager,
         // container: '#workflow-inner-wrapper',
@@ -73,8 +73,9 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
         dataPackage: context_data.data_package
       })
 
-      this.workflowComparison.silent_connect_fail = true
-      this.workflowComparison.init()
+      // @todo no...
+      // this.workflowComparison.silent_connect_fail = true
+      // this.workflowComparison.init()
 
       loader.endLoad()
     })

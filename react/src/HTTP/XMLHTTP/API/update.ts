@@ -57,12 +57,13 @@ export function updateValueQuery(
   }
 
   document.lastUpdateCallFunction = () => {
-    API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.update_value, post_object).then(
-      (response: EmptyPostResp) => {
-        if (response.action == VERB.POSTED) callBackFunction(response)
-        else window.fail_function(response.action)
-      }
-    )
+    API_POST(
+      COURSEFLOW_APP.globalContextData.path.post_paths.update_value,
+      post_object
+    ).then((response: EmptyPostResp) => {
+      if (response.action == VERB.POSTED) callBackFunction(response)
+      else window.fail_function(response.action)
+    })
   }
   document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
 }
@@ -92,14 +93,15 @@ export function dragAction(
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
 
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at, action_data).then(
-    (response: EmptyPostResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
-      $('.ui-draggable').draggable('enable')
-      COURSEFLOW_APP.tinyLoader.endLoad()
-    }
-  )
+  API_POST(
+    COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at,
+    action_data
+  ).then((response: EmptyPostResp) => {
+    if (response.action == VERB.POSTED) callBackFunction(response)
+    else window.fail_function(response.action)
+    $('.ui-draggable').draggable('enable')
+    COURSEFLOW_APP.tinyLoader.endLoad()
+  })
 }
 
 //Called when an object in a list is reordered
@@ -139,11 +141,14 @@ export function updateOutcomenodeDegree(
   value,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.update_outcomenode_degree, {
-    nodePk: nodeID,
-    outcomePk: outcomeID,
-    degree: value
-  }).then((response: EmptyPostResp) => {
+  API_POST(
+    COURSEFLOW_APP.globalContextData.path.post_paths.update_outcomenode_degree,
+    {
+      nodePk: nodeID,
+      outcomePk: outcomeID,
+      degree: value
+    }
+  ).then((response: EmptyPostResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
     else window.fail_function(response.action)
   })
@@ -156,12 +161,16 @@ export function updateOutcomehorizontallinkDegree(
   degree,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.update_outcomehorizontallink_degree, {
-    outcomePk: outcomePk,
-    objectID: outcome2Pk,
-    objectType: 'outcome',
-    degree: degree
-  }).then((response: EmptyPostResp) => {
+  API_POST(
+    COURSEFLOW_APP.globalContextData.path.post_paths
+      .update_outcomehorizontallink_degree,
+    {
+      outcomePk: outcomePk,
+      objectID: outcome2Pk,
+      objectType: 'outcome',
+      degree: degree
+    }
+  ).then((response: EmptyPostResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
     else window.fail_function(response.action)
   })
@@ -173,10 +182,13 @@ export function setLinkedWorkflow(
   workflow_id,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.set_linked_workflow, {
-    nodePk: node_id,
-    workflowPk: workflow_id
-  }).then((response: EmptyPostResp) => {
+  API_POST(
+    COURSEFLOW_APP.globalContextData.path.post_paths.set_linked_workflow,
+    {
+      nodePk: node_id,
+      workflowPk: workflow_id
+    }
+  ).then((response: EmptyPostResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
     else window.fail_function(response.action)
   })

@@ -53,10 +53,11 @@ class WorkflowCard<
     if (selectAction) {
       selectAction(this.workflow.id)
     } else {
-      window.location.href = COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-        '0',
-        String(this.workflow.id)
-      )
+      window.location.href =
+        COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
+          '0',
+          String(this.workflow.id)
+        )
     }
   }
 

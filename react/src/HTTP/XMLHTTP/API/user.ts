@@ -31,13 +31,15 @@ export function getUserListQuery(
  * NOTIFICATIONS SETTINGS
  *******************************************************/
 export async function fetchNotificationSettings(): Promise<NotificationSettingsQueryResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.json_api.user.notification_settings
+  const url =
+    COURSEFLOW_APP.globalContextData.path.json_api.user.notification_settings
   return API_GET<NotificationSettingsQueryResp>(url)
 }
 
 export async function updateNotificationSettings(data: any) {
   return API_POST(
-    COURSEFLOW_APP.globalContextData.path.json_api.user.notification_settings__update,
+    COURSEFLOW_APP.globalContextData.path.json_api.user
+      .notification_settings__update,
     data
   )
 }
@@ -46,7 +48,8 @@ export async function updateNotificationSettings(data: any) {
  * PROFILE SETTINGS
  *******************************************************/
 export async function fetchProfileSettings(): Promise<ProfileSettingsQueryResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.json_api.user.profile_settings
+  const url =
+    COURSEFLOW_APP.globalContextData.path.json_api.user.profile_settings
   return API_GET<ProfileSettingsQueryResp>(url)
 }
 

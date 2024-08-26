@@ -41,7 +41,8 @@ const Home = () => {
                   title: window.gettext('Recent classrooms'),
                   seeAll: {
                     text: 'View all classrooms',
-                    href: COURSEFLOW_APP.globalContextData.path.my_liveprojects_path
+                    href: COURSEFLOW_APP.globalContextData.path
+                      .my_liveprojects_path
                   }
                 }
           }

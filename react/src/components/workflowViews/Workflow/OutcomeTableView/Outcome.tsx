@@ -64,7 +64,9 @@ class TableCell extends React.Component<TableCellPropsType> {
   Contents = ({ completionStatus, selfCompletion }) => {
     if (completionStatus === 0) {
       return (
-        <img src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}nocheck.svg`} />
+        <img
+          src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}nocheck.svg`}
+        />
       )
     } else if (!completionStatus) {
       return ''
@@ -253,7 +255,9 @@ export class OutcomeUnconnected<
               <div className="outcome-drop-img">
                 <img
                   src={
-                    COURSEFLOW_APP.globalContextData.path.static_assets.icon + dropIcon + '.svg'
+                    COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+                    dropIcon +
+                    '.svg'
                   }
                 />
               </div>

@@ -34,18 +34,27 @@ export function duplicateBaseItemQuery(
   const projectPkString = projectID
 
   if (objectType === OBJECT_TYPE.PROJECT) {
-    sendPostRequest(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_project_ajax, {
-      projectPk: itemPkString
-    })
+    sendPostRequest(
+      COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_project_ajax,
+      {
+        projectPk: itemPkString
+      }
+    )
   } else if (objectType === OBJECT_TYPE.STRATEGY) {
-    sendPostRequest(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_strategy_ajax, {
-      workflowPk: itemPkString
-    })
+    sendPostRequest(
+      COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_strategy_ajax,
+      {
+        workflowPk: itemPkString
+      }
+    )
   } else {
-    sendPostRequest(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_workflow_ajax, {
-      workflowPk: itemPkString,
-      projectPk: projectPkString
-    })
+    sendPostRequest(
+      COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_workflow_ajax,
+      {
+        workflowPk: itemPkString,
+        projectPk: projectPkString
+      }
+    )
   }
 }
 

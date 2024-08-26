@@ -4,9 +4,7 @@ import StarOutlineIcon from '@mui/icons-material/StarOutline'
 
 import { WorkflowType } from '@cfModule/types/enum'
 import * as Utility from '@cfUtility'
-import {
-  ESectionObject,
-} from '@XMLHTTP/types/entity'
+import { ESectionObject } from '@XMLHTTP/types/entity'
 
 import {
   CardWrap,
@@ -48,7 +46,6 @@ export type PropsType = {
   chips: (WorkflowCardChipType | ReactNode)[]
 }
 
-
 const getTypeChip = (workflow): WorkflowCardChipType => {
   const { type, is_strategy } = workflow
   let typeText = window.gettext(type)
@@ -61,8 +58,7 @@ const getTypeChip = (workflow): WorkflowCardChipType => {
     typeText += ` ${window.gettext('strategy')}`
   }
 
-  const chipType =
-    type === WorkflowType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
+  const chipType = type === WorkflowType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
 
   return {
     type: chipType as CHIP_TYPE,
@@ -72,15 +68,15 @@ const getTypeChip = (workflow): WorkflowCardChipType => {
 
 const getTemplateChip = (workflow): WorkflowCardChipType => {
   const is_template = workflow.is_template
-  if(is_template)return {
-    type:CHIP_TYPE.TEMPLATE,
-    label: window.gettext("Template")
-  }
+  if (is_template)
+    return {
+      type: CHIP_TYPE.TEMPLATE,
+      label: window.gettext('Template')
+    }
   return null
 }
 
 const getWorkflowCountChip = (workflow): WorkflowCardChipType => {
-
   if (
     workflow.type === WorkflowType.PROJECT &&
     workflow.workflow_count !== null &&
@@ -96,18 +92,23 @@ const getWorkflowCountChip = (workflow): WorkflowCardChipType => {
   return null
 }
 
-
-export function PrepareBackendDataForWorkflowCardDumb(workflow:ESectionObject):PropsType {
-  let type_chip = getTypeChip(workflow)
-  let template_chip = getTemplateChip(workflow)
-  let count_chip = getWorkflowCountChip(workflow)
-  console.log("workflow",{
+export function PrepareBackendDataForWorkflowCardDumb(
+  workflow: ESectionObject
+): PropsType {
+  const type_chip = getTypeChip(workflow)
+  const template_chip = getTemplateChip(workflow)
+  const count_chip = getWorkflowCountChip(workflow)
+  console.log('workflow', {
     ...workflow,
-    chips:[type_chip,template_chip,count_chip].filter(entry=>entry!=null)
+    chips: [type_chip, template_chip, count_chip].filter(
+      (entry) => entry != null
+    )
   })
   return {
     ...workflow,
-    chips:[type_chip,template_chip,count_chip].filter(entry=>entry!=null)
+    chips: [type_chip, template_chip, count_chip].filter(
+      (entry) => entry != null
+    )
   }
 }
 

@@ -276,7 +276,11 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
             <div className="node-drop-side node-drop-left" />
             <div className="node-drop-middle">
               <img
-                src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + dropIcon + '.svg'}
+                src={
+                  COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+                  dropIcon +
+                  '.svg'
+                }
               />
             </div>
             <div className="node-drop-side node-drop-right" />

@@ -1,4 +1,4 @@
-import { TOutcomeOutcome } from '@cfRedux/types/type'
+import { TObjectSet, TOutcomeOutcome, TStrategy } from '@cfRedux/types/type'
 import {
   EColumn,
   EColumnworkflow,
@@ -12,7 +12,10 @@ import {
   EWeek,
   EWeekworkflow,
   EWorkflow,
-  EProject
+  EProject,
+  EObjectSet,
+  EStrategy,
+  EOutcomeOutcome
 } from '@XMLHTTP/types/entity'
 import { FieldChoice } from '@cfModule/types/common'
 
@@ -26,18 +29,18 @@ export type WorkflowDataPackage = {
   column: EColumn[]
   weekworkflow: EWeekworkflow[]
   week: EWeek[]
-  nodeweek: ENodeweek[]
-  nodelink: ENodelink[]
   node: ENode[]
-  outcomeworkflow: EOutcomeWorkflow[]
+  nodelink: ENodelink[]
+  nodeweek: ENodeweek[]
   outcome: EOutcome[]
   outcomenode: EOutcomenode[]
-  saltise_strategy: EWorkflow[]
-  outcomeoutcome: TOutcomeOutcome[]
-  // @todo still missing types
-  objectset: any[]
-  strategy: any[]
+  outcomeworkflow: EOutcomeWorkflow[]
+  outcomeoutcome: EOutcomeOutcome[]
+  objectset: EObjectSet[]
+  strategy: EStrategy[]
+  //
   unread_comments: any[]
+  saltise_strategy: EWorkflow[]
 }
 
 export type WorkflowParentDataPackage = {

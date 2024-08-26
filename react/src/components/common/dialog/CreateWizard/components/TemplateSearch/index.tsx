@@ -12,7 +12,7 @@ import { PrepareBackendDataForWorkflowCardDumb } from '@cfCommonComponents/cards
 import { TemplateThumbnail } from './styles'
 import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { getTemplates } from '@XMLHTTP/API/workflow'
-import Loader from "@cfCommonComponents/UIComponents/Loader";
+import Loader from '@cfCommonComponents/UIComponents/Loader'
 
 type PropsType = {
   selected?: number

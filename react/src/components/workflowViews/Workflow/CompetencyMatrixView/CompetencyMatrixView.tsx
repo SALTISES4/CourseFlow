@@ -8,8 +8,8 @@ import MatrixWeek from './MatrixWeek'
 import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
-import NodeOutcomeView from "@cfViews/components/Node/NodeOutcomeView";
-import OutcomeLegend from "@cfViews/Workflow/OutcomeTableView/OutcomeLegend";
+import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
+import OutcomeLegend from '@cfViews/Workflow/OutcomeTableView/OutcomeLegend'
 
 const GrandTotals = ({ totals }) => {
   return (

@@ -37,10 +37,13 @@ export function getUsersForObjectQuery(
 ) {
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
     objectType = 'workflow'
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object, {
-    objectID: objectID,
-    objectType: objectType
-  }).then((response: UsersForObjectQueryResp) => {
+  API_POST(
+    COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
+    {
+      objectID: objectID,
+      objectType: objectType
+    }
+  ).then((response: UsersForObjectQueryResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
     else window.fail_function(response.action)
   })

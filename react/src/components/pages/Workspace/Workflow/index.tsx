@@ -26,6 +26,12 @@ import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { EProject } from '@XMLHTTP/types/entity'
 import { FieldChoice } from '@cfModule/types/common'
+import { WebSocketService } from '@cfModule/HTTP/WebSocketService'
+import legacyWithRouter from '@cfModule/HOC/legacyWithRouter'
+import { RouterProps } from 'react-router'
+import WebSocketServiceConnectedUserManager, {
+  ConnectedUser
+} from '@cfModule/HTTP/WebsocketServiceConnectedUserManager'
 
 enum DATA_TYPE {
   WORKFLOW_ACTION = 'workflow_action',
@@ -36,14 +42,14 @@ enum DATA_TYPE {
 }
 
 type StateProps = {
+  connectedUsers: ConnectedUser[]
+  wsConnected: boolean
   ready: boolean
   viewType: ViewType
 }
 type PropsType = Record<string, never>
 
-// @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
-const websocket_prefix = window.location.protocol === 'https:' ? 'wss' : 'ws'
 
 /****************************************
  * this is a copy of the original Workflow/Workflow
@@ -51,9 +57,9 @@ const websocket_prefix = window.location.protocol === 'https:' ? 'wss' : 'ws'
  * which extends the original Workflow/Workflow....
  * the hope is that there unpacking this will be less work when Workflow/Workflow is revised first
  * ****************************************/
-class Workflow extends React.Component<PropsType, StateProps> {
-  private message_queue: any[]
-  private messages_queued: boolean
+class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
+  private messageQueue: any[]
+  private isMessagesQueued: boolean
   private outcome_type_choices: FieldChoice[]
   outcome_sort_choices: FieldChoice[]
   private user_permission: number
@@ -78,7 +84,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
   add_comments: boolean
   is_student: boolean
   selection_manager: SelectionManager
-  connection_update_receiver: null | ((data: any) => void)
   private child_data_completed: number
   private child_data_needed: any[]
   private fetching_child_data: boolean
@@ -86,31 +91,59 @@ class Workflow extends React.Component<PropsType, StateProps> {
   private has_disconnected: boolean
   private has_rendered: boolean
   store: Store<EmptyObject & AppState, AnyAction>
+  wsManager: WebSocketServiceConnectedUserManager
 
   unread_comments: any
   container: any
   view_type: ViewType
   protected locks: any
-  silent_connect_fail: any
-  is_static: boolean
+  private websocketService: WebSocketService
 
-  constructor(props) {
+  constructor(props: PropsType & RouterProps) {
     super(props)
 
     this.state = {
+      wsConnected: false,
+      connectedUsers: [],
       ready: false,
       viewType: ViewType.WORKFLOW
     }
+
+    this.isMessagesQueued = true // why would this be true right away?
+    this.messageQueue = []
     this.updateView = this.updateView.bind(this)
-    this.workflowID = 18
   }
 
   componentDidMount() {
-    const id = '18'
-    getWorkflowById(id).then((response) => {
+    const { id } = this.props.params
+    this.workflowID = id
+
+    // Begin websocket connection manager
+    const url = `ws/update/${this.workflowID}/`
+    this.websocketService = new WebSocketService(url)
+
+    this.websocketService.connect(
+      this.onMessageReceived.bind(this),
+      this.onConnectionOpened.bind(this),
+      this.handleSocketClose.bind(this)
+    )
+
+    // Begin connected user manager
+    this.wsManager = new WebSocketServiceConnectedUserManager(
+      this.props.websocket,
+      this.handleConnectedUsersUpdate.bind(this)
+    )
+    this.wsManager.startUserUpdates()
+
+    // fetch the basic workflow data by id set in URL
+    getWorkflowById(String(this.workflowID)).then((response) => {
       this.setupData(response.data_package)
-      this.init()
+      // this.init()
     })
+  }
+
+  componentWillUnmount() {
+    this.websocketService.disconnect()
   }
 
   setupData(response: WorkflowDetailViewDTO) {
@@ -127,12 +160,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
     } = response.workflow_data_package
 
     this.selection_manager = new SelectionManager(this.read_only)
-
-    this.message_queue = []
-    this.messages_queued = true
-    this.connection_update_receiver = null
-
-    this.workflowID = response.workflow_model_id
 
     // Data package
     this.column_choices = column_choices
@@ -185,14 +212,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
     }
   }
 
-  init() {
-    if (!this.always_static) {
-      this.connect()
-    } else {
-      this.onConnectionOpened()
-    }
-  }
-
   updateView(viewType: ViewType) {
     this.setState({
       ...this.state,
@@ -201,100 +220,15 @@ class Workflow extends React.Component<PropsType, StateProps> {
   }
 
   /*******************************************************
-   * WEBSOCKET MANAGER
+   * WEBSOCKET HANDLERS
    *******************************************************/
-  connect() {
-    const url = `${websocket_prefix}://${window.location.host}/ws/update/${this.workflowID}/`
-    this.websocket = new WebSocket(url)
-
-    this.websocket.onmessage = (e) => {
-      if (this.messages_queued) {
-        this.message_queue.push(e)
-      } else {
-        this.onMessageReceived(e)
-      }
-    }
-
-    this.websocket.onopen = () => {
-      this.has_rendered = true
-      this.onConnectionOpened()
-    }
-
-    // @todo why?
-    if (this.websocket.readyState === 1) {
-      this.onConnectionOpened()
-    }
-
-    this.websocket.onclose = (e) => this.handleSocketClose(e)
-  }
-
-  handleSocketClose(e: CloseEvent) {
-    if (e.code === 1000) return
-
-    if (!this.has_rendered) {
-      this.onConnectionOpened(true)
-    } else {
-      this.attemptReconnect()
-    }
-
-    this.is_static = true
-    this.has_disconnected = true
-    this.has_rendered = true
-
-    if (!this.silent_connect_fail && !this.has_disconnected) {
-      alert(
-        window.gettext(
-          'Unable to establish connection to the server, or connection has been lost.'
-        )
-      )
-    }
-  }
-
-  attemptReconnect() {
-    setTimeout(() => this.init(), 30000)
-  }
-
-  onMessageReceived(e: MessageEvent) {
-    this.parseMessage(e)
-  }
-
-  /*******************************************************
-   * // WEBSOCKET MANAGER
-   *******************************************************/
-
-  // Fetches the data for the given child workflow
-  getDataForChildWorkflow() {
-    if (this.child_data_completed === this.child_data_needed.length - 1) {
-      this.fetching_child_data = false
-      return
-    }
-
-    this.fetching_child_data = true
-    this.child_data_completed++
-    getWorkflowChildDataQuery(
-      this.child_data_needed[this.child_data_completed],
-      (response) => {
-        this.store.dispatch(
-          ActionCreator.refreshStoreData(response.data_package)
-        )
-        setTimeout(() => this.getDataForChildWorkflow(), 50)
-      }
-    )
-  }
-
-  // Lets the renderer know that it must load the child data for that workflow
-  childWorkflowDataNeeded(node_id) {
-    if (this.child_data_needed.indexOf(node_id) < 0) {
-      this.child_data_needed.push(node_id)
-      if (!this.fetching_child_data) {
-        setTimeout(() => this.getDataForChildWorkflow(), 50)
-      }
-    }
-  }
-
   onConnectionOpened(reconnect = false) {
+    // as soon as the socket connection is opened, fetch the 'additional workflow data query'
+    // put it in redux store, and indicate that we're ready to render / done loading
+    // Q: do we have race condition with main parent 'get workflow data'
+    // Q: why are these separate, and how can they be better defined?
     getWorkflowDataQuery(this.workflowID, (response) => {
-      this.unread_comments = response.data_package?.unread_comments // @todo explicit typing
+      this.unread_comments = response.data_package?.unread_comments // @todo do not assign this explicitly here, not seeing this in data package yet
 
       this.store = createStore(
         Reducers.rootWorkflowReducer,
@@ -304,66 +238,95 @@ class Workflow extends React.Component<PropsType, StateProps> {
 
       this.setState({
         ...this.state,
+        wsConnected: true,
         ready: true
       })
 
-      // @ts-ignore
-      this.clear_queue(response.data_package?.workflow.edit_count) // @todo why would there be a queue if we're not using pubsub?
-
-      if (reconnect) {
-        // @ts-ignore
-        this.attempt_reconnect() // @todo why would we try to reconnect if we're not using pubsub?
-      }
+      // how is the local queue actually based on this???
+      // this cannot be working robustly
+      // leave it for re-implementation; not worth trying to sort out now
+      this.clearQueue(response.data_package?.workflow.edit_count)
     })
   }
 
-  clear_queue(editCount: number) {
-    let started_edits = false
-    while (this.message_queue.length > 0) {
-      const message = this.message_queue[0]
-      if (started_edits) {
-        this.parseMessage(message)
-      } else if (
-        message.edit_count &&
-        parseInt(message.edit_count) >= editCount
-      ) {
-        started_edits = true
-        this.message_queue.splice(0, 1)
+  handleSocketClose(event: CloseEvent) {
+    this.has_disconnected = true
+    this.has_rendered = true // not sure what this is yet, it's being used in commentbox, likely it needs to go
+    console.log('socket disconnected')
+  }
+
+  onMessageReceived(e: MessageEvent) {
+    // don't feel like this queue system is going to withstand corruption, but leave for now
+    if (this.isMessagesQueued) {
+      this.messageQueue.push(e)
+    } else {
+      this.pareAndRouteMessage(e)
+    }
+  }
+
+  clearQueue(editCount = 0) {
+    let startedEdits = false
+
+    while (this.messageQueue.length > 0) {
+      const message = this.messageQueue.shift() // Directly remove the first message from the queue
+
+      // Check if we should start processing messages based on edit_count
+      if (!startedEdits) {
+        if (message.edit_count && parseInt(message.edit_count) >= editCount) {
+          startedEdits = true // Start processing subsequent messages after this point
+        }
+      }
+
+      if (startedEdits) {
+        this.pareAndRouteMessage(message) // Process the message if conditions are met
       }
     }
 
-    this.messages_queued = false
+    this.isMessagesQueued = false // All messages processed, set queue status to false
+  }
+
+  handleConnectedUsersUpdate(connectedUsers: ConnectedUser[]) {
+    this.setState({ connectedUsers })
   }
 
   /*******************************************************
-   * THESE ARE UPDATES FROM PUB MESSAGE
+   * // WEBSOCKET MANAGER
    *******************************************************/
-  parseMessage(e) {
+
+  /*******************************************************
+   * WEBSOCKET MESSAGE HANDLERS
+   *******************************************************/
+  pareAndRouteMessage(e: MessageEvent) {
     const data = JSON.parse(e.data)
 
     switch (data.type) {
       case DATA_TYPE.WORKFLOW_ACTION:
-        this.store.dispatch(data.action)
+        this.onWorkflowUpdated(data.action)
         break
       case DATA_TYPE.LOCK_UPDATE:
-        this.lockUpdateReceived(data.action)
+        this.onLockUpdateReceived(data.action)
         break
       case DATA_TYPE.CONNECTION_UPDATE:
-        this.connection_update_received(data.action)
+        this.onUserConnectionUpdateReceived(data.action)
         break
       case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
         // this.parent_workflow_updated(data.edit_count) // @todo function takes no args
-        this.parent_workflow_updated()
+        this.onParentWorkflowUpdated()
         break
       case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
-        this.child_workflow_updated(data.edit_count, data.child_workflow_id)
+        this.onChildWorkflowUpdated(data.edit_count, data.child_workflow_id)
         break
       default:
+        console.log('socket message not handled')
         break
     }
   }
 
-  lockUpdateReceived(data) {
+  onWorkflowUpdated(data) {
+    this.store.dispatch(data.action)
+  }
+
+  onLockUpdateReceived(data) {
     const object_type = data.object_type
     const object_id = data.object_id
 
@@ -385,6 +348,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
       )
     )
 
+    // ...should not need this
     if (data.lock) {
       this.locks[object_type][object_id] = setTimeout(() => {
         this.store.dispatch(
@@ -396,22 +360,20 @@ class Workflow extends React.Component<PropsType, StateProps> {
     }
   }
 
-  // @todo this is weird becuase connection_update_received is called in
-  // connectedUsers but expects data to be well defined
-  connection_update_received(data) {
-    if (this.connection_update_receiver) {
-      this.connection_update_receiver(data)
-    } else {
-      console.log('A connection update was received, but not handled.')
+  onUserConnectionUpdateReceived(data) {}
+
+  // @todo...this is weird...
+  childWorkflowDataNeeded(node_id) {
+    if (this.child_data_needed.indexOf(node_id) < 0) {
+      this.child_data_needed.push(node_id)
+      if (!this.fetching_child_data) {
+        setTimeout(() => this.getDataForChildWorkflow(), 50) // why another timeout here
+      }
     }
   }
 
-  connect_user_bar(connection_update_receiver) {
-    this.connection_update_receiver = connection_update_receiver
-  }
-
-  parent_workflow_updated() {
-    this.messages_queued = true
+  onParentWorkflowUpdated() {
+    this.isMessagesQueued = true
     getWorkflowParentDataQuery(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data
       this.store.dispatch(
@@ -421,12 +383,12 @@ class Workflow extends React.Component<PropsType, StateProps> {
         })
       )
       this.store.dispatch(ActionCreator.refreshStoreData(response.data_package))
-      this.clear_queue(0)
+      this.clearQueue(0)
     })
   }
 
-  child_workflow_updated(edit_count, child_workflow_id) {
-    this.messages_queued = true
+  onChildWorkflowUpdated(edit_count, child_workflow_id) {
+    this.isMessagesQueued = true
     const state = this.store.getState()
     const node = state.node.find(
       (node) => node.linked_workflow == child_workflow_id
@@ -438,7 +400,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
 
     getWorkflowChildDataQuery(node.id, (response) => {
       this.store.dispatch(ActionCreator.refreshStoreData(response.data_package))
-      this.clear_queue(0)
+      this.clearQueue()
     })
   }
 
@@ -446,6 +408,32 @@ class Workflow extends React.Component<PropsType, StateProps> {
    * END PARSE MESSAGE LOGIC
    *******************************************************/
 
+  // Fetches the data for the given child workflow
+  getDataForChildWorkflow() {
+    if (this.child_data_completed === this.child_data_needed.length - 1) {
+      this.fetching_child_data = false
+      return
+    }
+
+    this.fetching_child_data = true
+    this.child_data_completed++
+    getWorkflowChildDataQuery(
+      this.child_data_needed[this.child_data_completed],
+      (response) => {
+        this.store.dispatch(
+          ActionCreator.refreshStoreData(response.data_package)
+        )
+        setTimeout(() => this.getDataForChildWorkflow(), 50) // why another timeout here
+      }
+    )
+  }
+
+  /*******************************************************
+   * Probably each of these belongs somewhere in the editable components
+   *
+   *  ex see  selection  manager private lockCurrentSelection(): void {
+   *  unclear what the responsibility of the selection manager is yet
+   *******************************************************/
   // @todo how used?
   micro_update(obj) {
     if (this.websocket) {
@@ -466,9 +454,10 @@ class Workflow extends React.Component<PropsType, StateProps> {
     updateValueQuery(id, object_type, json, true)
   }
 
-  //Called by the selection manager and during drag events to
-  //lock an object, indicating it should not be selectable
-  //by any other users
+  // Called by the selection manager and during drag events to
+  // lock an object, indicating it should not be selectable
+  // by any other users
+  // this should not live here, it go in the draggable class
   lock_update(obj, time, lock) {
     if (this.websocket) {
       this.websocket.send(
@@ -488,7 +477,7 @@ class Workflow extends React.Component<PropsType, StateProps> {
   }
 
   /*******************************************************
-   * REACT TO MOVE
+   * RENDER
    *******************************************************/
   render() {
     this.locks = {}
@@ -514,7 +503,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
               projectPermission: this.project_permission,
               alwaysStatic: this.always_static
             }}
-            websocket={this.websocket}
           />
         </WorkFlowConfigProvider>
       </Provider>
@@ -522,4 +510,6 @@ class Workflow extends React.Component<PropsType, StateProps> {
   }
 }
 
-export default Workflow
+export { Workflow as WorkflowClass } // this is only in here to support the config context, which is itself a stop gap
+
+export default legacyWithRouter(Workflow) // only using HOC until we convert to FC

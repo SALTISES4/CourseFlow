@@ -12,6 +12,7 @@ declare global {
     fail_function: (action?: string) => void
     getCsrfToken: () => string
     cf_nonce: string
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: any
   }
   interface Document {
     lastUpdateCall: {

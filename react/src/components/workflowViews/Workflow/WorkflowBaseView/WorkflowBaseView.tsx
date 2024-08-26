@@ -41,10 +41,7 @@ import { DialogContextProvider } from '@cfModule/components/common/dialog/contex
 import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget'
 import ImportModal from '@cfModule/components/common/dialog/Import'
 import ActionCreator from '@cfRedux/ActionCreator'
-import {
-  getPublicWorkflowParentDataQuery,
-  getWorkflowParentDataQuery
-} from '@XMLHTTP/API/workflow'
+import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -124,7 +121,6 @@ type OwnProps = {
     projectPermission: number
     alwaysStatic: boolean
   }
-  websocket: WebSocket
 } & EditableComponentProps
 
 type PropsType = DispatchProp & ConnectedProps & OwnProps
@@ -182,7 +178,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     // used in parentworkflowindicator
 
     // used in connectionBar, but websocket status shouldn't go in the same context
-    this.websocket = this.props.websocket
 
     // @todo important: change this to state update control
     // issues with loss of scope of this if assigned to local method in this
@@ -748,9 +743,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <ConnectionBar
           user_id={this.context.user_id}
           user_name={this.context.user_name}
-          websocket={this.websocket}
-          // connection_update_receive={this.context.connection_update_received}
-          context={this.context}
         />
       )
     }
@@ -772,7 +764,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         title={window.gettext('Sharing')}
         onClick={this.openShareDialog.bind(this)}
       >
-        <span className="material-symbols-rounded filled">person_add</span>
+        <span className="material-symbols-rounded filled"></span>
       </div>
     )
   }

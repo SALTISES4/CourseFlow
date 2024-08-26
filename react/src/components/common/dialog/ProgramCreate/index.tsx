@@ -21,7 +21,6 @@ import { CreateProgramDataType } from './data'
 import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 
-
 type PropsType = CreateProgramDataType & Pick<ProgramFormDataType, 'units'>
 
 type StateType = {
@@ -45,14 +44,11 @@ const initialState: StateType = {
   }
 }
 
-const CreateProgramDialog = ({
-  steps,
-  units
-}: PropsType) => {
+const CreateProgramDialog = ({ steps, units }: PropsType) => {
   const [state, setState] = useState<StateType>(initialState)
   const { show, onClose } = useDialog(DIALOG_TYPE.PROGRAM_CREATE)
-  const [projects,setProjectData] = useState<ProjectType[]>(null)
-  const [templates,setTemplateData] = useState<TemplateType[]>(null)
+  const [projects, setProjectData] = useState<ProjectType[]>(null)
+  const [templates, setTemplateData] = useState<TemplateType[]>(null)
 
   // dynamic dialog title for each step
   const dialogTitle = [
@@ -196,7 +192,7 @@ const CreateProgramDialog = ({
               setTemplateData={setTemplateData}
               templates={templates}
               onTemplateSelect={onTemplateSelect}
-              template_type={"course"}
+              template_type={'course'}
             />
           )}
         </StyledForm>

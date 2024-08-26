@@ -9,7 +9,8 @@ export function deleteSelfQuery(
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   let path
-  if (soft) path = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self_soft
+  if (soft)
+    path = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self_soft
   else path = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self
 
   API_POST(path, {

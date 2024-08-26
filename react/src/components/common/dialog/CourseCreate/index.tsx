@@ -21,7 +21,6 @@ import { CREATE_RESOURCE_TYPE } from '@cfCommonComponents/dialog/CreateWizard/ty
 import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 
-
 type PropsType = CreateCourseDataType & Pick<CourseFormDataType, 'units'>
 
 type StateType = {
@@ -53,14 +52,11 @@ const initialState: StateType = {
   }
 }
 
-const CreateCourseDialog = ({
-  steps,
-  units
-}: PropsType) => {
+const CreateCourseDialog = ({ steps, units }: PropsType) => {
   const [state, setState] = useState<StateType>(initialState)
   const { show, onClose } = useDialog(DIALOG_TYPE.COURSE_CREATE)
-  const [projects,setProjectData] = useState<ProjectType[]>(null)
-  const [templates,setTemplateData] = useState<TemplateType[]>(null)
+  const [projects, setProjectData] = useState<ProjectType[]>(null)
+  const [templates, setTemplateData] = useState<TemplateType[]>(null)
 
   // dynamic dialog title for each step
   const dialogTitle = [
@@ -217,7 +213,7 @@ const CreateCourseDialog = ({
               setTemplateData={setTemplateData}
               templates={templates}
               onTemplateSelect={onTemplateSelect}
-              template_type={"course"}
+              template_type={'course'}
             />
           )}
         </StyledForm>

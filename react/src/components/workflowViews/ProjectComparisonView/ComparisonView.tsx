@@ -15,10 +15,9 @@ import {
   GetWorkflowSelectMenuResp,
   GetWorkflowSelectQueryResp
 } from '@XMLHTTP/types/query'
-import { EProject } from '@cfModule/XMLHTTP/types/entity'
+import { EProject } from '@XMLHTTP/types/entity'
 import { ObjectSet } from '@cfModule/types/common'
-import WorkflowComparisonRendererComponent
-  from "@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent";
+import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
 // import $ from 'jquery'
 
 /**

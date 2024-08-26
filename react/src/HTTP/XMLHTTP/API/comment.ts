@@ -10,10 +10,13 @@ export function getCommentsForObjectQuery(
   callBackFunction = (_data: CommentsForObjectQueryResp) =>
     console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.list_by_object, {
-    objectID: objectID,
-    objectType: objectType
-  }).then((response: CommentsForObjectQueryResp) => {
+  API_POST(
+    COURSEFLOW_APP.globalContextData.path.json_api.comment.list_by_object,
+    {
+      objectID: objectID,
+      objectType: objectType
+    }
+  ).then((response: CommentsForObjectQueryResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
     else window.fail_function(response.action)
   })

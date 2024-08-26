@@ -4,12 +4,13 @@ import * as Reducers from '@cfReducers'
 import { Provider } from 'react-redux'
 import ComparisonWorkflowBase from '@cfViews/ProjectComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
-import Workflow from '@cfPages/Workspace/Workflow'
+import Workflow, { WorkflowClass } from '@cfPages/Workspace/Workflow'
 import { ViewType } from '@cfModule/types/enum.js'
 import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
 import { getWorkflowDataQuery } from '@XMLHTTP/API/workflow'
 import * as Constants from '@cfModule/constants'
 import { getProjectById } from '@XMLHTTP/API/project'
+import legacyWithRouter from '@cfModule/HOC/legacyWithRouter'
 
 // @ts-ignore
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
@@ -52,7 +53,7 @@ const getProjectPermissions = (userPermission) => {
  *  @WorkflowComparisonRenderer
  *  @todo this is possibly where the channel leak is
  * ****************************************/
-export class ProjectComparison extends Workflow {
+export class ProjectComparison extends WorkflowClass {
   private initial_object_sets: any
   private projectData: any
   private userPermission: any
@@ -84,7 +85,7 @@ export class ProjectComparison extends Workflow {
 
     getProjectById(id).then((response) => {
       this.setupNewData(response.data_package)
-      this.init()
+      // this.init()
     })
   }
 
@@ -97,6 +98,7 @@ export class ProjectComparison extends Workflow {
   }
 
   onConnectionOpened(reconnect = false) {
+    // this makes no sense....
     getWorkflowDataQuery(this.workflowID, (response) => {
       let data_flat = response.data_package
       if (this.initial_object_sets) {
@@ -108,8 +110,7 @@ export class ProjectComparison extends Workflow {
 
       this.store = createStore(
         Reducers.rootWorkflowReducer,
-        // @ts-ignore
-        data_flat,
+        {},
         composeEnhancers()
       )
 
@@ -118,7 +119,7 @@ export class ProjectComparison extends Workflow {
         ready: true
       })
 
-      this.clear_queue(data_flat.workflow.edit_count)
+      this.clearQueue(data_flat.workflow.edit_count)
 
       if (reconnect) {
         // @ts-ignore
@@ -159,4 +160,5 @@ export class ProjectComparison extends Workflow {
   }
 }
 
-export default ProjectComparison
+export { ProjectComparison as ProjectComparisonClass }
+export default legacyWithRouter(ProjectComparison)

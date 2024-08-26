@@ -14,7 +14,7 @@ import DialogActions from '@mui/material/DialogActions'
 import { DIALOG_TYPE, useDialog } from '..'
 import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
-import { EProject } from '@cfModule/XMLHTTP/types/entity'
+import { EProject } from '@XMLHTTP/types/entity'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 
 enum EXPORT_TYPE {
@@ -98,7 +98,10 @@ function ExportProjectDialog({ data }: { data: EProject }) {
     }
 
     // TODO: handle success/failure appropriately
-    API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_export, postData)
+    API_POST(
+      COURSEFLOW_APP.globalContextData.path.post_paths.get_export,
+      postData
+    )
       .then((resp) => {
         console.log('response', resp)
       })

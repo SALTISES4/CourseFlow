@@ -260,7 +260,10 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
         >
           <img
             className="create-button"
-            src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'add_new_white.svg'}
+            src={
+              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+              'add_new_white.svg'
+            }
           />
           <div>{window.gettext('Add new')}</div>
         </div>

@@ -66,7 +66,8 @@ const ProfileSettingsPage = () => {
     state.map((field) => (formData[field.name] = field.value))
 
     API_POST(
-      COURSEFLOW_APP.globalContextData.path.json_api.user.profile_settings__update,
+      COURSEFLOW_APP.globalContextData.path.json_api.user
+        .profile_settings__update,
       formData
     )
       .then(() => setShowSnackbar(true))

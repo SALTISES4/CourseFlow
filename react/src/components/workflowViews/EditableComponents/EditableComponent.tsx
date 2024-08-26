@@ -25,7 +25,6 @@ const LinkedWorkflowButton = (id: any) => {
   )
 }
 
-
 //Extends the React component to add a few features that are used in a large number of components
 
 export type EditableComponentProps = {

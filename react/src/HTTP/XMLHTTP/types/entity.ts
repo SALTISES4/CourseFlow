@@ -1,6 +1,7 @@
 import { Discipline, ObjectSet, ObjectPermission } from '@cfModule/types/common'
-import { NodeTypeDisplay } from '@cfRedux/types/type'
+import { NodeTypeDisplay, TDate } from '@cfRedux/types/type'
 
+export type EDate = string
 export type EDiscipline = {
   id: number
   title: string
@@ -57,13 +58,6 @@ export type EOutcome = {
   sets: number[]
   outcomeworkflow: number
   is_dropped: boolean
-}
-
-export type EColumnworkflow = {
-  workflow: number
-  column: number
-  rank: number
-  id: number
 }
 
 export type EWorkflow = {
@@ -205,11 +199,12 @@ export type ENodelink = {
 }
 
 export type EOutcomeWorkflow = {
+  id: number
+  rank: number
   workflow: number
   outcome: number
-  rank: number
-  id: number
 }
+export type EColumnworkflow = EOutcomeWorkflow
 
 export type ENodeweek = {
   added_on: TDate
@@ -226,6 +221,7 @@ export type EOutcomenode = {
   id: number
   degree: number
 }
+
 
 export type EOutcomeHorizontalLink = {
   outcome: number
@@ -260,8 +256,8 @@ export type ESection = {
 export type ESectionObject = {
   deleted: boolean
   id: number
-  created_on: TDate
-  last_modified: TDate
+  created_on: EDate
+  last_modified: EDate
   type: string
   favourite: boolean
   is_owned: boolean
@@ -279,10 +275,12 @@ export type ESectionObject = {
 }
 
 export type EObjectSet = {
-  id: number
   title: string
+  id: number
   translation_plural: string
   term: string
 }
 
-export type TDate = string
+export type EStrategy = any
+export type EParentWorkflow = any
+export type EChildWorkflow = any

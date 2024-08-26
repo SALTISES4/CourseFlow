@@ -269,15 +269,12 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
         formFields={forms.createProject.formFields}
         disciplines={forms.createProject.disciplines}
       />
-      <ProgramCreateModal 
+      <ProgramCreateModal
         {...createProgramData}
         units={editProgramData.units}
       />
-      <CourseCreateModal 
-        {...createCourseData}
-        units={editCourseData.units}
-      />
-      <ActivityCreateModal 
+      <CourseCreateModal {...createCourseData} units={editCourseData.units} />
+      <ActivityCreateModal
         {...createActivityData}
         units={editActivityData.units}
       />
