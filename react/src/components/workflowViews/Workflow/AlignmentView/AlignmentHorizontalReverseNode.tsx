@@ -132,7 +132,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
       data_override = { ...data }
     }
 
-    const selection_manager = this.context.selection_manager
+    const selection_manager = this.context.selectionManager
     // let child_outcomes_header
     const child_outcomes_header = <this.ChildOutcomesHeader />
 
@@ -228,7 +228,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
     let outcomeadder
 
-    if (!this.context.read_only)
+    if (!this.context.permissions.workflowPermission.readOnly)
       outcomeadder = (
         <OutcomeAdder
           // renderer={this.props.renderer}
@@ -251,7 +251,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
     let add_new_outcome
 
-    if (!this.context.read_only && data.linked_workflow)
+    if (!this.context.permissions.workflowPermission.readOnly && data.linked_workflow)
       add_new_outcome = (
         <div
           id="add-new-outcome"
@@ -311,7 +311,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
       style.outline = '2px solid ' + data.lock.user_colour
     }
 
-    const comments = this.context.view_comments ? <this.AddCommenting /> : ''
+    const comments = this.context.workflow.view_comments ? <this.AddCommenting /> : ''
 
     return (
       <div className="node-week">

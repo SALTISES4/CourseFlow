@@ -69,7 +69,7 @@ class EditableComponent<
   checkboxChanged(field, evt) {
     const do_change = true
     if (do_change)
-      this.context.change_field(
+      this.context.editableMethods.change_field(
         this.props.data.id,
         Constants.object_dictionary[this.objectType],
         field,
@@ -78,7 +78,7 @@ class EditableComponent<
   }
 
   valueChanged(field, new_value) {
-    this.context.change_field(
+    this.context.editableMethods.change_field(
       this.props.data.id,
       Constants.object_dictionary[this.objectType],
       field,
@@ -102,7 +102,7 @@ class EditableComponent<
     else if (!value) value = ''
     if (field == 'colour') value = parseInt(value.replace('#', ''), 16)
     if (evt.target.type == 'number' && value == '') value = 0
-    this.context.change_field(
+    this.context.editableMethods.change_field(
       this.props.data.id,
       Constants.object_dictionary[this.objectType],
       field,
@@ -148,9 +148,11 @@ class EditableComponent<
           value={data.task_classification}
           onChange={this.inputChanged.bind(this, 'task_classification')}
         >
-          {this.context.task_choices
+          {this.context.workflow.choices.task_choices
             .filter(
               (choice) =>
+                // @todo clearly not properly typed
+                // @ts-ignore
                 Math.floor(choice.type / 100) == data.node_type ||
                 choice.type == 0
             )
@@ -184,7 +186,7 @@ class EditableComponent<
             value={data.time_units}
             onChange={this.inputChanged.bind(this, 'time_units')}
           >
-            {this.context.time_choices.map((choice) => (
+            {this.context.workflow.choices.time_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -240,7 +242,7 @@ class EditableComponent<
           // maxlength={500}
           textChangeFunction={this.valueChanged.bind(this, 'description')}
           placeholder="Insert description here"
-          readOnly={this.context.read_only}
+          readOnly={this.context.permissions.workflowPermission.readOnly}
         />
       </div>
     )
@@ -256,9 +258,10 @@ class EditableComponent<
           value={data.context_classification}
           onChange={this.inputChanged.bind(this, 'context_classification')}
         >
-          {this.context.context_choices
+          {this.context.workflow.choices.context_choices
             .filter(
               (choice) =>
+                // @ts-ignore
                 Math.floor(choice.type / 100) == data.node_type ||
                 choice.type == 0
             )
@@ -344,7 +347,7 @@ class EditableComponent<
             value={data.outcomes_type}
             onChange={this.inputChanged.bind(this, 'outcomes_type')}
           >
-            {this.context.context_choices.map((choice) => (
+            {this.context.workflow.choices.context_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -479,7 +482,7 @@ class EditableComponent<
           value={data.strategy_classification}
           onChange={this.inputChanged.bind(this, 'strategy_classification')}
         >
-          {this.context.context_choices.map((choice) => (
+          {this.context.workflow.choices.context_choices.map((choice) => (
             <option value={choice.type}>{choice.name}</option>
           ))}
         </select>
@@ -523,7 +526,7 @@ class EditableComponent<
   EditForm = ({ data, noDelete }) => {
     let sets
 
-    const read_only = this.context.read_only
+    const read_only = this.context.permissions.workflowPermission.readOnly
     const title = Utility.unescapeCharacters(data.title || '')
     const type = Constants.object_dictionary[this.objectType]
     const override = data.represents_workflow ? true : false

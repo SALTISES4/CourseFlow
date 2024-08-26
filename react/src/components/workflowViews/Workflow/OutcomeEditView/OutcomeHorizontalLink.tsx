@@ -137,7 +137,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
         id={data.id}
         ref={this.mainDiv}
       >
-        {!this.context.read_only && (
+        {!this.context.permissions.workflowPermission.readOnly && (
           <div>
             <this.DeleteSelf data={data} />{' '}
           </div>

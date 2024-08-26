@@ -60,7 +60,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<
     const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
     const nodes = this.props.nodes.map((node) => <GridNode data={node} />)
 
-    const comments = this.context.view_comments ? <this.AddCommenting /> : <></>
+    const comments = this.context.workflow.view_comments ? <this.AddCommenting /> : <></>
 
     this.addEditable(data, true)
 
@@ -70,7 +70,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<
         ref={this.mainDiv}
         style={this.getBorderStyle()}
         onClick={(evt) =>
-          this.context.selection_manager.changeSelection(evt, this)
+          this.context.selectionManager.changeSelection(evt, this)
         }
       >
         <div className="week-title">

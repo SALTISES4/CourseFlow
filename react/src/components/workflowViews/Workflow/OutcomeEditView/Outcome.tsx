@@ -81,11 +81,11 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.context.micro_update(
+    this.context.editableMethods.micro_update(
       ActionCreator.moveOutcomeOutcome(id, new_position, new_parent, child_id)
     )
     insertedAt(
-      this.context.selection_manager,
+      this.context.selectionManager,
       child_id,
       'outcome',
       new_parent,
@@ -240,7 +240,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       )
     }
 
-    if (!this.context.read_only) {
+    if (!this.context.permissions.workflowPermission.readOnly) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
@@ -248,7 +248,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         mouseover_actions.push(<this.AddInsertChild data={data} />)
       }
     }
-    if (this.context.view_comments) {
+    if (this.context.workflow.view_comments) {
       // mouseover_actions.push(this.addCommenting(data))
       mouseover_actions.push(<this.AddCommenting />)
     }
@@ -267,7 +267,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         )
 
     if (
-      !this.context.read_only &&
+      !this.context.permissions.workflowPermission.readOnly &&
       data.depth < 2 &&
       data.child_outcome_links.length === 0 &&
       children
@@ -304,7 +304,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           className={cssClass}
           ref={this.mainDiv}
           onClick={(evt) =>
-            this.context.selection_manager.changeSelection(evt, this)
+            this.context.selectionManager.changeSelection(evt, this)
           }
         >
           <div className="outcome-title">
@@ -342,7 +342,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
             </ol>
           )}
 
-          {!this.context.read_only && data.depth < 2 && (
+          {!this.context.permissions.workflowPermission.readOnly && data.depth < 2 && (
             <div
               className="outcome-create-child"
               onClick={this.insertChild.bind(this, data)}

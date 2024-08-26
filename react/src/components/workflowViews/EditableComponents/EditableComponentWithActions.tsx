@@ -44,7 +44,7 @@ class EditableComponentWithActions<
   deleteSelf(data) {
     //@todo Temporary confirmation; add better confirmation dialogue later
     if (this.context) {
-      this.context.selection_manager.deleted(this)
+      this.context.selectionManager.deleted(this)
     }
 
     if (

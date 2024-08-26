@@ -36,7 +36,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
    * RENDER
    *******************************************************/
   render() {
-    const selection_manager = this.context.selection_manager
+    const selection_manager = this.context.selectionManager
     const data = this.props.data
 
     const data_override = data.represents_workflow
@@ -66,7 +66,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
       data.lock ? 'locked locked-' + data.lock.user_id : ''
     ].join(' ')
 
-    const comments = this.context.view_comments ? (
+    const comments = this.context.workflow.view_comments ? (
       <this.AddCommenting />
     ) : undefined
 

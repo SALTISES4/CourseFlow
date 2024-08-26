@@ -111,7 +111,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     }
 
     this.lockChild(id, true, 'nodeweek')
-    this.context.micro_update(ActionCreator.columnChangeNode(id, new_column))
+    this.context.editableMethods.micro_update(ActionCreator.columnChangeNode(id, new_column))
     columnChanged(this.context, id, new_column) // @todo again dragaction needs to be designed and is not on renderer (context) any more
   }
 
@@ -126,11 +126,11 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       }
     }
 
-    this.context.micro_update(
+    this.context.editableMethods.micro_update(
       ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     )
     insertedAt(
-      this.context.selection_manager,
+      this.context.selectionManager,
       child_id,
       'node',
       new_parent,
@@ -215,7 +215,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
    *******************************************************/
   render() {
     const data = this.props.data
-    const selection_manager = this.context.selection_manager
+    const selection_manager = this.context.selectionManager
     // const css_class = 'week'
 
     const cssClasses = [
@@ -224,11 +224,8 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       data.lock ? 'locked locked-' + data.lock.user_id : '',
       data.is_dropped ? ' dropped' : ''
     ].join(' ')
-    // if (data.is_strategy) css_class += ' strategy'
-    // if (data.lock) css_class += ' locked locked-' + data.lock.user_id
-    // if (data.is_dropped) css_class += ' dropped'
 
-    const default_text = !this.context.is_strategy
+    const default_text = !this.context.workflow.is_strategy
       ? data.week_type_display + ' ' + (this.props.rank + 1)
       : undefined
     const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
@@ -238,12 +235,12 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     }
 
     const mouseoverActions = []
-    if (!this.context.read_only && !this.context.is_strategy) {
+    if (!this.context.permissions.workflowPermission.readOnly && !this.context.workflow.is_strategy) {
       mouseoverActions.push(<this.AddInsertSibling data={data} />)
       mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
       mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.context.view_comments) {
+    if (this.context.workflow.view_comments) {
       mouseoverActions.push(<this.AddCommenting />)
     }
 
@@ -298,7 +295,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
                 <div className="strategy-tab-circle">
                   <img
                     title={
-                      this.context.strategy_classification_choices.find(
+                      this.context.workflow.choices.strategy_classification_choices.find(
                         (obj) => obj.type === data.strategy_classification
                       ).name
                     }

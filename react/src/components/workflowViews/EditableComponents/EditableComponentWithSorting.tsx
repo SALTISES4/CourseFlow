@@ -75,7 +75,7 @@ class EditableComponentWithSorting<
     handle: string | boolean = false, // @todo review this union
     containment = '.workflow-container'
   ) {
-    if (this.context.read_only) {
+    if (this.context.permissions.workflowPermission.readOnly) {
       return
     }
 
@@ -123,7 +123,7 @@ class EditableComponentWithSorting<
         drag_item.attr('data-restrict-to', restrictTo)
         const old_index = drag_item.prevAll().length
         drag_item.attr('data-old-index', old_index)
-        this.context.selection_manager.changeSelection(null, null)
+        this.context.selectionManager.changeSelection(null, null)
         this.startSortFunction(
           parseInt(drag_item.attr('data-child-id')),
           draggable_type
@@ -284,7 +284,7 @@ class EditableComponentWithSorting<
     if (through_type == 'outcomeoutcome') object_type = 'outcome'
     if (through_type == 'outcomeworkflow') object_type = 'outcome'
 
-    this.context.lock_update(
+    this.context.editableMethods.lock_update(
       { object_id: id, object_type: object_type },
       Constants.lock_times.move,
       lock

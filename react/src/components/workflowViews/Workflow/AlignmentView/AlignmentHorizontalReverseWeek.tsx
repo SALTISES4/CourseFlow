@@ -62,7 +62,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
       )
     })
 
-    const comments = this.context.view_comments ? <this.AddCommenting /> : null
+    const comments = this.context.workflow.view_comments ? <this.AddCommenting /> : null
 
     return (
       <div
@@ -70,7 +70,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
         ref={this.mainDiv}
         style={this.getBorderStyle()}
         onClick={(evt) =>
-          this.context.selection_manager.changeSelection(evt, this)
+          this.context.selectionManager.changeSelection(evt, this)
         }
       >
         <TitleText text={data.title} defaultText={default_text} />

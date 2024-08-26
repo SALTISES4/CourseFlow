@@ -62,7 +62,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
     } else {
       data_override = { ...data }
     }
-    const selection_manager = this.context.selection_manager
+    const selection_manager = this.context.selectionManager
 
     const style: React.CSSProperties = {
       backgroundColor: Constants.getColumnColour(this.props.column)
@@ -119,7 +119,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
       lefticon = (
         <img
           title={
-            this.context.context_choices.find(
+            this.context.workflow.choices.context_choices.find(
               (obj) => obj.type == data.context_classification
             ).name
           }
@@ -136,7 +136,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
       righticon = (
         <img
           title={
-            this.context.task_choices.find(
+            this.context.workflow.choices.task_choices.find(
               (obj) => obj.type == data.task_classification
             ).name
           }
@@ -161,12 +161,12 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
     ].join(' ')
 
     const mouseover_actions = []
-    if (!this.context.read_only) {
+    if (!this.context.permissions.workflowPermission.readOnly) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.context.view_comments) {
+    if (this.context.workflow.view_comments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 

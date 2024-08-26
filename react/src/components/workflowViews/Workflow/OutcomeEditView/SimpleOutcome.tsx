@@ -123,11 +123,11 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
           data.child_outcome_links.length
         )
 
-    const comments = this.context.view_comments ? <this.AddCommenting /> : null
+    const comments = this.context.workflow.view_comments ? <this.AddCommenting /> : null
     const editPortal = this.props.edit ? this.addEditable(data, true) : null
 
     const onClick = (evt) => {
-      return this.context.selection_manager.changeSelection(evt, this)
+      return this.context.selectionManager.changeSelection(evt, this)
     }
 
     const cssClass = [

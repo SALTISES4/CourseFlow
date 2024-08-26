@@ -54,7 +54,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.context.micro_update(
+    this.context.editableMethods.micro_update(
       ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     )
 

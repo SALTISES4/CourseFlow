@@ -167,7 +167,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     const myComponent = this
 
     if ($('.workflow-canvas').hasClass('creating-node-link')) return
-    if (!this.context.read_only)
+    if (!this.context.permissions.workflowPermission.readOnly)
       $(
         "circle[data-node-id='" +
           this.props.objectID +
@@ -214,7 +214,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
     const mouseover_actions = []
 
     const data = this.props.data
-    const selection_manager = this.context.selection_manager
+    const selection_manager = this.context.selectionManager
 
     if (data.represents_workflow) {
       data_override = { ...data, ...data.linked_workflow_data, id: data.id }
@@ -292,7 +292,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         <div className="node-icon">
           <img
             title={
-              this.context.context_choices.find(
+              this.context.workflow.choices.context_choices.find(
                 (obj) => obj.type == data.context_classification
               ).name
             }
@@ -309,7 +309,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
         <div className="node-icon">
           <img
             title={
-              this.context.task_choices.find(
+              this.context.workflow.choices.task_choices.find(
                 (obj) => obj.type == data.task_classification
               ).name
             }
@@ -395,13 +395,13 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
       data.lock ? 'locked locked-' + data.lock.user_id : ''
     ].join(' ')
 
-    if (!this.context.read_only) {
+    if (!this.context.permissions.workflowPermission.readOnly) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
 
-    if (this.context.view_comments) {
+    if (this.context.workflow.view_comments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -416,7 +416,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
           onClick={(evt) =>
-            this.context.selection_manager.changeSelection(evt, this)
+            this.context.selectionManager.changeSelection(evt, this)
           }
         >
           <div className="node-top-row">
@@ -450,7 +450,7 @@ class Node extends EditableComponentWithActions<PropsType, StateProps> {
                 {data_override.time_required &&
                   data_override.time_required +
                     ' ' +
-                    this.context.time_choices[data_override.time_units].name}
+                    this.context.workflow.choices.time_choices[data_override.time_units].name}
               </div>
             </div>
           </div>

@@ -16,12 +16,8 @@ type StateType = {
 } & EditableComponentStateType
 
 type OwnProps = {
+  // @todo fix this
   dispatch?: any
-  // legacyRenderer: LegacyRendererProps & {
-  //   workflowID: any
-  //   unread_comments: any
-  //   add_comments: any
-  // }
 } & EditableComponentProps
 
 export type EditableComponentWithCommentsType = OwnProps
@@ -91,10 +87,10 @@ class EditableComponentWithComments<
           comments={this.props.data.comments}
           parent={this}
           // renderer={this.props.renderer} // not used
-          workflowID={this.context.workflowID}
-          unread_comments={this.context.unread_comments}
-          read_only={this.context.read_only}
-          add_comments={this.context.add_comments}
+          workflowID={this.context.workflow.workflowID}
+          unread_comments={this.context.workflow.unread_comments}
+          read_only={this.context.permissions.workflowPermission.readOnly}
+          add_comments={this.context.workflow.add_comments}
         />
       </>
     )

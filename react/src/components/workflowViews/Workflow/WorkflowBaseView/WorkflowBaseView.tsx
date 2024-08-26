@@ -29,7 +29,10 @@ import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
-import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import {
+  WorkFlowConfigContext,
+  WorkFlowContextType
+} from '@cfModule/context/workFlowConfigContext'
 
 import GridView from '../GridView/GridView.js'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
@@ -142,6 +145,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   StateType
 > {
   static contextType = WorkFlowConfigContext
+  declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   // Constants
   objectType = CfObjectType.WORKFLOW
@@ -159,16 +163,20 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private object_sets: any
   private workflowId: number
 
-  constructor(props: PropsType, context) {
-    // @ts-ignore
-    super(props, context)
+  constructor(props: PropsType, context: WorkFlowContextType) {
+    super(props)
+
+    this.context = context
+
+    console.log('this.context')
+    console.log(this.context)
 
     this.data = this.props.data
-    this.project = context.project
-    this.workflowId = context.workflowID
+    this.project = this.context.workflow.project
+    this.workflowId = this.context.workflow.workflowID
 
-    this.project_permission = this.props.config.projectPermission
-    this.always_static = this.props.config.alwaysStatic
+    this.project_permission = this.context.permissions.projectPermission
+    this.always_static = this.context.public_view
 
     this.state = {
       users: null,
@@ -176,7 +184,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       openExportDialog: false,
       openImportDialog: false
     } as StateType
-    this.selection_manager = context.selection_manager
+    this.selection_manager = this.context.selectionManager
   }
 
   /*******************************************************
@@ -202,7 +210,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * FUNCTIONS
    *******************************************************/
   getUserData() {
-    if (this.public_view || this.props.config.isStudent) {
+    // @todo should not be querying directly
+    // needs a new permission, like canGetUserData
+    if (this.public_view || this.context.user.isStudent) {
       return null
     }
     getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
@@ -455,7 +465,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   getReturnLinksPortal() {
     const return_links = []
-    if (this.project && !this.props.config.isStudent && !this.public_view) {
+    if (this.project && !this.context.user.isStudent && !this.public_view) {
       return_links.push(
         <a
           className="hover-shade no-underline"
@@ -477,7 +487,10 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         </a>
       )
     }
-    if (this.public_view && this.props.config.workflowPermission.canView) {
+    if (
+      this.public_view &&
+      this.context.permissions.workflowPermission.canView
+    ) {
       return_links.push(
         <a
           className="hover-shade no-underline"
@@ -587,7 +600,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       }
       default: {
         this.allowed_tabs = [1, 2, 3, 4]
-        if (this.props.config.workflowPermission.readOnly) {
+        if (this.context.permissions.workflowPermission.readOnly) {
           this.allowed_tabs = [2, 3]
         }
         return <WorkflowView />
@@ -773,7 +786,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     }
 
     // @todo ...
-    if (!this.props.config.workflowPermission.canView) {
+    if (!this.context.permissions.workflowPermission.canView) {
       return null
     }
 

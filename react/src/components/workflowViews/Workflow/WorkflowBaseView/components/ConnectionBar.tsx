@@ -28,7 +28,7 @@ const ConnectedUser = ({
 const ConnectionBar = () => {
   const context = useContext(WorkFlowConfigContext)
 
-  if (!context.wsConnected) {
+  if (!context.ws.wsConnected) {
     return (
       <div className="users-box connection-failed">
         {window.gettext('Not Connected')}
@@ -36,7 +36,7 @@ const ConnectionBar = () => {
     )
   }
 
-  const users = context.connectedUsers.map((user) => {
+  const users = context.ws.connectedUsers.map((user) => {
     return (
       <ConnectedUser userColour={user.user_colour} userName={user.user_name} />
     )

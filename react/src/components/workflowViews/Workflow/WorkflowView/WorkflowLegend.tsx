@@ -86,7 +86,9 @@ export class WorkflowLegendUnconnected<
       <LegendLine
         icon={Constants.context_keys[value]}
         text={
-          this.context.context_choices.find((obj) => obj.type == value).name
+          this.context.workflow.choices.context_choices.find(
+            (obj) => obj.type == value
+          ).name
         }
       />
     ))
@@ -94,7 +96,11 @@ export class WorkflowLegendUnconnected<
     const tasks = this.props.tasks.map((value) => (
       <LegendLine
         icon={Constants.task_keys[value]}
-        text={this.context.task_choices.find((obj) => obj.type == value).name}
+        text={
+          this.context.workflow.choices.task_choices.find(
+            (obj) => obj.type == value
+          ).name
+        }
       />
     ))
 
@@ -102,7 +108,7 @@ export class WorkflowLegendUnconnected<
       <LegendLine
         icon={Constants.strategy_keys[value]}
         text={
-          this.context.strategy_classification_choices.find(
+          this.context.workflow.choices.strategy_classification_choices.find(
             (obj) => obj.type == value
           ).name
         }

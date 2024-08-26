@@ -97,11 +97,11 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
   ) {
     if (type === 'columnworkflow') {
       console.log('columnworkflow sortablemoved', id)
-      this.context.micro_update(
+      this.context.editableMethods.micro_update(
         ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
-        this.context.selection_manager,
+        this.context.selectionManager,
         child_id,
         'column',
         new_parent,
@@ -111,11 +111,11 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
       )
     }
     if (type === 'weekworkflow') {
-      this.context.micro_update(
+      this.context.editableMethods.micro_update(
         ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
-        this.context.selection_manager,
+        this.context.selectionManager,
         child_id,
         'week',
         new_parent,

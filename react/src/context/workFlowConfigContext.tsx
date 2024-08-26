@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react'
 import { ViewType } from '@cfModule/types/enum'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { ConnectedUser } from '@cfModule/HTTP/WebsocketServiceConnectedUserManager'
-import { WorkflowDetailViewDTO } from '@cfPages/Workspace/Workflow/types'
+import {WorkflowDetailViewDTO, WorkflowPermission} from '@cfPages/Workspace/Workflow/types'
 import { FieldChoice } from '@cfModule/types/common'
 import { EProject } from '@XMLHTTP/types/entity'
 
@@ -10,7 +10,7 @@ export const WorkFlowConfigContext = React.createContext<WorkFlowContextType>(
   {} as WorkFlowContextType
 )
 
-type WorkFlowContextType = {
+export type WorkFlowContextType = {
   viewType: ViewType
   public_view: boolean
 
@@ -37,6 +37,7 @@ type WorkFlowContextType = {
   user: {
     user_name: string
     user_id: number
+    isStudent: boolean
   }
   editableMethods: {
     lock_update: (obj: any, time: any, lock: any) => void
@@ -48,11 +49,10 @@ type WorkFlowContextType = {
     wsConnected: boolean
   }
   permissions: {
-    projectPermission: any
-    workflowPermission: any
+    projectPermission: number
+    workflowPermission: WorkflowPermission
   }
 
-  // should be removed
   container: any
 }
 
@@ -112,7 +112,8 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       // @todo make the user a better defined object
       user: {
         user_id: initialValue.workflowDetailResp.user_id, // workflow/detail api call, data_package
-        user_name: initialValue.workflowDetailResp.user_name // workflow/detail api call, data_package
+        user_name: initialValue.workflowDetailResp.user_name, // workflow/detail api call, data_package
+        isStudent: false// @todo
       },
 
       // functions, these are the only items which actually belong to the 'workflow' react component class and as noted in the copponent, these

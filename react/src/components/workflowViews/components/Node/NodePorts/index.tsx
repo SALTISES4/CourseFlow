@@ -31,7 +31,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
 
   componentDidMount() {
     const thisComponent = this
-    if (!this.context.read_only)
+    if (!this.context.permissions.workflowPermission)
       d3.selectAll<SVGCircleElement, any>(
         'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
       ).call(

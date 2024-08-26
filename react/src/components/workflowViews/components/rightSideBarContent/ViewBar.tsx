@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { connect } from 'react-redux'
+import { connect, DispatchProp } from 'react-redux'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
@@ -10,10 +10,8 @@ type ConnectedProps = {
 }
 type OwnProps = {
   data: any
-  // renderer: any
-  dispatch?: any
 }
-type PropsType = ConnectedProps & OwnProps
+type PropsType = DispatchProp & ConnectedProps & OwnProps
 
 /**
  * The view tab of the right side bar for workflows. Allows object sets
@@ -54,17 +52,18 @@ class ViewBarUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let sort_block
     if (
-      this.context.view_type === ViewType.OUTCOMETABLE ||
-      this.context.view_type === ViewType.HORIZONTALOUTCOMETABLE
+      this.context.viewType === ViewType.OUTCOMETABLE ||
+      this.context.viewType === ViewType.HORIZONTALOUTCOMETABLE
     ) {
       const table_type_value = data.table_type || 0
       const sort_type = (
         <div className="node-bar-sort-block">
-          {this.context.outcome_sort_choices.map((choice) => (
+          {this.context.workflow.choices.outcome_sort_choices.map((choice) => (
             <div>
               <input
                 disabled={
                   table_type_value === 1 ||
+                  // @ts-ignore
                   (data.type === 'program' && choice.type > 1)
                 }
                 type="radio"
@@ -161,7 +160,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => ({
   object_sets: state.objectset
 })
 
-export default connect<ConnectedProps, object, OwnProps, AppState>(
+export default connect<ConnectedProps, DispatchProp, OwnProps, AppState>(
   mapStateToProps,
   null
 )(ViewBarUnconnected)

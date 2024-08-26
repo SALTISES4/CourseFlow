@@ -62,7 +62,7 @@ export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let default_text
 
-    if (!this.context.is_strategy) {
+    if (!this.context.workflow.is_strategy) {
       default_text = data.week_type_display + ' ' + (this.props.rank + 1)
     }
 

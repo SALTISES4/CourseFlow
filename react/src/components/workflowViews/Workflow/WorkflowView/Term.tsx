@@ -99,12 +99,12 @@ class Term extends WeekUnconnected<PropsType> {
     const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
 
     const mouseover_actions = []
-    if (!this.context.read_only) {
+    if (!this.context.permissions.workflowPermission.readOnly) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.context.view_comments) {
+    if (this.context.workflow.view_comments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -117,7 +117,7 @@ class Term extends WeekUnconnected<PropsType> {
           className={cssClasses}
           ref={this.mainDiv}
           onClick={(evt) =>
-            this.context.selection_manager.changeSelection(evt, this)
+            this.context.selectionManager.changeSelection(evt, this)
           }
         >
           <div className="mouseover-container-bypass">

@@ -72,7 +72,7 @@ export class OutcomeEditViewUnconnected<
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.context.micro_update(
+    this.context.editableMethods.micro_update(
       ActionCreator.moveOutcomeWorkflow(
         id,
         new_position,
@@ -82,7 +82,7 @@ export class OutcomeEditViewUnconnected<
     )
     insertedAt(
       // @ts-ignore
-      this.context.selection_manager,
+      this.context.selectionManager,
       child_id,
       'outcome',
       this.props.workflow.id,
@@ -102,7 +102,7 @@ export class OutcomeEditViewUnconnected<
    * COMPONENTS
    *******************************************************/
   AddNew = ({ objectset }: any) => {
-    if (!this.context.read_only) {
+    if (!this.context.permissions.workflowPermission.readOnly) {
       return (
         <div
           id="add-new-outcome"

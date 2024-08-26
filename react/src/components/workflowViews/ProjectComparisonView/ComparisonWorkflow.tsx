@@ -67,7 +67,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type === 'weekworkflow') {
-      this.context.micro_update(
+      this.context.editableMethods.micro_update(
         ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(

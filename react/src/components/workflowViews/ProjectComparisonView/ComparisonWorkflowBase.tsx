@@ -54,7 +54,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    * FUNCTIONS
    *******************************************************/
   openEdit(evt) {
-    this.context.selection_manager.changeSelection(evt, this)
+    this.context.selectionManager.changeSelection(evt, this)
   }
 
   addObjectSetTrigger() {
@@ -81,7 +81,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    *******************************************************/
 
   Content = () => {
-    if (this.context.view_type === ViewType.OUTCOME_EDIT) {
+    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQuery(this.props.data.id, (response) => {
         this.props.dispatch(
           ActionCreator.refreshStoreData(response.data_package)

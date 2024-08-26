@@ -84,8 +84,8 @@ class RightSideBar extends React.Component<PropsType> {
         <NodeBar
           // view_type={this.props.renderer.view_type}
           // renderer={this.props.renderer}
-          readOnly={this.context.read_only}
-          columnChoices={this.context.column_choices}
+          readOnly={this.context.permissions.workflowPermission.readOnly}
+          columnChoices={this.context.workflow.choices.column_choices}
         />
       )
     return null
@@ -97,7 +97,7 @@ class RightSideBar extends React.Component<PropsType> {
     if (this.props.wfcontext === WFContext.COMPARISON) {
       return null
     }
-    if (this.context.view_type === ViewType.OUTCOME_EDIT) {
+    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
       return <ParentOutcomeBar />
     }
     return (
@@ -162,7 +162,7 @@ class RightSideBar extends React.Component<PropsType> {
             </a>
           </li>
 
-          {!this.context.is_strategy && (
+          {!this.context.workflow.is_strategy && (
             <>
               <li className="hover-shade">
                 <a href="#outcome-bar">
@@ -204,7 +204,7 @@ class RightSideBar extends React.Component<PropsType> {
           <this.NodeBarWrapper />
         </div>
 
-        {!this.context.is_strategy && (
+        {!this.context.workflow.is_strategy && (
           <>
             <div id="outcome-bar" className="right-panel-container">
               <this.OutcomeBarWrapper />
@@ -215,7 +215,7 @@ class RightSideBar extends React.Component<PropsType> {
           </>
         )}
 
-        {!this.context.read_only && (
+        {!this.context.permissions.workflowPermission.readOnly && (
           <div id="restore-bar" className="right-panel-container">
             <this.RestoreBarWrapper />
           </div>

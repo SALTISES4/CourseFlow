@@ -44,8 +44,8 @@ type StateProps = {
 }
 type PropsType = Record<string, never>
 
-const calcPermissions = (user_permission: number): WorkflowPermission => {
-  switch (user_permission) {
+const calcPermissions = (userPermission: number): WorkflowPermission => {
+  switch (userPermission) {
     case PERMISSION_KEYS.VIEW:
       return {
         ...defaultPermissions,
@@ -67,6 +67,7 @@ const calcPermissions = (user_permission: number): WorkflowPermission => {
         canView: true
       }
   }
+  return defaultPermissions
 }
 
 /****************************************
@@ -148,6 +149,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     // except for 'choices' config lists TBD
     getWorkflowById(String(this.workflowID)).then((response) => {
       this.workflowDetailResp = response.data_package
+      this.setupData(response.data_package)
 
       // as soon as we have a more stable place to get current user, move this to the beginning of onConnectionOpened
       this.wsUserConnectedService.startUserUpdates({
@@ -175,6 +177,9 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     }
 
     this.workflowPermission = calcPermissions(response.user_permission)
+    this.selectionManager = new SelectionManager(
+      this.workflowPermission.readOnly
+    )
   }
 
   updateView(viewType: ViewType) {

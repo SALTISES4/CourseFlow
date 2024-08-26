@@ -65,13 +65,13 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
 
     const mouseoverActions = []
 
-    if (!this.context.read_only) {
+    if (!this.context.permissions.workflowPermission.readOnly) {
       mouseoverActions.push(<this.AddInsertSibling data={data} />)
       mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
       mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
 
-    if (this.context.view_comments) {
+    if (this.context.workflow.view_comments) {
       mouseoverActions.push(<this.AddCommenting />)
     }
 
@@ -81,7 +81,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
         style={style}
         className={cssClass}
         onClick={(evt) =>
-          this.context.selection_manager.changeSelection(evt, this)
+          this.context.selectionManager.changeSelection(evt, this)
         }
       >
         <div className="column-line">
