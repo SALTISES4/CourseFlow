@@ -38,6 +38,7 @@ export function newOutcomeQuery(
   object_set_id: number,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
+  console.log("Calling new outcome",workflowPk,object_set_id)
   API_POST(COURSEFLOW_APP.config.post_paths.new_outcome, {
     workflowPk: workflowPk,
     objectsetPk: object_set_id
