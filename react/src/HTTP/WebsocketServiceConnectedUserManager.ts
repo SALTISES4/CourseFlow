@@ -1,30 +1,43 @@
+import { WebSocketService } from '@cfModule/HTTP/WebSocketService'
+
+type CurrentUser = {
+  userId: number
+  userName: string
+}
+
 export type ConnectedUser = {
   user_id: string
   user_name: string
   user_colour: string
   connected: boolean
-  timeout: Timeout
+  timeout: NodeJS.Timeout
 }
+
 const calcColor = (id: number) =>
   'hsl(' + (((id * 5) % 360) + 1) + ', 50%, 50%)'
 
 type UpdateStateCallback = (users: ConnectedUser[]) => void
 
 class WebSocketServiceConnectedUserManager {
-  private websocket: WebSocket
+  private websocketService: WebSocketService
   private updateStateCallback: UpdateStateCallback
   private connectedUsers: ConnectedUser[]
   private userUpdateInterval: NodeJS.Timeout | null
+  private currenUser: CurrentUser
 
-  constructor(websocket: WebSocket, updateStateCallback: UpdateStateCallback) {
-    this.websocket = websocket
+  constructor(
+    websocket: WebSocketService,
+    updateStateCallback: UpdateStateCallback
+  ) {
+    this.websocketService = websocket
     this.updateStateCallback = updateStateCallback
     this.connectedUsers = []
     this.userUpdateInterval = null
   }
 
   // Call this method to initiate user update intervals
-  public startUserUpdates(): void {
+  public startUserUpdates(user: CurrentUser): void {
+    this.currenUser = user
     this.userUpdateInterval = setInterval(
       () => this.sendConnectionUpdate(),
       30000
@@ -40,15 +53,20 @@ class WebSocketServiceConnectedUserManager {
   }
 
   private sendConnectionUpdate(connected = true): void {
-    if (!this.websocket || this.websocket.readyState !== WebSocket.OPEN) return
+    if (
+      !this.websocketService ||
+      this.websocketService.getState() !== WebSocket.OPEN
+    ) {
+      return
+    }
 
-    this.websocket.send(
+    this.websocketService.send(
       JSON.stringify({
         type: 'connection_update',
         user_data: {
-          user_id: this.userId,
-          user_name: this.userName,
-          user_colour: calcColor(user_id),
+          user_id: this.currenUser.userId,
+          user_name: this.currenUser.userName,
+          user_colour: calcColor(Number(this.currenUser.userId)),
           connected: connected
         }
       })

@@ -12,7 +12,6 @@ import {
 import * as Utility from '@cfUtility'
 import AlignmentOutcomesBlock from './AlignmentOutcomesBlock'
 import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
-import { CfObjectType, ViewType } from '@cfModule/types/enum'
 import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = {
@@ -20,9 +19,7 @@ type ConnectedProps = {
   outcomes: any
   terms: any
 }
-type OwnProps = {
-  view_type: ViewType
-}
+type OwnProps = NonNullable<unknown>
 type StateProps = any
 type PropsType = ConnectedProps & OwnProps
 
@@ -31,10 +28,8 @@ type PropsType = ConnectedProps & OwnProps
  *This requires the child outcome data to be present in the redux state.
  */
 class AlignmentView extends React.Component<PropsType, StateProps> {
-  private objectType: CfObjectType
   constructor(props: PropsType) {
     super(props)
-    this.objectType = CfObjectType.WORKFLOW
     this.state = { active: 0, active2: 0, sort: 'outcome' }
   }
 
@@ -134,20 +129,10 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
       )
     } else if (this.state.sort == 'outcome') {
       outcomes_block = (
-        <AlignmentOutcomesBlock
-          workflow_type={data.type}
-          // renderer={this.props.renderer}
-          data={outcome_data}
-          // outcomes_type={data.outcomes_type} // @todo not used
-        />
+        <AlignmentOutcomesBlock workflow_type={data.type} data={outcome_data} />
       )
       alignment_reverse_block = (
-        <AlignmentHorizontalReverseBlock
-          sort="outcome"
-          // renderer={this.props.renderer}
-          data={outcome_data}
-          // outcomes_type={data.outcomes_type} // @todo not used
-        />
+        <AlignmentHorizontalReverseBlock sort="outcome" data={outcome_data} />
       )
     }
 
@@ -155,10 +140,8 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
       alignment_reverse_block = (
         <AlignmentHorizontalReverseBlock
           sort="week"
-          // renderer={this.props.renderer}
           data={this.props.terms[this.state.active]}
           base_outcomes={this.props.outcomes}
-          // outcomes_type={data.outcomes_type} // @todo not used
         />
       )
     }

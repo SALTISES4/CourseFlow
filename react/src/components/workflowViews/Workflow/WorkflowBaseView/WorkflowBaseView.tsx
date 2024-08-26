@@ -42,6 +42,7 @@ import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget
 import ImportModal from '@cfModule/components/common/dialog/Import'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
+import { WorkflowPermission } from '@cfPages/Workspace/Workflow/types'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -113,12 +114,11 @@ const ImportButtons = ({ aClass }: { aClass: string }) => {
  */
 
 type OwnProps = {
-  viewType: ViewType // doese this live in context or do we pass it?
-  parentRender: (viewType: ViewType) => void // @todo delete his after converrting to state mgmt
+  updateView: (viewType: ViewType) => void
   config: {
-    canView: boolean
     isStudent: boolean
     projectPermission: number
+    workflowPermission: WorkflowPermission
     alwaysStatic: boolean
   }
 } & EditableComponentProps
@@ -152,41 +152,25 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   objectType = CfObjectType.WORKFLOW
   private allowed_tabs = [0, 1, 2, 3, 4]
 
-  private readOnly: any
+  private readOnly: boolean
+
   private public_view: any
   private data: ConnectedProps['data']
   private project: any
   private selection_manager: SelectionManager
-  private renderMethod: (viewType: ViewType) => void
-  private websocket: any
   private always_static: boolean
   private user_id: any
   private project_permission: number
   private object_sets: any
-  private workflowId: any
-  private viewType: ViewType
-  private can_view: boolean
+  private workflowId: number
 
   constructor(props: PropsType, context) {
     // @ts-ignore
     super(props, context)
 
-    this.context = context
     this.data = this.props.data
-    this.project = this.context.project
-
-    // used in parentworkflowindicator
-
-    // used in connectionBar, but websocket status shouldn't go in the same context
-
-    // @todo important: change this to state update control
-    // issues with loss of scope of this if assigned to local method in this
-    // this.renderMethod = () => this.props.parentRender(this.props.viewType)
-
-    // not used in other components
-    // @todo what is the definition of canView ? since both these values are assigned in parent, figure it out there
-    this.can_view = this.props.config.canView
-    this.can_view = this.props.config.isStudent
+    this.project = context.project
+    this.workflowId = context.workflowID
 
     this.project_permission = this.props.config.projectPermission
     this.always_static = this.props.config.alwaysStatic
@@ -197,17 +181,10 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       openExportDialog: false,
       openImportDialog: false
     } as StateType
-    this.readOnly = this.context.read_only
-    this.workflowId = this.context.workflowID
-    this.selection_manager = this.context.selection_manager
+    this.selection_manager = context.selection_manager
 
     // this should be a state type, but leave in context for now
     // this.container = this.context.container
-
-    // to be added
-    this.viewType = this.props.viewType
-    this.user_id = this.context.user_id
-    this.public_view = this.context.public_view
   }
 
   /*******************************************************
@@ -220,7 +197,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     COURSEFLOW_APP.makeDropdown('#jump-to')
     COURSEFLOW_APP.makeDropdown('#expand-collapse-all')
 
-    if (this.viewType === ViewType.OUTCOME_EDIT) {
+    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQuery(this.workflowId, (response) => {
         this.props.dispatch(
           ActionCreator.refreshStoreData(response.data_package)
@@ -316,9 +293,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
      *******************************************************/
   }
 
-  // @todo what are all the view types?
   changeView(type: ViewType) {
-    this.props.parentRender(type)
+    this.props.updateView(type)
   }
 
   openEditMenu(evt: EventUnion) {
@@ -509,7 +485,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         </a>
       )
     }
-    if (this.public_view && this.can_view) {
+    if (this.public_view && this.props.config.workflowPermission.canView) {
       return_links.push(
         <a
           className="hover-shade no-underline"
@@ -574,7 +550,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       .filter((item) => item.disabled.indexOf(this.data.type) == -1)
       .map((item, index) => {
         let view_class = 'hover-shade'
-        if (item.type === this.viewType) view_class += ' active'
+        if (item.type === this.context.viewType) view_class += ' active'
         return (
           <a
             key={index}
@@ -594,7 +570,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     switch (viewType) {
       case ViewType.OUTCOMETABLE: {
         this.allowed_tabs = [3]
-        return <WorkflowTableView data={this.data} view_type={this.viewType} />
+        return <WorkflowTableView data={this.data} />
       }
       case ViewType.OUTCOME_EDIT: {
         if (this.data.type == 'program') {
@@ -606,16 +582,17 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       }
       case ViewType.ALIGNMENTANALYSIS: {
         this.allowed_tabs = [3]
-        return <AlignmentView view_type={this.viewType} />
+        return <AlignmentView  />
       }
 
       case ViewType.GRID: {
         this.allowed_tabs = [3]
-        return <GridView view_type={this.viewType} />
+        return <GridView view_type={this.context.viewType} />
       }
       default: {
         this.allowed_tabs = [1, 2, 3, 4]
-        if (this.context.read_only) this.allowed_tabs = [2, 3]
+        if (this.props.config.workflowPermission.readOnly)
+          this.allowed_tabs = [2, 3]
 
         // return <WorkflowView />
         return <WorkflowView />
@@ -642,7 +619,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * VIEW BAR
    *******************************************************/
   Jump = () => {
-    if (this.viewType !== ViewType.WORKFLOW) {
+    if (this.context.viewType !== ViewType.WORKFLOW) {
       return null
     }
     const nodebarweekworkflows = this.data.weekworkflow_set.map(
@@ -739,12 +716,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    *******************************************************/
   UserBar = () => {
     if (!this.always_static) {
-      return (
-        <ConnectionBar
-          user_id={this.context.user_id}
-          user_name={this.context.user_name}
-        />
-      )
+      return <ConnectionBar />
     }
     return <></>
   }
@@ -806,7 +778,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     }
 
     // @todo ...
-    if (this.can_view && !this.can_view) {
+    if (!this.props.config.workflowPermission.canView) {
       return null
     }
 
@@ -1044,22 +1016,16 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               <div id="workflow-wrapper" className="workflow-wrapper">
                 <this.Header />
                 <div className="workflow-container">
-                  <this.Content viewType={this.props.viewType} />
+                  <this.Content viewType={this.context.viewType} />
                 </div>
 
-                <ParentWorkflowIndicator
-                  // renderer={this.props.renderer}
-                  // legacyRenderer={this.props.legacyRenderer}
-                  workflow_id={this.workflowId}
-                />
+                <ParentWorkflowIndicator workflow_id={this.workflowId} />
               </div>
             </div>
             <RightSideBar
               wfcontext={WFContext.WORKFLOW}
-              // legacyRenderer={this.props.legacyRenderer}
               data={this.props.data}
               readOnly={this.readOnly}
-              //  parentRender={this.renderMethod}
             />
           </div>
 

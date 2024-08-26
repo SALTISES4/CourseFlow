@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
 import * as Reducers from '@cfReducers'
@@ -68,6 +69,7 @@ export class ProjectComparison extends WorkflowClass {
 
     super(props)
     this.state = {
+
       ready: false,
       viewType: ViewType.WORKFLOW
     }

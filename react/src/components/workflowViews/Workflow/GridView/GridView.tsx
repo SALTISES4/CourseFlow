@@ -4,16 +4,13 @@ import { connect } from 'react-redux'
 import { getWeekWorkflowByID, getWeekByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import GridWeek from '@cfViews/Workflow/GridView/GridWeek'
-import { CfObjectType, ViewType } from '@cfModule/types/enum'
 
 /**
  * Creates a grid with just nodes by week and their times
  */
 
-type OwnProps = {
-  // renderer: any
-  view_type: ViewType
-}
+type OwnProps = NonNullable<unknown>
+
 type ConnectedProps = {
   workflow: TWorkflow
   weeks: any[]
@@ -24,10 +21,8 @@ type StateType = {
 }
 type PropsType = OwnProps & ConnectedProps
 class GridViewUnconnected extends React.Component<PropsType, StateType> {
-  private objectType: CfObjectType
   constructor(props: PropsType) {
     super(props)
-    this.objectType = CfObjectType.WORKFLOW // @todo check addEditable
     this.state = { dropped_list: [] }
   }
 

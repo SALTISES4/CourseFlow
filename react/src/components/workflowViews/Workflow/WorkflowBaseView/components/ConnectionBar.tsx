@@ -17,25 +17,18 @@ const ConnectedUser = ({
       }}
       title={userName}
     >
-      {/*{userName[0]}*/}
-      {''}
+      {/*
+      this was previously userName[0], so this is likely broken and needs review
+      */}
+      {userName}
     </div>
   )
-}
-
-// @todo not sure where this goes
-
-//Container for common elements for workflows
-
-type PropsType = {
-  user_id: number
-  user_name: string
 }
 
 const ConnectionBar = () => {
   const context = useContext(WorkFlowConfigContext)
 
-  if (!context.isConnected) {
+  if (!context.wsConnected) {
     return (
       <div className="users-box connection-failed">
         {window.gettext('Not Connected')}
@@ -43,7 +36,7 @@ const ConnectionBar = () => {
     )
   }
 
-  const users = context.isConnected.map((user) => {
+  const users = context.connectedUsers.map((user) => {
     return (
       <ConnectedUser userColour={user.user_colour} userName={user.user_name} />
     )

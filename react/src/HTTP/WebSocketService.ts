@@ -5,6 +5,14 @@
  * 3 - CLOSED: The connection is closed or couldn't be opened.
  */
 
+export enum DATA_TYPE {
+  WORKFLOW_ACTION = 'workflow_action',
+  LOCK_UPDATE = 'lock_update',
+  CONNECTION_UPDATE = 'connection_update',
+  WORKFLOW_PARENT_UPDATED = 'workflow_parent_updated',
+  WORKFLOW_CHILD_UPDATED = 'workflow_child_updated'
+}
+
 type MessageHandler = (event: MessageEvent) => void
 type OpenHandler = () => void
 type CloseHandler = (event: CloseEvent) => void
@@ -106,5 +114,17 @@ export class WebSocketService {
         processMessage(message)
       }
     }
+  }
+
+  /**
+   * thin wrappers so we don't expose the underlying websocket object to other components
+   * perhaps not needed if we re-implement as singleton
+   */
+  getState() {
+    return this.websocket.readyState
+  }
+
+  send(jsonString: string) {
+    this.websocket.send(jsonString)
   }
 }
