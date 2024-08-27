@@ -3,7 +3,6 @@ import { Provider } from 'react-redux'
 import { AnyAction, configureStore, EmptyObject, Store } from '@reduxjs/toolkit'
 import * as Reducers from '@cfReducers'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
-import WorkflowBaseView from '@cfViews/Workflow/WorkflowBaseView/WorkflowBaseView'
 import {
   WorkflowDetailViewDTO,
   WorkflowPermission
@@ -28,6 +27,7 @@ import WebSocketServiceConnectedUserManager, {
 } from '@cfModule/HTTP/WebsocketServiceConnectedUserManager'
 import { PERMISSION_KEYS } from '@cfConstants'
 import { EProject } from '@XMLHTTP/types/entity'
+import WorkflowViewLayout from '@cfViews/WorkflowView/WorkflowViewLayout'
 
 const defaultPermissions: WorkflowPermission = {
   readOnly: false,
@@ -499,7 +499,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
             }
           }}
         >
-          <WorkflowBaseView
+          <WorkflowViewLayout
             // viewType={this.state.viewType}
             // alwaysStatic: this.always_static use 'public view' unless the use case gets better defined
             updateView={this.updateView}

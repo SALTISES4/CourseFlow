@@ -222,7 +222,6 @@ export type EOutcomenode = {
   degree: number
 }
 
-
 export type EOutcomeHorizontalLink = {
   outcome: number
   parent_outcome: number

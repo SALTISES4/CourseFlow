@@ -25,7 +25,9 @@ import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
  * redux state.
  *******************************************************/
 
-export async function getWorkflowById(id: string): Promise<GetWorkflowByIdQueryResp> {
+export async function getWorkflowById(
+  id: string
+): Promise<GetWorkflowByIdQueryResp> {
   const params = new URLSearchParams({ id }).toString()
   const url = `${COURSEFLOW_APP.globalContextData.path.json_api.workflow.detail}?${params}`
   return API_GET<GetWorkflowByIdQueryResp>(url)

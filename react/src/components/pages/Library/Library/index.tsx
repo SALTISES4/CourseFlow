@@ -1,9 +1,9 @@
 import * as React from 'react'
 import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter/index.jsx'
-import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { Workflow } from '@cfModule/types/common'
 import { LibraryQueryResp } from '@XMLHTTP/types/query'
 import { getLibraryQuery } from '@XMLHTTP/API/pages'
+import MenuBar from '@cfCommonComponents/layout/MenuBar'
 
 type PropsType = Record<string, never>
 type StateType = {
@@ -107,8 +107,8 @@ class LibraryPage extends React.Component<PropsType, StateType> {
     return (
       <div className="main-block">
         <MenuBar
-          overflowLinks={() => <this.OverflowLinks />}
-          visibleButtons={() => <this.CreateButton />}
+          visibleButtons={<this.CreateButton />}
+          overflowButtons={<this.OverflowLinks />}
         />
         <div className="project-menu">
           <WorkflowFilter

@@ -69,7 +69,6 @@ export class ProjectComparison extends WorkflowClass {
 
     super(props)
     this.state = {
-
       ready: false,
       viewType: ViewType.WORKFLOW
     }

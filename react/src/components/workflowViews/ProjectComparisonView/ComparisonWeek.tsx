@@ -6,12 +6,12 @@ import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
+import { insertedAtInstant } from '@XMLHTTP/API/update'
+import ComparisonNodeWeek from '@cfViews/ProjectComparisonView/ComparisonNodeWeek'
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
-} from '@cfViews/Workflow/WorkflowView/Week'
-import { insertedAtInstant } from '@XMLHTTP/API/update'
-import ComparisonNodeWeek from '@cfViews/ProjectComparisonView/ComparisonNodeWeek'
+} from '@cfViews/components/Week'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetWeekByIDType

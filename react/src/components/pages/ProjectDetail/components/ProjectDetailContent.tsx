@@ -9,7 +9,6 @@ import { Box, Dialog, DialogTitle, Link } from '@mui/material'
 import Header from '@cfPages/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
-import MenuBar from '@cfCommonComponents/components/MenuBar'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
@@ -19,6 +18,7 @@ import ProjectExportModal from '@cfModule/components/common/dialog/ProjectExport
 import ProjectArchiveModal from '@cfModule/components/common/dialog/ProjectArchive'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 import { Link as RouterLink } from 'react-router-dom'
+import MenuBar from '@cfModule/components/common/layout/MenuBar'
 
 /*******************************************************
  * The project library menu
@@ -404,8 +404,8 @@ function ProjectDetailContent({
   return (
     <div className="main-block">
       <MenuBar
-        overflowLinks={() => <OverflowLinks />}
-        visibleButtons={() => <VisibleButtons />}
+        overflowButtons={<OverflowLinks />}
+        visibleButtons={<VisibleButtons />}
       />
 
       <Box>

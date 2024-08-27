@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { getNodeWeekByID, TGetNodeWeekByID } from '@cfFindState'
 // @local
 import { AppState } from '@cfRedux/types/type'
-import { NodeWeekUnconnected } from '@cfViews/Workflow/WorkflowView/NodeWeek'
 import ComparisonNode from '@cfViews/ProjectComparisonView/ComparisonNode'
+import { NodeWeekUnconnected } from '@cfViews/components/NodeWeek'
 
 type ConnectedProps = TGetNodeWeekByID
 type OwnProps = any

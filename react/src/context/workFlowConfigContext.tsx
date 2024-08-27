@@ -2,7 +2,10 @@ import React, { ReactNode } from 'react'
 import { ViewType } from '@cfModule/types/enum'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { ConnectedUser } from '@cfModule/HTTP/WebsocketServiceConnectedUserManager'
-import {WorkflowDetailViewDTO, WorkflowPermission} from '@cfPages/Workspace/Workflow/types'
+import {
+  WorkflowDetailViewDTO,
+  WorkflowPermission
+} from '@cfPages/Workspace/Workflow/types'
 import { FieldChoice } from '@cfModule/types/common'
 import { EProject } from '@XMLHTTP/types/entity'
 
@@ -113,7 +116,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       user: {
         user_id: initialValue.workflowDetailResp.user_id, // workflow/detail api call, data_package
         user_name: initialValue.workflowDetailResp.user_name, // workflow/detail api call, data_package
-        isStudent: false// @todo
+        isStudent: false // @todo
       },
 
       // functions, these are the only items which actually belong to the 'workflow' react component class and as noted in the copponent, these

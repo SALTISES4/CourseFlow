@@ -10,8 +10,8 @@ import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
-import OutcomeNode from '@cfViews/Workflow/WorkflowView/OutcomeNode'
 import { CfObjectType } from '@cfModule/types/enum'
+import OutcomeNode from '@cfViews/components/OutcomeNode'
 
 type ConnectedProps = TGetNodeByID
 type OwnProps = {
@@ -87,11 +87,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
           style={{ borderColor: Constants.getColumnColour(this.props.column) }}
         >
           {data.outcomenode_unique_set.map((outcomenode) => (
-            <OutcomeNode
-              key={outcomenode}
-              objectID={outcomenode}
-              //legacyRenderer={this.props.legacyRenderer}
-            />
+            <OutcomeNode key={outcomenode} objectID={outcomenode} />
           ))}
         </div>
       )

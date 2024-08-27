@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
 import Loader from '@cfCommonComponents/UIComponents/Loader.js'
@@ -7,7 +8,6 @@ import ComparisonView from '@cfViews/ProjectComparisonView/ComparisonView'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { createTheme } from '@mui/material/styles'
 import createCache from '@emotion/cache'
-import { WorkflowComparisonViewDTO } from '@cfPages/Workspace/_ARCHIVE/Comparison/types'
 
 const cache = createCache({
   key: 'emotion',

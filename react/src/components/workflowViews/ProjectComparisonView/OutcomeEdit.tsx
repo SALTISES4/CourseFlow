@@ -5,12 +5,12 @@ import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { AppState } from '@cfRedux/types/type'
+import { CfObjectType } from '@cfModule/types/enum'
 import {
   OutcomeEditViewProps,
   OutcomeEditViewState,
   OutcomeEditViewUnconnected
-} from '@cfViews/Workflow/OutcomeEditView/OutcomeEditView'
-import { CfObjectType } from '@cfModule/types/enum'
+} from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeEditView'
 // import $ from 'jquery'
 
 type ConnectedProps = {
