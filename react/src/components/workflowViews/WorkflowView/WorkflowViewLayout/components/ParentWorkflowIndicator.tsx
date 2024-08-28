@@ -35,9 +35,12 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     if (!this.props.workflowId) {
       console.log('not defined')
+      return
+    }
+    if (this.props.workflowId === prevProps.workflowId) {
       return
     }
 

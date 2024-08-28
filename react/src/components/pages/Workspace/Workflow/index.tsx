@@ -212,7 +212,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
       //   preloadedState: response.data_package,
       //   devTools: process.env.NODE_ENV !== 'production' // Enable Redux DevTools only in non-production environments
       // })
-
       this.props.dispatch(ActionCreator.refreshStoreData(response.data_package))
 
       this.setState({
@@ -347,6 +346,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   }
 
   onParentWorkflowUpdateReceived() {
+
     this.isMessagesQueued = true
     getWorkflowParentDataQuery(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data

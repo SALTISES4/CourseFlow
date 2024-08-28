@@ -214,7 +214,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   const ToolbarWrap = () => {
     return (
       <Toolbar variant="dense">
-           <ReturnLinks />
+        <ReturnLinks />
         <Box sx={{ flexGrow: 1 }} className="title" />
         <Box sx={{ display: 'flex' }}>
           {isTeacher ? (
@@ -265,7 +265,6 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
     <TopBarWrap>
       <AppBar position="static">
         <ToolbarWrap />
-
       </AppBar>
 
       {/*
