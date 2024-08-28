@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import * as Constants from '@cfConstants'
+import * as Constants from '@cfModule/constants'
 import Slider from '@cfCommonComponents/UIComponents/Slider'
 import LegendLine from '@cfCommonComponents/UIComponents/LegendLine'
 // import $ from 'jquery'

@@ -1,11 +1,14 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { TitleText } from '@cfCommonComponents/UIComponents/Titles'
-import { WeekUnconnected, WeekUnconnectedPropsType } from './Week'
-import NodeWeek from './NodeWeek'
 import { getTermByID, TTermByID } from '@cfFindState'
 // import $ from 'jquery'
 import { AppState } from '@cfRedux/types/type'
+import {
+  WeekUnconnected,
+  WeekUnconnectedPropsType
+} from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
+import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
 
 type OwnProps = {
   objectID: number

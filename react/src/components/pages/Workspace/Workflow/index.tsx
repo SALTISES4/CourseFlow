@@ -303,7 +303,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   }
 
   onWorkflowUpdateReceived(data) {
-    this.store.dispatch(data.action)
+    this.props.dispatch(data.action)
   }
 
   onLockUpdateReceived(data) {
@@ -318,7 +318,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
       clearTimeout(this.locks[object_type][object_id])
     }
 
-    this.store.dispatch(
+    this.props.dispatch(
       ActionCreator.createLockAction(
         object_id,
         object_type,

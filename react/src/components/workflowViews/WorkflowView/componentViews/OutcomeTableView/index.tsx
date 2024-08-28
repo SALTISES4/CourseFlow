@@ -14,8 +14,8 @@ import {
 import { CfObjectType, ViewType } from '@cfModule/types/enum'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
-import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/OutcomeBase'
-import OutcomeLegend from '@cfViews/WorkflowView/componentViews/OutcomeTableView/OutcomeLegend'
+import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeBase'
+import OutcomeLegend from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeLegend'
 
 /**
  * The outcome table.

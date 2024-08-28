@@ -8,7 +8,6 @@ import { getNodeByID, TGetNodeByID } from '@cfFindState'
 import { NodeTitle, TitleText } from '@cfCommonComponents/UIComponents/Titles'
 import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
 import NodeLink from './NodeLink'
-import OutcomeNode from './OutcomeNode'
 import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithActionsProps,
@@ -19,6 +18,7 @@ import { CfObjectType } from '@cfModule/types/enum'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import NodePorts from '@cfViews/components/Node/NodePorts'
 import AutoLink from './AutoLink'
+import OutcomeNode from '@cfViews/components/OutcomeNode'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetNodeByID
@@ -36,7 +36,10 @@ type PropsType = ConnectedProps & OwnProps
 /**
  * Represents the node in the workflow view
  */
-class Node extends EditableComponentWithActions<PropsType, StateProps> {
+class NodeUnconnected extends EditableComponentWithActions<
+  PropsType,
+  StateProps
+> {
   static contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
@@ -465,7 +468,9 @@ const mapStateToProps = (state: AppState, ownProps: OwnProps): TGetNodeByID => {
   return getNodeByID(state, ownProps.objectID)
 }
 
-export default connect<ConnectedProps, object, OwnProps, AppState>(
+const Node = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
-)(Node)
+)(NodeUnconnected)
+
+export default Node

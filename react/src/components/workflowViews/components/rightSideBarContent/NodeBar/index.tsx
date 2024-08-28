@@ -28,8 +28,6 @@ type PropsType = OwnProps & ConnectedProps
 class NodeBarUnconnected extends React.Component<PropsType> {
   constructor(props: PropsType) {
     super(props)
-    console.log('this.props.columnChoices in nodebar/index')
-    console.log(this.props.columnChoices)
   }
   /*******************************************************
    * RENDER

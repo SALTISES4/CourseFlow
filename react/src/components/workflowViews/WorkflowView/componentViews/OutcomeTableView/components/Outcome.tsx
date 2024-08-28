@@ -187,8 +187,6 @@ export class OutcomeUnconnected<
   constructor(props: P) {
     super(props)
     this.objectType = CfObjectType.OUTCOME
-    console.log('OutcomeUnconnected props')
-    console.log(props)
   }
 
   /*******************************************************
@@ -274,8 +272,6 @@ export class OutcomeUnconnected<
 
     const outcome_row = this.props.outcome_tree?.outcomenodes?.map(
       (outcomenodegroup) => {
-        console.log('outcomenodegroup')
-        console.log(outcomenodegroup)
         const group_row = outcomenodegroup?.map((outcomenode) => (
           <TableCell
             outcomesType={this.props.outcomes_type}

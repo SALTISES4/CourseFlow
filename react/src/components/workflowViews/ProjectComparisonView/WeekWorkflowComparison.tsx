@@ -7,7 +7,7 @@ import { AppState } from '@cfRedux/types/type'
 import {
   WeekWorkflowUnconnected,
   WeekWorkflowUnconnectedProps
-} from '@cfViews/components/WeekWorkflow'
+} from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WeekWorkflow'
 
 type ConnectedProps = TGetWeekWorkflowByID
 type OwnProps = WeekWorkflowUnconnectedProps

@@ -11,7 +11,7 @@ import ComparisonNodeWeek from '@cfViews/ProjectComparisonView/ComparisonNodeWee
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
-} from '@cfViews/components/Week'
+} from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetWeekByIDType

@@ -118,9 +118,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
     this.context = context
 
-    console.log('this.context')
-    console.log(this.context)
-
     this.data = this.props.data
     this.project = this.context.workflow.project
     this.workflowId = this.context.workflow.workflowID
@@ -364,7 +361,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   updateFunction(new_data) {
     if (new_data.liveproject) {
-      console.log('liveproject updated')
     } else {
       this.setState({
         ...this.state,
@@ -428,13 +424,16 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               objectID={weekworkflow}
             />
           ),
-          action: null
+          action: null,
+          show: true
         }
       }
     )
     const header: MenuItemType = {
       content: window.gettext('Expand/Collapse'),
-      icon: <KeyboardDoubleArrowDownIcon />
+      icon: <KeyboardDoubleArrowDownIcon />,
+      showIconInList: true,
+      show: true
     }
 
     return <SimpleMenu menuItems={menuItems} header={header} />
@@ -443,7 +442,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   ExpandCollapseMenu = () => {
     const header: MenuItemType = {
       content: window.gettext('Expand/Collapse'),
-      icon: <ZoomOutMapIcon />
+      icon: <ZoomOutMapIcon />,
+      showIconInList: true,
+      show: true
     }
 
     const menuItems: MenuItemType[] = [
@@ -451,41 +452,46 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         content: window.gettext('Expand all weeks'),
         action: this.expandAll.bind(this, CfObjectType.WEEK),
         icon: <ZoomOutMapIcon />,
-        showIconInList: true
+        showIconInList: true,
+        show: true
       },
       {
         content: window.gettext('Collapse all weeks'),
         action: this.collapseAll.bind(this, CfObjectType.WEEK),
         icon: <ZoomInMapIcon />,
-        showIconInList: true
+        showIconInList: true,
+        show: true
       },
       {
         content: window.gettext('Expand all nodes'),
         action: this.expandAll.bind(this, CfObjectType.NODE),
         icon: <ZoomInMapIcon />,
-        showIconInList: true
+        showIconInList: true,
+        show: true
       },
       {
         content: window.gettext('Collapse all nodes'),
         action: this.expandAll.bind(this, CfObjectType.NODE),
         icon: <ZoomOutMapIcon />,
+        showIconInList: true,
         seperator: true,
-        showIconInList: true
+        show: true
       },
       {
         content: window.gettext('Expand all outcomes'),
         action: this.expandAll.bind(this, CfObjectType.OUTCOME),
         icon: <ZoomInMapIcon />,
-        showIconInList: true
+        showIconInList: true,
+        show: true
       },
       {
         content: window.gettext('Collapse all outcomes'),
         action: this.expandAll.bind(this, CfObjectType.OUTCOME),
         icon: <ZoomOutMapIcon />,
-        seperator: true
+        show: true
       }
     ]
-    return <SimpleMenu menuItems={menuItems} header={header} />
+    return <SimpleMenu header={header} menuItems={menuItems} />
   }
 
   ActionMenu = () => {
@@ -628,7 +634,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       <>
         {this.addEditable(this.props.data)}
 
-
         <div className="main-block">
           <MenuBar
             leftSection={<this.ActionMenu />}
@@ -650,7 +655,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                   data={this.data} // @todo clean this up
                   changeView={this.changeView.bind(this)}
                 />
-
               </div>
             </div>
 

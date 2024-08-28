@@ -4,7 +4,7 @@ import { AppState } from '@cfRedux/types/type'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import { createOutcomeNodeBranch } from '@cfModule/utility/createOutcomeNodeBranch'
 import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/CompetencyMatrixView/CompetencyMatrixView'
-import Outcome from '@cfViews/WorkflowView/componentViews/OutcomeTableView/Outcome'
+import Outcome from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/Outcome'
 /**
  * The base representation of an outcome line in a table,
  * regardless of the orientation of the table

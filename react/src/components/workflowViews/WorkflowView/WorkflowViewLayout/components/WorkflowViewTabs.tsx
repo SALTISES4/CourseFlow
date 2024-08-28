@@ -3,7 +3,7 @@ import * as React from 'react'
 import * as Utility from '@cfModule/utility/utilityFunctions'
 import AlignmentView from '@cfViews/WorkflowView/componentViews/AlignmentView/AlignmentView'
 import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/CompetencyMatrixView/CompetencyMatrixView'
-import OutcomeTableView from '@cfViews/WorkflowView/componentViews/OutcomeTableView/OutcomeTableView'
+import Index from '@cfViews/WorkflowView/componentViews/OutcomeTableView'
 import GridView from '@cfViews/WorkflowView/componentViews/GridView/GridView'
 import WorkflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
 import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeEditView'
@@ -90,11 +90,10 @@ const WorkflowContent = ({
     }
     case ViewType.OUTCOMETABLE: {
       allowedTabs.push(3)
-      // @ts-ignore figure out table type origin
-      if (this.data.table_type === 1) {
+      if (data.table_type === 1) {
         return <CompetencyMatrixView />
       }
-      return <OutcomeTableView />
+      return <Index />
     }
     case ViewType.OUTCOME_EDIT: {
       if (data.type == 'program') {

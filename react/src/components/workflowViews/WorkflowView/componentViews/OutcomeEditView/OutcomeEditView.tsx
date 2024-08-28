@@ -93,8 +93,6 @@ export class OutcomeEditViewUnconnected<
   }
 
   addNewWrapper(objectset) {
-    console.log('objectset')
-    console.log(objectset)
     newOutcomeQuery(this.props.workflow.id, objectset.id)
   }
 

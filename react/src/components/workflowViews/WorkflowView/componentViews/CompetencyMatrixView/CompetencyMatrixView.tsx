@@ -8,8 +8,8 @@ import { CfObjectType, ViewType } from '@cfModule/types/enum.js'
 import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
-import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/OutcomeBase'
-import OutcomeLegend from '@cfViews/WorkflowView/componentViews/OutcomeTableView/OutcomeLegend'
+import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeBase'
+import OutcomeLegend from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeLegend'
 
 const GrandTotals = ({ totals }) => {
   return (
@@ -153,8 +153,6 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
       (node) => !Utility.checkSetHidden(node, this.props.objectset)
     )
 
-    console.log('CompetencyMatrixView.tsx nodes_data for typing')
-    console.log(nodes_data)
     const linked_wf_data = nodes_data.map((node) => {
       if (node.represents_workflow)
         return {

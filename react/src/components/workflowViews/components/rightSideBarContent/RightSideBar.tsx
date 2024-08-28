@@ -98,8 +98,6 @@ class RightSideBar extends React.Component<PropsType> {
   }
 
   OutcomeBarWrapper = () => {
-    console.log('OutcomeBarWrapper')
-    console.log(this.props)
     if (this.props.wfcontext === WFContext.COMPARISON) {
       return null
     }

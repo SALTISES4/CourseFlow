@@ -4,7 +4,7 @@ import { getNodeWeekByID, TGetNodeWeekByID } from '@cfFindState'
 // @local
 import { AppState } from '@cfRedux/types/type'
 import ComparisonNode from '@cfViews/ProjectComparisonView/ComparisonNode'
-import { NodeWeekUnconnected } from '@cfViews/components/NodeWeek'
+import { NodeWeekUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
 
 type ConnectedProps = TGetNodeWeekByID
 type OwnProps = any

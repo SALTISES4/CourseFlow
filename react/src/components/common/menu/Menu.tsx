@@ -55,17 +55,13 @@ export const ListMenuItem = ({
     return null
   }
 
-  const contentChooser = (content) => {
+  const contentChooser = (content: string | ReactElement) => {
     if (typeof content === 'string') {
-      if (showIconInList) {
-        return (
-          <>
-            {icon}
-            <Typography>{content}</Typography>
-          </>
-        )
-      }
-      return <Typography>{content}</Typography>
+      return (
+        <>
+          {showIconInList && icon} <Typography>{content}</Typography>
+        </>
+      )
     }
     return content
   }
@@ -101,7 +97,7 @@ const SimpleMenu = ({
     setAnchorEl(null)
   }
 
-  const overflowButtons = menuItems.map((item, el) => {
+  const buttons = menuItems.map((item, el) => {
     return <ListMenuItem key={item.id} {...item} />
   })
 
@@ -125,7 +121,7 @@ const SimpleMenu = ({
           'aria-labelledby': 'basic-button'
         }}
       >
-        {overflowButtons})
+        {buttons}
       </Menu>
     </>
   )

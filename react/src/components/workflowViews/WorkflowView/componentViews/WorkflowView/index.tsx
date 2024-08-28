@@ -11,9 +11,9 @@ import {
 } from '@cfEditableComponents/EditableComponentWithSorting'
 import { CfObjectType } from '@cfModule/types/enum'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
-import WeekWorkflow from '@cfViews/components/WeekWorkflow'
 import ColumnWorkflow from '@cfViews/components/ColumnWorkflow'
-import WorkflowLegend from '@cfViews/components/WorkflowLegend'
+import WeekWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WeekWorkflow'
+import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WorkflowLegend'
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -96,7 +96,6 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     child_id: number
   ) {
     if (type === 'columnworkflow') {
-      console.log('columnworkflow sortablemoved', id)
       this.context.editableMethods.micro_update(
         ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
       )

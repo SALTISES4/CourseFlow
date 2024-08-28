@@ -41,19 +41,16 @@ const MenuBar = (props: PropsType) => {
   /*******************************************************
    * RENDER
    *******************************************************/
-  const viewBar = viewbar ?? null
-  const userBar = userbar ?? null
-
   return (
     <div className="menubar">
       <div id="floatbar" className="floatbar">
         {leftSection}
       </div>
       <div id="userbar" className="floatbar">
-        {userBar}
+        {userbar}
       </div>
       <div id="viewbar" className="floatbar">
-        {viewBar}
+        {viewbar}
       </div>
     </div>
   )

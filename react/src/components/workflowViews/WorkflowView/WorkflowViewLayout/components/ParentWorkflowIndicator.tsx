@@ -6,6 +6,8 @@ import {
   getPublicParentWorkflowInfo
 } from '@XMLHTTP/API/workflow'
 import { AppState } from '@cfRedux/types/type'
+import Divider from '@mui/material/Divider'
+import { Typography } from '@mui/material'
 
 type ConnectedProps = {
   childWorkflows: any
@@ -35,7 +37,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: PropsType) {
     if (!this.props.workflowId) {
       console.log('not defined')
       return
@@ -87,47 +89,54 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
         return null
       }
 
-      const parent_workflows = this.state.parent_workflows.map(
-        (childWorkflow, index) => (
-          <WorkflowTitle
-            key={`WorkflowTitleParent-${index}`}
-            data={childWorkflow}
-            test_id="panel-favourite"
-          />
-        )
-      )
-      const child_workflows = this.props.childWorkflows.map(
-        (childWorkflow, index) => (
-          <WorkflowTitle
-            key={`WorkflowTitleChild-${index}`}
-            data={childWorkflow}
-            test_id="panel-favourite"
-          />
-        )
-      )
-      const return_val = [
-        <hr key="br" />,
-        <a key="quick-nav" className="panel-item">
-          {window.gettext('Quick Navigation')}
-        </a>
-      ]
-      if (parent_workflows.length > 0)
-        return_val.push(
-          <a className="panel-item">{window.gettext('Used in:')}</a>,
-          ...parent_workflows
-        )
-      if (child_workflows.length > 0)
-        return_val.push(
-          <a className="panel-item">{window.gettext('Workflows Used:')}</a>,
-          ...child_workflows
-        )
+      const ParentWorkflows = () => {
+        if (this.state.parent_workflows.length > 0) {
+          return (
+            <>
+              <Typography>{window.gettext('Used in:')}</Typography>
+              {this.state.parent_workflows.map((workflow, index) => (
+                <WorkflowTitle
+                  key={`WorkflowTitleParent-${index}`}
+                  data={workflow}
+                  test_id="panel-favourite"
+                />
+              ))}
+            </>
+          )
+        }
+        return null
+      }
 
-      return <>{return_val}</>
+      const ChildWorkflows = () => {
+        if (this.props.childWorkflows.length > 0) {
+          return (
+            <>
+              <Typography>{window.gettext('Workflows Used:')}</Typography>
+              {this.props.childWorkflows.map((workflow, index) => (
+                <WorkflowTitle
+                  key={`WorkflowTitleParent-${index}`}
+                  data={workflow}
+                  test_id="panel-favourite"
+                />
+              ))}
+            </>
+          )
+        }
+        return null
+      }
+
+      return (
+        <>
+          <Divider />
+          <Typography>{window.gettext('Quick Navigation')}</Typography>
+          <ParentWorkflows />
+          <ChildWorkflows />
+        </>
+      )
     }
-
-    return <></>
   }
 }
+
 const mapStateToProps = (state: AppState) => {
   return {
     workflowId: state.workflow.id,
