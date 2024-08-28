@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import List from '@mui/material/List'
 import Divider from '@mui/material/Divider'
 import ListItem from '@mui/material/ListItem'
@@ -26,6 +26,7 @@ import {
   SeeAllLink,
   HelpLink
 } from './styles'
+import ParentWorkflowIndicator from '@cfViews/WorkflowView/WorkflowViewLayout/components/ParentWorkflowIndicator'
 
 const CFLogo = () => (
   <svg width="40" height="40" fill="none">
@@ -244,6 +245,8 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
             </FavouritesWrap>
           </>
         ) : null}
+
+        <ParentWorkflowIndicator />
 
         <HelpLink>
           <ListItem disablePadding dense>

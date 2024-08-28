@@ -662,7 +662,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                   changeView={this.changeView.bind(this)}
                 />
 
-                <ParentWorkflowIndicator workflow_id={this.workflowId} />
               </div>
             </div>
 

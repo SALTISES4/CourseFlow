@@ -1,7 +1,6 @@
 import React from 'react'
-import { connect, DispatchProp, Provider } from 'react-redux'
-import { AnyAction, configureStore, EmptyObject, Store } from '@reduxjs/toolkit'
-import * as Reducers from '@cfReducers'
+import { connect, DispatchProp } from 'react-redux'
+import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
 import {
   WorkflowDetailViewDTO,
@@ -42,9 +41,9 @@ type StateProps = {
   ready: boolean
   viewType: ViewType
 }
-type PropsType = Record<string, never>
 type OwnProps = Record<string, never>
 type ConnectedProps = Record<string, never>
+type PropsType = DispatchProp & OwnProps & ConnectedProps
 
 const calcPermissions = (userPermission: number): WorkflowPermission => {
   switch (userPermission) {
@@ -208,11 +207,13 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     getWorkflowDataQuery(this.workflowID, (response) => {
       // this.unread_comments = response.data_package?.unread_comments // @todo do not assign this explicitly here, not seeing this in data package yet
 
-      this.store = configureStore({
-        reducer: Reducers.rootWorkflowReducer,
-        preloadedState: response.data_package,
-        devTools: process.env.NODE_ENV !== 'production' // Enable Redux DevTools only in non-production environments
-      })
+      // this.store = configureStore({
+      //   reducer: Reducers.rootWorkflowReducer,
+      //   preloadedState: response.data_package,
+      //   devTools: process.env.NODE_ENV !== 'production' // Enable Redux DevTools only in non-production environments
+      // })
+
+      this.props.dispatch(ActionCreator.refreshStoreData(response.data_package))
 
       this.setState({
         ...this.state,
