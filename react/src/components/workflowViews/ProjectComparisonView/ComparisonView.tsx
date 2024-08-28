@@ -18,6 +18,8 @@ import {
 import { EProject } from '@XMLHTTP/types/entity'
 import { ObjectSet } from '@cfModule/types/common'
 import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
 // import $ from 'jquery'
 
 /**
@@ -202,7 +204,8 @@ class ComparisonView extends React.Component<PropsType, StateType> {
           String(data.id)
         )}
       >
-        <span className="green material-symbols-rounded">arrow_back_ios</span>
+        {/*green*/}
+        <ArrowBackIosIcon />
         <div>{window.gettext('Return to project')}</div>
       </a>,
       $('.titlebar .title')[0]
@@ -290,7 +293,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
         onClick={this.loadWorkflow.bind(this)}
       >
         <div className="flex-middle">
-          <span className="material-symbols-rounded filled">add_circle</span>
+          <AddCircleIcon />
           <div>{window.gettext('Load new workflow')}</div>
         </div>
       </button>

@@ -7,6 +7,16 @@ import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
 import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/sharing'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import { EUser } from '@XMLHTTP/types/entity'
+import AddLinkIcon from '@mui/icons-material/AddLink'
+import LinkIcon from '@mui/icons-material/Link'
+import CodeIcon from '@mui/icons-material/Code'
+import CloseIcon from '@mui/icons-material/Close'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import PublicIcon from '@mui/icons-material/Public'
+import LinkOffIcon from '@mui/icons-material/LinkOff'
+import BlockIcon from '@mui/icons-material/Block'
+import DoneIcon from '@mui/icons-material/Done'
+
 
 type PropsType = {
   data: any
@@ -176,7 +186,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             onClick={this.togglePublicView.bind(this, !public_view)}
           >
             <div className="public-link-icon">
-              <span className="material-symbols-rounded">add_link</span>
+              <AddLinkIcon />
             </div>
             <div>
               <div className="public-link-text">
@@ -204,9 +214,11 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
                 const copy_description_text = $(
                   '#public-page-link .copy-link-text'
                 ).text()
+
                 $(
                   '#public-page-link .copy-link-icon .material-symbols-rounded'
                 ).text('done')
+
                 $('#public-page-link .copy-link-text').text(
                   'Copied to Clipboard'
                 )
@@ -221,7 +233,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
               }}
             >
               <div className="copy-link-icon">
-                <span className="material-symbols-rounded">link</span>
+                <LinkIcon />
               </div>
               <div>
                 <div className="copy-link-text">
@@ -241,22 +253,31 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
                   public_link +
                   '"></iframe>'
                 navigator.clipboard.writeText(iframe)
+
                 const copy_icon_text = $(
                   '#public-page-code .copy-link-icon .material-symbols-rounded'
                 ).text()
+                console.log('copy_icon_text')
+                console.log(copy_icon_text)
+
                 const copy_description_text = $(
                   '#public-page-code .copy-link-text'
                 ).text()
+
+                /*       <DoneIcon /> */
                 $(
                   '#public-page-code .copy-link-icon .material-symbols-rounded'
                 ).text('done')
+
                 $('#public-page-code .copy-link-text').text(
                   'Copied to Clipboard'
                 )
+
                 setTimeout(() => {
                   $(
                     '#public-page-code .copy-link-icon .material-symbols-rounded'
                   ).text(copy_icon_text)
+
                   $('#public-page-code .copy-link-text').text(
                     copy_description_text
                   )
@@ -264,7 +285,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
               }}
             >
               <div className="copy-link-icon">
-                <span className="material-symbols-rounded">frame_source</span>
+                <CodeIcon />
               </div>
               <div>
                 <div className="copy-link-text">
@@ -283,7 +304,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             onClick={this.togglePublicView.bind(this, !public_view)}
           >
             <div className="public-link-icon">
-              <span className="material-symbols-rounded">link_off</span>
+              <LinkOffIcon />
             </div>
             <div>
               <div className="public-link-text">
@@ -328,7 +349,8 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
 
         disabled_indicator = (
           <div className="warning flex-middle">
-            <span className="material-symbols-rounded red">block</span>
+            {/* red */}
+            <BlockIcon />
             <div>{disabled_text}</div>
           </div>
         )
@@ -342,7 +364,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             disabled={public_disabled}
             onClick={this.setPublication.bind(this, true && !public_disabled)}
           >
-            <span className="material-symbols-rounded">public</span>
+            <PublicIcon />
             <div className="big-button-title">
               {window.gettext('Public to CourseFlow')}
             </div>
@@ -353,9 +375,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             className={private_class}
             onClick={this.setPublication.bind(this, false)}
           >
-            <span className="material-symbols-rounded filled">
-              visibility_off
-            </span>
+            <VisibilityOffIcon />
             <div className="big-button-title">{window.gettext('Private')}</div>
             <div className="big-button-description">
               {window.gettext('Only added collaborators can view')}
@@ -370,7 +390,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         published_icon = (
           <div className="big-buttons-wrapper">
             <div className="big-button active">
-              <span className="material-symbols-rounded">public</span>
+              <PublicIcon />
               <div className="big-button-title">
                 {window.gettext('Project public to CourseFlow')}
               </div>
@@ -384,9 +404,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         published_icon = (
           <div className="big-buttons-wrapper">
             <div className="big-button active">
-              <span className="material-symbols-rounded filled">
-                visibility_off
-              </span>
+              <VisibilityOffIcon />
               <div className="big-button-title">
                 {window.gettext('Project is private')}
               </div>
@@ -514,7 +532,8 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <span className="green material-symbols-rounded">close</span>
+          {/* green */}
+          <CloseIcon />
         </div>
         <div className="action-bar">
           <button

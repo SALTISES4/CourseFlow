@@ -36,15 +36,22 @@ import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
 import MenuBar from '@cfModule/components/common/layout/MenuBar'
 import ParentWorkflowIndicator from '@cfViews/WorkflowView/WorkflowViewLayout/components/ParentWorkflowIndicator'
 import Header from '@cfViews/WorkflowView/WorkflowViewLayout/components/Header'
-import {
-  IconMenuItem,
-  ListMenuItem,
-  MenuItemType
-} from './components/menuBar/MenuButtons'
 
 import WorkflowViewTabs from '@cfViews/WorkflowView/WorkflowViewLayout/components/WorkflowViewTabs'
 import ReturnLinks from '@cfViews/WorkflowView/WorkflowViewLayout/components/ReturnLinks'
 import { ReactElement } from 'react'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import EditIcon from '@mui/icons-material/Edit'
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
+import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
+import {
+  MenuItemType,
+  MenuWithOverflow,
+  SimpleMenu
+} from '@cfCommonComponents/menu/Menu'
+import Typography from '@mui/material/Typography'
+import JumpToWeekWorkflow from '@cfViews/WorkflowView/WorkflowViewLayout/components/menuBar/JumpToWeekWorkflow'
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -166,6 +173,10 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
       this.setState({ users: data })
     })
+  }
+
+  changeView(type: ViewType) {
+    this.props.updateView(type)
   }
 
   /*******************************************************
@@ -323,19 +334,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   }
 
   /*******************************************************
-   * FUNCTIONS AND MENU HANDLERS
-   *******************************************************/
-  changeView(type: ViewType) {
-    this.props.updateView(type)
-  }
-
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-
-  // @todo these will be our tab buttons
-
-  /*******************************************************
    * MODALS, @todo move these into the global modal hook
    *******************************************************/
 
@@ -418,38 +416,113 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     )
   }
 
-  MenuItems = (): [ReactElement[], ReactElement[]] => {
-    const menuActions: MenuItemType[] = [
+  /*******************************************************
+   * MENUS
+   *******************************************************/
+  JumpToMenu = () => {
+    if (this.context.viewType !== ViewType.WORKFLOW) {
+      return null
+    }
+    const menuItems: MenuItemType[] = this.data.weekworkflow_set.map(
+      (weekworkflow, index) => {
+        return {
+          content: (
+            <JumpToWeekWorkflow
+              key={`weekworkflow-${weekworkflow}`}
+              order={this.data.weekworkflow_set}
+              objectID={weekworkflow}
+            />
+          ),
+          action: null
+        }
+      }
+    )
+    const header: MenuItemType = {
+      content: window.gettext('Expand/Collapse'),
+      icon: <KeyboardDoubleArrowDownIcon />
+    }
+
+    return <SimpleMenu menuItems={menuItems} header={header} />
+  }
+
+  ExpandCollapseMenu = () => {
+    const header: MenuItemType = {
+      content: window.gettext('Expand/Collapse'),
+      icon: <ZoomOutMapIcon />
+    }
+
+    const menuItems: MenuItemType[] = [
+      {
+        content: window.gettext('Expand all weeks'),
+        action: this.expandAll.bind(this, CfObjectType.WEEK),
+        icon: <ZoomOutMapIcon />,
+        showIconInList: true
+      },
+      {
+        content: window.gettext('Collapse all weeks'),
+        action: this.collapseAll.bind(this, CfObjectType.WEEK),
+        icon: <ZoomInMapIcon />,
+        showIconInList: true
+      },
+      {
+        content: window.gettext('Expand all nodes'),
+        action: this.expandAll.bind(this, CfObjectType.NODE),
+        icon: <ZoomInMapIcon />,
+        showIconInList: true
+      },
+      {
+        content: window.gettext('Collapse all nodes'),
+        action: this.expandAll.bind(this, CfObjectType.NODE),
+        icon: <ZoomOutMapIcon />,
+        seperator: true,
+        showIconInList: true
+      },
+      {
+        content: window.gettext('Expand all outcomes'),
+        action: this.expandAll.bind(this, CfObjectType.OUTCOME),
+        icon: <ZoomInMapIcon />,
+        showIconInList: true
+      },
+      {
+        content: window.gettext('Collapse all outcomes'),
+        action: this.expandAll.bind(this, CfObjectType.OUTCOME),
+        icon: <ZoomOutMapIcon />,
+        seperator: true
+      }
+    ]
+    return <SimpleMenu menuItems={menuItems} header={header} />
+  }
+
+  ActionMenu = () => {
+    const menuItems: MenuItemType[] = [
       {
         id: 'edit-project',
         title: window.gettext('Edit Workflow'),
         action: this.openEditMenu.bind(this),
-        icon: <div>icon button</div>,
+        content: <EditIcon />,
         show: !this.context.permissions.workflowPermission.readOnly
       },
-
       {
         id: 'share',
         title: window.gettext('Sharing'),
+        content: <PersonAddIcon />,
         action: this.openShareDialog.bind(this),
-        icon: <div>icon button</div>,
         show: !this.context.permissions.workflowPermission.readOnly
       },
       {
         id: 'export',
-        title: window.gettext('Export'),
+        content: window.gettext('Export'),
         action: this.openExportDialog.bind(this),
-        icon: null,
         show:
           (!this.public_view || this.user_id) &&
-          this.context.permissions.workflowPermission.canView
+          this.context.permissions.workflowPermission.canView,
+        seperator: true
       },
       // hidden
       {
         id: 'copy-to-project',
-        title: window.gettext('Copy into current project'),
+        content: window.gettext('Copy into current project'),
         action: this.copyToProject.bind(this),
-        icon: null,
         show:
           this.user_id &&
           !this.data.is_strategy &&
@@ -457,66 +530,59 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       },
       {
         id: 'copy-to-library',
-        title: window.gettext('Copy to my library'),
+        content: window.gettext('Copy to my library'),
         action: this.openExportDialog.bind(this),
-        icon: null,
         show:
           !(this.public_view && !this.user_id) &&
           !(this.public_view && !this.user_id)
       },
       {
         id: 'import-outcomes',
-        title: window.gettext('Import outcomes'),
+        content: window.gettext('Import outcomes'),
         action: this.importOutcomes.bind(this),
-        icon: null,
         show:
           !(this.public_view && !this.user_id) &&
           !(this.public_view && !this.user_id)
       },
       {
         id: 'import-nodes',
-        title: window.gettext('Import nodes'),
+        content: window.gettext('Import nodes'),
         action: this.importNodes.bind(this),
-        icon: null,
         show:
           !(this.public_view && !this.user_id) &&
-          !(this.public_view && !this.user_id)
+          !(this.public_view && !this.user_id),
+        seperator: true
       },
       {
         id: 'delete-workflow',
         action: this.deleteWorkflow.bind(this),
-        title: window.gettext('Archive workflow'),
-        icon: null,
+        content: window.gettext('Archive workflow'),
         show: !this.readOnly && !this.data.deleted
       },
       {
         id: 'restore-workflow',
         action: this.restoreWorkflow.bind(this),
-        title: window.gettext('Restore workflow'),
-        icon: null,
+        content: window.gettext('Restore workflow'),
         show: !this.readOnly && this.data.deleted
       },
       {
         id: 'hard-delete-workflow',
         action: this.deleteWorkflowHard.bind(this),
-        title: window.gettext('Permanently delete workflow'),
-        icon: null,
+        content: window.gettext('Permanently delete workflow'),
         show: !this.readOnly && this.data.deleted
       }
     ]
 
-    const withIcons = []
-    const withoutIcons = []
+    return <MenuWithOverflow menuItems={menuItems} size={2} />
+  }
 
-    menuActions.forEach((item) => {
-      if (item.icon) {
-        withIcons.push(<IconMenuItem key={item.id} {...item} />)
-      } else {
-        withoutIcons.push(<ListMenuItem key={item.id} {...item} />)
-      }
-    })
-
-    return [withIcons, withoutIcons] // Returns a tuple of arrays
+  ViewBar = () => {
+    return (
+      <>
+        <this.JumpToMenu />
+        <this.ExpandCollapseMenu />
+      </>
+    )
   }
 
   // clickImport(import_type, evt) {
@@ -563,23 +629,21 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * RENDER
    *******************************************************/
   render() {
-    const [iconMenuItems, listMenuItems] = this.MenuItems()
-
     return (
-      <DialogContextProvider>
+      <>
         {this.addEditable(this.props.data)}
+
         <ReturnLinks
           project={this.project}
           isStudent={this.context.user.isStudent}
           publicView={this.public_view}
           canView={this.context.permissions.workflowPermission.canView}
         />
+
         <div className="main-block">
           <MenuBar
-            visibleButtons={iconMenuItems}
-            overflowButtons={listMenuItems}
-            // viewbar={<ViewBar />}
-            viewbar={<div>hello</div>}
+            leftSection={<this.ActionMenu />}
+            viewbar={<this.ViewBar />}
             userbar={<ConnectionBar show={!this.always_static} />}
           />
           <div className="right-panel-wrapper">
@@ -595,7 +659,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                   isStrategy={this.context.workflow.is_strategy}
                   viewType={this.context.viewType}
                   data={this.data} // @todo clean this up
-                  changeView={this.changeView}
+                  changeView={this.changeView.bind(this)}
                 />
 
                 <ParentWorkflowIndicator workflow_id={this.workflowId} />
@@ -616,7 +680,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           <ImportModal workflowID={this.data.id} />
           <this.ShareDialog />
         </div>
-      </DialogContextProvider>
+      </>
     )
   }
 }

@@ -4,6 +4,7 @@ import CollapsibleText from '@cfCommonComponents/UIComponents/CollapsibleText'
 import * as Utility from '@cfModule/utility/utilityFunctions'
 import { useContext } from 'react'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import PublicIcon from '@mui/icons-material/Public'
 
 const Users = ({
   users,
@@ -27,7 +28,7 @@ const Users = ({
     users_group.push(
       <div className="user-name">
         {Utility.getUserTag('view')}
-        <span className="material-symbols-rounded">public</span>{' '}
+        <PublicIcon />
         {window.gettext('All CourseFlow')}
       </div>
     )

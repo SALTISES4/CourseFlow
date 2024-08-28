@@ -1,5 +1,5 @@
 import React from 'react'
-import { Provider } from 'react-redux'
+import { connect, DispatchProp, Provider } from 'react-redux'
 import { AnyAction, configureStore, EmptyObject, Store } from '@reduxjs/toolkit'
 import * as Reducers from '@cfReducers'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
@@ -43,6 +43,8 @@ type StateProps = {
   viewType: ViewType
 }
 type PropsType = Record<string, never>
+type OwnProps = Record<string, never>
+type ConnectedProps = Record<string, never>
 
 const calcPermissions = (userPermission: number): WorkflowPermission => {
   switch (userPermission) {
@@ -476,40 +478,44 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     }
 
     return (
-      <Provider store={this.store}>
-        <WorkFlowConfigProvider
-          // some of these could have been direct props to WorkflowBaseView
-          // but gor now it makes sense to keep them together and organized
-          initialValue={{
-            workflowDetailResp: this.workflowDetailResp,
-            selectionManager: this.selectionManager,
-            viewType: this.state.viewType,
-            editableMethods: {
-              lock_update: this.lock_update,
-              micro_update: this.micro_update,
-              change_field: this.change_field
-            },
-            ws: {
-              wsConnected: this.state.wsConnected,
-              connectedUsers: this.state.connectedUsers
-            },
-            permissions: {
-              projectPermission: this.project_permission,
-              workflowPermission: this.workflowPermission
-            }
-          }}
-        >
-          <WorkflowViewLayout
-            // viewType={this.state.viewType}
-            // alwaysStatic: this.always_static use 'public view' unless the use case gets better defined
-            updateView={this.updateView}
-          />
-        </WorkFlowConfigProvider>
-      </Provider>
+      <WorkFlowConfigProvider
+        // some of these could have been direct props to WorkflowBaseView
+        // but gor now it makes sense to keep them together and organized
+        initialValue={{
+          workflowDetailResp: this.workflowDetailResp,
+          selectionManager: this.selectionManager,
+          viewType: this.state.viewType,
+          editableMethods: {
+            lock_update: this.lock_update,
+            micro_update: this.micro_update,
+            change_field: this.change_field
+          },
+          ws: {
+            wsConnected: this.state.wsConnected,
+            connectedUsers: this.state.connectedUsers
+          },
+          permissions: {
+            projectPermission: this.project_permission,
+            workflowPermission: this.workflowPermission
+          }
+        }}
+      >
+        <WorkflowViewLayout
+          // viewType={this.state.viewType}
+          // alwaysStatic: this.always_static use 'public view' unless the use case gets better defined
+          updateView={this.updateView}
+        />
+      </WorkFlowConfigProvider>
     )
   }
 }
 
 export { Workflow as WorkflowClass } // this is only in here to support the config context, which is itself a stop gap
+const WorkflowPageUnconnected = legacyWithRouter(Workflow) // only using HOC until we convert to FC
 
-export default legacyWithRouter(Workflow) // only using HOC until we convert to FC
+const WorkflowPage = connect<ConnectedProps, DispatchProp, PropsType, AppState>(
+  null,
+  null
+)(WorkflowPageUnconnected)
+
+export default WorkflowPage

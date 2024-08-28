@@ -19,6 +19,9 @@ import ProjectArchiveModal from '@cfModule/components/common/dialog/ProjectArchi
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 import { Link as RouterLink } from 'react-router-dom'
 import MenuBar from '@cfModule/components/common/layout/MenuBar'
+import EditIcon from '@mui/icons-material/Edit'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 /*******************************************************
  * The project library menu
@@ -275,7 +278,7 @@ function ProjectDetailContent({
           title={window.gettext('Edit Project')}
           onClick={openEditDialog}
         >
-          <span className="material-symbols-rounded filled">edit</span>
+          <EditIcon />
         </div>
       )
     }
@@ -291,7 +294,8 @@ function ProjectDetailContent({
           title={window.gettext('Create workflow')}
           ref={createDiv}
         >
-          <span className="material-symbols-rounded filled">add_circle</span>
+          {/* filled */}
+          <AddCircleIcon />
           <div id="create-links-project" className="create-dropdown">
             <Link
               component={RouterLink}
@@ -333,7 +337,7 @@ function ProjectDetailContent({
           title={window.gettext('Sharing')}
           onClick={openShareDialog}
         >
-          <span className="material-symbols-rounded filled">person_add</span>
+          <PersonAddIcon />
         </div>
       )
     return null
@@ -403,10 +407,10 @@ function ProjectDetailContent({
 
   return (
     <div className="main-block">
-      <MenuBar
-        overflowButtons={<OverflowLinks />}
-        visibleButtons={<VisibleButtons />}
-      />
+      {/*<MenuBar*/}
+      {/*  overflowButtons={<OverflowLinks />}*/}
+      {/*  visibleButtons={<VisibleButtons />}*/}
+      {/*/>*/}
 
       <Box>
         <Header

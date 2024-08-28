@@ -7,9 +7,12 @@ import * as Constants from '@cfConstants'
 import { deleteSelfQuery } from '@XMLHTTP/API/delete'
 import { addTerminologyQuery } from '@XMLHTTP/API/create'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
-
+import {
+  Close as CloseIcon,
+  Delete as DeleteIcon,
+  AddCircle as AddCircleIcon
+} from '@mui/icons-material'
 // import $ from 'jquery'
-
 type Data = any
 type StateProps = Data & {
   selected_set: any
@@ -216,10 +219,10 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           <div className="flex-middle discipline-tag">
             {discipline.title}
             <span
-              className="material-symbols-rounded green"
+              className="green"
               onClick={this.removeDiscipline.bind(this, discipline.id)}
             >
-              close
+              <CloseIcon />
             </span>
           </div>
         ))
@@ -248,8 +251,8 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           className="nomenclature-delete-button"
           onClick={this.deleteTerm.bind(this, item.id)}
         >
-          <span className="material-symbols-rounded filled green hover-shade">
-            delete
+          <span className="filled green hover-shade">
+            <DeleteIcon />
           </span>
         </div>
       </div>
@@ -266,7 +269,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
       )
     }
 
-    let add_term_css = 'material-symbols-rounded filled'
+    let add_term_css = 'filled'
     let clickEvt
     if (this.addTermDisabled(selected_set)) {
       clickEvt = () => console.log('Disabled')
@@ -336,7 +339,9 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
                 disabled={selected_set == null}
               />
               <div className="nomenclature-add-button" onClick={clickEvt}>
-                <span className={add_term_css}>add_circle</span>
+                <span className={add_term_css}>
+                  <AddCircleIcon />
+                </span>
               </div>
             </div>
           </div>
@@ -345,7 +350,9 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
             <this.Actions />
           </div>
           <div className="window-close-button" onClick={this.props.closeAction}>
-            <span className="material-symbols-rounded green">close</span>
+            <span className="green">
+              <CloseIcon />
+            </span>
           </div>
         </div>
       </>

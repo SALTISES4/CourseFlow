@@ -5,6 +5,14 @@ import { debounce } from '@cfUtility'
 import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
 import { GridWrap } from '@cfModule/mui/helper'
 import { libraryObjectsSearchQuery } from '@XMLHTTP/API/pages'
+import SearchIcon from '@mui/icons-material/Search'
+import FilterAltIcon from '@mui/icons-material/FilterAlt'
+import SortIcon from '@mui/icons-material/Sort'
+import NorthIcon from '@mui/icons-material/North'
+import SouthIcon from '@mui/icons-material/South'
+import ScienceIcon from '@mui/icons-material/Science'
+import ArrowLeftIcon from '@mui/icons-material/ArrowLeft'
+import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 
 type Filter = {
   name: string
@@ -97,7 +105,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
             this.state.activeFilters.length
           }
         >
-          <span className="material-symbols-rounded">filter_alt</span>
+          <FilterAltIcon />
           <div>{window.gettext('Type')}</div>
         </div>
         <div className="create-dropdown">
@@ -145,7 +153,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
             'workflow-sort-indicator hover-shade item-' + this.state.activeSort
           }
         >
-          <span className="material-symbols-rounded">sort</span>
+          <SortIcon />
           <div>{active_sort.display}</div>
         </div>
         <div className="create-dropdown">
@@ -154,14 +162,8 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
             let css_class = 'filter-option filter-checkbox'
             if (this.state.activeSort == i) {
               css_class += ' active'
-              if (this.state.reversed)
-                sort_dir = (
-                  <span className="material-symbols-rounded">north</span>
-                )
-              else
-                sort_dir = (
-                  <span className="material-symbols-rounded">south</span>
-                )
+              if (this.state.reversed) sort_dir = <NorthIcon />
+              else sort_dir = <SouthIcon />
             }
             return (
               <div
@@ -243,7 +245,8 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
             this.state.activeDisciplines.length
           }
         >
-          <span className="material-symbols-rounded">science</span>
+          <ScienceIcon />
+
           <div>{window.gettext('Discipline')}</div>
         </div>
         <div className="create-dropdown">
@@ -346,7 +349,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
           disabled={this.state.pages.current_page === 1}
           onClick={this.toPage.bind(this, this.state.pages.current_page - 1)}
         >
-          <span className="material-symbols-rounded">arrow_left</span>
+          <ArrowLeftIcon />
         </button>
       ]
       if (this.state.pages.current_page > 3) {
@@ -401,7 +404,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
           }
           onClick={this.toPage.bind(this, this.state.pages.current_page + 1)}
         >
-          <span className="material-symbols-rounded">arrow_right</span>
+          <ArrowRightIcon />
         </button>
       )
 
@@ -461,7 +464,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
                 id="workflow-search-input"
                 className="search-input"
               />
-              <span className="material-symbols-rounded">search</span>
+              <SearchIcon />
             </div>
             <button
               className="primary-button"

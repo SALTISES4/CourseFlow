@@ -2,6 +2,7 @@ import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import * as React from 'react'
 import { EProject } from '@XMLHTTP/types/entity'
 import { Link } from 'react-router-dom'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 
 type PropsType = {
   project: EProject
@@ -26,7 +27,7 @@ const ReturnLinks = ({
           String(project.id)
         )}
       >
-        <span className="material-symbols-rounded green">arrow_back_ios</span>
+        <ArrowBackIosIcon />
         <div>
           {window.gettext('Return to')}{' '}
           <WorkflowTitle
@@ -51,8 +52,8 @@ const ReturnLinks = ({
           String(project.id)
         )}
       >
-        <span className="material-symbols-rounded green">arrow_back_ios</span>
-        <div>{window.gettext('Return to Editable Workflow')}</div>
+        <ArrowBackIosIcon />
+        {window.gettext('Return to Editable Workflow')}
       </Link>
     ) : (
       <></>

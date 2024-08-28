@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { useEffect } from 'react'
+
 /**
  * Creates a menu bar at the top of the page which can be passed
  * various links, buttons and other buttons.
@@ -9,7 +10,7 @@ import { useEffect } from 'react'
  */
 
 type PropsType = {
-  visibleButtons: React.ReactElement | React.ReactElement[]
+  leftSection: React.ReactElement
   viewbar?: React.ReactElement
   userbar?: React.ReactElement
   overflowButtons?: React.ReactElement | React.ReactElement[]
@@ -18,7 +19,7 @@ type PropsType = {
  *
  */
 const MenuBar = (props: PropsType) => {
-  const { visibleButtons, viewbar, userbar, overflowButtons } = props
+  const { leftSection, viewbar, userbar, overflowButtons } = props
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
@@ -46,18 +47,7 @@ const MenuBar = (props: PropsType) => {
   return (
     <div className="menubar">
       <div id="floatbar" className="floatbar">
-        {visibleButtons && <div id="visible-icons">{visibleButtons}</div>}
-        {overflowButtons && (
-          <div id="overflow-options">
-            <span className="hover-shade green material-symbols-rounded">
-              more_horiz
-            </span>
-
-            <div id="overflow-links" className="create-dropdown">
-              {overflowButtons}
-            </div>
-          </div>
-        )}
+        {leftSection}
       </div>
       <div id="userbar" className="floatbar">
         {userBar}

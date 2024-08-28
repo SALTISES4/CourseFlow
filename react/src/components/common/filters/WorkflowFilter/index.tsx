@@ -6,6 +6,12 @@ import { debounce } from '@cfUtility'
 import { Workflow } from '@cfModule/types/common'
 import { GridWrap } from '@cfModule/mui/helper'
 import { libraryObjectsSearchQuery } from '@XMLHTTP/API/pages'
+import SearchIcon from '@mui/icons-material/Search'
+import CloseIcon from '@mui/icons-material/Close'
+import SortIcon from '@mui/icons-material/Sort'
+import SouthIcon from '@mui/icons-material/South'
+import NorthIcon from '@mui/icons-material/North'
+import FilterAltIcon from '@mui/icons-material/FilterAlt'
 
 /*******************************************************
  * workflow filter is a shared component that
@@ -290,7 +296,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
             this.state.activeFilter
           }
         >
-          <span className="material-symbols-rounded">filter_alt</span>
+          <FilterAltIcon />
           <div>{activeFilter.display}</div>
         </div>
         <div className="create-dropdown">{filters}</div>
@@ -313,10 +319,10 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
         }
 
         if (this.state.reversed) {
-          return <span className="material-symbols-rounded">north</span>
+          return <NorthIcon />
         }
 
-        return <span className="material-symbols-rounded">south</span>
+        return <SouthIcon />
       }
 
       return (
@@ -344,7 +350,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
             'workflow-sort-indicator hover-shade item-' + this.state.activeSort
           }
         >
-          <span className="material-symbols-rounded">sort</span>
+          <SortIcon />
           <div>{activeSort.display}</div>
         </div>
         <div className="create-dropdown">{sorts}</div>
@@ -396,11 +402,8 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
 
     return (
       <div className="search-filter-lock">
-        <span
-          onClick={this.clearSearchLock.bind(this)}
-          className="material-symbols-rounded hover-shade"
-        >
-          close
+        <span onClick={this.clearSearchLock.bind(this)}>
+          <CloseIcon />
         </span>
         {window.gettext('Search: ' + this.state.searchFilterLock)}
       </div>
@@ -422,7 +425,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
               className="search-input"
               autoComplete="off"
             />
-            <span className="material-symbols-rounded">search</span>
+            <SearchIcon />
             <div className="create-dropdown">
               <this.SearchResults />
             </div>

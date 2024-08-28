@@ -27,7 +27,6 @@ class JumpToWeekWorkflowUnconnected extends React.Component<PropsType> {
         rank={this.props.order.indexOf(data.id)}
         parentID={this.props.parentID}
         throughParentID={data.id}
-        // renderer={this.props.renderer}
       />
     )
   }

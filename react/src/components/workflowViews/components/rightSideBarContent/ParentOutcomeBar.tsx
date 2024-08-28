@@ -9,6 +9,7 @@ import ParentOutcome from './ParentOutcomeBarOutcome'
 import { AppState } from '@cfRedux/types/type'
 import CompletionImg from '@cfCommonComponents/UIComponents/CompletionImg'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import ErrorIcon from '@mui/icons-material/Error'
 
 /**
  * The outcomes tab of the right sidebar. This version is shown
@@ -75,9 +76,8 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
     if (this.props.parent_nodes.length > 1) {
       multiple_parent_warning = (
         <div>
-          <span className="material-symbols-rounded filled small-inline red">
-            error
-          </span>
+          {/* filled red small-inline */}
+          <ErrorIcon />
           {window.gettext(
             'Warning: you have linked this workflow to multiple nodes. This is not recommended. You may see outcomes from different parent workflows, or duplicates of outcomes.'
           )}
