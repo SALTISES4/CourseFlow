@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import HtmlReactParser from 'html-react-parser'
 
 import { OuterContentWrap } from '@cfModule/mui/helper'
@@ -7,59 +7,68 @@ import TopBar from '@cfCommonComponents/layout/TopBar'
 import Sidebar from '@cfCommonComponents/layout/Sidebar'
 
 import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
+import { configureStore } from '@reduxjs/toolkit'
+import * as Reducers from '@cfReducers'
+import { Provider } from 'react-redux'
 
 type PropsType = {
+  showNotifications?: boolean
   children: ReactNode
 }
 
 const { notifications, sidebar, topbar } = COURSEFLOW_APP.globalContextData
 
-const Base = ({ children }: PropsType) => {
+const NotificationsAlert = ({ show }: { show: boolean }) => {
+  if (!notifications.updateNotifications.id || !show) {
+    return <></>
+  }
   return (
-    <DialogContextProvider>
-      <div className="main-wrapper">
-        <div data-component="sidebar">
-          <Sidebar {...sidebar} />
-        </div>
+    <OuterContentWrap sx={{ pb: 0 }}>
+      <Alert
+        sx={{ mt: 3 }}
+        severity="update"
+        title={HtmlReactParser(notifications.updateNotifications.title)}
+        hideIfCookie={`cf-update-${notifications.updateNotifications.id}`}
+      />
+    </OuterContentWrap>
+  )
+}
 
-        {/*@todo see https://course-flow.atlassian.net/browse/COUR-246*/}
-        <div id="react-portal-left-panel-extra"></div>
+const Base = ({ showNotifications, children }: PropsType) => {
+  const store = configureStore({
+    reducer: Reducers.rootWorkflowReducer,
+    devTools: process.env.NODE_ENV !== 'production' // Enable Redux DevTools only in non-production environments
+  })
 
-        <div className="main-block">
-          <div data-component="topbar">
-            <TopBar {...topbar} />
+  return (
+    <Provider store={store}>
+      <DialogContextProvider>
+        <div className="main-wrapper">
+          <div data-component="sidebar">
+            <Sidebar {...sidebar} />
           </div>
 
-          {COURSEFLOW_APP.path_id === 'home' &&
-            notifications.updateNotifications.id && (
-              <OuterContentWrap sx={{ pb: 0 }}>
-                <Alert
-                  sx={{ mt: 3 }}
-                  severity="update"
-                  title={HtmlReactParser(
-                    notifications.updateNotifications.title
-                  )}
-                  hideIfCookie={`cf-update-${notifications.updateNotifications.id}`}
-                />
-              </OuterContentWrap>
-            )}
+          <div className="main-block">
+            <div data-component="topbar">
+              <TopBar {...topbar} />
+            </div>
 
-          <div className="topnav hide-print">
-            <div className="titlebar">
-              <div className="title"></div>
+            <NotificationsAlert show={showNotifications} />
+
+            {/* still being used as a portal in comparison view  */}
+            <div className="titlebar"></div>
+
+            <div className="right-panel-wrapper">
+              <div id="container" className="body-wrapper">
+                {children}
+              </div>
             </div>
           </div>
-
-          <div className="right-panel-wrapper">
-            <div id="container" className="body-wrapper">
-              {children}
-            </div>
-          </div>
         </div>
-      </div>
 
-      <div id="popup-container"></div>
-    </DialogContextProvider>
+        <div id="popup-container"></div>
+      </DialogContextProvider>
+    </Provider>
   )
 }
 

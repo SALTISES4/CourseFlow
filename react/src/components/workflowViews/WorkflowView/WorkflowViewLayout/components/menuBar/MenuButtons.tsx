@@ -4,117 +4,52 @@
 import * as React from 'react'
 import { CfObjectType, ViewType } from '@cfModule/types/enum'
 import JumpToWeekWorkflow from '@cfViews/WorkflowView/WorkflowViewLayout/components/menuBar/JumpToWeekWorkflow'
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 
-export type MenuItemType = {
-  id: string
-  title: string
-  action: any
-  icon?: React.ReactElement
-  show: boolean
-}
 
-export const IconMenuItem = ({
-  id,
-  title,
-  action,
-  icon,
-  show
-}: MenuItemType) => {
-  if (!show) {
-    return null
-  }
 
-  return (
-    <div
-      className="hover-shade"
-      id={`${id}-project-button`}
-      title={title}
-      onClick={action}
-    >
-      {icon}
-    </div>
-  )
-}
 
-export const ListMenuItem = ({
-  id,
-  title,
-  action,
-  icon,
-  show
-}: MenuItemType) => {
-  if (!show) {
-    return null
-  }
 
-  return (
-    <div id={`${id}-button`} className="hover-shade" onClick={action}>
-      <div>{title}</div>
-    </div>
-  )
-}
-/*******************************************************
- * VIEW BAR
- *******************************************************/
-// const Jump = () => {
-//
-//
-//   if (this.context.viewType !== ViewType.WORKFLOW) {
-//     return null
-//   }
-//   const nodebarweekworkflows = this.data.weekworkflow_set.map(
-//     (weekworkflow, index) => (
-//       <JumpToWeekWorkflow
-//         key={`weekworkflow-${weekworkflow}`}
-//         order={this.data.weekworkflow_set}
-//         // renderer={this.props.renderer}
-//         objectID={weekworkflow}
-//       />
-//     )
-//   )
-//   return (
-//     <div id="jump-to">
-//       <div className="hover-shade flex-middle">
-//         <span className="green material-symbols-rounded">
-//           keyboard_double_arrow_down
-//         </span>
-//         <div>{window.gettext('Jump to')}</div>
-//       </div>
-//       <div className="create-dropdown">{nodebarweekworkflows}</div>
-//     </div>
-//   )
-// }
 
 // const Expand = () => {
 //   return (
 //     <div id="expand-collapse-all">
+//
 //       <div className="hover-shade flex-middle">
-//         <span className="green material-symbols-rounded">zoom_out_map</span>
+//         {/* green */}
+//
 //         <div>{window.gettext('Expand/Collapse')}</div>
 //       </div>
+//
 //       <div className="create-dropdown">
-//         <div
-//           className="flex-middle hover-shade"
-//           onClick={this.expandAll.bind(this, CfObjectType.WEEK)}
-//         >
-//           <span className="green material-symbols-rounded">zoom_out_map</span>
-//           <div>{window.gettext('Expand all weeks')}</div>
-//         </div>
-//         <div
-//           className="flex-middle hover-shade"
-//           onClick={this.collapseAll.bind(this, CfObjectType.WEEK)}
-//         >
-//           <span className="green material-symbols-rounded">zoom_in_map</span>
-//           <div>{window.gettext('Collapse all weeks')}</div>
-//         </div>
-//         <hr />
+//         {/*<div*/}
+//         {/*  className="flex-middle hover-shade"*/}
+//         {/*  onClick={this.expandAll.bind(this, CfObjectType.WEEK)}*/}
+//         {/*>*/}
+//         {/*  /!* green *!/*/}
+//         {/*  <ZoomOutMapIcon />*/}
+//         {/*  <div>{window.gettext('Expand all weeks')}</div>*/}
+//         {/*</div>*/}
+//         {/*<div*/}
+//         {/*  className="flex-middle hover-shade"*/}
+//         {/*  onClick={this.collapseAll.bind(this, CfObjectType.WEEK)}*/}
+//         {/*>*/}
+//         {/*    /!* green *!/*/}
+//         {/*   <ZoomInMapIcon />*/}
+//         {/*  <div>{window.gettext('Collapse all weeks')}</div>*/}
+//         {/*</div>*/}
+//
+//         {/*<hr />*/}
 //         <div
 //           className="flex-middle hover-shade"
 //           onClick={this.expandAll.bind(this, CfObjectType.NODE)}
 //         >
-//           <span className="green material-symbols-rounded">zoom_out_map</span>
+//            {/* green */}
+//           <ZoomOutMapIcon />
 //           <div>{window.gettext('Expand all nodes')}</div>
 //         </div>
+//
 //         <div
 //           className="flex-middle hover-shade"
 //           onClick={this.collapseAll.bind(this, CfObjectType.NODE)}
@@ -122,6 +57,7 @@ export const ListMenuItem = ({
 //           <span className="green material-symbols-rounded">zoom_in_map</span>
 //           <div>{window.gettext('Collapse all nodes')}</div>
 //         </div>
+//
 //         <hr />
 //         <div
 //           className="flex-middle hover-shade"
@@ -130,6 +66,7 @@ export const ListMenuItem = ({
 //           <span className="green material-symbols-rounded">zoom_out_map</span>
 //           <div>{window.gettext('Expand all outcomes')}</div>
 //         </div>
+//
 //         <div
 //           className="flex-middle hover-shade"
 //           onClick={this.collapseAll.bind(this, CfObjectType.OUTCOME)}
@@ -140,7 +77,8 @@ export const ListMenuItem = ({
 //       </div>
 //     </div>
 //   )
-// }
+
+
 
 // const ShareButton = ({show}:  {show: boolean}) => {
 // if (show) {

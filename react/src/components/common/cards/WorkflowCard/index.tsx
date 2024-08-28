@@ -10,6 +10,8 @@ import { WorkflowCardProps } from '@cfCommonComponents/cards/WorkflowCard/type'
 import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
 import { toggleFavourite } from '@XMLHTTP/API/user'
+import GroupIcon from '@mui/icons-material/Group'
+import ErrorIcon from '@mui/icons-material/Error'
 
 /*******************************************************
  * A workflow card for a menu
@@ -145,7 +147,8 @@ class WorkflowCard<
           className="workflow-created workflow-live-classroom"
           title={window.gettext('Live Classroom')}
         >
-          <span className="material-symbols-rounded small-inline">group</span>
+          {/* small-inline */}
+          <GroupIcon />
           {` ${window.gettext('Live Classroom')}`}
         </div>
       )
@@ -161,9 +164,8 @@ class WorkflowCard<
             'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
           )}
         >
-          <span className="material-symbols-rounded red filled small-inline">
-            error
-          </span>
+          {/*red filled small-inline*/}
+          <ErrorIcon />
           {` ${window.gettext('Already in use')}`}
         </div>
       )

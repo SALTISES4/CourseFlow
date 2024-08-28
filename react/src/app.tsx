@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -51,7 +51,6 @@ import Library from '@cfModule/components/pages/Library/Library'
 import Favourites from '@cfModule/components/pages/Library/Favourites'
 import Home from '@cfModule/components/pages/Library/Home'
 import Explore from '@cfModule/components/pages/Library/Explore'
-import Workflow from '@cfModule/components/pages/Workspace/Workflow'
 import Base from '@cfModule/base'
 
 // @todo:
@@ -60,6 +59,7 @@ import Base from '@cfModule/base'
 // we don't want t a mouse loader at all, but the placeholder calls are useful currently
 import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
 import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
+import WorkflowPage from '@cfPages/Workspace/Workflow'
 const tinyLoader = new MouseCursorLoader($('body')[0])
 // @ts-ignore
 COURSEFLOW_APP.tinyLoader = tinyLoader
@@ -75,7 +75,7 @@ const router = createBrowserRouter([
   {
     path: `${DOMAIN}/home`,
     element: (
-      <Base>
+      <Base showNotifications={true}>
         <Home />
       </Base>
     )
@@ -158,7 +158,7 @@ const router = createBrowserRouter([
     element: (
       <Base>
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-        <Workflow />
+        <WorkflowPage />
       </Base>
     )
   },

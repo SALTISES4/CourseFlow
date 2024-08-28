@@ -1,7 +1,6 @@
 import React from 'react'
-import { Provider } from 'react-redux'
-import { AnyAction, configureStore, EmptyObject, Store } from '@reduxjs/toolkit'
-import * as Reducers from '@cfReducers'
+import { connect, DispatchProp } from 'react-redux'
+import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
 import {
   WorkflowDetailViewDTO,
@@ -42,7 +41,9 @@ type StateProps = {
   ready: boolean
   viewType: ViewType
 }
-type PropsType = Record<string, never>
+type OwnProps = Record<string, never>
+type ConnectedProps = Record<string, never>
+type PropsType = DispatchProp & OwnProps & ConnectedProps
 
 const calcPermissions = (userPermission: number): WorkflowPermission => {
   switch (userPermission) {
@@ -206,11 +207,12 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     getWorkflowDataQuery(this.workflowID, (response) => {
       // this.unread_comments = response.data_package?.unread_comments // @todo do not assign this explicitly here, not seeing this in data package yet
 
-      this.store = configureStore({
-        reducer: Reducers.rootWorkflowReducer,
-        preloadedState: response.data_package,
-        devTools: process.env.NODE_ENV !== 'production' // Enable Redux DevTools only in non-production environments
-      })
+      // this.store = configureStore({
+      //   reducer: Reducers.rootWorkflowReducer,
+      //   preloadedState: response.data_package,
+      //   devTools: process.env.NODE_ENV !== 'production' // Enable Redux DevTools only in non-production environments
+      // })
+      this.props.dispatch(ActionCreator.refreshStoreData(response.data_package))
 
       this.setState({
         ...this.state,
@@ -344,6 +346,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   }
 
   onParentWorkflowUpdateReceived() {
+
     this.isMessagesQueued = true
     getWorkflowParentDataQuery(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data
@@ -476,40 +479,44 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     }
 
     return (
-      <Provider store={this.store}>
-        <WorkFlowConfigProvider
-          // some of these could have been direct props to WorkflowBaseView
-          // but gor now it makes sense to keep them together and organized
-          initialValue={{
-            workflowDetailResp: this.workflowDetailResp,
-            selectionManager: this.selectionManager,
-            viewType: this.state.viewType,
-            editableMethods: {
-              lock_update: this.lock_update,
-              micro_update: this.micro_update,
-              change_field: this.change_field
-            },
-            ws: {
-              wsConnected: this.state.wsConnected,
-              connectedUsers: this.state.connectedUsers
-            },
-            permissions: {
-              projectPermission: this.project_permission,
-              workflowPermission: this.workflowPermission
-            }
-          }}
-        >
-          <WorkflowViewLayout
-            // viewType={this.state.viewType}
-            // alwaysStatic: this.always_static use 'public view' unless the use case gets better defined
-            updateView={this.updateView}
-          />
-        </WorkFlowConfigProvider>
-      </Provider>
+      <WorkFlowConfigProvider
+        // some of these could have been direct props to WorkflowBaseView
+        // but gor now it makes sense to keep them together and organized
+        initialValue={{
+          workflowDetailResp: this.workflowDetailResp,
+          selectionManager: this.selectionManager,
+          viewType: this.state.viewType,
+          editableMethods: {
+            lock_update: this.lock_update,
+            micro_update: this.micro_update,
+            change_field: this.change_field
+          },
+          ws: {
+            wsConnected: this.state.wsConnected,
+            connectedUsers: this.state.connectedUsers
+          },
+          permissions: {
+            projectPermission: this.project_permission,
+            workflowPermission: this.workflowPermission
+          }
+        }}
+      >
+        <WorkflowViewLayout
+          // viewType={this.state.viewType}
+          // alwaysStatic: this.always_static use 'public view' unless the use case gets better defined
+          updateView={this.updateView}
+        />
+      </WorkFlowConfigProvider>
     )
   }
 }
 
 export { Workflow as WorkflowClass } // this is only in here to support the config context, which is itself a stop gap
+const WorkflowPageUnconnected = legacyWithRouter(Workflow) // only using HOC until we convert to FC
 
-export default legacyWithRouter(Workflow) // only using HOC until we convert to FC
+const WorkflowPage = connect<ConnectedProps, DispatchProp, PropsType, AppState>(
+  null,
+  null
+)(WorkflowPageUnconnected)
+
+export default WorkflowPage

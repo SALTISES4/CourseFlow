@@ -1,19 +1,18 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
 import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
-import { connect } from 'react-redux'
+import { connect, DispatchProp } from 'react-redux'
 import {
   getParentWorkflowInfoQuery,
   getPublicParentWorkflowInfo
 } from '@XMLHTTP/API/workflow'
 import { AppState } from '@cfRedux/types/type'
-import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
-// import $ from 'jquery'
 
 type ConnectedProps = {
-  child_workflows: any
+  childWorkflows: any
+  workflowId: number
+  publicView: boolean
 }
-type OwnProps = { workflow_id: number }
+type OwnProps = NonNullable<unknown>
 type StateProps = {
   has_loaded: boolean
   parent_workflows: any
@@ -28,35 +27,32 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
   PropsType,
   StateProps
 > {
-  static contextType = WorkFlowConfigContext
-
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
-
   constructor(props: PropsType) {
     super(props)
     this.state = {} as StateProps
-    console.log('ParentWorkflow')
-    console.log(props)
   }
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
-  componentDidMount() {
-    if (!this.props.workflow_id) {
+  componentDidUpdate(prevProps) {
+    if (!this.props.workflowId) {
       console.log('not defined')
       return
     }
+    if (this.props.workflowId === prevProps.workflowId) {
+      return
+    }
 
-    if (this.context.public_view) {
-      getPublicParentWorkflowInfo(this.props.workflow_id, (response_data) =>
+    if (this.props.publicView) {
+      getPublicParentWorkflowInfo(this.props.workflowId, (response_data) =>
         this.setState({
           parent_workflows: response_data.parent_workflows,
           has_loaded: true
         })
       )
     } else {
-      getParentWorkflowInfoQuery(this.props.workflow_id, (response_data) =>
+      getParentWorkflowInfoQuery(this.props.workflowId, (response_data) =>
         this.setState({
           parent_workflows: response_data.parent_workflows,
           has_loaded: true
@@ -86,7 +82,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
     if (this.state.has_loaded) {
       if (
         this.state.parent_workflows.length == 0 &&
-        this.props.child_workflows.length == 0
+        this.props.childWorkflows.length == 0
       ) {
         return null
       }
@@ -100,7 +96,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
           />
         )
       )
-      const child_workflows = this.props.child_workflows.map(
+      const child_workflows = this.props.childWorkflows.map(
         (childWorkflow, index) => (
           <WorkflowTitle
             key={`WorkflowTitleChild-${index}`}
@@ -125,14 +121,8 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
           <a className="panel-item">{window.gettext('Workflows Used:')}</a>,
           ...child_workflows
         )
-      // return reactDom.createPortal(return_val, $('.left-panel-extra')[0])
-      // @todo see https://course-flow.atlassian.net/browse/COUR-246
-      const portal = reactDom.createPortal(
-        return_val,
-        $('#react-portal-left-panel-extra')[0]
-      )
 
-      return <>{portal}</>
+      return <>{return_val}</>
     }
 
     return <></>
@@ -140,7 +130,9 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
 }
 const mapStateToProps = (state: AppState) => {
   return {
-    child_workflows: state.node
+    workflowId: state.workflow.id,
+    publicView: state.workflow.public_view,
+    childWorkflows: state.node
       .filter((node) => node.linked_workflow_data)
       .map((node) => {
         return {
@@ -155,7 +147,7 @@ const mapStateToProps = (state: AppState) => {
 }
 const ParentWorkflowIndicator = connect<
   ConnectedProps,
-  object,
+  DispatchProp,
   OwnProps,
   AppState
 >(

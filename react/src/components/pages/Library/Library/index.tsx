@@ -4,6 +4,7 @@ import { Workflow } from '@cfModule/types/common'
 import { LibraryQueryResp } from '@XMLHTTP/types/query'
 import { getLibraryQuery } from '@XMLHTTP/API/pages'
 import MenuBar from '@cfCommonComponents/layout/MenuBar'
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 type PropsType = Record<string, never>
 type StateType = {
@@ -49,12 +50,8 @@ class LibraryPage extends React.Component<PropsType, StateType> {
         title={window.gettext('Create project or strategy')}
         ref={this.createDiv}
       >
-        <span className="material-symbols-rounded filled green">
-          {/*
-           // this has text add_circle in it before
-           add_circle
-           */}
-        </span>
+        {/* green */}
+        <AddCircleIcon />
         <div id="create-links-project" className="create-dropdown">
           <a
             id="project-create-library"
@@ -106,10 +103,10 @@ class LibraryPage extends React.Component<PropsType, StateType> {
   render() {
     return (
       <div className="main-block">
-        <MenuBar
-          visibleButtons={<this.CreateButton />}
-          overflowButtons={<this.OverflowLinks />}
-        />
+        {/*<MenuBar*/}
+        {/*  visibleButtons={<this.CreateButton />}*/}
+        {/*  overflowButtons={<this.OverflowLinks />}*/}
+        {/*/>*/}
         <div className="project-menu">
           <WorkflowFilter
             // renderer={this} @todo rendere is no longer used, but check this to make sure we're getting the data we need into this component

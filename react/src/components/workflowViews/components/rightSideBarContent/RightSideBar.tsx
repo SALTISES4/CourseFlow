@@ -7,6 +7,12 @@ import ComparisonViewBar from './ComparisonViewBar'
 import NodeBar from '@cfViews/components/rightSideBarContent/NodeBar'
 import { ViewType, WFContext } from '@cfModule/types/enum.js'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
+import EditIcon from '@mui/icons-material/Edit'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import SpokeIcon from '@mui/icons-material/Spoke'
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
 // import $ from 'jquery'
 
 /**
@@ -143,21 +149,15 @@ class RightSideBar extends React.Component<PropsType> {
         <ul>
           <li className="hover-shade">
             <a href="#edit-menu">
-              <span
-                className="material-symbols-rounded filled"
-                title={window.gettext('Edit')}
-              >
-                edit
+              <span className="filled" title={window.gettext('Edit')}>
+                <EditIcon />
               </span>
             </a>
           </li>
           <li className="hover-shade">
             <a href="#node-bar">
-              <span
-                className="material-symbols-rounded filled"
-                title={window.gettext('Add')}
-              >
-                add_circle
+              <span className=" filled" title={window.gettext('Add')}>
+                <AddCircleIcon />
               </span>
             </a>
           </li>
@@ -166,21 +166,15 @@ class RightSideBar extends React.Component<PropsType> {
             <>
               <li className="hover-shade">
                 <a href="#outcome-bar">
-                  <span
-                    className="material-symbols-rounded filled"
-                    title={window.gettext('Outcomes')}
-                  >
-                    spoke
+                  <span title={window.gettext('Outcomes')}>
+                    <SpokeIcon />
                   </span>
                 </a>
               </li>
               <li className="hover-shade">
                 <a href="#view-bar">
-                  <span
-                    className="material-symbols-rounded filled"
-                    title={window.gettext('View Options')}
-                  >
-                    remove_red_eye
+                  <span title={window.gettext('View Options')}>
+                    <RemoveRedEyeIcon />
                   </span>
                 </a>
               </li>
@@ -190,10 +184,9 @@ class RightSideBar extends React.Component<PropsType> {
           <li className="hover-shade">
             <a href="#restore-bar">
               <span
-                className="material-symbols-rounded filled"
                 title={window.gettext('Restore Deleted')}
               >
-                restore_from_trash
+                <RestoreFromTrashIcon />
               </span>
             </a>
           </li>
@@ -222,7 +215,8 @@ class RightSideBar extends React.Component<PropsType> {
         )}
 
         <div className="window-close-button" id="side-bar-close-button">
-          <span className="material-symbols-rounded green">arrow_forward</span>
+          {/* green */}
+          <ArrowForwardIcon />
         </div>
       </div>
     )

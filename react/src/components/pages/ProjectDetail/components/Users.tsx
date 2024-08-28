@@ -1,6 +1,7 @@
 import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import PublicIcon from '@mui/icons-material/Public'
 
 type PropsType = {
   users: UsersForObjectQueryResp
@@ -21,7 +22,8 @@ const Users = ({ users, readOnly, openShareDialog }: PropsType) => {
       {published && (
         <div className="user-name">
           {Utility.getUserTag('view')}
-          <span className="material-symbols-rounded">public</span>{' '}
+
+          <PublicIcon />
           {window.gettext('All CourseFlow')}
         </div>
       )}

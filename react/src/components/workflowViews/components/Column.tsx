@@ -26,25 +26,40 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     this.objectClass = '.column'
   }
 
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  Icon = () => {
-    if (this.props.data.icon && this.props.data.icon != '') {
-      return (
-        <span className="material-symbols-rounded">{this.props.data.icon}</span>
-      )
+  colorChooser = (color: string, type: number): string => {
+    if (color) {
+      return color
     }
-    return (
-      <img
-        src={
-          COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-          Constants.default_column_settings[this.props.data.column_type].icon +
-          '.svg'
-        }
-      />
-    )
+
+    // we have this.props.data
+    // which is TColumn
+    const colors = {
+      1: 'red',
+      2: 'blue',
+      3: 'orange'
+    }
+    return colors[type]
   }
+
+  // /*******************************************************
+  //  * COMPONENTS
+  //  *******************************************************/
+  // Icon = () => {
+  //   if (this.props.data.icon && this.props.data.icon != '') {
+  //     return (
+  //       <span className="material-symbols-rounded">{this.props.data.icon}</span>
+  //     )
+  //   }
+  //   return (
+  //     <img
+  //       src={
+  //         COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+  //         Constants.default_column_settings[this.props.data.column_type].icon +
+  //         '.svg'
+  //       }
+  //     />
+  //   )
+  // }
 
   /*******************************************************
    * RENDER
@@ -74,6 +89,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     if (this.context.workflow.view_comments) {
       mouseoverActions.push(<this.AddCommenting />)
     }
+    console.log()
 
     return (
       <div
@@ -85,7 +101,10 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
         }
       >
         <div className="column-line">
-          <this.Icon />
+          {this.colorChooser(
+            this.props.data.colour,
+            this.props.data.column_type
+          )}
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
         {this.addEditable(data)}

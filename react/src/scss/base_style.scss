@@ -130,15 +130,6 @@ a.unset {
   text-decoration: none;
 }
 
-// a.hover-shade:hover {
-//   text-decoration: underline;
-// }
-
-.material-symbols-rounded.filled,
-.material-symbols-outlined.filled {
-  font-variation-settings: "FILL" 1;
-}
-
 body {
   background: $color-body-bg;
 }
@@ -209,23 +200,11 @@ h3.big-space {
   box-shadow: inset 0 0 0 99999px rgba($color-black, 0.2);
 }
 
-.material-symbols-rounded.green,
-.material-symbols-outlined.green {
-  color: $color-primary-green;
-}
 
-.material-symbols-rounded.red,
-.material-symbols-outlined.red {
-  color: $color-primary-red;
-}
 
-.material-symbols-rounded.grey {
-  color: $color-white-gray;
-}
 
-.material-symbols-rounded.small-inline {
+.small-inline {
   font-size: 14px;
-  vertical-align: bottom;
 }
 
 .main-wrapper {
@@ -248,52 +227,8 @@ h3.big-space {
   justify-content: space-between;
 }
 
-.topnav {
-  width: 100%;
-  background: $color-white;
-  position: relative;
-  box-sizing: border-box;
-}
 
-.topnav > div {
-  padding-left: 40px;
-}
 
-// .topnav::before {
-//   content: '';
-//   position: absolute;
-//   bottom: 0;
-//   left: 0;
-//   right: 0;
-//   height: 2px;
-//   background: linear-gradient(to left, #46c443 0, $color-primary-blue 100%) left bottom $color-white no-repeat;
-// }
-
-.titlebar {
-  height: 36px;
-  width: 100%;
-  color: $color-text;
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-sizing: border-box;
-}
-
-.title {
-  padding-left: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.title a .material-symbols-rounded {
-  font-size: 20px;
-}
-
-.title a {
-  display: flex;
-}
 
 .inline-title {
   display: inline;
@@ -448,76 +383,8 @@ h3.big-space {
   align-items: center;
 }
 
-// .viewbar {
-//   display: inline-block;
-//   height: 100%;
-// }
 
-// .viewbar > div {
-//   vertical-align: middle;
-//   padding: 5px;
-//   padding-right: 20px;
-//   display: inline-block;
-//   text-align: center;
-// }
 
-// .viewbar > div > img {
-//   width: 30px;
-//   height: 30px;
-// }
-
-.topnavimage {
-  box-sizing: border-box;
-  display: inline-block;
-  padding: 5px;
-  padding-bottom: 0px;
-  height: 46px;
-  padding-left: 20px;
-  padding-right: 40px;
-}
-
-.topnavimage * {
-  display: block;
-  height: 100%;
-}
-
-// A wrapper for each button in the menu
-.topdropwrapper {
-  display: inline-block;
-  padding: 0px;
-  padding-top: 3px;
-  bottom: 0px;
-  vertical-align: top;
-  min-width: 48px;
-}
-
-// A button at the top of the menu that will open the div below it
-.topdropbutton {
-  background: inherit;
-  color: $color-primary-blue;
-  border: inherit;
-  font: inherit;
-  height: 48px;
-  left: 0;
-  bottom: 0;
-  min-width: 50px;
-  padding-left: 20px;
-  padding-right: 20px;
-  font-weight: 600;
-}
-
-.titlebar .topdropbutton {
-  color: $color-white;
-}
-
-.topdropbutton > a {
-  display: block;
-  color: $color-white;
-}
-
-.topdropbutton > a:hover {
-  text-decoration: none;
-}
 
 // A tag at the top of the menu that does nothing
 .toplink {
@@ -640,11 +507,6 @@ h3.big-space {
   display: block;
 }
 
-.left-panel-toggle .material-symbols-rounded {
-  font-size: 20px;
-  padding: 2px;
-  color: $color-white;
-}
 
 .collapsed #left-panel-collapse {
   display: none;
@@ -681,8 +543,7 @@ h3.big-space {
   background: $color-white-green;
 }
 
-.panel-item > img,
-.panel-item .material-symbols-rounded {
+.panel-item > img {
   margin-right: 10px;
 }
 
@@ -690,9 +551,7 @@ h3.big-space {
   text-decoration: none;
 }
 
-// .no-underline.hover-shade:hover > *:not(.material-symbols-rounded) {
-//   text-decoration: underline;
-// }
+
 
 .panel-item img {
   width: 24px;
@@ -874,11 +733,7 @@ h3.big-space {
   position: relative;
 }
 
-// #account-links, #create-links {
-//   right: 0px;
-//   width: max-content;
-//   max-width: 250px;
-// }
+
 
 .create-dropdown > a,
 .create-dropdown > div {
@@ -1145,23 +1000,13 @@ h3.big-space {
   max-width: 600px;
 }
 
-.search-input + .material-symbols-rounded {
-  position: absolute;
-  font-size: 20px;
-  left: 6px;
-  top: 5px;
-  color: $color-gray;
-}
+
 
 .filter-option {
   position: relative;
 }
 
-.filter-option .material-symbols-rounded {
-  position: absolute;
-  left: -2px;
-  font-size: 18px;
-}
+
 
 .filter-option.active {
   background: $color-white-green;
@@ -1442,17 +1287,9 @@ h3.big-space {
   color: $color-disabled-gray;
 }
 
-.big-button.disabled > .material-symbols-rounded {
-  display: block;
-  font-size: 36px;
-  color: $color-disabled-gray;
-}
 
-.big-button > .material-symbols-rounded {
-  display: block;
-  font-size: 36px;
-  color: $color-primary-green;
-}
+
+
 
 .big-button-title {
   font-size: 16px;
@@ -1569,10 +1406,7 @@ h3.big-space {
   margin-top: 8px;
 }
 
-.user-name .material-symbols-rounded {
-  color: $color-gray;
-  font-size: 16px;
-}
+
 
 .user-username {
   color: $color-gray;
