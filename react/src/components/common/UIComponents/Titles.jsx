@@ -20,61 +20,53 @@ export class TitleText extends React.Component {
   }
 }
 
-// Title text for a workflow
-export class WorkflowTitle extends React.Component {
-  render() {
-    const data = this.props.data
-
-    const getText = () => {
-      let text = data.title || window.gettext('Untitled')
-
-      if (data.code) {
-        text = `${data.code} - ${text}`
-      }
-
-      if (['noaccess', 'nouser'].includes(data.url)) {
-        text += ` ${window.gettext(' (no access)')}`
-      }
-
-      if (data.deleted) {
-        text += ' (deleted)'
-      }
-      return text
-    }
-
-    const href = !data.url
-      ? COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-          '0',
-          data.id
-        )
-      : data.url
-
-    if (
-      this.props.no_hyperlink ||
-      data.url == 'noaccess' ||
-      data.url == 'nouser'
-    ) {
-      return (
-        <div
-          className={this.props.class_name}
-          data-test-id={this.props.test_id}
-          title={getText()}
-          dangerouslySetInnerHTML={{ __html: getText() }}
-        />
+export const WorkflowTitle = (props) => {
+  const data = props.data
+  const href = !data.url
+    ? COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
+        '0',
+        data.id
       )
+    : data.url
+
+  const getText = () => {
+    let text = data.title || window.gettext('Untitled')
+
+    if (data.code) {
+      text = `${data.code} - ${text}`
     }
 
+    if (['noaccess', 'nouser'].includes(data.url)) {
+      text += ` ${window.gettext(' (no access)')}`
+    }
+
+    if (data.deleted) {
+      text += ' (deleted)'
+    }
+    return text
+  }
+
+  if (props.no_hyperlink || data.url == 'noaccess' || data.url == 'nouser') {
     return (
-      <a
-        onClick={(evt) => evt.stopPropagation()}
-        href={href}
-        className={this.props.class_name}
-        data-test-id={this.props.test_id}
+      <div
+        className={props.class_name}
+        data-test-id={props.test_id}
         title={getText()}
         dangerouslySetInnerHTML={{ __html: getText() }}
       />
     )
   }
+
+  return (
+    <a
+      onClick={(evt) => evt.stopPropagation()}
+      href={href}
+      className={props.class_name}
+      data-test-id={props.test_id}
+      title={getText()}
+      dangerouslySetInnerHTML={{ __html: getText() }}
+    />
+  )
 }
 
 //Title text for a week

@@ -26,7 +26,11 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     this.objectClass = '.column'
   }
 
-  colorChooser = (key: string): string => {
+  colorChooser = (color: string, type: number): string => {
+    if (color) {
+      return color
+    }
+
     // we have this.props.data
     // which is TColumn
     const colors = {
@@ -34,7 +38,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
       2: 'blue',
       3: 'orange'
     }
-    return colors[key]
+    return colors[type]
   }
 
   // /*******************************************************
@@ -85,6 +89,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     if (this.context.workflow.view_comments) {
       mouseoverActions.push(<this.AddCommenting />)
     }
+    console.log()
 
     return (
       <div
@@ -96,7 +101,10 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
         }
       >
         <div className="column-line">
-          {this.colorChooser(this.props.data.icon)}
+          {this.colorChooser(
+            this.props.data.colour,
+            this.props.data.column_type
+          )}
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
         {this.addEditable(data)}

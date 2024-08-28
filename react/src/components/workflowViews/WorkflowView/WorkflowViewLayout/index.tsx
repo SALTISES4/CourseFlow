@@ -28,18 +28,14 @@ import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { EventUnion } from '@cfModule/types/common'
-import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
 import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget'
 import ImportModal from '@cfModule/components/common/dialog/Import'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
 import MenuBar from '@cfModule/components/common/layout/MenuBar'
-import ParentWorkflowIndicator from '@cfViews/WorkflowView/WorkflowViewLayout/components/ParentWorkflowIndicator'
 import Header from '@cfViews/WorkflowView/WorkflowViewLayout/components/Header'
 
 import WorkflowViewTabs from '@cfViews/WorkflowView/WorkflowViewLayout/components/WorkflowViewTabs'
-import ReturnLinks from '@cfViews/WorkflowView/WorkflowViewLayout/components/ReturnLinks'
-import { ReactElement } from 'react'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import EditIcon from '@mui/icons-material/Edit'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
@@ -49,7 +45,6 @@ import {
   MenuWithOverflow,
   SimpleMenu
 } from '@cfCommonComponents/menu/Menu'
-import Typography from '@mui/material/Typography'
 import JumpToWeekWorkflow from '@cfViews/WorkflowView/WorkflowViewLayout/components/menuBar/JumpToWeekWorkflow'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 
@@ -633,12 +628,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       <>
         {this.addEditable(this.props.data)}
 
-        <ReturnLinks
-          project={this.project}
-          isStudent={this.context.user.isStudent}
-          publicView={this.public_view}
-          canView={this.context.permissions.workflowPermission.canView}
-        />
 
         <div className="main-block">
           <MenuBar

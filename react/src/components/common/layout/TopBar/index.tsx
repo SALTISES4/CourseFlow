@@ -41,6 +41,8 @@ import {
   NotificationsList
 } from './styles'
 import { TopBarProps } from '@cfModule/types/common'
+import * as React from 'react'
+import ReturnLinks from '@cfViews/WorkflowView/WorkflowViewLayout/components/ReturnLinks'
 
 const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   const { dispatch } = useDialog()
@@ -209,54 +211,69 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
     </StyledMenu>
   )
 
+  const ToolbarWrap = () => {
+    return (
+      <Toolbar variant="dense">
+           <ReturnLinks />
+        <Box sx={{ flexGrow: 1 }} className="title" />
+        <Box sx={{ display: 'flex' }}>
+          {isTeacher ? (
+            <IconButton
+              size="large"
+              aria-label="add menu"
+              aria-controls="add-menu"
+              aria-haspopup="true"
+              color="primary"
+              onClick={handleAddMenuOpen}
+            >
+              <AddCircleIcon />
+            </IconButton>
+          ) : null}
+
+          <IconButton
+            size="large"
+            aria-label={
+              notifications.unread >= 1
+                ? `show ${notifications.unread} new notifications`
+                : 'no new notifications'
+            }
+            aria-controls="notifications-menu"
+            aria-haspopup="true"
+            onClick={handleNotificationsMenuOpen}
+          >
+            <Badge badgeContent={notifications.unread} color="primary">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+
+          <IconButton
+            size="large"
+            edge="end"
+            aria-label="account of current user"
+            aria-controls="account-menu"
+            aria-haspopup="true"
+            onClick={handleMenuOpen}
+          >
+            <AccountCircle />
+          </IconButton>
+        </Box>
+      </Toolbar>
+    )
+  }
+
   return (
     <TopBarWrap>
       <AppBar position="static">
-        <Toolbar variant="dense">
-          <Box sx={{ flexGrow: 1 }} className="title" />
-          <Box sx={{ display: 'flex' }}>
-            {isTeacher ? (
-              <IconButton
-                size="large"
-                aria-label="add menu"
-                aria-controls="add-menu"
-                aria-haspopup="true"
-                color="primary"
-                onClick={handleAddMenuOpen}
-              >
-                <AddCircleIcon />
-              </IconButton>
-            ) : null}
+        <ToolbarWrap />
 
-            <IconButton
-              size="large"
-              aria-label={
-                notifications.unread >= 1
-                  ? `show ${notifications.unread} new notifications`
-                  : 'no new notifications'
-              }
-              aria-controls="notifications-menu"
-              aria-haspopup="true"
-              onClick={handleNotificationsMenuOpen}
-            >
-              <Badge badgeContent={notifications.unread} color="primary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls="account-menu"
-              aria-haspopup="true"
-              onClick={handleMenuOpen}
-            >
-              <AccountCircle />
-            </IconButton>
-          </Box>
-        </Toolbar>
       </AppBar>
+
+      {/*
+        @todo put these menus into the unified menu helper in
+        react/src/components/common/menu
+        they are already in MUI, so it's fine for now
+        // cuts down on a bit of boilerplate
+        */}
       {isTeacher && addMenu}
       {notificationsMenu}
       {accountMenu}
