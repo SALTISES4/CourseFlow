@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
  * console, disable TEMPORARILY
@@ -27,50 +27,44 @@ console.error = (message, ...args) => {
  * // HACK
  *******************************************************/
 
+// Theme  and CSS
 // https://mui.com/material-ui/react-css-baseline/#scoping-on-children
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from './mui/theme'
-
 // required to be able to create a custom cache configuration that
 // will work with the provided Django nonce when injecting styles
 import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
-
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
 // global styles / SCSS
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
+import { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar/styles'
 
-// pages/views/templates
+// pages
 import NotificationsPage from '@cfModule/components/pages/Notifications'
 import NotificationsSettingsPage from '@cfModule/components/pages/NotificationsSettings'
 import ProfileSettingsPage from '@cfModule/components/pages/ProfileSettings'
-// Workflow
-// React dumb components styleguide page
 import Styleguide from '@cfModule/components/pages/Styleguide'
-// @LIBRARY
-import ProjectDetail from '@cfModule/components/pages/Library/ProjectDetail'
+import ProjectDetail from '@cfModule/components/pages/ProjectDetail'
 import Library from '@cfModule/components/pages/Library/Library'
 import Favourites from '@cfModule/components/pages/Library/Favourites'
 import Home from '@cfModule/components/pages/Library/Home'
 import Explore from '@cfModule/components/pages/Library/Explore'
-import Workflow from '@cfModule/components/pages/Workflow/Workflow'
+import Workflow from '@cfModule/components/pages/Workspace/Workflow'
 import Base from '@cfModule/base'
 
-// components
-import { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar/styles'
-
+// @todo:
 // legacy, to remove it
 // see note in mouseCursorLoader.js
+// we don't want t a mouse loader at all, but the placeholder calls are useful currently
 import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
-import WorkflowComparison from '@cfPages/Workflow/WorkflowComparison'
+import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 const tinyLoader = new MouseCursorLoader($('body')[0])
 // @ts-ignore
 COURSEFLOW_APP.tinyLoader = tinyLoader
 
-const domain = 'course-flow'
+const DOMAIN = 'course-flow'
 // create the emotion cache
 const cache = createCache({
   key: 'emotion',
@@ -79,25 +73,23 @@ const cache = createCache({
 
 const router = createBrowserRouter([
   {
-    path: `${domain}/home`,
+    path: `${DOMAIN}/home`,
     element: (
       <Base>
-        {' '}
         <Home />
       </Base>
     )
   },
   {
-    path: `${domain}/styleguide`,
+    path: `${DOMAIN}/styleguide`,
     element: (
       <Base>
-        {' '}
         <Styleguide />
       </Base>
     )
   },
   {
-    path: `${domain}/favourites`,
+    path: `${DOMAIN}/favourites`,
     element: (
       <Base>
         <Favourites />
@@ -105,16 +97,15 @@ const router = createBrowserRouter([
     )
   },
   {
-    path: `${domain}/library`,
+    path: `${DOMAIN}/library`,
     element: (
       <Base>
-        {' '}
         <Library />
       </Base>
     )
   },
   {
-    path: `${domain}/explore`,
+    path: `${DOMAIN}/explore`,
     element: (
       <Base>
         <Explore />
@@ -122,7 +113,7 @@ const router = createBrowserRouter([
     )
   },
   {
-    path: `${domain}/user/notifications`,
+    path: `${DOMAIN}/user/notifications`,
     element: (
       <Base>
         <NotificationsPage />
@@ -130,16 +121,15 @@ const router = createBrowserRouter([
     )
   },
   {
-    path: `${domain}/user/notifications-settings`,
+    path: `${DOMAIN}/user/notifications-settings`,
     element: (
       <Base>
-        {' '}
         <NotificationsSettingsPage />
       </Base>
     )
   },
   {
-    path: `${domain}/user/profile-settings`,
+    path: `${DOMAIN}/user/profile-settings`,
     element: (
       <Base>
         <ProfileSettingsPage />
@@ -147,16 +137,16 @@ const router = createBrowserRouter([
     )
   },
   {
-    path: `${domain}/project/:id/comparison`,
+    path: `${DOMAIN}/project/:id/comparison`,
     element: (
       <Base>
-        {' '}
+        {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
         <WorkflowComparison />
       </Base>
     )
   },
   {
-    path: `${domain}/project/:id`,
+    path: `${DOMAIN}/project/:id`,
     element: (
       <Base>
         <ProjectDetail />
@@ -164,9 +154,10 @@ const router = createBrowserRouter([
     )
   },
   {
-    path: `${domain}/workflow/:id`,
+    path: `${DOMAIN}/workflow/:id`,
     element: (
       <Base>
+        {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
         <Workflow />
       </Base>
     )

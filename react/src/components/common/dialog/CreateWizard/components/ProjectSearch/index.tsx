@@ -3,27 +3,42 @@ import Fuse from 'fuse.js'
 import { debounce } from '@mui/material/utils'
 import { GridWrap } from '@cfMUI/helper'
 import Box from '@mui/material/Box'
-import WorkflowCardDumb from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
+import WorkflowCardDumb from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { PrepareBackendDataForWorkflowCardDumb } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
-import { ProjectType } from './types'
+import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { getProjectsForCreate } from '@XMLHTTP/API/workflow'
+import Loader from '@cfModule/components/common/UIComponents/Loader'
 
 type PropsType = {
   selected?: number
-  projects: ProjectType[]
+  projects: ProjectType[] | null
   onProjectSelect: (id: number) => void
+  setProjectData: (project_data: ProjectType[]) => void
 }
 
 type StateType = ProjectType[]
 
-const ProjectSearch = ({ selected, projects, onProjectSelect }: PropsType) => {
-  const [results, setResults] = useState<StateType>(projects)
-  const fuse = new Fuse(projects, {
-    keys: ['title', 'caption']
-  })
+const ProjectSearch = ({
+  selected,
+  projects,
+  onProjectSelect,
+  setProjectData
+}: PropsType) => {
+  /*******************************************************
+   * HOOKS
+   *******************************************************/
+  const [results, setResults] = useState<StateType>([])
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
+    const fuse = new Fuse(projects, {
+      keys: ['title', 'caption']
+    })
     const value = e.target.value
     if (value === '') {
       setResults(projects)
@@ -34,6 +49,20 @@ const ProjectSearch = ({ selected, projects, onProjectSelect }: PropsType) => {
     setResults(filtered)
   }
 
+  if (projects === null) {
+    getProjectsForCreate((response_data) => {
+      const project_data = response_data.data_package.map((project) => {
+        return PrepareBackendDataForWorkflowCardDumb(project)
+      })
+      setProjectData(project_data)
+      setResults(project_data)
+    })
+    return <Loader />
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
     <Box>
       <TextField
@@ -50,7 +79,7 @@ const ProjectSearch = ({ selected, projects, onProjectSelect }: PropsType) => {
         }}
       />
       <GridWrap sx={{ mt: 4 }}>
-        {results.slice(0, 4).map((project, index) => (
+        {results.slice(0, 8).map((project, index) => (
           <WorkflowCardDumb
             key={index}
             {...project}

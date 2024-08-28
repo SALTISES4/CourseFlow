@@ -17,7 +17,10 @@ const CompletionImg = ({
     return (
       <img
         className="self-completed"
-        src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'solid_check.svg'}
+        src={
+          COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+          'solid_check.svg'
+        }
       />
     )
   }

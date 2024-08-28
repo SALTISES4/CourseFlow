@@ -1,5 +1,5 @@
 import * as React from 'react'
-import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter'
+import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter'
 import { getFavouritesQuery } from '@XMLHTTP/API/pages'
 
 type StateType = {

@@ -1,9 +1,9 @@
 import * as React from 'react'
-import WorkflowFilter from '@cfCommonComponents/workflow/filters/WorkflowFilter/index.jsx'
-import MenuBar from '@cfCommonComponents/components/MenuBar'
+import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter/index.jsx'
 import { Workflow } from '@cfModule/types/common'
-import { LibraryQueryResp } from '@cfModule/XMLHTTP/types/query'
+import { LibraryQueryResp } from '@XMLHTTP/types/query'
 import { getLibraryQuery } from '@XMLHTTP/API/pages'
+import MenuBar from '@cfCommonComponents/layout/MenuBar'
 
 type PropsType = Record<string, never>
 type StateType = {
@@ -66,14 +66,19 @@ class LibraryPage extends React.Component<PropsType, StateType> {
           <hr />
           <a
             id="activity-strategy-create"
-            href={COURSEFLOW_APP.globalContextData.path.create_path.activity_strategy}
+            href={
+              COURSEFLOW_APP.globalContextData.path.create_path
+                .activity_strategy
+            }
             className="hover-shade"
           >
             {window.gettext('New activity strategy')}
           </a>
           <a
             id="course-strategy-create"
-            href={COURSEFLOW_APP.globalContextData.path.create_path.course_strategy}
+            href={
+              COURSEFLOW_APP.globalContextData.path.create_path.course_strategy
+            }
             className="hover-shade"
           >
             {window.gettext('New course strategy')}
@@ -102,8 +107,8 @@ class LibraryPage extends React.Component<PropsType, StateType> {
     return (
       <div className="main-block">
         <MenuBar
-          overflowLinks={() => <this.OverflowLinks />}
-          visibleButtons={() => <this.CreateButton />}
+          visibleButtons={<this.CreateButton />}
+          overflowButtons={<this.OverflowLinks />}
         />
         <div className="project-menu">
           <WorkflowFilter

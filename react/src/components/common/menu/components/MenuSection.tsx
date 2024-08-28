@@ -1,5 +1,5 @@
 import * as React from 'react'
-import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
+import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { GridWrap } from '@cfModule/mui/helper'
@@ -83,7 +83,10 @@ class MenuSection extends React.Component<PropsType> {
               ' link-image'
             }
             title={window.gettext('Add New')}
-            src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'add_new_white.svg'}
+            src={
+              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+              'add_new_white.svg'
+            }
           />
           <div>{this.props.section_data.title}</div>
           <div className="create-dropdown">{adds}</div>

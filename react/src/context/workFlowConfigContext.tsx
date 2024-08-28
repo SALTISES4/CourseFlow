@@ -1,101 +1,132 @@
-import React, { ReactNode  } from 'react'
-import WorkflowClass from '@cfPages/Workflow/Workflow'
+import React, { ReactNode } from 'react'
 import { ViewType } from '@cfModule/types/enum'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
+import { ConnectedUser } from '@cfModule/HTTP/WebsocketServiceConnectedUserManager'
+import {
+  WorkflowDetailViewDTO,
+  WorkflowPermission
+} from '@cfPages/Workspace/Workflow/types'
+import { FieldChoice } from '@cfModule/types/common'
+import { EProject } from '@XMLHTTP/types/entity'
 
-export const WorkFlowConfigContext = React.createContext<ChildRenderer>(
-  {} as ChildRenderer
+export const WorkFlowConfigContext = React.createContext<WorkFlowContextType>(
+  {} as WorkFlowContextType
 )
 
-type ChildRenderer = {
-  task_choices: any
-  time_choices: any
-  read_only: boolean
-  context_choices: any
-  outcome_type_choices: any
-  outcome_sort_choices: any
-  strategy_classification_choices: any
-  change_field: any
-  project: any
-  workflowID: number
-  unread_comments: any
-  add_comments: any
-  view_comments?: any
-  selection_manager: SelectionManager
+export type WorkFlowContextType = {
+  viewType: ViewType
+  public_view: boolean
 
-  lock_update: any
-  micro_update?: any
-  is_strategy?: any
-  // show_assignments?: any
-  column_choices: any
-  websocket: WebSocket
+  selectionManager: SelectionManager
 
-  // new
-  user_id: number
-  user_name: string
-  view_type: ViewType
+  workflow: {
+    workflowID: number
+    choices: {
+      task_choices: FieldChoice[]
+      time_choices: FieldChoice[]
+      context_choices: FieldChoice[]
+      strategy_classification_choices: FieldChoice[]
+      outcome_type_choices: FieldChoice[]
+      outcome_sort_choices: FieldChoice[]
+      column_choices: FieldChoice[]
+    }
+    project: EProject
+    is_strategy?: boolean
+    // verify
+    unread_comments: any
+    add_comments: any
+    view_comments?: any
+  }
+  user: {
+    user_name: string
+    user_id: number
+    isStudent: boolean
+  }
+  editableMethods: {
+    lock_update: (obj: any, time: any, lock: any) => void
+    micro_update: (obj: any) => void
+    change_field: (id: any, object_type: any, field: any, value: any) => void
+  }
+  ws: {
+    connectedUsers: ConnectedUser[]
+    wsConnected: boolean
+  }
+  permissions: {
+    projectPermission: number
+    workflowPermission: WorkflowPermission
+  }
 
-  // new new
-  public_view: any
-
-  // should be removed
   container: any
 }
-const initialWorkFlowConfig: ChildRenderer = {
-  // Initialize all required fields
-  // ...
-} as ChildRenderer
 
 type PropsType = {
   children: ReactNode
-  initialValue: WorkflowClass
+  initialValue: Pick<
+    WorkFlowContextType,
+    'editableMethods' | 'permissions' | 'ws' | 'selectionManager' | 'viewType'
+  > & {
+    workflowDetailResp: WorkflowDetailViewDTO
+  }
 }
 
 const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
   const formatInitialValue = (
-    workflowInstance: WorkflowClass
-  ): ChildRenderer => {
+    initialValue: PropsType['initialValue']
+  ): WorkFlowContextType => {
     // Process and format the workflowInstance
     // Return an object of type ChildRenderer
+
+    const wf_data = initialValue.workflowDetailResp.workflow_data_package
     const formattedValue = {
-      task_choices: workflowInstance.task_choices,
-      time_choices: workflowInstance.time_choices,
-      read_only: workflowInstance.read_only,
-      context_choices: workflowInstance.context_choices,
-      outcome_type_choices: workflowInstance.context_choices,
-      outcome_sort_choices: workflowInstance.outcome_sort_choices,
-      strategy_classification_choices:
-        workflowInstance.strategy_classification_choices,
+      viewType: initialValue.viewType,
+      public_view: initialValue.workflowDetailResp.public_view, // workflow/detail api call, data_package
+      selectionManager: initialValue.selectionManager, // define this as a singleton
 
-      project: workflowInstance.project,
-      workflowID: workflowInstance.workflowID,
-      unread_comments: workflowInstance.unread_comments,
-      add_comments: workflowInstance.add_comments,
-      view_comments: workflowInstance.view_comments,
+      // this is a partial list of needed values, directly from the API query, we should probably make a Pick
+      workflow: {
+        workflowID: initialValue.workflowDetailResp.workflow_model_id, // from URL param, also   workflow/detail api call, workflow_data_package, workflow_model_id (?)
+        project: wf_data.project, // from  workflow/detail api call, workflow_data_package
+        isStrategy: wf_data.is_strategy, // workflow/detail api call, workflow_data_package
 
-      is_strategy: workflowInstance.is_strategy,
-      // show_assignments: workflowInstance.show_assignments,
-      column_choices: workflowInstance.column_choices,
-      store: workflowInstance.store,
+        // @todo organize choices better
+        choices: {
+          task_choices: wf_data.task_choices, // // from  workflow/detail api call, workflow_data_package
+          time_choices: wf_data.time_choices, // // from  workflow/detail api call, workflow_data_package
+          context_choices: wf_data.context_choices, // from  workflow/detail api call, workflow_data_package
+          outcome_type_choices: wf_data.context_choices, // from  workflow/detail api call, workflow_data_package
+          outcome_sort_choices: wf_data.outcome_sort_choices, // from  workflow/detail api call, workflow_data_package
+          column_choices: wf_data.column_choices, // workflow/detail api call, workflow_data_package
+          strategy_classification_choices:
+            wf_data.strategy_classification_choices // from  workflow/detail api call, workflow_data_package
+        },
 
-      // functions
-      lock_update: workflowInstance.lock_update,
-      micro_update: workflowInstance.micro_update,
-      change_field: workflowInstance.change_field,
-      selection_manager: workflowInstance.selection_manager,
-      connect_user_bar:
-        workflowInstance.connect_user_bar.bind(workflowInstance),
-      websocket: workflowInstance.websocket,
+        // @ts-ignore
+        unread_comments: wf_data.unread_comments ?? [], // supposedly coming back from API, but currently undefined
 
-      //new
-      user_id: workflowInstance.user_id,
-      user_name: workflowInstance.user_name,
-      view_type: workflowInstance.view_type,
-      public_view: workflowInstance.public_view,
+        add_comments:
+          // @ts-ignore
+          wf_data.add_comments ?? // this is not confirmed
+          [], //permissions also set by user permissions from API
+        view_comments:
+          // @ts-ignore
+          initialValue.workflowDetailResp.workflow_data_package.view_comments ?? // this is not confirmed
+          [] // permissions also set by user permissions from API
+      },
+      // @todo make the user a better defined object
+      user: {
+        user_id: initialValue.workflowDetailResp.user_id, // workflow/detail api call, data_package
+        user_name: initialValue.workflowDetailResp.user_name, // workflow/detail api call, data_package
+        isStudent: false // @todo
+      },
 
-      // to remove
-      container: workflowInstance.container
+      // functions, these are the only items which actually belong to the 'workflow' react component class and as noted in the copponent, these
+      // probably belong to something in the editable component area ...
+
+      editableMethods: initialValue.editableMethods,
+      ws: initialValue.ws,
+      permissions: initialValue.permissions,
+
+      container: ''
     }
     return formattedValue
   }

@@ -182,6 +182,14 @@ export const permission_keys = {
   student: 4
 }
 
+export enum PERMISSION_KEYS {
+  NONE,
+  VIEW,
+  EDIT,
+  COMMENT,
+  STUDENT
+}
+
 export const role_keys = {
   none: 0,
   student: 1,

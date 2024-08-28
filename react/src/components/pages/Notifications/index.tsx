@@ -100,9 +100,13 @@ const NotificationsPage = (): JSX.Element => {
     const { notification } = pageState
 
     // fire the post request
-    API_POST(COURSEFLOW_APP.globalContextData.path.json_api.notification.mark_all_as_read, {
-      notification_id: notification.id
-    })
+    API_POST(
+      COURSEFLOW_APP.globalContextData.path.json_api.notification
+        .mark_all_as_read,
+      {
+        notification_id: notification.id
+      }
+    )
       .then(() => {
         const updated = [...pageState.notifications]
         const index = updated.findIndex((n) => n.id === notification.id)
@@ -126,9 +130,12 @@ const NotificationsPage = (): JSX.Element => {
   function onDeleteClick() {
     const { notification } = pageState
 
-    API_POST(COURSEFLOW_APP.globalContextData.path.json_api.notification.delete, {
-      notification_id: notification.id
-    })
+    API_POST(
+      COURSEFLOW_APP.globalContextData.path.json_api.notification.delete,
+      {
+        notification_id: notification.id
+      }
+    )
       .then(() => {
         const updated = [...pageState.notifications]
         const index = updated.findIndex((n) => n.id === notification.id)
@@ -153,7 +160,10 @@ const NotificationsPage = (): JSX.Element => {
   function onMarkAllAsReadClick(e) {
     e.preventDefault()
 
-    API_POST(COURSEFLOW_APP.globalContextData.path.json_api.notification.mark_all_as_read)
+    API_POST(
+      COURSEFLOW_APP.globalContextData.path.json_api.notification
+        .mark_all_as_read
+    )
       .then(() => {
         setPageState({
           ...pageState,
@@ -224,7 +234,8 @@ const NotificationsPage = (): JSX.Element => {
                     <IconButton
                       onClick={(e) => handleMenuOpen(e, n)}
                       aria-label={
-                        COURSEFLOW_APP.globalContextData.strings.show_notifications_menu
+                        COURSEFLOW_APP.globalContextData.strings
+                          .show_notifications_menu
                       }
                       aria-haspopup="true"
                     >
@@ -271,7 +282,8 @@ const NotificationsPage = (): JSX.Element => {
             open={!!pageState.menuAnchor}
             onClose={handleMenuClose}
             MenuListProps={{
-              'aria-label': COURSEFLOW_APP.globalContextData.strings.notification_options
+              'aria-label':
+                COURSEFLOW_APP.globalContextData.strings.notification_options
             }}
           >
             {pageState.notification?.unread && !pageState.allRead && (

@@ -43,7 +43,10 @@ export class WorkflowTitle extends React.Component {
     }
 
     const href = !data.url
-      ? COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace('0', data.id)
+      ? COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
+          '0',
+          data.id
+        )
       : data.url
 
     if (

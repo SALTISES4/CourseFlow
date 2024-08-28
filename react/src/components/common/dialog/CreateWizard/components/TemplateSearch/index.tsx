@@ -7,14 +7,19 @@ import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
 import { debounce } from '@mui/material/utils'
+import { PrepareBackendDataForWorkflowCardDumb } from '@cfCommonComponents/cards/WorkflowCardDumb'
 
 import { TemplateThumbnail } from './styles'
-import { TemplateType } from './types'
+import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { getTemplates } from '@XMLHTTP/API/workflow'
+import Loader from '@cfCommonComponents/UIComponents/Loader'
 
 type PropsType = {
   selected?: number
   templates: TemplateType[]
   onTemplateSelect: (id: number) => void
+  setTemplateData: (project_data: TemplateType[]) => void
+  template_type: string
 }
 
 type StateType = TemplateType[]
@@ -22,14 +27,16 @@ type StateType = TemplateType[]
 const TemplateSearch = ({
   selected,
   templates,
-  onTemplateSelect
+  onTemplateSelect,
+  setTemplateData,
+  template_type
 }: PropsType) => {
   const [results, setResults] = useState<StateType>(templates)
-  const fuse = new Fuse(templates, {
-    keys: ['title', 'description']
-  })
 
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
+    const fuse = new Fuse(templates, {
+      keys: ['title', 'description']
+    })
     const value = e.target.value
     if (value === '') {
       setResults(templates)
@@ -38,6 +45,17 @@ const TemplateSearch = ({
 
     const filtered: StateType = fuse.search(value).map((result) => result.item)
     setResults(filtered)
+  }
+
+  if (templates === null) {
+    getTemplates(template_type, (response_data) => {
+      const project_data = response_data.data_package.map((project) => {
+        return PrepareBackendDataForWorkflowCardDumb(project)
+      })
+      setTemplateData(project_data)
+      setResults(project_data)
+    })
+    return <Loader />
   }
 
   return (
@@ -57,7 +75,7 @@ const TemplateSearch = ({
       />
       <Box sx={{ mt: 4 }}>
         <List>
-          {results.slice(0, 6).map((result) => (
+          {results.slice(0, 12).map((result) => (
             <TemplateThumbnail
               key={result.id}
               selected={result.id === selected}

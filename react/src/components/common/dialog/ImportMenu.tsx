@@ -89,7 +89,12 @@ class ImportMenu extends React.Component<PropsType> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'close.svg'} />
+          <img
+            src={
+              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+              'close.svg'
+            }
+          />
         </div>
       </div>
     )

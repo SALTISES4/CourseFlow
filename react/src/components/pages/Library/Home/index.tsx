@@ -1,5 +1,5 @@
-import WorkflowCard from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCard'
-import Alert from '@cfCommonComponents/components/Alert'
+import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
+import Alert from '@cfCommonComponents/UIComponents/Alert'
 import { GridWrap, OuterContentWrap } from '@cfModule/mui/helper'
 import Welcome from './components/Welcome'
 import Section from './components/Section'
@@ -41,7 +41,8 @@ const Home = () => {
                   title: window.gettext('Recent classrooms'),
                   seeAll: {
                     text: 'View all classrooms',
-                    href: COURSEFLOW_APP.globalContextData.path.my_liveprojects_path
+                    href: COURSEFLOW_APP.globalContextData.path
+                      .my_liveprojects_path
                   }
                 }
           }

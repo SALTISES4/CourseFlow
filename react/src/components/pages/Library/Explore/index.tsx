@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useRef, useEffect, useState } from 'react'
-import ExploreFilter from '@cfCommonComponents/workflow/filters/ExploreFilter'
+import ExploreFilter from '@cfCommonComponents/filters/ExploreFilter'
 import { useQuery } from '@tanstack/react-query'
 import { PageExploreQueryResp } from '@XMLHTTP/types/query'
 import { fetchExploreContext, getLibraryQuery } from '@XMLHTTP/API/pages'

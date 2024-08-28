@@ -1,11 +1,11 @@
 import React from 'react'
 import { EventUnion } from '@cfModule/types/common'
 import * as Constants from '@cfConstants'
-import EditableComponent from '@cfParentComponents/EditableComponent'
+import EditableComponent from '@cfEditableComponents/EditableComponent'
 import {
   EditableComponentProps,
   EditableComponentStateType
-} from '@cfParentComponents/EditableComponent'
+} from '@cfEditableComponents/EditableComponent'
 
 /**
  * Manages the current selection and locks it to prevent
@@ -88,9 +88,6 @@ export class SelectionManager {
       this.deselectCurrentSelection()
     }
 
-    console.log('newSelection')
-    console.log(newSelection)
-
     // Select new selection
     this.currentSelection = newSelection
     if (this.currentSelection) {
@@ -131,7 +128,7 @@ export class SelectionManager {
   }
 
   private lockCurrentSelection(): void {
-    this.currentSelection.context.lock_update(
+    this.currentSelection.context.editableMethods.lock_update(
       {
         object_id: this.currentSelection.props.data.id,
         object_type:
@@ -143,7 +140,7 @@ export class SelectionManager {
   }
 
   private unlockCurrentSelection(): void {
-    this.currentSelection.context.lock_update(
+    this.currentSelection.context.editableMethods.lock_update(
       {
         object_id: this.currentSelection.props.data.id,
         object_type:
@@ -164,96 +161,3 @@ export class SelectionManager {
     }
   }
 }
-
-// export class SelectionManager {
-//   constructor(read_only) {
-//     this.currentSelection
-//     this.mouse_isclick = false
-//     this.read_only = read_only
-//     var selector = this
-//
-//     $(document).on('mousedown', () => {
-//       selector.mouse_isclick = true
-//       setTimeout(() => {
-//         selector.mouse_isclick = false
-//       }, 500)
-//     })
-//
-//     $(document).on('mousemove', () => {
-//       selector.mouse_isclick = false
-//     })
-//
-//     $(document).on('mouseup', (evt, newSelection) => {
-//       if (selector.mouse_isclick) {
-//         selector.changeSelection(evt, null)
-//       }
-//     })
-//
-//     this.last_sidebar_tab = $('#sidebar').tabs('option', 'active')
-//   }
-//
-//   changeSelection(evt, newSelection) {
-//     if (evt) {
-//       evt.stopPropagation()
-//     }
-//
-//     if (
-//       !this.read_only &&
-//       newSelection &&
-//       newSelection.props.data &&
-//       newSelection.props.data.lock
-//     ) {
-//       return
-//     }
-//
-//     if (this.currentSelection) {
-//       this.currentSelection.setState({ selected: false })
-//       if (!this.read_only) {
-//         this.currentSelection.props.renderer.lock_update(
-//           {
-//             object_id: this.currentSelection.props.data.id,
-//             object_type:
-//               Constants.object_dictionary[this.currentSelection.objectType]
-//           },
-//           60 * 1000,
-//           false
-//         )
-//       }
-//     }
-//
-//     this.currentSelection = newSelection
-//
-//     if (this.currentSelection) {
-//       if (!this.read_only) {
-//         this.currentSelection.props.renderer.lock_update(
-//           {
-//             object_id: this.currentSelection.props.data.id,
-//             object_type:
-//               Constants.object_dictionary[this.currentSelection.objectType]
-//           },
-//           60 * 1000,
-//           true
-//         )
-//       }
-//
-//       if ($('#sidebar').tabs('option', 'active') !== 0) {
-//         this.last_sidebar_tab = $('#sidebar').tabs('option', 'active')
-//       }
-//
-//       $('#sidebar').tabs('enable', 0)
-//       $('#sidebar').tabs('option', 'active', 0)
-//       this.currentSelection.setState({ selected: true })
-//     } else {
-//       if ($('#sidebar').tabs('option', 'active') === 0) {
-//         $('#sidebar').tabs('option', 'active', this.last_sidebar_tab)
-//       }
-//       $('#sidebar').tabs('disable', 0)
-//     }
-//   }
-//
-//   deleted(selection) {
-//     if (selection === this.currentSelection) {
-//       this.changeSelection(null, null)
-//     }
-//   }
-// }
