@@ -140,9 +140,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   componentDidMount() {
     this.getUserData()
     this.updateTabs()
-    // @ts-ignore
-    COURSEFLOW_APP.makeDropdown('#jump-to')
-    COURSEFLOW_APP.makeDropdown('#expand-collapse-all')
+
+
+
 
     if (this.context.viewType === ViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQuery(this.workflowId, (response) => {
@@ -658,11 +658,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
               </div>
             </div>
 
-            <RightSideBar
-              wfcontext={WFContext.WORKFLOW}
-              data={this.props.data}
-              readOnly={this.readOnly}
-            />
+            {/*<RightSideBar*/}
+            {/*  wfcontext={WFContext.WORKFLOW}*/}
+            {/*  data={this.props.data}*/}
+            {/*  readOnly={this.readOnly}*/}
+            {/*/>*/}
           </div>
 
           <ProjectTargetModal

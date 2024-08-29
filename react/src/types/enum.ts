@@ -9,8 +9,8 @@ export enum ViewType {
   GRID = 'grid',
   OUTCOMETABLE = 'outcometable',
   ALIGNMENTANALYSIS = 'alignmentanalysis',
-  HORIZONTALOUTCOMETABLE = 'horizontaloutcometable'
-  // WEEK = 'week',
+  HORIZONTALOUTCOMETABLE = 'horizontaloutcometable',
+  WORKFLOW_OVERVIEW = 'workflowoverview',
 }
 
 export enum WFContext {

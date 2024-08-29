@@ -49,6 +49,9 @@
       "@cfModule/*": [
         "./*"
       ],
+      "@cf/*": [
+        "./*"
+      ],
       "@cfComponents/*": [
         "./components/*"
       ],

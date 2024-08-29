@@ -39,7 +39,7 @@ const Welcome = ({ hide }: PropsType) => {
   const [visible, setVisible] = useState(true)
 
   function handleClose() {
-    setVisible(!visible)
+    setVisible(false) // @todo this should not be state, but cookie
   }
 
   if (hide || !visible) {

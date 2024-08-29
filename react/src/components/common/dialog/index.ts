@@ -2,32 +2,37 @@ import { useContext } from 'react'
 import { DialogDispatchContext, DialogContext } from './context'
 
 export enum DIALOG_TYPE {
+  // General
+  LINK_WORKFLOW = 'link_workflow',
+  TARGET_PROJECT = 'target_project',
+
+  // USER
+  PASSWORD_RESET = 'password_reset',
+
   // PROJECT
+  PROJECT_REMOVE_USER = 'project_user_remove',
+  ADD_CONTRIBUTOR = 'add_contributor', // where is this?
   PROJECT_CREATE = 'project_create',
   PROJECT_EDIT = 'project_edit',
   PROJECT_EXPORT = 'project_export',
   PROJECT_ARCHIVE = 'project_archive',
 
-  // PROGRAM
+  // WORKFLOW
+  IMPORT_OUTCOMES = 'import_outcomes',
+  IMPORT_NODES = 'import_nodes',
+
+  // WORKFLOW - PROGRAM
   PROGRAM_CREATE = 'program_create',
   PROGRAM_EDIT = 'program_edit',
 
-  // ACTIVITY
+  // WORKFLOW - ACTIVITY
   ACTIVITY_CREATE = 'activity_create',
   ACTIVITY_EDIT = 'activity_edit',
 
-  // COURSE
+  // WORKFLOW - COURSE
   COURSE_CREATE = 'course_create',
   COURSE_EDIT = 'course_edit',
-  COURSE_ARCHIVE = 'course_archive',
-
-  // General
-  LINK_WORKFLOW = 'link_workflow',
-  TARGET_PROJECT = 'target_project',
-  ADD_CONTRIBUTOR = 'add_contributor',
-  PASSWORD_RESET = 'password_reset',
-  IMPORT_OUTCOMES = 'import_outcomes',
-  IMPORT_NODES = 'import_nodes'
+  COURSE_ARCHIVE = 'course_archive'
 }
 
 /**

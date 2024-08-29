@@ -22,10 +22,11 @@ const Home = () => {
   if (isError) return <div>An error occurred: {error.message}</div>
 
   const { projects, isTeacher, templates } = data.data
+  console.log(data.data)
 
   return (
     <OuterContentWrap>
-      <Welcome hide={!!data.data.projects.length} />
+      <Welcome hide={!data.data.projects.length} />
       {!!projects.length && (
         <Section
           header={

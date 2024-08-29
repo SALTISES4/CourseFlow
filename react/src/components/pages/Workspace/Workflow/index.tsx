@@ -41,7 +41,9 @@ type StateProps = {
   ready: boolean
   viewType: ViewType
 }
-type OwnProps = Record<string, never>
+type OwnProps = {
+  initialView?: ViewType
+}
 type ConnectedProps = Record<string, never>
 type PropsType = DispatchProp & OwnProps & ConnectedProps
 
@@ -117,7 +119,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
       wsConnected: false,
       connectedUsers: [],
       ready: false,
-      viewType: ViewType.WORKFLOW
+      viewType: props.initialView
     }
 
     this.isMessagesQueued = true // why would this be true right away?
@@ -158,6 +160,14 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
         userName: response.data_package.user_name
       })
     })
+  }
+
+  componentDidUpdate(prevProps) {
+    console.log('this.props.initialView')
+    console.log(this.props.initialView)
+    if (this.props.initialView !== prevProps.initialView) {
+      this.updateView(this.props.initialView)
+    }
   }
 
   componentWillUnmount() {
@@ -207,11 +217,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     getWorkflowDataQuery(this.workflowID, (response) => {
       // this.unread_comments = response.data_package?.unread_comments // @todo do not assign this explicitly here, not seeing this in data package yet
 
-      // this.store = configureStore({
-      //   reducer: Reducers.rootWorkflowReducer,
-      //   preloadedState: response.data_package,
-      //   devTools: process.env.NODE_ENV !== 'production' // Enable Redux DevTools only in non-production environments
-      // })
       this.props.dispatch(ActionCreator.refreshStoreData(response.data_package))
 
       this.setState({
@@ -346,7 +351,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   }
 
   onParentWorkflowUpdateReceived() {
-
     this.isMessagesQueued = true
     getWorkflowParentDataQuery(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data

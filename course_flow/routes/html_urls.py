@@ -87,6 +87,15 @@ def html_patterns():
             name="workflow-detail",
         ),
         path(
+            "workflow/<int:pk>/<path:rest_of_path>",
+            views.html.library.default_react_view,
+            {
+                "title": "Project",
+                "path_id": "workflowDetail",
+            },
+            name="workflow-tabs",
+        ),
+        path(
             "workflow/public/<int:pk>/",
             ratelimit(key="ip", method=["GET"], rate="5/m", block=True)(
                 views.WorkflowPublicDetailView.as_view()

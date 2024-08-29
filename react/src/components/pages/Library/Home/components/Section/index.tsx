@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
+import { Link as RouterLink } from 'react-router-dom'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
 
@@ -37,11 +38,8 @@ const Section = ({ header, children }: PropsType) => (
       <SectionHeader>
         <Typography variant="h5">{window.gettext(header.title)}</Typography>
         {header.seeAll && (
-          <Link href={header.seeAll.href}>
-            {
-              // @todo need to fix paths here
-              window.gettext(header.seeAll.text || 'See all')
-            }
+          <Link component={RouterLink} to={header.seeAll.href}>
+            {window.gettext(header.seeAll.text || 'See all')}
           </Link>
         )}
       </SectionHeader>

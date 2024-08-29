@@ -130,7 +130,10 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
    *******************************************************/
   render() {
     const data = this.props.data
-    const columnworkflows = data.columnworkflow_set.map(
+    console.log('data in workflow view ')
+    console.log(data)
+
+    const columnworkflows = data.columnworkflow_set?.map(
       (columnworkflow, index) => (
         <ColumnWorkflow
           key={`columnworkflow-${columnworkflow}`}
@@ -139,7 +142,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
         />
       )
     )
-    const weekworkflows = data.weekworkflow_set.map((weekworkflow, index) => (
+    const weekworkflows = data.weekworkflow_set?.map((weekworkflow, index) => (
       <WeekWorkflow
         condensed={data.condensed}
         key={`weekworkflow-${weekworkflow}`}
