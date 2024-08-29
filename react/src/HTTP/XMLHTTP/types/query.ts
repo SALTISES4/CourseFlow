@@ -148,7 +148,7 @@ export type DuplicateBaseItemQueryResp = {
  * menu.ts
  *******************************************************/
 
-export type LibraryQueryResp = {
+export type PageLibraryQueryResp = {
   data_package: Workflow[]
 }
 
