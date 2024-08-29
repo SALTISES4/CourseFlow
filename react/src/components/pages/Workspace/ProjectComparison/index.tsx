@@ -13,8 +13,7 @@ import * as Constants from '@cfModule/constants'
 import { getProjectById } from '@XMLHTTP/API/project'
 import legacyWithRouter from '@cfModule/HOC/legacyWithRouter'
 
-// @ts-ignore
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ 
 
 const defaultPermissions = {
   readOnly: false,
