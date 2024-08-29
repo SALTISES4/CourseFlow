@@ -1,8 +1,8 @@
+import Section from '@cfPages/Styleguide/views/Homepage/components/Section'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 
 import { Routes } from '@cf/router'
-import Section from '@cfPages/Home/components/Section'
 
 const SectionLayouts = () => (
   <Section header={{ title: 'Layouts' }}>

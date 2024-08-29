@@ -1,8 +1,8 @@
+import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
+import Section from '@cfPages/Styleguide/views/Homepage/components/Section'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { DIALOG_TYPE, useDialog } from '../dialog'
-import Section from '@cfPages/Home/components/Section'
 
 const SectionDialogs = () => {
   const { dispatch } = useDialog()
