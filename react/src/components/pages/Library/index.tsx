@@ -9,7 +9,6 @@ import {
 import {
   fetchExploreContext,
   fetchLibraryContext,
-  getLibraryQuery
 } from '@XMLHTTP/API/pages'
 import MenuBar from '@cfCommonComponents/layout/MenuBar'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
@@ -43,7 +42,7 @@ const LibraryPage = () => {
    * LIFECYCLE HOOKS
    *******************************************************/
   useEffect(() => {
-    getLibraryQuery((data: PageLibraryQueryResp) => {
+    fetchLibraryContext((data: PageLibraryQueryResp) => {
       setState({
         project_data: data.data_package
       })

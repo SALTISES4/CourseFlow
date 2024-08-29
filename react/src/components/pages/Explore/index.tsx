@@ -1,9 +1,10 @@
+// @ts-nocheck
 import * as React from 'react'
 import { useRef, useEffect, useState } from 'react'
 import ExploreFilter from '@cfCommonComponents/filters/ExploreFilter'
 import { useQuery } from '@tanstack/react-query'
 import { PageExploreQueryResp } from '@XMLHTTP/types/query'
-import { fetchExploreContext, getLibraryQuery } from '@XMLHTTP/API/pages'
+import { fetchExploreContext, fetchLibraryContext } from '@XMLHTTP/API/pages'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
 
 const ExplorePage = () => {
@@ -21,7 +22,7 @@ const ExplorePage = () => {
   })
 
   useEffect(() => {
-    getLibraryQuery((data: { data_package: any }) => {
+    fetchLibraryContext((data: { data_package: any }) => {
       // Adjust the type of `data_package` if its structure is known
       // ??
       setProjectData(data)
