@@ -20,6 +20,7 @@ export enum DIALOG_TYPE {
   // WORKFLOW
   IMPORT_OUTCOMES = 'import_outcomes',
   IMPORT_NODES = 'import_nodes',
+  WORKFLOW_LINK = 'workflow_link',
 
   // WORKFLOW - PROGRAM
   PROGRAM_CREATE = 'program_create',
@@ -33,6 +34,8 @@ export enum DIALOG_TYPE {
   COURSE_CREATE = 'course_create',
   COURSE_EDIT = 'course_edit',
   COURSE_ARCHIVE = 'course_archive'
+
+  // TBD
 }
 
 /**

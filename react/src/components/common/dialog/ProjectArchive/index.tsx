@@ -11,7 +11,7 @@ type PropsType = {
   onSubmit: () => void
 }
 
-const ArchiveProjectModal = ({ onSubmit }: PropsType) => {
+const ProjectArchiveModal = ({ onSubmit }: PropsType) => {
   const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_ARCHIVE)
 
   return (
@@ -44,4 +44,4 @@ const ArchiveProjectModal = ({ onSubmit }: PropsType) => {
   )
 }
 
-export default ArchiveProjectModal
+export default ProjectArchiveModal

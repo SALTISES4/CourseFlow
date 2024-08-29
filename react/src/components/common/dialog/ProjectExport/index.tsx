@@ -56,7 +56,7 @@ const fields = {
   ]
 }
 
-function ExportProjectDialog({ data }: { data: EProject }) {
+function ProjectExportDialog({ data }: { data: EProject }) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
@@ -206,4 +206,4 @@ function ExportProjectDialog({ data }: { data: EProject }) {
   )
 }
 
-export default ExportProjectDialog
+export default ProjectExportDialog

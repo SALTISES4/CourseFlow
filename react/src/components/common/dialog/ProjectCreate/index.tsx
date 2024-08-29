@@ -34,7 +34,7 @@ export type StateType = {
   objectSetsExpanded: boolean
 }
 
-function CreateProjectDialog({
+function ProjectCreateDialog({
   showNoProjectsAlert,
   formFields
 }: TopBarProps['forms']['createProject']) {
@@ -262,4 +262,4 @@ function CreateProjectDialog({
   )
 }
 
-export default CreateProjectDialog
+export default ProjectCreateDialog

@@ -7,7 +7,7 @@ import { TargetProjectQueryResp } from '@XMLHTTP/types/query'
 import { DIALOG_TYPE, useDialog } from '../'
 import WorkflowsMenu from '../WorkflowsMenu'
 
-function TargetProjectDialog({ id, actionFunction }: any) {
+function ProjectTargetDialog({ id, actionFunction }: any) {
   const { show, onClose } = useDialog(DIALOG_TYPE.TARGET_PROJECT)
   const [project_data, setProjectData] = useState<TargetProjectQueryResp>(null)
 
@@ -60,4 +60,4 @@ function TargetProjectDialogContents({
   )
 }
 
-export default TargetProjectDialog
+export default ProjectTargetDialog

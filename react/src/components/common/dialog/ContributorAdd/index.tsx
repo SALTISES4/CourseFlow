@@ -34,7 +34,7 @@ export type PropsType = {
   roles: Role[]
 }
 
-const AddContributorDialog = ({ contributors, roles }: PropsType) => {
+const ContributorAddDialog = ({ contributors, roles }: PropsType) => {
   const { show, onClose } = useDialog(DIALOG_TYPE.ADD_CONTRIBUTOR)
 
   const { control, handleSubmit, reset, watch } = useForm<IFormInputs>({
@@ -135,4 +135,4 @@ const AddContributorDialog = ({ contributors, roles }: PropsType) => {
   )
 }
 
-export default AddContributorDialog
+export default ContributorAddDialog
