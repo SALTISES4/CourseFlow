@@ -168,8 +168,12 @@ export type DisciplineQueryResp = {
 
 export type LibraryObjectsSearchQueryResp = {
   action: VERB
+  data_package: ESectionObject[]
   workflow_list: ESectionObject[]
-  pages: QueryPages
+  meta: {
+    count: number
+    pageCount: number
+  }
 }
 
 /*******************************************************

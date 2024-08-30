@@ -1,7 +1,6 @@
 import * as React from 'react'
-import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter/index.jsx'
-import { PageLibraryQueryResp } from '@XMLHTTP/types/query'
-import { fetchLibraryContext } from '@XMLHTTP/API/pages'
+import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
+import { libraryObjectsSearchQuery } from '@XMLHTTP/API/pages'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
 import { useQuery } from '@tanstack/react-query'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
@@ -19,46 +18,82 @@ import FilterWorkflows from '@cfPages/Library/components/FilterWorkflows'
 import FilterIcon from '@mui/icons-material/FilterAlt'
 import { prepareBackendDataForWorkflowCardDumb } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/utilityFunctions'
+import { useState } from 'react'
+import {
+  Filters,
+  SortableFilterOption,
+  SortDirection
+} from '@cfPages/Library/components/types'
 
-const filterSortOptions = [
-  {
-    name: 'recent',
-    label: 'Recent'
-  },
-  {
-    name: 'a-z',
-    label: 'A - Z'
-  },
-  {
-    name: 'date',
-    label: 'Creation date'
-  }
-]
+const defaultFilter: Filters = {
+  keyword: '',
+  filterSortOptions: [
+    {
+      name: 'recent',
+      label: 'Recent'
+    },
+    {
+      name: 'a-z',
+      label: 'A - Z'
+    },
+    {
+      name: 'date',
+      label: 'Creation date'
+    }
+  ],
+  filterProjectOptions: [
+    {
+      name: 'all',
+      label: _t('All'),
+      selected: true
+    },
+    {
+      name: 'owned',
+      label: _t('Owned')
+    },
+    {
+      name: 'shared',
+      label: _t('Shared')
+    },
+    {
+      name: 'favorites',
+      label: _t('Fovorites')
+    },
+    {
+      name: 'archived',
+      label: _t('Archived')
+    }
+  ]
+}
 
-const filterProjectOptions = [
-  {
-    name: 'all',
-    label: _t('All'),
-    selected: true
-  },
-  {
-    name: 'owned',
-    label: _t('Owned')
-  },
-  {
-    name: 'shared',
-    label: _t('Shared')
-  },
-  {
-    name: 'favorites',
-    label: _t('Fovorites')
-  },
-  {
-    name: 'archived',
-    label: _t('Archived')
-  }
-]
+function updateFilterOptions(
+  options: SortableFilterOption[],
+  currentSelection: { name: string; direction?: SortDirection }
+): SortableFilterOption[] {
+  return options.map((option) => {
+    // Set 'selected' based on if the option's name matches the current selection's name
+    const isSelected = option.name === currentSelection.name
 
+    // Decide the 'direction' value: if the current selection has a direction and matches the name, use it, otherwise keep the original or set undefined
+    let directionValue
+    if (currentSelection.direction && isSelected) {
+      directionValue = currentSelection.direction
+    } else {
+      directionValue = option.direction
+    }
+
+    return {
+      ...option,
+      selected: isSelected,
+      direction: isSelected ? directionValue : undefined
+    }
+  })
+}
+
+type State = {
+  filters: Filters
+  page: number
+}
 /*******************************************************
  * @LibraryRenderer
  *******************************************************/
@@ -66,18 +101,35 @@ const LibraryPage = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { data, error, isLoading, isError } = useQuery<PageLibraryQueryResp>({
-    queryKey: ['fetchLibraryContext'],
-    queryFn: fetchLibraryContext
-  })
   const navigate = useNavigate()
+  const [searchParameters, setSearchParameters] = useState<{
+    filters: Filters
+    page: number
+  }>({
+    filters: defaultFilter,
+    page: 0
+  })
+
+  const { data, error, isLoading, isError } =
+    useQuery<LibraryObjectsSearchQueryResp>({
+      queryKey: [
+        'libraryObjectsSearchQuery',
+        searchParameters.filters,
+        searchParameters.page
+      ],
+      queryFn: () =>
+        libraryObjectsSearchQuery({
+          filters: searchParameters.filters,
+          page: searchParameters.page
+        })
+    })
 
   /*******************************************************
    * RENDER
    *******************************************************/
 
   if (isLoading) return <Loader />
-  if (!data || error) return <div>error</div>
+  if (!data || isError) return <div>error</div>
 
   const cards = data.data_package.map((item, index): WorkflowCardTypeUI => {
     const formattedCardData = prepareBackendDataForWorkflowCardDumb(item)
@@ -112,46 +164,65 @@ const LibraryPage = () => {
   }
 
   return (
-    <>
-      <WorkflowFilter workflows={data.data_package} context="library" />
+    <OuterContentWrap>
+      <Toolbar disableGutters sx={{ mt: 4, mb: 4 }}>
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="space-between"
+          sx={{ width: '100%' }}
+        >
+          <Stack direction="row" spacing={2}>
+            <FilterButton
+              sortable
+              options={searchParameters.filters.filterSortOptions}
+              icon={<SortIcon />}
+              onChange={(val, dir) => {
+                const newFilterSortOptions = updateFilterOptions(
+                  searchParameters.filters.filterSortOptions,
+                  { name: val, direction: dir }
+                )
+                setSearchParameters({
+                  ...searchParameters,
+                  filters: {
+                    ...searchParameters.filters,
+                    filterSortOptions: newFilterSortOptions
+                  }
+                })
+              }}
+              placeholder="Sort"
+            />
 
-      <OuterContentWrap>
-        <Toolbar disableGutters sx={{ mt: 4, mb: 4 }}>
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="space-between"
-            sx={{ width: '100%' }}
-          >
-            <Stack direction="row" spacing={2}>
-              <FilterButton
-                sortable
-                options={filterSortOptions}
-                icon={<SortIcon />}
-                onChange={(val, dir) => console.log(val, dir)}
-                placeholder="Sort"
-              />
-              <FilterButton
-                options={filterProjectOptions}
-                icon={<FilterIcon />}
-                onChange={(val) =>
-                  console.log('projects filter changed to', val)
-                }
-              />
-            </Stack>
-
-            <FilterWorkflows
-              workflows={cards}
-              onChange={(workflow) => console.log('clicked', workflow)}
+            <FilterButton
+              options={searchParameters.filters.filterProjectOptions}
+              icon={<FilterIcon />}
+              onChange={(val) => {
+                const newFilterProjectOptions = updateFilterOptions(
+                  searchParameters.filters.filterProjectOptions,
+                  { name: val }
+                )
+                setSearchParameters({
+                  ...searchParameters,
+                  filters: {
+                    ...searchParameters.filters,
+                    filterProjectOptions: newFilterProjectOptions
+                  }
+                })
+              }}
             />
           </Stack>
-        </Toolbar>
 
-        <GridWrap>
-          <Results />
-        </GridWrap>
-      </OuterContentWrap>
-    </>
+          <FilterWorkflows
+            workflows={cards}
+            onChange={(workflow) => console.log('clicked', workflow)}
+          />
+        </Stack>
+      </Toolbar>
+
+      <GridWrap>
+        <Results />
+      </GridWrap>
+    </OuterContentWrap>
   )
 }
 

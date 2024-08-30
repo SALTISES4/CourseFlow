@@ -4,16 +4,11 @@ import Button from '@mui/material/Button'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { StyledMenu, StyledMenuItem } from './styles'
-
-export type FilterOption = {
-  name: string
-  label: string
-  selected?: boolean
-}
+import {FilterOption, SortDirection} from '@cfPages/Library/components/types'
 
 type SortableProps = {
   sortable: true
-  onChange: (value: string, direction: 'asc' | 'desc') => void
+  onChange: (value: string, direction: SortDirection) => void
 }
 
 type NonSortableProps = {
@@ -29,7 +24,7 @@ type PropsType = {
 
 type StateType = {
   filter: FilterOption | null
-  direction: 'asc' | 'desc'
+  direction: SortDirection
 }
 
 const FilterButton = ({
@@ -42,7 +37,7 @@ const FilterButton = ({
   const selected = options.find((o) => o.selected)
   const [value, setValue] = useState<StateType>({
     filter: selected ?? null,
-    direction: 'desc'
+    direction: SortDirection.DESC
   })
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
 
@@ -55,11 +50,14 @@ const FilterButton = ({
       produce((draft) => {
         if (draft.filter?.name === option.name) {
           if (sortable) {
-            draft.direction = draft.direction === 'asc' ? 'desc' : 'asc'
+            draft.direction =
+              draft.direction === SortDirection.ASC
+                ? SortDirection.DESC
+                : SortDirection.ASC
           }
         } else {
           draft.filter = option
-          draft.direction = 'desc'
+          draft.direction = SortDirection.DESC
         }
 
         onChange(draft.filter.name, draft.direction)
@@ -105,10 +103,10 @@ const FilterButton = ({
             {option.label}
             {sortable && option.name === value.filter?.name && (
               <>
-                {value.direction === 'asc' && (
+                {value.direction === SortDirection.ASC && (
                   <ArrowUpwardIcon fontSize="small" />
                 )}
-                {value.direction === 'desc' && (
+                {value.direction === SortDirection.DESC && (
                   <ArrowDownwardIcon fontSize="small" />
                 )}
               </>

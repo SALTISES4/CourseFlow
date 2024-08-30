@@ -3,11 +3,10 @@ import {
   FavouritesQueryResp,
   PageHomeQueryResp,
   PageLibraryQueryResp,
-  LibraryObjectsSearchQueryResp,
-  DisciplineQueryResp
+  LibraryObjectsSearchQueryResp
 } from '@XMLHTTP/types/query'
-import { VERB } from '@cfModule/types/enum'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
+import { Filters } from '@cfPages/Library/components/types'
 
 /*******************************************************
  * HOME PAGE
@@ -45,23 +44,21 @@ export async function fetchLibraryContext(): Promise<PageLibraryQueryResp> {
  * @param data
  * @param callBackFunction
  */
-export function libraryObjectsSearchQuery(
-  filter,
-  data,
-  callBackFunction = (_data: LibraryObjectsSearchQueryResp) =>
-    console.log('success')
-) {
-  API_POST(
+type LibraryObjectsSearchQueryArgs = {
+  filters: Filters
+  page: number
+}
+export function libraryObjectsSearchQuery({
+  filters,
+  page
+}: LibraryObjectsSearchQueryArgs): Promise<LibraryObjectsSearchQueryResp> {
+  return API_POST(
     COURSEFLOW_APP.globalContextData.path.json_api.library
       .library__objects_search,
     {
-      filter: filter,
-      additional_data: data
+      filters
     }
-  ).then((response: LibraryObjectsSearchQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
-  })
+  )
 }
 
 /**
