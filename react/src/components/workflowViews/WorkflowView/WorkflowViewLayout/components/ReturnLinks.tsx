@@ -6,6 +6,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import { connect, DispatchProp } from 'react-redux'
 import { AppState } from '@cfRedux/types/type'
 import Typography from '@mui/material/Typography'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
   project: EProject
@@ -55,7 +56,7 @@ const ReturnLinksUnconnected = ({
       >
         <ArrowBackIosIcon />
         <div>
-          <Typography>{window.gettext('Return to')}</Typography>
+          <Typography>{_t('Return to')}</Typography>
           {
             // doesn't work for now because project is not in store
             0 && (
@@ -83,7 +84,7 @@ const ReturnLinksUnconnected = ({
         )}
       >
         <ArrowBackIosIcon />
-        {window.gettext('Return to Editable Workflow')}
+        {_t('Return to Editable Workflow')}
       </Link>
     ) : (
       <></>

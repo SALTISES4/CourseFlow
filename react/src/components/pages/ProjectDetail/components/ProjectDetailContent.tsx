@@ -3,7 +3,6 @@ import { produce } from 'immer'
 // @local
 import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter'
 import { ProjectMenuProps } from '@cfPages/ProjectDetail/types'
-import { Workflow } from '@cfModule/types/common'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { Box, Dialog, DialogTitle, Link } from '@mui/material'
 import Header from '@cfPages/ProjectDetail/components/Header'
@@ -13,15 +12,15 @@ import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
-import { EProject } from '@XMLHTTP/types/entity'
+import { EProject, ESectionObject } from '@XMLHTTP/types/entity'
 import ProjectExportModal from '@cfModule/components/common/dialog/ProjectExport'
 import ProjectArchiveModal from '@cfModule/components/common/dialog/ProjectArchive'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 import { Link as RouterLink } from 'react-router-dom'
-import MenuBar from '@cfModule/components/common/layout/MenuBar'
 import EditIcon from '@mui/icons-material/Edit'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * The project library menu
@@ -33,7 +32,7 @@ interface StateType {
   project?: EProject
   view_type?: string
   users?: UsersForObjectQueryResp
-  workflow_data?: Workflow[]
+  workflow_data?: ESectionObject[]
   openEditDialog?: boolean
   openShareDialog?: boolean
 }
@@ -75,6 +74,7 @@ function ProjectDetailContent({
     getWorkflowsForProjectQuery(project.id, (data) => {
       setState(
         produce((draft) => {
+          // @ts-ignore @todo not sure
           draft.workflow_data = data.data_package
         })
       )
@@ -178,17 +178,17 @@ function ProjectDetailContent({
           className="hover-shade"
           onClick={() => dispatch(DIALOG_TYPE.PROJECT_ARCHIVE)}
         >
-          <div>{window.gettext('Archive project')}</div>
+          <div>{_t('Archive project')}</div>
         </div>
       )
     }
     return (
       <>
         <div className="hover-shade" onClick={restoreProject}>
-          <div>{window.gettext('Restore project')}</div>
+          <div>{_t('Restore project')}</div>
         </div>
         <div className="hover-shade" onClick={deleteProjectHard}>
-          <div>{window.gettext('Permanently delete project')}</div>
+          <div>{_t('Permanently delete project')}</div>
         </div>
       </>
     )
@@ -203,7 +203,7 @@ function ProjectDetailContent({
           onClick={() => dispatch(DIALOG_TYPE.PROJECT_EXPORT)}
           // onClick={openExportDialog}
         >
-          <div>{window.gettext('Export')}</div>
+          <div>{_t('Export')}</div>
         </div>
       )
     }
@@ -236,7 +236,7 @@ function ProjectDetailContent({
             )
           }}
         >
-          <div>{window.gettext('Copy to my library')}</div>
+          <div>{_t('Copy to my library')}</div>
         </div>
       )
     }
@@ -250,7 +250,7 @@ function ProjectDetailContent({
 
     overflow_links.push(
       <a id="comparison-view" className="hover-shade" href="comparison">
-        {window.gettext('Workflow comparison tool')}
+        {_t('Workflow comparison tool')}
       </a>
     )
 
@@ -275,7 +275,7 @@ function ProjectDetailContent({
         <div
           className="hover-shade"
           id="edit-project-button"
-          title={window.gettext('Edit Project')}
+          title={_t('Edit Project')}
           onClick={openEditDialog}
         >
           <EditIcon />
@@ -291,7 +291,7 @@ function ProjectDetailContent({
         <div
           className="hover-shade"
           id="create-project-button"
-          title={window.gettext('Create workflow')}
+          title={_t('Create workflow')}
           ref={createDiv}
         >
           {/* filled */}
@@ -303,7 +303,7 @@ function ProjectDetailContent({
               to={projectPaths.activity}
               className="hover-shade"
             >
-              {window.gettext('New activity')}
+              {_t('New activity')}
             </Link>
             <Link
               component={RouterLink}
@@ -311,7 +311,7 @@ function ProjectDetailContent({
               id="course-create-project"
               className="hover-shade"
             >
-              {window.gettext('New course')}
+              {_t('New course')}
             </Link>
             <Link
               component={RouterLink}
@@ -319,7 +319,7 @@ function ProjectDetailContent({
               to={projectPaths.program}
               className="hover-shade"
             >
-              {window.gettext('New program')}
+              {_t('New program')}
             </Link>
           </div>
         </div>
@@ -334,7 +334,7 @@ function ProjectDetailContent({
         <div
           className="hover-shade"
           id="share-button"
-          title={window.gettext('Sharing')}
+          title={_t('Sharing')}
           onClick={openShareDialog}
         >
           <PersonAddIcon />
@@ -371,7 +371,7 @@ function ProjectDetailContent({
     return (
       <Dialog open={state.openShareDialog}>
         <DialogTitle>
-          <h2>{window.gettext('Share project')}</h2>
+          <h2>{_t('Share project')}</h2>
         </DialogTitle>
         <ShareMenu
           data={state.project}

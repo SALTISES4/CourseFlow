@@ -19,6 +19,7 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import NodePorts from '@cfViews/components/Node/NodePorts'
 import AutoLink from './AutoLink'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetNodeByID
@@ -322,7 +323,7 @@ class NodeUnconnected extends EditableComponentWithActions<
       dropIcon = 'droptriangledown'
     }
 
-    let linktext = window.gettext('Visit workflow')
+    let linktext = _t('Visit workflow')
     let link_class = 'linked-workflow'
 
     let clickfunc = this.doubleClick.bind(this)
@@ -332,11 +333,11 @@ class NodeUnconnected extends EditableComponentWithActions<
         data.linked_workflow_data.url == 'noaccess' ||
         data.linked_workflow_data.url == 'nouser'
       ) {
-        linktext = window.gettext('<Inaccessible>')
+        linktext = _t('<Inaccessible>')
         clickfunc = null
         link_class += ' link-noaccess'
       } else if (data.linked_workflow_data.deleted) {
-        linktext = window.gettext('<Deleted>')
+        linktext = _t('<Deleted>')
         clickfunc = null
         link_class += ' link-noaccess'
       } else {
@@ -421,7 +422,7 @@ class NodeUnconnected extends EditableComponentWithActions<
           <div className="node-details">
             <TitleText
               text={data_override.description}
-              defaultText={window.gettext('Click to edit')}
+              defaultText={_t('Click to edit')}
             />
           </div>
           <div

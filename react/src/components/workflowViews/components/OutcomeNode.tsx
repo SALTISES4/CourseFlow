@@ -107,7 +107,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
       <ActionButton
         buttonIcon={icon}
         buttonClass="delete-self-button"
-        titleText={window.gettext('Delete')}
+        titleText={_t('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
       />
     )

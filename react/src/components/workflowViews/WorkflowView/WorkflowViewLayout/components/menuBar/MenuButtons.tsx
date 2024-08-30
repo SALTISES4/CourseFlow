@@ -19,7 +19,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //       <div className="hover-shade flex-middle">
 //         {/* green */}
 //
-//         <div>{window.gettext('Expand/Collapse')}</div>
+//         <div>{_t('Expand/Collapse')}</div>
 //       </div>
 //
 //       <div className="create-dropdown">
@@ -29,7 +29,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //         {/*>*/}
 //         {/*  /!* green *!/*/}
 //         {/*  <ZoomOutMapIcon />*/}
-//         {/*  <div>{window.gettext('Expand all weeks')}</div>*/}
+//         {/*  <div>{_t('Expand all weeks')}</div>*/}
 //         {/*</div>*/}
 //         {/*<div*/}
 //         {/*  className="flex-middle hover-shade"*/}
@@ -37,7 +37,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //         {/*>*/}
 //         {/*    /!* green *!/*/}
 //         {/*   <ZoomInMapIcon />*/}
-//         {/*  <div>{window.gettext('Collapse all weeks')}</div>*/}
+//         {/*  <div>{_t('Collapse all weeks')}</div>*/}
 //         {/*</div>*/}
 //
 //         {/*<hr />*/}
@@ -47,7 +47,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //         >
 //            {/* green */}
 //           <ZoomOutMapIcon />
-//           <div>{window.gettext('Expand all nodes')}</div>
+//           <div>{_t('Expand all nodes')}</div>
 //         </div>
 //
 //         <div
@@ -55,7 +55,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //           onClick={this.collapseAll.bind(this, CfObjectType.NODE)}
 //         >
 //           <span className="green material-symbols-rounded">zoom_in_map</span>
-//           <div>{window.gettext('Collapse all nodes')}</div>
+//           <div>{_t('Collapse all nodes')}</div>
 //         </div>
 //
 //         <hr />
@@ -64,7 +64,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //           onClick={this.expandAll.bind(this, CfObjectType.OUTCOME)}
 //         >
 //           <span className="green material-symbols-rounded">zoom_out_map</span>
-//           <div>{window.gettext('Expand all outcomes')}</div>
+//           <div>{_t('Expand all outcomes')}</div>
 //         </div>
 //
 //         <div
@@ -72,7 +72,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //           onClick={this.collapseAll.bind(this, CfObjectType.OUTCOME)}
 //         >
 //           <span className="green material-symbols-rounded">zoom_in_map</span>
-//           <div>{window.gettext('Collapse all outcomes')}</div>
+//           <div>{_t('Collapse all outcomes')}</div>
 //         </div>
 //       </div>
 //     </div>
@@ -86,7 +86,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //     <div
 //       className="hover-shade"
 //       id="share-button"
-//       title={window.gettext('Sharing')}
+//       title={_t('Sharing')}
 //       onClick={this.openShareDialog.bind(this)}
 //     >
 //       <span className="material-symbols-rounded filled"></span>
@@ -133,7 +133,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //       className="hover-shade"
 //       onClick={this.openExportDialog.bind(this)}
 //     >
-//       <div>{window.gettext('Export')}</div>
+//       <div>{_t('Export')}</div>
 //     </div>
 //   )
 // }
@@ -170,7 +170,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //           )
 //         }}
 //       >
-//         <div>{window.gettext('Copy into current project')}</div>
+//         <div>{_t('Copy into current project')}</div>
 //       </div>
 //     )
 //   }
@@ -197,7 +197,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //           className="hover-shade"
 //           onClick={this.deleteWorkflow.bind(this)}
 //         >
-//           <div>{window.gettext('Archive workflow')}</div>
+//           <div>{_t('Archive workflow')}</div>
 //         </div>
 //       </>
 //     )
@@ -211,14 +211,14 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 //         className="hover-shade"
 //         onClick={this.restoreWorkflow.bind(this)}
 //       >
-//         <div>{window.gettext('Restore workflow')}</div>
+//         <div>{_t('Restore workflow')}</div>
 //       </div>
 //       <div
 //         id="permanently-delete-workflow"
 //         className="hover-shade"
 //         onClick={this.deleteWorkflowHard.bind(this)}
 //       >
-//         <div>{window.gettext('Permanently delete workflow')}</div>
+//         <div>{_t('Permanently delete workflow')}</div>
 //       </div>
 //     </>
 //   )

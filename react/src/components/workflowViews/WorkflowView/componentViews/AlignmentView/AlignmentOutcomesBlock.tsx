@@ -1,6 +1,7 @@
 import * as React from 'react'
 import * as Utility from '@cfUtility'
 import Outcome from '../OutcomeEditView/Outcome' // @todo if weird error , check this outcome
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {
   data: any

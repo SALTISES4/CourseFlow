@@ -8,6 +8,7 @@ import {
 } from '@cfFindState'
 import { ViewType, WorkflowType } from '@cfModule/types/enum'
 import { AppState } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 /**
@@ -77,14 +78,14 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
       : outcomeBarOutcomes
 
     const edittext = Utility.capWords(
-      window.gettext('Edit') +
+      _t('Edit') +
         ' ' +
         window.gettext(this.props.workflow_type + ' outcomes')
     )
 
     return (
       <div id="outcome-bar-workflow" className="right-panel-inner">
-        <h3 className="drag-and-drop">{window.gettext('Outcomes')}</h3>
+        <h3 className="drag-and-drop">{_t('Outcomes')}</h3>
         <div className="outcome-bar-outcome-block">{outcomeBlock}</div>
         {!this.props.readOnly && (
           <button

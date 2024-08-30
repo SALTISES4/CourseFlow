@@ -47,6 +47,7 @@ import {
 } from '@cfCommonComponents/menu/Menu'
 import JumpToWeekWorkflow from '@cfViews/WorkflowView/WorkflowViewLayout/components/menuBar/JumpToWeekWorkflow'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -141,9 +142,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.getUserData()
     this.updateTabs()
 
-
-
-
     if (this.context.viewType === ViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQuery(this.workflowId, (response) => {
         this.props.dispatch(
@@ -207,7 +205,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   deleteWorkflow() {
     if (
       window.confirm(
-        window.gettext('Are you sure you want to delete this workflow?')
+        _t('Are you sure you want to delete this workflow?')
       )
     ) {
       deleteSelfQuery(this.data.id, 'workflow', true, () => {})
@@ -377,7 +375,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     return (
       <Dialog open={this.state.openShareDialog}>
         <DialogTitle>
-          <h2>{window.gettext('Share project')}</h2>
+          <h2>{_t('Share project')}</h2>
         </DialogTitle>
         <ShareMenu
           data={this.props.data}
@@ -397,7 +395,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     return (
       <Dialog open={this.state.openExportDialog}>
         <DialogTitle>
-          <h2>{window.gettext('Export project')}</h2>
+          <h2>{_t('Export project')}</h2>
         </DialogTitle>
         <ExportMenu
           data={{ ...this.props.data, object_sets: this.object_sets }}
@@ -430,7 +428,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       }
     )
     const header: MenuItemType = {
-      content: window.gettext('Expand/Collapse'),
+      content: _t('Expand/Collapse'),
       icon: <KeyboardDoubleArrowDownIcon />,
       showIconInList: true,
       show: true
@@ -441,7 +439,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   ExpandCollapseMenu = () => {
     const header: MenuItemType = {
-      content: window.gettext('Expand/Collapse'),
+      content: _t('Expand/Collapse'),
       icon: <ZoomOutMapIcon />,
       showIconInList: true,
       show: true
@@ -449,28 +447,28 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
     const menuItems: MenuItemType[] = [
       {
-        content: window.gettext('Expand all weeks'),
+        content: _t('Expand all weeks'),
         action: this.expandAll.bind(this, CfObjectType.WEEK),
         icon: <ZoomOutMapIcon />,
         showIconInList: true,
         show: true
       },
       {
-        content: window.gettext('Collapse all weeks'),
+        content: _t('Collapse all weeks'),
         action: this.collapseAll.bind(this, CfObjectType.WEEK),
         icon: <ZoomInMapIcon />,
         showIconInList: true,
         show: true
       },
       {
-        content: window.gettext('Expand all nodes'),
+        content: _t('Expand all nodes'),
         action: this.expandAll.bind(this, CfObjectType.NODE),
         icon: <ZoomInMapIcon />,
         showIconInList: true,
         show: true
       },
       {
-        content: window.gettext('Collapse all nodes'),
+        content: _t('Collapse all nodes'),
         action: this.expandAll.bind(this, CfObjectType.NODE),
         icon: <ZoomOutMapIcon />,
         showIconInList: true,
@@ -478,14 +476,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         show: true
       },
       {
-        content: window.gettext('Expand all outcomes'),
+        content: _t('Expand all outcomes'),
         action: this.expandAll.bind(this, CfObjectType.OUTCOME),
         icon: <ZoomInMapIcon />,
         showIconInList: true,
         show: true
       },
       {
-        content: window.gettext('Collapse all outcomes'),
+        content: _t('Collapse all outcomes'),
         action: this.expandAll.bind(this, CfObjectType.OUTCOME),
         icon: <ZoomOutMapIcon />,
         show: true
@@ -498,21 +496,21 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const menuItems: MenuItemType[] = [
       {
         id: 'edit-project',
-        title: window.gettext('Edit Workflow'),
+        title: _t('Edit Workflow'),
         action: this.openEditMenu.bind(this),
         content: <EditIcon />,
         show: !this.context.permissions.workflowPermission.readOnly
       },
       {
         id: 'share',
-        title: window.gettext('Sharing'),
+        title: _t('Sharing'),
         content: <PersonAddIcon />,
         action: this.openShareDialog.bind(this),
         show: !this.context.permissions.workflowPermission.readOnly
       },
       {
         id: 'export',
-        content: window.gettext('Export'),
+        content: _t('Export'),
         action: this.openExportDialog.bind(this),
         show:
           (!this.public_view || this.user_id) &&
@@ -522,7 +520,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       // hidden
       {
         id: 'copy-to-project',
-        content: window.gettext('Copy into current project'),
+        content: _t('Copy into current project'),
         action: this.copyToProject.bind(this),
         show:
           this.user_id &&
@@ -531,45 +529,39 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       },
       {
         id: 'copy-to-library',
-        content: window.gettext('Copy to my library'),
+        content: _t('Copy to my library'),
         action: this.openExportDialog.bind(this),
-        show:
-          !(this.public_view && !this.user_id) &&
-          !(this.public_view && !this.user_id)
+        show: !(this.public_view && !this.user_id)
       },
       {
         id: 'import-outcomes',
-        content: window.gettext('Import outcomes'),
+        content: _t('Import outcomes'),
         action: this.importOutcomes.bind(this),
-        show:
-          !(this.public_view && !this.user_id) &&
-          !(this.public_view && !this.user_id)
+        show: !(this.public_view && !this.user_id)
       },
       {
         id: 'import-nodes',
-        content: window.gettext('Import nodes'),
+        content: _t('Import nodes'),
         action: this.importNodes.bind(this),
-        show:
-          !(this.public_view && !this.user_id) &&
-          !(this.public_view && !this.user_id),
+        show: !(this.public_view && !this.user_id),
         seperator: true
       },
       {
         id: 'delete-workflow',
         action: this.deleteWorkflow.bind(this),
-        content: window.gettext('Archive workflow'),
+        content: _t('Archive workflow'),
         show: !this.readOnly && !this.data.deleted
       },
       {
         id: 'restore-workflow',
         action: this.restoreWorkflow.bind(this),
-        content: window.gettext('Restore workflow'),
+        content: _t('Restore workflow'),
         show: !this.readOnly && this.data.deleted
       },
       {
         id: 'hard-delete-workflow',
         action: this.deleteWorkflowHard.bind(this),
-        content: window.gettext('Permanently delete workflow'),
+        content: _t('Permanently delete workflow'),
         show: !this.readOnly && this.data.deleted
       }
     ]

@@ -13,6 +13,7 @@ import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDr
 import { AppState } from '@cfRedux/types/type'
 import { ChangeEvent } from 'react'
 import { CfObjectType } from '@cfModule/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 /**
@@ -232,10 +233,10 @@ export class OutcomeBarOutcomeUnconnected<
     if (this.state.is_dropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
 
-    if (this.state.is_dropped) droptext = window.gettext('hide')
+    if (this.state.is_dropped) droptext = _t('hide')
     else
       droptext =
-        window.gettext('show ') +
+        _t('show ') +
         data.child_outcome_links.length +
         ' ' +
         window.ngettext(

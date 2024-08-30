@@ -21,6 +21,7 @@ import { CREATE_RESOURCE_TYPE } from '@cfCommonComponents/dialog/CreateWizard/ty
 import { CreateActivityDataType } from './data'
 import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = CreateActivityDataType & Pick<ActivityFormDataType, 'units'>
 

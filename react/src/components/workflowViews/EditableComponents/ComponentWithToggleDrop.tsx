@@ -4,6 +4,7 @@ import { Dispatch } from '@reduxjs/toolkit'
 import { Action } from 'redux'
 import { CfObjectType } from '@cfModule/types/enum'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  *  Extends the React component to add a few features

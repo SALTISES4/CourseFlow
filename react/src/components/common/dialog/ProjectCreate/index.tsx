@@ -20,6 +20,7 @@ import ObjectSets from './components/ObjectSets'
 import { TopBarProps } from '@cfModule/types/common'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { OBJECT_SET_TYPE, ObjectSetType } from './type'
+import { _t } from '@cf/utility/utilityFunctions'
 
 export type OnUpdateType = {
   index: number
@@ -146,13 +147,13 @@ function ProjectCreateDialog({
 
   return (
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
-      <DialogTitle>{window.gettext('Create project')}</DialogTitle>
+      <DialogTitle>{_t('Create project')}</DialogTitle>
       <DialogContent dividers>
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         {showNoProjectsAlert && (
           <Alert
             sx={{ mb: 3 }}
-            title={window.gettext('Start by creating a project')}
+            title={_t('Start by creating a project')}
             subtitle={window.gettext(
               'All workflows, whether they are programs, courses, or activities, exist within projects. You must start by creating a project before proceeding to create any type of workflow.'
             )}
@@ -255,7 +256,7 @@ function ProjectCreateDialog({
           onClick={onSubmit}
           disabled={!!Object.keys(errors).length}
         >
-          {window.gettext('Create project')}
+          {_t('Create project')}
         </Button>
       </DialogActions>
     </StyledDialog>

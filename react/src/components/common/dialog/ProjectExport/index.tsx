@@ -16,6 +16,7 @@ import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
 import { EProject } from '@XMLHTTP/types/entity'
 import { API_POST } from '@XMLHTTP/CallWrapper'
+import { _t } from '@cf/utility/utilityFunctions'
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -128,7 +129,7 @@ function ProjectExportDialog({ data }: { data: EProject }) {
           <Alert severity="warning" title="TODO" />
           <FormControl>
             <FormLabel id="export-type-group-label">
-              {window.gettext('Export type')}
+              {_t('Export type')}
             </FormLabel>
             <RadioGroup
               aria-labelledby="export-type-group-label"
@@ -154,7 +155,7 @@ function ProjectExportDialog({ data }: { data: EProject }) {
           </FormControl>
           <FormControl>
             <FormLabel id="export-format-group-label">
-              {window.gettext('Export format')}
+              {_t('Export format')}
             </FormLabel>
             <RadioGroup
               aria-labelledby="export-format-group-label"
@@ -176,7 +177,7 @@ function ProjectExportDialog({ data }: { data: EProject }) {
           {data.object_sets.length > 0 && (
             <FormControl>
               <FormLabel id="export-sets-group-label">
-                {window.gettext('Object set visibility')}
+                {_t('Object set visibility')}
               </FormLabel>
               <FormGroup>
                 {data.object_sets.map((set, index) => (
@@ -196,10 +197,10 @@ function ProjectExportDialog({ data }: { data: EProject }) {
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onDialogClose}>
-          {window.gettext('Cancel')}
+          {_t('Cancel')}
         </Button>
         <Button variant="contained" onClick={onSubmit}>
-          {window.gettext('Export')}
+          {_t('Export')}
         </Button>
       </DialogActions>
     </StyledDialog>

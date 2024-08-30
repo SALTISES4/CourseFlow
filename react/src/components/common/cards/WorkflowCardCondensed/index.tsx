@@ -2,6 +2,7 @@ import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import WorkflowCard, { WorkflowCardState } from '../WorkflowCard'
 import WorkflowCardDumb from '../WorkflowCardDumb'
 import { WorkflowCardProps } from '@cfCommonComponents/cards/WorkflowCard/type'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = WorkflowCardProps
 type StateType = WorkflowCardState

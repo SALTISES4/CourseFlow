@@ -8,6 +8,7 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
 import { AppState } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type TableCellPropsType = {
@@ -217,8 +218,8 @@ export class OutcomeUnconnected<
     const dropIcon = is_dropped ? 'droptriangleup' : 'droptriangledown'
 
     const droptext = is_dropped
-      ? window.gettext('hide')
-      : window.gettext('show ') +
+      ? _t('hide')
+      : _t('show ') +
         data.child_outcome_links.length +
         ' ' +
         window.ngettext(

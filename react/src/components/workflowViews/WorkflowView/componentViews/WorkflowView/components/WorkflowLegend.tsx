@@ -7,6 +7,7 @@ import LegendLine from '@cfCommonComponents/UIComponents/LegendLine'
 // import $ from 'jquery'
 import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type StateType = {
   show_slider: boolean
@@ -60,7 +61,7 @@ export class WorkflowLegendUnconnected<
       // dynamic react/src/components/common/components/MenuBar.tsx
       return reactDom.createPortal(
         <>
-          <div>{window.gettext('Legend')}</div>,
+          <div>{_t('Legend')}</div>,
           <Slider
             checked={this.state.show_legend}
             toggleAction={this.toggle.bind(this)}

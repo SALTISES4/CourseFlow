@@ -6,6 +6,7 @@ import { getWorkflowContextQuery } from '@XMLHTTP/API/workflow'
 import { ProjectComparisonClass } from '@cfPages/Workspace/ProjectComparison'
 import { CfObjectType } from '@cfModule/types/enum'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type OwnProps = {
   workflowID: any

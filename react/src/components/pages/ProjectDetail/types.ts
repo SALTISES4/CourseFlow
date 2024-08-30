@@ -1,5 +1,6 @@
 import { Discipline } from '@cfModule/types/common'
 import { EProject } from '@XMLHTTP/types/entity'
+import { _t } from '@cf/utility/utilityFunctions'
 
 export type ProjectViewDTO = {
   project_data: EProject

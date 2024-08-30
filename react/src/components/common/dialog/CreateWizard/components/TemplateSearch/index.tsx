@@ -7,12 +7,13 @@ import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
 import { debounce } from '@mui/material/utils'
-import { PrepareBackendDataForWorkflowCardDumb } from '@cfCommonComponents/cards/WorkflowCardDumb'
 
 import { TemplateThumbnail } from './styles'
 import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { getTemplates } from '@XMLHTTP/API/workflow'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
+import { prepareBackendDataForWorkflowCardDumb } from '@cf/utility/marshalling/libraryCards'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {
   selected?: number
@@ -50,7 +51,7 @@ const TemplateSearch = ({
   if (templates === null) {
     getTemplates(template_type, (response_data) => {
       const project_data = response_data.data_package.map((project) => {
-        return PrepareBackendDataForWorkflowCardDumb(project)
+        return prepareBackendDataForWorkflowCardDumb(project)
       })
       setTemplateData(project_data)
       setResults(project_data)

@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { useContext } from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 
 const ConnectedUser = ({
   userColour,
@@ -33,7 +34,7 @@ const ConnectionBar = ({ show }: { show: boolean }) => {
   if (!context.ws.wsConnected) {
     return (
       <div className="users-box connection-failed">
-        {window.gettext('Not Connected')}
+        {_t('Not Connected')}
       </div>
     )
   }

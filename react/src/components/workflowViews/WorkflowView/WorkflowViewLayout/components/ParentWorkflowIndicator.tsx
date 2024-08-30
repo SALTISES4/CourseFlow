@@ -8,6 +8,7 @@ import {
 import { AppState } from '@cfRedux/types/type'
 import Divider from '@mui/material/Divider'
 import { Typography } from '@mui/material'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
   childWorkflows: any
@@ -71,7 +72,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
 
     const text = [
       window.gettext(type),
-      data.is_strategy ? window.gettext(' strategy') : ''
+      data.is_strategy ? _t(' strategy') : ''
     ].join('')
 
     return <div className={'workflow-type-indicator ' + type}>{text}</div>
@@ -93,7 +94,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
         if (this.state.parent_workflows.length > 0) {
           return (
             <>
-              <Typography>{window.gettext('Used in:')}</Typography>
+              <Typography>{_t('Used in:')}</Typography>
               {this.state.parent_workflows.map((workflow, index) => (
                 <WorkflowTitle
                   key={`WorkflowTitleParent-${index}`}
@@ -111,7 +112,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
         if (this.props.childWorkflows.length > 0) {
           return (
             <>
-              <Typography>{window.gettext('Workflows Used:')}</Typography>
+              <Typography>{_t('Workflows Used:')}</Typography>
               {this.props.childWorkflows.map((workflow, index) => (
                 <WorkflowTitle
                   key={`WorkflowTitleParent-${index}`}
@@ -128,7 +129,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
       return (
         <>
           <Divider />
-          <Typography>{window.gettext('Quick Navigation')}</Typography>
+          <Typography>{_t('Quick Navigation')}</Typography>
           <ParentWorkflows />
           <ChildWorkflows />
         </>

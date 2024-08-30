@@ -1,60 +1,119 @@
-// @ts-nocheck
 import * as React from 'react'
 import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter/index.jsx'
-import { Workflow } from '@cfModule/types/common'
-import {
-  PageLibraryQueryResp,
-  PageExploreQueryResp
-} from '@XMLHTTP/types/query'
-import {
-  fetchExploreContext,
-  fetchLibraryContext,
-} from '@XMLHTTP/API/pages'
-import MenuBar from '@cfCommonComponents/layout/MenuBar'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
+import { PageLibraryQueryResp } from '@XMLHTTP/types/query'
+import { fetchLibraryContext } from '@XMLHTTP/API/pages'
 import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
+import { useQuery } from '@tanstack/react-query'
+import Loader from '@cfCommonComponents/UIComponents/Loader'
+import { generatePath, Link as LinkRouter, useNavigate } from 'react-router-dom'
+import WorkflowCardDumb, {
+  PropsType as WorkflowCardTypeUI
+} from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { Link, Typography } from '@mui/material'
+import { Routes as AppRoutes } from '@cf/router'
 import Toolbar from '@mui/material/Toolbar'
 import Stack from '@mui/material/Stack'
-import FilterButton from '@cfPages/Styleguide/components/FilterButton'
-import data from '@cfPages/Styleguide/views/Library/data'
+import FilterButton from '@cfPages/Library/components/FilterButton'
 import SortIcon from '@mui/icons-material/Sort'
+import FilterWorkflows from '@cfPages/Library/components/FilterWorkflows'
 import FilterIcon from '@mui/icons-material/FilterAlt'
-import FilterWorkflows from '@cfPages/Styleguide/components/FilterWorkflows'
-import WorkflowCardDumb from '@cfPages/Styleguide/components/WorkflowCard'
-import { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { prepareBackendDataForWorkflowCardDumb } from '@cf/utility/marshalling/libraryCards'
+import { _t } from '@cf/utility/utilityFunctions'
 
-type StateType = {
-  project_data?: Workflow[]
-}
+const filterSortOptions = [
+  {
+    name: 'recent',
+    label: 'Recent'
+  },
+  {
+    name: 'a-z',
+    label: 'A - Z'
+  },
+  {
+    name: 'date',
+    label: 'Creation date'
+  }
+]
+
+const filterProjectOptions = [
+  {
+    name: 'all',
+    label: _t('All'),
+    selected: true
+  },
+  {
+    name: 'owned',
+    label: _t('Owned')
+  },
+  {
+    name: 'shared',
+    label: _t('Shared')
+  },
+  {
+    name: 'favorites',
+    label: _t('Fovorites')
+  },
+  {
+    name: 'archived',
+    label: _t('Archived')
+  }
+]
+
 /*******************************************************
  * @LibraryRenderer
  *******************************************************/
 const LibraryPage = () => {
-  const [state, setState] = useState<StateType>({ project_data: [] })
-
+  /*******************************************************
+   * HOOKS
+   *******************************************************/
   const { data, error, isLoading, isError } = useQuery<PageLibraryQueryResp>({
     queryKey: ['fetchLibraryContext'],
     queryFn: fetchLibraryContext
   })
-
-  /*******************************************************
-   * LIFECYCLE HOOKS
-   *******************************************************/
-  useEffect(() => {
-    fetchLibraryContext((data: PageLibraryQueryResp) => {
-      setState({
-        project_data: data.data_package
-      })
-    })
-  })
+  const navigate = useNavigate()
 
   /*******************************************************
    * RENDER
    *******************************************************/
+
+  if (isLoading) return <Loader />
+  if (!data || error) return <div>error</div>
+
+  const cards = data.data_package.map((item, index): WorkflowCardTypeUI => {
+    const formattedCardData = prepareBackendDataForWorkflowCardDumb(item)
+    return {
+      ...formattedCardData,
+      onClick: () => {
+        const path = generatePath(AppRoutes.WORKFLOW_OVERVIEW, {
+          id: String(item.id)
+        })
+        navigate(path)
+      }
+    }
+  })
+
+  const Results = () => {
+    return (
+      <>
+        {!cards.length && <Typography>{_t('No results found')}</Typography>}
+
+        {cards.map((item) => (
+          <WorkflowCardDumb key={`workflow_${item.id}`} {...item} />
+        ))}
+
+        {/* ALL VIEW NOT IMPLEMENTED YET */}
+        {cards.length > 10 && (
+          <Link component={LinkRouter} to={'$'}>
+            <Typography>{_t('+ See all')}</Typography>
+          </Link>
+        )}
+      </>
+    )
+  }
+
   return (
     <>
-      <WorkflowFilter workflows={state.project_data} context="library" />
+      <WorkflowFilter workflows={data.data_package} context="library" />
 
       <OuterContentWrap>
         <Toolbar disableGutters sx={{ mt: 4, mb: 4 }}>
@@ -67,13 +126,13 @@ const LibraryPage = () => {
             <Stack direction="row" spacing={2}>
               <FilterButton
                 sortable
-                options={data.filterSortOptions}
+                options={filterSortOptions}
                 icon={<SortIcon />}
                 onChange={(val, dir) => console.log(val, dir)}
                 placeholder="Sort"
               />
               <FilterButton
-                options={data.filterProjectOptions}
+                options={filterProjectOptions}
                 icon={<FilterIcon />}
                 onChange={(val) =>
                   console.log('projects filter changed to', val)
@@ -82,16 +141,14 @@ const LibraryPage = () => {
             </Stack>
 
             <FilterWorkflows
-              workflows={data.workflows}
+              workflows={cards}
               onChange={(workflow) => console.log('clicked', workflow)}
             />
           </Stack>
         </Toolbar>
 
         <GridWrap>
-          {data.templates.map((template, index) => (
-            <WorkflowCardDumb key={index} {...template} />
-          ))}
+          <Results />
         </GridWrap>
       </OuterContentWrap>
     </>

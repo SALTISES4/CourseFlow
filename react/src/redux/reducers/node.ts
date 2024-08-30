@@ -13,6 +13,7 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TNode } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 export default function nodeReducer(
@@ -92,7 +93,7 @@ export default function nodeReducer(
           ? {
               ...item,
               deleted: true,
-              deleted_on: window.gettext('This session')
+              deleted_on: _t('This session')
             }
           : item
       )

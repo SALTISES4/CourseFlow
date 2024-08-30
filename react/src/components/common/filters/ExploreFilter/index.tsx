@@ -2,7 +2,7 @@ import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
 import { debounce } from '@cfUtility'
 // import $ from 'jquery'
-import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
+import { Discipline, QueryPages } from '@cfModule/types/common'
 import { GridWrap } from '@cfModule/mui/helper'
 import { libraryObjectsSearchQuery } from '@XMLHTTP/API/pages'
 import SearchIcon from '@mui/icons-material/Search'
@@ -13,6 +13,8 @@ import SouthIcon from '@mui/icons-material/South'
 import ScienceIcon from '@mui/icons-material/Science'
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
+import { ESectionObject } from '@XMLHTTP/types/entity'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type Filter = {
   name: string
@@ -21,7 +23,7 @@ type Filter = {
 
 type PropsType = {
   disciplines: Discipline[]
-  workflows: Workflow[]
+  workflows: ESectionObject[]
   pages: QueryPages
   context: string
 }
@@ -49,16 +51,16 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props)
     this.filters = [
-      { name: 'activity', display: window.gettext('Activity') },
-      { name: 'course', display: window.gettext('Course') },
-      { name: 'program', display: window.gettext('Program') },
-      { name: 'project', display: window.gettext('Project') }
+      { name: 'activity', display: _t('Activity') },
+      { name: 'course', display: _t('Course') },
+      { name: 'program', display: _t('Program') },
+      { name: 'project', display: _t('Project') }
     ]
 
     this.sorts = [
-      { name: 'relevance', display: window.gettext('Relevance') },
-      { name: 'title', display: window.gettext('A-Z') },
-      { name: 'created_on', display: window.gettext('Creation date') }
+      { name: 'relevance', display: _t('Relevance') },
+      { name: 'title', display: _t('A-Z') },
+      { name: 'created_on', display: _t('Creation date') }
     ]
     this.state = {
       workflows: this.props.workflows,
@@ -106,7 +108,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
           }
         >
           <FilterAltIcon />
-          <div>{window.gettext('Type')}</div>
+          <div>{_t('Type')}</div>
         </div>
         <div className="create-dropdown">
           {this.filters.map((filter, i) => {
@@ -247,7 +249,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
         >
           <ScienceIcon />
 
-          <div>{window.gettext('Discipline')}</div>
+          <div>{_t('Discipline')}</div>
         </div>
         <div className="create-dropdown">
           {this.props.disciplines.map((discipline, i) => {
@@ -303,7 +305,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
         }}
       >
         <input type="checkbox" checked={this.state.fromSaltise} />
-        <label>{window.gettext('SALTISE content')}</label>
+        <label>{_t('SALTISE content')}</label>
       </div>
     )
   }
@@ -410,17 +412,17 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
 
       return [
         <p>
-          {window.gettext('Showing results')}{' '}
+          {_t('Showing results')}{' '}
           {this.state.pages.results_per_page *
             (this.state.pages.current_page - 1) +
             1}
           -{this.state.pages.results_per_page * this.state.pages.current_page} (
-          {this.state.pages.total_results} {window.gettext('total results')})
+          {this.state.pages.total_results} {_t('total results')})
         </p>,
         <div className="explore-page-buttons">{pageButtons}</div>
       ]
     } else {
-      return <p>{window.gettext('No results were found.')}</p>
+      return <p>{_t('No results were found.')}</p>
     }
   }
   doSearch() {
@@ -459,7 +461,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
           <div className="flex-middle">
             <div id="workflow-search" ref={this.searchDOM}>
               <input
-                placeholder={window.gettext('Search the public library')}
+                placeholder={_t('Search the public library')}
                 onChange={debounce(this.searchChange.bind(this))}
                 id="workflow-search-input"
                 className="search-input"
@@ -471,7 +473,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
               disabled={this.state.hasSearched}
               onClick={this.doSearch.bind(this)}
             >
-              {window.gettext('Search')}
+              {_t('Search')}
             </button>
           </div>
           <div className="workflow-filter-sort">

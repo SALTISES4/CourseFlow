@@ -9,6 +9,7 @@ import { duplicateSelfQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/create'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type OwnProps = {
   sibling_count?: any
@@ -51,13 +52,13 @@ class EditableComponentWithActions<
       (this.objectType === 'week' || this.objectType === 'column') &&
       this.props.sibling_count < 2
     ) {
-      alert(window.gettext('You cannot delete the last ') + this.objectType)
+      alert(_t('You cannot delete the last ') + this.objectType)
       return
     }
 
     if (
       window.confirm(
-        window.gettext('Are you sure you want to delete this ') +
+        _t('Are you sure you want to delete this ') +
           Constants.get_verbose(
             this.props.data,
             this.objectType
@@ -130,7 +131,7 @@ class EditableComponentWithActions<
   //     <ActionButton
   //       buttonIcon={icon}
   //       buttonClass="delete-self-button"
-  //       titleText={window.gettext('Restore')}
+  //       titleText={_t('Restore')}
   //       handleClick={this.restoreSelf.bind(this, data)}
   //     />
   //   )
@@ -142,7 +143,7 @@ class EditableComponentWithActions<
       <ActionButton
         buttonIcon="duplicate.svg"
         buttonClass="duplicate-self-button"
-        titleText={window.gettext('Duplicate')}
+        titleText={_t('Duplicate')}
         handleClick={this.duplicateSelf.bind(this, data)}
       />
     )
@@ -154,7 +155,7 @@ class EditableComponentWithActions<
       <ActionButton
         buttonIcon="create_new_child.svg"
         buttonClass="insert-child-button"
-        titleText={window.gettext('Insert Child')}
+        titleText={_t('Insert Child')}
         handleClick={this.insertChild.bind(this, data)}
       />
     )
@@ -166,7 +167,7 @@ class EditableComponentWithActions<
       <ActionButton
         buttonIcon="add_new.svg"
         buttonClass="insert-sibling-button"
-        titleText={window.gettext('Insert Below')}
+        titleText={_t('Insert Below')}
         handleClick={this.insertSibling.bind(this, data)}
       />
     )
@@ -179,7 +180,7 @@ class EditableComponentWithActions<
       <ActionButton
         buttonIcon={icon}
         buttonClass="delete-self-button"
-        titleText={window.gettext('Delete')}
+        titleText={_t('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
       />
     )

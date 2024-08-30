@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { TObjectSet } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  * The view tab for the right side bar is a bit
@@ -53,7 +54,7 @@ class ComparisonViewBar extends React.Component<PropsType> {
   render() {
     return (
       <div id="node-bar-workflow" className="right-panel-inner">
-        <h4>{window.gettext('Object Sets') + ':'}</h4>
+        <h4>{_t('Object Sets') + ':'}</h4>
         <this.Sets />
       </div>
     )

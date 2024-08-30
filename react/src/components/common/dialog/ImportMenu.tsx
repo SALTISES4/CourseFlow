@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type PropsType = {
@@ -33,7 +34,7 @@ class ImportMenu extends React.Component<PropsType> {
   render() {
     return (
       <div className="message-wrap">
-        <h2>{window.gettext('Import Files')}</h2>
+        <h2>{_t('Import Files')}</h2>
         <p>
           {window.gettext(
             'Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format.'

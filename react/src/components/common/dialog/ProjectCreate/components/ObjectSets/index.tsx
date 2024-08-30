@@ -14,6 +14,7 @@ import MenuItem from '@mui/material/MenuItem'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import { object_sets_types } from '@cfConstants'
+import { _t } from '@cf/utility/utilityFunctions'
 
 import { StyledAccordion, AdvancedLabel } from './styles'
 import { StyledForm } from '../../../styles'
@@ -53,9 +54,9 @@ function ObjectSets({
         onClick={toggleExpanded}
       >
         <Stack direction="row" spacing={2}>
-          <Typography>{window.gettext('Object sets')}</Typography>
+          <Typography>{_t('Object sets')}</Typography>
           <AdvancedLabel
-            label={window.gettext('Advanced feature')}
+            label={_t('Advanced feature')}
             variant="filled"
           />
         </Stack>
@@ -70,7 +71,7 @@ function ObjectSets({
           {objectSets.map((set, index) => (
             <Stack key={index} direction="row" spacing={2}>
               <FormControl variant="standard" fullWidth>
-                <InputLabel>{window.gettext('Type')}</InputLabel>
+                <InputLabel>{_t('Type')}</InputLabel>
                 <Select
                   value={set.type}
                   onChange={(event: SelectChangeEvent) =>
@@ -92,7 +93,7 @@ function ObjectSets({
                 </Select>
               </FormControl>
               <TextField
-                label={window.gettext('Label')}
+                label={_t('Label')}
                 value={set.label}
                 variant="standard"
                 onChange={(event: ChangeEvent<HTMLInputElement>) => {

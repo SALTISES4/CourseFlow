@@ -6,6 +6,7 @@ import * as Constants from '@cfConstants'
 import { AppState } from '@cfRedux/types/type'
 import { getStrategyByID, TStrategyByID } from '@cfFindState'
 import { CfObjectType } from '@cfModule/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 /**

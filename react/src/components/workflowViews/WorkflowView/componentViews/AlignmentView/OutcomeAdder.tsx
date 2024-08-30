@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { getOutcomeTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetOutcomeByID
@@ -73,7 +74,7 @@ class OutcomeAdder extends React.Component<OutcomeAdderProps> {
 
     return (
       <select className="outcome-adder" onChange={this.onChange.bind(this)}>
-        <option value={0}>{window.gettext('Add outcome')}</option>
+        <option value={0}>{_t('Add outcome')}</option>
         {options}
       </select>
     )

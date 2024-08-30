@@ -1,5 +1,6 @@
 import * as Utility from '@cfUtility'
 import { NumTuple } from '@cfModule/types/common'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /*
 Determines how long an action locks an object
@@ -155,22 +156,22 @@ export const get_verbose = function (data, object_type) {
     case 'course':
     case 'program':
       return {
-        activity: window.gettext('Activity'),
-        course: window.gettext('Course'),
-        program: window.gettext('Program'),
-        workflow: window.gettext('Workflow')
+        activity: _t('Activity'),
+        course: _t('Course'),
+        program: _t('Program'),
+        workflow: _t('Workflow')
       }[data.type]
     case 'week':
       return data.week_type_display
   }
   return {
-    outcome_base: window.gettext('Outcome'),
-    nodelink: window.gettext('Node Link'),
-    outcome: window.gettext('Outcome'),
-    column: window.gettext('Column'),
-    project: window.gettext('Project'),
-    outcomehorizontallink: window.gettext('Association to the parent outcome'),
-    outcomenode: window.gettext('Association to the outcome')
+    outcome_base: _t('Outcome'),
+    nodelink: _t('Node Link'),
+    outcome: _t('Outcome'),
+    column: _t('Column'),
+    project: _t('Project'),
+    outcomehorizontallink: _t('Association to the parent outcome'),
+    outcomenode: _t('Association to the outcome')
   }[object_type]
 }
 
@@ -221,20 +222,20 @@ export function getColumnColour(data) {
 //get all possible object sets
 export function object_sets_types() {
   return {
-    'program outcome': Utility.capFirst(window.gettext('program outcome')),
-    'course outcome': Utility.capFirst(window.gettext('course outcome')),
-    'activity outcome': Utility.capFirst(window.gettext('activity outcome')),
-    'program node': Utility.capFirst(window.gettext('program node')),
-    'course node': Utility.capFirst(window.gettext('course node')),
-    'activity node': Utility.capFirst(window.gettext('activity node'))
+    'program outcome': Utility.capFirst(_t('program outcome')),
+    'course outcome': Utility.capFirst(_t('course outcome')),
+    'activity outcome': Utility.capFirst(_t('activity outcome')),
+    'program node': Utility.capFirst(_t('program node')),
+    'course node': Utility.capFirst(_t('course node')),
+    'activity node': Utility.capFirst(_t('activity node'))
   }
 }
 
 //missing_translations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
 function missing_translations() {
   console.log('missing_translations called')
-  window.gettext('activity')
-  window.gettext('course')
-  window.gettext('program')
-  window.gettext('project')
+  _t('activity')
+  _t('course')
+  _t('program')
+  _t('project')
 }

@@ -1,6 +1,7 @@
 // Only used in classroom view. Should be removed/replaced.
 import * as React from 'react'
 import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
+import { _t } from '@cf/utility/utilityFunctions'
 
 class WorkflowCardSimple extends React.Component {
   constructor(props) {
@@ -25,8 +26,8 @@ class WorkflowCardSimple extends React.Component {
     const data = this.props.workflow_data
     const type = data.type
     let type_text = window.gettext(type)
-    if (type === 'liveproject') type_text = window.gettext('classroom')
-    if (data.is_strategy) type_text += window.gettext(' strategy')
+    if (type === 'liveproject') type_text = _t('classroom')
+    if (data.is_strategy) type_text += _t(' strategy')
     return <div className={'workflow-type-indicator ' + type}>{type_text}</div>
   }
 

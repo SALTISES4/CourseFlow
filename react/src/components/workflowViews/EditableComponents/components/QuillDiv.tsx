@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
+import { _t } from '@cf/utility/utilityFunctions'
 
 interface PropsType {
   text: string
@@ -117,7 +118,7 @@ const QuillDiv: React.FC<PropsType> = (props) => {
         readOnly={props.readOnly}
       />
       <div className={'character-length'}>
-        {charLength + ' ' + window.gettext('characters')}
+        {charLength + ' ' + _t('characters')}
       </div>
     </div>
   )

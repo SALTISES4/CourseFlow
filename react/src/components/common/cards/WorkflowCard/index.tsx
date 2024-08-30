@@ -7,11 +7,12 @@ import WorkflowCardDumb, {
 } from '../WorkflowCardDumb'
 import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/cards/WorkflowCard/type'
-import { Workflow } from '@cfModule/types/common'
 import { WorkflowType } from '@cfModule/types/enum'
 import { toggleFavourite } from '@XMLHTTP/API/user'
 import GroupIcon from '@mui/icons-material/Group'
 import ErrorIcon from '@mui/icons-material/Error'
+import { ESectionObject } from '@XMLHTTP/types/entity'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * A workflow card for a menu
@@ -34,7 +35,7 @@ class WorkflowCard<
   S extends StateType
 > extends Component<P, S> {
   protected readonly mainDiv: RefObject<HTMLDivElement>
-  private readonly workflow: Workflow
+  private readonly workflow: ESectionObject
 
   constructor(props: P) {
     super(props)
@@ -68,11 +69,11 @@ class WorkflowCard<
     let typeText = window.gettext(type)
 
     if (type === WorkflowType.LIVE_PROJECT) {
-      typeText = window.gettext('classroom')
+      typeText = _t('classroom')
     }
 
     if (is_strategy) {
-      typeText += ` ${window.gettext('strategy')}`
+      typeText += ` ${_t('strategy')}`
     }
 
     const chipType =
@@ -85,11 +86,12 @@ class WorkflowCard<
   }
 
   getTemplateChip = (): WorkflowCardChipType => {
+    // @ts-ignore @todo why isn't is_template defined
     const is_template = this.workflow.is_template
     if (is_template)
       return {
         type: CHIP_TYPE.TEMPLATE,
-        label: window.gettext('Template')
+        label: _t('Template')
       }
   }
 
@@ -145,11 +147,11 @@ class WorkflowCard<
         <div
           key="workflow-created-group"
           className="workflow-created workflow-live-classroom"
-          title={window.gettext('Live Classroom')}
+          title={_t('Live Classroom')}
         >
           {/* small-inline */}
           <GroupIcon />
-          {` ${window.gettext('Live Classroom')}`}
+          {` ${_t('Live Classroom')}`}
         </div>
       )
     }
@@ -166,7 +168,7 @@ class WorkflowCard<
         >
           {/*red filled small-inline*/}
           <ErrorIcon />
-          {` ${window.gettext('Already in use')}`}
+          {` ${_t('Already in use')}`}
         </div>
       )
     }
@@ -193,7 +195,7 @@ class WorkflowCard<
         }
         description={
           this.workflow.author &&
-          `${window.gettext('Owned by')} ${this.workflow.author}`
+          `${_t('Owned by')} ${this.workflow.author}`
         }
         isSelected={selected}
         isFavourite={favouriteOptions.isFavourite}

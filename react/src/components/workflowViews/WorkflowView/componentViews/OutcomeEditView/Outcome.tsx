@@ -18,6 +18,7 @@ import {
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
 import OutcomeHorizontalLink from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeHorizontalLink'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetOutcomeByID
@@ -256,8 +257,8 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
 
     const droptext = data.is_dropped
-      ? window.gettext('hide')
-      : window.gettext('show ') +
+      ? _t('hide')
+      : _t('show ') +
         data.child_outcome_links.length +
         ' ' +
         window.ngettext(
@@ -348,7 +349,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
                 className="outcome-create-child"
                 onClick={this.insertChild.bind(this, data)}
               >
-                {window.gettext('+ Add New')}
+                {_t('+ Add New')}
               </div>
             )}
 

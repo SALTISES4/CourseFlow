@@ -6,6 +6,7 @@ import ComponentWithToggleDrop, {
 import * as Constants from '@cfConstants'
 import { getColumnByID, TGetColumnByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetColumnByID

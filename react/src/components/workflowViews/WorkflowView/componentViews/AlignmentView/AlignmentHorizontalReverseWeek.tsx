@@ -8,6 +8,7 @@ import { CfObjectType } from '@cfModule/types/enum.js'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { AppState } from '@cfRedux/types/type'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
   data: any

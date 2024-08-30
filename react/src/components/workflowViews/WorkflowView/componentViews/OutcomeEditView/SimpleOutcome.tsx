@@ -12,6 +12,7 @@ import {
   EditableComponentWithCommentsType
 } from '@cfEditableComponents/EditableComponentWithComments'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
@@ -113,8 +114,8 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
       : 'droptriangledown'
 
     const droptext = this.state.is_dropped
-      ? window.gettext('hide')
-      : window.gettext('show ') +
+      ? _t('hide')
+      : _t('show ') +
         data.child_outcome_links.length +
         ' ' +
         window.ngettext(

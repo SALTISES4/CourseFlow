@@ -10,7 +10,7 @@ export enum ViewType {
   OUTCOMETABLE = 'outcometable',
   ALIGNMENTANALYSIS = 'alignmentanalysis',
   HORIZONTALOUTCOMETABLE = 'horizontaloutcometable',
-  WORKFLOW_OVERVIEW = 'workflowoverview',
+  WORKFLOW_OVERVIEW = 'workflowoverview'
 }
 
 export enum WFContext {
@@ -19,9 +19,10 @@ export enum WFContext {
 }
 
 export enum WorkflowType {
+  PROGRAM = 'program',
   ACTIVITY = 'activity',
   PROJECT = 'project',
-  PROGRAM = 'program',
+  COURSE = 'course',
   LIVE_PROJECT = 'liveproject'
 }
 

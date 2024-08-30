@@ -7,6 +7,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Typography from '@mui/material/Typography'
 import { importData } from '@XMLHTTP/API/export_import'
+import { _t } from '@cf/utility/utilityFunctions'
 
 import { StyledDialog } from '../styles'
 import { DIALOG_TYPE, useDialog } from '../'

@@ -4,6 +4,7 @@ import { getNodeByID, TGetNodeByID } from '@cfFindState'
 import { CfObjectType } from '@cfModule/types/enum.js'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import { AppState } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = TGetNodeByID
 type OwnProps = {

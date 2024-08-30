@@ -4,6 +4,7 @@ import { Discipline } from '@cfModule/types/common'
 import Users from '@cfPages/ProjectDetail/components/Users'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { EProject } from '@XMLHTTP/types/entity'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsTypes = {
   allDisciplines: Discipline[]
@@ -36,7 +37,7 @@ const Header = ({
       />
       <div className="project-header-info">
         <div className="project-info-section project-members">
-          <h4>{window.gettext('Permissions')}</h4>
+          <h4>{_t('Permissions')}</h4>
           <Users
             users={users}
             readOnly={readOnly}
@@ -46,20 +47,20 @@ const Header = ({
 
         <div className="project-other">
           <div className="project-info-section project-description">
-            <h4>{window.gettext('Description')}</h4>
+            <h4>{_t('Description')}</h4>
             <CollapsibleText
               text={description}
-              defaultText={window.gettext('No description')}
+              defaultText={_t('No description')}
             />
           </div>
 
           <div className="project-info-section project-disciplines">
-            <h4>{window.gettext('Disciplines')}</h4>
+            <h4>{_t('Disciplines')}</h4>
             {allDisciplines
               // @ts-ignore
               .filter((discipline) => disciplines.indexOf(discipline.id) >= 0)
               .map((discipline) => discipline.title)
-              .join(', ') || window.gettext('None')}
+              .join(', ') || _t('None')}
           </div>
         </div>
       </div>

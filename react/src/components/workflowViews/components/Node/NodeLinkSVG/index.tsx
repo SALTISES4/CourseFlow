@@ -7,6 +7,7 @@ import ComponentWithToggleDrop, {
 } from '@cfEditableComponents/ComponentWithToggleDrop'
 import { ObjectLock } from '@cfModule/types/common'
 import { NumTuple } from '@cfModule/types/common'
+import { _t } from '@cf/utility/utilityFunctions'
 
 // eslint-disable-next-line no-undef
 type Direction = { source: NumTuple; target: NumTuple }

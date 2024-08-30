@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import RestoreBarItem from '@cfViews/components/rightSideBarContent/NodeBar/components/RestoreBarItem'
 import { AppState } from '@cfRedux/types/type'
 import { CfObjectType } from '@cfModule/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 /**
@@ -100,21 +101,21 @@ class RestoreBarUnconnected extends React.Component<PropsType> {
 
     return (
       <div id="restore-bar-workflow" className="right-panel-inner">
-        <h3>{window.gettext('Restore items')}</h3>
+        <h3>{_t('Restore items')}</h3>
         <hr />
-        <h4>{window.gettext('Nodes')}</h4>
+        <h4>{_t('Nodes')}</h4>
         <div className="node-bar-column-block">{nodes}</div>
         <hr />
-        <h4>{window.gettext('Weeks')}</h4>
+        <h4>{_t('Weeks')}</h4>
         <div className="node-bar-column-block">{weeks}</div>
         <hr />
-        <h4>{window.gettext('Columns')}</h4>
+        <h4>{_t('Columns')}</h4>
         <div className="node-bar-column-block">{columns}</div>
         <hr />
-        <h4>{window.gettext('Outcomes')}</h4>
+        <h4>{_t('Outcomes')}</h4>
         <div className="node-bar-column-block">{outcomes}</div>
         <hr />
-        <h4>{window.gettext('Node Links')}</h4>
+        <h4>{_t('Node Links')}</h4>
         <div className="node-bar-column-block">{nodelinks}</div>
       </div>
     )

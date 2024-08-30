@@ -4,6 +4,7 @@ import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
 import { setLinkedWorkflow } from '@XMLHTTP/API/update'
 import { GridWrap } from '@cfModule/mui/helper'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 /*
@@ -84,9 +85,9 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
       case 'linked_workflow_menu':
       case 'added_workflow_menu':
       case 'workflow_select_menu':
-        return <h2>{window.gettext('Select a workflow')}</h2>
+        return <h2>{_t('Select a workflow')}</h2>
       case 'target_project_menu':
-        return <h2>{window.gettext('Select a project')}</h2>
+        return <h2>{_t('Select a project')}</h2>
     }
     return null
   }
@@ -94,19 +95,19 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
   Actions = () => {
     const actions = []
     if (this.props.type === 'linked_workflow_menu') {
-      let text = window.gettext('link to node')
+      let text = _t('link to node')
       if (
         this.state.selected &&
         this.project_workflows.indexOf(this.state.selected) < 0
       )
-        text = window.gettext('Copy to Current Project and ') + text
+        text = _t('Copy to Current Project and ') + text
       actions.push(
         <button
           id="set-linked-workflow-cancel"
           className="secondary-button"
           onClick={this.props.actionFunction}
         >
-          {window.gettext('Cancel')}
+          {_t('Cancel')}
         </button>
       )
       actions.push(
@@ -121,7 +122,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
             )
           }}
         >
-          {window.gettext('Set to None')}
+          {_t('Set to None')}
         </button>
       )
       actions.push(
@@ -146,14 +147,14 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
     ) {
       let text = ''
       if (this.props.type === 'added_workflow_menu') {
-        text = window.gettext('Select')
+        text = _t('Select')
         if (
           this.state.selected &&
           this.project_workflows.indexOf(this.state.selected) < 0
         )
-          text = window.gettext('Copy to Current Project')
+          text = _t('Copy to Current Project')
       } else {
-        text = window.gettext('Select')
+        text = _t('Select')
       }
 
       actions.push(
@@ -162,7 +163,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
           className="secondary-button"
           onClick={closeMessageBox}
         >
-          {window.gettext('Cancel')}
+          {_t('Cancel')}
         </button>
       )
 
@@ -186,7 +187,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
           className="secondary-button"
           onClick={closeMessageBox}
         >
-          {window.gettext('Cancel')}
+          {_t('Cancel')}
         </button>
       )
       actions.push(
@@ -199,7 +200,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
             closeMessageBox()
           }}
         >
-          {window.gettext('Select project')}
+          {_t('Select project')}
         </button>
       )
     }
@@ -246,7 +247,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
 
     const current_project = this.current_project ? (
       <>
-        <h4 className={'big-space'}>{window.gettext('Current project')}</h4>,
+        <h4 className={'big-space'}>{_t('Current project')}</h4>,
         <GridWrap>
           <WorkflowCard
             workflowData={this.current_project}
@@ -259,7 +260,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
         </GridWrap>
         <hr className={'big-space'} />,
         <h4 className={'big-space'}>
-          {window.gettext('Or select from your projects')}
+          {_t('Or select from your projects')}
         </h4>
       </>
     ) : (

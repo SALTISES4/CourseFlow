@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import { styled } from '@mui/material/styles'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
+import { _t } from '@cf/utility/utilityFunctions'
 
 const Wrap = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -52,7 +53,7 @@ const Welcome = ({ hide }: PropsType) => {
         <CloseIcon />
       </CloseButton>
       <Typography variant="h4">
-        {window.gettext('Welcome to CourseFlow')}
+        {_t('Welcome to CourseFlow')}
       </Typography>
       <Typography sx={{ mt: 2 }}>
         {window.gettext(
@@ -64,19 +65,19 @@ const Welcome = ({ hide }: PropsType) => {
           variant="contained"
           onClick={() => dispatch(DIALOG_TYPE.PROGRAM_CREATE)}
         >
-          {window.gettext('I want to create a program')}
+          {_t('I want to create a program')}
         </Button>
         <Button
           variant="contained"
           onClick={() => dispatch(DIALOG_TYPE.COURSE_CREATE)}
         >
-          {window.gettext('I want to create a course')}
+          {_t('I want to create a course')}
         </Button>
         <Button
           variant="contained"
           onClick={() => dispatch(DIALOG_TYPE.ACTIVITY_CREATE)}
         >
-          {window.gettext('I want to create an activity')}
+          {_t('I want to create an activity')}
         </Button>
       </Actions>
     </Wrap>

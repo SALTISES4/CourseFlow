@@ -13,6 +13,7 @@ import {
 } from './OutcomeBarOutcome'
 import { OutcomeTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { AppState, TOutcomeOutcome } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  * Used for the parent outcome bar.
@@ -96,10 +97,10 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
     let droptext
 
     if (this.state.is_dropped) {
-      droptext = window.gettext('hide')
+      droptext = _t('hide')
     } else {
       droptext =
-        window.gettext('show ') +
+        _t('show ') +
         children.length +
         ' ' +
         window.ngettext('descendant', 'descendants', children.length)

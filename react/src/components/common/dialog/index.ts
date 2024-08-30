@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { DialogDispatchContext, DialogContext } from './context'
+import * as React from 'react'
 
 export enum DIALOG_TYPE {
   // General

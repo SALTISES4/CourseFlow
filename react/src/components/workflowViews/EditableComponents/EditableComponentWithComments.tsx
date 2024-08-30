@@ -10,6 +10,7 @@ import ActionCreator from '@cfRedux/ActionCreator'
 import { getCommentsForObjectQuery } from '@XMLHTTP/API/comment'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import CommentBox from '@cfViews/WorkflowView/componentViews/GridView/components/CommentBox'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type StateType = {
   show_comments: boolean
@@ -79,7 +80,7 @@ class EditableComponentWithComments<
         <ActionButton
           buttonIcon="comment_new.svg"
           buttonClass="comment-button"
-          titleText={window.gettext('Comments')}
+          titleText={_t('Comments')}
           handleClick={this.commentClick.bind(this)}
         />
         <CommentBox

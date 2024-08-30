@@ -3,7 +3,6 @@ import WorkflowCardCondensed from '@cfCommonComponents/cards/WorkflowCardCondens
 import Loader from '@cfCommonComponents/UIComponents/Loader.js'
 import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard/index.jsx'
 import { debounce } from '@cfUtility'
-import { Workflow } from '@cfModule/types/common'
 import { GridWrap } from '@cfModule/mui/helper'
 import { libraryObjectsSearchQuery } from '@XMLHTTP/API/pages'
 import SearchIcon from '@mui/icons-material/Search'
@@ -12,13 +11,15 @@ import SortIcon from '@mui/icons-material/Sort'
 import SouthIcon from '@mui/icons-material/South'
 import NorthIcon from '@mui/icons-material/North'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
+import { ESectionObject } from '@XMLHTTP/types/entity'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * workflow filter is a shared component that
  *******************************************************/
 
 type PropsType = {
-  workflows: Workflow[]
+  workflows: ESectionObject[]
   context: string
   read_only?: any
   project_data?: any
@@ -30,11 +31,11 @@ type Filters = { display: string; name: string }[]
 type Sorts = { display: string; name: string }[]
 
 type StateType = {
-  workflows: Workflow[]
+  workflows: ESectionObject[]
   activeFilter: number
   activeSort: number
   reversed: boolean
-  searchResults: Workflow[]
+  searchResults: ESectionObject[]
   searchFilterLock: null | number | string
   searchFilter?: string
 }
@@ -59,17 +60,17 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
     }
 
     this.filters = [
-      { name: 'all', display: window.gettext('All') },
-      { name: 'owned', display: window.gettext('Owned') },
-      { name: 'shared', display: window.gettext('Shared') },
-      { name: 'favourite', display: window.gettext('My Favourites') },
-      { name: 'archived', display: window.gettext('Archived') }
+      { name: 'all', display: _t('All') },
+      { name: 'owned', display: _t('Owned') },
+      { name: 'shared', display: _t('Shared') },
+      { name: 'favourite', display: _t('My Favourites') },
+      { name: 'archived', display: _t('Archived') }
     ]
     this.sorts = [
-      { name: 'last_viewed', display: window.gettext('Recent') },
-      { name: 'title', display: window.gettext('A-Z') },
-      { name: 'created_on', display: window.gettext('Creation date') },
-      { name: 'type', display: window.gettext('Type') }
+      { name: 'last_viewed', display: _t('Recent') },
+      { name: 'title', display: _t('A-Z') },
+      { name: 'created_on', display: _t('Creation date') },
+      { name: 'type', display: _t('Type') }
     ]
     const url_params = new URL(window.location.href).searchParams
     if (url_params.get('favourites') === 'true') {
@@ -111,9 +112,9 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
    *******************************************************/
   getPlaceholder() {
     if (this.props.context === 'project') {
-      return window.gettext('Search the project')
+      return _t('Search the project')
     } else {
-      return window.gettext('Search the library')
+      return _t('Search the library')
     }
   }
 
@@ -386,11 +387,11 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
     ))
 
     if (searchFilter && !searchResults.length) {
-      results.push(<div>{window.gettext('No results found')}</div>)
+      results.push(<div>{_t('No results found')}</div>)
     } else if (results.length === 10) {
       results.push(
         <div className="hover-shade" onClick={this.seeAll}>
-          {window.gettext('+ See all')}
+          {_t('+ See all')}
         </div>
       )
     }

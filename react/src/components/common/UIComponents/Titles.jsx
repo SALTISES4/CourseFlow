@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 
 //Text that can be passed a default value. HTML is dangerously set.
 export class TitleText extends React.Component {
@@ -30,14 +31,14 @@ export const WorkflowTitle = (props) => {
     : data.url
 
   const getText = () => {
-    let text = data.title || window.gettext('Untitled')
+    let text = data.title || _t('Untitled')
 
     if (data.code) {
       text = `${data.code} - ${text}`
     }
 
     if (['noaccess', 'nouser'].includes(data.url)) {
-      text += ` ${window.gettext(' (no access)')}`
+      text += ` ${_t(' (no access)')}`
     }
 
     if (data.deleted) {
@@ -90,7 +91,7 @@ export class NodeTitle extends React.Component {
     } else text = data.title
 
     if (text == null || text == '') {
-      text = window.gettext('Untitled')
+      text = _t('Untitled')
     }
 
     return (
@@ -109,7 +110,7 @@ export class OutcomeTitle extends React.Component {
     const data = this.props.data
     let text = data.title
     if (data.title == null || data.title == '') {
-      text = window.gettext('Untitled')
+      text = _t('Untitled')
     }
 
     return (
@@ -125,7 +126,7 @@ export class OutcomeTitle extends React.Component {
 export function getOutcomeTitle(data, prefix) {
   let text = data.title
   if (data.title == null || data.title == '') {
-    text = window.gettext('Untitled')
+    text = _t('Untitled')
   }
 
   return prefix + ' - ' + text

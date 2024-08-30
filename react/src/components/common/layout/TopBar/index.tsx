@@ -32,6 +32,7 @@ import editActivityData from '@cfCommonComponents/dialog/ActivityEdit/data'
 import createActivityData from '@cfCommonComponents/dialog/ActivityCreate/data'
 import PasswordResetModal from '@cfModule/components/common/dialog/PasswordReset'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
+import { _t } from '@cf/utility/utilityFunctions'
 
 import {
   TopBarWrap,

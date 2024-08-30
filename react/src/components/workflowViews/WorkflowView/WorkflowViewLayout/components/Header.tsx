@@ -5,6 +5,7 @@ import * as Utility from '@cfModule/utility/utilityFunctions'
 import { useContext } from 'react'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import PublicIcon from '@mui/icons-material/Public'
+import { _t } from '@cf/utility/utilityFunctions'
 
 const Users = ({
   users,
@@ -29,7 +30,7 @@ const Users = ({
       <div className="user-name">
         {Utility.getUserTag('view')}
         <PublicIcon />
-        {window.gettext('All CourseFlow')}
+        {_t('All CourseFlow')}
       </div>
     )
   }
@@ -69,7 +70,7 @@ const Users = ({
   if (users_group.length > 4) {
     users.push(
       <div className="workflow-created">
-        +{users_group.length - 4} {window.gettext('more')}
+        +{users_group.length - 4} {_t('more')}
       </div>
     )
   }
@@ -80,7 +81,7 @@ const Users = ({
         className="user-name collapsed-text-show-more"
         onClick={openShareDialog}
       >
-        {window.gettext('Modify')}
+        {_t('Modify')}
       </div>
     )
   return <></>
@@ -88,7 +89,7 @@ const Users = ({
 
 const TypeIndicator = ({ data }: { data: any }) => {
   let type_text = window.gettext(data.type)
-  if (data.is_strategy) type_text += window.gettext(' strategy')
+  if (data.is_strategy) type_text += _t(' strategy')
   return (
     <div className={'workflow-type-indicator ' + data.type}>{type_text}</div>
   )
@@ -124,7 +125,7 @@ const Header = ({
       </div>
       <div className="project-header-info">
         <div className="project-info-section project-members">
-          <h4>{window.gettext('Permissions')}</h4>
+          <h4>{_t('Permissions')}</h4>
           <Users
             users={users}
             readonly={context.permissions.workflowPermission.readOnly}
@@ -133,10 +134,10 @@ const Header = ({
         </div>
         <div className="project-other">
           <div className="project-info-section project-description">
-            <h4>{window.gettext('Description')}</h4>
+            <h4>{_t('Description')}</h4>
             <CollapsibleText
               text={data.description}
-              defaultText={window.gettext('No description')}
+              defaultText={_t('No description')}
             />
           </div>
         </div>

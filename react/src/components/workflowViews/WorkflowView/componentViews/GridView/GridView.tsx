@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { getWeekWorkflowByID, getWeekByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import GridWeek from '@cfViews/WorkflowView/componentViews/GridView/GridWeek'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  * Creates a grid with just nodes by week and their times
@@ -44,13 +45,13 @@ class GridViewUnconnected extends React.Component<PropsType, StateType> {
     return (
       <div className="workflow-details">
         <div className="grid-ponderation">
-          {window.gettext('Times in hours shown in format') +
+          {_t('Times in hours shown in format') +
             ': ' +
-            window.gettext('Theory') +
+            _t('Theory') +
             '/' +
-            window.gettext('Practical') +
+            _t('Practical') +
             '/' +
-            window.gettext('Individual')}
+            _t('Individual')}
         </div>
         <div className="workflow-grid">{weeks}</div>
       </div>

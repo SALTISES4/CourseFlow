@@ -13,6 +13,7 @@ import { newOutcomeQuery } from '@XMLHTTP/API/create'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
 import { AppState } from '@cfRedux/types/type'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
   workflow: any
@@ -69,10 +70,10 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
             {Utility.capWords(
               window.gettext(`${data.linked_workflow_data.type} outcomes`)
             )}{' '}
-            {window.gettext('From Linked Workflow')}
+            {_t('From Linked Workflow')}
           </div>
           <div className="half-width alignment-column">
-            {window.gettext('Associated ')}
+            {_t('Associated ')}
             {Utility.capWords(
               window.gettext(`${this.props.workflow.type} outcomes`)
             )}
@@ -88,7 +89,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
         this.context.childWorkflowDataNeeded(this.props.data.id)
         return (
           <div className="child-outcome child-outcome-header">
-            {window.gettext('... LOADING')}
+            {_t('... LOADING')}
           </div>
         )
       }
@@ -96,7 +97,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
       if (data.linked_workflow_data.deleted) {
         return (
           <div className="child-outcome child-outcome-header">
-            {window.gettext('The linked workflow has been deleted.')}
+            {_t('The linked workflow has been deleted.')}
           </div>
         )
       }
@@ -142,10 +143,10 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     //       <div className="half-width alignment-column">
     //         {Utility.capWords(
     //           window.gettext(data.linked_workflow_data.type + ' outcomes')
-    //         ) + window.gettext(' From Linked Workflow')}
+    //         ) + _t(' From Linked Workflow')}
     //       </div>
     //       <div className="half-width alignment-column">
-    //         {window.gettext('Associated ') +
+    //         {_t('Associated ') +
     //           Utility.capWords(
     //             window.gettext(this.props.workflow.type + ' outcomes')
     //           )}
@@ -157,7 +158,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     //     if (this.props.child_outcomes == -1) {
     //       child_outcomes_header = (
     //         <div className="child-outcome child-outcome-header">
-    //           {window.gettext('... LOADING')}
+    //           {_t('... LOADING')}
     //         </div>
     //       )
     //       this.context.childWorkflowDataNeeded(this.props.data.id)
@@ -165,7 +166,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     //       if (data.linked_workflow_data.deleted) {
     //         child_outcomes_header = (
     //           <div className="child-outcome child-outcome-header">
-    //             {window.gettext('The linked workflow has been deleted.')}
+    //             {_t('The linked workflow has been deleted.')}
     //           </div>
     //         )
     //       } else {
@@ -237,7 +238,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
         <div className="node-outcomes-header">
           {Utility.capWords(
             window.gettext(this.props.workflow.type + ' outcomes')
-          ) + window.gettext(' for node:')}
+          ) + _t(' for node:')}
         </div>
         {outcomenodes}
         {outcomeadder}
@@ -263,7 +264,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
               'add_new_white.svg'
             }
           />
-          <div>{window.gettext('Add new')}</div>
+          <div>{_t('Add new')}</div>
         </div>
       )
 
@@ -277,7 +278,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
               className="alignment-show-all"
               onClick={() => this.setState({ show_all: false })}
             >
-              {'-' + window.gettext('Hide Unused')}
+              {'-' + _t('Hide Unused')}
             </div>
           </div>
         )
@@ -288,7 +289,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
               className="alignment-show-all"
               onClick={() => this.setState({ show_all: true })}
             >
-              {'+' + window.gettext('Show All')}
+              {'+' + _t('Show All')}
             </div>
           </div>
         )

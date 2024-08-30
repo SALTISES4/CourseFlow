@@ -15,6 +15,7 @@ import {
 } from '@XMLHTTP/API/comment'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { TUser } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * @CommentBox
@@ -258,7 +259,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
               <div className="mouseover-actions">
                 <div
                   className="action-button"
-                  title={window.gettext('Delete Comment')}
+                  title={_t('Delete Comment')}
                   onClick={this.removeComment.bind(this, comment.id)}
                 >
                   <img
@@ -278,7 +279,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     top_contents.push(
       <div
         className="hover-shade"
-        title={window.gettext('Close')}
+        title={_t('Close')}
         onClick={this.props.parent.commentClick.bind(this.props.parent)}
       >
         <img
@@ -293,7 +294,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
       top_contents.push(
         <div
           className="hover-shade"
-          title={window.gettext('Clear All Comments')}
+          title={_t('Clear All Comments')}
           onClick={this.removeAllComments.bind(this)}
         >
           <img
@@ -305,9 +306,9 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
         </div>
       )
 
-    let input_default = window.gettext('Add a comment')
+    let input_default = _t('Add a comment')
     if (this.props.comments && this.props.comments.length > 0)
-      input_default = window.gettext('Reply')
+      input_default = _t('Reply')
 
     let tag_box
     if (this.state.tagging) {
@@ -352,7 +353,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
                 }
                 className="add-comment-button hidden hover-shade"
                 onClick={this.appendComment.bind(this)}
-                title={window.gettext('Submit')}
+                title={_t('Submit')}
               />
             </div>
           )}

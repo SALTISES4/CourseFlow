@@ -2,6 +2,7 @@ import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import PublicIcon from '@mui/icons-material/Public'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {
   users: UsersForObjectQueryResp
@@ -24,7 +25,7 @@ const Users = ({ users, readOnly, openShareDialog }: PropsType) => {
           {Utility.getUserTag('view')}
 
           <PublicIcon />
-          {window.gettext('All CourseFlow')}
+          {_t('All CourseFlow')}
         </div>
       )}
 
@@ -61,7 +62,7 @@ const Users = ({ users, readOnly, openShareDialog }: PropsType) => {
       {viewers.length + commentors.length + editors.length > 4 && (
         <div className="workflow-created">
           +{viewers.length + commentors.length + editors.length - 4}{' '}
-          {window.gettext('more')}
+          {_t('more')}
         </div>
       )}
 
@@ -70,7 +71,7 @@ const Users = ({ users, readOnly, openShareDialog }: PropsType) => {
           className="user-name collapsed-text-show-more"
           onClick={openShareDialog}
         >
-          {window.gettext('Modify')}
+          {_t('Modify')}
         </div>
       )}
     </>
@@ -92,7 +93,7 @@ export default Users
 //       <div className="user-name">
 //         {Utility.getUserTag('view')}
 //         <span className="material-symbols-rounded">public</span>{' '}
-//         {window.gettext('All CourseFlow')}
+//         {_t('All CourseFlow')}
 //       </div>
 //     )
 //   }
@@ -129,7 +130,7 @@ export default Users
 //   if (users_group.length > 4) {
 //     usersBlocks.push(
 //       <div className="workflow-created">
-//         +{users_group.length - 4} {window.gettext('more')}
+//         +{users_group.length - 4} {_t('more')}
 //       </div>
 //     )
 //   }
@@ -139,7 +140,7 @@ export default Users
 //         className="user-name collapsed-text-show-more"
 //         onClick={openShareDialog}
 //       >
-//         {window.gettext('Modify')}
+//         {_t('Modify')}
 //       </div>
 //     )
 //   return usersBlocks

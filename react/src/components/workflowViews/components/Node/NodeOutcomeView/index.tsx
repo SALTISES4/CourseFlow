@@ -8,6 +8,7 @@ import ComponentWithToggleDrop, {
 } from '@cfEditableComponents/ComponentWithToggleDrop'
 import { AppState } from '@cfRedux/types/type'
 import { CfObjectType } from '@cfModule/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  *  Basic component to represent a node in the outcomes table

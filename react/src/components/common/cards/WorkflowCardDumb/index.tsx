@@ -1,6 +1,7 @@
 import { Fragment, MouseEvent, ReactNode, RefObject } from 'react'
 import StarIcon from '@mui/icons-material/Star'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
+import { _t } from '@cf/utility/utilityFunctions'
 
 import { WorkflowType } from '@cfModule/types/enum'
 import * as Utility from '@cfUtility'
@@ -44,72 +45,6 @@ export type PropsType = {
   onMouseDown?: (evt: MouseEvent<HTMLDivElement>) => void
   onFavourite?: (evt: MouseEvent<HTMLButtonElement>) => void
   chips: (WorkflowCardChipType | ReactNode)[]
-}
-
-const getTypeChip = (workflow): WorkflowCardChipType => {
-  const { type, is_strategy } = workflow
-  let typeText = window.gettext(type)
-
-  if (type === WorkflowType.LIVE_PROJECT) {
-    typeText = window.gettext('classroom')
-  }
-
-  if (is_strategy) {
-    typeText += ` ${window.gettext('strategy')}`
-  }
-
-  const chipType = type === WorkflowType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
-
-  return {
-    type: chipType as CHIP_TYPE,
-    label: Utility.capWords(typeText)
-  }
-}
-
-const getTemplateChip = (workflow): WorkflowCardChipType => {
-  const is_template = workflow.is_template
-  if (is_template)
-    return {
-      type: CHIP_TYPE.TEMPLATE,
-      label: window.gettext('Template')
-    }
-  return null
-}
-
-const getWorkflowCountChip = (workflow): WorkflowCardChipType => {
-  if (
-    workflow.type === WorkflowType.PROJECT &&
-    workflow.workflow_count !== null &&
-    workflow.workflow_count > 0
-  ) {
-    return {
-      type: CHIP_TYPE.DEFAULT,
-      label: `${workflow.workflow_count} ${window.gettext(
-        `workflow` + (workflow.workflow_count > 1 ? 's' : '')
-      )}`
-    }
-  }
-  return null
-}
-
-export function PrepareBackendDataForWorkflowCardDumb(
-  workflow: ESectionObject
-): PropsType {
-  const type_chip = getTypeChip(workflow)
-  const template_chip = getTemplateChip(workflow)
-  const count_chip = getWorkflowCountChip(workflow)
-  console.log('workflow', {
-    ...workflow,
-    chips: [type_chip, template_chip, count_chip].filter(
-      (entry) => entry != null
-    )
-  })
-  return {
-    ...workflow,
-    chips: [type_chip, template_chip, count_chip].filter(
-      (entry) => entry != null
-    )
-  }
 }
 
 // Type guard function to check if an item is of type WorkflowCardChipType
@@ -159,7 +94,7 @@ const WorkflowCardDumb = ({
       )}
       <CardFooterActions>
         <CardFavouriteBtn
-          aria-label={window.gettext('Favourite')}
+          aria-label={_t('Favourite')}
           sx={{
             color: isFavourite
               ? 'courseflow.favouriteActive'

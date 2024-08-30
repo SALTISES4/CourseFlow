@@ -20,6 +20,7 @@ import ProjectSearch from '@cfCommonComponents/dialog/CreateWizard/components/Pr
 import { CREATE_RESOURCE_TYPE } from '@cfCommonComponents/dialog/CreateWizard/types'
 import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = CreateCourseDataType & Pick<CourseFormDataType, 'units'>
 

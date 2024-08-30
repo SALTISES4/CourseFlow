@@ -21,6 +21,7 @@ type StateProps = {
   show_outcomes: boolean
 } & EditableComponentWithActionsState
 type PropsType = ConnectedProps & OwnProps
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  * Represents the node in the comparison view
@@ -186,7 +187,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
           <div className="node-details">
             <TitleText
               text={data_override.description}
-              defaultText={window.gettext('Click to edit')}
+              defaultText={_t('Click to edit')}
             />
           </div>
           <div className="mouseover-actions">{mouseover_actions}</div>

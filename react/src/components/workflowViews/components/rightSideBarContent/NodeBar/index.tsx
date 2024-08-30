@@ -4,6 +4,7 @@ import NodeBarColumnWorkflow from '@cfViews/components/rightSideBarContent/NodeB
 import Strategy from '@cfViews/components/rightSideBarContent/NodeBar/components/Strategy'
 import { AppState } from '@cfRedux/types/type'
 import { FieldChoice } from '@cfModule/types/common'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  * The component for the right sidebar's tab in which
@@ -74,7 +75,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
 
     if (!this.props.readOnly) {
       nodebar_nodes = [
-        <h4>{window.gettext('Nodes')}</h4>,
+        <h4>{_t('Nodes')}</h4>,
         <div className="node-bar-column-block">{nodebarColumnWorkflows}</div>
       ]
     }
@@ -87,14 +88,14 @@ class NodeBarUnconnected extends React.Component<PropsType> {
 
     return (
       <div id="node-bar-workflow" className="right-panel-inner">
-        <h3 className="drag-and-drop">{window.gettext('Add to workflow')}</h3>
+        <h3 className="drag-and-drop">{_t('Add to workflow')}</h3>
         <hr />
         {nodebar_nodes}
         <hr />
-        <h4>{window.gettext('My strategies')}</h4>
+        <h4>{_t('My strategies')}</h4>
         <div className="strategy-bar-strategy-block">{strategies}</div>
         {/*{saltise_strategies.length > 0 && [*/}
-        {/*  <h4>{window.gettext('SALTISE strategies')}</h4>,*/}
+        {/*  <h4>{_t('SALTISE strategies')}</h4>,*/}
         {/*  <div className="strategy-bar-strategy-block">*/}
         {/*    {saltise_strategies}*/}
         {/*  </div>*/}

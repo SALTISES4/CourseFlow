@@ -7,6 +7,7 @@ import { fetchHomeContext } from '@XMLHTTP/API/pages'
 import { PageHomeQueryResp } from '@XMLHTTP/types/query'
 import { useQuery } from '@tanstack/react-query'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  *
@@ -32,14 +33,14 @@ const Home = () => {
           header={
             isTeacher
               ? {
-                  title: window.gettext('Recent projects'),
+                  title: _t('Recent projects'),
                   seeAll: {
                     text: 'View all projects',
                     href: COURSEFLOW_APP.globalContextData.path.my_library_path
                   }
                 }
               : {
-                  title: window.gettext('Recent classrooms'),
+                  title: _t('Recent classrooms'),
                   seeAll: {
                     text: 'View all classrooms',
                     href: COURSEFLOW_APP.globalContextData.path
@@ -59,14 +60,14 @@ const Home = () => {
       <Section
         header={{
           title: projects.length
-            ? window.gettext('Explore templates')
-            : window.gettext('Get started with templates')
+            ? _t('Explore templates')
+            : _t('Get started with templates')
         }}
       >
         <Alert
           sx={{ mb: 3 }}
           severity="info"
-          title={window.gettext('How to use templates')}
+          title={_t('How to use templates')}
           subtitle={window.gettext(
             'Templates provide a pre-established structure anchored in pedagogical best practices so that you don’t need to start from scratch!'
           )}

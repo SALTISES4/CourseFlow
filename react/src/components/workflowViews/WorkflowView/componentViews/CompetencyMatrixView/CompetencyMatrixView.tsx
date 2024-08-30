@@ -10,6 +10,7 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
 import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeBase'
 import OutcomeLegend from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeLegend'
+import { _t } from '@cf/utility/utilityFunctions'
 
 const GrandTotals = ({ totals }) => {
   return (
@@ -250,43 +251,43 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
       <div className="matrix-time-row">
         <div className="table-cell outcome-wrapper">
           <div className="outcome-head">
-            <h4>{window.gettext('Hours')}</h4>
+            <h4>{_t('Hours')}</h4>
           </div>
         </div>
         <div className="table-cell outcome-wrapper">
           <div className="outcome-head">
-            {window.gettext('General Education')}
+            {_t('General Education')}
           </div>
         </div>
         <div className="table-cell outcome-wrapper">
           <div className="outcome-head">
-            {window.gettext('Specific Education')}
+            {_t('Specific Education')}
           </div>
         </div>
         <div className="table-cell outcome-wrapper">
-          <div className="outcome-head">{window.gettext('Total Hours')}</div>
+          <div className="outcome-head">{_t('Total Hours')}</div>
         </div>
         <div className="table-cell outcome-wrapper">
           <div className="outcome-head">
-            <h4>{window.gettext('Ponderation')}</h4>
+            <h4>{_t('Ponderation')}</h4>
           </div>
         </div>
         <div className="table-cell outcome-wrapper">
-          <div className="outcome-head">{window.gettext('Theory')}</div>
+          <div className="outcome-head">{_t('Theory')}</div>
         </div>
         <div className="table-cell outcome-wrapper">
-          <div className="outcome-head">{window.gettext('Practical')}</div>
+          <div className="outcome-head">{_t('Practical')}</div>
         </div>
         <div className="table-cell outcome-wrapper">
           <div className="outcome-head">
-            {window.gettext('Individual Work')}
+            {_t('Individual Work')}
           </div>
         </div>
         <div className="table-cell outcome-wrapper">
-          <div className="outcome-head">{window.gettext('Total')}</div>
+          <div className="outcome-head">{_t('Total')}</div>
         </div>
         <div className="table-cell outcome-wrapper">
-          <div className="outcome-head">{window.gettext('Credits')}</div>
+          <div className="outcome-head">{_t('Credits')}</div>
         </div>
       </div>
     )

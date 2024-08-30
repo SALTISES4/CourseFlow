@@ -3,6 +3,7 @@ import {
   NodeBarColumnUnconnected,
   NodeBarColumnUnconnectedType
 } from '@cfViews/components/rightSideBarContent/NodeBar/components/NodeBarColumn'
+import { _t } from '@cf/utility/utilityFunctions'
 
 // type PropsType = NodeBarColumnUnconnectedType
 /**

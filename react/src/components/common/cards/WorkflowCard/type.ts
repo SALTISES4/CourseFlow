@@ -1,7 +1,7 @@
-import { Workflow } from '@cfModule/types/common'
+import { ESectionObject } from '@XMLHTTP/types/entity'
 
 export type WorkflowCardProps = {
-  workflowData: Workflow
+  workflowData: ESectionObject
   updateWorkflow?: any
   selected?: any
   noHyperlink?: any
@@ -20,5 +20,5 @@ export type CreateDiv = {
 }
 
 export type State = {
-  project_data: Workflow[]
+  project_data: ESectionObject[]
 }

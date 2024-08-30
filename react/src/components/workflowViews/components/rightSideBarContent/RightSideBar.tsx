@@ -13,6 +13,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import SpokeIcon from '@mui/icons-material/Spoke'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 /**
@@ -147,14 +148,14 @@ class RightSideBar extends React.Component<PropsType> {
         <ul>
           <li className="hover-shade">
             <a href="#edit-menu">
-              <span className="filled" title={window.gettext('Edit')}>
+              <span className="filled" title={_t('Edit')}>
                 <EditIcon />
               </span>
             </a>
           </li>
           <li className="hover-shade">
             <a href="#node-bar">
-              <span className=" filled" title={window.gettext('Add')}>
+              <span className=" filled" title={_t('Add')}>
                 <AddCircleIcon />
               </span>
             </a>
@@ -164,14 +165,14 @@ class RightSideBar extends React.Component<PropsType> {
             <>
               <li className="hover-shade">
                 <a href="#outcome-bar">
-                  <span title={window.gettext('Outcomes')}>
+                  <span title={_t('Outcomes')}>
                     <SpokeIcon />
                   </span>
                 </a>
               </li>
               <li className="hover-shade">
                 <a href="#view-bar">
-                  <span title={window.gettext('View Options')}>
+                  <span title={_t('View Options')}>
                     <RemoveRedEyeIcon />
                   </span>
                 </a>
@@ -182,7 +183,7 @@ class RightSideBar extends React.Component<PropsType> {
           <li className="hover-shade">
             <a href="#restore-bar">
               <span
-                title={window.gettext('Restore Deleted')}
+                title={_t('Restore Deleted')}
               >
                 <RestoreFromTrashIcon />
               </span>

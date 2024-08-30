@@ -2,6 +2,7 @@
 // since it's used to create new or edit existing project data
 
 import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import { deleteSelfQuery } from '@XMLHTTP/API/delete'
@@ -56,8 +57,8 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
   deleteTerm(id) {
     if (
       window.confirm(
-        window.gettext('Are you sure you want to delete this ') +
-          window.gettext('set') +
+        _t('Are you sure you want to delete this ') +
+          _t('set') +
           '?'
       )
     ) {
@@ -176,7 +177,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     const actions = []
     actions.push(
       <button className="secondary-button" onClick={this.props.closeAction}>
-        {window.gettext('Cancel')}
+        {_t('Cancel')}
       </button>
     )
     actions.push(
@@ -199,7 +200,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           this.props.closeAction
         }}
       >
-        {window.gettext('Save Changes')}
+        {_t('Save Changes')}
       </button>
     )
     return actions
@@ -282,10 +283,10 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     return (
       <>
         <div className="message-wrap">
-          <h2>{window.gettext('Edit project')}</h2>
+          <h2>{_t('Edit project')}</h2>
 
           <div>
-            <h4>{window.gettext('Title')}</h4>
+            <h4>{_t('Title')}</h4>
             <textarea
               autoComplete="off"
               id="project-title-input"
@@ -295,7 +296,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           </div>
 
           <div>
-            <h4>{window.gettext('Description')}</h4>
+            <h4>{_t('Description')}</h4>
             <textarea
               autoComplete="off"
               id="project-description-input"
@@ -305,7 +306,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           </div>
 
           <div>
-            <h4>{window.gettext('Disciplines')}</h4>
+            <h4>{_t('Disciplines')}</h4>
             <div className="flex-middle disciplines-div">{disciplines}</div>
             <input
               autoComplete="off"
@@ -315,7 +316,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           </div>
 
           <div>
-            <h4>{window.gettext('Object sets')}</h4>
+            <h4>{_t('Object sets')}</h4>
             <div className="workflow-created">
               {'Define categories for outcomes or nodes'}
             </div>
@@ -326,11 +327,11 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
                 value={this.state.selected_set}
                 onChange={this.inputChanged.bind(this, 'selected_set')}
               >
-                <option value="none">{window.gettext('Select a type')}</option>
+                <option value="none">{_t('Select a type')}</option>
                 {set_options}
               </select>
               <input
-                placeholder={window.gettext('Set name')}
+                placeholder={_t('Set name')}
                 type="text"
                 id="term-singular"
                 maxLength={50}

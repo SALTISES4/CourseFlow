@@ -10,6 +10,7 @@ import { AppState } from '@cfRedux/types/type'
 import CompletionImg from '@cfCommonComponents/UIComponents/CompletionImg'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import ErrorIcon from '@mui/icons-material/Error'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  * The outcomes tab of the right sidebar. This version is shown
@@ -88,7 +89,7 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
     return (
       <div id="outcome-bar-workflow" className="right-panel-inner">
         <h3 className="drag-and-drop">
-          {window.gettext('Outcomes from Parent Workflow')}
+          {_t('Outcomes from Parent Workflow')}
         </h3>
         <div className="outcome-bar-outcome-block">
           {multiple_parent_warning}

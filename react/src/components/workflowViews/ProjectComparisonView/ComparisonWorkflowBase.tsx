@@ -12,6 +12,7 @@ import EditableComponent, {
 } from '@cfEditableComponents/EditableComponent'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
   data: any

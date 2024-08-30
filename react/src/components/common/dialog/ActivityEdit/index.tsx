@@ -9,6 +9,7 @@ import ActivityForm from '@cfCommonComponents/dialog/CreateWizard/components/For
 import { ActivityFormDataType } from '@cfCommonComponents/dialog/CreateWizard/components/FormActivity/types'
 import { DIALOG_TYPE, useDialog } from '@cfCommonComponents/dialog'
 import { StyledDialog } from '@cfCommonComponents/dialog/styles'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type StateType = Omit<ActivityFormDataType, 'units'> & {
   unit: string

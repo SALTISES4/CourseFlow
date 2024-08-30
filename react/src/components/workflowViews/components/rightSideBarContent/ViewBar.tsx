@@ -4,6 +4,7 @@ import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import { ViewType } from '@cfModule/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
   object_sets: any
@@ -92,7 +93,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
               onChange={this.changeTableType.bind(this)}
             />
             <label htmlFor="table_type_table">
-              {window.gettext('Table Style')}
+              {_t('Table Style')}
             </label>
           </div>
           <div>
@@ -105,16 +106,16 @@ class ViewBarUnconnected extends React.Component<PropsType> {
               onChange={this.changeTableType.bind(this)}
             />
             <label htmlFor="table_type_matrix">
-              {window.gettext('Competency Matrix Style')}
+              {_t('Competency Matrix Style')}
             </label>
           </div>
         </div>
       )
       sort_block = (
         <div>
-          <h4>{window.gettext('Sort Nodes')}:</h4>
+          <h4>{_t('Sort Nodes')}:</h4>
           {sort_type}
-          <h4>{window.gettext('Table Type')}:</h4>
+          <h4>{_t('Table Type')}:</h4>
           {table_type}
         </div>
       )
@@ -147,10 +148,10 @@ class ViewBarUnconnected extends React.Component<PropsType> {
 
     return (
       <div id="node-bar-workflow" className="right-panel-inner">
-        <h3>{window.gettext('View options')}</h3>
+        <h3>{_t('View options')}</h3>
         <hr />
         {sort_block}
-        <h4>{window.gettext('Object Sets')}</h4>
+        <h4>{_t('Object Sets')}</h4>
         {sets}
       </div>
     )

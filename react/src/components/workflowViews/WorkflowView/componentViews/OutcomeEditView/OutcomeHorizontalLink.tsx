@@ -14,6 +14,7 @@ import { connect } from 'react-redux'
 import * as React from 'react'
 import { AppState } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = TOutcomeHorizontalLinkByID
 type OwnProps = { parentID?: number } & ComponentWithToggleProps
@@ -55,7 +56,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
     //Temporary confirmation; add better confirmation dialogue later
     if (
       window.confirm(
-        window.gettext('Are you sure you want to delete this ') +
+        _t('Are you sure you want to delete this ') +
           Constants.get_verbose(
             this.props.data,
             this.objectType
@@ -118,7 +119,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
       <ActionButton
         buttonIcon={icon}
         buttonClass="delete-self-button"
-        titleText={window.gettext('Delete')}
+        titleText={_t('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
       />
     )

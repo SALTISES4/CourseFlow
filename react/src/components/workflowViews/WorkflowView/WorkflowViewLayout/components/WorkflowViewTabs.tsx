@@ -20,6 +20,7 @@ import {
 import { Routes as AppRoutes } from '@cf/router'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
 import dummyOverviewData from '@cfViews/WorkflowView/componentViews/OverviewView/dummyData'
+import { _t } from '@cf/utility/utilityFunctions'
 
 const ViewTabButtons = ({
   data,
@@ -33,20 +34,20 @@ const ViewTabButtons = ({
   const viewButtons = [
     {
       type: ViewType.WORKFLOW,
-      name: window.gettext('Workflow View'),
+      name: _t('Workflow View'),
       disabled: []
     },
     {
       type: ViewType.OUTCOME_EDIT,
       name: Utility.capWords(
-        window.gettext('View') + ' ' + window.gettext(data.type + ' outcomes')
+        _t('View') + ' ' + window.gettext(data.type + ' outcomes')
       ),
       disabled: []
     },
     {
       type: ViewType.OUTCOMETABLE,
       name: Utility.capWords(
-        window.gettext(data.type + ' outcome') + ' ' + window.gettext('Table')
+        window.gettext(data.type + ' outcome') + ' ' + _t('Table')
       ),
       disabled: []
     },
@@ -55,13 +56,13 @@ const ViewTabButtons = ({
       name: Utility.capWords(
         window.gettext(data.type + ' outcome') +
           ' ' +
-          window.gettext('Analytics')
+          _t('Analytics')
       ),
       disabled: ['activity']
     },
     {
       type: ViewType.GRID,
-      name: window.gettext('Grid View'),
+      name: _t('Grid View'),
       disabled: ['activity', 'course']
     }
   ]

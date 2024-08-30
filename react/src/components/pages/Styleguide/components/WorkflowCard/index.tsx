@@ -32,6 +32,7 @@ export type PropsType = {
   onFavourite?: (evt: MouseEvent<HTMLButtonElement>) => void
   chips: (WorklowCardChipType | ReactNode)[]
 }
+export type WorkflowCardType = PropsType
 
 // Type guard function to check if an item is of type WorklowCardChipType
 function isWorkflowCardChipType(chip: any): chip is WorklowCardChipType {

@@ -1,6 +1,5 @@
-import { Discipline, QueryPages, Workflow } from '@cfModule/types/common'
+import { Discipline, QueryPages } from '@cfModule/types/common'
 import { VERB } from '@cfModule/types/enum'
-import { TWorkflow } from '@cfRedux/types/type'
 import {
   WorkflowDataPackage,
   WorkflowParentDataPackage,
@@ -13,7 +12,8 @@ import {
   EComment,
   EObjectSet,
   ESectionGroup,
-  ESectionObject
+  ESectionObject,
+  EWorkflow
 } from '@XMLHTTP/types/entity'
 import { ProjectViewDTO } from '@cfPages/ProjectDetail/types'
 import { WorkflowDetailViewDTO } from '@cfPages/Workspace/Workflow/types'
@@ -43,8 +43,8 @@ export type ProfileField = {
 export type PageHomeQueryResp = {
   action: VERB
   data: {
-    projects: Workflow[]
-    templates: Workflow[]
+    projects: ESectionObject[]
+    templates: ESectionObject[]
     isTeacher: boolean
   }
 }
@@ -52,7 +52,7 @@ export type PageHomeQueryResp = {
 export type PageExploreQueryResp = {
   action: VERB
   data: {
-    initial_workflows: Workflow[]
+    initial_workflows: ESectionObject[]
     initial_pages: QueryPages
     disciplines: Discipline[]
     user_id: number
@@ -149,17 +149,17 @@ export type DuplicateBaseItemQueryResp = {
  *******************************************************/
 
 export type PageLibraryQueryResp = {
-  data_package: Workflow[]
+  data_package: ESectionObject[]
 }
 
 export type FavouritesQueryResp = {
   action: VERB
-  data_package: Workflow[]
+  data_package: ESectionObject[]
 }
 
 export type DisciplineQueryResp = {
   action: VERB
-  data_package: Workflow[]
+  data_package: ESectionObject[]
 }
 
 /*******************************************************
@@ -168,7 +168,7 @@ export type DisciplineQueryResp = {
 
 export type LibraryObjectsSearchQueryResp = {
   action: VERB
-  workflow_list: Workflow[]
+  workflow_list: ESectionObject[]
   pages: QueryPages
 }
 
@@ -249,12 +249,12 @@ export type ProjectsForCreateQueryResp = {
 
 export type ParentWorkflowInfoQueryResp = {
   action: VERB
-  parent_workflows: Workflow[]
+  parent_workflows: EWorkflow[]
 }
 
 export type WorkflowsForProjectQueryResp = {
   action: VERB
-  data_package: Workflow[]
+  data_package: EWorkflow[]
 }
 
 export type LinkedWorkflowMenuQueryResp = {

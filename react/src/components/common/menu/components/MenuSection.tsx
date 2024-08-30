@@ -3,6 +3,7 @@ import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { GridWrap } from '@cfModule/mui/helper'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {
   no_hyperlink: any
@@ -67,12 +68,12 @@ class MenuSection extends React.Component<PropsType> {
             className="hover-shade"
             href={COURSEFLOW_APP.globalContextData.path.create_path[this_type]}
           >
-            {window.gettext('Create new ') + window.gettext(this_type)}
+            {_t('Create new ') + window.gettext(this_type)}
           </a>
         ))
         let import_text =
-          window.gettext('Import ') + window.gettext(section_type)
-        if (is_strategy) import_text += window.gettext(' strategy')
+          _t('Import ') + window.gettext(section_type)
+        if (is_strategy) import_text += _t(' strategy')
       }
       add_button = (
         <div className="menu-create hover-shade" ref={this.dropdownDiv}>
@@ -82,7 +83,7 @@ class MenuSection extends React.Component<PropsType> {
               this.props.section_data.object_type +
               ' link-image'
             }
-            title={window.gettext('Add New')}
+            title={_t('Add New')}
             src={
               COURSEFLOW_APP.globalContextData.path.static_assets.icon +
               'add_new_white.svg'

@@ -13,6 +13,7 @@ import * as Utility from '@cfUtility'
 import AlignmentOutcomesBlock from './AlignmentOutcomesBlock'
 import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
 import { AppState } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
   data: any
@@ -148,9 +149,9 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
 
     return (
       <div className="workflow-details">
-        <h3>{window.gettext('Filters')}:</h3>
+        <h3>{_t('Filters')}:</h3>
         {view_buttons_outcomes}
-        <h4>{window.gettext('Sections')}:</h4>
+        <h4>{_t('Sections')}:</h4>
         <div className="workflow-view-select hide-print">
           {view_buttons_terms}
         </div>

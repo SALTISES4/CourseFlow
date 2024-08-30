@@ -6,6 +6,7 @@ import EditableComponentWithActions, {
 } from './EditableComponentWithActions'
 import { newNodeQuery } from '@XMLHTTP/API/create'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type OwnProps = {

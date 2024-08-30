@@ -14,6 +14,7 @@ import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -114,7 +115,7 @@ export class OutcomeEditViewUnconnected<
               'add_new_white.svg'
             }
           />
-          <div>{window.gettext('Add new')}</div>
+          <div>{_t('Add new')}</div>
         </div>
       )
     }

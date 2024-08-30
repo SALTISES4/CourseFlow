@@ -14,13 +14,14 @@ import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
 import Button from '@mui/material/Button'
 import WorkflowLinkModal from '@cfModule/components/common/dialog/WorkflowLink'
+import { _t } from '@cf/utility/utilityFunctions'
 
 const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()
 
   return (
     <Button onClick={() => dispatch(DIALOG_TYPE.LINK_WORKFLOW)}>
-      {window.gettext('Change')}
+      {_t('Change')}
     </Button>
   )
 }
@@ -117,7 +118,7 @@ class EditableComponent<
   BrowseOptions = ({ data, override, readOnly }) => {
     return (
       <div>
-        <h4>{window.gettext('Custom Icon')}</h4>
+        <h4>{_t('Custom Icon')}</h4>
         <p>
           Browse options{' '}
           <a href="https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities">
@@ -141,7 +142,7 @@ class EditableComponent<
   Task = ({ data, readOnly }) => {
     return (
       <div>
-        <h4>{window.gettext('Task')}</h4>
+        <h4>{_t('Task')}</h4>
         <select
           id="task-editor"
           disabled={readOnly}
@@ -167,7 +168,7 @@ class EditableComponent<
   Time = ({ data, readOnly, override }) => {
     return (
       <div>
-        <h4>{window.gettext('Time')}</h4>
+        <h4>{_t('Time')}</h4>
         <div>
           <input
             disabled={override || readOnly}
@@ -198,7 +199,7 @@ class EditableComponent<
   Colour = ({ data, readOnly }) => {
     return (
       <div>
-        <h4>{window.gettext('Colour')}</h4>
+        <h4>{_t('Colour')}</h4>
         <div>
           <input
             disabled={readOnly}
@@ -218,7 +219,7 @@ class EditableComponent<
   CodeOptional = ({ data, readOnly }) => {
     return (
       <div>
-        <h4>{window.gettext('Code (Optional)')}</h4>
+        <h4>{_t('Code (Optional)')}</h4>
         <input
           autoComplete="off"
           disabled={readOnly}
@@ -235,7 +236,7 @@ class EditableComponent<
   Description = ({ readOnly, override, description }) => {
     return (
       <div>
-        <h4>{window.gettext('Description')}</h4>
+        <h4>{_t('Description')}</h4>
         <QuillDiv
           disabled={override || readOnly}
           text={description}
@@ -251,7 +252,7 @@ class EditableComponent<
   Context = ({ data, readOnly }) => {
     return (
       <div>
-        <h4>{window.gettext('Context')}</h4>
+        <h4>{_t('Context')}</h4>
         <select
           id="context-editor"
           disabled={readOnly}
@@ -275,7 +276,7 @@ class EditableComponent<
 
   Ponderation = ({ data, override, read_only }) => (
     <div>
-      <h4>{window.gettext('Ponderation')}</h4>
+      <h4>{_t('Ponderation')}</h4>
       <input
         disabled={override || read_only}
         autoComplete="off"
@@ -285,7 +286,7 @@ class EditableComponent<
         value={data.ponderation_theory}
         onChange={this.inputChanged.bind(this, 'ponderation_theory')}
       />
-      <div className="half-width">{window.gettext('hrs. Theory')}</div>
+      <div className="half-width">{_t('hrs. Theory')}</div>
       <input
         disabled={override || read_only}
         autoComplete="off"
@@ -295,7 +296,7 @@ class EditableComponent<
         value={data.ponderation_practical}
         onChange={this.inputChanged.bind(this, 'ponderation_practical')}
       />
-      <div className="half-width">{window.gettext('hrs. Practical')}</div>
+      <div className="half-width">{_t('hrs. Practical')}</div>
       <input
         disabled={override || read_only}
         className="half-width"
@@ -305,7 +306,7 @@ class EditableComponent<
         value={data.ponderation_individual}
         onChange={this.inputChanged.bind(this, 'ponderation_individual')}
       />
-      <div className="half-width">{window.gettext('hrs. Individual')}</div>
+      <div className="half-width">{_t('hrs. Individual')}</div>
       <input
         disabled={override || read_only}
         className="half-width"
@@ -316,7 +317,7 @@ class EditableComponent<
         onChange={this.inputChanged.bind(this, 'time_general_hours')}
       />
       <div className="half-width">
-        {window.gettext('hrs. General Education')}
+        {_t('hrs. General Education')}
       </div>
       <input
         disabled={override || read_only}
@@ -328,7 +329,7 @@ class EditableComponent<
         onChange={this.inputChanged.bind(this, 'time_specific_hours')}
       />
       <div className="half-width">
-        {window.gettext('hrs. Specific Education')}
+        {_t('hrs. Specific Education')}
       </div>
     </div>
   )
@@ -336,10 +337,10 @@ class EditableComponent<
   Workflow = ({ data, readOnly }) => {
     return (
       <div>
-        <h4>{window.gettext('Settings')}</h4>
+        <h4>{_t('Settings')}</h4>
         <div>
           <label htmlFor="outcomes_type">
-            {window.gettext('Outcomes Style')}
+            {_t('Outcomes Style')}
           </label>
           <select
             disabled={readOnly}
@@ -353,7 +354,7 @@ class EditableComponent<
           </select>
         </div>
         <div>
-          <label htmlFor="condensed">{window.gettext('Condensed View')}</label>
+          <label htmlFor="condensed">{_t('Condensed View')}</label>
           <input
             disabled={readOnly}
             type="checkbox"
@@ -364,7 +365,7 @@ class EditableComponent<
         </div>
         {data.is_strategy && (
           <div>
-            <label htmlFor="is_published">{window.gettext('Published')}</label>
+            <label htmlFor="is_published">{_t('Published')}</label>
             <input
               disabled={readOnly}
               type="checkbox"
@@ -381,7 +382,7 @@ class EditableComponent<
   Style = ({ readOnly, data }) => {
     return (
       <div>
-        <h4>{window.gettext('Style')}</h4>
+        <h4>{_t('Style')}</h4>
         <div>
           <input
             disabled={readOnly}
@@ -390,11 +391,11 @@ class EditableComponent<
             checked={data.dashed}
             onChange={this.checkboxChanged.bind(this, 'dashed')}
           />
-          <label htmlFor="dashed">{window.gettext('Dashed Line')}</label>
+          <label htmlFor="dashed">{_t('Dashed Line')}</label>
         </div>
         <div>
           <label htmlFor="text-position-range">
-            {window.gettext('Text Position')}
+            {_t('Text Position')}
           </label>
           <div className="slidecontainer">
             <input
@@ -416,7 +417,7 @@ class EditableComponent<
   Title = ({ readOnly, override, title, titleLength }) => {
     return (
       <div>
-        <h4>{window.gettext('Title')}</h4>
+        <h4>{_t('Title')}</h4>
         <textarea
           // resize="none"  @todo resize is not a valid attribute
           style={{ resize: 'none' }}
@@ -429,7 +430,7 @@ class EditableComponent<
           onChange={this.inputChanged.bind(this, 'title')}
         />
         <div className="character-length">
-          {title.length}/{titleLength} {window.gettext('characters')}
+          {title.length}/{titleLength} {_t('characters')}
         </div>
       </div>
     )
@@ -438,7 +439,7 @@ class EditableComponent<
   Other = ({ readOnly, data }) => {
     return (
       <div>
-        <h4>{window.gettext('Other')}</h4>
+        <h4>{_t('Other')}</h4>
         <input
           disabled={readOnly}
           type="checkbox"
@@ -447,7 +448,7 @@ class EditableComponent<
           onChange={this.checkboxChanged.bind(this, 'has_autolink')}
         />
         <label htmlFor="has_autolink">
-          {window.gettext('Draw arrow to next node')}
+          {_t('Draw arrow to next node')}
         </label>
       </div>
     )
@@ -456,7 +457,7 @@ class EditableComponent<
   LinkedWorkflow = ({ readOnly, data }) => {
     return (
       <div>
-        <h4>{window.gettext('Linked Workflow')}</h4>
+        <h4>{_t('Linked Workflow')}</h4>
         <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
         <LinkedWorkflowButton id={data.id} />
         <input
@@ -467,7 +468,7 @@ class EditableComponent<
           onChange={this.checkboxChanged.bind(this, 'represents_workflow')}
         />
         <label htmlFor="repesents_workflow">
-          {window.gettext('Display linked workflow data')}
+          {_t('Display linked workflow data')}
         </label>
       </div>
     )
@@ -476,7 +477,7 @@ class EditableComponent<
   Strategy = ({ readOnly, data }) => {
     return (
       <div>
-        <h4>{window.gettext('Strategy')}</h4>
+        <h4>{_t('Strategy')}</h4>
         <select
           disabled={readOnly}
           value={data.strategy_classification}
@@ -496,8 +497,8 @@ class EditableComponent<
             })
           }}
         >
-          {data.is_strategy && window.gettext('Remove Strategy Status')}
-          {!data.is_strategy && window.gettext('Save as Template')}
+          {data.is_strategy && _t('Remove Strategy Status')}
+          {!data.is_strategy && _t('Save as Template')}
         </button>
       </div>
     )
@@ -510,7 +511,7 @@ class EditableComponent<
       } else {
         return (
           <>
-            <h4>{window.gettext('Delete')}</h4>
+            <h4>{_t('Delete')}</h4>
             <this.AddDeleteSelf data={data} />
           </>
         )
@@ -555,7 +556,7 @@ class EditableComponent<
             <label htmlFor={set.id}>{set.title}</label>
           </div>
         ))
-        sets = [<h4>{window.gettext('Sets')}</h4>, set_options]
+        sets = [<h4>{_t('Sets')}</h4>, set_options]
       }
     }
 
@@ -565,7 +566,7 @@ class EditableComponent<
         onClick={(evt) => evt.stopPropagation()}
       >
         <h3>
-          {window.gettext('Edit ') +
+          {_t('Edit ') +
             Constants.get_verbose(data, this.objectType)}
         </h3>
 

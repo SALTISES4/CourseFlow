@@ -5,6 +5,7 @@ import ComponentWithToggleDrop, {
 import * as React from 'react'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type OwnProps = {
   data: any
@@ -30,7 +31,7 @@ class RestoreBarItem extends ComponentWithToggleDrop<OwnProps> {
       this.props.data.linked_workflow_data.title !== ''
     )
       return this.props.data.linked_workflow_data.title
-    return window.gettext('Untitled')
+    return _t('Untitled')
   }
 
   restore() {
@@ -66,13 +67,13 @@ class RestoreBarItem extends ComponentWithToggleDrop<OwnProps> {
       <div ref={this.mainDiv} className="restore-bar-item">
         <div>{this.getTitle()}</div>
         <div className="workflow-created">
-          {window.gettext('Deleted') + ' ' + this.props.data.deleted_on}
+          {_t('Deleted') + ' ' + this.props.data.deleted_on}
         </div>
         <button onClick={this.restore.bind(this)}>
-          {window.gettext('Restore')}
+          {_t('Restore')}
         </button>
         <button onClick={this.delete.bind(this)}>
-          {window.gettext('Permanently Delete')}
+          {_t('Permanently Delete')}
         </button>
       </div>
     )

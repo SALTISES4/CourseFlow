@@ -20,6 +20,7 @@ import { ObjectSet } from '@cfModule/types/common'
 import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 /**
@@ -206,7 +207,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       >
         {/*green*/}
         <ArrowBackIosIcon />
-        <div>{window.gettext('Return to project')}</div>
+        <div>{_t('Return to project')}</div>
       </a>,
       $('.titlebar .title')[0]
     )
@@ -215,7 +216,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       <>
         {portal}
         <div className="project-header">
-          <div>{window.gettext('Comparing workflows for:')}</div>
+          <div>{_t('Comparing workflows for:')}</div>
           <WorkflowTitle
             data={data}
             no_hyperlink={true}
@@ -230,12 +231,12 @@ class ComparisonView extends React.Component<PropsType, StateType> {
     return [
       {
         type: ViewType.WORKFLOW,
-        name: window.gettext('Workflow View'),
+        name: _t('Workflow View'),
         disabled: []
       },
       {
         type: ViewType.OUTCOME_EDIT,
-        name: Utility.capWords(window.gettext('View') + ' outcomes'),
+        name: Utility.capWords(_t('View') + ' outcomes'),
         disabled: []
       }
     ]
@@ -267,7 +268,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
         <div
           id="share-button"
           className="hover-shade"
-          title={window.gettext('Sharing')}
+          title={_t('Sharing')}
           // @todo move to dialog
           onClick={renderMessageBox.bind(
             this,
@@ -294,7 +295,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       >
         <div className="flex-middle">
           <AddCircleIcon />
-          <div>{window.gettext('Load new workflow')}</div>
+          <div>{_t('Load new workflow')}</div>
         </div>
       </button>
     </div>

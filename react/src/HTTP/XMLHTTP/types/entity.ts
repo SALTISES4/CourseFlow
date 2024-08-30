@@ -1,5 +1,6 @@
 import { Discipline, ObjectSet, ObjectPermission } from '@cfModule/types/common'
-import { NodeTypeDisplay, TDate } from '@cfRedux/types/type'
+import { NodeTypeDisplay } from '@cfRedux/types/type'
+import { WorkflowType } from '@cf/types/enum'
 
 export type EDate = string
 export type EDiscipline = {
@@ -10,29 +11,31 @@ export type EDiscipline = {
 export type EComment = {
   id: number
   user: EUser
-  created_on: TDate
+  created_on: EDate
   text: string
 }
 
 export type EColumn = {
+  id: number
+  deleted: boolean
+  deleted_on: EDate
+  title: null
+
   colour: null
   column_type: number
   column_type_display: string
   comments: any[]
-  deleted: boolean
-  deleted_on: TDate
   icon: string | null
-  id: number
-  title: null
   visible: boolean
 }
 
 export type EWeek = {
-  deleted: boolean
-  deleted_on: TDate
   id: number
+  deleted: boolean
+  deleted_on: EDate
   title: null
   description: null
+
   default: boolean
   nodeweek_set: number[]
   week_type: number
@@ -45,10 +48,11 @@ export type EWeek = {
 export type EOutcome = {
   id: number
   deleted: boolean
-  deleted_on: TDate
+  deleted_on: EDate
   title: string
-  code: string
   description: string
+
+  code: string
   child_outcome_links: number[]
   outcome_horizontal_links: number[]
   outcome_horizontal_links_unique: number[]
@@ -61,21 +65,24 @@ export type EOutcome = {
 }
 
 export type EWorkflow = {
+  id: number
   author: string
+  deleted: boolean
+  created_on: EDate
+  last_modified: EDate
+  title: string
+  favourite: boolean
+  published: boolean
+  description: null | string
+
   author_id: number | null
   code: null
   columnworkflow_set: number[]
   condensed: boolean
-  created_on: TDate
-  deleted: boolean
-  deleted_on: TDate
-  description: null | string
-  favourite: boolean
-  id: number
+  deleted_on: EDate
   importing: boolean
   is_original: boolean
   is_strategy: boolean
-  last_modified: TDate
   outcomes_sort: number
   outcomes_type: number
   outcomeworkflow_set: any[]
@@ -84,12 +91,12 @@ export type EWorkflow = {
   ponderation_practical: number
   ponderation_theory: number
   public_view: boolean
-  published: boolean
+
   time_general_hours: number
   time_required: null
   time_specific_hours: number
   time_units: number
-  title: string
+
   url: string
   weekworkflow_set: number[]
   // @todo check where this is defined
@@ -127,7 +134,7 @@ export type EWeekworkflow = {
 export type ENewItem = {
   deleted: boolean
   id: number
-  created_on: TDate
+  created_on: EDate
   last_modified: string
   type: string
   favourite: boolean
@@ -155,7 +162,7 @@ export type EUser = {
 
 export type ENode = {
   deleted: boolean
-  deleted_on: TDate
+  deleted_on: EDate
   id: number
   title: null
   description: null
@@ -187,7 +194,7 @@ export type ENode = {
 
 export type ENodelink = {
   deleted: boolean
-  deleted_on: TDate
+  deleted_on: EDate
   id: number
   title: string | null
   source_node: number
@@ -207,7 +214,7 @@ export type EOutcomeWorkflow = {
 export type EColumnworkflow = EOutcomeWorkflow
 
 export type ENodeweek = {
-  added_on: TDate
+  added_on: EDate
   week: number
   node: number
   rank: number
@@ -253,22 +260,23 @@ export type ESection = {
 }
 
 export type ESectionObject = {
-  deleted: boolean
   id: number
+  author: string
+  deleted: boolean
   created_on: EDate
   last_modified: EDate
-  type: string
+  title: string
   favourite: boolean
+  published: boolean
+  description: string
+
+  type: WorkflowType
   is_owned: boolean
   is_strategy: boolean
-  published: boolean
-  author: string
-  title: string
-  description: string
   project_title: string
   object_permission: ObjectPermission
   has_liveproject: boolean
-  workflow_count: null
+  workflow_count: number
   is_linked: boolean
   is_visible: boolean
 }

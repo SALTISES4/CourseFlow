@@ -1,5 +1,6 @@
 import { getTableOutcomeNodeByID } from '@cfFindState'
 import { filterThenSortByID } from '@cfModule/utility/utilityFunctions'
+import { _t } from '@cf/utility/utilityFunctions'
 
 export type CreateOutcomeNodeBranchType = {
   id: any
