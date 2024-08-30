@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { hasId, MaybeWithId } from '@cfModule/types/typeGuards'
-import { _t } from '@cf/utility/utilityFunctions'
 
 export function permission_translate() {
   return {

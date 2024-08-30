@@ -34,12 +34,14 @@ export default function weekReducer(
 
     case WeekActions.CREATE_LOCK:
     case WeekActions.RELOAD_COMMENTS:
-    case WeekActions.CHANGE_FIELD:
     case StrategyActions.TOGGLE_STRATEGY:
       return state.map((item) =>
         item.id === action.payload.id ? { ...item, ...action.payload } : item
       )
-
+    case WeekActions.CHANGE_FIELD:
+      return state.map((item) =>
+        item.id === action.payload.id ? {...item, ...action.payload.json} : item
+      )
     case WeekActions.INSERT_BELOW:
     case StrategyActions.ADD_STRATEGY:
       return [...state, action.payload.new_model]

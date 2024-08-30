@@ -11,6 +11,8 @@ import { AppState } from '@cfRedux/types/type'
 import ActionButton from '@cfCommonComponents/UIComponents/ActionButton'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
+import { _t } from '@cf/utility/utilityFunctions'
+
 // import $ from 'jquery'
 
 type ConnectedProps = TOutcomeNodeByID

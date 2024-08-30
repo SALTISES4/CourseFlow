@@ -4,6 +4,7 @@ import * as Constants from '@cfConstants'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
 import { getUserListQuery } from '@XMLHTTP/API/user'
 import SearchIcon from '@mui/icons-material/Search'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type StateProps = {
   selected: number
