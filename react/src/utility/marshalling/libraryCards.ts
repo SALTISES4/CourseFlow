@@ -3,15 +3,12 @@ import * as Utility from '@cf/utility/utilityFunctions'
 import { ELibraryObject } from '@XMLHTTP/types/entity'
 import {
   CHIP_TYPE,
-  PropsType as WorkflowCardTypeUI,
   PropsType,
   WorkflowCardChipType
 } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { _t } from '@cf/utility/utilityFunctions'
-import { generatePath } from 'react-router-dom'
-import { Routes as AppRoutes } from '@cf/router'
 
-const getTypeChip = (workflow): WorkflowCardChipType => {
+function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
   const { type, is_strategy } = workflow
   let typeText = _t(type)
 
@@ -32,7 +29,7 @@ const getTypeChip = (workflow): WorkflowCardChipType => {
   }
 }
 
-const getTemplateChip = (workflow): WorkflowCardChipType => {
+function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
   const is_template = workflow.is_template
   if (is_template)
     return {
@@ -42,7 +39,7 @@ const getTemplateChip = (workflow): WorkflowCardChipType => {
   return null
 }
 
-const getWorkflowCountChip = (workflow): WorkflowCardChipType => {
+function getWorkflowCountChip(workflow: ELibraryObject): WorkflowCardChipType {
   if (
     workflow.type === LibraryObjectType.PROJECT &&
     workflow.workflow_count !== null &&
@@ -58,9 +55,7 @@ const getWorkflowCountChip = (workflow): WorkflowCardChipType => {
   return null
 }
 
-export function prepareBackendDataForWorkflowCardDumb(
-  workflow: ELibraryObject
-): PropsType {
+export function formatLibraryObject(workflow: ELibraryObject): PropsType {
   const type_chip = getTypeChip(workflow)
   const template_chip = getTemplateChip(workflow)
   const count_chip = getWorkflowCountChip(workflow)

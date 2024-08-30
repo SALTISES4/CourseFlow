@@ -279,6 +279,7 @@ export type ELibraryObject = {
   workflow_count: number
   is_linked: boolean
   is_visible: boolean
+  is_template: boolean
 }
 
 export type EObjectSet = {

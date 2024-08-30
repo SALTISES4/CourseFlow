@@ -15,7 +15,7 @@ import Stack from '@mui/material/Stack'
 import FilterButton from '@cfPages/Library/components/FilterButton'
 import SortIcon from '@mui/icons-material/Sort'
 import FilterIcon from '@mui/icons-material/FilterAlt'
-import { prepareBackendDataForWorkflowCardDumb } from '@cf/utility/marshalling/libraryCards'
+import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/utilityFunctions'
 import { useEffect, useState } from 'react'
 import { SearchOption, SortDirection } from '@cfPages/Library/components/types'
@@ -175,7 +175,7 @@ const LibraryPage = () => {
 
   function formatCards(data: ELibraryObject[]): WorkflowCardTypeUI[] {
     return data.map((item: ELibraryObject): WorkflowCardTypeUI => {
-      const formattedCardData = prepareBackendDataForWorkflowCardDumb(item)
+      const formattedCardData = formatLibraryObject(item)
       return {
         ...formattedCardData,
         onClick: () => navigateToItem(item)
