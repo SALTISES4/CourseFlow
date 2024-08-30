@@ -75,10 +75,10 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_mylibrary_view(self):
-        response = self.client.get(reverse("course_flow:my-library"))
+        response = self.client.get(reverse("course_flow:library"))
         self.assertEqual(response.status_code, 302)
         login(self)
-        response = self.client.get(reverse("course_flow:my-library"))
+        response = self.client.get(reverse("course_flow:library"))
         self.assertEqual(response.status_code, 200)
 
     # def test_myprojects_view(self):
@@ -89,10 +89,10 @@ class ModelViewTest(TestCase):
     #     self.assertEqual(response.status_code, 200)
 
     # def test_myfavourites_view(self):
-    #     response = self.client.get(reverse("course_flow:my-favourites"))
+    #     response = self.client.get(reverse("course_flow:favourites"))
     #     self.assertEqual(response.status_code, 302)
     #     login(self)
-    #     response = self.client.get(reverse("course_flow:my-favourites"))
+    #     response = self.client.get(reverse("course_flow:favourites"))
     #     self.assertEqual(response.status_code, 200)
 
     # def test_mytemplates_view(self):
@@ -157,7 +157,7 @@ class ModelViewTest(TestCase):
             workflow = make_object(workflow_type, author)
             WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
-                reverse("course_flow:workflow-update", args=[workflow.pk])
+                reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 302)
         user = login(self)
@@ -166,7 +166,7 @@ class ModelViewTest(TestCase):
             workflow = make_object(workflow_type, author)
             WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
-                reverse("course_flow:workflow-update", args=[workflow.pk])
+                reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 403)
         project = Project.objects.create(author=author)
@@ -182,7 +182,7 @@ class ModelViewTest(TestCase):
                 permission_type=ObjectPermission.PERMISSION_VIEW,
             )
             response = self.client.get(
-                reverse("course_flow:workflow-update", args=[workflow.pk])
+                reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 200)
             ObjectPermission.objects.create(
@@ -191,7 +191,7 @@ class ModelViewTest(TestCase):
                 permission_type=ObjectPermission.PERMISSION_EDIT,
             )
             response = self.client.get(
-                reverse("course_flow:workflow-update", args=[workflow.pk])
+                reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 200)
             ObjectPermission.objects.create(
@@ -200,7 +200,7 @@ class ModelViewTest(TestCase):
                 permission_type=ObjectPermission.PERMISSION_NONE,
             )
             response = self.client.get(
-                reverse("course_flow:workflow-update", args=[workflow.pk])
+                reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 403)
 
@@ -211,7 +211,7 @@ class ModelViewTest(TestCase):
             workflow = make_object(workflow_type, user)
             WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
-                reverse("course_flow:workflow-update", args=[workflow.pk])
+                reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 200)
 

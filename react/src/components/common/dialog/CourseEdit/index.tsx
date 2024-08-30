@@ -9,6 +9,7 @@ import CourseForm from '@cfCommonComponents/dialog/CreateWizard/components/FormC
 import { CourseFormDataType } from '@cfCommonComponents/dialog/CreateWizard/components/FormCourse/types'
 import { DIALOG_TYPE, useDialog } from '@cfCommonComponents/dialog'
 import { StyledDialog } from '@cfCommonComponents/dialog/styles'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type StateType = Omit<CourseFormDataType, 'units'> & {
   unit: string

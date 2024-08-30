@@ -22,11 +22,13 @@ from course_flow.serializers import (
     bleach_sanitizer,
 )
 
-# This view allows users to import a project from the old CourseFlow by exporting
-# their project as a JSON then importing it here. It's not used often, and due to
-# differences in how we use outcomes (which belonged to the project rather than
-# the workflows) it's not fully functional - currently the outcomes are not processed
-# and that portion has been commented out.
+"""
+ This view allows users to import a project from the old CourseFlow by exporting
+ their project as a JSON then importing it here. It's not used often, and due to
+ differences in how we use outcomes (which belonged to the project rather than
+ the workflows) it's not fully functional - currently the outcomes are not processed
+ and that portion has been commented out.
+"""
 
 
 @require_POST

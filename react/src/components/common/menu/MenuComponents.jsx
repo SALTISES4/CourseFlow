@@ -1,8 +1,10 @@
+import React from 'react'
 import { Component } from 'react'
 import reactDom from 'react-dom'
 import WorkflowsMenu from '../dialog/WorkflowsMenu'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@cfMUI/theme'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 /**

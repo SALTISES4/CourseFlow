@@ -13,6 +13,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import MenuItem from '@mui/material/MenuItem'
 import { DIALOG_TYPE, useDialog } from '..'
 import { StyledDialog, StyledForm } from '../styles'
+import { _t } from '@cf/utility/utilityFunctions'
 
 interface IFormInputs {
   contributor: Contributor | null
@@ -34,7 +35,7 @@ export type PropsType = {
   roles: Role[]
 }
 
-const AddContributorDialog = ({ contributors, roles }: PropsType) => {
+const ContributorAddDialog = ({ contributors, roles }: PropsType) => {
   const { show, onClose } = useDialog(DIALOG_TYPE.ADD_CONTRIBUTOR)
 
   const { control, handleSubmit, reset, watch } = useForm<IFormInputs>({
@@ -135,4 +136,4 @@ const AddContributorDialog = ({ contributors, roles }: PropsType) => {
   )
 }
 
-export default AddContributorDialog
+export default ContributorAddDialog

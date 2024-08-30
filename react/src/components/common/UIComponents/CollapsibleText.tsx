@@ -2,7 +2,8 @@
 import * as React from 'react'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
-} from '@cfParentComponents/ComponentWithToggleDrop'
+} from '@cfEditableComponents/ComponentWithToggleDrop'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {
   css_class?: string
@@ -79,15 +80,15 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
     // if (this.props.css_class) css_class = this.props.css_class + ' '
     // css_class += 'title-text collapsible-text'
 
-    // let drop_text = window.gettext('show more')
+    // let drop_text = _t('show more')
     // if (this.state.is_dropped) {
     //   css_class += ' dropped'
-    //   drop_text = window.gettext('show less')
+    //   drop_text = _t('show less')
     // }
 
     const dropText = this.state.is_dropped
-      ? window.gettext('show less')
-      : window.gettext('show more')
+      ? _t('show less')
+      : _t('show more')
 
     const text =
       (this.props.text == null || this.props.text == '') &&

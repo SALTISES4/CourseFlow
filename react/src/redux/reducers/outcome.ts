@@ -7,6 +7,7 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TOutcome } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * HELPERS
@@ -120,7 +121,7 @@ export default function outcomeReducer(
           ? {
               ...item,
               deleted: true,
-              deleted_on: window.gettext('This session')
+              deleted_on: _t('This session')
             }
           : item
       })
@@ -176,7 +177,7 @@ export default function outcomeReducer(
           ? {
               ...item,
               deleted: true,
-              deleted_on: window.gettext('This session')
+              deleted_on: _t('This session')
             }
           : item
       )

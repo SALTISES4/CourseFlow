@@ -1,3 +1,7 @@
+"""
+@todo separate out domain specific tasks from generalized utils
+
+"""
 import re
 import time
 
@@ -217,19 +221,6 @@ def get_nondeleted_favourites(user):
         )
     ) + list(models.Workflow.objects.filter(favourited_by__user=user))
 
-    # return models.Favourite.objects.filter(user=user).exclude(
-    #     Q(
-    #         object_id__in=models.Workflow.objects.filter(
-    #             Q(deleted=True) | Q(project__deleted=True)
-    #         ),
-    #         content_type=ContentType.objects.get_for_model(models.Workflow)
-    #     )
-    #     | Q(
-    #         object_id__in=models.Project.objects.filter(deleted=True),
-    #         content_type=ContentType.objects.get_for_model(models.Project)
-    #     )
-    # )
-
 
 def check_possible_parent(workflow, parent_workflow, same_project):
     order = ["activity", "course", "program"]
@@ -274,7 +265,7 @@ def user_workflow_url(workflow, user):
         can_view = True
     if can_view:
         return reverse(
-            "course_flow:workflow-update", kwargs={"pk": workflow.pk}
+            "course_flow:workflow-detail", kwargs={"pk": workflow.pk}
         )
     if is_public:
         return reverse(
@@ -290,10 +281,8 @@ def user_project_url(project, user):
     if not user.is_authenticated:
         return "noaccess"
     if user_permission != models.ObjectPermission.PERMISSION_NONE:
-        return reverse("course_flow:project-update", kwargs={"pk": project.pk})
-    return reverse(
-        "course_flow:live-project-update", kwargs={"pk": project.pk}
-    )
+        return reverse("course_flow:project-detail", kwargs={"pk": project.pk})
+    return ""
 
 
 def save_serializer(serializer) -> HttpResponse:

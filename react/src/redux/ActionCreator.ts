@@ -1,5 +1,3 @@
-// @ts-ignore
-
 import {
   ColumnWorkflowActions,
   CommonActions,
@@ -39,7 +37,10 @@ class ActionCreator {
     else
       return {
         type: object_type + '/createLock',
-        payload: { id: object_id, lock: null }
+        payload: {
+          id: object_id,
+          lock: null
+        }
       }
   }
 

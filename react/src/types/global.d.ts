@@ -32,10 +32,7 @@ declare global {
 }
 
 interface CourseflowAppGlobals {
-  config: Config
-  strings: Strings
   path_id: string
-
   // global context data that's available that more general use
   // (sidebar, topbar, app notifications, etc)
   globalContextData: GlobalContextData
@@ -49,7 +46,7 @@ interface CourseflowAppGlobals {
   ) => void
 }
 
-interface Config {
+interface Path {
   post_paths: { [key: string]: string }
   get_paths: GetPaths
 
@@ -63,8 +60,10 @@ interface Config {
   my_liveprojects_path: string
   registration_path: string
   logout_path: string
-  icon_path: string
-  json_api_paths: JSONAPIPaths
+  /* SORTED */
+  html: HTMLPaths
+  json_api: JSONAPIPaths
+  static_assets: GenericPath
 }
 
 interface CreatePath {
@@ -77,7 +76,6 @@ interface CreatePath {
 }
 
 interface GetPaths {
-  get_disciplines: string
   get_library: string
   get_favourites: string
   import: string
@@ -85,6 +83,21 @@ interface GetPaths {
   get_public_workflow_parent_data: string
   get_public_workflow_child_data: string
   get_public_parent_workflow_info: string
+}
+
+interface HTMLPaths {
+  update_path_temp: string
+  public_update_path_temp: string
+  library: {
+    home: string
+    explore: string
+    library: string
+    favourites: string
+  }
+}
+
+interface GenericPath {
+  [key: string]: string
 }
 
 interface JSONAPIPaths {
@@ -95,6 +108,40 @@ interface JSONAPIPaths {
   update_notifications_settings: string
   mark_all_notifications_as_read: string
   delete_notification: string
+  library: {
+    home: string
+    explore: string
+    library__objects_search: string
+    library__favourites__projects: string
+    library__library__projects: string
+  }
+  user: {
+    list: string
+    profile_settings: string
+    profile_settings__update: string
+    notification_settings: string
+    notification_settings__update: string
+    favourite_toggle: string
+  }
+  project: {
+    detail: string
+    create: string
+    discipline__list: string
+  }
+  workflow: {
+    detail: string
+  }
+  comment: {
+    list_by_object: string
+    create: string
+    delete: string
+    delete_all: string
+  }
+  notification: {
+    list: string
+    delete: string
+    mark_all_as_read: string
+  }
 }
 
 interface PublicUpdatePath {
@@ -117,7 +164,8 @@ interface UpdatePath {
 interface GlobalContextData {
   sidebar: SidebarProps
   topbar: TopBarProps
-
+  path: Path
+  strings: Strings
   notifications: {
     showNotificationRequest: boolean
     updateNotifications:

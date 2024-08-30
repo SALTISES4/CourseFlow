@@ -43,106 +43,11 @@ from course_flow.serializers import (
 from course_flow.sockets import redux_actions as actions
 from course_flow.utils import get_all_outcomes_for_outcome, get_model_from_str
 
-#############################################
-# JSON API for duplication of workflows and
-# workflow objects
-#############################################
+"""
+@todo what is this
+"""
 
 
-@user_can_view("workflowPk")
-@user_can_edit("projectPk")
-def json_api_post_duplicate_workflow(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
-    project = Project.objects.get(pk=body.get("projectPk"))
-
-    try:
-        with transaction.atomic():
-            clone = fast_duplicate_workflow(workflow, request.user, project)
-            try:
-                clone.title = clone.title + _("(copy)")
-                clone.save()
-            except (ValidationError, TypeError):
-                pass
-
-            WorkflowProject.objects.create(project=project, workflow=clone)
-
-            if workflow.get_project() != project:
-                cleanup_workflow_post_duplication(clone, project)
-
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    linked_workflows = Workflow.objects.filter(
-        linked_nodes__week__workflow=clone
-    )
-    for wf in linked_workflows:
-        actions.dispatch_parent_updated(wf)
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "new_item": InfoBoxSerializer(
-                clone, context={"user": request.user}
-            ).data,
-            "type": clone.type,
-        }
-    )
-
-
-@user_can_view("workflowPk")
-def json_api_post_duplicate_strategy(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
-    try:
-        with transaction.atomic():
-            clone = fast_duplicate_workflow(workflow, request.user, None)
-            try:
-                clone.title = clone.title + _("(copy)")
-                clone.save()
-            except (ValidationError, TypeError):
-                pass
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "new_item": InfoBoxSerializer(
-                clone, context={"user": request.user}
-            ).data,
-            "type": clone.type,
-        }
-    )
-
-
-@user_can_view("projectPk")
-def json_api_post_duplicate_project(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    project = Project.objects.get(pk=body.get("projectPk"))
-    try:
-        with transaction.atomic():
-            clone = fast_duplicate_project(project, request.user)
-            try:
-                clone.title = clone.title + _("(copy)")
-                clone.save()
-            except (ValidationError, TypeError):
-                pass
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "new_item": InfoBoxSerializer(
-                clone, context={"user": request.user}
-            ).data,
-            "type": "project",
-        }
-    )
-
-
-# Soft-duplicate the item
 @user_can_view(False)
 @user_can_edit(False, get_parent=True)
 def json_api_post_duplicate_self(request: HttpRequest) -> JsonResponse:

@@ -3,7 +3,7 @@ export type CreateActivityDataType = {
 }
 
 const data: CreateActivityDataType = {
-  steps: ['Select project', 'Select activity type', 'Create activity'],
+  steps: ['Select project', 'Select activity type', 'Create activity']
 }
 
 export default data

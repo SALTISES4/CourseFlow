@@ -28,7 +28,7 @@ from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.routing import websocket_urlpatterns
+from course_flow.routes.routing import websocket_urlpatterns
 from course_flow.utils import get_model_from_str
 
 from ...models.activity import Activity
@@ -826,7 +826,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         liveproject.visible_workflows.add(workflow)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[workflow.id])
+            + reverse("course_flow:workflow-detail", args=[workflow.id])
         )
         time.sleep(2)
 
@@ -876,7 +876,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[workflow.id])
+            + reverse("course_flow:workflow-detail", args=[workflow.id])
         )
         time.sleep(2)
 
@@ -1258,9 +1258,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         # View the favourites
-        selenium.get(
-            self.live_server_url + reverse("course_flow:my-favourites")
-        )
+        selenium.get(self.live_server_url + reverse("course_flow:favourites"))
         time.sleep(2)
         self.assertEqual(
             len(
@@ -1379,7 +1377,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
 
@@ -1415,7 +1413,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             num_columns = workflow.columns.all().count()
@@ -1572,7 +1570,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             num_columns = workflow.columns.all().count()
@@ -1667,7 +1665,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=workflow)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[workflow.pk])
+            + reverse("course_flow:workflow-detail", args=[workflow.pk])
         )
         time.sleep(4)
         selenium.find_element(
@@ -1848,7 +1846,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             selenium.find_element(
@@ -1931,7 +1929,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             selenium.find_element(By.ID, "project-return").click()
@@ -1963,7 +1961,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(5)
             selenium.find_element(
@@ -1985,9 +1983,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                     By.CSS_SELECTOR, ".strategy-bar-strategy div"
                 ).text
             )
-            selenium.get(
-                self.live_server_url + reverse("course_flow:my-library")
-            )
+            selenium.get(self.live_server_url + reverse("course_flow:library"))
             time.sleep(1)
             selenium.find_element(
                 By.CSS_SELECTOR, "." + workflow_type + " .workflow-title"
@@ -2056,7 +2052,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             selenium.find_element(By.CSS_SELECTOR, ".other-views").click()
@@ -2318,7 +2314,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         # Navigate to URL
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[program.pk])
+            + reverse("course_flow:workflow-detail", args=[program.pk])
         )
         other_views = wait.until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, ".other-views"))
@@ -2408,7 +2404,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[program.pk])
+            + reverse("course_flow:workflow-detail", args=[program.pk])
         )
         time.sleep(2)
         selenium.find_element(By.CSS_SELECTOR, ".other-views").click()
@@ -2447,7 +2443,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[program.pk])
+            + reverse("course_flow:workflow-detail", args=[program.pk])
         )
         time.sleep(2)
         selenium.find_element(By.CSS_SELECTOR, ".other-views").click()
@@ -2488,7 +2484,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             # navigate to newly created workflow page
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
 
             this_url = selenium.current_url
@@ -3108,7 +3104,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
 
@@ -3150,7 +3146,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             # Refresh, and make sure the change is permanent
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             self.assertEqual(
@@ -3187,7 +3183,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             # Refresh, and make sure the change is permanent
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             self.assertEqual(
@@ -3217,7 +3213,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             workflow.outcomes.first().children.create(author=self.user)
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
 
@@ -3254,7 +3250,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             # Refresh, and make sure the change is permanent
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             self.assertEqual(
@@ -3289,7 +3285,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             # Refresh, and make sure the change is permanent
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             self.assertEqual(
@@ -3332,7 +3328,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             OutcomeNode.objects.create(node=node2, outcome=outcome2)
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(3)
             ActionChains(selenium).move_to_element(
@@ -3418,7 +3414,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             # Refresh, and make sure the change is permanent
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             ActionChains(selenium).move_to_element(
@@ -3493,7 +3489,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             # Refresh, and make sure the change is permanent
             selenium.get(
                 self.live_server_url
-                + reverse("course_flow:workflow-update", args=[workflow.pk])
+                + reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             time.sleep(2)
             ActionChains(selenium).move_to_element(
@@ -3563,7 +3559,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # delete a workflow
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[course.pk])
+            + reverse("course_flow:workflow-detail", args=[course.pk])
         )
         time.sleep(2)
         selenium.find_element(By.CSS_SELECTOR, "#overflow-options").click()
@@ -3595,7 +3591,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure it doesn't show up in linked wf
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[program.pk])
+            + reverse("course_flow:workflow-detail", args=[program.pk])
         )
         time.sleep(2)
         ActionChains(selenium).move_to_element_with_offset(
@@ -3622,7 +3618,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # Restore
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[course.pk])
+            + reverse("course_flow:workflow-detail", args=[course.pk])
         )
         time.sleep(1)
         time.sleep(2)
@@ -3648,7 +3644,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure it shows up in linked wf
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[program.pk])
+            + reverse("course_flow:workflow-detail", args=[program.pk])
         )
         time.sleep(2)
         ActionChains(selenium).move_to_element_with_offset(
@@ -3817,7 +3813,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         # navigate to project URL
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[workflow.pk])
+            + reverse("course_flow:workflow-detail", args=[workflow.pk])
         )
         created_by_button = wait.until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".node"))
@@ -4201,7 +4197,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
 
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:workflow-update", args=[workflow_edit.pk])
+            + reverse("course_flow:workflow-detail", args=[workflow_edit.pk])
         )
         time.sleep(3)
         self.assertEqual(
@@ -4219,7 +4215,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         selenium.get(
             self.live_server_url
             + reverse(
-                "course_flow:workflow-update", args=[workflow_published.pk]
+                "course_flow:workflow-detail", args=[workflow_published.pk]
             )
         )
         time.sleep(3)

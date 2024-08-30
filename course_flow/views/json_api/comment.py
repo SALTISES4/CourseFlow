@@ -1,58 +1,50 @@
 import json
-import traceback
+import re
 
 import bleach
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import ProtectedError
 from django.http import HttpRequest, JsonResponse
-from rest_framework.renderers import JSONRenderer
 
-from course_flow.decorators import user_can_comment, user_can_edit
-from course_flow.models import Comment, Notification, User
+from course_flow.decorators import (
+    check_object_permission,
+    user_can_comment,
+    user_can_edit,
+)
+from course_flow.models import Notification, ObjectPermission, User
 from course_flow.serializers import CommentSerializer
 from course_flow.utils import get_model_from_str, make_user_notification
 
-#################################################
-# API for comments
-#################################################
-
-
-@user_can_edit(False)
-def json_api_post_remove_comment(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    object_id = body.get("objectID")
-    object_type = body.get("objectType")
-    comment_id = body.get("commentPk")
-
-    try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-        comment = model.comments.get(id=comment_id)
-        comment.delete()
-
-    except (ProtectedError, ObjectDoesNotExist):
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-
-
-@user_can_edit(False)
-def json_api_post_remove_all_comments(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    object_id = body.get("objectID")
-    object_type = body.get("objectType")
-
-    try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-        model.comments.all().delete()
-
-    except (ProtectedError, ObjectDoesNotExist):
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
+"""
+API for comments
+"""
 
 
 @user_can_comment(False)
-def json_api_post_add_comment(request: HttpRequest) -> JsonResponse:
+def json_api__comment__list_by_object__post(
+    request: HttpRequest,
+) -> JsonResponse:
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
+    try:
+        comments = (
+            get_model_from_str(object_type)
+            .objects.get(id=object_id)
+            .comments.all()
+            .order_by("created_on")
+        )
+        Notification.objects.filter(
+            comment__in=comments, user=request.user
+        ).update(is_unread=False)
+        data_package = CommentSerializer(comments, many=True).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "data_package": data_package})
+
+
+@user_can_comment(False)
+def json_api__comment__create__post(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
     object_id = body.get("objectID")
     object_type = body.get("objectType")
@@ -96,24 +88,35 @@ def json_api_post_add_comment(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"action": "posted"})
 
 
-@user_can_comment(False)
-def json_api_post_get_comments_for_object(
-    request: HttpRequest,
-) -> JsonResponse:
+@user_can_edit(False)
+def json_api__comment__delete__post(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
     object_id = body.get("objectID")
     object_type = body.get("objectType")
+    comment_id = body.get("commentPk")
+
     try:
-        comments = (
-            get_model_from_str(object_type)
-            .objects.get(id=object_id)
-            .comments.all()
-            .order_by("created_on")
-        )
-        Notification.objects.filter(
-            comment__in=comments, user=request.user
-        ).update(is_unread=False)
-        data_package = CommentSerializer(comments, many=True).data
-    except AttributeError:
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        comment = model.comments.get(id=comment_id)
+        comment.delete()
+
+    except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
+
+    return JsonResponse({"action": "posted"})
+
+
+@user_can_edit(False)
+def json_api__comment__delete_all__post(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    object_type = body.get("objectType")
+
+    try:
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        model.comments.all().delete()
+
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})

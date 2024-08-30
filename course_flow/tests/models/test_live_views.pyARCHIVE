@@ -523,7 +523,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
         response = self.client.get(
-            reverse("course_flow:workflow-update", args=[workflow.pk])
+            reverse("course_flow:workflow-detail", args=[workflow.pk])
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
@@ -540,7 +540,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
         response = self.client.get(
-            reverse("course_flow:workflow-update", args=[workflow.pk])
+            reverse("course_flow:workflow-detail", args=[workflow.pk])
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
@@ -559,7 +559,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
         response = self.client.get(
-            reverse("course_flow:workflow-update", args=[workflow.pk])
+            reverse("course_flow:workflow-detail", args=[workflow.pk])
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
@@ -576,7 +576,7 @@ class ModelViewTest(TestCase):
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
         response = self.client.get(
-            reverse("course_flow:workflow-update", args=[workflow.pk])
+            reverse("course_flow:workflow-detail", args=[workflow.pk])
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.post(

@@ -1,13 +1,16 @@
 import { Enum } from '@cfModule/utility/utilityFunctions'
 
+// this is guidelines for our wofklow tabs
+// each view type is more or less a tab
+
 export enum ViewType {
   WORKFLOW = 'workflowview',
   OUTCOME_EDIT = 'outcomeedit',
   GRID = 'grid',
   OUTCOMETABLE = 'outcometable',
   ALIGNMENTANALYSIS = 'alignmentanalysis',
-  HORIZONTALOUTCOMETABLE = 'horizontaloutcometable'
-  // WEEK = 'week',
+  HORIZONTALOUTCOMETABLE = 'horizontaloutcometable',
+  WORKFLOW_OVERVIEW = 'workflowoverview'
 }
 
 export enum WFContext {
@@ -16,9 +19,10 @@ export enum WFContext {
 }
 
 export enum WorkflowType {
+  PROGRAM = 'program',
   ACTIVITY = 'activity',
   PROJECT = 'project',
-  PROGRAM = 'program',
+  COURSE = 'course',
   LIVE_PROJECT = 'liveproject'
 }
 
@@ -49,5 +53,6 @@ export enum OBJECT_TYPE {
 
 export enum VERB {
   POSTED = 'posted',
-  ERROR = 'error'
+  ERROR = 'error',
+  GET = 'get'
 }

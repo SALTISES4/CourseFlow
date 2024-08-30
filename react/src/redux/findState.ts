@@ -12,6 +12,7 @@ import {
   TWeek,
   TColumn
 } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * TYPES
@@ -522,7 +523,7 @@ export const getSortedOutcomeNodesFromNodes = (
     return outcomes
   }
 
-  const base_title = Utility.capWords(window.gettext('outcomes'))
+  const base_title = Utility.capWords(_t('outcomes'))
   const object_sets = state.objectset.filter(
     (objectset) => objectset.term === outcomes[0].type
   )
@@ -537,7 +538,7 @@ export const getSortedOutcomeNodesFromNodes = (
     ]
   const categories = [
     {
-      objectset: { title: window.gettext('Uncategorized') },
+      objectset: { title: _t('Uncategorized') },
       outcomes: outcomes.filter((outcome) => outcome.sets.length === 0)
     },
     ...object_sets
@@ -558,7 +559,8 @@ export type TSortedOutcomes = {
   objectset: TObjectSet
   outcomes: TOutcome[]
 }[]
-//Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+
+// Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
   outcomeworkflow_set: number[]
@@ -585,7 +587,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag
   }
 
-  const base_title = Utility.capWords(window.gettext('outcomes'))
+  const base_title = Utility.capWords(_t('outcomes'))
 
   const object_sets = state.objectset.filter(
     (objectset) => objectset.term === outcomes[0].type
@@ -606,7 +608,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   if (uncategorized.length > 0)
     categories = [
       {
-        objectset: { title: window.gettext('Uncategorized') },
+        objectset: { title: _t('Uncategorized') },
         outcomes: uncategorized
       }
     ]
@@ -692,7 +694,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
     outcomes[i].through_no_drag = outcomeworkflows[i].no_drag
   }
   if (outcomes.length === 0) return outcomes.map((outcome) => outcome.id)
-  const base_title = Utility.capWords(window.gettext('outcomes'))
+  const base_title = Utility.capWords(_t('outcomes'))
   const object_sets = object_sets_unfiltered.filter(
     (objectset) => objectset.term === outcomes[0].type
   )
@@ -710,7 +712,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   if (uncategorized.length > 0)
     categories = [
       {
-        objectset: { title: window.gettext('Uncategorized') },
+        objectset: { title: _t('Uncategorized') },
         outcomes: uncategorized
       }
     ]

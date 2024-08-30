@@ -29,5 +29,5 @@ class ProgramCreateView(
 
     def get_success_url(self):
         return reverse(
-            "course_flow:workflow-update", kwargs={"pk": self.object.pk}
+            "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
         )

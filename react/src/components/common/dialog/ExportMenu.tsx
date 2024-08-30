@@ -2,6 +2,7 @@
 // which could be renamed since the same dialog appears when exporting workflows
 
 import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type StateProps = {
@@ -37,7 +38,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
       this.ctrlKey = true
       // @ts-ignore @todo what is action ?
       $('#export-form')[0].action =
-        COURSEFLOW_APP.config.post_paths.get_export_download
+        COURSEFLOW_APP.globalContextData.path.post_paths.get_export_download
     }
   }
 
@@ -72,7 +73,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'outcome'}
       />,
-      <label htmlFor="export_type">{window.gettext('Outcomes')}</label>
+      <label htmlFor="export_type">{_t('Outcomes')}</label>
     ])
 
     exports.push([
@@ -83,7 +84,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'node'}
       />,
-      <label htmlFor="export_type">{window.gettext('Nodes')}</label>
+      <label htmlFor="export_type">{_t('Nodes')}</label>
     ])
 
     if (type == 'project' || type == 'course')
@@ -96,7 +97,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           checked={this.state.type == 'framework'}
         />,
         <label htmlFor="export_type">
-          {window.gettext('Course Framework')}
+          {_t('Course Framework')}
         </label>
       ])
 
@@ -110,7 +111,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           checked={this.state.type == 'matrix'}
         />,
         <label htmlFor="export_type">
-          {window.gettext('Competency Matrix')}
+          {_t('Competency Matrix')}
         </label>
       ])
 
@@ -125,7 +126,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           checked={this.state.type == 'sobec'}
         />,
         <label htmlFor="export_type">
-          {window.gettext('Sobec Validation')}
+          {_t('Sobec Validation')}
         </label>
       ])
 
@@ -139,7 +140,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
     let object_sets
     if (this.props.data.object_sets.length > 0) {
       object_sets = [
-        <h4>{window.gettext('Object Set Visibility')}:</h4>,
+        <h4>{_t('Object Set Visibility')}:</h4>,
         this.props.data.object_sets.map((objectset) => (
           <div>
             <input
@@ -158,12 +159,12 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
 
     return (
       <div className="message-wrap">
-        <h2>{window.gettext('Export files')}</h2>
-        <p>{window.gettext('Use this menu to export files.')}</p>
+        <h2>{_t('Export files')}</h2>
+        <p>{_t('Use this menu to export files.')}</p>
         <form
           id="export-form"
           encType="multipart/form-data"
-          action={COURSEFLOW_APP.config.post_paths.get_export}
+          action={COURSEFLOW_APP.globalContextData.path.post_paths.get_export}
           method="POST"
           target="redirect-iframe"
           onSubmit={this.submit.bind(this)}
@@ -173,9 +174,9 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
             name="csrfmiddlewaretoken"
             value={window.getCsrfToken()}
           />
-          <h4>{window.gettext('Export Type')}:</h4>
+          <h4>{_t('Export Type')}:</h4>
           <this.ExportTypes />
-          <h4>{window.gettext('Export Format')}:</h4>
+          <h4>{_t('Export Format')}:</h4>
           <select name="export_format">
             <option value="excel">Excel</option>
             <option value="csv">CSV</option>
@@ -204,7 +205,12 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
+          <img
+            src={
+              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+              'close.svg'
+            }
+          />
         </div>
       </div>
     )

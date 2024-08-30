@@ -4,6 +4,7 @@ import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize'
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch'
 import { CREATE_RESOURCE_TYPE } from '../../types'
 import { TypeBlock } from './styles'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {
   resourceLabel: 'course' | 'activity' | 'program'

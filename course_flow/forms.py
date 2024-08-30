@@ -6,7 +6,6 @@ from django.utils.translation import gettext as _
 from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.models.discipline import Discipline
 from course_flow.models.project import Project
-from course_flow.serializers import DisciplineSerializer
 
 
 class RegistrationForm(UserCreationForm):

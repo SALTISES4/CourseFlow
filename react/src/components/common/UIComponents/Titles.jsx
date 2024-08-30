@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as Constants from '@cfConstants'
+import { _t } from '@cf/utility/utilityFunctions'
 
 //Text that can be passed a default value. HTML is dangerously set.
 export class TitleText extends React.Component {
@@ -21,58 +21,53 @@ export class TitleText extends React.Component {
   }
 }
 
-//Title text for a workflow
-export class WorkflowTitle extends React.Component {
-  render() {
-    const getText = () => {
-      let text = data.title || window.gettext('Untitled')
+export const WorkflowTitle = (props) => {
+  const data = props.data
+  const href = !data.url
+    ? COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
+        '0',
+        data.id
+      )
+    : data.url
 
-      if (data.code) {
-        text = `${data.code} - ${text}`
-      }
+  const getText = () => {
+    let text = data.title || _t('Untitled')
 
-      if (['noaccess', 'nouser'].includes(data.url)) {
-        text += ` ${window.gettext(' (no access)')}`
-      }
-
-      if (data.deleted) {
-        text += ' (deleted)'
-      }
-      return text
+    if (data.code) {
+      text = `${data.code} - ${text}`
     }
 
-    const data = this.props.data
-
-    const href = !data.url
-      ? COURSEFLOW_APP.config.update_path[data.type].replace('0', data.id)
-      : data.url
-
-    if (
-      this.props.no_hyperlink ||
-      data.url == 'noaccess' ||
-      data.url == 'nouser'
-    ) {
-      return (
-        <div
-          className={this.props.class_name}
-          data-test-id={this.props.test_id}
-          title={getText()}
-          dangerouslySetInnerHTML={{ __html: getText() }}
-        />
-      )
-    } else {
-      return (
-        <a
-          onClick={(evt) => evt.stopPropagation()}
-          href={href}
-          className={this.props.class_name}
-          data-test-id={this.props.test_id}
-          title={getText()}
-          dangerouslySetInnerHTML={{ __html: getText() }}
-        />
-      )
+    if (['noaccess', 'nouser'].includes(data.url)) {
+      text += ` ${_t(' (no access)')}`
     }
+
+    if (data.deleted) {
+      text += ' (deleted)'
+    }
+    return text
   }
+
+  if (props.no_hyperlink || data.url == 'noaccess' || data.url == 'nouser') {
+    return (
+      <div
+        className={props.class_name}
+        data-test-id={props.test_id}
+        title={getText()}
+        dangerouslySetInnerHTML={{ __html: getText() }}
+      />
+    )
+  }
+
+  return (
+    <a
+      onClick={(evt) => evt.stopPropagation()}
+      href={href}
+      className={props.class_name}
+      data-test-id={props.test_id}
+      title={getText()}
+      dangerouslySetInnerHTML={{ __html: getText() }}
+    />
+  )
 }
 
 //Title text for a week
@@ -96,7 +91,7 @@ export class NodeTitle extends React.Component {
     } else text = data.title
 
     if (text == null || text == '') {
-      text = window.gettext('Untitled')
+      text = _t('Untitled')
     }
 
     return (
@@ -115,7 +110,7 @@ export class OutcomeTitle extends React.Component {
     const data = this.props.data
     let text = data.title
     if (data.title == null || data.title == '') {
-      text = window.gettext('Untitled')
+      text = _t('Untitled')
     }
 
     return (
@@ -131,7 +126,7 @@ export class OutcomeTitle extends React.Component {
 export function getOutcomeTitle(data, prefix) {
   let text = data.title
   if (data.title == null || data.title == '') {
-    text = window.gettext('Untitled')
+    text = _t('Untitled')
   }
 
   return prefix + ' - ' + text

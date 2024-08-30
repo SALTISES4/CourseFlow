@@ -1,3 +1,7 @@
+"""
+@todo describe this since 'week' is misnamed
+
+"""
 import uuid
 
 from django.db import models

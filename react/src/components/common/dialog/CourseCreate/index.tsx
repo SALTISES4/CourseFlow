@@ -18,9 +18,9 @@ import TypeSelect from '@cfCommonComponents/dialog/CreateWizard/components/TypeS
 import TemplateSearch from '@cfCommonComponents/dialog/CreateWizard/components/TemplateSearch'
 import ProjectSearch from '@cfCommonComponents/dialog/CreateWizard/components/ProjectSearch'
 import { CREATE_RESOURCE_TYPE } from '@cfCommonComponents/dialog/CreateWizard/types'
-import { PropsType as TemplateType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
-import { PropsType as ProjectType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
-
+import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = CreateCourseDataType & Pick<CourseFormDataType, 'units'>
 
@@ -53,14 +53,11 @@ const initialState: StateType = {
   }
 }
 
-const CreateCourseDialog = ({
-  steps,
-  units
-}: PropsType) => {
+const CreateCourseDialog = ({ steps, units }: PropsType) => {
   const [state, setState] = useState<StateType>(initialState)
   const { show, onClose } = useDialog(DIALOG_TYPE.COURSE_CREATE)
-  const [projects,setProjectData] = useState<ProjectType[]>(null)
-  const [templates,setTemplateData] = useState<TemplateType[]>(null)
+  const [projects, setProjectData] = useState<ProjectType[]>(null)
+  const [templates, setTemplateData] = useState<TemplateType[]>(null)
 
   // dynamic dialog title for each step
   const dialogTitle = [
@@ -84,8 +81,8 @@ const CreateCourseDialog = ({
     state.type === CREATE_RESOURCE_TYPE.TEMPLATE
       ? !state.template
       : state.fields
-        ? !state.fields.title
-        : true
+      ? !state.fields.title
+      : true
   ][state.step]
 
   function goToNextStep() {
@@ -217,7 +214,7 @@ const CreateCourseDialog = ({
               setTemplateData={setTemplateData}
               templates={templates}
               onTemplateSelect={onTemplateSelect}
-              template_type={"course"}
+              template_type={'course'}
             />
           )}
         </StyledForm>

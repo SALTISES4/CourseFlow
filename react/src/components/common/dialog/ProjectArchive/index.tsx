@@ -4,6 +4,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
 import Typography from '@mui/material/Typography'
 import { DIALOG_TYPE, useDialog } from '..'
+import { _t } from '@cf/utility/utilityFunctions'
 
 import { StyledDialog } from '../styles'
 
@@ -11,7 +12,7 @@ type PropsType = {
   onSubmit: () => void
 }
 
-const ArchiveProjectModal = ({ onSubmit }: PropsType) => {
+const ProjectArchiveModal = ({ onSubmit }: PropsType) => {
   const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_ARCHIVE)
 
   return (
@@ -23,7 +24,7 @@ const ArchiveProjectModal = ({ onSubmit }: PropsType) => {
       aria-labelledby="archive-project-modal"
     >
       <DialogTitle id="archive-project-modal">
-        {window.gettext('Archive project')}
+        {_t('Archive project')}
       </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
@@ -34,14 +35,14 @@ const ArchiveProjectModal = ({ onSubmit }: PropsType) => {
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
-          {window.gettext('Cancel')}
+          {_t('Cancel')}
         </Button>
         <Button variant="contained" onClick={onSubmit}>
-          {window.gettext('Archive project')}
+          {_t('Archive project')}
         </Button>
       </DialogActions>
     </StyledDialog>
   )
 }
 
-export default ArchiveProjectModal
+export default ProjectArchiveModal

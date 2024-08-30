@@ -1,13 +1,12 @@
 import * as React from 'react'
-import { isObject } from 'mathjs'
 import { hasId, MaybeWithId } from '@cfModule/types/typeGuards'
 
 export function permission_translate() {
   return {
-    author: window.gettext('Owner'),
-    edit: window.gettext('Editor'),
-    comment: window.gettext('Commenter'),
-    view: window.gettext('Viewer')
+    author: _t('Owner'),
+    edit: _t('Editor'),
+    comment: _t('Commenter'),
+    view: _t('Viewer')
   }
 }
 
@@ -182,4 +181,8 @@ export const debounce = (func, timeout = 300) => {
       func.apply(this, args)
     }, timeout)
   }
+}
+
+export const _t = (str: string) => {
+  return window.gettext(str)
 }

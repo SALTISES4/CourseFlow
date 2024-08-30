@@ -2,7 +2,9 @@ import * as React from 'react'
 // import $ from 'jquery'
 import * as Constants from '@cfConstants'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
-import { getUserListQuery } from '@XMLHTTP/API/sharing'
+import { getUserListQuery } from '@XMLHTTP/API/user'
+import SearchIcon from '@mui/icons-material/Search'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type StateProps = {
   selected: number
@@ -82,9 +84,9 @@ class UserAdd extends React.Component<PropsType, StateProps> {
           <input
             className="search-input"
             ref={this.input}
-            placeholder={window.gettext('Begin typing to search users')}
+            placeholder={_t('Begin typing to search users')}
           />
-          <span className="material-symbols-rounded">search</span>
+          <SearchIcon />
         </div>
         {user}
       </div>

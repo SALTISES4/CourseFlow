@@ -1,3 +1,6 @@
+"""
+@todo what is this file doing
+"""
 from django.contrib import admin
 
 from course_flow.models import (

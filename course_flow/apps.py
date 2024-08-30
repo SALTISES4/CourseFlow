@@ -1,3 +1,6 @@
+"""
+What is this file doing
+"""
 from django.apps import AppConfig
 from django.core.checks import register
 

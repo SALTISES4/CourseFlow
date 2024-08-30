@@ -9,6 +9,7 @@ import ProgramForm from '@cfCommonComponents/dialog/CreateWizard/components/Form
 import { ProgramFormDataType } from '@cfCommonComponents/dialog/CreateWizard/components/FormProgram/types'
 import { DIALOG_TYPE, useDialog } from '@cfCommonComponents/dialog'
 import { StyledDialog } from '@cfCommonComponents/dialog/styles'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type StateType = Omit<ProgramFormDataType, 'units'> & {
   unit: string

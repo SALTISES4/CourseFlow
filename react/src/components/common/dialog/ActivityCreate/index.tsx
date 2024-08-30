@@ -10,7 +10,7 @@ import Stepper from '@mui/material/Stepper'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 import { StyledDialog, StyledForm } from '@cfCommonComponents/dialog/styles'
-import { API_POST } from '@XMLHTTP/PostFunctions'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 
 import ActivityForm from '@cfCommonComponents/dialog/CreateWizard/components/FormActivity'
 import { ActivityFormDataType } from '@cfCommonComponents/dialog/CreateWizard/components/FormActivity/types'
@@ -19,8 +19,9 @@ import TemplateSearch from '@cfCommonComponents/dialog/CreateWizard/components/T
 import ProjectSearch from '@cfCommonComponents/dialog/CreateWizard/components/ProjectSearch'
 import { CREATE_RESOURCE_TYPE } from '@cfCommonComponents/dialog/CreateWizard/types'
 import { CreateActivityDataType } from './data'
-import { PropsType as ProjectType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
-import { PropsType as TemplateType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
+import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = CreateActivityDataType & Pick<ActivityFormDataType, 'units'>
 
@@ -45,14 +46,11 @@ const initialState: StateType = {
   }
 }
 
-const CreateActivityDialog = ({
-  steps,
-  units
-}: PropsType) => {
+const CreateActivityDialog = ({ steps, units }: PropsType) => {
   const [state, setState] = useState<StateType>(initialState)
   const { show, onClose } = useDialog(DIALOG_TYPE.ACTIVITY_CREATE)
-  const [projects,setProjectData] = useState<ProjectType[]>(null)
-  const [templates,setTemplateData] = useState<TemplateType[]>(null)
+  const [projects, setProjectData] = useState<ProjectType[]>(null)
+  const [templates, setTemplateData] = useState<TemplateType[]>(null)
 
   // dynamic dialog title for each step
   const dialogTitle = [
@@ -76,8 +74,8 @@ const CreateActivityDialog = ({
     state.type === CREATE_RESOURCE_TYPE.TEMPLATE
       ? !state.template
       : state.fields
-        ? !state.fields.title
-        : true
+      ? !state.fields.title
+      : true
   ][state.step]
 
   function goToNextStep() {
@@ -144,16 +142,15 @@ const CreateActivityDialog = ({
   function onSubmit() {
     console.log('submitted CREATE ACTIVITY with', state)
     API_POST<{ redirect: string }>(
-      COURSEFLOW_APP.config.json_api_paths.create_workflow,
+      COURSEFLOW_APP.globalContextData.path.json_api.create_workflow,
       {
         ...state,
-        workflow_type:"activity",
-        projectPk:state.project,
+        workflow_type: 'activity',
+        projectPk: state.project
       }
-    )
-      .then((resp) => {
-        window.location.href = resp.redirect
-      })
+    ).then((resp) => {
+      window.location.href = resp.redirect
+    })
   }
 
   return (
@@ -207,7 +204,7 @@ const CreateActivityDialog = ({
               setTemplateData={setTemplateData}
               templates={templates}
               onTemplateSelect={onTemplateSelect}
-              template_type={"course"}
+              template_type={'course'}
             />
           )}
         </StyledForm>

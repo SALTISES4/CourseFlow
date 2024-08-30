@@ -6,6 +6,7 @@ import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
 import { LinkedWorkflowMenuQueryResp } from '@XMLHTTP/types/query'
 import { DIALOG_TYPE, useDialog } from '../'
 import WorkflowsMenu from '../WorkflowsMenu'
+import { _t } from '@cf/utility/utilityFunctions'
 
 function LinkWorkflowDialog({ id }: any) {
   const { show, onClose } = useDialog(DIALOG_TYPE.LINK_WORKFLOW)
@@ -32,7 +33,7 @@ function LinkWorkflowDialog({ id }: any) {
 
   return (
     <Dialog open={show} onClose={onDialogClose}>
-      <DialogTitle>{window.gettext('Choose A Workflow')}</DialogTitle>
+      <DialogTitle>{_t('Choose A Workflow')}</DialogTitle>
       <DialogContent>{getContent()}</DialogContent>
     </Dialog>
   )

@@ -18,9 +18,9 @@ import TemplateSearch from '@cfCommonComponents/dialog/CreateWizard/components/T
 import ProjectSearch from '@cfCommonComponents/dialog/CreateWizard/components/ProjectSearch'
 import { CREATE_RESOURCE_TYPE } from '@cfCommonComponents/dialog/CreateWizard/types'
 import { CreateProgramDataType } from './data'
-import { PropsType as ProjectType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
-import { PropsType as TemplateType } from '@cfCommonComponents/workflow/WorkflowCards/WorkflowCardDumb'
-
+import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = CreateProgramDataType & Pick<ProgramFormDataType, 'units'>
 
@@ -45,14 +45,11 @@ const initialState: StateType = {
   }
 }
 
-const CreateProgramDialog = ({
-  steps,
-  units
-}: PropsType) => {
+const CreateProgramDialog = ({ steps, units }: PropsType) => {
   const [state, setState] = useState<StateType>(initialState)
   const { show, onClose } = useDialog(DIALOG_TYPE.PROGRAM_CREATE)
-  const [projects,setProjectData] = useState<ProjectType[]>(null)
-  const [templates,setTemplateData] = useState<TemplateType[]>(null)
+  const [projects, setProjectData] = useState<ProjectType[]>(null)
+  const [templates, setTemplateData] = useState<TemplateType[]>(null)
 
   // dynamic dialog title for each step
   const dialogTitle = [
@@ -76,8 +73,8 @@ const CreateProgramDialog = ({
     state.type === CREATE_RESOURCE_TYPE.TEMPLATE
       ? !state.template
       : state.fields
-        ? !state.fields.title
-        : true
+      ? !state.fields.title
+      : true
   ][state.step]
 
   function goToNextStep() {
@@ -196,7 +193,7 @@ const CreateProgramDialog = ({
               setTemplateData={setTemplateData}
               templates={templates}
               onTemplateSelect={onTemplateSelect}
-              template_type={"course"}
+              template_type={'course'}
             />
           )}
         </StyledForm>

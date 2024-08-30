@@ -1,17 +1,10 @@
 import json
 import math
-import re
 
-import bleach
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.http import HttpRequest, JsonResponse
-from django.urls import reverse
-from django.views.decorators.http import require_POST
 
 from course_flow.decorators import (
-    check_object_permission,
-    user_can_comment,
     user_can_edit,
     user_can_view,
     user_can_view_or_none,
@@ -36,7 +29,6 @@ from course_flow.models import (
 )
 from course_flow.models.relations import (
     ColumnWorkflow,
-    NodeLink,
     NodeWeek,
     OutcomeNode,
     OutcomeOutcome,
@@ -46,24 +38,20 @@ from course_flow.models.relations import (
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
-    NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
     OutcomeNodeSerializerShallow,
     OutcomeOutcomeSerializerShallow,
     OutcomeSerializerShallow,
     OutcomeWorkflowSerializerShallow,
-    ProjectSerializerShallow,
-    WeekSerializerShallow,
-    WeekWorkflowSerializerShallow,
     serializer_lookups_shallow,
 )
 from course_flow.sockets import redux_actions as actions
 from course_flow.utils import get_model_from_str
 
-###############################################
+#########################################################
 # JSON API to create workflow objects
-###############################################
+#########################################################
 
 
 @user_can_edit("weekPk")
@@ -150,157 +138,18 @@ def json_api_post_new_outcome_for_workflow(
     return JsonResponse({"action": "posted"})
 
 
-@user_can_edit("workflowPk")
-@user_can_view(False)
-def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    workflow_id = body.get("workflowPk")
-    strategy_id = body.get("objectID")
-    strategy_type = body.get("objectType")
-    position = body.get("position")
-    workflow = Workflow.objects.get(pk=workflow_id)
-    strategy = get_model_from_str(strategy_type).objects.get(pk=strategy_id)
-    try:
-        if strategy.author == request.user or strategy.published:
-            # first, check compatibility between types (activity/course)
-            if strategy.type != workflow.type:
-                raise ValidationError("Mismatch between types")
-            # create a copy of the strategy (the first/only week in the strategy
-            # workflow). Note that all the nodes, at this point, are pointed at
-            # the columns from the OLD workflow
-            if position < 0 or position > workflow.weeks.count():
-                position = workflow.weeks.count()
-            old_week = strategy.weeks.first()
-            week = fast_duplicate_week(old_week, request.user)
-            week.title = strategy.title
-            week.is_strategy = True
-            week.original_strategy = strategy
-            week.save()
-            new_through = WeekWorkflow.objects.create(
-                week=week, workflow=workflow, rank=position
-            )
-            # now, check for missing columns. We try to create a one to one
-            # relationship between the columns, and then add in any that are
-            # still missing
-            old_columns = []
-            for node in week.nodes.all():
-                if node.column not in old_columns:
-                    old_columns.append(node.column)
-            new_columns = []
-            columnworkflows_added = []
-            columns_added = []
-            for column in old_columns:
-                # check for a new column with same type
-                columns_type = workflow.columns.filter(
-                    column_type=column.column_type
-                ).exclude(id__in=map(lambda x: x.id, new_columns))
-                if columns_type.count() == 1:
-                    new_columns.append(columns_type.first())
-                    continue
-                if columns_type.count() == 0:
-                    added_column = duplicate_column(column, request.user)
-                    columnworkflows_added.append(
-                        ColumnWorkflow.objects.create(
-                            column=added_column,
-                            workflow=workflow,
-                            rank=workflow.columns.count(),
-                        )
-                    )
-                    new_columns.append(added_column)
-                    columns_added.append(added_column)
-                    continue
-                if columns_type.count() > 1:
-                    # if we have multiple columns of that type, check to see if
-                    # any have this one as their parent
-                    columns_parent = columns_type.filter(parent_column=column)
-                    if columns_parent.count() == 1:
-                        new_columns.append(columns_parent.first())
-                        continue
-                    if columns_parent.count() > 1:
-                        columns_type = columns_parent
-                    # check to see if any have the same title
-                    columns_title = columns_type.filter(title=column.title)
-                    if columns_title.count() >= 1:
-                        new_columns.append(columns_title.first())
-                        continue
-                    else:
-                        new_columns.append(columns_type.first())
-            # go through all the nodes and fill them in with our updated columns
-            for node in week.nodes.all():
-                column_index = old_columns.index(node.column)
-                node.column = new_columns[column_index]
-                node.save()
-
-            # return all this information to the user
-            response_data = {
-                "strategy": WeekSerializerShallow(week).data,
-                "new_through": WeekWorkflowSerializerShallow(new_through).data,
-                "index": position,
-                "columns_added": ColumnSerializerShallow(
-                    columns_added, many=True
-                ).data,
-                "columnworkflows_added": ColumnWorkflowSerializerShallow(
-                    columnworkflows_added, many=True
-                ).data,
-                "nodeweeks_added": NodeWeekSerializerShallow(
-                    week.nodeweek_set, many=True
-                ).data,
-                "nodes_added": NodeSerializerShallow(
-                    week.nodes.all(), many=True
-                ).data,
-                "nodelinks_added": NodeLinkSerializerShallow(
-                    NodeLink.objects.filter(
-                        source_node__in=week.nodes.all(),
-                        target_node__in=week.nodes.all(),
-                    ),
-                    many=True,
-                ).data,
-            }
-            actions.dispatch_wf(
-                workflow, actions.newStrategyAction(response_data)
-            )
-            return JsonResponse({"action": "posted"})
-
-        else:
-            raise ValidationError("User cannot access this strategy")
-    except ValidationError:
-        return JsonResponse({"action": "error"})
+#########################################################
+# ??
+#########################################################
 
 
-@user_can_edit("nodePk")
-@user_can_edit(False)
-def json_api_post_new_node_link(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    node_id = body.get("nodePk")
-    target_id = body.get("objectID")
-    target_type = body.get("objectType")
-    source_port = body.get("sourcePort")
-    target_port = body.get("targetPort")
-    node = Node.objects.get(pk=node_id)
-    target = get_model_from_str(target_type).objects.get(pk=target_id)
-    try:
-        node_link = NodeLink.objects.create(
-            author=node.author,
-            source_node=node,
-            target_node=target,
-            source_port=source_port,
-            target_port=target_port,
-        )
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    response_data = {
-        "new_model": NodeLinkSerializerShallow(node_link).data,
-    }
-    actions.dispatch_wf(
-        node.get_workflow(), actions.newNodeLinkAction(response_data)
-    )
-    return JsonResponse({"action": "posted"})
-
-
-# Add a new child to a model
 @user_can_edit(False)
 def json_api_post_insert_child(request: HttpRequest) -> JsonResponse:
+    """
+    Add a new child to a model (??)
+    :param request:
+    :return:
+    """
     body = json.loads(request.body)
     object_id = body.get("objectID")
     object_type = body.get("objectType")
@@ -356,10 +205,19 @@ def json_api_post_insert_child(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"action": "posted"})
 
 
-# Add a new sibling to a through model
+#########################################################
+# ?
+#########################################################
+
+
 @user_can_view(False)
 @user_can_edit(False, get_parent=True)
 def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
+    """
+    Add a new sibling to a through model
+    :param request:
+    :return:
+    """
     body = json.loads(request.body)
     object_id = body.get("objectID")
     object_type = body.get("objectType")

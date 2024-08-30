@@ -1,6 +1,7 @@
 import * as React from 'react'
 import * as Constants from '@cfConstants'
 import $ from 'jquery'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type StateProps = {
   published: boolean
@@ -58,9 +59,9 @@ class UserLabel extends React.Component<PropsType, StateProps> {
           <div className="flex-middle">
             <div className="permission-select">
               <select ref={this.select} disabled={disabled}>
-                <option value="edit">{window.gettext('Can edit')}</option>
-                <option value="comment">{window.gettext('Can comment')}</option>
-                <option value="view">{window.gettext('Can view')}</option>
+                <option value="edit">{_t('Can edit')}</option>
+                <option value="comment">{_t('Can comment')}</option>
+                <option value="view">{_t('Can view')}</option>
               </select>
             </div>
             <button
@@ -69,7 +70,7 @@ class UserLabel extends React.Component<PropsType, StateProps> {
                 this.props.addFunction($(this.select.current).val())
               }
             >
-              {window.gettext('Share')}
+              {_t('Share')}
             </button>
           </div>
         )
@@ -81,10 +82,10 @@ class UserLabel extends React.Component<PropsType, StateProps> {
               disabled={disabled}
               onChange={this.onChange.bind(this)}
             >
-              <option value="edit">{window.gettext('Can edit')}</option>
-              <option value="comment">{window.gettext('Can comment')}</option>
-              <option value="view">{window.gettext('Can view')}</option>
-              <option value="none">{window.gettext('Remove user')}</option>
+              <option value="edit">{_t('Can edit')}</option>
+              <option value="comment">{_t('Can comment')}</option>
+              <option value="view">{_t('Can view')}</option>
+              <option value="none">{_t('Remove user')}</option>
             </select>
           </div>
         )

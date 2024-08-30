@@ -2,14 +2,18 @@
 // since it's used to create new or edit existing project data
 
 import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
 import { deleteSelfQuery } from '@XMLHTTP/API/delete'
 import { addTerminologyQuery } from '@XMLHTTP/API/create'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
-
+import {
+  Close as CloseIcon,
+  Delete as DeleteIcon,
+  AddCircle as AddCircleIcon
+} from '@mui/icons-material'
 // import $ from 'jquery'
-
 type Data = any
 type StateProps = Data & {
   selected_set: any
@@ -53,8 +57,8 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
   deleteTerm(id) {
     if (
       window.confirm(
-        window.gettext('Are you sure you want to delete this ') +
-          window.gettext('set') +
+        _t('Are you sure you want to delete this ') +
+          _t('set') +
           '?'
       )
     ) {
@@ -173,7 +177,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     const actions = []
     actions.push(
       <button className="secondary-button" onClick={this.props.closeAction}>
-        {window.gettext('Cancel')}
+        {_t('Cancel')}
       </button>
     )
     actions.push(
@@ -196,7 +200,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           this.props.closeAction
         }}
       >
-        {window.gettext('Save Changes')}
+        {_t('Save Changes')}
       </button>
     )
     return actions
@@ -216,10 +220,10 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           <div className="flex-middle discipline-tag">
             {discipline.title}
             <span
-              className="material-symbols-rounded green"
+              className="green"
               onClick={this.removeDiscipline.bind(this, discipline.id)}
             >
-              close
+              <CloseIcon />
             </span>
           </div>
         ))
@@ -248,8 +252,8 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           className="nomenclature-delete-button"
           onClick={this.deleteTerm.bind(this, item.id)}
         >
-          <span className="material-symbols-rounded filled green hover-shade">
-            delete
+          <span className="filled green hover-shade">
+            <DeleteIcon />
           </span>
         </div>
       </div>
@@ -266,7 +270,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
       )
     }
 
-    let add_term_css = 'material-symbols-rounded filled'
+    let add_term_css = 'filled'
     let clickEvt
     if (this.addTermDisabled(selected_set)) {
       clickEvt = () => console.log('Disabled')
@@ -279,10 +283,10 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     return (
       <>
         <div className="message-wrap">
-          <h2>{window.gettext('Edit project')}</h2>
+          <h2>{_t('Edit project')}</h2>
 
           <div>
-            <h4>{window.gettext('Title')}</h4>
+            <h4>{_t('Title')}</h4>
             <textarea
               autoComplete="off"
               id="project-title-input"
@@ -292,7 +296,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           </div>
 
           <div>
-            <h4>{window.gettext('Description')}</h4>
+            <h4>{_t('Description')}</h4>
             <textarea
               autoComplete="off"
               id="project-description-input"
@@ -302,7 +306,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           </div>
 
           <div>
-            <h4>{window.gettext('Disciplines')}</h4>
+            <h4>{_t('Disciplines')}</h4>
             <div className="flex-middle disciplines-div">{disciplines}</div>
             <input
               autoComplete="off"
@@ -312,7 +316,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
           </div>
 
           <div>
-            <h4>{window.gettext('Object sets')}</h4>
+            <h4>{_t('Object sets')}</h4>
             <div className="workflow-created">
               {'Define categories for outcomes or nodes'}
             </div>
@@ -323,11 +327,11 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
                 value={this.state.selected_set}
                 onChange={this.inputChanged.bind(this, 'selected_set')}
               >
-                <option value="none">{window.gettext('Select a type')}</option>
+                <option value="none">{_t('Select a type')}</option>
                 {set_options}
               </select>
               <input
-                placeholder={window.gettext('Set name')}
+                placeholder={_t('Set name')}
                 type="text"
                 id="term-singular"
                 maxLength={50}
@@ -336,7 +340,9 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
                 disabled={selected_set == null}
               />
               <div className="nomenclature-add-button" onClick={clickEvt}>
-                <span className={add_term_css}>add_circle</span>
+                <span className={add_term_css}>
+                  <AddCircleIcon />
+                </span>
               </div>
             </div>
           </div>
@@ -345,7 +351,9 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
             <this.Actions />
           </div>
           <div className="window-close-button" onClick={this.props.closeAction}>
-            <span className="material-symbols-rounded green">close</span>
+            <span className="green">
+              <CloseIcon />
+            </span>
           </div>
         </div>
       </>

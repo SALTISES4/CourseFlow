@@ -178,7 +178,7 @@ export default function weekReducer(
 //           new_state[i] = {
 //             ...new_state[i],
 //             deleted: true,
-//             deleted_on: window.gettext('This session')
+//             deleted_on: _t('This session')
 //           }
 //           return new_state
 //         }

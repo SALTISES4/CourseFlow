@@ -6,6 +6,7 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TColumn } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
+import { _t } from '@cf/utility/utilityFunctions'
 
 export default function columnReducer(
   state: TColumn[] = [],
@@ -49,7 +50,7 @@ export default function columnReducer(
           ? {
               ...item,
               deleted: true,
-              deleted_on: window.gettext('This session')
+              deleted_on: _t('This session')
             }
           : item
       )
@@ -156,7 +157,7 @@ export default function columnReducer(
 //           new_state[i] = {
 //             ...new_state[i],
 //             deleted: true,
-//             deleted_on: window.gettext('This session')
+//             deleted_on: _t('This session')
 //           }
 //           return new_state
 //         }

@@ -1,10 +1,17 @@
 import json
 import traceback
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+
+# from duplication
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db import transaction
 from django.http import HttpRequest, JsonResponse
+from django.utils.translation import gettext as _
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 
 from course_flow.decorators import (
     public_model_access,
@@ -12,6 +19,10 @@ from course_flow.decorators import (
     user_can_view,
     user_can_view_or_none,
     user_is_teacher,
+)
+from course_flow.duplication_functions import (
+    cleanup_workflow_post_duplication,
+    fast_duplicate_workflow,
 )
 from course_flow.models import (
     Activity,
@@ -29,6 +40,7 @@ from course_flow.models.relations import (
     OutcomeHorizontalLink,
     OutcomeNode,
     OutcomeWorkflow,
+    WorkflowProject,
 )
 from course_flow.serializers import (
     ColumnSerializerShallow,
@@ -49,23 +61,59 @@ from course_flow.serializers import (
     WorkflowSerializerShallow,
     serializer_lookups_shallow,
 )
+from course_flow.sockets import redux_actions as actions
 from course_flow.utils import (
     get_all_outcomes_for_workflow,
     get_model_from_str,
     get_parent_nodes_for_workflow,
+    get_user_permission,
 )
 from course_flow.view_utils import (
     get_my_projects,
     get_workflow_context_data,
     get_workflow_data_package,
 )
+from course_flow.views import UserCanViewMixin
 
-#################################################
+"""
 # Bulk data API for workflows
 # These are used by renderers on loading a workflow
 # view to fetch all the base JSON that can be
 # placed into the redux state
-#################################################
+"""
+
+
+#########################################################
+#
+#########################################################
+@permission_classes([UserCanViewMixin])
+@api_view(["GET"])
+@login_required
+def json_api__workflow__detail__get(request: HttpRequest):
+    workflows_pk = request.GET.get("id")
+    try:
+        workflow = Workflow.objects.get(pk=workflows_pk)
+
+    except Workflow.DoesNotExist:
+        return Response({"detail": "Not found."}, status=404)
+
+    current_user = request.user
+
+    user_permission = get_user_permission(workflow, current_user)
+
+    context = get_workflow_context_data(workflow, current_user)
+
+    response_data = {
+        "user_id": current_user.id if current_user else 0,
+        "user_name": current_user.username,
+        "user_permission": user_permission,
+        "public_view": False,
+        "workflow_data_package": context.get("data_package"),
+        "workflow_type": workflow.type,
+        "workflow_model_id": workflow.id,
+    }
+
+    return JsonResponse({"action": "GET", "data_package": response_data})
 
 
 @user_can_view("workflowPk")
@@ -171,7 +219,6 @@ def json_api_post_get_workflow_context(request: HttpRequest) -> JsonResponse:
         workflow = Workflow.objects.get(pk=workflowPk)
         data_package = get_workflow_context_data(
             workflow,
-            {},
             request.user,
         )
     except AttributeError:
@@ -618,3 +665,47 @@ def get_workflow_data_flat(workflow, user):
         ]
 
     return data_flat
+
+
+#########################################################
+#  DUPLICATE WORKFLOW
+#########################################################
+@user_can_view("workflowPk")
+@user_can_edit("projectPk")
+def json_api_post_duplicate_workflow(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
+    project = Project.objects.get(pk=body.get("projectPk"))
+
+    try:
+        with transaction.atomic():
+            clone = fast_duplicate_workflow(workflow, request.user, project)
+            try:
+                clone.title = clone.title + _("(copy)")
+                clone.save()
+            except (ValidationError, TypeError):
+                pass
+
+            WorkflowProject.objects.create(project=project, workflow=clone)
+
+            if workflow.get_project() != project:
+                cleanup_workflow_post_duplication(clone, project)
+
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    linked_workflows = Workflow.objects.filter(
+        linked_nodes__week__workflow=clone
+    )
+    for wf in linked_workflows:
+        actions.dispatch_parent_updated(wf)
+
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_item": InfoBoxSerializer(
+                clone, context={"user": request.user}
+            ).data,
+            "type": clone.type,
+        }
+    )

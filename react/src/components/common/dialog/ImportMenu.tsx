@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type PropsType = {
@@ -33,7 +34,7 @@ class ImportMenu extends React.Component<PropsType> {
   render() {
     return (
       <div className="message-wrap">
-        <h2>{window.gettext('Import Files')}</h2>
+        <h2>{_t('Import Files')}</h2>
         <p>
           {window.gettext(
             'Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format.'
@@ -41,7 +42,7 @@ class ImportMenu extends React.Component<PropsType> {
         </p>
         <form
           encType="multipart/form-data"
-          action={COURSEFLOW_APP.config.post_paths.import_data}
+          action={COURSEFLOW_APP.globalContextData.path.post_paths.import_data}
           method="POST"
           id="upload-form"
           target="redirect-iframe"
@@ -89,7 +90,12 @@ class ImportMenu extends React.Component<PropsType> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img src={COURSEFLOW_APP.config.icon_path + 'close.svg'} />
+          <img
+            src={
+              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+              'close.svg'
+            }
+          />
         </div>
       </div>
     )

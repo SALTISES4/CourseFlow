@@ -5,6 +5,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
+import { Link as RouterLink } from 'react-router-dom'
 import Badge from '@mui/material/Badge'
 import MenuItem from '@mui/material/MenuItem'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -31,6 +32,7 @@ import editActivityData from '@cfCommonComponents/dialog/ActivityEdit/data'
 import createActivityData from '@cfCommonComponents/dialog/ActivityCreate/data'
 import PasswordResetModal from '@cfModule/components/common/dialog/PasswordReset'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
+import { _t } from '@cf/utility/utilityFunctions'
 
 import {
   TopBarWrap,
@@ -40,6 +42,8 @@ import {
   NotificationsList
 } from './styles'
 import { TopBarProps } from '@cfModule/types/common'
+import * as React from 'react'
+import ReturnLinks from '@cfViews/WorkflowView/WorkflowViewLayout/components/ReturnLinks'
 
 const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   const { dispatch } = useDialog()
@@ -66,7 +70,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   }
 
   const handleLogout = () => [
-    window.location.replace(COURSEFLOW_APP.config.logout_path)
+    window.location.replace(COURSEFLOW_APP.globalContextData.path.logout_path)
   ]
 
   const closeAllMenus = () => {
@@ -97,16 +101,16 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       onClose={closeAllMenus}
     >
       <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.PROJECT_CREATE)}>
-        {COURSEFLOW_APP.strings.project}
+        {COURSEFLOW_APP.globalContextData.strings.project}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.PROGRAM_CREATE)}>
-        {COURSEFLOW_APP.strings.program}
+        {COURSEFLOW_APP.globalContextData.strings.program}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.COURSE_CREATE)}>
-        {COURSEFLOW_APP.strings.course}
+        {COURSEFLOW_APP.globalContextData.strings.course}
       </MenuItem>
       <MenuItem onClick={() => handleCreateClick(DIALOG_TYPE.ACTIVITY_CREATE)}>
-        {COURSEFLOW_APP.strings.activity}
+        {COURSEFLOW_APP.globalContextData.strings.activity}
       </MenuItem>
     </StyledMenu>
   )
@@ -129,10 +133,10 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
     >
       <NotificationsHeader>
         <Typography variant="h5">
-          {COURSEFLOW_APP.strings.notifications}
+          {COURSEFLOW_APP.globalContextData.strings.notifications}
         </Typography>
-        <Link href={notifications.url} underline="always">
-          {COURSEFLOW_APP.strings.see_all}
+        <Link component={RouterLink} to={notifications.url} underline="always">
+          {COURSEFLOW_APP.globalContextData.strings.see_all}
         </Link>
       </NotificationsHeader>
 
@@ -145,7 +149,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
               backgroundColor: n.unread ? 'courseflow.lightest' : null
             }}
           >
-            <ListItemButton component="a" href={n.url}>
+            <ListItemButton component={RouterLink} to={n.url}>
               {n.unread && <Badge color="primary" variant="dot" />}
               <ListItemAvatar>
                 <Avatar alt={n.from}>{getNameInitials(n.from)}</Avatar>
@@ -186,73 +190,90 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
       open={isMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem component="a" href={menus.account.profileUrl}>
-        {COURSEFLOW_APP.strings.profile}
+      <MenuItem component={RouterLink} to={menus.account.profileUrl}>
+        {COURSEFLOW_APP.globalContextData.strings.profile}
       </MenuItem>
       <MenuItem onClick={() => dispatch(DIALOG_TYPE.PASSWORD_RESET)}>
-        {COURSEFLOW_APP.strings.password_reset}
+        {COURSEFLOW_APP.globalContextData.strings.password_reset}
       </MenuItem>
-      <MenuItem component="a" href={menus.account.notificationsSettingsUrls}>
-        {COURSEFLOW_APP.strings.notification_settings}
+      <MenuItem
+        component={RouterLink}
+        to={menus.account.notificationsSettingsUrls}
+      >
+        {COURSEFLOW_APP.globalContextData.strings.notification_settings}
       </MenuItem>
       <Divider />
-      <MenuItem component="a" href={menus.account.daliteUrl}>
+      <MenuItem component={RouterLink} to={menus.account.daliteUrl}>
         Go to {menus.account.daliteText}
       </MenuItem>
       <MenuItem onClick={handleLogout}>
-        <LogoutIcon /> {COURSEFLOW_APP.strings.sign_out}
+        <LogoutIcon /> {COURSEFLOW_APP.globalContextData.strings.sign_out}
       </MenuItem>
     </StyledMenu>
   )
 
+  const ToolbarWrap = () => {
+    return (
+      <Toolbar variant="dense">
+        <ReturnLinks />
+        <Box sx={{ flexGrow: 1 }} className="title" />
+        <Box sx={{ display: 'flex' }}>
+          {isTeacher ? (
+            <IconButton
+              size="large"
+              aria-label="add menu"
+              aria-controls="add-menu"
+              aria-haspopup="true"
+              color="primary"
+              onClick={handleAddMenuOpen}
+            >
+              <AddCircleIcon />
+            </IconButton>
+          ) : null}
+
+          <IconButton
+            size="large"
+            aria-label={
+              notifications.unread >= 1
+                ? `show ${notifications.unread} new notifications`
+                : 'no new notifications'
+            }
+            aria-controls="notifications-menu"
+            aria-haspopup="true"
+            onClick={handleNotificationsMenuOpen}
+          >
+            <Badge badgeContent={notifications.unread} color="primary">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+
+          <IconButton
+            size="large"
+            edge="end"
+            aria-label="account of current user"
+            aria-controls="account-menu"
+            aria-haspopup="true"
+            onClick={handleMenuOpen}
+          >
+            <AccountCircle />
+          </IconButton>
+        </Box>
+      </Toolbar>
+    )
+  }
+
   return (
     <TopBarWrap>
       <AppBar position="static">
-        <Toolbar variant="dense">
-          <Box sx={{ flexGrow: 1 }} className="title" />
-          <Box sx={{ display: 'flex' }}>
-            {isTeacher ? (
-              <IconButton
-                size="large"
-                aria-label="add menu"
-                aria-controls="add-menu"
-                aria-haspopup="true"
-                color="primary"
-                onClick={handleAddMenuOpen}
-              >
-                <AddCircleIcon />
-              </IconButton>
-            ) : null}
-
-            <IconButton
-              size="large"
-              aria-label={
-                notifications.unread >= 1
-                  ? `show ${notifications.unread} new notifications`
-                  : 'no new notifications'
-              }
-              aria-controls="notifications-menu"
-              aria-haspopup="true"
-              onClick={handleNotificationsMenuOpen}
-            >
-              <Badge badgeContent={notifications.unread} color="primary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls="account-menu"
-              aria-haspopup="true"
-              onClick={handleMenuOpen}
-            >
-              <AccountCircle />
-            </IconButton>
-          </Box>
-        </Toolbar>
+        <ToolbarWrap />
       </AppBar>
+
+      {/*
+        @todo put these menus into the unified menu helper in
+        react/src/components/common/menu
+        they are already in MUI, so it's fine for now
+        // cuts down on a bit of boilerplate
+        */}
       {isTeacher && addMenu}
       {notificationsMenu}
       {accountMenu}
@@ -265,15 +286,12 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
         formFields={forms.createProject.formFields}
         disciplines={forms.createProject.disciplines}
       />
-      <ProgramCreateModal 
+      <ProgramCreateModal
         {...createProgramData}
         units={editProgramData.units}
       />
-      <CourseCreateModal 
-        {...createCourseData}
-        units={editCourseData.units}
-      />
-      <ActivityCreateModal 
+      <CourseCreateModal {...createCourseData} units={editCourseData.units} />
+      <ActivityCreateModal
         {...createActivityData}
         units={editActivityData.units}
       />

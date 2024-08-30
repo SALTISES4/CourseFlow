@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
+import { _t } from '@cf/utility/utilityFunctions'
 
 // import $ from 'jquery'
 import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
@@ -7,7 +8,15 @@ import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
 import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/sharing'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import { EUser } from '@XMLHTTP/types/entity'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import AddLinkIcon from '@mui/icons-material/AddLink'
+import LinkIcon from '@mui/icons-material/Link'
+import CodeIcon from '@mui/icons-material/Code'
+import CloseIcon from '@mui/icons-material/Close'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import PublicIcon from '@mui/icons-material/Public'
+import LinkOffIcon from '@mui/icons-material/LinkOff'
+import BlockIcon from '@mui/icons-material/Block'
+import DoneIcon from '@mui/icons-material/Done'
 
 type PropsType = {
   data: any
@@ -42,7 +51,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       userlist: [],
       cannot_change: [],
       saltise_user: false,
-      is_template: false,
+      is_template: false
     }
   }
 
@@ -64,7 +73,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
           public_view: response.public_view,
           cannot_change: response.cannot_change,
           saltise_user: response.saltise_user,
-          is_template: response.is_template,
+          is_template: response.is_template
         })
       }
     )
@@ -120,7 +129,6 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     }
   }
 
-
   toggleTemplate() {
     const component = this
     const is_template = !this.state.is_template
@@ -164,7 +172,10 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     const public_link =
       'https://' +
       window.location.host +
-      COURSEFLOW_APP.config.public_update_path['workflow'].replace('0', data.id)
+      COURSEFLOW_APP.globalContextData.path.html.public_update_path_temp.replace(
+        '0',
+        String(data.id)
+      )
 
     if (data.type !== 'project') {
       const public_view = this.state.public_view
@@ -175,11 +186,11 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             onClick={this.togglePublicView.bind(this, !public_view)}
           >
             <div className="public-link-icon">
-              <span className="material-symbols-rounded">add_link</span>
+              <AddLinkIcon />
             </div>
             <div>
               <div className="public-link-text">
-                {window.gettext('Generate a public link')}
+                {_t('Generate a public link')}
               </div>
               <div className="public-link-description">
                 {window.gettext(
@@ -203,9 +214,11 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
                 const copy_description_text = $(
                   '#public-page-link .copy-link-text'
                 ).text()
+
                 $(
                   '#public-page-link .copy-link-icon .material-symbols-rounded'
                 ).text('done')
+
                 $('#public-page-link .copy-link-text').text(
                   'Copied to Clipboard'
                 )
@@ -220,14 +233,14 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
               }}
             >
               <div className="copy-link-icon">
-                <span className="material-symbols-rounded">link</span>
+                <LinkIcon />
               </div>
               <div>
                 <div className="copy-link-text">
-                  {window.gettext('Copy public link')}
+                  {_t('Copy public link')}
                 </div>
                 <div className="public-link-description">
-                  {window.gettext('Anyone with the link can view the workflow')}
+                  {_t('Anyone with the link can view the workflow')}
                 </div>
               </div>
             </div>
@@ -240,22 +253,31 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
                   public_link +
                   '"></iframe>'
                 navigator.clipboard.writeText(iframe)
+
                 const copy_icon_text = $(
                   '#public-page-code .copy-link-icon .material-symbols-rounded'
                 ).text()
+                console.log('copy_icon_text')
+                console.log(copy_icon_text)
+
                 const copy_description_text = $(
                   '#public-page-code .copy-link-text'
                 ).text()
+
+                /*       <DoneIcon /> */
                 $(
                   '#public-page-code .copy-link-icon .material-symbols-rounded'
                 ).text('done')
+
                 $('#public-page-code .copy-link-text').text(
                   'Copied to Clipboard'
                 )
+
                 setTimeout(() => {
                   $(
                     '#public-page-code .copy-link-icon .material-symbols-rounded'
                   ).text(copy_icon_text)
+
                   $('#public-page-code .copy-link-text').text(
                     copy_description_text
                   )
@@ -263,11 +285,11 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
               }}
             >
               <div className="copy-link-icon">
-                <span className="material-symbols-rounded">frame_source</span>
+                <CodeIcon />
               </div>
               <div>
                 <div className="copy-link-text">
-                  {window.gettext('Copy embed code')}
+                  {_t('Copy embed code')}
                 </div>
                 <div className="public-link-description">
                   {window.gettext(
@@ -282,11 +304,11 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             onClick={this.togglePublicView.bind(this, !public_view)}
           >
             <div className="public-link-icon">
-              <span className="material-symbols-rounded">link_off</span>
+              <LinkOffIcon />
             </div>
             <div>
               <div className="public-link-text">
-                {window.gettext('Remove public link')}
+                {_t('Remove public link')}
               </div>
             </div>
           </div>
@@ -316,18 +338,19 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
 
       if (!public_disabled && !published) public_class += ' hover-shade'
       if (public_disabled) public_class += ' disabled'
-      const public_text = window.gettext('Any CourseFlow teacher can view')
+      const public_text = _t('Any CourseFlow teacher can view')
       let disabled_indicator
 
       if (public_disabled) {
         const disabled_text =
           data.type == 'project'
-            ? window.gettext('Title and disciplines are required to publish.')
-            : window.gettext('Title is required to publish.')
+            ? _t('Title and disciplines are required to publish.')
+            : _t('Title is required to publish.')
 
         disabled_indicator = (
           <div className="warning flex-middle">
-            <span className="material-symbols-rounded red">block</span>
+            {/* red */}
+            <BlockIcon />
             <div>{disabled_text}</div>
           </div>
         )
@@ -341,9 +364,9 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             disabled={public_disabled}
             onClick={this.setPublication.bind(this, true && !public_disabled)}
           >
-            <span className="material-symbols-rounded">public</span>
+            <PublicIcon />
             <div className="big-button-title">
-              {window.gettext('Public to CourseFlow')}
+              {_t('Public to CourseFlow')}
             </div>
             <div className="big-button-description">{public_text}</div>
           </div>
@@ -352,12 +375,10 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             className={private_class}
             onClick={this.setPublication.bind(this, false)}
           >
-            <span className="material-symbols-rounded filled">
-              visibility_off
-            </span>
-            <div className="big-button-title">{window.gettext('Private')}</div>
+            <VisibilityOffIcon />
+            <div className="big-button-title">{_t('Private')}</div>
             <div className="big-button-description">
-              {window.gettext('Only added collaborators can view')}
+              {_t('Only added collaborators can view')}
             </div>
           </div>
         </div>,
@@ -369,12 +390,12 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         published_icon = (
           <div className="big-buttons-wrapper">
             <div className="big-button active">
-              <span className="material-symbols-rounded">public</span>
+              <PublicIcon />
               <div className="big-button-title">
-                {window.gettext('Project public to CourseFlow')}
+                {_t('Project public to CourseFlow')}
               </div>
               <div className="big-button-description">
-                {window.gettext('Any CourseFlow teacher can view')}
+                {_t('Any CourseFlow teacher can view')}
               </div>
             </div>
           </div>
@@ -383,14 +404,12 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         published_icon = (
           <div className="big-buttons-wrapper">
             <div className="big-button active">
-              <span className="material-symbols-rounded filled">
-                visibility_off
-              </span>
+              <VisibilityOffIcon />
               <div className="big-button-title">
-                {window.gettext('Project is private')}
+                {_t('Project is private')}
               </div>
               <div className="big-button-description">
-                {window.gettext('Only added collaborators can view')}
+                {_t('Only added collaborators can view')}
               </div>
             </div>
           </div>
@@ -400,13 +419,20 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
   }
 
   IsTemplate = () => {
-    if (this.state.published && this.state.saltise_user){
+    if (this.state.published && this.state.saltise_user) {
       return [
-        <input id="toggle-is-template" type="checkbox" checked={this.state.is_template} onClick={this.toggleTemplate.bind(this)}/>,
-        <label htmlFor="toggle-is-template">{window.gettext("Make Available As Template")}</label>
-      ];
+        <input
+          id="toggle-is-template"
+          type="checkbox"
+          checked={this.state.is_template}
+          onClick={this.toggleTemplate.bind(this)}
+        />,
+        <label htmlFor="toggle-is-template">
+          {_t('Make Available As Template')}
+        </label>
+      ]
     }
-    return null;
+    return null
   }
 
   /*******************************************************
@@ -470,7 +496,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       shared_with = [
         <hr />,
         <div className="user-panel">
-          <p>{window.gettext('Shared With')}:</p>
+          <p>{_t('Shared With')}:</p>
           <ul className="user-list">
             {editors}
             {commentors}
@@ -484,7 +510,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     return (
       <div className="message-wrap user-text">
         <h2>
-          {window.gettext('Share') + ' ' + window.gettext(data.type) + ' '}
+          {_t('Share') + ' ' + window.gettext(data.type) + ' '}
           <WorkflowTitle
             no_hyperlink={true}
             data={this.props.data}
@@ -494,7 +520,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         <this.Publication />
         <this.IsTemplate />
         <hr />
-        <p>{window.gettext('Owned By')}:</p>
+        <p>{_t('Owned By')}:</p>
         <div>{owner}</div>
         <hr />
         <UserAdd
@@ -506,14 +532,15 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <span className="green material-symbols-rounded">close</span>
+          {/* green */}
+          <CloseIcon />
         </div>
         <div className="action-bar">
           <button
             className="secondary-button"
             onClick={this.props.actionFunction}
           >
-            {window.gettext('Close')}
+            {_t('Close')}
           </button>
         </div>
       </div>

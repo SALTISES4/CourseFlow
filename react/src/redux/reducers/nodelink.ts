@@ -6,6 +6,7 @@ import {
   StrategyActions,
   WeekActions
 } from '@cfRedux/types/enumActions'
+import { _t } from '@cf/utility/utilityFunctions'
 
 export default function nodelinkReducer(
   state: TNodelink[] = [],
@@ -68,7 +69,7 @@ export default function nodelinkReducer(
           ? {
               ...item,
               deleted: true,
-              deleted_on: window.gettext('This session')
+              deleted_on: _t('This session')
             }
           : item
       )
