@@ -88,7 +88,7 @@ const Users = ({
 }
 
 const TypeIndicator = ({ data }: { data: any }) => {
-  let type_text = window.gettext(data.type)
+  let type_text = _t(data.type)
   if (data.is_strategy) type_text += _t(' strategy')
   return (
     <div className={'workflow-type-indicator ' + data.type}>{type_text}</div>

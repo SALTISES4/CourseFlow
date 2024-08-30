@@ -4,6 +4,7 @@
  * 2 - CLOSING: The connection is in the process of closing.
  * 3 - CLOSED: The connection is closed or couldn't be opened.
  */
+import { _t } from '@cf/utility/utilityFunctions'
 
 export enum DATA_TYPE {
   WORKFLOW_ACTION = 'workflow_action',
@@ -99,7 +100,7 @@ export class WebSocketService {
       } else {
         console.error('Maximum reconnect attempts reached.')
         console.error(
-          window.gettext(
+          _t(
             'Unable to establish connection to the server, or connection has been lost.'
           )
         )

@@ -101,7 +101,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
   sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
     if (
       confirm(
-        window.gettext(
+        _t(
           "You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"
         )
       )

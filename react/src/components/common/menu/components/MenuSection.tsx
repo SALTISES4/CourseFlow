@@ -68,11 +68,10 @@ class MenuSection extends React.Component<PropsType> {
             className="hover-shade"
             href={COURSEFLOW_APP.globalContextData.path.create_path[this_type]}
           >
-            {_t('Create new ') + window.gettext(this_type)}
+            {_t('Create new ') + _t(this_type)}
           </a>
         ))
-        let import_text =
-          _t('Import ') + window.gettext(section_type)
+        let import_text = _t('Import ') + _t(section_type)
         if (is_strategy) import_text += _t(' strategy')
       }
       add_button = (

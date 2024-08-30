@@ -1,7 +1,7 @@
-import { ESectionObject } from '@XMLHTTP/types/entity'
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 
 export type WorkflowCardProps = {
-  workflowData: ESectionObject
+  workflowData: ELibraryObject
   updateWorkflow?: any
   selected?: any
   noHyperlink?: any
@@ -20,5 +20,5 @@ export type CreateDiv = {
 }
 
 export type State = {
-  project_data: ESectionObject[]
+  project_data: ELibraryObject[]
 }

@@ -255,14 +255,10 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
           </div>
         </div>
         <div className="table-cell outcome-wrapper">
-          <div className="outcome-head">
-            {_t('General Education')}
-          </div>
+          <div className="outcome-head">{_t('General Education')}</div>
         </div>
         <div className="table-cell outcome-wrapper">
-          <div className="outcome-head">
-            {_t('Specific Education')}
-          </div>
+          <div className="outcome-head">{_t('Specific Education')}</div>
         </div>
         <div className="table-cell outcome-wrapper">
           <div className="outcome-head">{_t('Total Hours')}</div>
@@ -279,9 +275,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
           <div className="outcome-head">{_t('Practical')}</div>
         </div>
         <div className="table-cell outcome-wrapper">
-          <div className="outcome-head">
-            {_t('Individual Work')}
-          </div>
+          <div className="outcome-head">{_t('Individual Work')}</div>
         </div>
         <div className="table-cell outcome-wrapper">
           <div className="outcome-head">{_t('Total')}</div>
@@ -303,10 +297,10 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     if (outcomes_sorted.length == 0 || !has_nodes) {
       const text =
         this.context.viewType == ViewType.OUTCOMETABLE
-          ? window.gettext(
+          ? _t(
               'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
             )
-          : window.gettext(
+          : _t(
               "This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes."
             )
 

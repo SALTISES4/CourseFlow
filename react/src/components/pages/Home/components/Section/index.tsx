@@ -4,6 +4,7 @@ import Link from '@mui/material/Link'
 import { Link as RouterLink } from 'react-router-dom'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
+import { _t } from '@cf/utility/utilityFunctions'
 
 const SectionWrap = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(6)
@@ -36,10 +37,10 @@ const Section = ({ header, children }: PropsType) => (
   <SectionWrap>
     {header && (
       <SectionHeader>
-        <Typography variant="h5">{window.gettext(header.title)}</Typography>
+        <Typography variant="h5">{_t(header.title)}</Typography>
         {header.seeAll && (
           <Link component={RouterLink} to={header.seeAll.href}>
-            {window.gettext(header.seeAll.text || 'See all')}
+            {_t(header.seeAll.text || 'See all')}
           </Link>
         )}
       </SectionHeader>

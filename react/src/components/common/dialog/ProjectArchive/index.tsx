@@ -28,7 +28,7 @@ const ProjectArchiveModal = ({ onSubmit }: PropsType) => {
       </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          {window.gettext(
+          {_t(
             'Once your project is archived, it won’t be visible from your library. You’ll have to navigate to your archived project to access it. From there, you’ll be able to restore your project if needed.'
           )}
         </Typography>

@@ -143,8 +143,9 @@ def json_api___library__library__objects_search__post(
     request: HttpRequest,
 ) -> JsonResponse:
     body = json.loads(request.body)
-    name_filter = body.get("filter").lower()
-    data = body.get("additional_data", "{}")
+    # name_filter = body.get("filter").lower()
+    name_filter = ""
+    data = body.get("args", "{}")
     nresults = data.get("nresults", 10)
     full_search = data.get("full_search", False)
     published = data.get("published", False)
@@ -163,10 +164,14 @@ def json_api___library__library__objects_search__post(
     return JsonResponse(
         {
             "action": "posted",
-            "workflow_list": InfoBoxSerializer(
-                return_objects, context={"user": request.user}, many=True
-            ).data,
-            "pages": pages,
+            "data_package": {
+                "results": InfoBoxSerializer(
+                    return_objects, context={"user": request.user}, many=True
+                ).data,
+                "meta": {
+                    "pages": pages,
+                },
+            },
         }
     )
 
@@ -205,96 +210,9 @@ def get_library_objects(user, name_filter, nresults):
     return return_objects
 
 
-def get_explore_objects(user, name_filter, nresults, published, data):
-    # Unpack and set default values from data
-    types = data.get("types", ["project", "workflow"])
-    disciplines = data.get("disciplines", [])
-    sort = data.get("sort", None)
-    from_saltise = data.get("fromSaltise", False)
-    content_rich = data.get("contentRich", False)
-    sort_reversed = data.get("sort_reversed", False)
-    page = data.get("page", 1)
-
-    # Set up filter arguments
-    filter_kwargs = {
-        "published": True,
-        "disciplines__in": disciplines if disciplines else None,
-        "num_nodes__gte": 3 if content_rich else None,
-        "from_saltise": from_saltise,
-    }
-
-    # Combine all keyword queries into a single Q object
-    keywords = name_filter.split()
-    q_objects = Q()
-    for keyword in keywords:
-        q_objects &= (
-            Q(author__first_name__icontains=keyword)
-            | Q(author__username__icontains=keyword)
-            | Q(author__last_name__icontains=keyword)
-            | Q(title__icontains=keyword)
-            | Q(description__icontains=keyword)
-        )
-
-    # Prepare querysets for each type and combine using chain
-    querysets = []
-    for model_type in types:
-        model = get_model_from_str(model_type)
-        extra_excludes = (
-            {} if model_type == "project" else {"project__deleted": True}
-        )
-        queryset = (
-            model.objects.filter(**filter_kwargs)
-            .filter(q_objects)
-            .exclude(deleted=True, **extra_excludes)
-            .distinct()
-        )
-        if model_type != "project":
-            queryset = queryset.annotate(num_nodes=Count("weeks__nodes"))
-        else:
-            queryset = queryset.annotate(
-                num_nodes=Count("workflows__weeks__nodes")
-            )
-        querysets.append(queryset)
-
-    combined_queryset = list(chain(*querysets))
-
-    # Sorting and pagination
-    if sort:
-        sort_key = (
-            attrgetter(sort)
-            if sort in ["created_on", "title"]
-            else lambda x: get_relevance(x, name_filter, keywords)
-        )
-        combined_queryset.sort(key=sort_key, reverse=sort_reversed)
-
-    # Implement pagination
-    total_results = len(combined_queryset)
-    start_index = max((page - 1) * nresults, 0)
-    end_index = min(page * nresults, total_results)
-    return_objects = combined_queryset[start_index:end_index]
-    pages = {
-        "total_results": total_results,
-        "page_count": math.ceil(total_results / nresults),
-        "current_page": page,
-        "results_per_page": nresults,
-    }
-
-    return return_objects, pages
-
-
-def get_model_from_str(model_type):
-    # Placeholder function to convert model type to actual model
-    return {
-        "project": Project,
-        "workflow": Workflow,
-    }.get(
-        model_type, Project
-    )  # Default to Project if type is not recognized
-
-
 # def get_explore_objects(user, name_filter, nresults, published, data):
-#     keywords = name_filter.split(" ")
-#     types = data.get("types", [])
+#     # Unpack and set default values from data
+#     types = data.get("types", ["project", "workflow"])
 #     disciplines = data.get("disciplines", [])
 #     sort = data.get("sort", None)
 #     from_saltise = data.get("fromSaltise", False)
@@ -302,8 +220,16 @@ def get_model_from_str(model_type):
 #     sort_reversed = data.get("sort_reversed", False)
 #     page = data.get("page", 1)
 #
-#     filter_kwargs = {}
-#     # Create filters for each keyword
+#     # Set up filter arguments
+#     filter_kwargs = {
+#         "published": True,
+#         "disciplines__in": disciplines if disciplines else None,
+#         "num_nodes__gte": 3 if content_rich else None,
+#         "from_saltise": from_saltise,
+#     }
+#
+#     # Combine all keyword queries into a single Q object
+#     keywords = name_filter.split()
 #     q_objects = Q()
 #     for keyword in keywords:
 #         q_objects &= (
@@ -313,70 +239,149 @@ def get_model_from_str(model_type):
 #             | Q(title__icontains=keyword)
 #             | Q(description__icontains=keyword)
 #         )
-#     # Choose which types to search
-#     if len(types) == 0:
-#         types = ("project", "workflow")
-#     # Create disciplines filter
-#     if len(disciplines) > 0:
-#         filter_kwargs["disciplines__in"] = disciplines
-#     if content_rich:
-#         filter_kwargs["num_nodes__gte"] = 3
-#     if from_saltise:
-#         filter_kwargs["from_saltise"] = True
 #
-#     if published:
-#         try:
-#             queryset = reduce(
-#                 lambda x, y: chain(x, y),
-#                 [
-#                     get_model_from_str(model_type)
-#                     .objects.filter(published=True)
-#                     .annotate(num_nodes=Count("workflows__weeks__nodes"))
-#                     .filter(**filter_kwargs)
-#                     .filter(q_objects)
-#                     .exclude(deleted=True)
-#                     .distinct()
-#                     if model_type == "project"
-#                     else get_model_from_str(model_type)
-#                     .objects.filter(published=True)
-#                     .annotate(num_nodes=Count("weeks__nodes"))
-#                     .filter(**filter_kwargs)
-#                     .filter(q_objects)
-#                     .exclude(Q(deleted=True) | Q(project__deleted=True))
-#                     .distinct()
-#                     for model_type in types
-#                 ],
+#     # Prepare querysets for each type and combine using chain
+#     querysets = []
+#     for model_type in types:
+#         model = get_model_from_str(model_type)
+#         extra_excludes = (
+#             {} if model_type == "project" else {"project__deleted": True}
+#         )
+#         queryset = (
+#             model.objects.filter(**filter_kwargs)
+#             .filter(q_objects)
+#             .exclude(deleted=True, **extra_excludes)
+#             .distinct()
+#         )
+#         if model_type != "project":
+#             queryset = queryset.annotate(num_nodes=Count("weeks__nodes"))
+#         else:
+#             queryset = queryset.annotate(
+#                 num_nodes=Count("workflows__weeks__nodes")
 #             )
-#             if sort is not None:
-#                 if sort == "created_on" or sort == "title":
-#                     sort_key = attrgetter(sort)
-#                 elif sort == "relevance":
+#         querysets.append(queryset)
 #
-#                     def sort_key(x):
-#                         return get_relevance(x, name_filter, keywords)
+#     combined_queryset = list(chain(*querysets))
 #
-#                 queryset = sorted(
-#                     queryset, key=sort_key, reverse=sort_reversed
-#                 )
-#             queryset = list(queryset)
+#     # Sorting and pagination
+#     if sort:
+#         sort_key = (
+#             attrgetter(sort)
+#             if sort in ["created_on", "title"]
+#             else lambda x: get_relevance(x, name_filter, keywords)
+#         )
+#         combined_queryset.sort(key=sort_key, reverse=sort_reversed)
 #
-#             total_results = len(queryset)
-#             return_objects = queryset[
-#                 max((page - 1) * nresults, 0) : min(
-#                     page * nresults, total_results
-#                 )
-#             ]
-#             page_number = math.ceil(float(total_results) / nresults)
-#             pages = {
-#                 "total_results": total_results,
-#                 "page_count": page_number,
-#                 "current_page": page,
-#                 "results_per_page": nresults,
-#             }
-#         except TypeError:
-#             return_objects = Project.objects.none()
-#             pages = {}
-#     else:
-#         return_objects = Project.objects.none()
-#         pages = {}
+#     # Implement pagination
+#     total_results = len(combined_queryset)
+#     start_index = max((page - 1) * nresults, 0)
+#     end_index = min(page * nresults, total_results)
+#     return_objects = combined_queryset[start_index:end_index]
+#     pages = {
+#         "total_results": total_results,
+#         "page_count": math.ceil(total_results / nresults),
+#         "current_page": page,
+#         "results_per_page": nresults,
+#     }
+#
 #     return return_objects, pages
+
+
+# def get_model_from_str(model_type):
+#     # Placeholder function to convert model type to actual model
+#     return {
+#         "project": Project,
+#         "workflow": Workflow,
+#     }.get(
+#         model_type, Project
+#     )  # Default to Project if type is not recognized
+
+
+def get_explore_objects(user, name_filter, nresults, published, data):
+    keywords = name_filter.split(" ")
+    types = data.get("types", [])
+    disciplines = data.get("disciplines", [])
+    sort = data.get("sort", None)
+    from_saltise = data.get("fromSaltise", False)
+    content_rich = data.get("contentRich", False)
+    sort_reversed = data.get("sort_reversed", False)
+    page = data.get("page", 1)
+
+    filter_kwargs = {}
+    # Create filters for each keyword
+    q_objects = Q()
+    for keyword in keywords:
+        q_objects &= (
+            Q(author__first_name__icontains=keyword)
+            | Q(author__username__icontains=keyword)
+            | Q(author__last_name__icontains=keyword)
+            | Q(title__icontains=keyword)
+            | Q(description__icontains=keyword)
+        )
+    # Choose which types to search
+    if len(types) == 0:
+        types = ("project", "workflow")
+    # Create disciplines filter
+    if len(disciplines) > 0:
+        filter_kwargs["disciplines__in"] = disciplines
+    if content_rich:
+        filter_kwargs["num_nodes__gte"] = 3
+    if from_saltise:
+        filter_kwargs["from_saltise"] = True
+
+    if published:
+        try:
+            queryset = reduce(
+                lambda x, y: chain(x, y),
+                [
+                    get_model_from_str(model_type)
+                    .objects.filter(published=True)
+                    .annotate(num_nodes=Count("workflows__weeks__nodes"))
+                    .filter(**filter_kwargs)
+                    .filter(q_objects)
+                    .exclude(deleted=True)
+                    .distinct()
+                    if model_type == "project"
+                    else get_model_from_str(model_type)
+                    .objects.filter(published=True)
+                    .annotate(num_nodes=Count("weeks__nodes"))
+                    .filter(**filter_kwargs)
+                    .filter(q_objects)
+                    .exclude(Q(deleted=True) | Q(project__deleted=True))
+                    .distinct()
+                    for model_type in types
+                ],
+            )
+            if sort is not None:
+                if sort == "created_on" or sort == "title":
+                    sort_key = attrgetter(sort)
+                elif sort == "relevance":
+
+                    def sort_key(x):
+                        return get_relevance(x, name_filter, keywords)
+
+                queryset = sorted(
+                    queryset, key=sort_key, reverse=sort_reversed
+                )
+            queryset = list(queryset)
+
+            total_results = len(queryset)
+            return_objects = queryset[
+                max((page - 1) * nresults, 0) : min(
+                    page * nresults, total_results
+                )
+            ]
+            page_number = math.ceil(float(total_results) / nresults)
+            pages = {
+                "total_results": total_results,
+                "page_count": page_number,
+                "current_page": page,
+                "results_per_page": nresults,
+            }
+        except TypeError:
+            return_objects = Project.objects.none()
+            pages = {}
+    else:
+        return_objects = Project.objects.none()
+        pages = {}
+    return return_objects, pages

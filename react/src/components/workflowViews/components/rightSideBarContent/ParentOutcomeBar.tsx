@@ -38,7 +38,7 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.data
-    const placeholderText = window.gettext(
+    const placeholderText = _t(
       "Here you can find outcomes from the workflows that contain a node linked to this workflow. This allows you to create relationships between the outcomes at different levels (ex. program to course), called 'alignment'. Link this workflow to a node in another to do so."
     )
 
@@ -79,7 +79,7 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
         <div>
           {/* filled red small-inline */}
           <ErrorIcon />
-          {window.gettext(
+          {_t(
             'Warning: you have linked this workflow to multiple nodes. This is not recommended. You may see outcomes from different parent workflows, or duplicates of outcomes.'
           )}
         </div>

@@ -3,20 +3,28 @@ export enum SortDirection {
   DESC = 'DESC'
 }
 
+export type SearchOption = {
+  name: string
+  label: string
+  value?: boolean | string | number | number[] | string[] | SortDirection
+  enabled?: boolean
+}
+
 export type FilterOption = {
   name: string
   label: string
-  selected?: boolean
+  value: boolean | string | number | number[] | string[]
+  enabled?: boolean
 }
 
-export type SortableFilterOption = {
+export type SortOption = {
   name: string
   label: string
-  selected?: boolean
+  enabled?: boolean
   direction?: SortDirection
 }
-export type Filters = {
-  keyword: string
-  filterSortOptions: SortableFilterOption[]
-  filterProjectOptions: FilterOption[]
-}
+// export type Filters = {
+//   keyword: string
+//   filterSortOptions: SortOption[]
+//   filterProjectOptions: FilterOption[]
+// }

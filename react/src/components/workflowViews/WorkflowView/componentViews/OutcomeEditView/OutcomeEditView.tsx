@@ -129,7 +129,7 @@ export class OutcomeEditViewUnconnected<
     const defaultMessage = (
       <>
         <div className="emptytext">
-          {window.gettext(
+          {_t(
             'Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.'
           )}
         </div>

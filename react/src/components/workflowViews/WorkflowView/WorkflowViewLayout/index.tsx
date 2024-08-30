@@ -203,11 +203,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   importNodes = () => console.log('importNodes')
 
   deleteWorkflow() {
-    if (
-      window.confirm(
-        _t('Are you sure you want to delete this workflow?')
-      )
-    ) {
+    if (window.confirm(_t('Are you sure you want to delete this workflow?'))) {
       deleteSelfQuery(this.data.id, 'workflow', true, () => {})
     }
   }
@@ -215,9 +211,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   deleteWorkflowHard() {
     if (
       window.confirm(
-        window.gettext(
-          'Are you sure you want to permanently delete this workflow?'
-        )
+        _t('Are you sure you want to permanently delete this workflow?')
       )
     ) {
       deleteSelfQuery(this.data.id, 'workflow', false, () => {

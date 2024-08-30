@@ -71,7 +71,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
     const type = data.type
 
     const text = [
-      window.gettext(type),
+      _t(ype),
       data.is_strategy ? _t(' strategy') : ''
     ].join('')
 

@@ -12,7 +12,7 @@ import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
-import { EProject, ESectionObject } from '@XMLHTTP/types/entity'
+import { EProject, ELibraryObject } from '@XMLHTTP/types/entity'
 import ProjectExportModal from '@cfModule/components/common/dialog/ProjectExport'
 import ProjectArchiveModal from '@cfModule/components/common/dialog/ProjectArchive'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
@@ -32,7 +32,7 @@ interface StateType {
   project?: EProject
   view_type?: string
   users?: UsersForObjectQueryResp
-  workflow_data?: ESectionObject[]
+  workflow_data?: ELibraryObject[]
   openEditDialog?: boolean
   openShareDialog?: boolean
 }
@@ -97,9 +97,7 @@ function ProjectDetailContent({
   function deleteProjectHard() {
     if (
       window.confirm(
-        window.gettext(
-          'Are you sure you want to permanently delete this project?'
-        )
+        _t('Are you sure you want to permanently delete this project?')
       )
     ) {
       deleteSelfQuery(project.id, 'project', false, () => {
