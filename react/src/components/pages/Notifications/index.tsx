@@ -94,7 +94,7 @@ const NotificationsPage = (): JSX.Element => {
   }
 
   /**
-   *
+   * // @todo move to react query
    */
   function onMarkAsReadClick() {
     const { notification } = pageState
@@ -125,7 +125,7 @@ const NotificationsPage = (): JSX.Element => {
   }
 
   /**
-   *
+   * // @todo move to react query
    */
   function onDeleteClick() {
     const { notification } = pageState
@@ -154,8 +154,7 @@ const NotificationsPage = (): JSX.Element => {
   }
 
   /**
-   *
-   * @param e
+   * // @todo move to react query
    */
   function onMarkAllAsReadClick(e) {
     e.preventDefault()

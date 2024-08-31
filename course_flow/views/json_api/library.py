@@ -68,7 +68,7 @@ def json_api__library__home(request: HttpRequest) -> JsonResponse:
         "projects": projects_serialized,
         "templates": templates_serialized,
     }
-    return JsonResponse({"action": "get", "data": data})
+    return JsonResponse({"action": "get", "data_package": data})
 
 
 #########################################################
