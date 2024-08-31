@@ -1,11 +1,11 @@
 // @ts-nocheck
 import * as React from 'react'
-import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
+import WorkflowCardWrapper from '@cfCommonComponents/cards/WorkflowCardWrapper'
 import { debounce } from '@cfUtility'
 // import $ from 'jquery'
 import { Discipline, QueryPages } from '@cfModule/types/common'
 import { GridWrap } from '@cfModule/mui/helper'
-import { libraryObjectsSearchQuery } from '@XMLHTTP/API/pages'
+import { libraryObjectsSearchQuery } from '@XMLHTTP/API/library'
 import SearchIcon from '@mui/icons-material/Search'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import SortIcon from '@mui/icons-material/Sort'

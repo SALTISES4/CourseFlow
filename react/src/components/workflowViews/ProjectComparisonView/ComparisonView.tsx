@@ -3,7 +3,6 @@ import * as reactDom from 'react-dom'
 import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar'
-import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 
 import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents'
 import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
@@ -217,11 +216,12 @@ class ComparisonView extends React.Component<PropsType, StateType> {
         {portal}
         <div className="project-header">
           <div>{_t('Comparing workflows for:')}</div>
-          <WorkflowTitle
-            data={data}
-            no_hyperlink={true}
-            class_name="project-title"
-          />
+          {/*<WorkflowTitle*/}
+          {/*  data={data}*/}
+          {/*  no_hyperlink={true}*/}
+          {/*  class_name="project-title"*/}
+          {/*/>*/}
+          placeholder title
         </div>
       </>
     )

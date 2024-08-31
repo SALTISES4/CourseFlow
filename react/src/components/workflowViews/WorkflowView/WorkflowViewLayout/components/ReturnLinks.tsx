@@ -1,4 +1,3 @@
-import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import * as React from 'react'
 import { EProject } from '@XMLHTTP/types/entity'
 import { Link } from 'react-router-dom'
@@ -59,13 +58,13 @@ const ReturnLinksUnconnected = ({
           <Typography>{_t('Return to')}</Typography>
           {
             // doesn't work for now because project is not in store
-            0 && (
-              <WorkflowTitle
-                class_name="inline"
-                no_hyperlink={true}
-                data={project}
-              />
-            )
+            0 &&
+              // <WorkflowTitle
+              //   class_name="inline"
+              //   no_hyperlink={true}
+              //   data={project}
+              // />
+              'placeholder title'
           }
         </div>
       </Link>

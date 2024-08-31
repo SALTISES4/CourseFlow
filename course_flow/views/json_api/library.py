@@ -10,12 +10,15 @@ from operator import attrgetter
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db.models import Count, Q
 from django.http import HttpRequest, JsonResponse
 
-from course_flow.decorators import user_is_teacher
+from course_flow.decorators import user_can_view
 from course_flow.models import Project
 from course_flow.models.discipline import Discipline
+from course_flow.models.favourite import Favourite
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.workflow import Workflow
 from course_flow.serializers import DisciplineSerializer, InfoBoxSerializer
@@ -74,23 +77,23 @@ def json_api__library__home(request: HttpRequest) -> JsonResponse:
 @login_required
 def json_api__library__explore(request: HttpRequest) -> JsonResponse:
     user = request.user
-    initial_workflows, pages = get_explore_objects(
-        user,
-        "",
-        20,
-        True,
-        {"sort": "created_on", "sort_reversed": True},
-    )
+    # initial_workflows, pages = get_explore_objects(
+    #     user,
+    #     "",
+    #     20,
+    #     True,
+    #     {"sort": "created_on", "sort_reversed": True},
+    # )
 
     data = {
-        "initial_workflows": (
-            InfoBoxSerializer(
-                initial_workflows,
-                context={"user": user},
-                many=True,
-            ).data
-        ),
-        "initial_pages": pages,
+        # "initial_workflows": (
+        #     InfoBoxSerializer(
+        #         initial_workflows,
+        #         context={"user": user},
+        #         many=True,
+        #     ).data
+        # ),
+        # "initial_pages": pages,
         "disciplines": DisciplineSerializer(
             Discipline.objects.all(), many=True
         ).data,
@@ -98,7 +101,7 @@ def json_api__library__explore(request: HttpRequest) -> JsonResponse:
         if user
         else 0,  # @todo this should handle null not 0, or perhaps -1
     }
-    return JsonResponse({"action": "get", "data": data})
+    return JsonResponse({"action": "get", "data_package": data})
 
 
 #########################################################
@@ -123,15 +126,29 @@ def json_api__library__library__projects__get(
 # FAVORITES
 #########################################################
 @login_required
-def json_api__library__favourites__projects__get(
+def json_api__library__favourite_library_objects__post(
     request: HttpRequest,
 ) -> JsonResponse:
-    projects_serialized = InfoBoxSerializer(
+    body = json.loads(request.body)
+
+    library_objects_serialized = InfoBoxSerializer(
         get_nondeleted_favourites(request.user),
         many=True,
         context={"user": request.user},
     ).data
-    return JsonResponse({"data_package": projects_serialized})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": {
+                "results": library_objects_serialized,
+                "meta": {
+                    "pages": 1,
+                },
+            },
+        }
+    )
+
+    # JsonResponse({"data_package": projects_serialized}))
 
 
 #########################################################
@@ -139,7 +156,7 @@ def json_api__library__favourites__projects__get(
 #########################################################
 # @user_is_teacher() @todo how to spoof teacher for dev
 @login_required
-def json_api___library__library__objects_search__post(
+def json_api___library__library_objects_search__post(
     request: HttpRequest,
 ) -> JsonResponse:
     body = json.loads(request.body)
@@ -174,6 +191,38 @@ def json_api___library__library__objects_search__post(
             },
         }
     )
+
+
+# favourite/unfavourite a project or workflow for a user
+@user_can_view(False)
+def json_api__library__toggle_favourite__post(
+    request: HttpRequest,
+) -> JsonResponse:
+    response = {}
+
+    body = json.loads(request.body)
+    object_id = body.get("objectID")
+    objectType = body.get("objectType")
+    favourite = body.get("favourite")
+
+    if objectType in ["activity", "course", "program"]:
+        objectType = "workflow"
+    try:
+        item = get_model_from_str(objectType).objects.get(pk=object_id)
+        Favourite.objects.filter(
+            user=request.user,
+            content_type=ContentType.objects.get_for_model(item),
+            object_id=object_id,
+        ).delete()
+
+        if favourite:
+            Favourite.objects.create(user=request.user, content_object=item)
+
+    except ValidationError:
+        response["error"] = "validation error"
+
+    response["action"] = "posted"
+    return JsonResponse(response)
 
 
 #########################################################

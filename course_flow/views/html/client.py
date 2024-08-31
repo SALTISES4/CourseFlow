@@ -26,13 +26,3 @@ def default_react_view(request, title, path_id, *args, **kwargs):
     return render(
         request, "course_flow/html/react_common_entrypoint.html", context
     )
-
-
-@login_required
-@user_passes_test(is_teacher)
-def explore_view(request):
-    context = {"path_id": "explore", "title": "Explore"}
-
-    return render(
-        request, "course_flow/html/react_common_entrypoint.html", context
-    )

@@ -186,3 +186,16 @@ export const debounce = (func, timeout = 300) => {
 export const _t = (str: string) => {
   return window.gettext(str)
 }
+
+export function convertEnum<T>(
+  value: string,
+  enumType: { [key: string]: T },
+  defaultValue: T
+): T {
+  for (const key in enumType) {
+    if (enumType[key] === value) {
+      return enumType[key]
+    }
+  }
+  return defaultValue
+}

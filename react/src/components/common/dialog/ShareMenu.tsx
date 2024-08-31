@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { _t } from '@cf/utility/utilityFunctions'
 
 // import $ from 'jquery'
@@ -495,11 +494,12 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       <div className="message-wrap user-text">
         <h2>
           {_t('Share') + ' ' + _t(data.type) + ' '}
-          <WorkflowTitle
-            no_hyperlink={true}
-            data={this.props.data}
-            class_name={'inline'}
-          />
+          {/*<WorkflowTitle*/}
+          {/*  no_hyperlink={true}*/}
+          {/*  data={this.props.data}*/}
+          {/*  class_name={'inline'}*/}
+          {/*/>*/}
+          title placeholder
         </h2>
         <this.Publication />
         <this.IsTemplate />

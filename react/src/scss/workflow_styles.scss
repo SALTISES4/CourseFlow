@@ -498,9 +498,7 @@ input[type="submit"] {
   flex-wrap: wrap;
 }
 
-.assignment-in-node .workflow-title {
-  font-size: 12px;
-}
+
 
 .flatpickr-input + input:disabled {
   background: none;
@@ -1060,9 +1058,7 @@ ol.children-block {
   display: block;
 }
 
-.user-table .table-cell .workflow-title {
-  font-size: 12px;
-}
+
 
 .user-table {
   white-space: nowrap;
@@ -2317,10 +2313,6 @@ circle.mouseover {
 .comparison-view .workflow-description,
 .comparison-view .workflow-publication {
   display: none;
-}
-
-.comparison-view .workflow-title {
-  font-size: 12px;
 }
 
 .comparison-view .workflow-array {

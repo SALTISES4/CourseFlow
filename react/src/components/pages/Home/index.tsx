@@ -1,4 +1,3 @@
-import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
 import Alert from '@cfCommonComponents/UIComponents/Alert'
 import { GridWrap, OuterContentWrap } from '@cfModule/mui/helper'
 import Welcome from './components/Welcome'
@@ -8,6 +7,8 @@ import { PageHomeQueryResp } from '@XMLHTTP/types/query'
 import { useQuery } from '@tanstack/react-query'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
 import { _t } from '@cf/utility/utilityFunctions'
+import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
+import WorkflowCardWrapper from '@cfCommonComponents/cards/WorkflowCardWrapper'
 
 /**
  *
@@ -22,12 +23,14 @@ const Home = () => {
   if (isLoading) return <Loader />
   if (isError) return <div>An error occurred: {error.message}</div>
 
-  const { projects, isTeacher, templates } = data.data
-  console.log(data.data)
+  const { projects, isTeacher, templates } = data.data_package
+
+  const formattedProjects = formatLibraryObjects(projects)
+  const formattedTemplates = formatLibraryObjects(templates)
 
   return (
     <OuterContentWrap>
-      <Welcome hide={!data.data.projects.length} />
+      <Welcome hide={!projects.length} />
       {!!projects.length && (
         <Section
           header={
@@ -50,8 +53,8 @@ const Home = () => {
           }
         >
           <GridWrap>
-            {projects.map((project, index) => (
-              <WorkflowCard key={`project-${index}`} workflowData={project} />
+            {formattedProjects.map((item, index) => (
+              <WorkflowCardWrapper key={`project-${item.id}`} {...item} />
             ))}
           </GridWrap>
         </Section>
@@ -75,8 +78,8 @@ const Home = () => {
         />
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         <GridWrap>
-          {templates.map((template, index) => (
-            <WorkflowCard key={`template-${index}`} workflowData={template} />
+          {formattedTemplates.map((item, index) => (
+            <WorkflowCardWrapper key={`template-${item.id}`} {...item} />
           ))}
         </GridWrap>
       </Section>

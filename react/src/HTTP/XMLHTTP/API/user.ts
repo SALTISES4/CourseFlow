@@ -1,11 +1,13 @@
 import {
+  EmptyPostResp,
   NotificationSettingsQueryResp,
   ProfileSettingsQueryResp,
   UserListResp
 } from '@XMLHTTP/types/query'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
-import { VERB } from '@cfModule/types/enum'
+import { LibraryObjectType, VERB } from '@cfModule/types/enum'
 import { ToDefine } from '@cfModule/types/common'
+import { ToggleFavouriteQueryArgs } from '@XMLHTTP/types/args'
 
 /*******************************************************
  * USERS MODEL QUERY
@@ -53,25 +55,3 @@ export async function fetchProfileSettings(): Promise<ProfileSettingsQueryResp> 
   return API_GET<ProfileSettingsQueryResp>(url)
 }
 
-/**
- *  Toggle whether a project or activity is a favourite for the user
- * @param objectID
- * @param objectType
- * @param favourite
- * @param callBackFunction
- */
-export function toggleFavourite(
-  objectID,
-  objectType,
-  favourite,
-  callBackFunction = (_data: ToDefine) => console.log('success')
-) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.toggle_favourite, {
-    objectID: objectID,
-    objectType: objectType,
-    favourite: favourite
-  }).then((response: ToDefine) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
-  })
-}

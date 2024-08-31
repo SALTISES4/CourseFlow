@@ -31,7 +31,7 @@ class UserAdd extends React.Component<PropsType, StateProps> {
     $(this.input.current).autocomplete({
       source: (request, response_function) => {
         getUserListQuery(request.term, (response) => {
-          const user_list = response.user_list.map((user) => {
+          const user_list = response.data_package.user_list.map((user) => {
             return {
               label:
                 user.first_name + ' ' + user.last_name + ' - ' + user.username,

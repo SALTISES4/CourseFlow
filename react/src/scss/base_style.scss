@@ -787,25 +787,9 @@ h3.big-space {
   border-width: 0px;
 }
 
-.simple-workflow .workflow-title {
-  font-size: 14px;
-  font-weight: normal;
-  width: 200px;
-  min-width: 200px;
-  max-width: 200px;
-  overflow: hidden;
-  -webkit-line-clamp: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-}
-
 .create-dropdown .workflow-top-row {
   gap: 10px;
   align-items: center;
-}
-
-.create-dropdown .workflow-top-row .workflow-title {
-  margin-bottom: 0;
 }
 
 .simple-workflow .workflow-type-indicator {
@@ -881,12 +865,7 @@ h3.big-space {
   margin: 0;
 }
 
-.workflow-for-menu .workflow-title {
-  overflow: hidden;
-  -webkit-line-clamp: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-}
+
 
 .workflow-publication {
   font-size: 14px;
@@ -1589,9 +1568,6 @@ h3.big-space {
   padding: 5px;
 }
 
-.overview-table .workflow-title {
-  font-size: 12px;
-}
 
 .overview-table .table-user {
   font-weight: 600;
@@ -1742,7 +1718,6 @@ table tr.total-row {
 
 .create-dropdown > .list-notification,
 .workflow-create-wrapper .list-notification {
-  white-space: wrap;
   color: $color-text;
   text-decoration: none;
   position: relative;

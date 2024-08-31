@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { connect, DispatchProp } from 'react-redux'
 import {
   getParentWorkflowInfoQuery,
@@ -71,7 +70,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
     const type = data.type
 
     const text = [
-      _t(ype),
+      _t(type),
       data.is_strategy ? _t(' strategy') : ''
     ].join('')
 
@@ -95,13 +94,14 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
           return (
             <>
               <Typography>{_t('Used in:')}</Typography>
-              {this.state.parent_workflows.map((workflow, index) => (
-                <WorkflowTitle
-                  key={`WorkflowTitleParent-${index}`}
-                  data={workflow}
-                  test_id="panel-favourite"
-                />
-              ))}
+              {/*{this.state.parent_workflows.map((workflow, index) => (*/}
+              {/*  // <WorkflowTitle*/}
+              {/*  //   key={`WorkflowTitleParent-${index}`}*/}
+              {/*  //   data={workflow}*/}
+              {/*  //   test_id="panel-favourite"*/}
+              {/*  // />*/}
+              {/*  placeholder title*/}
+              {/*))}*/}
             </>
           )
         }
@@ -113,13 +113,13 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
           return (
             <>
               <Typography>{_t('Workflows Used:')}</Typography>
-              {this.props.childWorkflows.map((workflow, index) => (
-                <WorkflowTitle
-                  key={`WorkflowTitleParent-${index}`}
-                  data={workflow}
-                  test_id="panel-favourite"
-                />
-              ))}
+              {/*{this.props.childWorkflows.map((workflow, index) => (*/}
+              {/*  <WorkflowTitle*/}
+              {/*    key={`WorkflowTitleParent-${index}`}*/}
+              {/*    data={workflow}*/}
+              {/*    test_id="panel-favourite"*/}
+              {/*  />*/}
+              {/*))}*/}
             </>
           )
         }

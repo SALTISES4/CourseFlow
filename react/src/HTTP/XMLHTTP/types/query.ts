@@ -36,13 +36,24 @@ export type ProfileField = {
   help_text: string
   value: string | number
 }
+/*******************************************************
+ * EmptyPostResp
+ * Used for all queries that do not export
+ * a response beyond confirmation that the
+ * POST has been sucessfully recieved and
+ * processed
+ *******************************************************/
+export type EmptyPostResp = {
+  action: VERB
+  error?: string
+}
 
 /*******************************************************
  * Page
  *******************************************************/
 export type PageHomeQueryResp = {
   action: VERB
-  data: {
+  data_package: {
     projects: ELibraryObject[]
     templates: ELibraryObject[]
     isTeacher: boolean
@@ -51,9 +62,7 @@ export type PageHomeQueryResp = {
 
 export type PageExploreQueryResp = {
   action: VERB
-  data: {
-    initial_workflows: ELibraryObject[]
-    initial_pages: QueryPages
+  data_package: {
     disciplines: Discipline[]
     user_id: number
   }
@@ -92,22 +101,10 @@ export type ProfileSettingsQueryResp = {
  *******************************************************/
 export type NotificationQueryResp = {
   action: VERB
-  data: {
+  data_package: {
     notifications: any
     unreadCount: number
   }
-}
-
-/*******************************************************
- * EmptyPostResp
- * Used for all queries that do not export
- * a response beyond confirmation that the
- * POST has been sucessfully recieved and
- * processed
- *******************************************************/
-export type EmptyPostResp = {
-  action: VERB
-  error?: string
 }
 
 /*******************************************************
@@ -151,12 +148,6 @@ export type DuplicateBaseItemQueryResp = {
 export type PageLibraryQueryResp = {
   data_package: ELibraryObject[]
 }
-
-export type FavouritesQueryResp = {
-  action: VERB
-  data_package: ELibraryObject[]
-}
-
 export type DisciplineQueryResp = {
   action: VERB
   data_package: ELibraryObject[]
@@ -197,7 +188,9 @@ export type UsersForObjectQueryResp = {
 
 export type UserListResp = {
   action: VERB
-  user_list: EUser[]
+  data_package: {
+    user_list: EUser[]
+  }
 }
 
 /*******************************************************

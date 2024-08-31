@@ -2,9 +2,6 @@ import { createBrowserRouter } from 'react-router-dom'
 import Base from '@cf/base'
 import Home from '@cfPages/Home'
 import Styleguide from '@cfPages/Styleguide'
-import Favourites from '@cfPages/Favourites'
-import Library from '@cfPages/Library'
-import Explore from '@cfPages/Explore'
 import NotificationsPage from '@cfPages/Notifications'
 import NotificationsSettingsPage from '@cfPages/NotificationsSettings'
 import ProfileSettingsPage from '@cfPages/ProfileSettings'
@@ -13,6 +10,9 @@ import ProjectDetail from '@cfPages/ProjectDetail'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import React from 'react'
 import { ViewType } from '@cf/types/enum'
+import MyLibrary from "@cfPages/Library/MyLibrary";
+import Favourites from '@cfModule/components/pages/Library/Favourites'
+import Explore from '@cfModule/components/pages/Library/Explore'
 
 const DOMAIN = 'course-flow'
 export enum Routes {
@@ -64,7 +64,7 @@ export const CfRouter = createBrowserRouter([
     path: Routes.LIBRARY,
     element: (
       <Base>
-        <Library />
+        <MyLibrary />
       </Base>
     )
   },

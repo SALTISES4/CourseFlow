@@ -1,5 +1,6 @@
+// @ts-nocheck
 import * as React from 'react'
-import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
+import WorkflowCardWrapper from '@cfCommonComponents/cards/WorkflowCardWrapper'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
 import { GridWrap } from '@cfModule/mui/helper'

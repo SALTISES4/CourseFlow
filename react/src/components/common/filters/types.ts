@@ -23,8 +23,3 @@ export type SortOption = {
   enabled?: boolean
   direction?: SortDirection
 }
-// export type Filters = {
-//   keyword: string
-//   filterSortOptions: SortOption[]
-//   filterProjectOptions: FilterOption[]
-// }

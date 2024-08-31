@@ -58,7 +58,7 @@ def json_api__notification__list__get(request: HttpRequest):
         "notifications": prepared_notifications,
         "unreadCount": unread,
     }
-    return JsonResponse({"action": "get", "data": data})
+    return JsonResponse({"action": "get", "data_package": data})
 
 
 @ajax_login_required

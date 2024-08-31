@@ -21,53 +21,22 @@ export class TitleText extends React.Component {
   }
 }
 
-export const WorkflowTitle = (props) => {
-  const data = props.data
-  const href = !data.url
-    ? COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-        '0',
-        data.id
-      )
-    : data.url
+export function workflowTitle(title, code, deleted) {
+  let text = title || _t('Untitled')
 
-  const getText = () => {
-    let text = data.title || _t('Untitled')
-
-    if (data.code) {
-      text = `${data.code} - ${text}`
-    }
-
-    if (['noaccess', 'nouser'].includes(data.url)) {
-      text += ` ${_t(' (no access)')}`
-    }
-
-    if (data.deleted) {
-      text += ' (deleted)'
-    }
-    return text
+  if (code) {
+    text = `${code} - ${text}`
   }
 
-  if (props.no_hyperlink || data.url == 'noaccess' || data.url == 'nouser') {
-    return (
-      <div
-        className={props.class_name}
-        data-test-id={props.test_id}
-        title={getText()}
-        dangerouslySetInnerHTML={{ __html: getText() }}
-      />
-    )
-  }
+  // @todo check this condition
+  // if (['noaccess', 'nouser'].includes(data.url)) {
+  //   text += ` ${_t(' (no access)')}`
+  // }
 
-  return (
-    <a
-      onClick={(evt) => evt.stopPropagation()}
-      href={href}
-      className={props.class_name}
-      data-test-id={props.test_id}
-      title={getText()}
-      dangerouslySetInnerHTML={{ __html: getText() }}
-    />
-  )
+  if (deleted) {
+    text += ' (deleted)'
+  }
+  return text
 }
 
 //Title text for a week

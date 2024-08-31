@@ -1,6 +1,5 @@
 // Only used in classroom view. Should be removed/replaced.
 import * as React from 'react'
-import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { _t } from '@cf/utility/utilityFunctions'
 
 class WorkflowCardSimple extends React.Component {
@@ -49,7 +48,7 @@ class WorkflowCardSimple extends React.Component {
         }}
       >
         <div className="workflow-top-row">
-          <WorkflowTitle class_name="workflow-title" data={data} />
+          {/*<WorkflowTitle class_name="workflow-title" data={data} />*/}
           {this.getTypeIndicator()}
         </div>
       </div>

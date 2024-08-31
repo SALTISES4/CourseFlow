@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect, DispatchProp } from 'react-redux'
 
-import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
+import WorkflowCardWrapper from '@cfCommonComponents/cards/WorkflowCardWrapper'
 import OutcomeEdit from './OutcomeEdit'
 import ComparisonWorkflow from './ComparisonWorkflow'
 import ActionCreator from '@cfRedux/ActionCreator'
@@ -108,10 +108,13 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
       <>
         {portal}
         <div className="workflow-header" style={style}>
-          <WorkflowCard
-            workflowData={data}
-            selectAction={this.openEdit.bind(this, null)}
-          />
+
+          {/*<WorkflowCard*/}
+          {/*  workflowData={data}*/}
+          {/*  selectAction={this.openEdit.bind(this, null)}*/}
+          {/*/>*/}
+          placeholder card
+
         </div>
         <div className="workflow-container">
           <this.Content />

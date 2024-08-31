@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { produce } from 'immer'
 // @local
-import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter'
+// import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter'
 import { ProjectMenuProps } from '@cfPages/ProjectDetail/types'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { Box, Dialog, DialogTitle, Link } from '@mui/material'
@@ -355,13 +355,14 @@ function ProjectDetailContent({
    *******************************************************/
   const Content = () => {
     return (
-      <WorkflowFilter
-        read_only={readOnly}
-        project_data={state.project}
-        workflows={state.workflow_data}
-        updateWorkflow={updateWorkflow}
-        context="project"
-      />
+      <></>
+      // <WorkflowFilter
+      //   read_only={readOnly}
+      //   project_data={state.project}
+      //   workflows={state.workflow_data}
+      //   updateWorkflow={updateWorkflow}
+      //   context="project"
+      // />
     )
   }
 

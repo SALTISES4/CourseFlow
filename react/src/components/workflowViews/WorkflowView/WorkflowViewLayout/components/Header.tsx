@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import CollapsibleText from '@cfCommonComponents/UIComponents/CollapsibleText'
 import * as Utility from '@cfModule/utility/utilityFunctions'
 import { useContext } from 'react'
@@ -116,11 +115,12 @@ const Header = ({
       onClick={(evt) => context.selectionManager.changeSelection(evt)}
     >
       <div className="project-header-top-line">
-        <WorkflowTitle
-          data={data}
-          no_hyperlink={true}
-          class_name="project-title"
-        />
+        {/*<WorkflowTitle*/}
+        {/*  data={data}*/}
+        {/*  no_hyperlink={true}*/}
+        {/*  class_name="project-title"*/}
+        {/*/>*/}
+        placeholder title
         <TypeIndicator data={data} />
       </div>
       <div className="project-header-info">

@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
  * console, disable TEMPORARILY
@@ -70,5 +72,6 @@ root.render(
         </ScopedCssBaseline>
       </ThemeProvider>
     </CacheProvider>
+    <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
 )

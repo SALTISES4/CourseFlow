@@ -1,5 +1,5 @@
 import { Discipline, QueryPages } from '@cfModule/types/common'
-import {ELibraryObject} from "@XMLHTTP/types/entity";
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 
 export type ExploreViewContextDataDTO = {
   initial_workflows: ELibraryObject[]
