@@ -28,6 +28,8 @@ const ProjectDetails = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
+  const projectId = 5
+
   const location = useLocation()
   const [tab, setTab] = useState<AppRoutes>(location.pathname as AppRoutes)
   const navigate = useNavigate()
@@ -35,8 +37,8 @@ const ProjectDetails = () => {
 
   const { data, error, isLoading, isError } = useQuery<GetProjectByIdQueryResp>(
     {
-      queryKey: ['getProjectById', 5],
-      queryFn: () => getProjectById(5)
+      queryKey: ['getProjectById', projectId],
+      queryFn: () => getProjectById(projectId)
     }
   )
 
@@ -89,20 +91,16 @@ const ProjectDetails = () => {
               value={AppRoutes.TEMP_PROJECT_WORKFLOWS}
               onClick={() => navigate(AppRoutes.TEMP_PROJECT_WORKFLOWS)}
             />
-            {/*<Tab*/}
-            {/*  label="Workspaces"*/}
-            {/*  value={AppRoutes.PROJECT_WORKSPACE}*/}
-            {/*  onClick={() => navigate(AppRoutes.PROJECT_WORKSPACE)}*/}
-            {/*/>*/}
           </Tabs>
         </OuterContentWrap>
       </Box>
 
       <Routes>
         <Route path="/" element={<TabOverview {...project} />} />
-        <Route path="/workflows" element={<TabWorkflows />} />
-        <Route path="/temp-project/workflows" element={<TabWorkflows />} />
-        {/*<Route path="/workspace" element={<TabWorkspace />} />*/}
+        <Route
+          path="/workflows"
+          element={<TabWorkflows projectId={projectId} />}
+        />
       </Routes>
     </>
   )

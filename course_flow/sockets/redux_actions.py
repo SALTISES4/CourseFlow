@@ -196,6 +196,7 @@ def replaceStoreData(data_package):
 
 
 def refreshStoreData(data_package):
+    print("am i being called refreshStoreData")
     return {"type": "refreshStoreData", "payload": data_package}
 
 

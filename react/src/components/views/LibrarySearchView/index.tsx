@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
-import { GridWrap, OuterContentWrap } from '@cfMUI/helper'
+import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { Link as LinkRouter } from 'react-router-dom'
 import { Link, Skeleton, Typography } from '@mui/material'

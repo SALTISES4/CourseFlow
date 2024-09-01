@@ -7,7 +7,7 @@ import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 
 import { StyledDialog } from '../styles'
-import { PermissionUserType } from '@cfViews/WorkflowView/componentViews/OverviewView/types'
+import { PermissionUserType } from '@cf/types/common'
 
 type PropsType = {
   user: PermissionUserType | null

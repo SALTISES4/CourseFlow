@@ -6,7 +6,7 @@ export enum PROJECT_PERMISSION_ROLE {
 }
 
 export type PermissionUserType = {
-  id: string
+  id: number
   name: string
   email: string
   role: PROJECT_PERMISSION_ROLE
@@ -18,7 +18,7 @@ export type ObjectSetType = {
 }
 
 export type ProjectDetailsType = {
-  id: string
+  id: number
   title: string
   description: string
   isFavorite?: boolean

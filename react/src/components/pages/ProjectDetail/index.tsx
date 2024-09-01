@@ -7,7 +7,7 @@ import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { _t } from '@cf/utility/utilityFunctions'
-import Loader from "@cfComponents/UIPrimitives/Loader";
+import Loader from '@cfComponents/UIPrimitives/Loader'
 
 // class ProjectPage extends React.Component {
 //   private readonly readOnly: boolean
@@ -61,7 +61,7 @@ const ProjectPage = () => {
   const { data, error, isLoading, isError } = useQuery<GetProjectByIdQueryResp>(
     {
       queryKey: ['getProjectById', id],
-      queryFn: () => getProjectById(id)
+      queryFn: () => getProjectById(Number(id))
     }
   )
 

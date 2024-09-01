@@ -26,9 +26,9 @@ import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
  *******************************************************/
 
 export async function getWorkflowById(
-  id: string
+  id: number
 ): Promise<GetWorkflowByIdQueryResp> {
-  const params = new URLSearchParams({ id }).toString()
+  const params = new URLSearchParams({ id: id.toString() }).toString()
   const url = `${COURSEFLOW_APP.globalContextData.path.json_api.workflow.detail}?${params}`
   return API_GET<GetWorkflowByIdQueryResp>(url)
 }

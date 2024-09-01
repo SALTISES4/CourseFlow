@@ -1,5 +1,3 @@
-import { DIALOG_TYPE } from '@cfPages/Styleguide/dialog'
-
 import ArchiveDialog from '@cfPages/Styleguide/dialog/Archive'
 import WorkflowLinkDialog from '@cfPages/Styleguide/dialog/WorkflowLink'
 
@@ -27,6 +25,7 @@ import editCourseData from '@cfPages/Styleguide/dialog/CourseEdit/data'
 import ImportDialog from '@cfPages/Styleguide/dialog/Import'
 import AddContributorDialog from '@cfPages/Styleguide/dialog/AddContributor'
 import addContributorData from '@cfPages/Styleguide/dialog/AddContributor/data'
+import { DIALOG_TYPE } from '@cf/hooks/useDialog'
 
 const AllDialogs = () => (
   <>

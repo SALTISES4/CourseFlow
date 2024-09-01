@@ -82,9 +82,6 @@
       "@cfSCSS/*": [
         "./scss/*"
       ],
-      "@cfMUI/*": [
-        "./mui/*"
-      ]
     }
   },
   "include": [

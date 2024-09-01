@@ -1,8 +1,5 @@
 import { EUser } from '@XMLHTTP/types/entity'
-import {
-  PermissionUserType,
-  PROJECT_PERMISSION_ROLE
-} from '@cfPages/ProjectTabs/types'
+import { PermissionUserType, PROJECT_PERMISSION_ROLE } from '@cf/types/common'
 
 export function groupUsersFromRoleGroups({
   viewers,

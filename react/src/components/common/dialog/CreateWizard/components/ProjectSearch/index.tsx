@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react'
 import Fuse from 'fuse.js'
 import { debounce } from '@mui/material/utils'
-import { GridWrap } from '@cfMUI/helper'
+import { GridWrap } from '@cf/mui/helper'
 import Box from '@mui/material/Box'
 import WorkflowCardDumb from '@cfComponents/cards/WorkflowCardDumb'
 import TextField from '@mui/material/TextField'

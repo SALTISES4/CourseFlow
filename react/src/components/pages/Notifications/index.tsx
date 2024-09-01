@@ -17,7 +17,7 @@ import { getNameInitials } from '@cf/utility/utilityFunctions'
 import { useQuery } from '@tanstack/react-query'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import * as Styled from './style'
-import { fetchNotifications } from '@XMLHTTP/API/notifications'
+import { getNotifications } from '@XMLHTTP/API/notifications'
 import { NotificationQueryResp } from '@XMLHTTP/types/query'
 
 /**

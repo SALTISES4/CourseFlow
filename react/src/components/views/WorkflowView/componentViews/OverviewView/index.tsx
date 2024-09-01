@@ -9,11 +9,7 @@ import List from '@mui/material/List'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import LinkIcon from '@mui/icons-material/Link'
-import {
-  ProjectDetailsType,
-  PermissionUserType,
-  PROJECT_PERMISSION_ROLE
-} from './types'
+
 import {
   InfoBlock,
   InfoBlockTitle,
@@ -26,6 +22,11 @@ import RemoveUserFromProjectDialog from '@cf/components/common/dialog/UserRemove
 import MenuButton, {
   MenuButtonOption
 } from '@cf/components/common/menu/MenuButton'
+import {
+  PermissionUserType,
+  PROJECT_PERMISSION_ROLE,
+  ProjectDetailsType
+} from '@cf/types/common'
 
 function getInitials(name: string): string {
   const split = name.split(' ')

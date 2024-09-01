@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState } from 'react'
 import { OuterContentWrap } from '@cf/mui/helper'
 import Button from '@mui/material/Button'
@@ -25,12 +26,8 @@ import MenuButton, {
   MenuButtonOption
 } from '@cfPages/Styleguide/components/MenuButton'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import UserRemoveFromProject from "@cfPages/Styleguide/dialog/UserRemove";
-
-function getInitials(name: string): string {
-  const split = name.split(' ')
-  return `${split[0][0]}${split[split.length - 1][0]}`
-}
+import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
+import {_t, getInitials} from '@cf/utility/utilityFunctions'
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
@@ -131,14 +128,15 @@ const OverviewTab = ({
               color="secondary"
               startIcon={<LinkIcon />}
             >
-              Generate public link
+              {_t("Generate public link")}
             </Button>
             <Button
               size="medium"
               variant="contained"
               onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
             >
-              Add contributor
+              {_t("Add contributor")}
+
             </Button>
           </Stack>
         </InfoBlock>

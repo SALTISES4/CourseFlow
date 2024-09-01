@@ -150,7 +150,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     // fetch the basic workflow data by id set in URL
     // @todo i think that we have everything we need in getWorkflowDataQuery
     // except for 'choices' config lists TBD
-    getWorkflowById(String(this.workflowID)).then((response) => {
+    getWorkflowById(this.workflowID).then((response) => {
       this.workflowDetailResp = response.data_package
       this.setupData(response.data_package)
 

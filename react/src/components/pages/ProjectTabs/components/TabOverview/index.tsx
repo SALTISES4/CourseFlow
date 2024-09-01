@@ -9,11 +9,7 @@ import List from '@mui/material/List'
 import ListItemText from '@mui/material/ListItemText'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import LinkIcon from '@mui/icons-material/Link'
-import {
-  ProjectDetailsType,
-  PermissionUserType,
-  PROJECT_PERMISSION_ROLE
-} from '../../types'
+
 import {
   InfoBlock,
   InfoBlockTitle,
@@ -31,19 +27,24 @@ import { useQuery } from '@tanstack/react-query'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
+import {
+  PermissionUserType,
+  PROJECT_PERMISSION_ROLE,
+  ProjectDetailsType
+} from '@cfPages/Styleguide/views/Project/types'
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
     name: PROJECT_PERMISSION_ROLE.EDITOR,
-    label: 'Editor'
+    label: _t('Editor')
   },
   {
     name: PROJECT_PERMISSION_ROLE.COMMENTER,
-    label: 'Commenter'
+    label: _t('Commenter')
   },
   {
     name: PROJECT_PERMISSION_ROLE.VIEWER,
-    label: 'Viewer'
+    label: _t('Viewer')
   }
 ]
 
@@ -78,68 +79,42 @@ const OverviewTab = ({
     })
 
     return (
-      <InfoBlock sx={{ mt: 3 }}>
-        <InfoBlockTitle>Permissions</InfoBlockTitle>
-        <InfoBlockContent>
-          <List>
-            {usersWithRoles.map((user) => (
-              <PermissionThumbnail key={user.id}>
-                <ListItemAvatar>
-                  <Avatar alt={user.name}>{getInitials(user.name)}</Avatar>
-                </ListItemAvatar>
-                <ListItemText primary={user.name} secondary={user.email} />
-                <MenuButton
-                  selected={user.role}
-                  disabled={user.role === PROJECT_PERMISSION_ROLE.OWNER}
-                  options={[
-                    ...roleMenuOptions,
-                    {
-                      name: 'mui-divider'
-                    },
-                    {
-                      name: 'remove',
-                      label: 'Remove user',
-                      onClick: () => {
-                        setRemoveUser(user)
-                        dispatch(DIALOG_TYPE.PROJECT_REMOVE_USER)
-                      }
+      <InfoBlockContent>
+        <List>
+          {usersWithRoles.map((user) => (
+            <PermissionThumbnail key={user.id}>
+              <ListItemAvatar>
+                <Avatar alt={user.name}>{getInitials(user.name)}</Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={user.name} secondary={user.email} />
+              <MenuButton
+                selected={user.role}
+                disabled={user.role === PROJECT_PERMISSION_ROLE.OWNER}
+                options={[
+                  ...roleMenuOptions,
+                  {
+                    name: 'mui-divider'
+                  },
+                  {
+                    name: 'remove',
+                    label: 'Remove user',
+                    onClick: () => {
+                      setRemoveUser(user)
+                      dispatch(DIALOG_TYPE.PROJECT_REMOVE_USER)
                     }
-                  ]}
-                  onChange={(role) => console.log('changed to', role)}
-                  placeholder={
-                    user.role === PROJECT_PERMISSION_ROLE.OWNER
-                      ? 'Owner'
-                      : roleMenuOptions.find((p) => p.name === user.role)?.label
                   }
-                />
-              </PermissionThumbnail>
-            ))}
-          </List>
-        </InfoBlockContent>
-
-        <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="flex-end"
-          sx={{ mt: 2 }}
-        >
-          <Button
-            size="medium"
-            variant="contained"
-            color="secondary"
-            startIcon={<LinkIcon />}
-          >
-            Generate public link
-          </Button>
-          <Button
-            size="medium"
-            variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
-          >
-            Add contributor
-          </Button>
-        </Stack>
-      </InfoBlock>
+                ]}
+                onChange={(role) => console.log('changed to', role)}
+                placeholder={
+                  user.role === PROJECT_PERMISSION_ROLE.OWNER
+                    ? 'Owner'
+                    : roleMenuOptions.find((p) => p.name === user.role)?.label
+                }
+              />
+            </PermissionThumbnail>
+          ))}
+        </List>
+      </InfoBlockContent>
     )
   }
 
@@ -170,14 +145,14 @@ const OverviewTab = ({
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
       <InfoBlock>
-        <InfoBlockTitle>Description</InfoBlockTitle>
+        <InfoBlockTitle>{_t('Description')}</InfoBlockTitle>
         <InfoBlockContent>{description}</InfoBlockContent>
       </InfoBlock>
 
       <Grid container columnSpacing={3} sx={{ mt: 3 }}>
         <Grid item xs={6}>
           <InfoBlock>
-            <InfoBlockTitle>Disciplines</InfoBlockTitle>
+            <InfoBlockTitle>{_t('Disciplines')}</InfoBlockTitle>
 
             <InfoBlockContent>
               {disciplines.length
@@ -189,13 +164,39 @@ const OverviewTab = ({
 
         <Grid item xs={6}>
           <InfoBlock>
-            <InfoBlockTitle>Created on</InfoBlockTitle>
+            <InfoBlockTitle>{_t('Created on')}</InfoBlockTitle>
             <InfoBlockContent>{String(created)}</InfoBlockContent>
           </InfoBlock>
         </Grid>
       </Grid>
+      <InfoBlock sx={{ mt: 3 }}>
+        <InfoBlockTitle>{_t('Permissions')}</InfoBlockTitle>
+        <Users {...data} />
 
-      <Users {...data} />
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="flex-end"
+          sx={{ mt: 2 }}
+        >
+          <Button
+            size="medium"
+            variant="contained"
+            color="secondary"
+            startIcon={<LinkIcon />}
+          >
+            {_t('Generate public link')}
+          </Button>
+          <Button
+            size="medium"
+            variant="contained"
+            onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
+          >
+            {_t('Add contributor')}
+          </Button>
+        </Stack>
+      </InfoBlock>
+
       <ObjectSets />
 
       <UserRemoveFromProject user={removeUser} />
