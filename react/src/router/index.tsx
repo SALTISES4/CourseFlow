@@ -10,9 +10,10 @@ import ProjectDetail from '@cfPages/ProjectDetail'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import React from 'react'
 import { ViewType } from '@cf/types/enum'
-import MyLibrary from "@cfPages/Library/MyLibrary";
-import Favourites from '@cfModule/components/pages/Library/Favourites'
-import Explore from '@cfModule/components/pages/Library/Explore'
+import MyLibrary from '@cfPages/Library/MyLibrary'
+import Favourites from '@cf/components/pages/Library/Favourites'
+import Explore from '@cf/components/pages/Library/Explore'
+import ProjectTabs from "@cfPages/ProjectTabs";
 
 const DOMAIN = 'course-flow'
 export enum Routes {
@@ -32,7 +33,10 @@ export enum Routes {
   WORKFLOW_ALIGNMENTANALYSIS = `/${DOMAIN}/workflow/:id/alignment/`,
   WORKFLOW_OUTCOMETABLE = `/${DOMAIN}/workflow/:id/outcometable/`,
   WORKFLOW_OUTCOME_EDIT = `/${DOMAIN}/workflow/:id/outcomedit/`,
-  WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/grid/`
+  WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/grid/`,
+
+  TEMP_PROJECT = `/${DOMAIN}/temp-project`,
+  TEMP_PROJECT_WORKFLOWS = `/${DOMAIN}/temp-project/workflows`
 }
 
 export const CfRouter = createBrowserRouter([
@@ -118,13 +122,22 @@ export const CfRouter = createBrowserRouter([
     )
   },
   {
+    path: `${Routes.TEMP_PROJECT}/*`,
+    element: (
+      <Base>
+        <ProjectTabs />
+      </Base>
+    )
+  },
+
+  {
     path: Routes.WORKFLOW_OVERVIEW,
     element: (
       <Base>
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
         {/*<WorkflowPage initialView={ViewType.WORKFLOW_OVERVIEW} />*/}
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-        <WorkflowPage  />
+        <WorkflowPage />
       </Base>
     )
   },
@@ -133,8 +146,8 @@ export const CfRouter = createBrowserRouter([
     element: (
       <Base>
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-  {/*      <WorkflowPage initialView={ViewType.WORKFLOW} />*/}
-         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
+        {/*      <WorkflowPage initialView={ViewType.WORKFLOW} />*/}
+        {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
         <WorkflowPage />
       </Base>
     )

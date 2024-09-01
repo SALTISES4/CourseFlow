@@ -1,4 +1,4 @@
-import { Discipline, QueryPages } from '@cfModule/types/common'
+import { Discipline, QueryPages } from '@cf/types/common'
 import { ELibraryObject } from '@XMLHTTP/types/entity'
 
 export type ExploreViewContextDataDTO = {

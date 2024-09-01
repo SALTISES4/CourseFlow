@@ -1,10 +1,10 @@
 // @ts-nocheck
-// import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
+// import { WorkflowTitle } from '@cfComponents/UIPrimitives/Titles'
 
-// import { WorkflowCardProps } from '@cfCommonComponents/cards/WorkflowCard/type'
+// import { WorkflowCardProps } from '@cfComponents/cards/WorkflowCard/type'
 import { _t } from '@cf/utility/utilityFunctions'
 import { Component } from 'react'
-import { WorkflowCardWrapperPropsType } from '@cfCommonComponents/cards/WorkflowCardWrapper'
+import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
 
 type PropsType = WorkflowCardWrapperPropsType
 // type StateType = WorkflowCardWrapperState

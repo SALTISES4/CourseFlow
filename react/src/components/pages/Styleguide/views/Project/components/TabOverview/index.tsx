@@ -24,7 +24,7 @@ import {
 import MenuButton, {
   MenuButtonOption
 } from '@cfPages/Styleguide/components/MenuButton'
-import { DIALOG_TYPE, useDialog } from '@cfCommonComponents/dialog'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import UserRemoveFromProject from "@cfPages/Styleguide/dialog/UserRemove";
 
 function getInitials(name: string): string {

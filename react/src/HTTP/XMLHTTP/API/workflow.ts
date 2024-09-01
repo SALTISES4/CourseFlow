@@ -15,8 +15,8 @@ import {
   WorkflowGroupsDataPackage,
   ProjectsForCreateQueryResp
 } from '@XMLHTTP/types/query'
-import { CfObjectType, VERB } from '@cfModule/types/enum'
-import { renderMessageBox } from '@cfCommonComponents/menu/MenuComponents.jsx'
+import { CfObjectType, VERB } from '@cf/types/enum'
+import { renderMessageBox } from '@cfComponents/menu/MenuComponents.jsx'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 
 /*******************************************************

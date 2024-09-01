@@ -1,9 +1,9 @@
 // @ts-nocheck
 import React from 'react'
 import * as reactDom from 'react-dom'
-import Loader from '@cfCommonComponents/UIComponents/Loader.js'
+import Loader from '@cfComponents/UIPrimitives/Loader/Loader.js'
 import * as Constants from '@cfConstants'
-import { ViewType } from '@cfModule/types/enum.js'
+import { ViewType } from '@cf/types/enum.js'
 import ComparisonView from '@cfViews/ProjectComparisonView/ComparisonView'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { createTheme } from '@mui/material/styles'

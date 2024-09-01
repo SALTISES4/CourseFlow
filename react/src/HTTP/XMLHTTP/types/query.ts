@@ -1,5 +1,5 @@
-import { Discipline, QueryPages } from '@cfModule/types/common'
-import { VERB } from '@cfModule/types/enum'
+import { Discipline, QueryPages } from '@cf/types/common'
+import { VERB } from '@cf/types/enum'
 import {
   WorkflowDataPackage,
   WorkflowParentDataPackage,
@@ -175,15 +175,17 @@ export type LibraryObjectsSearchQueryResp = {
 export type UsersForObjectQueryResp = {
   action: VERB
   author: EUser
+
   viewers: EUser[]
   commentors: EUser[]
   editors: EUser[]
   students: EUser[]
-  published: boolean
-  public_view: boolean
-  cannot_change: number[]
-  saltise_user: boolean
-  is_template: boolean
+
+  published: boolean // why here, should move it
+  public_view: boolean // why here, should move it
+  cannot_change: number[] // what is
+  saltise_user: boolean // what is
+  is_template: boolean // why here, should move it
 }
 
 export type UserListResp = {

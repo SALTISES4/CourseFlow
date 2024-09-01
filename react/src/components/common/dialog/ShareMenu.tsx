@@ -2,9 +2,9 @@ import * as React from 'react'
 import { _t } from '@cf/utility/utilityFunctions'
 
 // import $ from 'jquery'
-import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
-import UserAdd from '@cfCommonComponents/dialog/components/UserAdd'
-import { getUsersForObjectQuery, setUserPermission } from '@XMLHTTP/API/sharing'
+import UserLabel from '@cfComponents/dialog/components/UserLabel'
+import UserAdd from '@cfComponents/dialog/components/UserAdd'
+import { getUsersForObjectQueryLegacy, setUserPermission } from '@XMLHTTP/API/sharing'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import { EUser } from '@XMLHTTP/types/entity'
 import AddLinkIcon from '@mui/icons-material/AddLink'
@@ -58,7 +58,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    getUsersForObjectQuery(
+    getUsersForObjectQueryLegacy(
       this.props.data.id,
       this.props.data.type,
       (response) => {
@@ -147,7 +147,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       this.props.data.type,
       permission_type,
       () => {
-        getUsersForObjectQuery(
+        getUsersForObjectQueryLegacy(
           this.props.data.id,
           this.props.data.type,
           (response) => {

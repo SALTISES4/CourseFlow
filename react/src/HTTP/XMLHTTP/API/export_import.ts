@@ -1,16 +1,16 @@
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { VERB } from '@cfModule/types/enum'
+import { VERB } from '@cf/types/enum'
 import { API_POST, API_POST_FILE } from '@XMLHTTP/CallWrapper'
 
 //get exported data
 export function getExport(
-  objectID,
+  objectId,
   objectType,
   exportType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_export, {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType,
     exportType: exportType
   }).then((response: EmptyPostResp) => {
@@ -21,7 +21,7 @@ export function getExport(
 
 //import from file data
 export function importData(
-  objectID,
+  objectId,
   objectType,
   importType,
   myFile,
@@ -30,7 +30,7 @@ export function importData(
   API_POST_FILE(
     COURSEFLOW_APP.globalContextData.path.post_paths.import_data,
     {
-      objectID: objectID,
+      objectId: objectId,
       objectType: objectType,
       importType: importType
     },

@@ -131,6 +131,16 @@ def html_patterns():
             },
             name="project-comparison",
         ),
+        # TEMP
+        path(
+            "temp-project",
+            views.html.client.default_react_view,
+            {
+                "title": "Project temp",
+                "path_id": "projectDetail",
+            },
+            name="temp-project",
+        ),
         #########################################################
         # PROGRAM
         #########################################################

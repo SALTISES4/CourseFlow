@@ -41,13 +41,13 @@ import createCache from '@emotion/cache'
 // global styles / SCSS
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
-import { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar/styles'
+import { SidebarRootStyles } from '@cfComponents/layout/Sidebar/styles'
 
 // @todo:
 // legacy, to remove it
 // see note in mouseCursorLoader.js
 // we don't want t a mouse loader at all, but the placeholder calls are useful currently
-import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
+import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 const tinyLoader = new MouseCursorLoader($('body')[0])
 // @ts-ignore
 COURSEFLOW_APP.tinyLoader = tinyLoader

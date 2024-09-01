@@ -1,13 +1,11 @@
 import * as React from 'react'
 import { _t } from '@cf/utility/utilityFunctions'
-import LibrarySearchView, {
-  SearchOptionsState
-} from '@cfPages/Library/components/LibrarySearchView'
 import { useQuery } from '@tanstack/react-query'
 import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 import { libraryFavouriteObjectsQuery } from '@XMLHTTP/API/library'
 import { useState } from 'react'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
+import LibrarySearchView, { SearchOptionsState } from 'components/views/LibrarySearchView'
 
 const defaultOptionsSearchOptions: SearchOptionsState = {
   page: 0,

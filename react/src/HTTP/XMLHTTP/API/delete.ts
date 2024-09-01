@@ -1,9 +1,9 @@
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { VERB } from '@cfModule/types/enum'
+import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 
 export function deleteSelfQuery(
-  objectID: number,
+  objectId: number,
   objectType: any,
   soft = false,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
@@ -14,7 +14,7 @@ export function deleteSelfQuery(
   else path = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self
 
   API_POST(path, {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
@@ -24,12 +24,12 @@ export function deleteSelfQuery(
 
 //Causes the specified object to undelete itself
 export function restoreSelfQuery(
-  objectID: number,
+  objectId: number,
   objectType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.restore_self, {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)

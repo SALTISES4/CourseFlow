@@ -1,14 +1,14 @@
-import Alert from '@cfCommonComponents/UIComponents/Alert'
-import { GridWrap, OuterContentWrap } from '@cfModule/mui/helper'
+import Alert from '@cfComponents/UIPrimitives/Alert'
+import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
 import Welcome from './components/Welcome'
 import Section from './components/Section'
-import { fetchHomeContext } from '@XMLHTTP/API/pages'
+import { getHomeContext } from '@XMLHTTP/API/pages'
 import { PageHomeQueryResp } from '@XMLHTTP/types/query'
 import { useQuery } from '@tanstack/react-query'
-import Loader from '@cfCommonComponents/UIComponents/Loader'
 import { _t } from '@cf/utility/utilityFunctions'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
-import WorkflowCardWrapper from '@cfCommonComponents/cards/WorkflowCardWrapper'
+import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 
 /**
  *
@@ -16,8 +16,8 @@ import WorkflowCardWrapper from '@cfCommonComponents/cards/WorkflowCardWrapper'
  */
 const Home = () => {
   const { data, error, isLoading, isError } = useQuery<PageHomeQueryResp>({
-    queryKey: ['fetchHomeContext'],
-    queryFn: fetchHomeContext
+    queryKey: ['getHomeContext'],
+    queryFn: getHomeContext
   })
 
   if (isLoading) return <Loader />

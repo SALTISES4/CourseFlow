@@ -57,13 +57,12 @@ def json_api__project__detail__get(request):
     response_data = {
         "project_data": serializer.data,
         # @todo bad
-        "user_id": current_user.id if current_user else 0,
-        "user_name": current_user.username,
-        "user_permission": user_permission,
+        "userId": current_user.id if current_user else 0,
+        "userName": current_user.username,
+        "userPermission": user_permission,
         "disciplines": disciplines,
-        "create_path_this_project": get_project_urls_by_pk(project_pk),
-        "is_strategy": is_strategy,
-        "public_view": public_view,
+        "isStrategy": is_strategy,
+        "publicView": public_view,
     }
 
     return JsonResponse({"action": "GET", "data_package": response_data})

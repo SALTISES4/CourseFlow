@@ -1,4 +1,4 @@
-import { Enum } from '@cfModule/utility/utilityFunctions'
+import { Enum } from '@cf/utility/utilityFunctions'
 
 // this is guidelines for our wofklow tabs
 // each view type is more or less a tab

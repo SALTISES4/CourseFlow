@@ -1,5 +1,5 @@
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { VERB } from '@cfModule/types/enum'
+import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 
 //
@@ -9,14 +9,14 @@ import { API_POST } from '@XMLHTTP/CallWrapper'
  *
  * endpoint: workflow/updatevalue/
  *
- * @param objectID
+ * @param objectId
  * @param objectType
  * @param json
  * @param changeField
  * @param callBackFunction
  */
 export function updateValueQuery(
-  objectID: number,
+  objectId: number,
   objectType: any,
   json: any,
   changeField = false,
@@ -27,7 +27,7 @@ export function updateValueQuery(
 
   document.lastUpdateCall = {
     time: Date.now(),
-    id: objectID,
+    id: objectId,
     type: objectType,
     field: Object.keys(json)[0]
   }
@@ -44,7 +44,7 @@ export function updateValueQuery(
     document.lastUpdateCallFunction()
   }
   const post_object = {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType,
     data: json,
     changeFieldID: 0
@@ -70,13 +70,13 @@ export function updateValueQuery(
 
 //As above, but not debounced
 export function updateValueInstantQuery(
-  objectID: number,
+  objectId: number,
   objectType: any,
   json: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.update_value, {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType,
     data: json
   }).then((response: EmptyPostResp) => {
@@ -106,7 +106,7 @@ export function dragAction(
 
 //Called when an object in a list is reordered
 export function insertedAtInstant(
-  objectID,
+  objectId,
   objectType,
   parentID,
   parentType,
@@ -118,7 +118,7 @@ export function insertedAtInstant(
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at, {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType,
     parentID: parentID,
     parentType: parentType,
@@ -166,7 +166,7 @@ export function updateOutcomehorizontallinkDegree(
       .update_outcomehorizontallink_degree,
     {
       outcomePk: outcomePk,
-      objectID: outcome2Pk,
+      objectId: outcome2Pk,
       objectType: 'outcome',
       degree: degree
     }
@@ -216,14 +216,14 @@ export function toggleStrategyQuery(
 }
 
 export function updateObjectSet(
-  objectID,
+  objectId,
   objectType,
   objectsetPk,
   add,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.update_object_set, {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType,
     objectsetPk: objectsetPk,
     add: add

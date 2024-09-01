@@ -1,16 +1,15 @@
 import {
-  LibraryObjectsSearchQueryResp,
   PageExploreQueryResp,
   PageHomeQueryResp,
   PageLibraryQueryResp
 } from '@XMLHTTP/types/query'
-import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
+import { API_GET } from '@XMLHTTP/CallWrapper'
 import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * HOME PAGE
  *******************************************************/
-export async function fetchHomeContext(): Promise<PageHomeQueryResp> {
+export async function getHomeContext(): Promise<PageHomeQueryResp> {
   const url = COURSEFLOW_APP.globalContextData.path.json_api.library.home
   return API_GET<PageHomeQueryResp>(url)
 }
@@ -19,7 +18,7 @@ export async function fetchHomeContext(): Promise<PageHomeQueryResp> {
  * LIBRARY PAGES
  *******************************************************/
 
-export async function fetchExploreContext(): Promise<PageExploreQueryResp> {
+export async function getExploreContext(): Promise<PageExploreQueryResp> {
   const url = COURSEFLOW_APP.globalContextData.path.json_api.library.explore
   return API_GET<PageExploreQueryResp>(url)
 }
@@ -28,7 +27,7 @@ export async function fetchExploreContext(): Promise<PageExploreQueryResp> {
  * @param callBackFunction
  * this uses a callback because not yet used in hook
  */
-export async function fetchLibraryContext(): Promise<PageLibraryQueryResp> {
+export async function getLibraryContext(): Promise<PageLibraryQueryResp> {
   const url =
     COURSEFLOW_APP.globalContextData.path.json_api.library
       .library__library__projects

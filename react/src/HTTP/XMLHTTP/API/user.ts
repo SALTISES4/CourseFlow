@@ -5,8 +5,8 @@ import {
   UserListResp
 } from '@XMLHTTP/types/query'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
-import { LibraryObjectType, VERB } from '@cfModule/types/enum'
-import { ToDefine } from '@cfModule/types/common'
+import { LibraryObjectType, VERB } from '@cf/types/enum'
+import { ToDefine } from '@cf/types/common'
 import { ToggleFavouriteQueryArgs } from '@XMLHTTP/types/args'
 
 /*******************************************************
@@ -32,7 +32,7 @@ export function getUserListQuery(
 /*******************************************************
  * NOTIFICATIONS SETTINGS
  *******************************************************/
-export async function fetchNotificationSettings(): Promise<NotificationSettingsQueryResp> {
+export async function getNotificationSettings(): Promise<NotificationSettingsQueryResp> {
   const url =
     COURSEFLOW_APP.globalContextData.path.json_api.user.notification_settings
   return API_GET<NotificationSettingsQueryResp>(url)
@@ -49,7 +49,7 @@ export async function updateNotificationSettings(data: any) {
 /*******************************************************
  * PROFILE SETTINGS
  *******************************************************/
-export async function fetchProfileSettings(): Promise<ProfileSettingsQueryResp> {
+export async function getProfileSettings(): Promise<ProfileSettingsQueryResp> {
   const url =
     COURSEFLOW_APP.globalContextData.path.json_api.user.profile_settings
   return API_GET<ProfileSettingsQueryResp>(url)

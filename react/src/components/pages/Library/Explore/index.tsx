@@ -5,27 +5,27 @@ import {
   LibraryObjectsSearchQueryResp,
   PageExploreQueryResp
 } from '@XMLHTTP/types/query'
-import { fetchExploreContext } from '@XMLHTTP/API/pages'
-import Loader from '@cfCommonComponents/UIComponents/Loader'
+import { getExploreContext } from '@XMLHTTP/API/pages'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import LibrarySearchView, {
   SearchOptionsState
-} from '@cfPages/Library/components/LibrarySearchView'
+} from 'components/views/LibrarySearchView'
 import { _t } from '@cf/utility/utilityFunctions'
 import { libraryObjectsSearchQuery } from '@XMLHTTP/API/library'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 
 /*
-* @todo
-*   1 -- the filters are not connected properly to the backend query
-*   2 -- the library seach view needs to be more flexible / dynamic for filter type config
-*      see: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow---V2?node-id=1181-17902&node-type=FRAME&t=rIPGYwZ2k9mYfbzx-0
-*      we need to add some data in our defaultOptionsSearchOptions config about filter/sort types
-*     - search/ keywrod input
-*           select list with inplace, within list filtering (i.e. disciplies) that have multiple allowable options at once
-*     - binary on off button filter (template)
-*     - simple list filter (type)
-*     - sort (relevance)
-* */
+ * @todo
+ *   1 -- the filters are not connected properly to the backend query
+ *   2 -- the library seach view needs to be more flexible / dynamic for filter type config
+ *      see: https://www.figma.com/design/ibrUG0Rc5B2lpUW4Tflbum/CourseFlow---V2?node-id=1181-17902&node-type=FRAME&t=rIPGYwZ2k9mYfbzx-0
+ *      we need to add some data in our defaultOptionsSearchOptions config about filter/sort types
+ *     - search/ keywrod input
+ *           select list with inplace, within list filtering (i.e. disciplies) that have multiple allowable options at once
+ *     - binary on off button filter (template)
+ *     - simple list filter (type)
+ *     - sort (relevance)
+ * */
 const defaultOptionsSearchOptions: SearchOptionsState = {
   page: 0,
   sortOptions: [
@@ -102,8 +102,8 @@ const ExplorePage = () => {
     isLoading: exploreIsLoading,
     isError: exploreIsError
   } = useQuery<PageExploreQueryResp>({
-    queryKey: ['fetchExploreContext'],
-    queryFn: fetchExploreContext
+    queryKey: ['getExploreContext'],
+    queryFn: getExploreContext
   })
 
   const {

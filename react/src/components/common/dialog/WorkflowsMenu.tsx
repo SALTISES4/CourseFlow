@@ -1,9 +1,9 @@
 import * as React from 'react'
-import WorkflowCardWrapper from '@cfCommonComponents/cards/WorkflowCardWrapper'
-import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
-import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
+import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
+import MenuTab from '@cfComponents/menu/components/MenuTab'
+import closeMessageBox from '@cfComponents/menu/components/closeMessageBox'
 import { setLinkedWorkflow } from '@XMLHTTP/API/update'
-import { GridWrap } from '@cfModule/mui/helper'
+import { GridWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 

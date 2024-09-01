@@ -3,7 +3,7 @@ import StarIcon from '@mui/icons-material/Star'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
 import { _t } from '@cf/utility/utilityFunctions'
 
-import { WorkflowType } from '@cfModule/types/enum'
+import { WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cfUtility'
 import { ELibraryObject } from '@XMLHTTP/types/entity'
 

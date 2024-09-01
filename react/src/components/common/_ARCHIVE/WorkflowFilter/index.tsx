@@ -1,11 +1,11 @@
 // @ts-nocheck
 // @todo this file to be removed
 import * as React from 'react'
-import WorkflowCardCondensed from '@cfCommonComponents/cards/WorkflowCardCondensed/index.jsx'
-import Loader from '@cfCommonComponents/UIComponents/Loader.js'
-import WorkflowCardWrapper from '@cfCommonComponents/cards/WorkflowCardWrapper'
+import WorkflowCardCondensed from '@cfComponents/cards/WorkflowCardCondensed/index.jsx'
+import Loader from '@cfComponents/UIPrimitives/Loader/Loader.js'
+import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import { debounce } from '@cfUtility'
-import { GridWrap } from '@cfModule/mui/helper'
+import { GridWrap } from '@cf/mui/helper'
 import { libraryObjectsSearchQuery } from '@XMLHTTP/API/library'
 import SearchIcon from '@mui/icons-material/Search'
 import CloseIcon from '@mui/icons-material/Close'

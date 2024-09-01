@@ -1,14 +1,14 @@
 import React, { ReactNode } from 'react'
 import HtmlReactParser from 'html-react-parser'
 
-import { OuterContentWrap } from '@cfModule/mui/helper'
-import Alert from '@cfCommonComponents/UIComponents/Alert'
-import TopBar from '@cfCommonComponents/layout/TopBar'
-import Sidebar from '@cfCommonComponents/layout/Sidebar'
+import { OuterContentWrap } from '@cf/mui/helper'
+import Alert from '@cfComponents/UIPrimitives/Alert'
+import TopBar from '@cfComponents/layout/TopBar'
+import Sidebar from '@cfComponents/layout/Sidebar'
 
-import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
+import { DialogContextProvider } from '@cf/context/dialogContext'
 import { configureStore } from '@reduxjs/toolkit'
-import * as Reducers from '@cfReducers'
+import * as Reducers from '@cfRedux/Reducers'
 import { Provider } from 'react-redux'
 
 type PropsType = {

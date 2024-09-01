@@ -176,8 +176,8 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           {object_sets}
           <input
             type="hidden"
-            id="objectID"
-            name="objectID"
+            id="objectId"
+            name="objectId"
             value={JSON.stringify(this.props.data.id)}
           />
           <input

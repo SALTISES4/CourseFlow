@@ -11,11 +11,11 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
 
-import { OuterContentWrap } from '@cfModule/mui/helper'
+import { OuterContentWrap } from '@cf/mui/helper'
 import { API_POST } from '@XMLHTTP/CallWrapper'
-import { getNameInitials } from '@cfModule/utility/utilityFunctions'
+import { getNameInitials } from '@cf/utility/utilityFunctions'
 import { useQuery } from '@tanstack/react-query'
-import Loader from '@cfCommonComponents/UIComponents/Loader.js'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import * as Styled from './style'
 import { fetchNotifications } from '@XMLHTTP/API/notifications'
 import { NotificationQueryResp } from '@XMLHTTP/types/query'
@@ -32,8 +32,8 @@ const NotificationsPage = (): JSX.Element => {
    * HOOKS
    *******************************************************/
   const { data, error, isLoading, isError } = useQuery<NotificationQueryResp>({
-    queryKey: ['fetchNotifications'],
-    queryFn: fetchNotifications
+    queryKey: ['getNotifications'],
+    queryFn: getNotifications
   })
 
   const [pagination, setPagination] = useState<{

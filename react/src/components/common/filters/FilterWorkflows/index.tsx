@@ -23,7 +23,7 @@ import {
   ProjectName,
   ProjectTag
 } from './styles'
-import { PropsType as ResultType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { PropsType as ResultType } from '@cfComponents/cards/WorkflowCardDumb'
 import {ELibraryObject} from "@XMLHTTP/types/entity";
 
 // export type ResultType = {

@@ -1,5 +1,5 @@
 import { LibraryObjectType } from '@cf/types/enum'
-import { SearchOption } from '@cfCommonComponents/filters/types'
+import { SearchOption } from '@cfComponents/filters/types'
 
 // types of filter
 

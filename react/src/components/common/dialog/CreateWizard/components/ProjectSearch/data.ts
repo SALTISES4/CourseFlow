@@ -1,4 +1,4 @@
-// import { CHIP_TYPE } from '@cfCommonComponents/cards/WorkflowCardDumb'
+// import { CHIP_TYPE } from '@cfComponents/cards/WorkflowCardDumb'
 
 // const projects = [
 //   {

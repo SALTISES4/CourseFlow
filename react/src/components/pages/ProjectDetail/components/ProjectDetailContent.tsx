@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { produce } from 'immer'
 // @local
-// import WorkflowFilter from '@cfCommonComponents/filters/WorkflowFilter'
+// import WorkflowFilter from '@cfComponents/filters/WorkflowFilter'
 import { ProjectMenuProps } from '@cfPages/ProjectDetail/types'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { Box, Dialog, DialogTitle, Link } from '@mui/material'
 import Header from '@cfPages/ProjectDetail/components/Header'
-import ProjectEditDialog from '@cfCommonComponents/dialog/ProjectEditDialog'
-import ShareMenu from '@cfCommonComponents/dialog/ShareMenu'
+import ProjectEditDialog from '@cfComponents/dialog/ProjectEditDialog'
+import ShareMenu from '@cfComponents/dialog/ShareMenu'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
+import { getUsersForObjectQueryLegacy } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
 import { EProject, ELibraryObject } from '@XMLHTTP/types/entity'
-import ProjectExportModal from '@cfModule/components/common/dialog/ProjectExport'
-import ProjectArchiveModal from '@cfModule/components/common/dialog/ProjectArchive'
-import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
+import ProjectExportModal from '@cf/components/common/dialog/ProjectExport'
+import ProjectArchiveModal from '@cf/components/common/dialog/ProjectArchive'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { Link as RouterLink } from 'react-router-dom'
 import EditIcon from '@mui/icons-material/Edit'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
@@ -61,7 +61,7 @@ function ProjectDetailContent({
   // TODO: this is wrapped because it is called by openShareMenu
   // so do not unwrap until the renderMessageBox is sorted out
   const getUserData = useCallback(() => {
-    getUsersForObjectQuery(project.id, project.type, (data) => {
+    getUsersForObjectQueryLegacy(project.id, project.type, (data) => {
       setState(
         produce((draft) => {
           draft.users = data

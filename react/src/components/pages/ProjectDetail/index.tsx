@@ -5,9 +5,9 @@ import { useQuery } from '@tanstack/react-query'
 import { getProjectById } from '@XMLHTTP/API/project'
 import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
 import { useEffect, useState } from 'react'
-import Loader from '@cfCommonComponents/UIComponents/Loader'
 import { useParams } from 'react-router-dom'
 import { _t } from '@cf/utility/utilityFunctions'
+import Loader from "@cfComponents/UIPrimitives/Loader";
 
 // class ProjectPage extends React.Component {
 //   private readonly readOnly: boolean

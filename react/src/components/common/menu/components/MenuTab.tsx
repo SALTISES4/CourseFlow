@@ -1,5 +1,5 @@
 import * as React from 'react'
-import MenuSection from '@cfCommonComponents/menu/components/MenuSection'
+import MenuSection from '@cfComponents/menu/components/MenuSection'
 import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {

@@ -46,38 +46,29 @@
     "paths": {
 //       "jquery":["node_modules/@types/jquery/index"],
 //      "jquery-ui":["node_modules/@types/jqueryui/index"],
-      "@cfModule/*": [
-        "./*"
-      ],
       "@cf/*": [
         "./*"
       ],
       "@cfComponents/*": [
-        "./components/*"
+        "./components/common/*"
       ],
       "@cfViews/*": [
-        "./components/workflowViews/*"
+        "./components/views/*"
       ],
       "@cfPages/*": [
         "./components/pages/*"
       ],
-      "@cfCommonComponents/*": [
-        "./components/common/*"
-      ],
       "@cfEditableComponents": [
-        "./components/workflowViews/EditableComponents"
+        "./components/common/editableComponents"
       ],
       "@cfEditableComponents/*": [
-        "./components/workflowViews/EditableComponents/*"
+        "./components/common/editableComponents/*"
       ],
       "@cfFindState": [
         "./redux/findState.ts"
       ],
       "@cfRedux/*": [
         "./redux/*"
-      ],
-      "@cfReducers": [
-        "./redux/Reducers.ts"
       ],
       "@cfUtility": [
         "./utility/utilityFunctions.jsx"

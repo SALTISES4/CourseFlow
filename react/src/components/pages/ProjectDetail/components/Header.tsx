@@ -1,5 +1,5 @@
-import CollapsibleText from '@cfCommonComponents/UIComponents/CollapsibleText'
-import { Discipline } from '@cfModule/types/common'
+import CollapsibleText from '@cfComponents/UIPrimitives/CollapsibleText'
+import { Discipline } from '@cf/types/common'
 import Users from '@cfPages/ProjectDetail/components/Users'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { EProject } from '@XMLHTTP/types/entity'

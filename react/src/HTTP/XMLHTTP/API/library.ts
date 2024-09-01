@@ -51,7 +51,7 @@ export function toggleFavouriteMutation({
   return API_POST<EmptyPostResp>(
     COURSEFLOW_APP.globalContextData.path.post_paths.toggle_favourite,
     {
-      objectID: id,
+      objectId: id,
       objectType: type,
       favourite: favourite
     }

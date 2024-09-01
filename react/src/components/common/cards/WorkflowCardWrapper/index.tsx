@@ -2,8 +2,8 @@ import { useState } from 'react'
 import WorkflowCardDumb, {
   PropsType as WorkflowCardDumbPropsType
 } from '../WorkflowCardDumb'
-import { workflowTitle } from '@cfCommonComponents/UIComponents/Titles'
-import { LibraryObjectType } from '@cfModule/types/enum'
+import { workflowTitle } from '@cfComponents/UIPrimitives/Titles'
+import { LibraryObjectType } from '@cf/types/enum'
 import ErrorIcon from '@mui/icons-material/Error'
 import { _t } from '@cf/utility/utilityFunctions'
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'

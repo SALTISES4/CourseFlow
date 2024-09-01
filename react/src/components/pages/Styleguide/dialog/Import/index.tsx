@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import FileUploader from '@cfPages/Styleguide/components/FileUploader'
 
 import { StyledDialog } from '../styles'
-import { DIALOG_TYPE, useDialog } from '../'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 
 type StateType = {
   whitelisted: string[]

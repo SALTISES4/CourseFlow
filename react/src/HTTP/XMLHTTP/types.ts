@@ -17,7 +17,7 @@ import {
   EStrategy,
   EOutcomeOutcome
 } from '@XMLHTTP/types/entity'
-import { FieldChoice } from '@cfModule/types/common'
+import { FieldChoice } from '@cf/types/common'
 
 /*******************************************************
  *

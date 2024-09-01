@@ -4,7 +4,7 @@ import DialogContent from '@mui/material/DialogContent'
 import { getTargetProjectMenuQuery } from '@XMLHTTP/API/workflow'
 import { useState } from 'react'
 import { TargetProjectQueryResp } from '@XMLHTTP/types/query'
-import { DIALOG_TYPE, useDialog } from '../'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import WorkflowsMenu from '../WorkflowsMenu'
 import { _t } from '@cf/utility/utilityFunctions'
 

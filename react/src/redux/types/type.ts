@@ -1,4 +1,4 @@
-import { WorkflowType } from '@cfModule/types/enum'
+import { WorkflowType } from '@cf/types/enum'
 import {
   EColumn,
   EDate,
@@ -16,7 +16,7 @@ import {
   EWeekworkflow,
   EWorkflow
 } from '@XMLHTTP/types/entity'
-import { Lock } from '@cfModule/types/common'
+import { Lock } from '@cf/types/common'
 
 export type AppState = {
   workflow: TWorkflow

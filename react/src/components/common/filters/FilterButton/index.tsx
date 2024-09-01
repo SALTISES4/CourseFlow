@@ -8,7 +8,7 @@ import {
   FilterOption,
   SortDirection,
   SortOption
-} from '@cfCommonComponents/filters/types'
+} from '@cfComponents/filters/types'
 
 type SortableProps = {
   sortable: true

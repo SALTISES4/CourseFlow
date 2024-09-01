@@ -98,7 +98,7 @@ function ExportProjectDialog({ project }: { project: EProject }) {
 
   function onSubmit() {
     const postData = {
-      objectID: project.id,
+      objectId: project.id,
       objectType: project.type,
       exportType: state.type,
       exportFormat: state.format,

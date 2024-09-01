@@ -4,8 +4,8 @@ import { ELibraryObject } from '@XMLHTTP/types/entity'
 import {
   CHIP_TYPE,
   WorkflowCardChipType
-} from '@cfCommonComponents/cards/WorkflowCardDumb'
-import { WorkflowCardWrapperPropsType } from '@cfCommonComponents/cards/WorkflowCardWrapper'
+} from '@cfComponents/cards/WorkflowCardDumb'
+import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
 import { _t, convertEnum } from '@cf/utility/utilityFunctions'
 
 /**
