@@ -1,7 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom'
 import Base from '@cf/base'
 import Home from '@cfPages/Home'
-import Styleguide from '@cfPages/Styleguide'
 import Favourites from '@cfPages/Favourites'
 import Library from '@cfPages/Library'
 import Explore from '@cfPages/Explore'
@@ -11,8 +10,11 @@ import ProfileSettingsPage from '@cfPages/ProfileSettings'
 import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import ProjectDetail from '@cfPages/ProjectDetail'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
-import React from 'react'
 import { ViewType } from '@cf/types/enum'
+
+// Styleguide views
+import Styleguide from '@cfPages/Styleguide'
+import StyleguideProject from '@cfPages/Styleguide/views/Project'
 
 const DOMAIN = 'course-flow'
 export enum Routes {
@@ -20,7 +22,6 @@ export enum Routes {
   LIBRARY = `/${DOMAIN}/library/`,
   FAVOURITES = `/${DOMAIN}/favourites/`,
   EXPLORE = `/${DOMAIN}/explore/`,
-  STYLEGUIDE = `/${DOMAIN}/styleguide/`,
   NOTIFICAIONS = `/${DOMAIN}/user/notifications/`,
   NOTIFICAIONS_SETTINGS = `/${DOMAIN}/user/notifications-settings/`,
   PROFILE_SETTINGS = `/${DOMAIN}/user/profile-settings/`,
@@ -32,7 +33,13 @@ export enum Routes {
   WORKFLOW_ALIGNMENTANALYSIS = `/${DOMAIN}/workflow/:id/alignment/`,
   WORKFLOW_OUTCOMETABLE = `/${DOMAIN}/workflow/:id/outcometable/`,
   WORKFLOW_OUTCOME_EDIT = `/${DOMAIN}/workflow/:id/outcomedit/`,
-  WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/grid/`
+  WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/grid/`,
+
+  // STYLEGUIDE - Static UI routes
+  STYLEGUIDE = `/${DOMAIN}/styleguide/`,
+  STYLEGUIDE_PROJECT = `/${DOMAIN}/styleguide/project`,
+  STYLEGUIDE_PROJECT_WORKFLOWS = `/${DOMAIN}/styleguide/project/workflows`,
+  STYLEGUIDE_PROJECT_WORKSPACE = `/${DOMAIN}/styleguide/project/workspace`
 }
 
 export const CfRouter = createBrowserRouter([
@@ -46,11 +53,24 @@ export const CfRouter = createBrowserRouter([
   },
   {
     path: Routes.STYLEGUIDE,
-    element: (
-      <Base>
-        <Styleguide />
-      </Base>
-    )
+    children: [
+      {
+        path: Routes.STYLEGUIDE,
+        element: (
+          <Base>
+            <Styleguide />
+          </Base>
+        )
+      },
+      {
+        path: `${Routes.STYLEGUIDE_PROJECT}/*`,
+        element: (
+          <Base>
+            <StyleguideProject />
+          </Base>
+        )
+      }
+    ]
   },
   {
     path: Routes.FAVOURITES,

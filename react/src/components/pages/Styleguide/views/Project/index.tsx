@@ -57,19 +57,19 @@ const ProjectDetails = () => {
           >
             <Tab
               label="Overview"
-              value={AppRoutes.PROJECT}
-              onClick={() => navigate(AppRoutes.PROJECT)}
+              value={AppRoutes.STYLEGUIDE_PROJECT}
+              onClick={() => navigate(AppRoutes.STYLEGUIDE_PROJECT)}
             />
-            {/*<Tab*/}
-            {/*  label="Workflows"*/}
-            {/*  value={AppRoutes.PROJECT_WORKFLOWS}*/}
-            {/*  onClick={() => navigate(AppRoutes.PROJECT_WORKFLOWS)}*/}
-            {/*/>*/}
-            {/*<Tab*/}
-            {/*  label="Workspaces"*/}
-            {/*  value={AppRoutes.PROJECT_WORKSPACE}*/}
-            {/*  onClick={() => navigate(AppRoutes.PROJECT_WORKSPACE)}*/}
-            {/*/>*/}
+            <Tab
+              label="Workflows"
+              value={AppRoutes.STYLEGUIDE_PROJECT_WORKFLOWS}
+              onClick={() => navigate(AppRoutes.STYLEGUIDE_PROJECT_WORKFLOWS)}
+            />
+            <Tab
+              label="Workspaces"
+              value={AppRoutes.STYLEGUIDE_PROJECT_WORKSPACE}
+              onClick={() => navigate(AppRoutes.STYLEGUIDE_PROJECT_WORKSPACE)}
+            />
           </Tabs>
         </OuterContentWrap>
       </Box>
