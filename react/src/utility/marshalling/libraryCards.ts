@@ -1,21 +1,18 @@
-import { WorkflowType } from '@cf/types/enum'
+import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
-import { ESectionObject } from '@XMLHTTP/types/entity'
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 import {
   CHIP_TYPE,
-  PropsType as WorkflowCardTypeUI,
   PropsType,
   WorkflowCardChipType
 } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { _t } from '@cf/utility/utilityFunctions'
-import { generatePath } from 'react-router-dom'
-import { Routes as AppRoutes } from '@cf/router'
 
-const getTypeChip = (workflow): WorkflowCardChipType => {
+function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
   const { type, is_strategy } = workflow
-  let typeText = window.gettext(type)
+  let typeText = _t(type)
 
-  if (type === WorkflowType.LIVE_PROJECT) {
+  if (type === LibraryObjectType.LIVE_PROJECT) {
     typeText = _t('classroom')
   }
 
@@ -23,7 +20,8 @@ const getTypeChip = (workflow): WorkflowCardChipType => {
     typeText += ` ${_t('strategy')}`
   }
 
-  const chipType = type === WorkflowType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
+  const chipType =
+    type === LibraryObjectType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
 
   return {
     type: chipType,
@@ -31,7 +29,7 @@ const getTypeChip = (workflow): WorkflowCardChipType => {
   }
 }
 
-const getTemplateChip = (workflow): WorkflowCardChipType => {
+function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
   const is_template = workflow.is_template
   if (is_template)
     return {
@@ -41,15 +39,15 @@ const getTemplateChip = (workflow): WorkflowCardChipType => {
   return null
 }
 
-const getWorkflowCountChip = (workflow): WorkflowCardChipType => {
+function getWorkflowCountChip(workflow: ELibraryObject): WorkflowCardChipType {
   if (
-    workflow.type === WorkflowType.PROJECT &&
+    workflow.type === LibraryObjectType.PROJECT &&
     workflow.workflow_count !== null &&
     workflow.workflow_count > 0
   ) {
     return {
       type: CHIP_TYPE.DEFAULT,
-      label: `${workflow.workflow_count} ${window.gettext(
+      label: `${workflow.workflow_count} ${_t(
         `workflow` + (workflow.workflow_count > 1 ? 's' : '')
       )}`
     }
@@ -57,9 +55,7 @@ const getWorkflowCountChip = (workflow): WorkflowCardChipType => {
   return null
 }
 
-export function prepareBackendDataForWorkflowCardDumb(
-  workflow: ESectionObject
-): PropsType {
+export function formatLibraryObject(workflow: ELibraryObject): PropsType {
   const type_chip = getTypeChip(workflow)
   const template_chip = getTemplateChip(workflow)
   const count_chip = getWorkflowCountChip(workflow)

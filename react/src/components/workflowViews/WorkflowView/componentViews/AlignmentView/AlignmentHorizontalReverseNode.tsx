@@ -67,16 +67,12 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
       return (
         <div className="child-outcome child-outcome-header">
           <div className="half-width alignment-column">
-            {Utility.capWords(
-              window.gettext(`${data.linked_workflow_data.type} outcomes`)
-            )}{' '}
+            {Utility.capWords(_t(`${data.linked_workflow_data.type} outcomes`))}{' '}
             {_t('From Linked Workflow')}
           </div>
           <div className="half-width alignment-column">
             {_t('Associated ')}
-            {Utility.capWords(
-              window.gettext(`${this.props.workflow.type} outcomes`)
-            )}
+            {Utility.capWords(_t(`${this.props.workflow.type} outcomes`))}
           </div>
         </div>
       )
@@ -104,7 +100,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
       return (
         <div className="child-outcome child-outcome-header">
-          {window.gettext(
+          {_t(
             'No outcomes have been added to the linked workflow. When added, they will appear here.'
           )}
         </div>
@@ -113,7 +109,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
     return (
       <div className="child-outcome child-outcome-header">
-        {window.gettext(
+        {_t(
           'No workflow has been linked to this node. If you link a workflow, its outcomes will appear here.'
         )}
       </div>
@@ -236,9 +232,8 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     const outcomes_for_node = (
       <div>
         <div className="node-outcomes-header">
-          {Utility.capWords(
-            window.gettext(this.props.workflow.type + ' outcomes')
-          ) + _t(' for node:')}
+          {Utility.capWords(_t(this.props.workflow.type + ' outcomes')) +
+            _t(' for node:')}
         </div>
         {outcomenodes}
         {outcomeadder}

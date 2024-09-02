@@ -5,7 +5,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 
 import { WorkflowType } from '@cfModule/types/enum'
 import * as Utility from '@cfUtility'
-import { ESectionObject } from '@XMLHTTP/types/entity'
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 
 import {
   CardWrap,

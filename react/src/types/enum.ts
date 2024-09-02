@@ -21,6 +21,12 @@ export enum WFContext {
 export enum WorkflowType {
   PROGRAM = 'program',
   ACTIVITY = 'activity',
+  COURSE = 'course'
+}
+
+export enum LibraryObjectType {
+  PROGRAM = 'program',
+  ACTIVITY = 'activity',
   PROJECT = 'project',
   COURSE = 'course',
   LIVE_PROJECT = 'liveproject'

@@ -12,7 +12,7 @@ import {
   EComment,
   EObjectSet,
   ESectionGroup,
-  ESectionObject,
+  ELibraryObject,
   EWorkflow
 } from '@XMLHTTP/types/entity'
 import { ProjectViewDTO } from '@cfPages/ProjectDetail/types'
@@ -43,8 +43,8 @@ export type ProfileField = {
 export type PageHomeQueryResp = {
   action: VERB
   data: {
-    projects: ESectionObject[]
-    templates: ESectionObject[]
+    projects: ELibraryObject[]
+    templates: ELibraryObject[]
     isTeacher: boolean
   }
 }
@@ -52,7 +52,7 @@ export type PageHomeQueryResp = {
 export type PageExploreQueryResp = {
   action: VERB
   data: {
-    initial_workflows: ESectionObject[]
+    initial_workflows: ELibraryObject[]
     initial_pages: QueryPages
     disciplines: Discipline[]
     user_id: number
@@ -149,17 +149,17 @@ export type DuplicateBaseItemQueryResp = {
  *******************************************************/
 
 export type PageLibraryQueryResp = {
-  data_package: ESectionObject[]
+  data_package: ELibraryObject[]
 }
 
 export type FavouritesQueryResp = {
   action: VERB
-  data_package: ESectionObject[]
+  data_package: ELibraryObject[]
 }
 
 export type DisciplineQueryResp = {
   action: VERB
-  data_package: ESectionObject[]
+  data_package: ELibraryObject[]
 }
 
 /*******************************************************
@@ -168,8 +168,13 @@ export type DisciplineQueryResp = {
 
 export type LibraryObjectsSearchQueryResp = {
   action: VERB
-  workflow_list: ESectionObject[]
-  pages: QueryPages
+  data_package: {
+    results: ELibraryObject[]
+    meta: {
+      count: number
+      pageCount: number
+    }
+  }
 }
 
 /*******************************************************
@@ -244,7 +249,7 @@ export type TargetProjectQueryResp = {
 
 export type ProjectsForCreateQueryResp = {
   action: VERB
-  data_package: ESectionObject[]
+  data_package: ELibraryObject[]
 }
 
 export type ParentWorkflowInfoQueryResp = {

@@ -4,16 +4,15 @@ import Button from '@mui/material/Button'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { StyledMenu, StyledMenuItem } from './styles'
-
-export type FilterOption = {
-  name: string
-  label: string
-  selected?: boolean
-}
+import {
+  FilterOption,
+  SortDirection,
+  SortOption
+} from '@cfPages/Library/components/types'
 
 type SortableProps = {
   sortable: true
-  onChange: (value: string, direction: 'asc' | 'desc') => void
+  onChange: (value: string, direction: SortDirection) => void
 }
 
 type NonSortableProps = {
@@ -24,12 +23,12 @@ type NonSortableProps = {
 type PropsType = {
   icon: ReactNode
   placeholder?: string
-  options: FilterOption[]
+  options: FilterOption[] | SortOption[]
 } & (SortableProps | NonSortableProps)
 
 type StateType = {
-  filter: FilterOption | null
-  direction: 'asc' | 'desc'
+  filter: FilterOption | SortOption | null
+  value: SortDirection
 }
 
 const FilterButton = ({
@@ -39,10 +38,10 @@ const FilterButton = ({
   options,
   onChange
 }: PropsType) => {
-  const selected = options.find((o) => o.selected)
-  const [value, setValue] = useState<StateType>({
-    filter: selected ?? null,
-    direction: 'desc'
+  const enabled = options.find((o) => o.enabled)
+  const [el, setEl] = useState<StateType>({
+    filter: enabled ?? null,
+    value: SortDirection.DESC
   })
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
 
@@ -51,18 +50,21 @@ const FilterButton = ({
   }
 
   const onOptionClick = (option: FilterOption) => {
-    setValue(
+    setEl(
       produce((draft) => {
         if (draft.filter?.name === option.name) {
           if (sortable) {
-            draft.direction = draft.direction === 'asc' ? 'desc' : 'asc'
+            draft.value =
+              draft.value === SortDirection.ASC
+                ? SortDirection.DESC
+                : SortDirection.ASC
           }
         } else {
           draft.filter = option
-          draft.direction = 'desc'
+          draft.value = SortDirection.DESC
         }
 
-        onChange(draft.filter.name, draft.direction)
+        onChange(draft.filter.name, draft.value)
       })
     )
 
@@ -78,7 +80,7 @@ const FilterButton = ({
         startIcon={icon}
         onClick={onButtonClick}
       >
-        {value.filter ? value.filter?.label : placeholder}
+        {el.filter ? el.filter?.label : placeholder}
       </Button>
 
       <StyledMenu
@@ -100,15 +102,15 @@ const FilterButton = ({
           <StyledMenuItem
             key={option.name}
             onClick={() => onOptionClick(option)}
-            selected={option.name === value.filter?.name}
+            selected={option.name === el.filter?.name}
           >
             {option.label}
-            {sortable && option.name === value.filter?.name && (
+            {sortable && option.name === el.filter?.name && (
               <>
-                {value.direction === 'asc' && (
+                {el.value === SortDirection.ASC && (
                   <ArrowUpwardIcon fontSize="small" />
                 )}
-                {value.direction === 'desc' && (
+                {el.value === SortDirection.DESC && (
                   <ArrowDownwardIcon fontSize="small" />
                 )}
               </>

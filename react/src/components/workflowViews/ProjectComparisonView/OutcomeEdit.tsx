@@ -11,6 +11,8 @@ import {
   OutcomeEditViewState,
   OutcomeEditViewUnconnected
 } from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeEditView'
+import { _t } from '@cf/utility/utilityFunctions'
+
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -58,7 +60,7 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected<
     if (
       type === CfObjectType.OUTCOMEWORKFLOW &&
       confirm(
-        window.gettext(
+        _t(
           "You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"
         )
       )

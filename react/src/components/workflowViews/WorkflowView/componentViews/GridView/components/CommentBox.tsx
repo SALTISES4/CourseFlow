@@ -130,7 +130,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     const props = parent.props
     if (
       window.confirm(
-        window.gettext(
+        _t(
           'Are you sure you want to permanently clear this comment?'
         )
       )
@@ -149,7 +149,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     const props = parent.props
     if (
       window.confirm(
-        window.gettext(
+        _t(
           'Are you sure you want to permanently clear all comments from this object?'
         )
       )

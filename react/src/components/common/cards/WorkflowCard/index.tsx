@@ -7,11 +7,11 @@ import WorkflowCardDumb, {
 } from '../WorkflowCardDumb'
 import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
 import { WorkflowCardProps } from '@cfCommonComponents/cards/WorkflowCard/type'
-import { WorkflowType } from '@cfModule/types/enum'
+import {LibraryObjectType, WorkflowType} from '@cfModule/types/enum'
 import { toggleFavourite } from '@XMLHTTP/API/user'
 import GroupIcon from '@mui/icons-material/Group'
 import ErrorIcon from '@mui/icons-material/Error'
-import { ESectionObject } from '@XMLHTTP/types/entity'
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
@@ -35,7 +35,7 @@ class WorkflowCard<
   S extends StateType
 > extends Component<P, S> {
   protected readonly mainDiv: RefObject<HTMLDivElement>
-  private readonly workflow: ESectionObject
+  private readonly workflow: ELibraryObject
 
   constructor(props: P) {
     super(props)
@@ -66,9 +66,9 @@ class WorkflowCard<
 
   getTypeChip = (): WorkflowCardChipType => {
     const { type, is_strategy } = this.workflow
-    let typeText = window.gettext(type)
+    let typeText = _t(type)
 
-    if (type === WorkflowType.LIVE_PROJECT) {
+    if (type === LibraryObjectType.LIVE_PROJECT) {
       typeText = _t('classroom')
     }
 
@@ -77,7 +77,7 @@ class WorkflowCard<
     }
 
     const chipType =
-      type === WorkflowType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
+      type === LibraryObjectType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
 
     return {
       type: chipType as CHIP_TYPE,
@@ -99,13 +99,13 @@ class WorkflowCard<
     const { workflow } = this
 
     if (
-      workflow.type === WorkflowType.PROJECT &&
+      workflow.type === LibraryObjectType.PROJECT &&
       workflow.workflow_count !== null &&
       workflow.workflow_count > 0
     ) {
       return {
         type: CHIP_TYPE.DEFAULT,
-        label: `${workflow.workflow_count} ${window.gettext(
+        label: `${workflow.workflow_count} ${_t(
           `workflow` + (workflow.workflow_count > 1 ? 's' : '')
         )}`
       }
@@ -116,7 +116,7 @@ class WorkflowCard<
     const { favourite } = this.state
     const { workflow } = this
 
-    if (workflow.type === WorkflowType.LIVE_PROJECT) {
+    if (workflow.type === LibraryObjectType.LIVE_PROJECT) {
       return null
     }
 
@@ -139,7 +139,7 @@ class WorkflowCard<
 
     // Live classroom indicator
     if (
-      workflow.type === WorkflowType.PROJECT &&
+      workflow.type === LibraryObjectType.PROJECT &&
       workflow.has_liveproject &&
       workflow.object_permission.role_type !== Constants.role_keys['none']
     ) {
@@ -162,7 +162,7 @@ class WorkflowCard<
         <div
           key="workflow-created-warning"
           className="workflow-created linked-workflow-warning"
-          title={window.gettext(
+          title={_t(
             'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
           )}
         >
@@ -194,8 +194,7 @@ class WorkflowCard<
           />
         }
         description={
-          this.workflow.author &&
-          `${_t('Owned by')} ${this.workflow.author}`
+          this.workflow.author && `${_t('Owned by')} ${this.workflow.author}`
         }
         isSelected={selected}
         isFavourite={favouriteOptions.isFavourite}

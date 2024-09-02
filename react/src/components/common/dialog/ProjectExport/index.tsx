@@ -123,7 +123,7 @@ function ProjectExportDialog({ data }: { data: EProject }) {
 
   return (
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
-      <DialogTitle>{window.gettext(`Export ${projectType}`)}</DialogTitle>
+      <DialogTitle>{_t(`Export ${projectType}`)}</DialogTitle>
       <DialogContent dividers>
         <StyledForm component="form">
           <Alert severity="warning" title="TODO" />
@@ -143,7 +143,7 @@ function ProjectExportDialog({ data }: { data: EProject }) {
                     key={index}
                     value={type.value}
                     control={<Radio />}
-                    label={window.gettext(type.label)}
+                    label={_t(type.label)}
                     onChange={() => onRadioChange('type', type.value)}
                     checked={type.value === state.type}
                   />
@@ -166,7 +166,7 @@ function ProjectExportDialog({ data }: { data: EProject }) {
                   key={index}
                   value={format.value}
                   control={<Radio />}
-                  label={window.gettext(format.label)}
+                  label={_t(format.label)}
                   onChange={() => onRadioChange('format', format.value)}
                   checked={format.value === state.format}
                 />

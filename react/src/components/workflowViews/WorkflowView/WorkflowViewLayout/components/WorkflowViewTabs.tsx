@@ -39,24 +39,18 @@ const ViewTabButtons = ({
     },
     {
       type: ViewType.OUTCOME_EDIT,
-      name: Utility.capWords(
-        _t('View') + ' ' + window.gettext(data.type + ' outcomes')
-      ),
+      name: Utility.capWords(_t('View') + ' ' + _t(data.type + ' outcomes')),
       disabled: []
     },
     {
       type: ViewType.OUTCOMETABLE,
-      name: Utility.capWords(
-        window.gettext(data.type + ' outcome') + ' ' + _t('Table')
-      ),
+      name: Utility.capWords(_t(data.type + ' outcome') + ' ' + _t('Table')),
       disabled: []
     },
     {
       type: ViewType.ALIGNMENTANALYSIS,
       name: Utility.capWords(
-        window.gettext(data.type + ' outcome') +
-          ' ' +
-          _t('Analytics')
+        _t(data.type + ' outcome') + ' ' + _t('Analytics')
       ),
       disabled: ['activity']
     },

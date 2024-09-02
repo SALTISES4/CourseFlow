@@ -12,7 +12,7 @@ import {
   WeekUnconnected,
   WeekUnconnectedPropsType
 } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
-// import $ from 'jquery'
+import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = TGetWeekByIDType
 type OwnProps = {
@@ -74,7 +74,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
   sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
     if (
       confirm(
-        window.gettext(
+        _t(
           "You've moved a node to another workflow. Nodes lose all tagged outcomes when transferred between workflows. Do you want to continue?"
         )
       )

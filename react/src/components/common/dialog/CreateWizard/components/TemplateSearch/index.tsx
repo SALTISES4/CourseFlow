@@ -12,7 +12,7 @@ import { TemplateThumbnail } from './styles'
 import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { getTemplates } from '@XMLHTTP/API/workflow'
 import Loader from '@cfCommonComponents/UIComponents/Loader'
-import { prepareBackendDataForWorkflowCardDumb } from '@cf/utility/marshalling/libraryCards'
+import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {
@@ -51,7 +51,7 @@ const TemplateSearch = ({
   if (templates === null) {
     getTemplates(template_type, (response_data) => {
       const project_data = response_data.data_package.map((project) => {
-        return prepareBackendDataForWorkflowCardDumb(project)
+        return formatLibraryObject(project)
       })
       setTemplateData(project_data)
       setResults(project_data)

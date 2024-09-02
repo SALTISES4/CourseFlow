@@ -24,6 +24,7 @@ import {
   ProjectTag
 } from './styles'
 import { PropsType as ResultType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import {ELibraryObject} from "@XMLHTTP/types/entity";
 
 // export type ResultType = {
 //   id: string
@@ -37,7 +38,7 @@ import { PropsType as ResultType } from '@cfCommonComponents/cards/WorkflowCardD
 
 export type PropsType = {
   workflows: ResultType[]
-  onChange: (project: ResultType) => void
+  onChange: (item: ResultType) => void
   placeholder?: string
   resultsLimit?: number
   seeAllText?: string
@@ -59,8 +60,9 @@ const FilterWorkflows = ({
 
   const debouncedFilter = useMemo(() => {
     return debounce((term) => {
+      console.log(workflows)
       const fuse = new Fuse(workflows, {
-        keys: ['name', 'group']
+        keys: ['title', 'description']
       })
 
       const filtered: typeof workflows = fuse
@@ -146,6 +148,8 @@ const FilterWorkflows = ({
     setSelected(undefined)
     setMenuAnchor(null)
   }
+
+  console.log(results)
 
   return (
     <Wrap ref={wrapRef}>

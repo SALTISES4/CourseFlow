@@ -83,7 +83,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     if (public_view) {
       if (
         window.confirm(
-          window.gettext(
+          _t(
             'Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow.'
           )
         )
@@ -115,7 +115,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     if (
       !published ||
       window.confirm(
-        window.gettext(
+        _t(
           'Are you sure you want to publish this project, making it fully visible to anyone with an account?'
         )
       )
@@ -193,9 +193,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
                 {_t('Generate a public link')}
               </div>
               <div className="public-link-description">
-                {window.gettext(
-                  'Anyone with the link will be able to view the workflow'
-                )}
+                {_t('Anyone with the link will be able to view the workflow')}
               </div>
             </div>
           </div>
@@ -236,9 +234,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
                 <LinkIcon />
               </div>
               <div>
-                <div className="copy-link-text">
-                  {_t('Copy public link')}
-                </div>
+                <div className="copy-link-text">{_t('Copy public link')}</div>
                 <div className="public-link-description">
                   {_t('Anyone with the link can view the workflow')}
                 </div>
@@ -288,13 +284,9 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
                 <CodeIcon />
               </div>
               <div>
-                <div className="copy-link-text">
-                  {_t('Copy embed code')}
-                </div>
+                <div className="copy-link-text">{_t('Copy embed code')}</div>
                 <div className="public-link-description">
-                  {window.gettext(
-                    'HTML code to embed the workflow in a site or page'
-                  )}
+                  {_t('HTML code to embed the workflow in a site or page')}
                 </div>
               </div>
             </div>
@@ -307,9 +299,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
               <LinkOffIcon />
             </div>
             <div>
-              <div className="public-link-text">
-                {_t('Remove public link')}
-              </div>
+              <div className="public-link-text">{_t('Remove public link')}</div>
             </div>
           </div>
         ]
@@ -365,9 +355,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             onClick={this.setPublication.bind(this, true && !public_disabled)}
           >
             <PublicIcon />
-            <div className="big-button-title">
-              {_t('Public to CourseFlow')}
-            </div>
+            <div className="big-button-title">{_t('Public to CourseFlow')}</div>
             <div className="big-button-description">{public_text}</div>
           </div>
 
@@ -405,9 +393,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
           <div className="big-buttons-wrapper">
             <div className="big-button active">
               <VisibilityOffIcon />
-              <div className="big-button-title">
-                {_t('Project is private')}
-              </div>
+              <div className="big-button-title">{_t('Project is private')}</div>
               <div className="big-button-description">
                 {_t('Only added collaborators can view')}
               </div>
@@ -478,11 +464,9 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
 
     let share_info
     if (data.type === 'project') {
-      share_info = window.gettext(
-        'Invite collaborators to project and its workflows'
-      )
+      share_info = _t('Invite collaborators to project and its workflows')
     } else {
-      share_info = window.gettext(
+      share_info = _t(
         'Invite collaborators to workflow and grant view permissions to the project'
       )
     }
@@ -510,7 +494,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
     return (
       <div className="message-wrap user-text">
         <h2>
-          {_t('Share') + ' ' + window.gettext(data.type) + ' '}
+          {_t('Share') + ' ' + _t(data.type) + ' '}
           <WorkflowTitle
             no_hyperlink={true}
             data={this.props.data}

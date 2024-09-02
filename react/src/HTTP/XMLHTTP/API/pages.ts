@@ -3,11 +3,11 @@ import {
   FavouritesQueryResp,
   PageHomeQueryResp,
   PageLibraryQueryResp,
-  LibraryObjectsSearchQueryResp,
-  DisciplineQueryResp
+  LibraryObjectsSearchQueryResp
 } from '@XMLHTTP/types/query'
-import { VERB } from '@cfModule/types/enum'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
+import { SearchOption } from '@cfPages/Library/components/types'
+import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * HOME PAGE
@@ -38,6 +38,29 @@ export async function fetchLibraryContext(): Promise<PageLibraryQueryResp> {
   return API_GET<PageLibraryQueryResp>(url)
 }
 
+// types of filter
+
+// FROM  EXPLORE
+// activeDisciplines: [number]
+// type: [LibraryObjectType]
+// contentRich: boolean
+// fromSaltise: boolean
+
+// FROM LIB
+// owned: boolean
+// shared: ?
+// favorited: boolean
+// archived: boolean
+
+// all query options are optional,
+// defaults set in backend for now
+export type SearchArgs = {
+  resultsPerPage?: number
+  page?: number
+  fullSearch?: boolean
+  sort?: SearchOption
+  filters?: SearchOption[]
+}
 /**
  * Search entire library
  *
@@ -45,23 +68,17 @@ export async function fetchLibraryContext(): Promise<PageLibraryQueryResp> {
  * @param data
  * @param callBackFunction
  */
+
 export function libraryObjectsSearchQuery(
-  filter,
-  data,
-  callBackFunction = (_data: LibraryObjectsSearchQueryResp) =>
-    console.log('success')
-) {
-  API_POST(
+  args: SearchArgs
+): Promise<LibraryObjectsSearchQueryResp> {
+  return API_POST(
     COURSEFLOW_APP.globalContextData.path.json_api.library
       .library__objects_search,
     {
-      filter: filter,
-      additional_data: data
+      args
     }
-  ).then((response: LibraryObjectsSearchQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
-  })
+  )
 }
 
 /**

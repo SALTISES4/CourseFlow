@@ -56,7 +56,7 @@ const Welcome = ({ hide }: PropsType) => {
         {_t('Welcome to CourseFlow')}
       </Typography>
       <Typography sx={{ mt: 2 }}>
-        {window.gettext(
+        {_t(
           'Tell us a bit more about your goals so that we can help you get started.'
         )}
       </Typography>

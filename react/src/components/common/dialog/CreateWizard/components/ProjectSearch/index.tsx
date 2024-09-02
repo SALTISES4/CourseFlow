@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { PropsType as ProjectType } from '@cfCommonComponents/cards/WorkflowCardDumb'
 import { getProjectsForCreate } from '@XMLHTTP/API/workflow'
 import Loader from '@cfModule/components/common/UIComponents/Loader'
-import {prepareBackendDataForWorkflowCardDumb} from "@cf/utility/marshalling/libraryCards";
+import {formatLibraryObject} from "@cf/utility/marshalling/libraryCards";
 
 type PropsType = {
   selected?: number
@@ -52,7 +52,7 @@ const ProjectSearch = ({
   if (projects === null) {
     getProjectsForCreate((response_data) => {
       const project_data = response_data.data_package.map((project) => {
-        return prepareBackendDataForWorkflowCardDumb(project)
+        return formatLibraryObject(project)
       })
       setProjectData(project_data)
       setResults(project_data)

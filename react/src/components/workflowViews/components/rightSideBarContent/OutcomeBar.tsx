@@ -78,9 +78,7 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
       : outcomeBarOutcomes
 
     const edittext = Utility.capWords(
-      _t('Edit') +
-        ' ' +
-        window.gettext(this.props.workflow_type + ' outcomes')
+      _t('Edit') + ' ' + _t(this.props.workflow_type + ' outcomes')
     )
 
     return (

@@ -50,9 +50,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
         this.props.actionFunction()
       }
       alert(
-        window.gettext(
-          'Your file is being generated and will be emailed to you shortly.'
-        )
+        _t('Your file is being generated and will be emailed to you shortly.')
       )
     }, 100)
     return true
@@ -96,9 +94,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'framework'}
         />,
-        <label htmlFor="export_type">
-          {_t('Course Framework')}
-        </label>
+        <label htmlFor="export_type">{_t('Course Framework')}</label>
       ])
 
     if (type == 'project' || type == 'program')
@@ -110,9 +106,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'matrix'}
         />,
-        <label htmlFor="export_type">
-          {_t('Competency Matrix')}
-        </label>
+        <label htmlFor="export_type">{_t('Competency Matrix')}</label>
       ])
 
     // brought from master branch
@@ -125,9 +119,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'sobec'}
         />,
-        <label htmlFor="export_type">
-          {_t('Sobec Validation')}
-        </label>
+        <label htmlFor="export_type">{_t('Sobec Validation')}</label>
       ])
 
     return exports

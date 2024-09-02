@@ -16,6 +16,7 @@ import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
 import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeBase'
 import OutcomeLegend from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeLegend'
+import {_t} from "@cfUtility";
 
 /**
  * The outcome table.
@@ -201,7 +202,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
     if (outcomes_sorted.length === 0 || !has_nodes) {
       let text
       if (this.context.viewType === ViewType.OUTCOMETABLE) {
-        text = window.gettext(
+        text = _t(
           'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
         )
       }

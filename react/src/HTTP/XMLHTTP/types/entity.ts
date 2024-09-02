@@ -1,6 +1,6 @@
 import { Discipline, ObjectSet, ObjectPermission } from '@cfModule/types/common'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
-import { WorkflowType } from '@cf/types/enum'
+import {LibraryObjectType, WorkflowType} from '@cf/types/enum'
 
 export type EDate = string
 export type EDiscipline = {
@@ -256,10 +256,10 @@ export type ESection = {
   title: string
   object_type: string
   is_strategy: boolean
-  objects: ESectionObject[]
+  objects: ELibraryObject[]
 }
 
-export type ESectionObject = {
+export type ELibraryObject = {
   id: number
   author: string
   deleted: boolean
@@ -270,7 +270,7 @@ export type ESectionObject = {
   published: boolean
   description: string
 
-  type: WorkflowType
+  type: LibraryObjectType
   is_owned: boolean
   is_strategy: boolean
   project_title: string
@@ -279,6 +279,7 @@ export type ESectionObject = {
   workflow_count: number
   is_linked: boolean
   is_visible: boolean
+  is_template: boolean
 }
 
 export type EObjectSet = {

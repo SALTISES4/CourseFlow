@@ -13,9 +13,7 @@ type PropsType = {
  */
 const AlignmentOutcomesBlock = (props: PropsType) => {
   const data = props.data
-  const titlestr = Utility.capWords(
-    window.gettext(props.workflow_type + ' outcome')
-  )
+  const titlestr = Utility.capWords(_t(props.workflow_type + ' outcome'))
   /*******************************************************
    * RENDER
    *******************************************************/

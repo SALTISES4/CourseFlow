@@ -125,7 +125,7 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
     }
 
     if (this.state.active == -1) {
-      view_buttons_outcomes = window.gettext(
+      view_buttons_outcomes = _t(
         'No outcomes have been added yet. Use the Edit Outcomes menu to get started'
       )
     } else if (this.state.sort == 'outcome') {

@@ -45,7 +45,7 @@ class RestoreBarItem extends ComponentWithToggleDrop<OwnProps> {
   delete() {
     if (
       window.confirm(
-        window.gettext(
+       _t(
           'Are you sure you want to permanently delete this object?'
         )
       )

@@ -137,13 +137,15 @@ def json_api__library__favourites__projects__get(
 #########################################################
 # LIBRARY
 #########################################################
-@user_is_teacher()
+# @user_is_teacher() @todo how to spoof teacher for dev
+@login_required
 def json_api___library__library__objects_search__post(
     request: HttpRequest,
 ) -> JsonResponse:
     body = json.loads(request.body)
-    name_filter = body.get("filter").lower()
-    data = body.get("additional_data", "{}")
+    # name_filter = body.get("filter").lower()
+    name_filter = ""
+    data = body.get("args", "{}")
     nresults = data.get("nresults", 10)
     full_search = data.get("full_search", False)
     published = data.get("published", False)
@@ -162,10 +164,14 @@ def json_api___library__library__objects_search__post(
     return JsonResponse(
         {
             "action": "posted",
-            "workflow_list": InfoBoxSerializer(
-                return_objects, context={"user": request.user}, many=True
-            ).data,
-            "pages": pages,
+            "data_package": {
+                "results": InfoBoxSerializer(
+                    return_objects, context={"user": request.user}, many=True
+                ).data,
+                "meta": {
+                    "pages": pages,
+                },
+            },
         }
     )
 
@@ -202,6 +208,93 @@ def get_library_objects(user, name_filter, nresults):
             extra_objects = extra_objects[: nresults - count]
         return_objects += [x.content_object for x in extra_objects]
     return return_objects
+
+
+# def get_explore_objects(user, name_filter, nresults, published, data):
+#     # Unpack and set default values from data
+#     types = data.get("types", ["project", "workflow"])
+#     disciplines = data.get("disciplines", [])
+#     sort = data.get("sort", None)
+#     from_saltise = data.get("fromSaltise", False)
+#     content_rich = data.get("contentRich", False)
+#     sort_reversed = data.get("sort_reversed", False)
+#     page = data.get("page", 1)
+#
+#     # Set up filter arguments
+#     filter_kwargs = {
+#         "published": True,
+#         "disciplines__in": disciplines if disciplines else None,
+#         "num_nodes__gte": 3 if content_rich else None,
+#         "from_saltise": from_saltise,
+#     }
+#
+#     # Combine all keyword queries into a single Q object
+#     keywords = name_filter.split()
+#     q_objects = Q()
+#     for keyword in keywords:
+#         q_objects &= (
+#             Q(author__first_name__icontains=keyword)
+#             | Q(author__username__icontains=keyword)
+#             | Q(author__last_name__icontains=keyword)
+#             | Q(title__icontains=keyword)
+#             | Q(description__icontains=keyword)
+#         )
+#
+#     # Prepare querysets for each type and combine using chain
+#     querysets = []
+#     for model_type in types:
+#         model = get_model_from_str(model_type)
+#         extra_excludes = (
+#             {} if model_type == "project" else {"project__deleted": True}
+#         )
+#         queryset = (
+#             model.objects.filter(**filter_kwargs)
+#             .filter(q_objects)
+#             .exclude(deleted=True, **extra_excludes)
+#             .distinct()
+#         )
+#         if model_type != "project":
+#             queryset = queryset.annotate(num_nodes=Count("weeks__nodes"))
+#         else:
+#             queryset = queryset.annotate(
+#                 num_nodes=Count("workflows__weeks__nodes")
+#             )
+#         querysets.append(queryset)
+#
+#     combined_queryset = list(chain(*querysets))
+#
+#     # Sorting and pagination
+#     if sort:
+#         sort_key = (
+#             attrgetter(sort)
+#             if sort in ["created_on", "title"]
+#             else lambda x: get_relevance(x, name_filter, keywords)
+#         )
+#         combined_queryset.sort(key=sort_key, reverse=sort_reversed)
+#
+#     # Implement pagination
+#     total_results = len(combined_queryset)
+#     start_index = max((page - 1) * nresults, 0)
+#     end_index = min(page * nresults, total_results)
+#     return_objects = combined_queryset[start_index:end_index]
+#     pages = {
+#         "total_results": total_results,
+#         "page_count": math.ceil(total_results / nresults),
+#         "current_page": page,
+#         "results_per_page": nresults,
+#     }
+#
+#     return return_objects, pages
+
+
+# def get_model_from_str(model_type):
+#     # Placeholder function to convert model type to actual model
+#     return {
+#         "project": Project,
+#         "workflow": Workflow,
+#     }.get(
+#         model_type, Project
+#     )  # Default to Project if type is not recognized
 
 
 def get_explore_objects(user, name_filter, nresults, published, data):

@@ -1,3 +1,5 @@
+// @ts-nocheck
+// @todo this file to be removed
 import * as React from 'react'
 import WorkflowCardCondensed from '@cfCommonComponents/cards/WorkflowCardCondensed/index.jsx'
 import Loader from '@cfCommonComponents/UIComponents/Loader.js'
@@ -11,7 +13,7 @@ import SortIcon from '@mui/icons-material/Sort'
 import SouthIcon from '@mui/icons-material/South'
 import NorthIcon from '@mui/icons-material/North'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
-import { ESectionObject } from '@XMLHTTP/types/entity'
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
@@ -19,7 +21,7 @@ import { _t } from '@cf/utility/utilityFunctions'
  *******************************************************/
 
 type PropsType = {
-  workflows: ESectionObject[]
+  workflows: ELibraryObject[]
   context: string
   read_only?: any
   project_data?: any
@@ -31,11 +33,11 @@ type Filters = { display: string; name: string }[]
 type Sorts = { display: string; name: string }[]
 
 type StateType = {
-  workflows: ESectionObject[]
+  workflows: ELibraryObject[]
   activeFilter: number
   activeSort: number
   reversed: boolean
-  searchResults: ESectionObject[]
+  searchResults: ELibraryObject[]
   searchFilterLock: null | number | string
   searchFilter?: string
 }
@@ -406,7 +408,7 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
         <span onClick={this.clearSearchLock.bind(this)}>
           <CloseIcon />
         </span>
-        {window.gettext('Search: ' + this.state.searchFilterLock)}
+        {_t('Search: ' + this.state.searchFilterLock)}
       </div>
     )
   }

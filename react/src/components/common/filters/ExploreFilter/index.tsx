@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react'
 import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
 import { debounce } from '@cfUtility'
@@ -13,7 +14,7 @@ import SouthIcon from '@mui/icons-material/South'
 import ScienceIcon from '@mui/icons-material/Science'
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
-import { ESectionObject } from '@XMLHTTP/types/entity'
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { _t } from '@cf/utility/utilityFunctions'
 
 type Filter = {
@@ -23,7 +24,7 @@ type Filter = {
 
 type PropsType = {
   disciplines: Discipline[]
-  workflows: ESectionObject[]
+  workflows: ELibraryObject[]
   pages: QueryPages
   context: string
 }
@@ -291,7 +292,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
   getFromSaltise() {
     return (
       <div
-        title={window.gettext(
+        title={_t(
           'Restrict results to content provided by SALTISE'
         )}
         id="content-rich"
@@ -435,7 +436,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
     if (this.state.workflows === this.props.workflows)
       return (
         <p>
-          {window.gettext(
+          {_t(
             "Enter a search term or filter then click 'search' to get started."
           )}
         </p>

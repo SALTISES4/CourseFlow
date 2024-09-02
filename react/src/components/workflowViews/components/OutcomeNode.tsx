@@ -12,7 +12,6 @@ import ActionButton from '@cfCommonComponents/UIComponents/ActionButton'
 import { WorkFlowConfigContext } from '@cfModule/context/workFlowConfigContext'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
 import { _t } from '@cf/utility/utilityFunctions'
-
 // import $ from 'jquery'
 
 type ConnectedProps = TOutcomeNodeByID
@@ -102,8 +101,6 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
    * Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
    */
   AddDeleteSelf = ({ data }: { data: any }) => {
-    console.log('AddDeleteSelf OutcomeNode.tsx')
-    console.log(data)
     const icon = 'close.svg'
     return (
       <ActionButton

@@ -68,7 +68,7 @@ const Home = () => {
           sx={{ mb: 3 }}
           severity="info"
           title={_t('How to use templates')}
-          subtitle={window.gettext(
+          subtitle={_t(
             'Templates provide a pre-established structure anchored in pedagogical best practices so that you don’t need to start from scratch!'
           )}
           hideIfCookie="home-howto-template"

@@ -63,7 +63,7 @@ function ObjectSets({
       </AccordionSummary>
       <AccordionDetails>
         <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
-          {window.gettext(
+          {_t(
             'Define categories for types outcomes or streams of nodes for your project.'
           )}
         </Typography>
