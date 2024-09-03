@@ -27,7 +27,7 @@ import {
 } from './styles'
 
 export type ResultType = {
-  id: string
+  id: number
   group: string
   name: string
   chip: {

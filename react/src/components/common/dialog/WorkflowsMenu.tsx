@@ -1,9 +1,9 @@
 import * as React from 'react'
-import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
-import MenuTab from '@cfCommonComponents/menu/components/MenuTab'
-import closeMessageBox from '@cfCommonComponents/menu/components/closeMessageBox'
+import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
+import MenuTab from '@cfComponents/menu/components/MenuTab'
+import closeMessageBox from '@cfComponents/menu/components/closeMessageBox'
 import { setLinkedWorkflow } from '@XMLHTTP/API/update'
-import { GridWrap } from '@cfModule/mui/helper'
+import { GridWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
@@ -249,19 +249,17 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
       <>
         <h4 className={'big-space'}>{_t('Current project')}</h4>,
         <GridWrap>
-          <WorkflowCard
-            workflowData={this.current_project}
-            selected={this.state.selected === this.current_project.id}
-            noHyperlink={no_hyperlink}
-            type={this.props.type} // @todo i don't think this is used
-            dispatch={null} // @todo i don't think this is used
-            selectAction={this.workflowSelected.bind(this)}
-          />
+          {/*<WorkflowCard*/}
+          {/*  workflowData={this.current_project}*/}
+          {/*  selected={this.state.selected === this.current_project.id}*/}
+          {/*  noHyperlink={no_hyperlink}*/}
+          {/*  type={this.props.type} // @todo i don't think this is used*/}
+          {/*  dispatch={null} // @todo i don't think this is used*/}
+          {/*  selectAction={this.workflowSelected.bind(this)}*/}
+          {/*/>*/}
         </GridWrap>
         <hr className={'big-space'} />,
-        <h4 className={'big-space'}>
-          {_t('Or select from your projects')}
-        </h4>
+        <h4 className={'big-space'}>{_t('Or select from your projects')}</h4>
       </>
     ) : (
       <></>

@@ -1,17 +1,17 @@
 // @ts-nocheck
 import React from 'react'
-import Loader from '@cfCommonComponents/UIComponents/Loader'
-import * as Reducers from '@cfReducers'
+import Loader from '@cfComponents/UIPrimitives/Loader'
+import * as Reducers from '@cfRedux/Reducers'
 import { Provider } from 'react-redux'
 import ComparisonWorkflowBase from '@cfViews/ProjectComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
 import Workflow, { WorkflowClass } from '@cfPages/Workspace/Workflow'
-import { ViewType } from '@cfModule/types/enum.js'
-import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
+import { ViewType } from '@cf/types/enum.js'
+import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import { getWorkflowDataQuery } from '@XMLHTTP/API/workflow'
-import * as Constants from '@cfModule/constants'
+import * as Constants from '@cf/constants'
 import { getProjectById } from '@XMLHTTP/API/project'
-import legacyWithRouter from '@cfModule/HOC/legacyWithRouter'
+import legacyWithRouter from '@cf/HOC/legacyWithRouter'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
 

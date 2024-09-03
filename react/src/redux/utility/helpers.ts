@@ -1,23 +1,23 @@
-import { CfObjectType } from '@cfModule/types/enum'
+import { CfObjectType } from '@cf/types/enum'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { Action } from 'redux'
 import { Dispatch } from '@reduxjs/toolkit'
 import React from 'react'
-import * as Constants from '@cfModule/constants'
+import * as Constants from '@cf/constants'
 
 /**
  *
  *  @toggleDrop
  *
  *  Toggles whether an object is dropped. No longer sent to database.
- * @param objectID
+ * @param objectId
  * @param objectType
  * @param is_dropped
  * @param dispatch
  * @param depth
  */
 export function toggleDropReduxAction(
-  objectID: number,
+  objectId: number,
   objectType: CfObjectType, //i thibnk this is CfObjectType
   is_dropped: string | boolean,
   dispatch: Dispatch<Action>,
@@ -25,13 +25,13 @@ export function toggleDropReduxAction(
 ) {
   try {
     const default_drop = Constants.get_default_drop_state(
-      objectID,
+      objectId,
       objectType,
       depth
     )
     if (is_dropped !== default_drop)
-      window.localStorage.setItem(objectType + objectID, String(is_dropped))
-    else window.localStorage.removeItem(objectType + objectID)
+      window.localStorage.setItem(objectType + objectId, String(is_dropped))
+    else window.localStorage.removeItem(objectType + objectId)
   } catch (err) {
     const error = err as Error
     if (
@@ -42,6 +42,6 @@ export function toggleDropReduxAction(
     }
   }
   dispatch(
-    ActionCreator.changeField(objectID, objectType, { is_dropped: is_dropped })
+    ActionCreator.changeField(objectId, objectType, { is_dropped: is_dropped })
   )
 }

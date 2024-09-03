@@ -40,7 +40,9 @@ export default function weekReducer(
       )
     case WeekActions.CHANGE_FIELD:
       return state.map((item) =>
-        item.id === action.payload.id ? {...item, ...action.payload.json} : item
+        item.id === action.payload.id
+          ? { ...item, ...action.payload.json }
+          : item
       )
     case WeekActions.INSERT_BELOW:
     case StrategyActions.ADD_STRATEGY:

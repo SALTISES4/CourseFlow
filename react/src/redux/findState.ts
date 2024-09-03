@@ -1,6 +1,6 @@
 // @ts-nocheck
 import * as Constants from '../constants'
-import * as Utility from '@cfModule/utility/utilityFunctions'
+import * as Utility from '@cf/utility/utilityFunctions'
 import {
   AppState,
   TColumnworkflow,

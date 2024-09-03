@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import { styled } from '@mui/material/styles'
-import { DIALOG_TYPE, useDialog } from '@cfCommonComponents/dialog'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 
 const Wrap = styled(Box)(({ theme }) => ({
   position: 'relative',

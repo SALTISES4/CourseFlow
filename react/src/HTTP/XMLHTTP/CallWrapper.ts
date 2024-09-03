@@ -11,7 +11,7 @@ All functions for API calls.
  *  Rejects if the 'action' in JSON response hasn't 'posted'
  *  which can be caught and acted upon for error handling
  */
-import { VERB } from '@cfModule/types/enum'
+import { VERB } from '@cf/types/enum'
 
 /**
  *

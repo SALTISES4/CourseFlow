@@ -9,6 +9,14 @@ from course_flow.models.workflow import Workflow
 
 
 class WorkflowUpdateConsumer(WebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.user = None
+        self.room_group_name = None
+        self.workflow_pk = None
+        self.EDIT = None
+        self.VIEW = None
+
     def get_permission(self):
         workflow = Workflow.objects.get(pk=self.workflow_pk)
         self.VIEW = check_object_permission(
@@ -46,7 +54,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             self.room_group_name, self.channel_name
         )
 
-    def receive(self, text_data):
+    def receive(self, text_data=None, bytes_data=None):
         print("got a message")
         print(text_data)
         if not self.EDIT:

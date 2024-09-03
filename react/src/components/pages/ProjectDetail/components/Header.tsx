@@ -1,6 +1,5 @@
-import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
-import CollapsibleText from '@cfCommonComponents/UIComponents/CollapsibleText'
-import { Discipline } from '@cfModule/types/common'
+import CollapsibleText from '@cfComponents/UIPrimitives/CollapsibleText'
+import { Discipline } from '@cf/types/common'
 import Users from '@cfPages/ProjectDetail/components/Users'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { EProject } from '@XMLHTTP/types/entity'
@@ -30,11 +29,12 @@ const Header = ({
 
   return (
     <div className="project-header">
-      <WorkflowTitle
-        data={project}
-        no_hyperlink={true}
-        class_name="project-title"
-      />
+      {/*<WorkflowTitle*/}
+      {/*  data={project}*/}
+      {/*  no_hyperlink={true}*/}
+      {/*  class_name="project-title"*/}
+      {/*/>*/}
+      placeholder title
       <div className="project-header-info">
         <div className="project-info-section project-members">
           <h4>{_t('Permissions')}</h4>

@@ -73,7 +73,7 @@ def is_owner(model):
                     pk = body.get(model, "")
                     model = model[:-2]
             else:
-                pk = body.get("objectID", "")
+                pk = body.get("objectId", "")
                 model = body.get("objectType", "")
 
             if not pk or not model:
@@ -184,7 +184,7 @@ def get_model_from_request(model, body, **kwargs):
                 pk = request_data
                 model = body.get("parentType")
         else:
-            request_data = body.get("objectID")
+            request_data = body.get("objectId")
             if request_data is None:
                 pk = None
                 model = None

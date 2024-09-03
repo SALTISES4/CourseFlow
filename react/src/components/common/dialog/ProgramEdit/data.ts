@@ -1,4 +1,4 @@
-import { ProgramFormDataType } from '@cfCommonComponents/dialog/CreateWizard/components/FormProgram/types'
+import { ProgramFormDataType } from '@cfComponents/dialog/CreateWizard/components/FormProgram/types'
 
 const data: ProgramFormDataType = {
   title: 'This is a program title',

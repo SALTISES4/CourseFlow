@@ -11,13 +11,13 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
 
-import { OuterContentWrap } from '@cfModule/mui/helper'
+import { OuterContentWrap } from '@cf/mui/helper'
 import { API_POST } from '@XMLHTTP/CallWrapper'
-import { getNameInitials } from '@cfModule/utility/utilityFunctions'
+import { getNameInitials } from '@cf/utility/utilityFunctions'
 import { useQuery } from '@tanstack/react-query'
-import Loader from '@cfCommonComponents/UIComponents/Loader.js'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import * as Styled from './style'
-import { fetchNotifications } from '@XMLHTTP/API/notifications'
+import { getNotifications } from '@XMLHTTP/API/notifications'
 import { NotificationQueryResp } from '@XMLHTTP/types/query'
 
 /**
@@ -32,8 +32,8 @@ const NotificationsPage = (): JSX.Element => {
    * HOOKS
    *******************************************************/
   const { data, error, isLoading, isError } = useQuery<NotificationQueryResp>({
-    queryKey: ['fetchNotifications'],
-    queryFn: fetchNotifications
+    queryKey: ['getNotifications'],
+    queryFn: getNotifications
   })
 
   const [pagination, setPagination] = useState<{
@@ -94,7 +94,7 @@ const NotificationsPage = (): JSX.Element => {
   }
 
   /**
-   *
+   * // @todo move to react query
    */
   function onMarkAsReadClick() {
     const { notification } = pageState
@@ -125,7 +125,7 @@ const NotificationsPage = (): JSX.Element => {
   }
 
   /**
-   *
+   * // @todo move to react query
    */
   function onDeleteClick() {
     const { notification } = pageState
@@ -154,8 +154,7 @@ const NotificationsPage = (): JSX.Element => {
   }
 
   /**
-   *
-   * @param e
+   * // @todo move to react query
    */
   function onMarkAllAsReadClick(e) {
     e.preventDefault()
@@ -186,7 +185,7 @@ const NotificationsPage = (): JSX.Element => {
   if (isLoading) return <Loader />
   if (isError) return <div>An error occurred: {error.message}</div>
 
-  const { notifications, unreadCount } = data.data
+  const { notifications, unreadCount } = data.data_package
   const totalPaginationPages = Math.ceil(
     pageState.notifications.length / pagination.countPerPage
   )

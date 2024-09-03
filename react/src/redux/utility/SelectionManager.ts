@@ -1,5 +1,5 @@
 import React from 'react'
-import { EventUnion } from '@cfModule/types/common'
+import { EventUnion } from '@cf/types/common'
 import * as Constants from '@cfConstants'
 import EditableComponent from '@cfEditableComponents/EditableComponent'
 import {

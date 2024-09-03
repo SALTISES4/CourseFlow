@@ -1,5 +1,5 @@
 import { EmptyPostResp, DuplicateBaseItemQueryResp } from '@XMLHTTP/types/query'
-import { VERB, OBJECT_TYPE } from '@cfModule/types/enum'
+import { VERB, OBJECT_TYPE } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 
 /**
@@ -60,7 +60,7 @@ export function duplicateBaseItemQuery(
 
 //Causes the specified object to insert a sibling after itself
 export function duplicateSelfQuery(
-  objectID: number,
+  objectId: number,
   objectType: any,
   parentID: number,
   parentType: any,
@@ -70,7 +70,7 @@ export function duplicateSelfQuery(
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_self, {
     parentID: parentID,
     parentType: parentType,
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType,
     throughType: throughType
   }).then((response: EmptyPostResp) => {

@@ -7,7 +7,7 @@ import DialogActions from '@mui/material/DialogActions'
 import { SelectChangeEvent } from '@mui/material/Select'
 import CourseForm from '@cfPages/Styleguide/dialog/CreateWizard/components/FormCourse'
 import { CourseFormDataType } from '@cfPages/Styleguide/dialog/CreateWizard/components/FormCourse/types'
-import { DIALOG_TYPE, useDialog } from '@cfPages/Styleguide/dialog'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { StyledDialog } from '@cfPages/Styleguide/dialog/styles'
 
 type StateType = Omit<CourseFormDataType, 'units'> & {

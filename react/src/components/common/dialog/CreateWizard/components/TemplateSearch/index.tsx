@@ -9,9 +9,9 @@ import SearchIcon from '@mui/icons-material/Search'
 import { debounce } from '@mui/material/utils'
 
 import { TemplateThumbnail } from './styles'
-import { PropsType as TemplateType } from '@cfCommonComponents/cards/WorkflowCardDumb'
+import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
 import { getTemplates } from '@XMLHTTP/API/workflow'
-import Loader from '@cfCommonComponents/UIComponents/Loader'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/utilityFunctions'
 

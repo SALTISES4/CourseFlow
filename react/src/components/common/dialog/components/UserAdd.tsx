@@ -1,7 +1,7 @@
 import * as React from 'react'
 // import $ from 'jquery'
 import * as Constants from '@cfConstants'
-import UserLabel from '@cfCommonComponents/dialog/components/UserLabel'
+import UserLabel from '@cfComponents/dialog/components/UserLabel'
 import { getUserListQuery } from '@XMLHTTP/API/user'
 import SearchIcon from '@mui/icons-material/Search'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -31,7 +31,7 @@ class UserAdd extends React.Component<PropsType, StateProps> {
     $(this.input.current).autocomplete({
       source: (request, response_function) => {
         getUserListQuery(request.term, (response) => {
-          const user_list = response.user_list.map((user) => {
+          const user_list = response.data_package.user_list.map((user) => {
             return {
               label:
                 user.first_name + ' ' + user.last_name + ' - ' + user.username,

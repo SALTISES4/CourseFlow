@@ -1,4 +1,4 @@
-import { Discipline } from '@cfModule/types/common'
+import { Discipline } from '@cf/types/common'
 import { EProject } from '@XMLHTTP/types/entity'
 import { _t } from '@cf/utility/utilityFunctions'
 

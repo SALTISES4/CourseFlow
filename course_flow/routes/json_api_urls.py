@@ -271,14 +271,19 @@ def json_api_patterns():
             name="library--library--projects--get",
         ),
         path(
-            "library/favourites/projects",
-            views.json_api.library.json_api__library__favourites__projects__get,
+            "library/favourites",
+            views.json_api.library.json_api__library__favourite_library_objects__post,
             name="library--favourites--projects--get",
         ),
         path(
-            "library/library/objects-search",
-            views.json_api.library.json_api___library__library__objects_search__post,
+            "library/objects-search",
+            views.json_api.library.json_api___library__library_objects_search__post,
             name="library--library--objects-search--post",
+        ),
+        path(
+            "library/toggle-favourite",
+            views.json_api.library.json_api__library__toggle_favourite__post,
+            name="library--toggle-favourite--post",
         ),
         #########################################################
         # User
@@ -310,12 +315,6 @@ def json_api_patterns():
             "user/notifications-settings/update",
             views.json_api.user.json_api__user__notification_settings__post,
             name="user--notification-settings--update--post",
-        ),
-        # move this
-        path(
-            "favourite/toggle",
-            views.json_api.user.json_api__favourite__toggle__post,
-            name="favourite--toggle--post",
         ),
         #########################################################
         # notifications

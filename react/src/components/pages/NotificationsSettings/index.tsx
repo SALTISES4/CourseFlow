@@ -5,14 +5,14 @@ import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { OuterContentWrap } from '@cfModule/mui/helper'
+import { OuterContentWrap } from '@cf/mui/helper'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import {
   NotificationSettingsQueryResp,
   NotificationSettingsUpdateQueryResp
 } from '@XMLHTTP/types/query.js'
 import {
-  fetchNotificationSettings,
+  getNotificationSettings,
   updateNotificationSettings
 } from '@XMLHTTP/API/user'
 
@@ -47,8 +47,8 @@ const NotificationsSettingsPage = () => {
    *******************************************************/
   const { data, error, isLoading, isError } =
     useQuery<NotificationSettingsQueryResp>({
-      queryKey: ['fetchNotificationSettings'],
-      queryFn: fetchNotificationSettings
+      queryKey: ['getNotificationSettings'],
+      queryFn: getNotificationSettings
     })
 
   const { mutate } = useMutation<NotificationSettingsUpdateQueryResp>({

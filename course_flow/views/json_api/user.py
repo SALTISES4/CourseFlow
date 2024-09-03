@@ -3,19 +3,16 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
-from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
 
-from course_flow.decorators import user_can_view, user_is_teacher
+from course_flow.decorators import user_is_teacher
 from course_flow.forms import NotificationsSettings, ProfileSettings
 from course_flow.models import User
 from course_flow.models.courseFlowUser import CourseFlowUser
-from course_flow.models.favourite import Favourite
 from course_flow.serializers import FormFieldsSerializer, UserSerializer
-from course_flow.utils import get_model_from_str
 
 
 #########################################################
@@ -91,37 +88,6 @@ def json_api__user__notification_settings__post(
     return JsonResponse({"action": "error", "errors": form.errors})
 
 
-#########################################################
-# FAVS
-#########################################################
-
-
-# favourite/unfavourite a project or workflow for a user
-@user_can_view(False)
-def json_api__favourite__toggle__post(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    object_id = body.get("objectID")
-    objectType = body.get("objectType")
-    favourite = body.get("favourite")
-    response = {}
-    if objectType in ["activity", "course", "program"]:
-        objectType = "workflow"
-    try:
-        item = get_model_from_str(objectType).objects.get(pk=object_id)
-        Favourite.objects.filter(
-            user=request.user,
-            content_type=ContentType.objects.get_for_model(item),
-            object_id=object_id,
-        ).delete()
-        if favourite:
-            Favourite.objects.create(user=request.user, content_object=item)
-        response["action"] = "posted"
-    except ValidationError:
-        response["action"] = "error"
-
-    return JsonResponse(response)
-
-
 @user_is_teacher()
 def json_api__user__list__post(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
@@ -166,6 +132,8 @@ def json_api__user__list__post(request: HttpRequest) -> JsonResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "user_list": UserSerializer(user_list, many=True).data,
+            "data_package": {
+                "user_list": UserSerializer(user_list, many=True).data,
+            },
         }
     )

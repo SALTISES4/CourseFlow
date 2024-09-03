@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
 import Base from '@cf/base'
 import Home from '@cfPages/Home'
+import Styleguide from '@cfPages/Styleguide'
 import Favourites from '@cfPages/Favourites'
 import Library from '@cfPages/Library'
 import Explore from '@cfPages/Explore'
@@ -11,6 +12,10 @@ import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import ProjectDetail from '@cfPages/ProjectDetail'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import { ViewType } from '@cf/types/enum'
+import MyLibrary from '@cfPages/Library/MyLibrary'
+import Favourites from '@cf/components/pages/Library/Favourites'
+import Explore from '@cf/components/pages/Library/Explore'
+import ProjectTabs from '@cfPages/ProjectTabs'
 
 // Styleguide views
 import Styleguide from '@cfPages/Styleguide'
@@ -39,7 +44,11 @@ export enum Routes {
   STYLEGUIDE = `/${DOMAIN}/styleguide/`,
   STYLEGUIDE_PROJECT = `/${DOMAIN}/styleguide/project`,
   STYLEGUIDE_PROJECT_WORKFLOWS = `/${DOMAIN}/styleguide/project/workflows`,
-  STYLEGUIDE_PROJECT_WORKSPACE = `/${DOMAIN}/styleguide/project/workspace`
+  STYLEGUIDE_PROJECT_WORKSPACE = `/${DOMAIN}/styleguide/project/workspace`,
+  WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/grid/`,
+
+  TEMP_PROJECT = `/${DOMAIN}/temp-project`,
+  TEMP_PROJECT_WORKFLOWS = `/${DOMAIN}/temp-project/workflows`
 }
 
 export const CfRouter = createBrowserRouter([
@@ -84,7 +93,7 @@ export const CfRouter = createBrowserRouter([
     path: Routes.LIBRARY,
     element: (
       <Base>
-        <Library />
+        <MyLibrary />
       </Base>
     )
   },
@@ -138,13 +147,22 @@ export const CfRouter = createBrowserRouter([
     )
   },
   {
+    path: `${Routes.TEMP_PROJECT}/*`,
+    element: (
+      <Base>
+        <ProjectTabs />
+      </Base>
+    )
+  },
+
+  {
     path: Routes.WORKFLOW_OVERVIEW,
     element: (
       <Base>
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
         {/*<WorkflowPage initialView={ViewType.WORKFLOW_OVERVIEW} />*/}
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-        <WorkflowPage  />
+        <WorkflowPage />
       </Base>
     )
   },
@@ -153,8 +171,8 @@ export const CfRouter = createBrowserRouter([
     element: (
       <Base>
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-  {/*      <WorkflowPage initialView={ViewType.WORKFLOW} />*/}
-         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
+        {/*      <WorkflowPage initialView={ViewType.WORKFLOW} />*/}
+        {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
         <WorkflowPage />
       </Base>
     )

@@ -10,8 +10,8 @@ import { importData } from '@XMLHTTP/API/export_import'
 import { _t } from '@cf/utility/utilityFunctions'
 
 import { StyledDialog } from '../styles'
-import { DIALOG_TYPE, useDialog } from '../'
-import FileUploader from '@cfModule/components/FileUploader'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import FileUploader from '@cfComponents/UIPrimitives/FileUploader'
 
 type PropsType = {
   workflowID: number

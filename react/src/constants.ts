@@ -1,5 +1,5 @@
 import * as Utility from '@cfUtility'
-import { NumTuple } from '@cfModule/types/common'
+import { NumTuple } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 
 /*
@@ -203,7 +203,7 @@ export const default_drop_state = {
   outcome: [true, false, false, false, false]
 }
 
-export const get_default_drop_state = (objectID, objectType, depth = 1) => {
+export const get_default_drop_state = (objectId, objectType, depth = 1) => {
   let default_drop = default_drop_state[objectType]
   if (objectType === 'outcome') {
     if (depth < default_drop.length) default_drop = default_drop[depth]

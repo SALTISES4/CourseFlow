@@ -1,4 +1,4 @@
-import { CourseFormDataType } from '@cfCommonComponents/dialog/CreateWizard/components/FormCourse/types'
+import { CourseFormDataType } from '@cfComponents/dialog/CreateWizard/components/FormCourse/types'
 
 const data: CourseFormDataType = {
   title: 'Course title goes here',

@@ -25,7 +25,7 @@ import editCourseData from '@cfPages/Styleguide/dialog/CourseEdit/data'
 import ImportDialog from '@cfPages/Styleguide/dialog/Import'
 import AddContributorDialog from '@cfPages/Styleguide/dialog/AddContributor'
 import addContributorData from '@cfPages/Styleguide/dialog/AddContributor/data'
-import { DIALOG_TYPE } from '@cfCommonComponents/dialog'
+import { DIALOG_TYPE } from '@cf/hooks/useDialog'
 
 const AllDialogs = () => (
   <>
@@ -40,7 +40,6 @@ const AllDialogs = () => (
     {/*/>*/}
 
     <ProjectExportDialog project={exportProjectData} />
-
 
     <ArchiveDialog />
 

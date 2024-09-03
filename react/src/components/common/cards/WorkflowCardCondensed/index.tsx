@@ -1,11 +1,13 @@
-import { WorkflowTitle } from '@cfCommonComponents/UIComponents/Titles'
-import WorkflowCard, { WorkflowCardState } from '../WorkflowCard'
-import WorkflowCardDumb from '../WorkflowCardDumb'
-import { WorkflowCardProps } from '@cfCommonComponents/cards/WorkflowCard/type'
-import { _t } from '@cf/utility/utilityFunctions'
+// @ts-nocheck
+// import { WorkflowTitle } from '@cfComponents/UIPrimitives/Titles'
 
-type PropsType = WorkflowCardProps
-type StateType = WorkflowCardState
+// import { WorkflowCardProps } from '@cfComponents/cards/WorkflowCard/type'
+import { _t } from '@cf/utility/utilityFunctions'
+import { Component } from 'react'
+import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
+
+type PropsType = WorkflowCardWrapperPropsType
+// type StateType = WorkflowCardWrapperState
 
 /*******************************************************
   A container for workflow cards that allows searching and filtering
@@ -14,7 +16,7 @@ type StateType = WorkflowCardState
   Optional prop search_within restricts searches to the existing list of workflows.
  *******************************************************/
 // @todo define props
-class WorkflowCardCondensed extends WorkflowCard<PropsType, StateType> {
+class WorkflowCardCondensed extends Component<PropsType, StateType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -34,29 +36,29 @@ class WorkflowCardCondensed extends WorkflowCard<PropsType, StateType> {
    *******************************************************/
   render() {
     const data = this.props.workflowData
-
-    return (
-      <WorkflowCardDumb
-        ref={this.mainDiv}
-        className={'workflow-for-menu simple-workflow hover-shade ' + data.type}
-        title={
-          <>
-            <WorkflowTitle
-              no_hyperlink={this.props.no_hyperlink}
-              class_name="workflow-title"
-              data={data}
-            />
-            <this.ProjectTitle />
-          </>
-        }
-        id={data.id}
-        chips={[this.getTypeChip()]}
-        onClick={this.clickAction.bind(this)}
-        onMouseDown={(evt) => {
-          evt.preventDefault()
-        }}
-      />
-    )
+    return <></>
+    // return (
+    //   <WorkflowCardDumb
+    //     ref={this.mainDiv}
+    //     className={'workflow-for-menu simple-workflow hover-shade ' + data.type}
+    //     title={
+    //       <>
+    //         <WorkflowTitle
+    //           no_hyperlink={this.props.no_hyperlink}
+    //           class_name="workflow-title"
+    //           data={data}
+    //         />
+    //         <this.ProjectTitle />
+    //       </>
+    //     }
+    //     id={data.id}
+    //     chips={[this.getTypeChip()]}
+    //     onClick={this.clickAction.bind(this)}
+    //     onMouseDown={(evt) => {
+    //       evt.preventDefault()
+    //     }}
+    //   />
+    // )
   }
 }
 

@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react'
 import { produce } from 'immer'
-import { DIALOG_TYPE, useDialog } from '@cfPages/Styleguide/dialog'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { SelectChangeEvent } from '@mui/material/Select'
 import Button from '@mui/material/Button'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -73,8 +73,8 @@ const CreateActivityDialog = ({
     state.type === CREATE_RESOURCE_TYPE.TEMPLATE
       ? !state.template
       : state.fields
-        ? !state.fields.title
-        : true
+      ? !state.fields.title
+      : true
   ][state.step]
 
   function goToNextStep() {

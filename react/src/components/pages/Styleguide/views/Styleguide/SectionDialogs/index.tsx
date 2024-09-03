@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import Section from '@cfPages/Styleguide/views/Homepage/components/Section'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'

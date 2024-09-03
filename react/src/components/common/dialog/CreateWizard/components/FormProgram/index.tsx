@@ -6,7 +6,7 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import MenuItem from '@mui/material/MenuItem'
-import { StyledForm } from '@cfCommonComponents/dialog/styles'
+import { StyledForm } from '@cfComponents/dialog/styles'
 import { ProgramFormDataType } from './types'
 
 type FormValues = Omit<ProgramFormDataType, 'units'> & {

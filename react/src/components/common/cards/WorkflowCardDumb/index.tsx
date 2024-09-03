@@ -3,7 +3,7 @@ import StarIcon from '@mui/icons-material/Star'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
 import { _t } from '@cf/utility/utilityFunctions'
 
-import { WorkflowType } from '@cfModule/types/enum'
+import { WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cfUtility'
 import { ELibraryObject } from '@XMLHTTP/types/entity'
 
@@ -45,6 +45,8 @@ export type PropsType = {
   onMouseDown?: (evt: MouseEvent<HTMLDivElement>) => void
   onFavourite?: (evt: MouseEvent<HTMLButtonElement>) => void
   chips: (WorkflowCardChipType | ReactNode)[]
+  footer?: ReactNode
+  isDisabledLink?: boolean
 }
 
 // Type guard function to check if an item is of type WorkflowCardChipType
@@ -65,10 +67,12 @@ const WorkflowCardDumb = ({
   onFavourite,
   onClick,
   onMouseDown,
-  chips
+  chips,
+  footer,
+  isDisabledLink
 }: PropsType) => (
   <CardWrap
-    onClick={onClick}
+    onClick={!isDisabledLink ? onClick : null}
     onMouseDown={onMouseDown}
     className={isSelected ? 'selected' : ''}
   >
@@ -105,6 +109,7 @@ const WorkflowCardDumb = ({
           {isFavourite ? <StarIcon /> : <StarOutlineIcon />}
         </CardFavouriteBtn>
       </CardFooterActions>
+      {footer}
     </CardFooter>
   </CardWrap>
 )

@@ -1,6 +1,6 @@
-import { Discipline, ObjectSet, ObjectPermission } from '@cfModule/types/common'
+import { Discipline, ObjectSet, ObjectPermission } from '@cf/types/common'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
-import {LibraryObjectType, WorkflowType} from '@cf/types/enum'
+import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
 
 export type EDate = string
 export type EDiscipline = {
