@@ -11,7 +11,7 @@ import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
 import { _t } from '@cf/utility/utilityFunctions'
-import CompletionImg from "@cfComponents/UIPrimitives/CompletionIng";
+import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
 // import $ from 'jquery'
 
 type ConnectedProps = TOutcomeNodeByID

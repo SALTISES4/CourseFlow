@@ -4,7 +4,10 @@ import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 import UserLabel from '@cfComponents/dialog/components/UserLabel'
 import UserAdd from '@cfComponents/dialog/components/UserAdd'
-import { getUsersForObjectQueryLegacy, setUserPermission } from '@XMLHTTP/API/sharing'
+import {
+  getUsersForObjectQueryLegacy,
+  setUserPermission
+} from '@XMLHTTP/API/sharing'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import { EUser } from '@XMLHTTP/types/entity'
 import AddLinkIcon from '@mui/icons-material/AddLink'

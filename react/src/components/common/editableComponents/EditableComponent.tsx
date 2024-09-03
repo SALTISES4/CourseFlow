@@ -316,9 +316,7 @@ class EditableComponent<
         value={data.time_general_hours}
         onChange={this.inputChanged.bind(this, 'time_general_hours')}
       />
-      <div className="half-width">
-        {_t('hrs. General Education')}
-      </div>
+      <div className="half-width">{_t('hrs. General Education')}</div>
       <input
         disabled={override || read_only}
         className="half-width"
@@ -328,9 +326,7 @@ class EditableComponent<
         value={data.time_specific_hours}
         onChange={this.inputChanged.bind(this, 'time_specific_hours')}
       />
-      <div className="half-width">
-        {_t('hrs. Specific Education')}
-      </div>
+      <div className="half-width">{_t('hrs. Specific Education')}</div>
     </div>
   )
 
@@ -339,9 +335,7 @@ class EditableComponent<
       <div>
         <h4>{_t('Settings')}</h4>
         <div>
-          <label htmlFor="outcomes_type">
-            {_t('Outcomes Style')}
-          </label>
+          <label htmlFor="outcomes_type">{_t('Outcomes Style')}</label>
           <select
             disabled={readOnly}
             name="outcomes_type"
@@ -394,9 +388,7 @@ class EditableComponent<
           <label htmlFor="dashed">{_t('Dashed Line')}</label>
         </div>
         <div>
-          <label htmlFor="text-position-range">
-            {_t('Text Position')}
-          </label>
+          <label htmlFor="text-position-range">{_t('Text Position')}</label>
           <div className="slidecontainer">
             <input
               disabled={readOnly}
@@ -447,9 +439,7 @@ class EditableComponent<
           checked={data.has_autolink}
           onChange={this.checkboxChanged.bind(this, 'has_autolink')}
         />
-        <label htmlFor="has_autolink">
-          {_t('Draw arrow to next node')}
-        </label>
+        <label htmlFor="has_autolink">{_t('Draw arrow to next node')}</label>
       </div>
     )
   }
@@ -565,10 +555,7 @@ class EditableComponent<
         className="right-panel-inner"
         onClick={(evt) => evt.stopPropagation()}
       >
-        <h3>
-          {_t('Edit ') +
-            Constants.get_verbose(data, this.objectType)}
-        </h3>
+        <h3>{_t('Edit ') + Constants.get_verbose(data, this.objectType)}</h3>
 
         {[
           CfObjectType.NODE,

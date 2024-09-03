@@ -192,9 +192,7 @@ const WorkflowViewTabs = ({
       </Box>
 
       <div className="workflow-container">
-        <div className="workflow-view-select hide-print">
-          <ViewTabButtons data={data} changeView={changeView} />
-        </div>
+        <ViewTabButtons data={data} changeView={changeView} />
         <WorkflowContent viewType={viewType} data={data} />
       </div>
     </>

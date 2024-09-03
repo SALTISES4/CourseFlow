@@ -55,10 +55,7 @@ function ObjectSets({
       >
         <Stack direction="row" spacing={2}>
           <Typography>{_t('Object sets')}</Typography>
-          <AdvancedLabel
-            label={_t('Advanced feature')}
-            variant="filled"
-          />
+          <AdvancedLabel label={_t('Advanced feature')} variant="filled" />
         </Stack>
       </AccordionSummary>
       <AccordionDetails>

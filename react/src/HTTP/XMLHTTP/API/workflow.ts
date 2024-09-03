@@ -84,24 +84,38 @@ export function getPublicWorkflowDataQuery(
 
 //Get the data from all parent workflows
 export function getWorkflowParentDataQuery(
+  id: number
+): Promise<WorkflowParentDataQueryResp> {
+  return API_POST<WorkflowParentDataQueryResp>(
+    COURSEFLOW_APP.globalContextData.path.post_paths.get_workflow_parent_data,
+    {
+      workflowPk: id
+    }
+  )
+}
+
+// @todo combine these
+//Get the public data from all parent workflows
+export function getWorkflowParentDataQueryLegacy(
   workflowPk,
   callBackFunction = (_data: WorkflowParentDataQueryResp) =>
     console.log('success')
 ) {
   try {
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.post_paths.get_workflow_parent_data,
-      {
-        workflowPk: workflowPk
-      }
-    ).then((response: WorkflowParentDataQueryResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
+    $.get(
+      COURSEFLOW_APP.globalContextData.path.get_paths.get_public_workflow_parent_data.replace(
+        '0',
+        workflowPk
+      )
+    ).done(function (response: WorkflowParentDataQueryResp) {
+      if (response.action === VERB.POSTED) callBackFunction(response)
       else window.fail_function(response.action)
     })
   } catch (err) {
     window.fail_function()
   }
 }
+
 
 // @todo combine these
 //Get the public data from all parent workflows

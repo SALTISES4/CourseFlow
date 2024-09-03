@@ -27,7 +27,7 @@ import MenuButton, {
 } from '@cfPages/Styleguide/components/MenuButton'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
-import {_t, getInitials} from '@cf/utility/utilityFunctions'
+import { _t, getInitials } from '@cf/utility/utilityFunctions'
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
@@ -128,15 +128,14 @@ const OverviewTab = ({
               color="secondary"
               startIcon={<LinkIcon />}
             >
-              {_t("Generate public link")}
+              {_t('Generate public link')}
             </Button>
             <Button
               size="medium"
               variant="contained"
               onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
             >
-              {_t("Add contributor")}
-
+              {_t('Add contributor')}
             </Button>
           </Stack>
         </InfoBlock>

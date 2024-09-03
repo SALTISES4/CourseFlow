@@ -113,13 +113,17 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
       this.tagPosition = this.input.current.selectionStart - 1
       const loader = COURSEFLOW_APP.tinyLoader
       loader.startLoad()
-      getUsersForObjectQueryLegacy(this.props.workflowID, 'workflow', (response) => {
-        loader.endLoad()
-        this.setState({
-          tagging: true,
-          user_list: response.editors.concat(response.commentors)
-        })
-      })
+      getUsersForObjectQueryLegacy(
+        this.props.workflowID,
+        'workflow',
+        (response) => {
+          loader.endLoad()
+          this.setState({
+            tagging: true,
+            user_list: response.editors.concat(response.commentors)
+          })
+        }
+      )
     } else if (this.state.tagging) {
       this.setState({ tagging: false })
     }
@@ -130,9 +134,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     const props = parent.props
     if (
       window.confirm(
-        _t(
-          'Are you sure you want to permanently clear this comment?'
-        )
+        _t('Are you sure you want to permanently clear this comment?')
       )
     ) {
       removeComment(

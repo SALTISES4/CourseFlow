@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import { getProjectsForCreate } from '@XMLHTTP/API/workflow'
 import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
-import Loader from "@cfComponents/UIPrimitives/Loader";
+import Loader from '@cfComponents/UIPrimitives/Loader'
 
 type PropsType = {
   selected?: number

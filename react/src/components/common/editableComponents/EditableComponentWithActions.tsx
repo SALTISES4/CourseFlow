@@ -6,7 +6,7 @@ import EditableComponentWithComments, {
   EditableComponentWithCommentsType
 } from './EditableComponentWithComments'
 import { duplicateSelfQuery } from '@XMLHTTP/API/duplication'
-import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
+import { deleteSelfQueryLegacy, restoreSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/create'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -33,7 +33,7 @@ class EditableComponentWithActions<
 
   restoreSelf(data) {
     COURSEFLOW_APP.tinyLoader.startLoad()
-    restoreSelfQuery(
+    restoreSelfQueryLegacy(
       data.id,
       Constants.object_dictionary[this.objectType],
       (response_data) => {
@@ -67,7 +67,7 @@ class EditableComponentWithActions<
       )
     ) {
       COURSEFLOW_APP.tinyLoader.startLoad()
-      deleteSelfQuery(
+      deleteSelfQueryLegacy(
         data.id,
         Constants.object_dictionary[this.objectType],
         true,

@@ -11,7 +11,7 @@ import EditableComponent, {
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
+import {getWorkflowParentDataQuery, getWorkflowParentDataQueryLegacy} from '@XMLHTTP/API/workflow'
 import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
@@ -83,7 +83,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
 
   Content = () => {
     if (this.context.viewType === ViewType.OUTCOME_EDIT) {
-      getWorkflowParentDataQuery(this.props.data.id, (response) => {
+      getWorkflowParentDataQueryLegacy(this.props.data.id, (response) => {
         this.props.dispatch(
           ActionCreator.refreshStoreData(response.data_package)
         )
@@ -108,13 +108,11 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
       <>
         {portal}
         <div className="workflow-header" style={style}>
-
           {/*<WorkflowCard*/}
           {/*  workflowData={data}*/}
           {/*  selectAction={this.openEdit.bind(this, null)}*/}
           {/*/>*/}
           placeholder card
-
         </div>
         <div className="workflow-container">
           <this.Content />

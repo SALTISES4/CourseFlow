@@ -9,7 +9,7 @@ import Header from '@cfPages/ProjectDetail/components/Header'
 import ProjectEditDialog from '@cfComponents/dialog/ProjectEditDialog'
 import ShareMenu from '@cfComponents/dialog/ShareMenu'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
-import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
+import { deleteSelfQueryLegacy, restoreSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQueryLegacy } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
 import { EProject, ELibraryObject } from '@XMLHTTP/types/entity'
@@ -85,7 +85,7 @@ function ProjectDetailContent({
   }, [project.id, createDiv, getUserData])
 
   function deleteProject() {
-    deleteSelfQuery(project.id, 'project', true, () => {
+    deleteSelfQueryLegacy(project.id, 'project', true, () => {
       setState(
         produce((draft) => {
           draft.project.deleted = true
@@ -100,7 +100,7 @@ function ProjectDetailContent({
         _t('Are you sure you want to permanently delete this project?')
       )
     ) {
-      deleteSelfQuery(project.id, 'project', false, () => {
+      deleteSelfQueryLegacy(project.id, 'project', false, () => {
         window.location.href =
           COURSEFLOW_APP.globalContextData.path.html.library.home
       })
@@ -108,7 +108,7 @@ function ProjectDetailContent({
   }
 
   function restoreProject() {
-    restoreSelfQuery(project.id, 'project', () => {
+    restoreSelfQueryLegacy(project.id, 'project', () => {
       setState(
         produce((draft) => {
           draft.project.deleted = false

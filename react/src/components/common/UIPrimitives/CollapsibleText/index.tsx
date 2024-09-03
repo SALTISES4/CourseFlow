@@ -86,9 +86,7 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
     //   drop_text = _t('show less')
     // }
 
-    const dropText = this.state.is_dropped
-      ? _t('show less')
-      : _t('show more')
+    const dropText = this.state.is_dropped ? _t('show less') : _t('show more')
 
     const text =
       (this.props.text == null || this.props.text == '') &&

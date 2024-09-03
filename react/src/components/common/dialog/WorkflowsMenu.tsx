@@ -259,9 +259,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
           {/*/>*/}
         </GridWrap>
         <hr className={'big-space'} />,
-        <h4 className={'big-space'}>
-          {_t('Or select from your projects')}
-        </h4>
+        <h4 className={'big-space'}>{_t('Or select from your projects')}</h4>
       </>
     ) : (
       <></>

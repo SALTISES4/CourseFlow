@@ -11,7 +11,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 
 import { StyledDialog } from '../styles'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import FileUploader from "@cfComponents/UIPrimitives/FileUploader";
+import FileUploader from '@cfComponents/UIPrimitives/FileUploader'
 
 type PropsType = {
   workflowID: number

@@ -1,4 +1,4 @@
-import {PROJECT_PERMISSION_ROLE, ProjectDetailsType } from "@cf/types/common"
+import { PROJECT_PERMISSION_ROLE, ProjectDetailsType } from '@cf/types/common'
 
 const data: ProjectDetailsType = {
   id: 10,

@@ -12,7 +12,7 @@ import {
   getWorkflowById,
   getWorkflowChildDataQuery,
   getWorkflowDataQuery,
-  getWorkflowParentDataQuery
+  getWorkflowParentDataQuery, getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
@@ -25,8 +25,8 @@ import WebSocketServiceConnectedUserManager, {
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import { PERMISSION_KEYS } from '@cfConstants'
 import { EProject } from '@XMLHTTP/types/entity'
-import WorkflowViewLayout from '@cfViews/WorkflowView/WorkflowViewLayout'
 import Loader from '@cfComponents/UIPrimitives/Loader'
+import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 
 const defaultPermissions: WorkflowPermission = {
   readOnly: false,
@@ -352,7 +352,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
   onParentWorkflowUpdateReceived() {
     this.isMessagesQueued = true
-    getWorkflowParentDataQuery(this.workflowID, (response) => {
+    getWorkflowParentDataQueryLegacy(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data
       this.store.dispatch(
         ActionCreator.replaceStoreData({
@@ -505,7 +505,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
           }
         }}
       >
-        <WorkflowViewLayout
+        <WorkflowTabs
           // viewType={this.state.viewType}
           // alwaysStatic: this.always_static use 'public view' unless the use case gets better defined
           updateView={this.updateView}

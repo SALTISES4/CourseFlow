@@ -73,8 +73,8 @@ const CreateActivityDialog = ({
     state.type === CREATE_RESOURCE_TYPE.TEMPLATE
       ? !state.template
       : state.fields
-        ? !state.fields.title
-        : true
+      ? !state.fields.title
+      : true
   ][state.step]
 
   function goToNextStep() {

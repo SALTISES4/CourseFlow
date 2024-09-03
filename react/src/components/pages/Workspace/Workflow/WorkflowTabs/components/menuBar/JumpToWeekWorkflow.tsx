@@ -2,7 +2,7 @@ import * as React from 'react'
 import { TGetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
 import { connect } from 'react-redux'
 import { AppState } from '@cfRedux/types/type'
-import JumpToWeekView from '@cfViews/WorkflowView/WorkflowViewLayout/components/menuBar/JumpToWeekView'
+import JumpToWeekView from "@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeekView";
 
 type ConnectedProps = TGetWeekWorkflowByID
 type OwnProps = {

@@ -54,4 +54,3 @@ export async function getProfileSettings(): Promise<ProfileSettingsQueryResp> {
     COURSEFLOW_APP.globalContextData.path.json_api.user.profile_settings
   return API_GET<ProfileSettingsQueryResp>(url)
 }
-

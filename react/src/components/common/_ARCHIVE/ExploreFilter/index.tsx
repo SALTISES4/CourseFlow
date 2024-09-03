@@ -292,9 +292,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
   getFromSaltise() {
     return (
       <div
-        title={_t(
-          'Restrict results to content provided by SALTISE'
-        )}
+        title={_t('Restrict results to content provided by SALTISE')}
         id="content-rich"
         className="hover-shade"
         onClick={() => {

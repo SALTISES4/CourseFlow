@@ -16,7 +16,7 @@ import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
 import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeBase'
 import OutcomeLegend from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeLegend'
-import {_t} from "@cfUtility";
+import { _t } from '@cfUtility'
 
 /**
  * The outcome table.

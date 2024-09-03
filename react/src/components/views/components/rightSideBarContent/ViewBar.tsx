@@ -92,9 +92,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
               checked={table_type_value === 0}
               onChange={this.changeTableType.bind(this)}
             />
-            <label htmlFor="table_type_table">
-              {_t('Table Style')}
-            </label>
+            <label htmlFor="table_type_table">{_t('Table Style')}</label>
           </div>
           <div>
             <input

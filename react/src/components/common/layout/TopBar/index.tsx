@@ -43,7 +43,7 @@ import {
 } from './styles'
 import { TopBarProps } from '@cf/types/common'
 import * as React from 'react'
-import ReturnLinks from '@cfViews/WorkflowView/WorkflowViewLayout/components/ReturnLinks'
+import ReturnLinks from "@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks";
 
 const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   const { dispatch } = useDialog()

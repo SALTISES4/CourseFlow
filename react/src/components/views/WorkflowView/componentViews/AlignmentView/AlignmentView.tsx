@@ -1,9 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {
-  OutcomeTitle,
-  WeekTitle
-} from '@cfComponents/UIPrimitives/Titles'
+import { OutcomeTitle, WeekTitle } from '@cfComponents/UIPrimitives/Titles'
 import {
   getOutcomeByID,
   getWeekByID,
@@ -54,7 +51,7 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
     let view_buttons_outcomes = this.props.outcomes.map((category, i) => {
       return [
         <h4>{category.objectset.title}:</h4>,
-        <div className="workflow-view-select hide-print">
+        <div className=" hide-print">
           {category.outcomes.map((outcome, j) => {
             let view_class = 'hover-shade'
             if (
@@ -152,7 +149,7 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
         <h3>{_t('Filters')}:</h3>
         {view_buttons_outcomes}
         <h4>{_t('Sections')}:</h4>
-        <div className="workflow-view-select hide-print">
+        <div className="hide-print">
           {view_buttons_terms}
         </div>
         {outcomes_block}

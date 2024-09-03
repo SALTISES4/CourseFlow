@@ -5,7 +5,9 @@ import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 import { libraryFavouriteObjectsQuery } from '@XMLHTTP/API/library'
 import { useState } from 'react'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
-import LibrarySearchView, { SearchOptionsState } from 'components/views/LibrarySearchView'
+import LibrarySearchView, {
+  SearchOptionsState
+} from 'components/views/LibrarySearchView'
 
 const defaultOptionsSearchOptions: SearchOptionsState = {
   page: 0,

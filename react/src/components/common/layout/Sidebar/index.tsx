@@ -26,8 +26,8 @@ import {
   SeeAllLink,
   HelpLink
 } from './styles'
-import ParentWorkflowIndicator from '@cfViews/WorkflowView/WorkflowViewLayout/components/ParentWorkflowIndicator'
-import CFLogo from "@cfComponents/UIPrimitives/SVG/CFLogo";
+import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
+import ParentWorkflowIndicator from "@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator";
 
 const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
   const location = useLocation()

@@ -13,7 +13,7 @@ import { ViewType } from '@cf/types/enum'
 import MyLibrary from '@cfPages/Library/MyLibrary'
 import Favourites from '@cf/components/pages/Library/Favourites'
 import Explore from '@cf/components/pages/Library/Explore'
-import ProjectTabs from "@cfPages/ProjectTabs";
+import ProjectTabs from '@cfPages/ProjectTabs'
 
 const DOMAIN = 'course-flow'
 export enum Routes {

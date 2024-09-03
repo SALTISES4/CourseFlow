@@ -33,9 +33,7 @@ const ConnectionBar = ({ show }: { show: boolean }) => {
 
   if (!context.ws.wsConnected) {
     return (
-      <div className="users-box connection-failed">
-        {_t('Not Connected')}
-      </div>
+      <div className="users-box connection-failed">{_t('Not Connected')}</div>
     )
   }
 

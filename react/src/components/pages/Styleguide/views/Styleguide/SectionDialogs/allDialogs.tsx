@@ -41,7 +41,6 @@ const AllDialogs = () => (
 
     <ProjectExportDialog project={exportProjectData} />
 
-
     <ArchiveDialog />
 
     <ActivityCreateDialog

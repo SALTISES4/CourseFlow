@@ -182,9 +182,7 @@ class RightSideBar extends React.Component<PropsType> {
 
           <li className="hover-shade">
             <a href="#restore-bar">
-              <span
-                title={_t('Restore Deleted')}
-              >
+              <span title={_t('Restore Deleted')}>
                 <RestoreFromTrashIcon />
               </span>
             </a>

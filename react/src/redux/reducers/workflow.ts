@@ -14,7 +14,6 @@ import {
   WorkFlowActions
 } from '@cfRedux/types/enumActions'
 
-
 function workflowReducer(
   state: TWorkflow = {} as TWorkflow,
   action: AnyAction
