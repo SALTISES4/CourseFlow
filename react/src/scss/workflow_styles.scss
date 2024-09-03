@@ -108,22 +108,9 @@ input[type="submit"] {
   max-width: 800px;
 }
 
-.workflow-view-select {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  margin: 0px 0px 10px 0px;
-}
 
-.workflow-view-select > * {
-  max-width: 200px;
-  overflow: hidden;
-  padding: 8px;
-  font-size: 16px;
-  border-radius: 20px;
-  background: $color-white;
-  border: 1px solid $color-white-gray;
-}
+
+
 
 .title-text ul,
 .title-text ol {
@@ -133,22 +120,6 @@ input[type="submit"] {
 .ql-editor ul li,
 .ql-editor ol li {
   padding-left: 0 !important;
-}
-
-.workflow-view-select .title-text {
-  white-space: nowrap;
-}
-
-.workflow-view-select .active {
-  background: $color-primary-green;
-  color: $color-white;
-  border: 1px solid $color-primary-green;
-}
-
-.workflow-view-select .disabled {
-  background: $color-white-gray;
-  color: darkgrey;
-  pointer-events: none;
 }
 
 .other-views {
@@ -498,9 +469,7 @@ input[type="submit"] {
   flex-wrap: wrap;
 }
 
-.assignment-in-node .workflow-title {
-  font-size: 12px;
-}
+
 
 .flatpickr-input + input:disabled {
   background: none;
@@ -1060,9 +1029,7 @@ ol.children-block {
   display: block;
 }
 
-.user-table .table-cell .workflow-title {
-  font-size: 12px;
-}
+
 
 .user-table {
   white-space: nowrap;
@@ -2317,10 +2284,6 @@ circle.mouseover {
 .comparison-view .workflow-description,
 .comparison-view .workflow-publication {
   display: none;
-}
-
-.comparison-view .workflow-title {
-  font-size: 12px;
 }
 
 .comparison-view .workflow-array {

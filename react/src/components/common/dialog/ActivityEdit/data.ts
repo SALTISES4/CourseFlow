@@ -1,4 +1,4 @@
-import { ActivityFormDataType } from '@cfCommonComponents/dialog/CreateWizard/components/FormActivity/types'
+import { ActivityFormDataType } from '@cfComponents/dialog/CreateWizard/components/FormActivity/types'
 
 const data: ActivityFormDataType = {
   title: 'This is an activity title',

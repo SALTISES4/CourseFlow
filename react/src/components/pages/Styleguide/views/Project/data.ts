@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { PROJECT_PERMISSION_ROLE, ProjectDetailsType } from './types'
 
 const data: ProjectDetailsType = {

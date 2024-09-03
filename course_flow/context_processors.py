@@ -369,6 +369,9 @@ def get_app_config(request: HttpRequest):
                     "library__library__projects": reverse(
                         "json_api:library--library--projects--get"
                     ),
+                    "library__toggle_favourite__post": reverse(
+                        "json_api:library--toggle-favourite--post"
+                    ),
                 },
                 "project": {
                     "detail": reverse("json_api:project--detail--get"),
@@ -393,9 +396,6 @@ def get_app_config(request: HttpRequest):
                     ),
                     "notification_settings__update": reverse(
                         "json_api:user--notification-settings--update--post"
-                    ),
-                    "favourite_toggle": reverse(
-                        "json_api:favourite--toggle--post"
                     ),
                 },
                 "notification": {

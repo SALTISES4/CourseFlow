@@ -2,7 +2,7 @@ import {
   EmptyPostResp,
   LibraryObjectsSearchQueryResp
 } from '@XMLHTTP/types/query'
-import { VERB } from '@cfModule/types/enum'
+import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 
 /**

@@ -5,7 +5,7 @@ import * as React from 'react'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import { deleteSelfQuery } from '@XMLHTTP/API/delete'
+import { deleteSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { addTerminologyQuery } from '@XMLHTTP/API/create'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import {
@@ -57,15 +57,13 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
   deleteTerm(id) {
     if (
       window.confirm(
-        _t('Are you sure you want to delete this ') +
-          _t('set') +
-          '?'
+        _t('Are you sure you want to delete this ') + _t('set') + '?'
       )
     ) {
       const new_state_dict = this.state.object_sets.slice()
       for (let i = 0; i < new_state_dict.length; i++) {
         if (new_state_dict[i].id === id) {
-          deleteSelfQuery(id, 'objectset')
+          deleteSelfQueryLegacy(id, 'objectset')
           new_state_dict.splice(i, 1)
           this.setState({
             object_sets: new_state_dict

@@ -19,7 +19,7 @@ from course_flow.utils import get_model_from_str, make_user_notification
 @user_can_edit(False)
 def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
-    object_id = body.get("objectID")
+    object_id = body.get("objectId")
     objectType = body.get("objectType")
     if objectType in ["activity", "course", "program"]:
         objectType = "workflow"
@@ -88,14 +88,16 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
 @user_can_view(False)
 def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
-    object_id = body.get("objectID")
+    object_id = body.get("objectId")
     object_type = body.get("objectType")
+
     if object_type in ["activity", "course", "program"]:
         object_type = "workflow"
     content_type = ContentType.objects.get(model=object_type)
     this_object = get_model_from_str(object_type).objects.get(id=object_id)
     published = this_object.published
     public_view = False
+
     if object_type == "workflow":
         public_view = this_object.public_view
     try:
@@ -116,6 +118,7 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
         ).select_related("user"):
             editors.add(object_permission.user)
         viewers = set()
+
         for object_permission in ObjectPermission.objects.filter(
             content_type=content_type,
             object_id=object_id,
@@ -123,6 +126,7 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
         ).select_related("user"):
             viewers.add(object_permission.user)
         commentors = set()
+
         for object_permission in ObjectPermission.objects.filter(
             content_type=content_type,
             object_id=object_id,
@@ -130,12 +134,14 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
         ).select_related("user"):
             commentors.add(object_permission.user)
         students = set()
+
         for object_permission in ObjectPermission.objects.filter(
             content_type=content_type,
             object_id=object_id,
             permission_type=ObjectPermission.PERMISSION_STUDENT,
         ).select_related("user"):
             students.add(object_permission.user)
+
         try:
             if (
                 Group.objects.get(name="SALTISE_Staff")
@@ -147,6 +153,7 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
         except ObjectDoesNotExist:
             saltise_user = False
         is_template = this_object.is_template
+
     except ValidationError:
         return JsonResponse({"action": "error"})
 

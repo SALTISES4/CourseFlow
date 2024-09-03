@@ -18,7 +18,7 @@ def html_patterns():
         #########################################################
         path(
             "home/",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "Home",
                 "path_id": "home",
@@ -27,7 +27,7 @@ def html_patterns():
         ),
         path(
             "library/",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "My Library",
                 "path_id": "library",
@@ -36,20 +36,28 @@ def html_patterns():
         ),
         path(
             "favourites/",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "My Favourites",
                 "path_id": "favourites",
             },
             name="favourites",
         ),
-        path("explore/", views.html.library.explore_view, name="explore"),
+        path(
+            "explore/",
+            views.html.client.default_react_view,
+            {
+                "title": "Explore",
+                "path_id": "Explore",
+            },
+            name="explore",
+        ),
         #########################################################
         # USER
         #########################################################
         path(
             "user/profile-settings/",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "Profile Settings",
                 "path_id": "profileSettings",
@@ -58,7 +66,7 @@ def html_patterns():
         ),
         path(
             "user/notifications-settings/",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "Notifications Settings",
                 "path_id": "notificationsSettings",
@@ -67,7 +75,7 @@ def html_patterns():
         ),
         path(
             "user/notifications/",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "Notifications",
                 "path_id": "notifications",
@@ -79,7 +87,7 @@ def html_patterns():
         #########################################################
         path(
             "workflow/<int:pk>/",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "Project",
                 "path_id": "workflowDetail",
@@ -88,7 +96,7 @@ def html_patterns():
         ),
         path(
             "workflow/<int:pk>/<path:rest_of_path>",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "Project",
                 "path_id": "workflowDetail",
@@ -107,7 +115,7 @@ def html_patterns():
         #########################################################
         path(
             "project/<path:pk>/",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "Project",
                 "path_id": "projectDetail",
@@ -116,12 +124,22 @@ def html_patterns():
         ),
         path(
             "project/<int:pk>/comparison",
-            views.html.library.default_react_view,
+            views.html.client.default_react_view,
             {
                 "title": "Project Comparison",
                 "path_id": "projectComparison",
             },
             name="project-comparison",
+        ),
+        # TEMP
+        path(
+            "temp-project",
+            views.html.client.default_react_view,
+            {
+                "title": "Project temp",
+                "path_id": "projectDetail",
+            },
+            name="temp-project",
         ),
         #########################################################
         # PROGRAM
@@ -155,7 +173,7 @@ def html_patterns():
             name="activity-strategy-create",
         ),
         #########################################################
-        # ADMIN
+        # ADMIN / AUTH
         #########################################################
         path(
             "saltise-admin/",
@@ -167,16 +185,20 @@ def html_patterns():
             views.SALTISEAnalyticsView.as_view(),
             name="saltise-analytics",
         ),
+        path("logout/", views.logout_view, name="logout"),
         #########################################################
-        # UTILITY
+        # UTILITY / DEV
         #########################################################
         path(
             "styleguide/",
-            views.html.utility.styleguide_home_view,
+            views.html.client.default_react_view,
+            {
+                "title": "Styleguide",
+                "path_id": "styleguide",
+            },
             name="styleguide",
         ),
         # todo is this for dev only or this is the same path for dalite embed?
-        path("logout/", views.logout_view, name="logout"),
         path("import/", views.import_view, name="import"),
         path(
             "downloads/saltise/get/",

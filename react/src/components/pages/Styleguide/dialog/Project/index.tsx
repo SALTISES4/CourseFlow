@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react'
 import { produce } from 'immer'
 import { Discipline, ObjectSet, FormFieldSerialized } from '@cf/types/common'
-import { DIALOG_TYPE, useDialog } from '@cfPages/Styleguide/dialog'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 
 import CreateProjectDialog from './CreateProject'
 import EditProjectDialog from './EditProject'

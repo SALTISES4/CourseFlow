@@ -1,11 +1,11 @@
 //Removes the specified comment from the object
 import { EmptyPostResp, CommentsForObjectQueryResp } from '@XMLHTTP/types/query'
-import { VERB } from '@cfModule/types/enum'
+import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 
 //Get the comments for a particular object
 export function getCommentsForObjectQuery(
-  objectID: number,
+  objectId: number,
   objectType: any,
   callBackFunction = (_data: CommentsForObjectQueryResp) =>
     console.log('success')
@@ -13,7 +13,7 @@ export function getCommentsForObjectQuery(
   API_POST(
     COURSEFLOW_APP.globalContextData.path.json_api.comment.list_by_object,
     {
-      objectID: objectID,
+      objectId: objectId,
       objectType: objectType
     }
   ).then((response: CommentsForObjectQueryResp) => {
@@ -23,13 +23,13 @@ export function getCommentsForObjectQuery(
 }
 //add a comment to an object
 export function addComment(
-  objectID,
+  objectId,
   objectType,
   text,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.create, {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType,
     text: text
   }).then((response: EmptyPostResp) => {
@@ -39,13 +39,13 @@ export function addComment(
 }
 
 export function removeComment(
-  objectID,
+  objectId,
   objectType,
   commentPk,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.delete, {
-    objectID: objectID,
+    objectId: objectId,
     commentPk: commentPk,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
@@ -56,12 +56,12 @@ export function removeComment(
 
 //Removes all comments from the object
 export function removeAllComments(
-  objectID,
+  objectId,
   objectType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.delete_all, {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)

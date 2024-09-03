@@ -11,7 +11,7 @@ import Select from '@mui/material/Select'
 import InputLabel from '@mui/material/InputLabel'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import MenuItem from '@mui/material/MenuItem'
-import { DIALOG_TYPE, useDialog } from '..'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { StyledDialog, StyledForm } from '../styles'
 import { _t } from '@cf/utility/utilityFunctions'
 

@@ -1,67 +1,9 @@
 import * as React from 'react'
-import { hasId, MaybeWithId } from '@cfModule/types/typeGuards'
+import { hasId, MaybeWithId } from '@cf/types/typeGuards'
 
-export function permission_translate() {
-  return {
-    author: _t('Owner'),
-    edit: _t('Editor'),
-    comment: _t('Commenter'),
-    view: _t('Viewer')
-  }
-}
-
-// @todo move to component
-// Get the little tag that sits in front of usernames signifying the role
-export function getUserTag(user_type) {
-  return (
-    <span className={'user-tag permission-' + user_type}>
-      {permission_translate()[user_type]}
-    </span>
-  )
-}
-
-//Check if an object (such as a node or an outcome) should be hidden based on its sets and the currently active object sets
-export function checkSetHidden(data, objectsets) {
-  if (data.sets.length === 0 || !objectsets) {
-    return false
-  }
-
-  return !objectsets.some((set) => !set.hidden && data.sets.includes(set.id))
-}
-
-// Do a bit of cleaning to unescape certain characters and display them correctly
-export function unescapeCharacters(string) {
-  return string
-    .replace(/\&amp;/g, '&')
-    .replace(/\&gt;/g, '>')
-    .replace(/\&lt;/g, '<')
-}
-
-//Get translate from an svg transform
-export function getSVGTranslation(transform) {
-  return transform
-    .substring(transform.indexOf('translate(') + 10, transform.indexOf(')'))
-    .split(',')
-}
-
-export function pushOrCreate(obj, index, value) {
-  if (obj[index]) obj[index].push(value)
-  else obj[index] = [value]
-}
-
-// Find and return the best way to display a user's name, username, or email (if that's all we have)
-export function getUserDisplay(user) {
-  let str = ''
-  if (user.first_name) str += user.first_name + ' '
-  if (user.last_name) str += user.last_name + ' '
-  if (!str && user.username) str = user.username + ' '
-  return str || user.email
-}
-
-export function cantorPairing(k1, k2) {
-  return parseInt(((k1 + k2) * (k1 + k2 + 1)) / 2 + k2)
-}
-
+/*******************************************************
+ * ARRAYS / OBJECTS
+ *******************************************************/
 //take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
 export function filterThenSortByID<T extends object>(
   object_list: MaybeWithId<T>[],
@@ -72,6 +14,19 @@ export function filterThenSortByID<T extends object>(
       (obj): obj is T & { id: any } => hasId(obj) && id_list.includes(obj.id)
     )
     .sort((a, b) => id_list.indexOf(a.id) - id_list.indexOf(b.id))
+}
+
+/*******************************************************
+ * STRINGS
+ *******************************************************/
+export function getInitials(name: string): string {
+  const split = name.split(' ')
+  return `${split[0][0]}${split[split.length - 1][0]}`
+}
+
+// thin wrapper around the glbal python gettext method
+export const _t = (str: string) => {
+  return window.gettext(str)
 }
 
 //capitalize first letter of each word in a string
@@ -105,6 +60,26 @@ export function capFirst(str) {
   return str[0].toUpperCase() + str.substr(1)
 }
 
+// Do a bit of cleaning to unescape certain characters and display them correctly
+export function unescapeCharacters(string) {
+  return string
+    .replace(/\&amp;/g, '&')
+    .replace(/\&gt;/g, '>')
+    .replace(/\&lt;/g, '<')
+}
+
+export function getUserDisplay(user) {
+  let str = ''
+  if (user.first_name) str += user.first_name + ' '
+  if (user.last_name) str += user.last_name + ' '
+  if (!str && user.username) str = user.username + ' '
+  return str || user.email
+}
+
+/*******************************************************
+ * UI
+ *******************************************************/
+
 //Get the offset from the canvas of a specific jquery object
 export function getCanvasOffset(node_dom) {
   const node_offset = node_dom.offset()
@@ -131,6 +106,36 @@ export function mouseOutsidePadding(evt, elem, padding) {
   )
 }
 
+//Get translate from an svg transform
+export function getSVGTranslation(transform) {
+  return transform
+    .substring(transform.indexOf('translate(') + 10, transform.indexOf(')'))
+    .split(',')
+}
+
+function getElementOffset(element) {
+  const rect = element.getBoundingClientRect()
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+
+  return {
+    top: rect.top + scrollTop,
+    left: rect.left + scrollLeft
+  }
+}
+/*******************************************************
+ * UX
+ *******************************************************/
+export const debounce = (func, timeout = 300) => {
+  let timer
+  return (...args) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, timeout)
+  }
+}
+
 //A utility function to trigger an event on each element. This is used to avoid .trigger, which bubbles (we will be careful to only trigger events on the elements that need them)
 export function triggerHandlerEach(trigger, eventname) {
   // @todo this has beeen moved away from jQuery but we aren't sure yet whether the passed element
@@ -147,17 +152,9 @@ export function triggerHandlerEach(trigger, eventname) {
   })
 }
 
-function getElementOffset(element) {
-  const rect = element.getBoundingClientRect()
-  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
-  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-
-  return {
-    top: rect.top + scrollTop,
-    left: rect.left + scrollLeft
-  }
-}
-
+/*******************************************************
+ *  Type Related
+ *******************************************************/
 // use the enum proxy stopgap
 export function Enum(baseEnum) {
   return new Proxy(baseEnum, {
@@ -173,16 +170,69 @@ export function Enum(baseEnum) {
   })
 }
 
-export const debounce = (func, timeout = 300) => {
-  let timer
-  return (...args) => {
-    clearTimeout(timer)
-    timer = setTimeout(() => {
-      func.apply(this, args)
-    }, timeout)
+export function convertEnum<T>(
+  value: string,
+  enumType: { [key: string]: T },
+  defaultValue: T
+): T {
+  for (const key in enumType) {
+    if (enumType[key] === value) {
+      return enumType[key]
+    }
   }
+  return defaultValue
+}
+/*******************************************************
+ * DATE TIME
+ *******************************************************/
+export function formatDate(dateString: Date) {
+  const date = new Date(dateString)
+
+  // Create an Intl.DateTimeFormat instance with desired options
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+  return formatter.format(date)
+}
+/*******************************************************
+ * SORT / MISC
+ *******************************************************/
+
+// @todo move to component
+// Get the little tag that sits in front of usernames signifying the role
+export function getUserTag(user_type) {
+  function permission_translate() {
+    return {
+      author: _t('Owner'),
+      edit: _t('Editor'),
+      comment: _t('Commenter'),
+      view: _t('Viewer')
+    }
+  }
+  return (
+    <span className={'user-tag permission-' + user_type}>
+      {permission_translate()[user_type]}
+    </span>
+  )
 }
 
-export const _t = (str: string) => {
-  return window.gettext(str)
+//Check if a cfobject (such as a node or an outcome) should be hidden based on its sets and the currently active object sets
+export function checkSetHidden(data, objectsets) {
+  if (data.sets.length === 0 || !objectsets) {
+    return false
+  }
+
+  return !objectsets.some((set) => !set.hidden && data.sets.includes(set.id))
+}
+
+export function pushOrCreate(obj, index, value) {
+  if (obj[index]) obj[index].push(value)
+  else obj[index] = [value]
+}
+
+// Find and return the best way to display a user's name, username, or email (if that's all we have)
+export function cantorPairing(k1, k2) {
+  return parseInt(((k1 + k2) * (k1 + k2 + 1)) / 2 + k2)
 }

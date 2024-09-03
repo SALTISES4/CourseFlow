@@ -3,10 +3,18 @@ import * as Utility from '@cf/utility/utilityFunctions'
 import { ELibraryObject } from '@XMLHTTP/types/entity'
 import {
   CHIP_TYPE,
-  PropsType,
   WorkflowCardChipType
-} from '@cfCommonComponents/cards/WorkflowCardDumb'
-import { _t } from '@cf/utility/utilityFunctions'
+} from '@cfComponents/cards/WorkflowCardDumb'
+import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
+import { _t, convertEnum } from '@cf/utility/utilityFunctions'
+
+/**
+ * this thin wrapper is for when we move CHIP_TYPE away from the domain
+ * @param type
+ */
+function mapChipType(type: LibraryObjectType): CHIP_TYPE {
+  return convertEnum<CHIP_TYPE>(type, CHIP_TYPE, CHIP_TYPE.DEFAULT)
+}
 
 function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
   const { type, is_strategy } = workflow
@@ -20,8 +28,7 @@ function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
     typeText += ` ${_t('strategy')}`
   }
 
-  const chipType =
-    type === LibraryObjectType.LIVE_PROJECT ? CHIP_TYPE.DEFAULT : type
+  const chipType = mapChipType(type)
 
   return {
     type: chipType,
@@ -55,15 +62,29 @@ function getWorkflowCountChip(workflow: ELibraryObject): WorkflowCardChipType {
   return null
 }
 
-export function formatLibraryObject(workflow: ELibraryObject): PropsType {
-  const type_chip = getTypeChip(workflow)
-  const template_chip = getTemplateChip(workflow)
-  const count_chip = getWorkflowCountChip(workflow)
+export function formatLibraryObjects(data: ELibraryObject[]) {
+  return data.map((item: ELibraryObject) => {
+    return formatLibraryObject(item)
+  })
+}
+
+export function formatLibraryObject(
+  libraryObject: ELibraryObject
+): Pick<
+  WorkflowCardWrapperPropsType,
+  'id' | 'title' | 'description' | 'isFavourite' | 'chips' | 'isLinked' | 'type'
+> {
+  const type_chip = getTypeChip(libraryObject)
+  const template_chip = getTemplateChip(libraryObject)
+  const count_chip = getWorkflowCountChip(libraryObject)
   return {
-    id: workflow.id,
-    title: workflow.title,
-    description: `Owned by ${workflow.author}`,
-    isFavourite: workflow.favourite,
+    id: libraryObject.id,
+    title: libraryObject.title,
+    description:
+      libraryObject.author && `${_t('Owned by')} ${libraryObject.author}`,
+    isFavourite: libraryObject.favourite,
+    isLinked: libraryObject.is_linked,
+    type: libraryObject.type,
     chips: [type_chip, template_chip, count_chip].filter(
       (entry) => entry != null
     )

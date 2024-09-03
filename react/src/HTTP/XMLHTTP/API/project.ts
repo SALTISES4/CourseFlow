@@ -25,8 +25,8 @@ export async function getDisciplines(
     })
 }
 
-export async function getProjectById(id: string) {
-  const params = new URLSearchParams({ id }).toString()
+export async function getProjectById(id: number) {
+  const params = new URLSearchParams({ id: String(id) }).toString()
   const url = `${COURSEFLOW_APP.globalContextData.path.json_api.project.detail}?${params}`
   return API_GET<GetProjectByIdQueryResp>(url)
 }

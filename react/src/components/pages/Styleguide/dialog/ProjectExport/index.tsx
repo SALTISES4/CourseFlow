@@ -12,7 +12,7 @@ import Button from '@mui/material/Button'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import { DIALOG_TYPE, useDialog } from '..'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
 import { EProject } from '@XMLHTTP/types/entity'
@@ -98,7 +98,7 @@ function ExportProjectDialog({ project }: { project: EProject }) {
 
   function onSubmit() {
     const postData = {
-      objectID: project.id,
+      objectId: project.id,
       objectType: project.type,
       exportType: state.type,
       exportFormat: state.format,

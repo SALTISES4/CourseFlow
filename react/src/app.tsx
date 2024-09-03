@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
  * console, disable TEMPORARILY
@@ -39,13 +41,13 @@ import createCache from '@emotion/cache'
 // global styles / SCSS
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
-import { SidebarRootStyles } from '@cfCommonComponents/layout/Sidebar/styles'
+import { SidebarRootStyles } from '@cfComponents/layout/Sidebar/styles'
 
 // @todo:
 // legacy, to remove it
 // see note in mouseCursorLoader.js
 // we don't want t a mouse loader at all, but the placeholder calls are useful currently
-import { MouseCursorLoader } from '@cfModule/utility/mouseCursorLoader.js'
+import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 const tinyLoader = new MouseCursorLoader($('body')[0])
 // @ts-ignore
 COURSEFLOW_APP.tinyLoader = tinyLoader
@@ -70,5 +72,6 @@ root.render(
         </ScopedCssBaseline>
       </ThemeProvider>
     </CacheProvider>
+    <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
 )

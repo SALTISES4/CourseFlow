@@ -55,8 +55,8 @@ class ImportMenu extends React.Component<PropsType> {
           />
           <input
             type="hidden"
-            id="objectID"
-            name="objectID"
+            id="objectId"
+            name="objectId"
             value={JSON.stringify(this.props.data.object_id)}
           />
           <input

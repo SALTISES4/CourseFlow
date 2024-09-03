@@ -1,5 +1,5 @@
 import { MouseEvent, useState } from 'react'
-import Alert from '@cfCommonComponents/UIComponents/Alert'
+import Alert from '@cfComponents/UIPrimitives/Alert'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import RadioGroup from '@mui/material/RadioGroup'
@@ -11,7 +11,7 @@ import Button from '@mui/material/Button'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
 import DialogActions from '@mui/material/DialogActions'
-import { DIALOG_TYPE, useDialog } from '..'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { StyledDialog, StyledForm } from '../styles'
 import { produce } from 'immer'
 import { EProject } from '@XMLHTTP/types/entity'
@@ -91,7 +91,7 @@ function ProjectExportDialog({ data }: { data: EProject }) {
 
   function onSubmit(e: MouseEvent<HTMLButtonElement>) {
     const postData = {
-      objectID: data.id,
+      objectId: data.id,
       objectType: data.type,
       exportType: state.type,
       exportFormat: state.format,

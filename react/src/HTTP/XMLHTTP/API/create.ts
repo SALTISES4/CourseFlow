@@ -1,5 +1,5 @@
 import { EmptyPostResp, AddTerminologyQueryResp } from '@XMLHTTP/types/query'
-import { VERB } from '@cfModule/types/enum'
+import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 
 //Add a new node to a week
@@ -56,7 +56,7 @@ export function addStrategyQuery(
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.add_strategy, {
     workflowPk: workflowPk,
     position: position,
-    objectID: strategyPk,
+    objectId: strategyPk,
     objectType: 'workflow'
   }).then((response: EmptyPostResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
@@ -73,7 +73,7 @@ export function newNodeLink(
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_node_link, {
     nodePk: source_node,
-    objectID: target_node,
+    objectId: target_node,
     objectType: 'node',
     sourcePort: source_port,
     targetPort: target_port
@@ -85,12 +85,12 @@ export function newNodeLink(
 
 //Causes the specified object to insert a child to itself
 export function insertChildQuery(
-  objectID: number,
+  objectId: number,
   objectType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.insert_child, {
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
@@ -100,7 +100,7 @@ export function insertChildQuery(
 
 //Causes the specified object to insert a sibling after itself
 export function insertSiblingQuery(
-  objectID: number,
+  objectId: number,
   objectType: any,
   parentID: number,
   parentType: any,
@@ -110,7 +110,7 @@ export function insertSiblingQuery(
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.insert_sibling, {
     parentID: parentID,
     parentType: parentType,
-    objectID: objectID,
+    objectId: objectId,
     objectType: objectType,
     throughType: throughType
   }).then((response: EmptyPostResp) => {

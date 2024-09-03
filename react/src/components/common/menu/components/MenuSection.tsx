@@ -1,8 +1,9 @@
+// @ts-nocheck
 import * as React from 'react'
-import WorkflowCard from '@cfCommonComponents/cards/WorkflowCard'
+import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
-import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
-import { GridWrap } from '@cfModule/mui/helper'
+import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import { GridWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {

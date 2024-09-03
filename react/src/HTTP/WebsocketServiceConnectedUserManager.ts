@@ -1,4 +1,4 @@
-import { WebSocketService } from '@cfModule/HTTP/WebSocketService'
+import { WebSocketService } from '@cf/HTTP/WebSocketService'
 
 type CurrentUser = {
   userId: number

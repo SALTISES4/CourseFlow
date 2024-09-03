@@ -52,7 +52,7 @@ const data: DataType = {
   ],
   workflows: [
     {
-      id: '1',
+      id: 1,
       group: 'Biology 101',
       name: 'Active Activity',
       chip: {
@@ -61,7 +61,7 @@ const data: DataType = {
       }
     },
     {
-      id: '2',
+      id: 2,
       group: 'Biology 101',
       name: 'Act as a project',
       chip: {
@@ -70,7 +70,7 @@ const data: DataType = {
       }
     },
     {
-      id: '3',
+      id: 3,
       group: 'Biology 101',
       name: 'Le programming course',
       chip: {
@@ -79,7 +79,7 @@ const data: DataType = {
       }
     },
     {
-      id: '4',
+      id: 4,
       group: 'Biology 101',
       name: 'Pro gramming',
       chip: {
@@ -88,7 +88,7 @@ const data: DataType = {
       }
     },
     {
-      id: '5',
+      id: 5,
       group: 'Biology 101',
       name: 'Stay on course',
       chip: {
@@ -97,7 +97,7 @@ const data: DataType = {
       }
     },
     {
-      id: '6',
+      id: 6,
       group: 'Biology 101',
       name: 'Projecting failure',
       chip: {
@@ -106,7 +106,7 @@ const data: DataType = {
       }
     },
     {
-      id: '7',
+      id: 7,
       group: 'Biology 101',
       name: 'Programmable and flammable',
       chip: {
@@ -115,7 +115,7 @@ const data: DataType = {
       }
     },
     {
-      id: '8',
+      id: 8,
       group: 'Biology 101',
       name: 'Why is this course so hard',
       chip: {
@@ -124,7 +124,7 @@ const data: DataType = {
       }
     },
     {
-      id: '9',
+      id: 9,
       group: 'Biology 101 is super super long here',
       name: 'The activities are killing me with all these long titles',
       chip: {
@@ -133,7 +133,7 @@ const data: DataType = {
       }
     },
     {
-      id: '10',
+      id: 10,
       group: 'Biology 101',
       name: 'Programming is da best',
       chip: {
@@ -142,7 +142,7 @@ const data: DataType = {
       }
     },
     {
-      id: '11',
+      id: 11,
       group: 'Biology 101',
       name: 'This is a super nice project',
       chip: {
@@ -151,7 +151,7 @@ const data: DataType = {
       }
     },
     {
-      id: '12',
+      id: 12,
       group: 'Biology 101',
       name: 'Courseflow course',
       chip: {

@@ -1,32 +1,32 @@
 import React from 'react'
 import { connect, DispatchProp } from 'react-redux'
 import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
-import Loader from '@cfCommonComponents/UIComponents/Loader'
 import {
   WorkflowDetailViewDTO,
   WorkflowPermission
 } from '@cfPages/Workspace/Workflow/types'
 import { AppState } from '@cfRedux/types/type'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { ViewType } from '@cfModule/types/enum'
+import { ViewType } from '@cf/types/enum'
 import {
   getWorkflowById,
   getWorkflowChildDataQuery,
   getWorkflowDataQuery,
-  getWorkflowParentDataQuery
+  getWorkflowParentDataQuery, getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
 import { updateValueQuery } from '@XMLHTTP/API/update'
-import WorkFlowConfigProvider from '@cfModule/context/workFlowConfigContext'
+import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { DATA_TYPE, WebSocketService } from '@cfModule/HTTP/WebSocketService'
-import legacyWithRouter from '@cfModule/HOC/legacyWithRouter'
+import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
+import legacyWithRouter from '@cf/HOC/legacyWithRouter'
 import { RouterProps } from 'react-router'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
-} from '@cfModule/HTTP/WebsocketServiceConnectedUserManager'
+} from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import { PERMISSION_KEYS } from '@cfConstants'
 import { EProject } from '@XMLHTTP/types/entity'
-import WorkflowViewLayout from '@cfViews/WorkflowView/WorkflowViewLayout'
+import Loader from '@cfComponents/UIPrimitives/Loader'
+import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 
 const defaultPermissions: WorkflowPermission = {
   readOnly: false,
@@ -150,7 +150,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     // fetch the basic workflow data by id set in URL
     // @todo i think that we have everything we need in getWorkflowDataQuery
     // except for 'choices' config lists TBD
-    getWorkflowById(String(this.workflowID)).then((response) => {
+    getWorkflowById(this.workflowID).then((response) => {
       this.workflowDetailResp = response.data_package
       this.setupData(response.data_package)
 
@@ -352,7 +352,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
   onParentWorkflowUpdateReceived() {
     this.isMessagesQueued = true
-    getWorkflowParentDataQuery(this.workflowID, (response) => {
+    getWorkflowParentDataQueryLegacy(this.workflowID, (response) => {
       // remove all the parent node and parent workflow data
       this.store.dispatch(
         ActionCreator.replaceStoreData({
@@ -505,7 +505,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
           }
         }}
       >
-        <WorkflowViewLayout
+        <WorkflowTabs
           // viewType={this.state.viewType}
           // alwaysStatic: this.always_static use 'public view' unless the use case gets better defined
           updateView={this.updateView}

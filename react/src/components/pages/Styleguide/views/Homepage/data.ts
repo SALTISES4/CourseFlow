@@ -1,4 +1,4 @@
-import { CHIP_TYPE } from '@cfModule/components/common/cards/WorkflowCardDumb'
+import { CHIP_TYPE } from '@cf/components/common/cards/WorkflowCardDumb'
 
 const data = {
   isTeacher: true,

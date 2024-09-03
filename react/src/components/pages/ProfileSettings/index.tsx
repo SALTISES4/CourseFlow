@@ -12,12 +12,12 @@ import Radio from '@mui/material/Radio'
 import Button from '@mui/material/Button'
 import Snackbar from '@mui/material/Snackbar'
 import Typography from '@mui/material/Typography'
-import { OuterContentWrap } from '@cfModule/mui/helper'
+import { OuterContentWrap } from '@cf/mui/helper'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { useQuery } from '@tanstack/react-query'
 import { ProfileField, ProfileSettingsQueryResp } from '@XMLHTTP/types/query'
-import Loader from '@cfCommonComponents/UIComponents/Loader'
-import { fetchProfileSettings } from '@XMLHTTP/API/user'
+import Loader from '@cfComponents/UIPrimitives/Loader'
+import { getProfileSettings } from '@XMLHTTP/API/user'
 
 const PageTitle = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -41,8 +41,8 @@ const ProfileSettingsPage = () => {
    *******************************************************/
   const { data, error, isLoading, isError } =
     useQuery<ProfileSettingsQueryResp>({
-      queryKey: ['fetchProfileSettings'],
-      queryFn: fetchProfileSettings
+      queryKey: ['getProfileSettings'],
+      queryFn: getProfileSettings
     })
 
   /*******************************************************

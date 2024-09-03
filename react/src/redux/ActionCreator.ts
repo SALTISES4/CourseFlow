@@ -47,14 +47,22 @@ class ActionCreator {
   static reloadCommentsAction = (id, objectType, comment_data) => {
     return {
       type: objectType + '/reloadComments',
-      payload: { id: id, objectType: objectType, comment_data }
+      payload: {
+        id: id,
+        objectType: objectType,
+        comment_data
+      }
     }
   }
 
   static changeField = (id, objectType, json) => {
     return {
       type: objectType + '/changeField',
-      payload: { id: id, objectType: objectType, json: json }
+      payload: {
+        id: id,
+        objectType: objectType,
+        json: json
+      }
     }
   }
 
