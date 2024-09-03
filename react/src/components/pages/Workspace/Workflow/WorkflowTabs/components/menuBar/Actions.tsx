@@ -117,19 +117,27 @@ const useMenuActions = () => {
 
   // @todo is this ViewType or cfobjecttype
   function expandAll(type: CfObjectType) {
-    // this is weird, not defined in propstype
-    // @ts-ignore @todo
-    this.props[type].forEach((week) =>
-      toggleDropReduxAction(week.id, type, true, dispatch)
-    )
+    // expand all by 'workflow type' and workflow content types
+    // according to the redux store, which has 'week' 'node' and 'outcome'
+    // hence this.props[type]
+    // it's an array i.e. TOutcome[]
+    // go trhough them all and call this redux method
+    // @todo don't know how to fix this yet
+    // this.props[type].forEach((week) =>
+    //   toggleDropReduxAction(week.id, type, true, dispatch)
+    // )
   }
 
   function collapseAll(type: CfObjectType) {
-    // this is weird, not defined in propstype
-    // @ts-ignore @todo
-    this.props[type].forEach((week) =>
-      toggleDropReduxAction(week.id, type, false, dispatch)
-    )
+    // collapse all by 'workflow type' and workflow content types
+    // according to the redux store, which has 'week' 'node' and 'outcome'
+    // hence this.props[type]
+    // it's an array i.e. TOutcome[]
+    // go through them all and call this redux method
+    // @todo don't know how to fix this yet
+    // this.props[type].forEach((week) =>
+    //   toggleDropReduxAction(week.id, type, false, dispatch)
+    // )
   }
 
   function pushImport(imports, import_type, text, disabled) {

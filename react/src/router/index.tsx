@@ -131,7 +131,7 @@ export const CfRouter = createBrowserRouter([
   },
 
   {
-    path: Routes.WORKFLOW_OVERVIEW,
+    path: `${Routes.WORKFLOW_OVERVIEW}/*`,
     element: (
       <Base>
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}

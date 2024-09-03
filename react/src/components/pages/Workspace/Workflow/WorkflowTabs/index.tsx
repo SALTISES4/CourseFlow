@@ -260,6 +260,10 @@ const WorkflowTabs = ({ updateView }: PropsType) => {
   //   )
   // }
 
+  const duplicateItem = () => {
+    console.log('duplicateItem')
+  }
+
   /*******************************************************
    * RENDER
    *******************************************************/
