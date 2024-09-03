@@ -13,6 +13,20 @@ declare module '@mui/material/styles' {
       activity?: string
       template?: string
     }
+
+    workspaceBlocks: {
+      courseAssessment?: string
+      courseProject?: string
+      courseLesson?: string
+      coursePreparation?: string
+      reusableBlocks?: string
+      strategies?: string
+      activityOOCInstr?: string
+      activityOOCStud?: string
+      activityICInstr?: string
+      activityICStud?: string
+      background?: string
+    }
   }
 
   interface PaletteOptions {
@@ -26,6 +40,20 @@ declare module '@mui/material/styles' {
       course?: string
       activity?: string
       template?: string
+    }
+
+    workspaceBlocks: {
+      courseAssessment?: string
+      courseProject?: string
+      courseLesson?: string
+      coursePreparation?: string
+      reusableBlocks?: string
+      strategies?: string
+      activityOOCInstr?: string
+      activityOOCStud?: string
+      activityICInstr?: string
+      activityICStud?: string
+      background?: string
     }
   }
 }
