@@ -190,7 +190,7 @@ def html_patterns():
         # UTILITY / DEV
         #########################################################
         path(
-            "styleguide/",
+            "styleguide/<path:rest_of_path>",
             views.html.client.default_react_view,
             {
                 "title": "Styleguide",

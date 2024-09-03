@@ -285,6 +285,10 @@ const WorkflowTabs = ({ updateView }: PropsType) => {
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
+
+              {/*
+              legacy overbiew section
+              */}
               <Header
                 users={usersForObjectData}
                 data={data}

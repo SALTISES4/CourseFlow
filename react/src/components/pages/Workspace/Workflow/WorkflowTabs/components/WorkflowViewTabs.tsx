@@ -122,6 +122,9 @@ const WorkflowViewTabs = ({
   data: any
   changeView: any
 }) => {
+  console.log('viewType')
+  console.log(viewType)
+
   const location = useLocation()
   const [tab, setTab] = useState<ViewType>(viewType)
   const navigate = useNavigate()
@@ -175,7 +178,14 @@ const WorkflowViewTabs = ({
       </Box>
 
       <div className="workflow-container">
-        <Routes>{tabRoutes}</Routes>
+        <Routes>
+          {/*  {tabRoutes}*/}
+          <Route
+            path={'/'}
+            // element={<OverviewView {...dummyOverviewData} />}
+            element={<>dfasdf</>}
+          />
+        </Routes>
       </div>
     </>
   )

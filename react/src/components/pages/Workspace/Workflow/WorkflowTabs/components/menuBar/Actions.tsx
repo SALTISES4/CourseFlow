@@ -359,7 +359,7 @@ const JumpToMenu = ({
   viewType: ViewType
   weekWorkflowSet: number[]
 }) => {
-  if (viewType !== ViewType.WORKFLOW) {
+  if (viewType !== ViewType.WORKFLOW || !weekWorkflowSet.length) {
     return null
   }
   const menuItems: MenuItemType[] = weekWorkflowSet.map(
