@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import HtmlReactParser from 'html-react-parser'
+import { SnackbarProvider } from 'notistack'
 
 import { OuterContentWrap } from '@cf/mui/helper'
 import Alert from '@cfComponents/UIPrimitives/Alert'
@@ -43,30 +44,34 @@ const Base = ({ showNotifications, children }: PropsType) => {
   return (
     <Provider store={store}>
       <DialogContextProvider>
-        <div className="main-wrapper">
-          <div data-component="sidebar">
-            <Sidebar {...sidebar} />
-          </div>
-
-          <div className="main-block">
-            <div data-component="topbar">
-              <TopBar {...topbar} />
+        <SnackbarProvider
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
+          <div className="main-wrapper">
+            <div data-component="sidebar">
+              <Sidebar {...sidebar} />
             </div>
 
-            <NotificationsAlert show={showNotifications} />
+            <div className="main-block">
+              <div data-component="topbar">
+                <TopBar {...topbar} />
+              </div>
 
-            {/* still being used as a portal in comparison view  */}
-            <div className="titlebar"></div>
+              <NotificationsAlert show={showNotifications} />
 
-            <div className="right-panel-wrapper">
-              <div id="container" className="body-wrapper">
-                {children}
+              {/* still being used as a portal in comparison view  */}
+              <div className="titlebar"></div>
+
+              <div className="right-panel-wrapper">
+                <div id="container" className="body-wrapper">
+                  {children}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div id="popup-container"></div>
+          <div id="popup-container"></div>
+        </SnackbarProvider>
       </DialogContextProvider>
     </Provider>
   )
