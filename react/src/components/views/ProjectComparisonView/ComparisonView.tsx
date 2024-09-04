@@ -4,8 +4,8 @@ import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar'
 
-import { renderMessageBox } from '@cfComponents/menu/MenuComponents'
-import closeMessageBox from '@cfComponents/menu/components/closeMessageBox'
+import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents'
+import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
 import { CfObjectType, WorkflowViewType, WFContext } from '@cf/types/enum.js'
 
 import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'

@@ -16,7 +16,7 @@ import {
   ProjectsForCreateQueryResp
 } from '@XMLHTTP/types/query'
 import { CfObjectType, VERB } from '@cf/types/enum'
-import { renderMessageBox } from '@cfComponents/menu/MenuComponents.jsx'
+import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents.jsx'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 
 /*******************************************************

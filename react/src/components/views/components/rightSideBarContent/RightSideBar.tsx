@@ -102,7 +102,7 @@ class RightSideBar extends React.Component<PropsType> {
     if (this.props.wfcontext === WFContext.COMPARISON) {
       return null
     }
-    if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
+    if (this.context.workflowView === WorkflowViewType.OUTCOME_EDIT) {
       return <ParentOutcomeBar />
     }
     return (

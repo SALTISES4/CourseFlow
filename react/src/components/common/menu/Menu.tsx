@@ -16,6 +16,10 @@ const StyledPopover = styled(Popover)({
     width: 500
   }
 })
+/*******************************************************
+ * This file contains menu 'builders' the accept a config list, as a plain object
+ *  and construct some different menu types based around MUI menu
+ *******************************************************/
 
 export type MenuItemType = {
   content: string | ReactElement
@@ -241,17 +245,9 @@ const StaticMenu = ({
           vertical: 'top',
           horizontal: 'right'
         }}
-        // MenuListProps={{ 'aria-labelledby': `${id}-button` }}
         open={open}
         onClose={handleClose}
       >
-        {/*<Menu*/}
-        {/*  id={`${id}-menu`}*/}
-        {/*  anchorEl={anchorEl}*/}
-        {/*  open={open}*/}
-        {/*  onClose={handleClose}*/}
-        {/*  MenuListProps={{ 'aria-labelledby': `${id}-button` }}*/}
-        {/*>*/}
         {content}
       </StyledPopover>
     </>

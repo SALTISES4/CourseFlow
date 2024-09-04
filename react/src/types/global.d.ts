@@ -32,7 +32,6 @@ declare global {
 }
 
 interface CourseflowAppGlobals {
-  path_id: string
   // global context data that's available that more general use
   // (sidebar, topbar, app notifications, etc)
   globalContextData: GlobalContextData

@@ -53,8 +53,8 @@ class ViewBarUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let sort_block
     if (
-      this.context.viewType === WorkflowViewType.OUTCOMETABLE ||
-      this.context.viewType === WorkflowViewType.HORIZONTALOUTCOMETABLE
+      this.context.workflowView === WorkflowViewType.OUTCOMETABLE ||
+      this.context.workflowView === WorkflowViewType.HORIZONTALOUTCOMETABLE
     ) {
       const table_type_value = data.table_type || 0
       const sort_type = (

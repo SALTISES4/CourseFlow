@@ -82,7 +82,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    *******************************************************/
 
   Content = () => {
-    if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
+    if (this.context.workflowView === WorkflowViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQueryLegacy(this.props.data.id, (response) => {
         this.props.dispatch(
           ActionCreator.refreshStoreData(response.data_package)

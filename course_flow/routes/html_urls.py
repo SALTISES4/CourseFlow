@@ -11,45 +11,26 @@ from course_flow import views
 def html_patterns():
     return [
         #########################################################
-        # Library, may not be the best namespace
-        # but we'll keep it for now
-        # general collectoin of different views for user to see
-        # items which belong to them or they can explore
+        # Library
         #########################################################
         path(
             "home/",
             views.html.client.default_react_view,
-            {
-                "title": "Home",
-                "path_id": "home",
-            },
             name="home",
         ),
         path(
             "library/",
             views.html.client.default_react_view,
-            {
-                "title": "My Library",
-                "path_id": "library",
-            },
             name="library",
         ),
         path(
             "favourites/",
             views.html.client.default_react_view,
-            {
-                "title": "My Favourites",
-                "path_id": "favourites",
-            },
             name="favourites",
         ),
         path(
             "explore/",
             views.html.client.default_react_view,
-            {
-                "title": "Explore",
-                "path_id": "Explore",
-            },
             name="explore",
         ),
         #########################################################
@@ -58,28 +39,16 @@ def html_patterns():
         path(
             "user/profile-settings/",
             views.html.client.default_react_view,
-            {
-                "title": "Profile Settings",
-                "path_id": "profileSettings",
-            },
             name="user-update",
         ),
         path(
             "user/notifications-settings/",
             views.html.client.default_react_view,
-            {
-                "title": "Notifications Settings",
-                "path_id": "notificationsSettings",
-            },
             name="user-notifications-settings",
         ),
         path(
             "user/notifications/",
             views.html.client.default_react_view,
-            {
-                "title": "Notifications",
-                "path_id": "notifications",
-            },
             name="user-notifications",
         ),
         #########################################################
@@ -88,19 +57,11 @@ def html_patterns():
         path(
             "workflow/<int:pk>/",
             views.html.client.default_react_view,
-            {
-                "title": "Project",
-                "path_id": "workflowDetail",
-            },
             name="workflow-detail",
         ),
         path(
             "workflow/<int:pk>/<path:rest_of_path>",
             views.html.client.default_react_view,
-            {
-                "title": "Project",
-                "path_id": "workflowDetail",
-            },
             name="workflow-tabs",
         ),
         path(
@@ -116,29 +77,17 @@ def html_patterns():
         path(
             "project/<path:pk>/",
             views.html.client.default_react_view,
-            {
-                "title": "Project",
-                "path_id": "projectDetail",
-            },
             name="project-detail",
         ),
         path(
             "project/<int:pk>/comparison",
             views.html.client.default_react_view,
-            {
-                "title": "Project Comparison",
-                "path_id": "projectComparison",
-            },
             name="project-comparison",
         ),
         # TEMP
         path(
             "temp-project",
             views.html.client.default_react_view,
-            {
-                "title": "Project temp",
-                "path_id": "projectDetail",
-            },
             name="temp-project",
         ),
         #########################################################
@@ -192,10 +141,6 @@ def html_patterns():
         path(
             "styleguide/<path:rest_of_path>",
             views.html.client.default_react_view,
-            {
-                "title": "Styleguide",
-                "path_id": "styleguide",
-            },
             name="styleguide",
         ),
         # todo is this for dev only or this is the same path for dalite embed?
