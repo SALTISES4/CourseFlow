@@ -161,21 +161,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
 
   const NotificationsMenu = () => {
     const content = (
-      <SC.NotificationsMenu
-        anchorEl={notificationsMenuAnchorEl}
-        id="notifications-menu"
-        keepMounted
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        open={isNotificationsMenuOpen}
-        onClose={closeAllMenus}
-      >
+      <>
         <SC.NotificationsHeader>
           <Typography variant="h5">
             {COURSEFLOW_APP.globalContextData.strings.notifications}
@@ -220,7 +206,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
             </ListItem>
           ))}
         </SC.NotificationsList>
-      </SC.NotificationsMenu>
+      </>
     )
 
     const header: MenuItemType = {

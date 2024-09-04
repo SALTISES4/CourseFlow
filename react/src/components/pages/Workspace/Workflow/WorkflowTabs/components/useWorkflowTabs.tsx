@@ -21,7 +21,6 @@ import { RelativeRoutes, CFRoutes as AppRoutes } from '@cf/router'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
 import dummyOverviewData from '@cfViews/WorkflowView/componentViews/OverviewView/dummyData'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import useInitializeWorkflowView from '@cf/hooks/useInitializeWorkflowView'
 
 const useWorkflowTabs = ({ data }: { data: any }) => {
   const navigate = useNavigate()

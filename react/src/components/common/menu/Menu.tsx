@@ -7,6 +7,15 @@ import { ReactElement } from 'react'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import { StyledMenu } from '@cfComponents/layout/TopBar/styles'
+import Popover from '@mui/material/Popover'
+import { styled } from '@mui/material/styles'
+
+const StyledPopover = styled(Popover)({
+  '& .MuiPaper-root': {
+    marginLeft: '3em',
+    width: 500
+  }
+})
 
 export type MenuItemType = {
   content: string | ReactElement
@@ -220,29 +229,31 @@ const StaticMenu = ({
       >
         {header.content}
       </Button>
-      <Menu
-        id={`${id}-menu`}
+      <StyledPopover
         anchorEl={anchorEl}
+        id={`${id}-menu`}
+        keepMounted
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        // MenuListProps={{ 'aria-labelledby': `${id}-button` }}
         open={open}
         onClose={handleClose}
-        MenuListProps={{ 'aria-labelledby': `${id}-button` }}
       >
-        {content ? (
-          <MenuItem onClick={handleClose}>{content}</MenuItem>
-        ) : (
-          menuItems.map((item, index) => (
-            <MenuItem
-              key={item.id || index}
-              onClick={() => {
-                item.action && item.action()
-                handleClose()
-              }}
-            >
-              {item.content}
-            </MenuItem>
-          ))
-        )}
-      </Menu>
+        {/*<Menu*/}
+        {/*  id={`${id}-menu`}*/}
+        {/*  anchorEl={anchorEl}*/}
+        {/*  open={open}*/}
+        {/*  onClose={handleClose}*/}
+        {/*  MenuListProps={{ 'aria-labelledby': `${id}-button` }}*/}
+        {/*>*/}
+        {content}
+      </StyledPopover>
     </>
   )
 }
