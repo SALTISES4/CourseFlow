@@ -14,6 +14,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import MenuIcon from '@mui/icons-material/Menu'
 import { SidebarProps } from '@cf/types/common'
 import { Link, useLocation } from 'react-router-dom'
+import { CFRoutes } from '@cf/router'
 
 import {
   LogoWrap,
@@ -27,7 +28,7 @@ import {
   HelpLink
 } from './styles'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
-import ParentWorkflowIndicator from "@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator";
+import ParentWorkflowIndicator from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator'
 
 const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
   const location = useLocation()
@@ -191,6 +192,13 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
         <ParentWorkflowIndicator />
 
         <HelpLink>
+          {process.env.NODE_ENV !== 'production' && (
+            <ListItem disablePadding dense>
+              <ListItemButton component={Link} to={CFRoutes.STYLEGUIDE}>
+                <ListItemText primary="Styleguide" />
+              </ListItemButton>
+            </ListItem>
+          )}
           <ListItem disablePadding dense>
             <ListItemButton
               component="a"
