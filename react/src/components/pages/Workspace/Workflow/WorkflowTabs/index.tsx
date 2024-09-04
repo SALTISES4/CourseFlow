@@ -30,10 +30,11 @@ import {
   ExpandCollapseMenu,
   JumpToMenu
 } from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/Actions'
-import { generatePath, Routes, useNavigate } from 'react-router-dom'
+import { generatePath, matchPath, Routes, useNavigate } from 'react-router-dom'
 import { OuterContentWrap } from '@cf/mui/helper'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/useWorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
+import workflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
 
 type WorkflowTabsManagerPropsType = {
   isStrategy: boolean
@@ -59,16 +60,13 @@ type StateType = {
 // with possible exception of addDeleteSelf (which needs addressing independently)
 // class WorkflowTabsUnconnected extends EditableComponent<PropsType, StateType> {
 const WorkflowTabs = () => {
-  const dispatch = useDispatch()
-  const allowedTabs = [0, 1, 2, 3, 4]
-  const disabledTabs = []
-  // const selection_manager =     new SelectionManager(
-  //     workflowPermission.readOnly
-  //   )
-  // Access state using useSelector
   const data = useSelector((state: AppState) => state.workflow)
-
   const context = useContext(WorkFlowConfigContext)
+  const [tab, setTab] = useState<WorkflowViewType>()
+  // @todo should be memoized (calling the tabs per render)
+  const { tabRoutes, tabButtons, tabs } = useWorkflowTabs({
+    data
+  })
 
   // @todo this is called originally via
   //    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
@@ -89,7 +87,7 @@ const WorkflowTabs = () => {
   // } = useQuery<WorkflowParentDataQueryResp>({
   //   queryKey: ['getWorkflowParentDataQuery'],
   //   queryFn: () => getWorkflowParentDataQuery(data.id),
-  //   enabled: context.viewType === ViewType.OUTCOME_EDIT
+  //   enabled: context.workflowView === ViewType.OUTCOME_EDIT
   // })
 
   /*******************************************************
@@ -106,6 +104,15 @@ const WorkflowTabs = () => {
     enabled: !context.public_view && !context.user.isStudent
   })
 
+  useEffect(() => {
+    const match = tabs.find((tab) =>
+      matchPath({ path: tab.route, end: true }, location.pathname)
+    )
+    if (match && context.workflowView !== match.type) {
+      context.setWorkflowView(match.type)
+    }
+  }, [])
+
   /*******************************************************
    * COMPONENTS
    *******************************************************/
@@ -120,18 +127,9 @@ const WorkflowTabs = () => {
   }
 
   const WorkflowTabsManager = ({
-    isStrategy,
-    data
+    isStrategy
   }: WorkflowTabsManagerPropsType) => {
     const { workflowView } = useContext(WorkFlowConfigContext)
-    const [tab, setTab] = useState<WorkflowViewType>()
-
-    console.log('tab outizsde')
-    console.log(tab)
-    // @todo should be memoized (calling the tabs per render)
-    const { tabRoutes, tabButtons } = useWorkflowTabs({
-      data
-    })
 
     if (isStrategy) {
       return (
@@ -164,6 +162,7 @@ const WorkflowTabs = () => {
       </>
     )
   }
+
   /*******************************************************
    * RENDER
    *******************************************************/

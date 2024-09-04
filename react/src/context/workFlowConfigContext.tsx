@@ -8,7 +8,7 @@ import {
 } from '@cfPages/Workspace/Workflow/types'
 import { FieldChoice } from '@cf/types/common'
 import { EProject } from '@XMLHTTP/types/entity'
-import WorkflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
+import { CFRoutes } from '@cf/router'
 
 export const WorkFlowConfigContext = React.createContext<WorkFlowContextType>(
   {} as WorkFlowContextType
@@ -71,7 +71,10 @@ type PropsType = {
 }
 
 const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
-  const [workflowViewType, setWorkflowViewType] = useState<WorkflowViewType>()
+  // this default serves not purpose, it's immediately overwritten by the workflow tab manager, but otherwise RR complains with verbosity...
+  const [workflowViewType, setWorkflowViewType] = useState<WorkflowViewType>(
+    WorkflowViewType.WORKFLOW
+  )
 
   const formatInitialValue = (
     initialValue: PropsType['initialValue']

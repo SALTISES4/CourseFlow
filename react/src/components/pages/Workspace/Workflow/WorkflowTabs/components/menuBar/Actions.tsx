@@ -463,7 +463,9 @@ const ExpandCollapseMenu = () => {
       show: true
     }
   ]
-  return <SimpleMenu header={header} menuItems={menuItems} />
+  return (
+    <SimpleMenu id="ExpandCollapseMenu" header={header} menuItems={menuItems} />
+  )
 }
 
 const JumpToMenu = ({ weekWorkflowSet }: { weekWorkflowSet: number[] }) => {
@@ -495,7 +497,7 @@ const JumpToMenu = ({ weekWorkflowSet }: { weekWorkflowSet: number[] }) => {
     show: true
   }
 
-  return <SimpleMenu menuItems={menuItems} header={header} />
+  return <SimpleMenu id={'JumpToMenu'} menuItems={menuItems} header={header} />
 }
 
 export { JumpToMenu, ActionMenu, ExpandCollapseMenu }

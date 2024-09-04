@@ -92,15 +92,6 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
     }
   ]
 
-  useEffect(() => {
-    const match = tabs.find((tab) =>
-      matchPath({ path: tab.route, end: true }, location.pathname)
-    )
-    if (match && workflowView !== match.type) {
-      setWorkflowView(match.type)
-    }
-  }, [])
-
   const tabButtons = tabs
     .filter((item) => !item.disabled)
     .map((item, index) => {
@@ -118,7 +109,6 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       )
     })
 
-
   const tabRoutes = tabs
     .filter((item) => !item.disabled)
     .map((item, index) => {
@@ -131,7 +121,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       )
     })
 
-  return { tabRoutes, tabButtons }
+  return { tabRoutes, tabButtons, tabs }
 }
 
 export default useWorkflowTabs
