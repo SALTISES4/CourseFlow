@@ -5,7 +5,7 @@ import OutcomeBar from './OutcomeBar'
 import ParentOutcomeBar from './ParentOutcomeBar'
 import ComparisonViewBar from './ComparisonViewBar'
 import NodeBar from '@cfViews/components/rightSideBarContent/NodeBar'
-import { ViewType, WFContext } from '@cf/types/enum.js'
+import { WorkflowViewType, WFContext } from '@cf/types/enum.js'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
 import EditIcon from '@mui/icons-material/Edit'
@@ -102,7 +102,7 @@ class RightSideBar extends React.Component<PropsType> {
     if (this.props.wfcontext === WFContext.COMPARISON) {
       return null
     }
-    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
+    if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
       return <ParentOutcomeBar />
     }
     return (

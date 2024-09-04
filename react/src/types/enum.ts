@@ -3,7 +3,7 @@ import { Enum } from '@cf/utility/utilityFunctions'
 // this is guidelines for our wofklow tabs
 // each view type is more or less a tab
 
-export enum ViewType {
+export enum WorkflowViewType {
   WORKFLOW = 'workflowview',
   OUTCOME_EDIT = 'outcomeedit',
   GRID = 'grid',

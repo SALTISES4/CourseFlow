@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 import ComparisonWorkflowBase from '@cfViews/ProjectComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
 import Workflow, { WorkflowClass } from '@cfPages/Workspace/Workflow'
-import { ViewType } from '@cf/types/enum.js'
+import { WorkflowViewType } from '@cf/types/enum.js'
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import { getWorkflowDataQuery } from '@XMLHTTP/API/workflow'
 import * as Constants from '@cf/constants'
@@ -69,7 +69,7 @@ export class ProjectComparison extends WorkflowClass {
     super(props)
     this.state = {
       ready: false,
-      viewType: ViewType.WORKFLOW
+      viewType: WorkflowViewType.WORKFLOW
     }
     this.updateView = this.updateView.bind(this)
     this.workflowID = 1
@@ -132,8 +132,8 @@ export class ProjectComparison extends WorkflowClass {
     this.locks = {}
 
     if (
-      this.state.viewType !== ViewType.WORKFLOW &&
-      this.state.viewType !== ViewType.OUTCOME_EDIT
+      this.state.viewType !== WorkflowViewType.WORKFLOW &&
+      this.state.viewType !== WorkflowViewType.OUTCOME_EDIT
     ) {
       return <>comparsion view not supported</>
     }

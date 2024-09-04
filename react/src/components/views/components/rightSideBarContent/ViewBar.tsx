@@ -3,7 +3,7 @@ import { connect, DispatchProp } from 'react-redux'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { ViewType } from '@cf/types/enum'
+import { WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
@@ -53,8 +53,8 @@ class ViewBarUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let sort_block
     if (
-      this.context.viewType === ViewType.OUTCOMETABLE ||
-      this.context.viewType === ViewType.HORIZONTALOUTCOMETABLE
+      this.context.viewType === WorkflowViewType.OUTCOMETABLE ||
+      this.context.viewType === WorkflowViewType.HORIZONTALOUTCOMETABLE
     ) {
       const table_type_value = data.table_type || 0
       const sort_type = (

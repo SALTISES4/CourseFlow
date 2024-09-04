@@ -122,7 +122,8 @@ const OverviewTab = ({
     if (!objectSets) return <></>
     return (
       <InfoBlock sx={{ mt: 3 }}>
-        <InfoBlockTitle>Object sets</InfoBlockTitle>
+        <InfoBlockTitle>{_t('Object sets')}</InfoBlockTitle>
+
         <InfoBlockContent sx={{ mt: 0 }}>
           <Grid container columnSpacing={3}>
             {objectSets.map((set, idx) => (

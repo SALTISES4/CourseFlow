@@ -3,7 +3,7 @@ import React from 'react'
 import * as reactDom from 'react-dom'
 import Loader from '@cfComponents/UIPrimitives/Loader/Loader.js'
 import * as Constants from '@cfConstants'
-import { ViewType } from '@cf/types/enum.js'
+import { WorkflowViewType } from '@cf/types/enum.js'
 import ComparisonView from '@cfViews/ProjectComparisonView/ComparisonView'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { createTheme } from '@mui/material/styles'
@@ -19,7 +19,7 @@ export class Comparison {
   private readOnly: boolean
   private viewComments: boolean
   private addComments: boolean
-  private view_type: ViewType
+  private view_type: WorkflowViewType
   private container: JQuery
   private projectData: any
   private userPermission: any
@@ -38,7 +38,7 @@ export class Comparison {
   //  -- then pass a 'view type' state handler to the child
   //  -- not sure why there's a loader at level since we don't make a query here, but it can probably go
   //
-  render(container, view_type = ViewType.WORKFLOW) {
+  render(container, view_type = WorkflowViewType.WORKFLOW) {
     this.container = container
     this.view_type = view_type
 
@@ -68,8 +68,8 @@ export class Comparison {
     this.selection_manager = new SelectionManager(this.readOnly)
 
     if (
-      view_type === ViewType.WORKFLOW ||
-      view_type === ViewType.OUTCOME_EDIT
+      view_type === WorkflowViewType.WORKFLOW ||
+      view_type === WorkflowViewType.OUTCOME_EDIT
     ) {
       const theme = createTheme({})
       reactDom.render(

@@ -6,7 +6,7 @@ import {
   getSortedOutcomesFromOutcomeWorkflowSet,
   TSortedOutcomes
 } from '@cfFindState'
-import { ViewType, WorkflowType } from '@cf/types/enum'
+import { WorkflowViewType, WorkflowType } from '@cf/types/enum'
 import { AppState } from '@cfRedux/types/type'
 import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'

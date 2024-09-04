@@ -7,7 +7,7 @@ import {
   useParams
 } from 'react-router-dom'
 import { OuterContentWrap } from '@cf/mui/helper'
-import { Routes as AppRoutes } from '@cf/router'
+import { CFRoutes as AppRoutes } from '@cf/router'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'

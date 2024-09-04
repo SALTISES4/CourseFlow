@@ -1038,25 +1038,6 @@ h3.big-space {
   background: $color-white-green;
 }
 
-.project-header {
-  border-radius: 10px;
-  background: $color-white;
-  width: 100%;
-  color: $color-text;
-  padding-bottom: 10px;
-  box-sizing: border-box;
-}
-
-.project-header-top-line {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-}
-
-.project-header h4 {
-  color: $color-text;
-}
-
 .project-title {
   font-size: 28px;
 }

@@ -6,7 +6,7 @@ import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar'
 
 import { renderMessageBox } from '@cfComponents/menu/MenuComponents'
 import closeMessageBox from '@cfComponents/menu/components/closeMessageBox'
-import { CfObjectType, ViewType, WFContext } from '@cf/types/enum.js'
+import { CfObjectType, WorkflowViewType, WFContext } from '@cf/types/enum.js'
 
 import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
@@ -38,7 +38,7 @@ type StateType = {
   workflows: number[]
 }
 type PropsType = {
-  view_type: ViewType
+  view_type: WorkflowViewType
   // turn this into config object
   projectData: EProject
   selection_manager: any
@@ -214,7 +214,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
     return (
       <>
         {portal}
-        <div className="project-header">
+        <div>
           <div>{_t('Comparing workflows for:')}</div>
           {/*<WorkflowTitle*/}
           {/*  data={data}*/}
@@ -230,12 +230,12 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   ViewButtons = () => {
     return [
       {
-        type: ViewType.WORKFLOW,
+        type: WorkflowViewType.WORKFLOW,
         name: _t('Workflow View'),
         disabled: []
       },
       {
-        type: ViewType.OUTCOME_EDIT,
+        type: WorkflowViewType.OUTCOME_EDIT,
         name: Utility.capWords(_t('View') + ' outcomes'),
         disabled: []
       }

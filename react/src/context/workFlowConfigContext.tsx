@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react'
-import { ViewType } from '@cf/types/enum'
+import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import { WorkflowViewType } from '@cf/types/enum'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import {
@@ -8,15 +8,14 @@ import {
 } from '@cfPages/Workspace/Workflow/types'
 import { FieldChoice } from '@cf/types/common'
 import { EProject } from '@XMLHTTP/types/entity'
+import WorkflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
 
 export const WorkFlowConfigContext = React.createContext<WorkFlowContextType>(
   {} as WorkFlowContextType
 )
 
 export type WorkFlowContextType = {
-  viewType: ViewType
   public_view: boolean
-
   selectionManager: SelectionManager
 
   workflow: {
@@ -57,28 +56,31 @@ export type WorkFlowContextType = {
   }
 
   container: any
+  workflowView: WorkflowViewType
+  setWorkflowView: Dispatch<SetStateAction<WorkflowViewType>>
 }
 
 type PropsType = {
   children: ReactNode
   initialValue: Pick<
     WorkFlowContextType,
-    'editableMethods' | 'permissions' | 'ws' | 'selectionManager' | 'viewType'
+    'editableMethods' | 'permissions' | 'ws' | 'selectionManager'
   > & {
     workflowDetailResp: WorkflowDetailViewDTO
   }
 }
 
 const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
+  const [workflowViewType, setWorkflowViewType] = useState<WorkflowViewType>()
+
   const formatInitialValue = (
     initialValue: PropsType['initialValue']
-  ): WorkFlowContextType => {
+  ): Omit<WorkFlowContextType, 'workflowView' | 'setWorkflowView'> => {
     // Process and format the workflowInstance
     // Return an object of type ChildRenderer
 
     const wf_data = initialValue.workflowDetailResp.workflow_data_package
     const formattedValue = {
-      viewType: initialValue.viewType,
       public_view: initialValue.workflowDetailResp.public_view, // workflow/detail api call, data_package
       selectionManager: initialValue.selectionManager, // define this as a singleton
 
@@ -135,7 +137,13 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
   const formattedValue = formatInitialValue(initialValue)
 
   return (
-    <WorkFlowConfigContext.Provider value={formattedValue}>
+    <WorkFlowConfigContext.Provider
+      value={{
+        ...formattedValue,
+        workflowView: workflowViewType,
+        setWorkflowView: setWorkflowViewType
+      }}
+    >
       {children}
     </WorkFlowConfigContext.Provider>
   )

@@ -5,7 +5,7 @@ import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import OutcomeEdit from './OutcomeEdit'
 import ComparisonWorkflow from './ComparisonWorkflow'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { CfObjectType, ViewType } from '@cf/types/enum.js'
+import { CfObjectType, WorkflowViewType } from '@cf/types/enum.js'
 import { AppState } from '@cfRedux/types/type'
 import EditableComponent, {
   EditableComponentStateType
@@ -19,7 +19,7 @@ type ConnectedProps = {
   object_sets: any
 }
 type OwnProps = {
-  view_type: ViewType
+  view_type: WorkflowViewType
   rank?: number
 }
 type StateProps = EditableComponentStateType
@@ -82,7 +82,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    *******************************************************/
 
   Content = () => {
-    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
+    if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQueryLegacy(this.props.data.id, (response) => {
         this.props.dispatch(
           ActionCreator.refreshStoreData(response.data_package)

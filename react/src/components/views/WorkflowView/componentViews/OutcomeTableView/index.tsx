@@ -11,7 +11,7 @@ import {
   TWeek,
   TWeekworkflow
 } from '@cfRedux/types/type'
-import { CfObjectType, ViewType } from '@cf/types/enum'
+import { CfObjectType, WorkflowViewType } from '@cf/types/enum'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
 import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeBase'
@@ -201,7 +201,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
     if (outcomes_sorted.length === 0 || !has_nodes) {
       let text
-      if (this.context.viewType === ViewType.OUTCOMETABLE) {
+      if (this.context.viewType === WorkflowViewType.OUTCOMETABLE) {
         text = _t(
           'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
         )

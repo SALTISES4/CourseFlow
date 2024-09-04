@@ -13,7 +13,7 @@ import {
   deleteSelfQueryLegacy,
   restoreSelfQueryLegacy
 } from '@XMLHTTP/API/delete'
-import { CfObjectType, ViewType, WorkflowType } from '@cf/types/enum'
+import { CfObjectType, WorkflowViewType, WorkflowType } from '@cf/types/enum'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import JumpToWeekWorkflow from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeekWorkflow'
@@ -21,12 +21,18 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 import { useMutation } from '@tanstack/react-query'
 import { NotificationSettingsUpdateQueryResp } from '@XMLHTTP/types/query'
 import { updateNotificationSettings } from '@XMLHTTP/API/user'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import { WorkflowPermission } from '@cfPages/Workspace/Workflow/types'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { Dialog, DialogTitle } from '@mui/material'
+import ExportMenu from '@cfComponents/dialog/ExportMenu'
+import * as React from 'react'
+import ProjectTargetModal from '@cfComponents/dialog/ProjectTarget'
+import ImportModal from '@cfComponents/dialog/Import'
+import { AppState } from '@cfRedux/types/type'
 
 const useMenuActions = () => {
   const dispatch = useDispatch()
@@ -194,6 +200,12 @@ const useMenuActions = () => {
     duplicateItem
   }
 }
+type StateType = {
+  openShareDialog: boolean
+  openExportDialog: boolean
+  openImportDialog: boolean
+  openEditDialog: boolean
+}
 
 const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
   const context = useContext(WorkFlowConfigContext)
@@ -206,7 +218,98 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
   const projectId = context.workflow.project.id
   const workflowType = context.workflow
   const publicView = context.public_view
-  // ts-ignore
+
+  const [state, setState] = useState<StateType>({
+    openShareDialog: false,
+    openExportDialog: false,
+    openImportDialog: false,
+    openEditDialog: false
+  })
+  const objectSets = useSelector<AppState>((state: AppState) => state.objectset)
+  const week = useSelector<AppState>((state: AppState) => state.week)
+  const node = useSelector<AppState>((state: AppState) => state.node)
+  const outcome = useSelector<AppState>((state: AppState) => state.outcome)
+
+  /*******************************************************
+   * MODALS
+   *******************************************************/
+
+  function closeModals() {
+    setState({
+      ...state,
+      openExportDialog: false,
+      openShareDialog: false,
+      openEditDialog: false
+    })
+  }
+
+  function openImportDialog() {
+    setState({
+      ...state,
+      openEditDialog: true
+    })
+  }
+
+  const duplicateItem = () => {
+    console.log('duplicateItem')
+  }
+
+  // clickImport(import_type, evt) {
+  //   evt.preventDefault()
+  //   renderMessageBox(
+  //     {
+  //       object_id: this.props.data.id,
+  //       object_type: this.objectType,
+  //       import_type: import_type
+  //     },
+  //     'import',
+  //     () => {
+  //       closeMessageBox()
+  //     }
+  //   )
+  // }
+
+  // ImportDialog = () => {
+  //   return (
+  //     <Dialog open={this.state.openImportDialog}>
+  //       <>
+  //         <ImportMenu
+  //           data={{
+  //             object_id: this.data.id,
+  //             object_type: this.objectType,
+  //             import_type: 'outcomes'
+  //           }}
+  //           actionFunction={this.closeModals}
+  //         />
+  //         <ImportMenu
+  //           data={{
+  //             object_id: this.data.id,
+  //             object_type: this.objectType,
+  //             import_type: 'nodes'
+  //           }}
+  //           actionFunction={this.closeModals}
+  //         />
+  //       </>
+  //     </Dialog>
+  //   )
+  // }
+
+  const ExportDialog = () => {
+    return (
+      <Dialog open={state.openExportDialog}>
+        <DialogTitle>
+          <h2>{_t('Export project')}</h2>
+        </DialogTitle>
+        <ExportMenu
+          data={{
+            // ...data,
+            object_sets: objectSets
+          }}
+          actionFunction={closeModals}
+        />
+      </Dialog>
+    )
+  }
 
   const {
     openEditMenu,
@@ -292,7 +395,18 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
     }
   ]
 
-  return <MenuWithOverflow menuItems={menuItems} size={2} />
+  return (
+    <>
+      <MenuWithOverflow menuItems={menuItems} size={2} />
+      <ProjectTargetModal
+        id={workflowId}
+        //@ts-ignore
+        actionFunction={duplicateItem}
+      />
+      <ImportModal workflowID={workflowId} />
+      {/*<ShareDialog />*/}
+    </>
+  )
 }
 
 const ExpandCollapseMenu = () => {
@@ -352,14 +466,11 @@ const ExpandCollapseMenu = () => {
   return <SimpleMenu header={header} menuItems={menuItems} />
 }
 
-const JumpToMenu = ({
-  viewType,
-  weekWorkflowSet
-}: {
-  viewType: ViewType
-  weekWorkflowSet: number[]
-}) => {
-  if (viewType !== ViewType.WORKFLOW || !weekWorkflowSet.length) {
+const JumpToMenu = ({ weekWorkflowSet }: { weekWorkflowSet: number[] }) => {
+  const context = useContext(WorkFlowConfigContext)
+  const viewType = context.workflowView
+
+  if (viewType !== WorkflowViewType.WORKFLOW || !weekWorkflowSet.length) {
     return null
   }
   const menuItems: MenuItemType[] = weekWorkflowSet.map(

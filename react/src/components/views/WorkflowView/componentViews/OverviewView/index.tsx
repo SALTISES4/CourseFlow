@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { OuterContentWrap } from '@cf/mui/helper'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -27,6 +27,7 @@ import {
   PROJECT_PERMISSION_ROLE,
   ProjectDetailsType
 } from '@cf/types/common'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 
 function getInitials(name: string): string {
   const split = name.split(' ')
@@ -62,6 +63,9 @@ const OverviewView = ({
     <OuterContentWrap sx={{ pt: 4 }}>
       <InfoBlock>
         <InfoBlockTitle>Description</InfoBlockTitle>
+        {/*
+        NOTE: legacy coponent had a collapsible drawer
+        */}
         <InfoBlockContent>{description}</InfoBlockContent>
       </InfoBlock>
       <Grid container columnSpacing={3} sx={{ mt: 3 }}>
