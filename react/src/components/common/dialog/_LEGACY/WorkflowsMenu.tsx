@@ -173,7 +173,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
           className="primary-button"
           disabled={!this.state.selected}
           onClick={() => {
-            this.props.actionFunction({ workflowID: this.state.selected })
+            this.props.actionFunction({ workflowId: this.state.selected })
             closeMessageBox()
           }}
         >

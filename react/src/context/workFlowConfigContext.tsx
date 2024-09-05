@@ -19,7 +19,7 @@ export type WorkFlowContextType = {
   selectionManager: SelectionManager
 
   workflow: {
-    workflowID: number
+    workflowId: number
     choices: {
       task_choices: FieldChoice[]
       time_choices: FieldChoice[]
@@ -89,7 +89,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
 
       // this is a partial list of needed values, directly from the API query, we should probably make a Pick
       workflow: {
-        workflowID: initialValue.workflowDetailResp.workflow_model_id, // from URL param, also   workflow/detail api call, workflow_data_package, workflow_model_id (?)
+        workflowId: initialValue.workflowDetailResp.workflow_model_id, // from URL param, also   workflow/detail api call, workflow_data_package, workflow_model_id (?)
         project: wf_data.project, // from  workflow/detail api call, workflow_data_package
         isStrategy: wf_data.is_strategy, // workflow/detail api call, workflow_data_package
 
@@ -126,8 +126,8 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
 
       // functions, these are the only items which actually belong to the 'workflow' react component class and as noted in the copponent, these
       // probably belong to something in the editable component area ...
-
       editableMethods: initialValue.editableMethods,
+
       ws: initialValue.ws,
       permissions: initialValue.permissions,
 

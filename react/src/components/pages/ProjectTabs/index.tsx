@@ -1,5 +1,5 @@
 import { OuterContentWrap } from '@cf/mui/helper'
-import { CFRoutes as AppRoutes, RelativeRoutes } from '@cf/router'
+import { CFRoutes, RelativeRoutes } from '@cf/router'
 import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/utilityFunctions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -47,22 +47,22 @@ const ProjectDetails = () => {
 
   const tabsObject = [
     {
-      path: AppRoutes.PROJECT,
+      path: CFRoutes.PROJECT,
       relativePath: RelativeRoutes.INDEX,
       label: _t('Overview'),
       action: () => {
-        const path = generatePath(AppRoutes.PROJECT, {
+        const path = generatePath(CFRoutes.PROJECT, {
           id: String(projectId)
         })
         navigate(path)
       }
     },
     {
-      path: AppRoutes.PROJECT_WORKFLOW,
+      path: CFRoutes.PROJECT_WORKFLOW,
       relativePath: RelativeRoutes.WORKFLOW,
       label: _t('Workflows'),
       action: () => {
-        const path = generatePath(AppRoutes.PROJECT_WORKFLOW, {
+        const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
           id: String(projectId)
         })
         navigate(path)

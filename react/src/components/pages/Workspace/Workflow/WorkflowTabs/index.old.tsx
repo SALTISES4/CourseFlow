@@ -121,7 +121,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
     this.data = this.props.data
     this.project = this.context.workflow.project
-    this.workflowId = this.context.workflow.workflowID
+    this.workflowId = this.context.workflow.workflowId
 
     this.project_permission = this.context.permissions.projectPermission
     this.always_static = this.context.public_view
@@ -615,7 +615,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
             id={this.data.id}
             actionFunction={this.duplicateItem}
           />
-          <ImportModal workflowID={this.data.id} />
+          <ImportModal workflowId={this.data.id} />
           <this.ShareDialog />
         </div>
       </DialogContextProvider>

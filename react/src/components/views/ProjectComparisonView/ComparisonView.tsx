@@ -137,12 +137,12 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   openEdit() {}
 
   updateFunction = (responseData: GetWorkflowSelectMenuResp) => {
-    if (responseData.workflowID != null) {
+    if (responseData.workflowId != null) {
       const workflows = this.state.workflows.slice()
-      workflows.push(responseData.workflowID)
+      workflows.push(responseData.workflowId)
       const treat = this
       this.setState({
-        workflows: [...this.state.workflows, responseData.workflowID]
+        workflows: [...this.state.workflows, responseData.workflowId]
       })
     }
   }
@@ -300,13 +300,13 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   )
 
   WorkflowContent = () => {
-    return this.state.workflows.map((workflowID) => (
+    return this.state.workflows.map((workflowId) => (
       <WorkflowComparisonRendererComponent
-        key={workflowID}
-        removeFunction={this.removeWorkflow.bind(this, workflowID)}
+        key={workflowId}
+        removeFunction={this.removeWorkflow.bind(this, workflowId)}
         // @ts-ignore
         view_type={this.props.view_type}
-        workflowID={workflowID}
+        workflowId={workflowId}
         selection_manager={this.props.selection_manager}
         object_sets={this.state.object_sets}
       />

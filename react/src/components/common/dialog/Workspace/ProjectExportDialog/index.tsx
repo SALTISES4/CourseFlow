@@ -17,6 +17,9 @@ import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EProject } from '@XMLHTTP/types/entity'
 import { produce } from 'immer'
 import { MouseEvent, useState } from 'react'
+import {Dialog} from "@mui/material";
+import ExportMenu from "@cfComponents/dialog/_LEGACY/ExportMenu";
+import * as React from "react";
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -57,7 +60,28 @@ const fields = {
   ]
 }
 
-function ProjectExportDialog({ data }: { data: EProject }) {
+  //  reference for connecting
+
+  // class ExportMenu extends React.Component<PropsType, StateProps> {
+  // const ExportDialog = () => {
+  //   return (
+  //     <Dialog open={state.openExportDialog}>
+  //       <DialogTitle>
+  //         <h2>{_t('Export project')}</h2>
+  //       </DialogTitle>
+  //       <ExportMenu
+  //         data={{
+  //           // ...data,
+  //           object_sets: objectSets
+  //         }}
+  //         actionFunction={closeModals}
+  //       />
+  //     </Dialog>
+  //   )
+  // }
+
+
+function ProjectExportDialog(data: EProject ) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,

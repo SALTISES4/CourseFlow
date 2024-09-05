@@ -1,5 +1,5 @@
 import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
-import { useContext } from 'react'
+import {ReactNode, useContext} from 'react'
 import * as React from 'react'
 
 export enum DIALOG_TYPE {
@@ -34,7 +34,9 @@ export enum DIALOG_TYPE {
   // WORKFLOW - COURSE
   COURSE_CREATE = 'course_create',
   COURSE_EDIT = 'course_edit',
-  COURSE_ARCHIVE = 'course_archive'
+  COURSE_ARCHIVE = 'course_archive',
+
+  GENERIC = 'generic'
 
   // TBD
 }
@@ -52,7 +54,7 @@ export enum DIALOG_TYPE {
 
 type PossibleDialogTypes = DIALOG_TYPE | DIALOG_TYPE[] | null
 
-export function useDialog(dialogType: PossibleDialogTypes = null) {
+export function useDialog(dialogType: PossibleDialogTypes = null ) {
   const dialogContext = useContext(DialogContext)
   const dialogDispatch = useContext(DialogDispatchContext)
 

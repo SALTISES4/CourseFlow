@@ -27,7 +27,7 @@ type OwnProps = {
   comments: any
   parent: any
   // renderer: any /  not used
-  workflowID: any
+  workflowId: any
   unread_comments: any
   read_only: boolean
   add_comments: any
@@ -114,7 +114,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
       const loader = COURSEFLOW_APP.tinyLoader
       loader.startLoad()
       getUsersForObjectQueryLegacy(
-        this.props.workflowID,
+        this.props.workflowId,
         'workflow',
         (response) => {
           loader.endLoad()

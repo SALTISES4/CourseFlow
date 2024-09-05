@@ -8,9 +8,9 @@ import {
   ActionMenu,
   ExpandCollapseMenu,
   JumpToMenu
-} from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/Actions'
+} from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/actions'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
-import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/dialogs'
+import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/useWorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
 import { Box, Tabs } from '@mui/material'

@@ -428,7 +428,12 @@ function ProjectDetailContent({
 
       <EditDialog />
       <ShareDialog />
+
+      {/*
+      // 1 - @todo this has moved to project tabs
+      // 2 - where to collect the dialogs
       <ProjectExportDialog data={state.project} />
+*/}
       <ProjectArchiveDialog onSubmit={deleteProject} />
     </div>
   )

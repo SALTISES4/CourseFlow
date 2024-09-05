@@ -270,7 +270,7 @@ export type GetWorkflowSelectQueryResp = {
 }
 
 export type GetWorkflowSelectMenuResp = {
-  workflowID: number
+  workflowId: number
 }
 
 /*******************************************************

@@ -1,7 +1,7 @@
-import ImportDialog from '@cf/components/common/dialog/common/ImportDialog'
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { OuterContentWrap } from '@cf/mui/helper'
 import { EventUnion } from '@cf/types/common'
 import { CfObjectType, WorkflowType, WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -13,6 +13,7 @@ import {
   MenuWithOverflow,
   SimpleMenu
 } from '@cfComponents/menu/Menu'
+import Alert from '@cfComponents/UIPrimitives/Alert'
 import JumpToWeekWorkflow from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeekWorkflow'
 import { AppState } from '@cfRedux/types/type'
 import EditIcon from '@mui/icons-material/Edit'
@@ -29,9 +30,12 @@ import {
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { updateNotificationSettings } from '@XMLHTTP/API/user'
 import { NotificationSettingsUpdateQueryResp } from '@XMLHTTP/types/query'
+import HtmlReactParser from 'html-react-parser'
 import { useContext, useState } from 'react'
 import * as React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+
+import ImportDialog from 'components/common/dialog/Workspace/ImportDialog'
 
 const useMenuActions = () => {
   const dispatch = useDispatch()
@@ -56,8 +60,42 @@ const useMenuActions = () => {
    *******************************************************/
   function openEditMenu(evt: EventUnion) {
     // this.selection_manager.changeSelection(evt, this)
-    dispatchDialog(DIALOG_TYPE.PASSWORD_RESET)
+    dispatchDialog(DIALOG_TYPE.ACTIVITY_EDIT)
   }
+
+  // REFERENCE ORIGINAL DATA
+  //           data={{
+  //             object_id: this.data.id,
+  //             object_type: this.objectType,
+  //             import_type: 'outcomes'
+  //           }}
+  //           actionFunction={this.closeModals}
+  //         />
+  //         <ImportMenu
+  //           data={{
+  //             object_id: this.data.id,
+  //             object_type: this.objectType,
+  //             import_type: 'nodes'
+  //           }}
+  function importOutcomes() {
+    dispatchDialog(DIALOG_TYPE.IMPORT_OUTCOMES)
+  }
+
+  function importNodes() {
+    dispatchDialog(DIALOG_TYPE.IMPORT_NODES)
+  }
+
+  function openShareDialog() {
+    dispatchDialog(DIALOG_TYPE.ADD_CONTRIBUTOR)
+  }
+
+  function openExportDialog() {
+    dispatchDialog(DIALOG_TYPE.PROJECT_EXPORT)
+  }
+
+  /*******************************************************
+   * TO PROCESS
+   *******************************************************/
 
   function copyToProject(
     workflowId: number,
@@ -81,17 +119,6 @@ const useMenuActions = () => {
           )
       }
     )
-  }
-
-  // @todo swap back to real function after hook conversion
-  // importOutcomes = () => dispatch(DIALOG_TYPE.IMPORT_OUTCOMES)
-  // importNodes = () => dispatch(DIALOG_TYPE.IMPORT_NODES)
-  function importOutcomes() {
-    console.log('importOutcomes')
-  }
-
-  function importNodes() {
-    console.log('importNodes')
   }
 
   function deleteWorkflow(workflowId: number) {
@@ -179,12 +206,6 @@ const useMenuActions = () => {
     }
   }
 
-  function openShareDialog() {
-    console.log('openShareDialog')
-  }
-  function openExportDialog() {
-    console.log('openExportDialog')
-  }
 
   return {
     openEditMenu,
@@ -215,7 +236,7 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
   const userId = context.user.user_id
   const workflowPermission = context.permissions.workflowPermission
   const projectPermission = context.permissions.projectPermission
-  const workflowId = context.workflow.workflowID
+  const workflowId = context.workflow.workflowId
   const projectId = context.workflow.project.id
   const workflowType = context.workflow
   const publicView = context.public_view
@@ -235,22 +256,6 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
    * MODALS
    *******************************************************/
 
-  function closeModals() {
-    setState({
-      ...state,
-      openExportDialog: false,
-      openShareDialog: false,
-      openEditDialog: false
-    })
-  }
-
-  function openImportDialog() {
-    setState({
-      ...state,
-      openEditDialog: true
-    })
-  }
-
   const duplicateItem = () => {
     console.log('duplicateItem')
   }
@@ -269,48 +274,6 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
   //     }
   //   )
   // }
-
-  // ImportDialog = () => {
-  //   return (
-  //     <Dialog open={this.state.openImportDialog}>
-  //       <>
-  //         <ImportMenu
-  //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'outcomes'
-  //           }}
-  //           actionFunction={this.closeModals}
-  //         />
-  //         <ImportMenu
-  //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'nodes'
-  //           }}
-  //           actionFunction={this.closeModals}
-  //         />
-  //       </>
-  //     </Dialog>
-  //   )
-  // }
-
-  const ExportDialog = () => {
-    return (
-      <Dialog open={state.openExportDialog}>
-        <DialogTitle>
-          <h2>{_t('Export project')}</h2>
-        </DialogTitle>
-        <ExportMenu
-          data={{
-            // ...data,
-            object_sets: objectSets
-          }}
-          actionFunction={closeModals}
-        />
-      </Dialog>
-    )
-  }
 
   const {
     openEditMenu,
@@ -404,7 +367,7 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
         //@ts-ignore
         actionFunction={duplicateItem}
       />
-      <ImportDialog workflowID={workflowId} />
+      <ImportDialog workflowId={workflowId} />
       {/*<ShareDialog />*/}
     </>
   )

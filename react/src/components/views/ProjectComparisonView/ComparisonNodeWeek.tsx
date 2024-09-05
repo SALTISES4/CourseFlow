@@ -36,7 +36,7 @@ class ComparisonNodeWeekUnconnected extends NodeWeekUnconnected<PropsType> {
         //   strategy_classification_choices:
         //     this.props.renderer.strategy_classification_choices,
         //   change_field: this.props.renderer.change_field,
-        //   workflowID: this.props.renderer.workflowID,
+        //   workflowId: this.props.renderer.workflowId,
         //   unread_comments: this.props.renderer.unread_comments,
         //   add_comments: this.props.renderer.add_comments,
         //   view_comments: this.props.renderer.view_comments,
