@@ -1,64 +1,64 @@
-import React, { useState } from 'react'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import IconButton from '@mui/material/IconButton'
-import CloseIcon from '@mui/icons-material/Close'
-import { styled } from '@mui/material/styles'
+import { CookieTypes, useCookies } from '@cf/context/cookieContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
+import CloseIcon from '@mui/icons-material/Close'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import React, { useEffect, useState } from 'react'
 
-const Wrap = styled(Box)(({ theme }) => ({
-  position: 'relative',
-  padding: `${theme.spacing(6)} ${theme.spacing(4)}`,
-  marginBottom: theme.spacing(4),
-  border: `1px solid ${theme.palette.divider}`,
-  textAlign: 'center'
-}))
-
-const Actions = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  flexWrap: 'wrap',
-  gap: theme.spacing(2),
-  marginTop: theme.spacing(3)
-}))
-
-const CloseButton = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  top: theme.spacing(1),
-  right: theme.spacing(1),
-  color: theme.palette.primary.main
-}))
+import * as SC from './style'
 
 type PropsType = {
   hide?: boolean
 }
 
 const Welcome = ({ hide }: PropsType) => {
+  /*******************************************************
+   * HOOKS
+   *******************************************************/
   const { dispatch } = useDialog()
   const [visible, setVisible] = useState(true)
+  const { cookies, updateCookie, removeCookie } = useCookies()
 
-  function handleClose() {
-    setVisible(false) // @todo this should not be state, but cookie
-  }
+  useEffect(() => {
+    const showWelcomeMessageCookie =
+      !cookies[CookieTypes.HIDE_HOME_WELCOME_MESSAGE]
+
+    setVisible(showWelcomeMessageCookie)
+  }, [])
 
   if (hide || !visible) {
     return null
   }
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  function handleClose() {
+    setVisible(false)
+    updateCookie(CookieTypes.HIDE_HOME_WELCOME_MESSAGE, String(true), {
+      expires: 7
+    })
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
-    <Wrap>
-      <CloseButton aria-label="close" onClick={handleClose}>
+    <SC.Wrap>
+      <SC.CloseButton aria-label="close" onClick={handleClose}>
         <CloseIcon />
-      </CloseButton>
+      </SC.CloseButton>
+
       <Typography variant="h4">{_t('Welcome to CourseFlow')}</Typography>
+
       <Typography sx={{ mt: 2 }}>
         {_t(
           'Tell us a bit more about your goals so that we can help you get started.'
         )}
       </Typography>
-      <Actions>
+
+      <SC.Actions>
         <Button
           variant="contained"
           onClick={() => dispatch(DIALOG_TYPE.PROGRAM_CREATE)}
@@ -77,8 +77,8 @@ const Welcome = ({ hide }: PropsType) => {
         >
           {_t('I want to create an activity')}
         </Button>
-      </Actions>
-    </Wrap>
+      </SC.Actions>
+    </SC.Wrap>
   )
 }
 

@@ -1,19 +1,11 @@
-import { ReactNode, useState } from 'react'
+import { CookieTypes } from '@cf/context/cookieContext'
+import CampaignIcon from '@mui/icons-material/Campaign'
 import Alert, { AlertProps } from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
-import CampaignIcon from '@mui/icons-material/Campaign'
+import { SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { styled, SxProps } from '@mui/material/styles'
 import Cookies from 'js-cookie'
-
-type PropsType = {
-  severity?: AlertProps['severity'] | 'update'
-  title: string | ReactNode
-  subtitle?: string | ReactNode
-  hideIfCookie?: string
-  onClose?: () => void
-  sx?: SxProps
-}
+import { ReactNode, useState } from 'react'
 
 const StyledTitle = styled(AlertTitle)({
   fontWeight: 600,
@@ -21,6 +13,15 @@ const StyledTitle = styled(AlertTitle)({
     marginBottom: 0
   }
 })
+
+type PropsType = {
+  severity?: AlertProps['severity'] | 'update'
+  title: string | ReactNode
+  subtitle?: string | ReactNode
+  hideIfCookie?: CookieTypes
+  onClose?: () => void
+  sx?: SxProps
+}
 
 const StyledSubtitle = styled(Typography)({})
 

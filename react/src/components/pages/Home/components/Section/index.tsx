@@ -1,10 +1,10 @@
-import React, { ReactNode } from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
-import { Link as RouterLink } from 'react-router-dom'
-import Typography from '@mui/material/Typography'
 import { styled } from '@mui/material/styles'
-import { _t } from '@cf/utility/utilityFunctions'
+import Typography from '@mui/material/Typography'
+import React, { ReactNode } from 'react'
+import { Link as RouterLink } from 'react-router-dom'
 
 const SectionWrap = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(6)

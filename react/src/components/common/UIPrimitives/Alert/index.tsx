@@ -1,10 +1,11 @@
-import { ReactNode, useState } from 'react'
+import { CookieTypes, useCookies } from '@cf/context/cookieContext'
+import CampaignIcon from '@mui/icons-material/Campaign'
 import Alert, { AlertProps } from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
-import CampaignIcon from '@mui/icons-material/Campaign'
+import { SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { styled, SxProps } from '@mui/material/styles'
 import Cookies from 'js-cookie'
+import { ReactNode, useEffect, useState } from 'react'
 
 type PropsType = {
   severity?: AlertProps['severity'] | 'update'
@@ -38,13 +39,20 @@ const CFAlert = ({
   hideIfCookie,
   sx
 }: PropsType) => {
-  const [hide, setHide] = useState(
-    hideIfCookie ? !!Cookies.get(hideIfCookie) : false
-  )
+  const [hide, setHide] = useState(false)
+  const { cookies, updateCookie, removeCookie } = useCookies()
+
+  useEffect(() => {
+    if (!hideIfCookie) return
+
+    const cookieValue = cookies[hideIfCookie]
+
+    setHide(!!cookieValue)
+  }, [hideIfCookie])
 
   function handleClose() {
     onClose && onClose()
-    Cookies.set(hideIfCookie, 'true', { expires: 7 }) // expires?
+    updateCookie(hideIfCookie, 'true', { expires: 7 }) // expires?
     setHide(true)
   }
 
