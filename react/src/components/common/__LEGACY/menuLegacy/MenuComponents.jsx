@@ -1,10 +1,11 @@
+import theme from '@cf/mui/theme.ts'
+import { _t } from '@cf/utility/utilityFunctions.tsx'
+import { ThemeProvider } from '@mui/material/styles'
 import React from 'react'
 import { Component } from 'react'
 import reactDom from 'react-dom'
-import WorkflowsMenu from '../../dialog/WorkflowsMenu.tsx'
-import { ThemeProvider } from '@mui/material/styles'
-import theme from '@cf/mui/theme.ts'
-import { _t } from '@cf/utility/utilityFunctions.tsx'
+
+import WorkflowsMenu from '../../dialog/_LEGACY/WorkflowsMenu.tsx'
 // import $ from 'jquery'
 
 /**

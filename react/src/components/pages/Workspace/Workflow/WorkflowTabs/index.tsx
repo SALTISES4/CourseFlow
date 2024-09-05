@@ -17,7 +17,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import * as React from 'react'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
 
@@ -47,7 +47,6 @@ type StateType = {
 const WorkflowTabs = () => {
   const data = useSelector((state: AppState) => state.workflow)
   const context = useContext(WorkFlowConfigContext)
-  const [tab, setTab] = useState<WorkflowViewType>()
   // @todo should be memoized (calling the tabs per render)
   const { tabRoutes, tabButtons, tabs } = useWorkflowTabs({
     data
@@ -191,6 +190,7 @@ const WorkflowTabs = () => {
           {/*/>*/}
         </div>
       </div>
+
     </>
   )
 }

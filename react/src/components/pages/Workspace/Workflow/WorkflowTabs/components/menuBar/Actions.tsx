@@ -1,41 +1,41 @@
+import ImportDialog from '@cf/components/common/dialog/common/ImportDialog'
+import * as Constants from '@cf/constants'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { EventUnion } from '@cf/types/common'
+import { CfObjectType, WorkflowType, WorkflowViewType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import ExportMenu from '@cfComponents/dialog/_LEGACY/ExportMenu'
+import ProjectTargetDialog from '@cfComponents/dialog/Workspace/ProjectTargetDialog'
 import {
   MenuItemType,
   MenuWithOverflow,
   SimpleMenu
 } from '@cfComponents/menu/Menu'
-import { _t } from '@cf/utility/utilityFunctions'
+import JumpToWeekWorkflow from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeekWorkflow'
+import { AppState } from '@cfRedux/types/type'
 import EditIcon from '@mui/icons-material/Edit'
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import * as Constants from '@cf/constants'
-import { EventUnion } from '@cf/types/common'
-import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
+import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
+import { Dialog, DialogTitle } from '@mui/material'
+import { useMutation } from '@tanstack/react-query'
 import {
   deleteSelfQueryLegacy,
   restoreSelfQueryLegacy
 } from '@XMLHTTP/API/delete'
-import { CfObjectType, WorkflowViewType, WorkflowType } from '@cf/types/enum'
-import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import JumpToWeekWorkflow from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeekWorkflow'
-import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
-import { useMutation } from '@tanstack/react-query'
-import { NotificationSettingsUpdateQueryResp } from '@XMLHTTP/types/query'
+import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { updateNotificationSettings } from '@XMLHTTP/API/user'
-import { useDispatch, useSelector } from 'react-redux'
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
-import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
-import { WorkflowPermission } from '@cfPages/Workspace/Workflow/types'
+import { NotificationSettingsUpdateQueryResp } from '@XMLHTTP/types/query'
 import { useContext, useState } from 'react'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { Dialog, DialogTitle } from '@mui/material'
-import ExportMenu from '@cfComponents/dialog/ExportMenu'
 import * as React from 'react'
-import ProjectTargetModal from '@cfComponents/dialog/ProjectTarget'
-import ImportModal from '@cfComponents/dialog/Import'
-import { AppState } from '@cfRedux/types/type'
+import { useDispatch, useSelector } from 'react-redux'
 
 const useMenuActions = () => {
   const dispatch = useDispatch()
+  const { dispatch: dispatchDialog } = useDialog()
 
   const { mutate } = useMutation<NotificationSettingsUpdateQueryResp>({
     mutationFn: updateNotificationSettings,
@@ -56,6 +56,7 @@ const useMenuActions = () => {
    *******************************************************/
   function openEditMenu(evt: EventUnion) {
     // this.selection_manager.changeSelection(evt, this)
+    dispatchDialog(DIALOG_TYPE.PASSWORD_RESET)
   }
 
   function copyToProject(
@@ -398,12 +399,12 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
   return (
     <>
       <MenuWithOverflow menuItems={menuItems} size={2} />
-      <ProjectTargetModal
+      <ProjectTargetDialog
         id={workflowId}
         //@ts-ignore
         actionFunction={duplicateItem}
       />
-      <ImportModal workflowID={workflowId} />
+      <ImportDialog workflowID={workflowId} />
       {/*<ShareDialog />*/}
     </>
   )

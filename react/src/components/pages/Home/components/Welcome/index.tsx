@@ -25,7 +25,7 @@ const Welcome = ({ hide }: PropsType) => {
       !cookies[CookieTypes.HIDE_HOME_WELCOME_MESSAGE]
 
     setVisible(showWelcomeMessageCookie)
-  }, [])
+  }, [cookies])
 
   if (hide || !visible) {
     return null
