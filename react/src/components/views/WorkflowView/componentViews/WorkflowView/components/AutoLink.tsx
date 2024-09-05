@@ -1,6 +1,6 @@
+import NodeLinkSVG from '@cfViews/components/Node/NodeLinkSVG'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import NodeLinkSVG from '@cfViews/components/Node/NodeLinkSVG'
 // import $ from 'jquery'
 
 type PropsType = {

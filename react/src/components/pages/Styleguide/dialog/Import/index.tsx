@@ -1,15 +1,15 @@
-import { useCallback, useState } from 'react'
-import { produce } from 'immer'
-import { FileRejection } from 'react-dropzone'
-import Button from '@mui/material/Button'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import Typography from '@mui/material/Typography'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import FileUploader from '@cfPages/Styleguide/components/FileUploader'
+import Button from '@mui/material/Button'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
+import { produce } from 'immer'
+import { useCallback, useState } from 'react'
+import { FileRejection } from 'react-dropzone'
 
 import { StyledDialog } from '../styles'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 
 type StateType = {
   whitelisted: string[]

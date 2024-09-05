@@ -1,17 +1,17 @@
-import { ReactNode, useState } from 'react'
-import { produce } from 'immer'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import EditIcon from '@mui/icons-material/Edit'
+import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined'
+import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined'
 import Paper from '@mui/material/Paper'
 import ToggleButton from '@mui/material/ToggleButton'
-import { SidebarDataType } from './types'
-import { SidebarWrap, SidebarTabsWrap, SidebarToggle } from './styles'
-import EditIcon from '@mui/icons-material/Edit'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
-import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined'
-import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined'
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import { produce } from 'immer'
+import { ReactNode, useState } from 'react'
 
 import AddTab from './components/AddTab'
 import OutcomesTab from './components/OutcomesTab'
+import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
+import { SidebarDataType } from './types'
 
 type StateType = {
   tab: keyof SidebarDataType | null

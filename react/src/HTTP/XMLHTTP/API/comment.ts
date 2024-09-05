@@ -1,7 +1,7 @@
 //Removes the specified comment from the object
-import { EmptyPostResp, CommentsForObjectQueryResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
+import { CommentsForObjectQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 
 //Get the comments for a particular object
 export function getCommentsForObjectQuery(

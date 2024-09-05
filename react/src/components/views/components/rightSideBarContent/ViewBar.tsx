@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { connect, DispatchProp } from 'react-redux'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState } from '@cfRedux/types/type'
+import * as React from 'react'
+import { DispatchProp, connect } from 'react-redux'
 
 type ConnectedProps = {
   object_sets: any

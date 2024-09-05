@@ -1,5 +1,3 @@
-import { AnyAction } from '@reduxjs/toolkit'
-import { TWorkflow } from '@cfRedux/types/type'
 import {
   ColumnActions,
   ColumnWorkflowActions,
@@ -13,6 +11,8 @@ import {
   WeekWorkflowActions,
   WorkFlowActions
 } from '@cfRedux/types/enumActions'
+import { TWorkflow } from '@cfRedux/types/type'
+import { AnyAction } from '@reduxjs/toolkit'
 
 function workflowReducer(
   state: TWorkflow = {} as TWorkflow,

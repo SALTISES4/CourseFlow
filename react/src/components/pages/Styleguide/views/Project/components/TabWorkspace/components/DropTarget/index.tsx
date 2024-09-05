@@ -1,13 +1,13 @@
-import {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  ReactNode,
-  CSSProperties
-} from 'react'
-import Box from '@mui/material/Box'
 import { useDroppable } from '@dnd-kit/core'
 import { SxProps } from '@mui/material'
+import Box from '@mui/material/Box'
+import {
+  CSSProperties,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useEffect
+} from 'react'
 
 type PropsType = {
   id: string

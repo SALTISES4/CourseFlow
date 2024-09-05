@@ -1,6 +1,6 @@
-import * as React from 'react'
-import MenuSection from '@cfComponents/__LEGACY/menuLegacy/components/MenuSection'
 import { _t } from '@cf/utility/utilityFunctions'
+import MenuSection from '@cfComponents/__LEGACY/menuLegacy/components/MenuSection'
+import * as React from 'react'
 
 type PropsType = {
   data: any

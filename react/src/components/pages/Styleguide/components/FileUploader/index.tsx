@@ -1,9 +1,10 @@
+import UploadFileIcon from '@mui/icons-material/UploadFile'
+import Typography from '@mui/material/Typography'
 import { ReactNode } from 'react'
 import { DropzoneOptions, FileRejection, useDropzone } from 'react-dropzone'
-import Typography from '@mui/material/Typography'
-import UploadFileIcon from '@mui/icons-material/UploadFile'
-import { Wrap, TextWrap, TextFiletypes } from './styles'
+
 import FilePreview from './FilePreview'
+import { TextFiletypes, TextWrap, Wrap } from './styles'
 
 type PropsType = DropzoneOptions & {
   fileTypeMessage?: string

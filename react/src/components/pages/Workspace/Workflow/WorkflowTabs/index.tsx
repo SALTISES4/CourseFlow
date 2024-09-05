@@ -10,6 +10,7 @@ import {
   JumpToMenu
 } from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/Actions'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
+import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/dialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/useWorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
 import { Box, Tabs } from '@mui/material'
@@ -190,7 +191,7 @@ const WorkflowTabs = () => {
           {/*/>*/}
         </div>
       </div>
-
+      <WorkflowDialogs />
     </>
   )
 }

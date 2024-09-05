@@ -1,6 +1,6 @@
-import { EmptyPostResp, AddTerminologyQueryResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
+import { AddTerminologyQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 
 //Add a new node to a week
 export function newNodeQuery(

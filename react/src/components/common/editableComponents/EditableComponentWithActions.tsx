@@ -1,15 +1,19 @@
-import * as React from 'react'
 import * as Constants from '@cf/constants'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
+import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/create'
+import {
+  deleteSelfQueryLegacy,
+  restoreSelfQueryLegacy
+} from '@XMLHTTP/API/delete'
+import { duplicateSelfQuery } from '@XMLHTTP/API/duplication'
+import * as React from 'react'
+
 import EditableComponentWithComments, {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType
 } from './EditableComponentWithComments'
-import { duplicateSelfQuery } from '@XMLHTTP/API/duplication'
-import { deleteSelfQueryLegacy, restoreSelfQueryLegacy } from '@XMLHTTP/API/delete'
-import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/create'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { _t } from '@cf/utility/utilityFunctions'
 
 type OwnProps = {
   sibling_count?: any

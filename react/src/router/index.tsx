@@ -1,20 +1,20 @@
-import { createBrowserRouter } from 'react-router-dom'
 import Base from '@cf/base'
+import { WorkflowViewType } from '@cf/types/enum'
 import Home from '@cfPages/Home'
+import Explore from '@cfPages/Library/Explore'
+import Favourites from '@cfPages/Library/Favourites'
+import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
 import NotificationsSettingsPage from '@cfPages/NotificationsSettings'
 import ProfileSettingsPage from '@cfPages/ProfileSettings'
-import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import ProjectDetail from '@cfPages/ProjectDetail'
-import WorkflowPage from '@cfPages/Workspace/Workflow'
-import { WorkflowViewType } from '@cf/types/enum'
-import MyLibrary from '@cfPages/Library/MyLibrary'
-import Favourites from '@cfPages/Library/Favourites'
-import Explore from '@cfPages/Library/Explore'
 import ProjectTabs from '@cfPages/ProjectTabs'
 // Styleguide views
 import Styleguide from '@cfPages/Styleguide'
 import StyleguideProject from '@cfPages/Styleguide/views/Project'
+import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
+import WorkflowPage from '@cfPages/Workspace/Workflow'
+import { createBrowserRouter } from 'react-router-dom'
 
 /*******************************************************
  * NOTE:  RR6 drastically altered it's approach and no longer robustly supports absolute paths

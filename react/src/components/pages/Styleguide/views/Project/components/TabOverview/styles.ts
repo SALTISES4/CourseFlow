@@ -1,7 +1,7 @@
-import { styled } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import ListItem from '@mui/material/ListItem'
+import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 
 export const InfoBlock = styled(Box)({})
 

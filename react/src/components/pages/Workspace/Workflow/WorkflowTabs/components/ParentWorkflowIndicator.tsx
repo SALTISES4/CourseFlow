@@ -1,13 +1,13 @@
-import * as React from 'react'
-import { connect, DispatchProp } from 'react-redux'
+import { _t } from '@cf/utility/utilityFunctions'
+import { AppState } from '@cfRedux/types/type'
+import { Typography } from '@mui/material'
+import Divider from '@mui/material/Divider'
 import {
   getParentWorkflowInfoQuery,
   getPublicParentWorkflowInfo
 } from '@XMLHTTP/API/workflow'
-import { AppState } from '@cfRedux/types/type'
-import Divider from '@mui/material/Divider'
-import { Typography } from '@mui/material'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import { DispatchProp, connect } from 'react-redux'
 
 type ConnectedProps = {
   childWorkflows: any

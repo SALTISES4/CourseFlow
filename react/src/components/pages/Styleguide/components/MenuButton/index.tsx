@@ -1,8 +1,9 @@
-import { MouseEventHandler, ReactNode, useState } from 'react'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
+import { MouseEventHandler, ReactNode, useState } from 'react'
+
 import { StyledButton, StyledMenu } from './styles'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
 export type MenuButtonOption = {
   name: string | 'mui-divider'

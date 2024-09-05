@@ -1,12 +1,12 @@
-import * as React from 'react'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
-import { getWorkflowContextQuery } from '@XMLHTTP/API/workflow'
 import { ProjectComparisonClass } from '@cfPages/Workspace/ProjectComparison'
-import { CfObjectType } from '@cf/types/enum'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import { _t } from '@cf/utility/utilityFunctions'
+import { getWorkflowContextQuery } from '@XMLHTTP/API/workflow'
+import * as React from 'react'
 
 type OwnProps = {
   workflowID: any

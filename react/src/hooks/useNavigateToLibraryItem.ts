@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom'
-import { generatePath } from 'react-router-dom'
 import { CFRoutes as AppRoutes } from '@cf/router'
 import { LibraryObjectType } from '@cf/types/enum'
+import { useNavigate } from 'react-router-dom'
+import { generatePath } from 'react-router-dom'
 
 const useNavigateToLibraryItem = () => {
   const navigate = useNavigate()

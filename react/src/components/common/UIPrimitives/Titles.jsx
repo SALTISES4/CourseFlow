@@ -1,5 +1,5 @@
-import * as React from 'react'
 import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
 
 //Text that can be passed a default value. HTML is dangerously set.
 export class TitleText extends React.Component {

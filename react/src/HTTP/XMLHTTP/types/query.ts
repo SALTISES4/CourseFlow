@@ -1,22 +1,22 @@
 import { Discipline, QueryPages } from '@cf/types/common'
 import { VERB } from '@cf/types/enum'
-import {
-  WorkflowDataPackage,
-  WorkflowParentDataPackage,
-  WorkflowChildDataPackage,
-  WorkflowContextData
-} from '@XMLHTTP/types'
-import {
-  ENewItem,
-  EUser,
-  EComment,
-  EObjectSet,
-  ESectionGroup,
-  ELibraryObject,
-  EWorkflow
-} from '@XMLHTTP/types/entity'
 import { ProjectViewDTO } from '@cfPages/ProjectDetail/types'
 import { WorkflowDetailViewDTO } from '@cfPages/Workspace/Workflow/types'
+import {
+  WorkflowChildDataPackage,
+  WorkflowContextData,
+  WorkflowDataPackage,
+  WorkflowParentDataPackage
+} from '@XMLHTTP/types'
+import {
+  EComment,
+  ELibraryObject,
+  ENewItem,
+  EObjectSet,
+  ESectionGroup,
+  EUser,
+  EWorkflow
+} from '@XMLHTTP/types/entity'
 
 /*******************************************************
  * Primitives

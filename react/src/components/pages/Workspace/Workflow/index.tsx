@@ -1,13 +1,22 @@
-import React from 'react'
-import { connect, DispatchProp } from 'react-redux'
-import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
+import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
+import legacyWithRouter from '@cf/HOC/legacyWithRouter'
+import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
+import WebSocketServiceConnectedUserManager, {
+  ConnectedUser
+} from '@cf/HTTP/WebsocketServiceConnectedUserManager'
+import { WorkflowViewType } from '@cf/types/enum'
+import { calcWorkflowPermissions } from '@cf/utility/permissions'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import {
   WorkflowDetailViewDTO,
   WorkflowPermission
 } from '@cfPages/Workspace/Workflow/types'
-import { AppState } from '@cfRedux/types/type'
+import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { WorkflowViewType } from '@cf/types/enum'
+import { AppState } from '@cfRedux/types/type'
+import { SelectionManager } from '@cfRedux/utility/SelectionManager'
+import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
+import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
   getWorkflowById,
   getWorkflowChildDataQuery,
@@ -15,19 +24,10 @@ import {
   getWorkflowParentDataQuery,
   getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
-import { updateValueQuery } from '@XMLHTTP/API/update'
-import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
-import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
-import legacyWithRouter from '@cf/HOC/legacyWithRouter'
-import { RouterProps } from 'react-router'
-import WebSocketServiceConnectedUserManager, {
-  ConnectedUser
-} from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import { EProject } from '@XMLHTTP/types/entity'
-import Loader from '@cfComponents/UIPrimitives/Loader'
-import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
-import { calcWorkflowPermissions } from '@cf/utility/permissions'
+import React from 'react'
+import { DispatchProp, connect } from 'react-redux'
+import { RouterProps } from 'react-router'
 
 type StateProps = {
   connectedUsers: ConnectedUser[]

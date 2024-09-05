@@ -1,12 +1,12 @@
-import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import * as Constants from '@cfConstants'
 import ProjectDetailContent from '@cfPages/ProjectDetail/components/ProjectDetailContent'
 import { useQuery } from '@tanstack/react-query'
 import { getProjectById } from '@XMLHTTP/API/project'
 import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
+import * as React from 'react'
 import { useParams } from 'react-router-dom'
-import { _t } from '@cf/utility/utilityFunctions'
-import Loader from '@cfComponents/UIPrimitives/Loader'
 
 const ProjectPage = () => {
   /*******************************************************

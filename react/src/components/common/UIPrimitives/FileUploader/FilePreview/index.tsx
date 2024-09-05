@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react'
-import { FileRejection } from 'react-dropzone'
-import Stack from '@mui/material/Stack'
-import LinearProgress from '@mui/material/LinearProgress'
-import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
-import { FileWrap, FileName, FileInfo } from './styles'
+import IconButton from '@mui/material/IconButton'
+import LinearProgress from '@mui/material/LinearProgress'
+import Stack from '@mui/material/Stack'
+import { useEffect, useState } from 'react'
+import { FileRejection } from 'react-dropzone'
+
+import { FileInfo, FileName, FileWrap } from './styles'
 
 type PropsType = {
   id: number

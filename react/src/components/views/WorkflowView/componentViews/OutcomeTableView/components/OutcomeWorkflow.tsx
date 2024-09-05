@@ -1,8 +1,9 @@
+import { TGetOutcomeWorkflowByID, getOutcomeWorkflowByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
 import Outcome from './Outcome'
-import { getOutcomeWorkflowByID, TGetOutcomeWorkflowByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = TGetOutcomeWorkflowByID
 type OwnProps = {

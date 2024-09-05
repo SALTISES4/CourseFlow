@@ -6,6 +6,7 @@ import * as Utility from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import WorkflowLinkDialog from '@cfComponents/dialog/Workspace/WorkflowLinkDialog'
 import QuillDiv from '@cfEditableComponents/components/QuillDiv'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import Button from '@mui/material/Button'
@@ -14,7 +15,6 @@ import { updateObjectSet } from '@XMLHTTP/API/update'
 import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
 import ReactDOM from 'react-dom'
-import WorkflowLinkDialog from "@cfComponents/dialog/Workspace/WorkflowLinkDialog";
 
 const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()

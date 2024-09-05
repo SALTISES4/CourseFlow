@@ -1,9 +1,9 @@
+import { CfObjectType } from '@cf/types/enum'
+import { TGetNodeWeekByID, getNodeWeekByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import Node from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Node'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getNodeWeekByID, TGetNodeWeekByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
-import { CfObjectType } from '@cf/types/enum'
-import Node from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Node'
 
 type ConnectedProps = TGetNodeWeekByID
 type OwnProps = {

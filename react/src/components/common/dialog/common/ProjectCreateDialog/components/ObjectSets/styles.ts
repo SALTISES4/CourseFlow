@@ -1,6 +1,6 @@
-import { styled } from '@mui/material/styles'
 import Accordion from '@mui/material/Accordion'
 import Chip from '@mui/material/Chip'
+import { styled } from '@mui/material/styles'
 
 export const StyledAccordion = styled(Accordion)(({ theme }) => ({
   '&.MuiPaper-root': {

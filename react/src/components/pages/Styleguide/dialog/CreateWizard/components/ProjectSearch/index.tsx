@@ -1,12 +1,13 @@
-import { ChangeEvent, useState } from 'react'
-import Fuse from 'fuse.js'
-import { debounce } from '@mui/material/utils'
 import { GridWrap } from '@cf/mui/helper'
-import Box from '@mui/material/Box'
 import WorkflowCardDumb from '@cfPages/Styleguide/components/WorkflowCard'
-import TextField from '@mui/material/TextField'
-import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
+import Box from '@mui/material/Box'
+import InputAdornment from '@mui/material/InputAdornment'
+import TextField from '@mui/material/TextField'
+import { debounce } from '@mui/material/utils'
+import Fuse from 'fuse.js'
+import { ChangeEvent, useState } from 'react'
+
 import { ProjectType } from './types'
 
 type PropsType = {

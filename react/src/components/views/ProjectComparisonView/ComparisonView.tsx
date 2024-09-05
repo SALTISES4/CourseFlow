@@ -1,25 +1,23 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
+import { ObjectSet } from '@cf/types/common'
+import { CfObjectType, WFContext, WorkflowViewType } from '@cf/types/enum.js'
+import { _t } from '@cf/utility/utilityFunctions'
+import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
+import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents'
 import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar'
-
-import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents'
-import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
-import { CfObjectType, WorkflowViewType, WFContext } from '@cf/types/enum.js'
-
+import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
+import { EProject } from '@XMLHTTP/types/entity'
 import {
   GetWorkflowSelectMenuResp,
   GetWorkflowSelectQueryResp
 } from '@XMLHTTP/types/query'
-import { EProject } from '@XMLHTTP/types/entity'
-import { ObjectSet } from '@cf/types/common'
-import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import * as reactDom from 'react-dom'
 // import $ from 'jquery'
 
 /**

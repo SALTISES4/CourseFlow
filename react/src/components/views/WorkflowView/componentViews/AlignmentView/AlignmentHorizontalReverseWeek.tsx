@@ -1,14 +1,15 @@
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum.js'
+import { _t } from '@cf/utility/utilityFunctions'
+import { TitleText } from '@cfComponents/UIPrimitives/Titles'
+import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
+import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles'
-import * as Utility from '@cfUtility'
+
 import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode'
-import { CfObjectType } from '@cf/types/enum.js'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { AppState } from '@cfRedux/types/type'
-import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
-import { _t } from '@cf/utility/utilityFunctions'
 
 type ConnectedProps = {
   data: any

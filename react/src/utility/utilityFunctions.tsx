@@ -1,5 +1,5 @@
+import { MaybeWithId, hasId } from '@cf/types/typeGuards'
 import * as React from 'react'
-import { hasId, MaybeWithId } from '@cf/types/typeGuards'
 
 /*******************************************************
  * ARRAYS / OBJECTS

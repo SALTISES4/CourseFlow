@@ -1,18 +1,18 @@
 // TODO: Deprecate/remove this component in favor of "CreateProject" dialog
 // since it's used to create new or edit existing project data
 
-import * as React from 'react'
 import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cfUtility'
 import * as Constants from '@cfConstants'
-import { deleteSelfQueryLegacy } from '@XMLHTTP/API/delete'
-import { addTerminologyQuery } from '@XMLHTTP/API/create'
-import { updateValueInstantQuery } from '@XMLHTTP/API/update'
+import * as Utility from '@cfUtility'
 import {
+  AddCircle as AddCircleIcon,
   Close as CloseIcon,
-  Delete as DeleteIcon,
-  AddCircle as AddCircleIcon
+  Delete as DeleteIcon
 } from '@mui/icons-material'
+import { addTerminologyQuery } from '@XMLHTTP/API/create'
+import { deleteSelfQueryLegacy } from '@XMLHTTP/API/delete'
+import { updateValueInstantQuery } from '@XMLHTTP/API/update'
+import * as React from 'react'
 // import $ from 'jquery'
 type Data = any
 type StateProps = Data & {

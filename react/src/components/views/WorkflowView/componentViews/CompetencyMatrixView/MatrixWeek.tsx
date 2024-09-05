@@ -1,13 +1,12 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-
-import { getWeekByID } from '@cfFindState'
-import * as Utility from '@cfUtility'
 import { CfObjectType } from '@cf/types/enum'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
+import { getWeekByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 type ConnectedProps = {
   data: any

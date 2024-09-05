@@ -1,7 +1,7 @@
 import * as Constants from '@cf/constants'
-import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
-import { WorkflowPermission } from '@cfPages/Workspace/Workflow/types'
 import { PERMISSION_KEYS } from '@cf/constants'
+import { WorkflowPermission } from '@cfPages/Workspace/Workflow/types'
+import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
 
 export const calcIsProjectReadOnly = (
   data: GetProjectByIdQueryResp
@@ -18,7 +18,9 @@ const defaultWorkflowPermissions: WorkflowPermission = {
   canView: false
 }
 
-export const calcWorkflowPermissions = (userPermission: number): WorkflowPermission => {
+export const calcWorkflowPermissions = (
+  userPermission: number
+): WorkflowPermission => {
   switch (userPermission) {
     case PERMISSION_KEYS.VIEW:
       return {

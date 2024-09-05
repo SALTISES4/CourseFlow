@@ -1,8 +1,8 @@
+import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 import {
   LibraryObjectsSearchQueryArgs,
   ToggleFavouriteQueryArgs
 } from '@XMLHTTP/types/args'
-import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 import {
   EmptyPostResp,
   LibraryObjectsSearchQueryResp

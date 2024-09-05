@@ -1,17 +1,17 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
+import { CfObjectType } from '@cf/types/enum'
 import { NodeTitle, TitleText } from '@cfComponents/UIPrimitives/Titles'
-import { getNodeByID, TGetNodeByID } from '@cfFindState'
 import * as Constants from '@cfConstants'
-import * as Utility from '@cfUtility'
-import { AppState } from '@cfRedux/types/type'
+import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
 import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
-import { CfObjectType } from '@cf/types/enum'
+import { TGetNodeByID, getNodeByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 type ConnectedProps = TGetNodeByID
 type OwnProps = {

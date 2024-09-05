@@ -1,17 +1,17 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { connect } from 'react-redux'
-import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
-import { getNodeLinkByID, TGetNodeLinkByID } from '@cfFindState'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cfConstants'
-import NodeLinkSVG from '@cfViews/components/Node/NodeLinkSVG'
-import { AppState } from '@cfRedux/types/type'
+import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
 import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
-import { CfObjectType } from '@cf/types/enum'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { TGetNodeLinkByID, getNodeLinkByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import NodeLinkSVG from '@cfViews/components/Node/NodeLinkSVG'
+import * as React from 'react'
+import * as reactDom from 'react-dom'
+import { connect } from 'react-redux'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetNodeLinkByID

@@ -1,6 +1,6 @@
 // Only used in classroom view. Should be removed/replaced.
-import * as React from 'react'
 import { _t } from '@cf/utility/utilityFunctions.tsx'
+import * as React from 'react'
 
 class WorkflowCardSimple extends React.Component {
   constructor(props) {

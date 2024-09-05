@@ -1,5 +1,5 @@
-import * as React from 'react'
 import flatpickr from 'flatpickr'
+import * as React from 'react'
 
 // Define props type
 interface DatePickerProps {

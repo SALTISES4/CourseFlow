@@ -1,25 +1,26 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { connect } from 'react-redux'
-import * as Utility from '@cfUtility'
-import * as Constants from '@cfConstants'
-import { getNodeByID, TGetNodeByID } from '@cfFindState'
-
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle, TitleText } from '@cfComponents/UIPrimitives/Titles'
+import * as Constants from '@cfConstants'
 import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
-import NodeLink from './NodeLink'
-import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
-import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
-import { CfObjectType } from '@cf/types/enum'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { TGetNodeByID, getNodeByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import NodePorts from '@cfViews/components/Node/NodePorts'
-import AutoLink from './AutoLink'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
-import { _t } from '@cf/utility/utilityFunctions'
+import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
+import * as React from 'react'
+import * as reactDom from 'react-dom'
+import { connect } from 'react-redux'
+
+import AutoLink from './AutoLink'
+import NodeLink from './NodeLink'
+
 // import $ from 'jquery'
 
 type ConnectedProps = TGetNodeByID

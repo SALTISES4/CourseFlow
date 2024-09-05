@@ -1,6 +1,1 @@
-const Modals = () => {
-
-
-
-
-}
+const Modals = () => {}

@@ -1,9 +1,9 @@
-import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 import {
   NodeBarColumnUnconnected,
   NodeBarColumnUnconnectedType
 } from '@cfViews/components/rightSideBarContent/NodeBar/components/NodeBarColumn'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
 
 // type PropsType = NodeBarColumnUnconnectedType
 /**

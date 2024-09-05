@@ -1,6 +1,5 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import * as Utility from '@cfUtility'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType, WorkflowViewType } from '@cf/types/enum'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
 import {
   AppState,
@@ -11,12 +10,13 @@ import {
   TWeek,
   TWeekworkflow
 } from '@cfRedux/types/type'
-import { CfObjectType, WorkflowViewType } from '@cf/types/enum'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import * as Utility from '@cfUtility'
+import { _t } from '@cfUtility'
 import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
 import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeBase'
 import OutcomeLegend from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeLegend'
-import { _t } from '@cfUtility'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 /**
  * The outcome table.

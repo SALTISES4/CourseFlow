@@ -1,6 +1,6 @@
-import { EmptyPostResp, UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
+import { EmptyPostResp, UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 
 export function setUserPermission(
   user_id,

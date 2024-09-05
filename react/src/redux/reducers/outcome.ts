@@ -1,3 +1,4 @@
+import { _t } from '@cf/utility/utilityFunctions'
 import {
   CommonActions,
   OutcomeActions,
@@ -7,7 +8,6 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TOutcome } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
-import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * HELPERS

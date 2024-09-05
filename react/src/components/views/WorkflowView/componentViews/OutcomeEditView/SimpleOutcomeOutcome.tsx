@@ -1,9 +1,10 @@
+import { CfObjectType } from '@cf/types/enum'
+import { TOutcomeOutcomeByID, getOutcomeOutcomeByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
 import SimpleOutcome from './SimpleOutcome'
-import { getOutcomeOutcomeByID, TOutcomeOutcomeByID } from '@cfFindState'
-import { CfObjectType } from '@cf/types/enum'
-import { AppState } from '@cfRedux/types/type'
 
 type OwnProps = {
   objectId: number

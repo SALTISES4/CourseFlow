@@ -8,6 +8,7 @@ import {
   PermissionUserType,
   ProjectDetailsType
 } from '@cf/types/common'
+import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
 import LinkIcon from '@mui/icons-material/Link'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
@@ -26,7 +27,6 @@ import {
   ObjectSetThumbnail,
   PermissionThumbnail
 } from './styles'
-import UserRemoveFromProject from "@cfPages/Styleguide/dialog/UserRemove";
 
 function getInitials(name: string): string {
   const split = name.split(' ')

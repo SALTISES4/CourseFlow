@@ -1,16 +1,17 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
+import { _t } from '@cf/utility/utilityFunctions'
 import { OutcomeTitle, WeekTitle } from '@cfComponents/UIPrimitives/Titles'
 import {
   getOutcomeByID,
-  getWeekByID,
-  getSortedOutcomesFromOutcomeWorkflowSet
+  getSortedOutcomesFromOutcomeWorkflowSet,
+  getWeekByID
 } from '@cfFindState'
-import * as Utility from '@cfUtility'
-import AlignmentOutcomesBlock from './AlignmentOutcomesBlock'
-import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
 import { AppState } from '@cfRedux/types/type'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as Utility from '@cfUtility'
+import * as React from 'react'
+import { connect } from 'react-redux'
+
+import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
+import AlignmentOutcomesBlock from './AlignmentOutcomesBlock'
 
 type ConnectedProps = {
   data: any
@@ -149,9 +150,7 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
         <h3>{_t('Filters')}:</h3>
         {view_buttons_outcomes}
         <h4>{_t('Sections')}:</h4>
-        <div className="hide-print">
-          {view_buttons_terms}
-        </div>
+        <div className="hide-print">{view_buttons_terms}</div>
         {outcomes_block}
         {terms_block}
         {alignment_block}

@@ -1,6 +1,6 @@
-import { EProject } from '@XMLHTTP/types/entity'
-import { formatDate } from '@cf/utility/utilityFunctions'
 import { ProjectDetailsType } from '@cf/types/common'
+import { formatDate } from '@cf/utility/utilityFunctions'
+import { EProject } from '@XMLHTTP/types/entity'
 
 export function formatProjectEntity(project: EProject): ProjectDetailsType {
   return {

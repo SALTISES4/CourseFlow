@@ -1,6 +1,6 @@
-import * as React from 'react'
-import { TObjectSet } from '@cfRedux/types/type'
 import { _t } from '@cf/utility/utilityFunctions'
+import { TObjectSet } from '@cfRedux/types/type'
+import * as React from 'react'
 
 /**
  * The view tab for the right side bar is a bit

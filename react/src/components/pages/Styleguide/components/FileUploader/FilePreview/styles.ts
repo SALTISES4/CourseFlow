@@ -1,6 +1,6 @@
-import { styled } from '@mui/material/styles'
-import Paper from '@mui/material/Paper'
 import theme from '@cf/mui/theme'
+import Paper from '@mui/material/Paper'
+import { styled } from '@mui/material/styles'
 
 export const FileWrap = styled(Paper, {
   shouldForwardProp: (prop) => prop !== 'error'

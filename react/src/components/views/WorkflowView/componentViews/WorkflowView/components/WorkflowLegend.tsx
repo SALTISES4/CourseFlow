@@ -1,13 +1,13 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { connect } from 'react-redux'
 import * as Constants from '@cf/constants'
 // import $ from 'jquery'
-import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
 import Slider from '@cfComponents/UIPrimitives/Slider'
+import { AppState } from '@cfRedux/types/type'
+import * as React from 'react'
+import * as reactDom from 'react-dom'
+import { connect } from 'react-redux'
 
 type StateType = {
   show_slider: boolean

@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles'
-import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
-import { connect } from 'react-redux'
-import { CfObjectType } from '@cf/types/enum'
-import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
+import { TitleText } from '@cfComponents/UIPrimitives/Titles'
+import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import * as React from 'react'
+import { connect } from 'react-redux'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetWeekByIDType

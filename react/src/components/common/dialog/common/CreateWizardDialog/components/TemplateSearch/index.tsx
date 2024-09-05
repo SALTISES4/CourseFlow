@@ -1,19 +1,19 @@
-import { ChangeEvent, useState } from 'react'
-import Fuse from 'fuse.js'
+import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
+import { _t } from '@cf/utility/utilityFunctions'
+import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
+import Loader from '@cfComponents/UIPrimitives/Loader'
+import SearchIcon from '@mui/icons-material/Search'
 import Box from '@mui/material/Box'
+import InputAdornment from '@mui/material/InputAdornment'
 import List from '@mui/material/List'
 import ListItemText from '@mui/material/ListItemText'
 import TextField from '@mui/material/TextField'
-import InputAdornment from '@mui/material/InputAdornment'
-import SearchIcon from '@mui/icons-material/Search'
 import { debounce } from '@mui/material/utils'
+import { getTemplates } from '@XMLHTTP/API/workflow'
+import Fuse from 'fuse.js'
+import { ChangeEvent, useState } from 'react'
 
 import { TemplateThumbnail } from './styles'
-import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
-import { getTemplates } from '@XMLHTTP/API/workflow'
-import Loader from '@cfComponents/UIPrimitives/Loader'
-import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
-import { _t } from '@cf/utility/utilityFunctions'
 
 type PropsType = {
   selected?: number

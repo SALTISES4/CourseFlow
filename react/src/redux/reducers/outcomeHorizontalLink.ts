@@ -1,10 +1,10 @@
-import * as Utility from '@cfUtility'
-import { TOutcomeHorizontalLink } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
 import {
   CommonActions,
   OutcomeHorizontalLinkActions
 } from '@cfRedux/types/enumActions'
+import { TOutcomeHorizontalLink } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
+import { AnyAction } from '@reduxjs/toolkit'
 
 function outcomeHorizontalLinkReducer(
   state: TOutcomeHorizontalLink[] = [],

@@ -1,18 +1,19 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
-import * as Utility from '@cfUtility'
-import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
-import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
-import { AppState } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
+import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
+import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType
 } from '@cfEditableComponents/EditableComponentWithComments'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { _t } from '@cf/utility/utilityFunctions'
+import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
+import * as React from 'react'
+import { connect } from 'react-redux'
+
+import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
 
 /**
  *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything

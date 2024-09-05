@@ -1,9 +1,8 @@
-import { Link } from 'react-router-dom'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-
 import { CFRoutes } from '@cf/router'
 import Section from '@cfPages/Home/components/Section'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import { Link } from 'react-router-dom'
 
 const SectionLayouts = () => (
   <Section header={{ title: 'Layouts' }}>

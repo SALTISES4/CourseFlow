@@ -1,24 +1,24 @@
-import * as React from 'react'
 import { _t } from '@cf/utility/utilityFunctions'
 
 // import $ from 'jquery'
-import UserLabel from '@cfComponents/dialog/components/UserLabel'
 import UserAdd from '@cfComponents/dialog/components/UserAdd'
+import UserLabel from '@cfComponents/dialog/components/UserLabel'
+import AddLinkIcon from '@mui/icons-material/AddLink'
+import BlockIcon from '@mui/icons-material/Block'
+import CloseIcon from '@mui/icons-material/Close'
+import CodeIcon from '@mui/icons-material/Code'
+import DoneIcon from '@mui/icons-material/Done'
+import LinkIcon from '@mui/icons-material/Link'
+import LinkOffIcon from '@mui/icons-material/LinkOff'
+import PublicIcon from '@mui/icons-material/Public'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import {
   getUsersForObjectQueryLegacy,
   setUserPermission
 } from '@XMLHTTP/API/sharing'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import { EUser } from '@XMLHTTP/types/entity'
-import AddLinkIcon from '@mui/icons-material/AddLink'
-import LinkIcon from '@mui/icons-material/Link'
-import CodeIcon from '@mui/icons-material/Code'
-import CloseIcon from '@mui/icons-material/Close'
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import PublicIcon from '@mui/icons-material/Public'
-import LinkOffIcon from '@mui/icons-material/LinkOff'
-import BlockIcon from '@mui/icons-material/Block'
-import DoneIcon from '@mui/icons-material/Done'
+import * as React from 'react'
 
 type PropsType = {
   data: any

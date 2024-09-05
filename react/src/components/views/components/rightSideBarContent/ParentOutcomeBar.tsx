@@ -1,16 +1,16 @@
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
+import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
+import {
+  TSortedOutcomeNodes,
+  getSortedOutcomeNodesFromNodes
+} from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import ErrorIcon from '@mui/icons-material/Error'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import {
-  getSortedOutcomeNodesFromNodes,
-  TSortedOutcomeNodes
-} from '@cfFindState'
 import ParentOutcome from './ParentOutcomeBarOutcome'
-import { AppState } from '@cfRedux/types/type'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import ErrorIcon from '@mui/icons-material/Error'
-import { _t } from '@cf/utility/utilityFunctions'
-import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
 
 /**
  * The outcomes tab of the right sidebar. This version is shown
