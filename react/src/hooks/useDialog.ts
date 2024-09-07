@@ -1,5 +1,5 @@
+import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
 import { useContext } from 'react'
-import { DialogDispatchContext, DialogContext } from '@cf/context/dialogContext'
 import * as React from 'react'
 
 export enum DIALOG_TYPE {

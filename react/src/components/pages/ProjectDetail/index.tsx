@@ -1,57 +1,12 @@
-import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import * as Constants from '@cfConstants'
 import ProjectDetailContent from '@cfPages/ProjectDetail/components/ProjectDetailContent'
 import { useQuery } from '@tanstack/react-query'
 import { getProjectById } from '@XMLHTTP/API/project'
 import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
-import { useEffect, useState } from 'react'
+import * as React from 'react'
 import { useParams } from 'react-router-dom'
-import { _t } from '@cf/utility/utilityFunctions'
-import Loader from '@cfComponents/UIPrimitives/Loader'
-
-// class ProjectPage extends React.Component {
-//   private readonly readOnly: boolean
-//   private readonly projectData: EProject
-//   private readonly allDisciplines: Discipline[]
-//   private readonly userId: number
-//   private readonly projectPaths: {
-//     activity: string
-//     course: string
-//     program: string
-//   }
-//
-//   constructor(props: ProjectViewDTO) {
-//     super(props)
-//
-//     this.readOnly = true
-//     this.projectData = this.props.project_data
-//     this.allDisciplines = this.props.disciplines
-//     this.userId = this.props.user_id
-//     this.projectPaths = this.props.create_path_this_project
-//
-//     if (
-//       this.projectData.object_permission &&
-//       this.projectData.object_permission.permission_type ===
-//         Constants.permission_keys['edit']
-//     ) {
-//       this.readOnly = false
-//     }
-//   }
-//
-//   render() {
-//     return (
-//       <ProjectMenu
-//         projectPaths={this.projectPaths}
-//         allDisciplines={this.allDisciplines}
-//         readOnly={'asdf'}
-//         project={this.projectData}
-//         userId={this.userId}
-//       />
-//     )
-//   }
-// }
-//
-// export default ProjectPage
 
 const ProjectPage = () => {
   /*******************************************************

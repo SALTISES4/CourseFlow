@@ -1,14 +1,15 @@
-import { ChangeEvent } from 'react'
-import { SelectChangeEvent } from '@mui/material/Select'
+import { StyledForm } from '@cfPages/Styleguide/dialog/styles'
 import Divider from '@mui/material/Divider'
-import InputLabel from '@mui/material/InputLabel'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import { SelectChangeEvent } from '@mui/material/Select'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import MenuItem from '@mui/material/MenuItem'
-import { StyledForm } from '@cfPages/Styleguide/dialog/styles'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import { ChangeEvent } from 'react'
+
 import { CourseFormDataType } from './types'
 
 type FormValues = Omit<CourseFormDataType, 'units'> & {

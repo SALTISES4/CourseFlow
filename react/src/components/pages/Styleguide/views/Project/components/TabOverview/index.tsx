@@ -1,33 +1,34 @@
 // @ts-nocheck
-import { useState } from 'react'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
-import Avatar from '@mui/material/Avatar'
-import List from '@mui/material/List'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import LinkIcon from '@mui/icons-material/Link'
-import {
-  ProjectDetailsType,
-  PermissionUserType,
-  PROJECT_PERMISSION_ROLE
-} from '../../types'
-import {
-  InfoBlock,
-  InfoBlockTitle,
-  InfoBlockContent,
-  PermissionThumbnail,
-  ObjectSetThumbnail
-} from './styles'
+import { _t, getInitials } from '@cf/utility/utilityFunctions'
 import MenuButton, {
   MenuButtonOption
 } from '@cfPages/Styleguide/components/MenuButton'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
-import { _t, getInitials } from '@cf/utility/utilityFunctions'
+import LinkIcon from '@mui/icons-material/Link'
+import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import List from '@mui/material/List'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import ListItemText from '@mui/material/ListItemText'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useState } from 'react'
+
+import {
+  InfoBlock,
+  InfoBlockContent,
+  InfoBlockTitle,
+  ObjectSetThumbnail,
+  PermissionThumbnail
+} from './styles'
+import {
+  PROJECT_PERMISSION_ROLE,
+  PermissionUserType,
+  ProjectDetailsType
+} from '../../types'
 
 const roleMenuOptions: MenuButtonOption[] = [
   {

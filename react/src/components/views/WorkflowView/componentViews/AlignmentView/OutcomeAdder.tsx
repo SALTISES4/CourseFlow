@@ -1,9 +1,9 @@
+import { _t } from '@cf/utility/utilityFunctions'
+import { getOutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
+import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { getOutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
-import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
-import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetOutcomeByID

@@ -1,4 +1,3 @@
-import * as Utility from '@cfUtility'
 import {
   CommonActions,
   NodeActions,
@@ -9,6 +8,7 @@ import {
   WeekActions
 } from '@cfRedux/types/enumActions'
 import { TOutcomenode } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import { AnyAction } from '@reduxjs/toolkit'
 export default function outcomeNodeReducer(
   state: TOutcomenode[] = [],

@@ -1,11 +1,14 @@
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
 // import $ from 'jquery'
+import {
+  deleteSelfQueryLegacy,
+  restoreSelfQueryLegacy
+} from '@XMLHTTP/API/delete'
 import * as React from 'react'
-import { deleteSelfQueryLegacy, restoreSelfQueryLegacy } from '@XMLHTTP/API/delete'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { _t } from '@cf/utility/utilityFunctions'
 
 type OwnProps = {
   data: any
@@ -51,9 +54,14 @@ class RestoreBarItem extends ComponentWithToggleDrop<OwnProps> {
       // @ts-ignore
       $(this.mainDiv.current).children('button').attr('disabled', true)
       COURSEFLOW_APP.tinyLoader.startLoad()
-      deleteSelfQueryLegacy(this.props.data.id, this.props.objectType, false, () => {
-        COURSEFLOW_APP.tinyLoader.endLoad()
-      })
+      deleteSelfQueryLegacy(
+        this.props.data.id,
+        this.props.objectType,
+        false,
+        () => {
+          COURSEFLOW_APP.tinyLoader.endLoad()
+        }
+      )
     }
   }
 

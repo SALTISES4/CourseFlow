@@ -1,12 +1,12 @@
 import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
-import { ELibraryObject } from '@XMLHTTP/types/entity'
+import { _t, convertEnum } from '@cf/utility/utilityFunctions'
 import {
   CHIP_TYPE,
   WorkflowCardChipType
 } from '@cfComponents/cards/WorkflowCardDumb'
 import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
-import { _t, convertEnum } from '@cf/utility/utilityFunctions'
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 
 /**
  * this thin wrapper is for when we move CHIP_TYPE away from the domain

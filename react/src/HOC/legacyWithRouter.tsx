@@ -6,13 +6,13 @@
 import React from 'react'
 import { PathMatch, RouteMatch } from 'react-router'
 import {
-  useParams,
-  useNavigate,
+  Location,
+  NavigateFunction,
+  Params,
   useLocation,
   useMatch,
-  Params,
-  NavigateFunction,
-  Location
+  useNavigate,
+  useParams
 } from 'react-router-dom'
 
 interface RouterProps {

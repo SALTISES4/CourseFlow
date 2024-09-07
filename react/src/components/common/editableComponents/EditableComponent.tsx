@@ -1,20 +1,20 @@
-import * as React from 'react'
-import ReactDOM from 'react-dom'
 import * as Constants from '@cf/constants'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { CfObjectType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
+import { _t } from '@cf/utility/utilityFunctions'
+import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import WorkflowLinkDialog from '@cfComponents/dialog/Workspace/WorkflowLinkDialog'
 import QuillDiv from '@cfEditableComponents/components/QuillDiv'
+import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
+import Button from '@mui/material/Button'
 import { toggleStrategyQuery } from '@XMLHTTP/API/update'
 import { updateObjectSet } from '@XMLHTTP/API/update'
-import { CfObjectType } from '@cf/types/enum'
 import { ReactElement, ReactPortal } from 'react'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import Button from '@mui/material/Button'
-import WorkflowLinkModal from '@cfComponents/dialog/WorkflowLink'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import ReactDOM from 'react-dom'
 
 const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()
@@ -630,7 +630,7 @@ class EditableComponent<
 
         {type === CfObjectType.NODE && data.node_type !== 0 && (
           <>
-            <WorkflowLinkModal id={data.id} />
+            <WorkflowLinkDialog id={data.id} />
             <this.LinkedWorkflow data={data} readOnly={read_only} />
           </>
         )}

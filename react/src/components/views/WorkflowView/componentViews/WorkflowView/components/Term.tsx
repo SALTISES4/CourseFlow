@@ -1,14 +1,14 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles'
-import { getTermByID, TTermByID } from '@cfFindState'
+import { TTermByID, getTermByID } from '@cfFindState'
 // import $ from 'jquery'
 import { AppState } from '@cfRedux/types/type'
+import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
 } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
-import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 type OwnProps = {
   objectId: number

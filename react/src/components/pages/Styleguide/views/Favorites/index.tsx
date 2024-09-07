@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
 import { OuterContentWrap } from '@cf/mui/helper'
+import { Link } from 'react-router-dom'
 
 const Favorites = () => {
   return (

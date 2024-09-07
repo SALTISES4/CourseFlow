@@ -1,8 +1,8 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import { Typography } from '@mui/material'
 
 import SectionDialogs from './SectionDialogs'
 import SectionLayouts from './SectionLayouts'
-import { Typography } from '@mui/material'
 
 import SectionSnackbar from './SectionSnackbar'
 

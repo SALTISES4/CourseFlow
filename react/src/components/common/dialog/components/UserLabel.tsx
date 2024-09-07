@@ -1,7 +1,7 @@
-import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
 import $ from 'jquery'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
 
 type StateProps = {
   published: boolean

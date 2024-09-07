@@ -3,8 +3,8 @@
 
 // import { WorkflowCardProps } from '@cfComponents/cards/WorkflowCard/type'
 import { _t } from '@cf/utility/utilityFunctions'
-import { Component } from 'react'
 import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
+import { Component } from 'react'
 
 type PropsType = WorkflowCardWrapperPropsType
 // type StateType = WorkflowCardWrapperState

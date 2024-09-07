@@ -1,6 +1,6 @@
-import * as React from 'react'
-import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
+import * as React from 'react'
 
 type PropsType = {
   outcomenode: any

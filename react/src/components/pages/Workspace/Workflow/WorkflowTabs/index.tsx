@@ -1,40 +1,26 @@
-import * as React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-
-import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar.js'
-import * as Constants from '@cf/constants'
-
-import { Box, Dialog, DialogTitle, Tabs } from '@mui/material'
-
-import ShareMenu from '@cfComponents/dialog/ShareMenu.js'
-import ExportMenu from '@cfComponents/dialog/ExportMenu.js'
-import { AppState } from '@cfRedux/types/type'
-import { WorkflowViewType } from '@cf/types/enum'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import ProjectTargetModal from '@cfComponents/dialog/ProjectTarget'
-import ImportModal from '@cfComponents/dialog/Import'
-import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
-import MenuBar from '@cfComponents/layout/MenuBar'
+import { OuterContentWrap } from '@cf/mui/helper'
+import { WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
+import MenuBar from '@cfComponents/layout/MenuBar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
-import { useContext, useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import {
-  UsersForObjectQueryResp,
-  WorkflowParentDataQueryResp
-} from '@XMLHTTP/types/query'
 import {
   ActionMenu,
   ExpandCollapseMenu,
   JumpToMenu
 } from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/Actions'
-import { generatePath, matchPath, Routes, useNavigate } from 'react-router-dom'
-import { OuterContentWrap } from '@cf/mui/helper'
+import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
+import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/dialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/useWorkflowTabs'
-import ActionCreator from '@cfRedux/ActionCreator'
-import workflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
+import { AppState } from '@cfRedux/types/type'
+import { Box, Tabs } from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
+import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import * as React from 'react'
+import { useContext, useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { Routes, matchPath } from 'react-router-dom'
 
 type WorkflowTabsManagerPropsType = {
   isStrategy: boolean
@@ -62,7 +48,6 @@ type StateType = {
 const WorkflowTabs = () => {
   const data = useSelector((state: AppState) => state.workflow)
   const context = useContext(WorkFlowConfigContext)
-  const [tab, setTab] = useState<WorkflowViewType>()
   // @todo should be memoized (calling the tabs per render)
   const { tabRoutes, tabButtons, tabs } = useWorkflowTabs({
     data
@@ -206,6 +191,7 @@ const WorkflowTabs = () => {
           {/*/>*/}
         </div>
       </div>
+      <WorkflowDialogs />
     </>
   )
 }

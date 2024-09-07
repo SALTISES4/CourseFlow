@@ -1,24 +1,25 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-// @components
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
-import OutcomeOutcome from './OutcomeOutcome'
-import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
-
-import * as Utility from '@cfUtility'
-import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
-import { insertedAtInstant } from '@XMLHTTP/API/update'
-import { CfObjectType } from '@cf/types/enum'
-import { AppState } from '@cfRedux/types/type'
 import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
+import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import OutcomeHorizontalLink from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeHorizontalLink'
-import { _t } from '@cf/utility/utilityFunctions'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
+import { insertedAtInstant } from '@XMLHTTP/API/update'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import * as React from 'react'
+import { connect } from 'react-redux'
+// @components
+
+import OutcomeOutcome from './OutcomeOutcome'
+
 // import $ from 'jquery'
 
 type ConnectedProps = TGetOutcomeByID

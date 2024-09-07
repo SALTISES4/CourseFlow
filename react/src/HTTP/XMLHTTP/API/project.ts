@@ -1,9 +1,9 @@
+import { API_GET } from '@XMLHTTP/CallWrapper'
+import { EDiscipline } from '@XMLHTTP/types/entity'
 import {
   DisciplineQueryResp,
   GetProjectByIdQueryResp
 } from '@XMLHTTP/types/query'
-import { EDiscipline } from '@XMLHTTP/types/entity'
-import { API_GET } from '@XMLHTTP/CallWrapper'
 
 /**
  * Get the list of possible disciplines

@@ -1,44 +1,36 @@
+import { CookieTypes } from '@cf/context/cookieContext'
+import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
+import { CFRoutes } from '@cf/router'
+import { _t } from '@cf/utility/utilityFunctions'
+import Alert from '@cfComponents/UIPrimitives/Alert'
 import WorkflowCardDumb, {
   PropsType as WorkflowCardDumbPropsType
 } from '@cfPages/Styleguide/components/WorkflowCard'
-import Alert from '@cfPages/Styleguide/components/Alert'
-import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
-import Welcome from './components/Welcome'
+
 import Section from './components/Section'
+import Welcome from './components/Welcome'
+import data from './data'
 
 type PropsType = {
   projects: WorkflowCardDumbPropsType[]
   templates: WorkflowCardDumbPropsType[]
-  isTeacher: boolean
 }
 
-import data from './data'
-
 const Homepage = () => {
-  const { isTeacher, projects, templates }: PropsType = data
+  const { projects, templates }: PropsType = data
 
   return (
     <OuterContentWrap>
       <Welcome hide={!!projects.length} />
       {!!projects.length && (
         <Section
-          header={
-            isTeacher
-              ? {
-                  title: 'Recent projects',
-                  seeAll: {
-                    text: 'View all projects',
-                    href: '#'
-                  }
-                }
-              : {
-                  title: 'Recent classrooms',
-                  seeAll: {
-                    text: 'View all classrooms',
-                    href: '#'
-                  }
-                }
-          }
+          header={{
+            title: _t('Recent projects'),
+            seeAll: {
+              text: _t('View all projects'),
+              href: CFRoutes.LIBRARY
+            }
+          }}
         >
           <GridWrap>
             {projects.map((project, index) => (
@@ -51,19 +43,20 @@ const Homepage = () => {
       <Section
         header={{
           title: projects.length
-            ? 'Explore templates'
-            : 'Get started with templates'
+            ? _t('Explore templates')
+            : _t('Get started with templates')
         }}
       >
         <Alert
           sx={{ mb: 3 }}
           severity="info"
-          title={'How to use templates'}
-          subtitle={
+          title={_t('How to use templates')}
+          subtitle={_t(
             'Templates provide a pre-established structure anchored in pedagogical best practices so that you don’t need to start from scratch!'
-          }
-          hideIfCookie="home-howto-template"
+          )}
+          hideIfCookie={CookieTypes.HIDE_HOME_HOWTO_TEMPLATE_MESSAGE}
         />
+
         <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         <GridWrap>
           {templates.map((template, index) => (

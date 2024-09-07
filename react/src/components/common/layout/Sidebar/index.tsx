@@ -1,34 +1,34 @@
-import React, { useState } from 'react'
-import List from '@mui/material/List'
+import { CFRoutes } from '@cf/router'
+import { SidebarProps } from '@cf/types/common'
+import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
+import ParentWorkflowIndicator from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import FolderCopyIcon from '@mui/icons-material/FolderCopy'
+import HelpRoundedIcon from '@mui/icons-material/HelpRounded'
+import HomeIcon from '@mui/icons-material/Home'
+import MenuIcon from '@mui/icons-material/Menu'
+import SearchIcon from '@mui/icons-material/Search'
 import Divider from '@mui/material/Divider'
+import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import HomeIcon from '@mui/icons-material/Home'
-import FolderCopyIcon from '@mui/icons-material/FolderCopy'
-import SearchIcon from '@mui/icons-material/Search'
-import HelpRoundedIcon from '@mui/icons-material/HelpRounded'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import MenuIcon from '@mui/icons-material/Menu'
-import { SidebarProps } from '@cf/types/common'
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { CFRoutes } from '@cf/router'
 
 import {
-  LogoWrap,
   Collapse,
-  SidebarWrap,
-  SidebarInner,
-  MainMenuWrap,
-  FavouritesWrap,
   FavouritesLabel,
+  FavouritesWrap,
+  HelpLink,
+  LogoWrap,
+  MainMenuWrap,
   SeeAllLink,
-  HelpLink
+  SidebarInner,
+  SidebarWrap
 } from './styles'
-import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
-import ParentWorkflowIndicator from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator'
 
 const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
   const location = useLocation()

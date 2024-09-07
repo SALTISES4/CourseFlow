@@ -1,3 +1,4 @@
+import { FieldChoice } from '@cf/types/common'
 import { TObjectSet, TOutcomeOutcome, TStrategy } from '@cfRedux/types/type'
 import {
   EColumn,
@@ -5,19 +6,18 @@ import {
   ENode,
   ENodelink,
   ENodeweek,
+  EObjectSet,
   EOutcome,
   EOutcomeHorizontalLink,
-  EOutcomenode,
+  EOutcomeOutcome,
   EOutcomeWorkflow,
+  EOutcomenode,
+  EProject,
+  EStrategy,
   EWeek,
   EWeekworkflow,
-  EWorkflow,
-  EProject,
-  EObjectSet,
-  EStrategy,
-  EOutcomeOutcome
+  EWorkflow
 } from '@XMLHTTP/types/entity'
-import { FieldChoice } from '@cf/types/common'
 
 /*******************************************************
  *

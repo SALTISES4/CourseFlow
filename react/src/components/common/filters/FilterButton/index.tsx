@@ -1,14 +1,15 @@
-import { MouseEventHandler, ReactNode, useState } from 'react'
-import { produce } from 'immer'
-import Button from '@mui/material/Button'
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
-import { StyledMenu, StyledMenuItem } from './styles'
 import {
   FilterOption,
   SortDirection,
   SortOption
 } from '@cfComponents/filters/types'
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import Button from '@mui/material/Button'
+import { produce } from 'immer'
+import { MouseEventHandler, ReactNode, useState } from 'react'
+
+import { StyledMenu, StyledMenuItem } from './styles'
 
 type SortableProps = {
   sortable: true

@@ -1,19 +1,19 @@
+import { _t } from '@cf/utility/utilityFunctions'
+import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
+import {
+  TGetOutcomeByID,
+  TOutcomeOutcomeByID,
+  getOutcomeByID,
+  getOutcomeOutcomeByID
+} from '@cfFindState'
+import { AppState, TOutcomeOutcome } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
 import {
-  getOutcomeByID,
-  TGetOutcomeByID,
-  getOutcomeOutcomeByID,
-  TOutcomeOutcomeByID
-} from '@cfFindState'
-import {
   OutcomeBarOutcomePropsType,
   OutcomeBarOutcomeUnconnected
 } from './OutcomeBarOutcome'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
-import { AppState, TOutcomeOutcome } from '@cfRedux/types/type'
-import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  * Used for the parent outcome bar.

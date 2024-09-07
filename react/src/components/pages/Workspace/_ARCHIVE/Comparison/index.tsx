@@ -1,13 +1,13 @@
 // @ts-nocheck
-import React from 'react'
-import * as reactDom from 'react-dom'
+import { WorkflowViewType } from '@cf/types/enum.js'
 import Loader from '@cfComponents/UIPrimitives/Loader/Loader.js'
 import * as Constants from '@cfConstants'
-import { WorkflowViewType } from '@cf/types/enum.js'
-import ComparisonView from '@cfViews/ProjectComparisonView/ComparisonView'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { createTheme } from '@mui/material/styles'
+import ComparisonView from '@cfViews/ProjectComparisonView/ComparisonView'
 import createCache from '@emotion/cache'
+import { createTheme } from '@mui/material/styles'
+import React from 'react'
+import * as reactDom from 'react-dom'
 
 const cache = createCache({
   key: 'emotion',

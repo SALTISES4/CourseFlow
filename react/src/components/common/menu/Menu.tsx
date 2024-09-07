@@ -1,12 +1,25 @@
-import * as React from 'react'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import MenuItem from '@mui/material/MenuItem'
-import Button from '@mui/material/Button'
-import { Menu } from '@mui/material'
-import { ReactElement } from 'react'
-import Divider from '@mui/material/Divider'
-import Typography from '@mui/material/Typography'
 import { StyledMenu } from '@cfComponents/layout/TopBar/styles'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import { Menu } from '@mui/material'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import MenuItem from '@mui/material/MenuItem'
+import Popover from '@mui/material/Popover'
+import { styled } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+import * as React from 'react'
+
+const StyledPopover = styled(Popover)({
+  '& .MuiPaper-root': {
+    marginLeft: '3em',
+    width: 500
+  }
+})
+/*******************************************************
+ * This file contains menu 'builders' the accept a config list, as a plain object
+ *  and construct some different menu types based around MUI menu
+ *******************************************************/
 
 export type MenuItemType = {
   content: string | ReactElement
@@ -220,29 +233,23 @@ const StaticMenu = ({
       >
         {header.content}
       </Button>
-      <Menu
-        id={`${id}-menu`}
+      <StyledPopover
         anchorEl={anchorEl}
+        id={`${id}-menu`}
+        keepMounted
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
         open={open}
         onClose={handleClose}
-        MenuListProps={{ 'aria-labelledby': `${id}-button` }}
       >
-        {content ? (
-          <MenuItem onClick={handleClose}>{content}</MenuItem>
-        ) : (
-          menuItems.map((item, index) => (
-            <MenuItem
-              key={item.id || index}
-              onClick={() => {
-                item.action && item.action()
-                handleClose()
-              }}
-            >
-              {item.content}
-            </MenuItem>
-          ))
-        )}
-      </Menu>
+        {content}
+      </StyledPopover>
     </>
   )
 }

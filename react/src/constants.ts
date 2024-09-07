@@ -1,6 +1,6 @@
-import * as Utility from '@cfUtility'
 import { NumTuple } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
+import * as Utility from '@cfUtility'
 
 /*
 Determines how long an action locks an object

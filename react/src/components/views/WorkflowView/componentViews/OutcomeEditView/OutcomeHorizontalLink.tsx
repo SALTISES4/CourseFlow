@@ -1,20 +1,20 @@
+import * as Constants from '@cf/constants'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { CfObjectType } from '@cf/types/enum'
-import * as Constants from '@cf/constants'
-import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
-import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import {
-  getOutcomeHorizontalLinkByID,
-  TOutcomeHorizontalLinkByID
+  TOutcomeHorizontalLinkByID,
+  getOutcomeHorizontalLinkByID
 } from '@cfFindState'
-import { connect } from 'react-redux'
-import * as React from 'react'
 import { AppState } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
-import { _t } from '@cf/utility/utilityFunctions'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 type ConnectedProps = TOutcomeHorizontalLinkByID
 type OwnProps = { parentID?: number } & ComponentWithToggleProps

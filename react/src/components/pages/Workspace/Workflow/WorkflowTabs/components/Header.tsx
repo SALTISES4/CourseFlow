@@ -1,12 +1,12 @@
-import * as React from 'react'
-import { useContext } from 'react'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { _t } from '@cf/utility/utilityFunctions'
-import { WorkflowType } from '@cf/types/enum'
-import Typography from '@mui/material/Typography'
 import { workflowTitle } from '@cf/components/common/UIPrimitives/Titles'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 import { CHIP_TYPE } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
+import Typography from '@mui/material/Typography'
+import { useContext } from 'react'
+import * as React from 'react'
 
 const Header = ({
   isStrategy,

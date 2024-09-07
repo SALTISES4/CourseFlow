@@ -1,13 +1,12 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import { getWeekWorkflowByID, TGetWeekWorkflowByID } from '@cfFindState'
-
-import ComparisonWeek from '@cfViews/ProjectComparisonView/ComparisonWeek'
+import { TGetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
+import ComparisonWeek from '@cfViews/ProjectComparisonView/ComparisonWeek'
 import {
   WeekWorkflowUnconnected,
   WeekWorkflowUnconnectedProps
 } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WeekWorkflow'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 type ConnectedProps = TGetWeekWorkflowByID
 type OwnProps = WeekWorkflowUnconnectedProps

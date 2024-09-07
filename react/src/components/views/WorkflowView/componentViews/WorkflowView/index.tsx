@@ -1,19 +1,19 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
-import * as Utility from '@cfUtility'
-import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { AppState } from '@cfRedux/types/type'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
 import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
-import { CfObjectType } from '@cf/types/enum'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import ColumnWorkflow from '@cfViews/components/ColumnWorkflow'
 import WeekWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WeekWorkflow'
 import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WorkflowLegend'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import * as React from 'react'
+import { connect } from 'react-redux'
 // import $ from 'jquery'
 
 type ConnectedProps = {

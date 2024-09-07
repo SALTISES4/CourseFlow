@@ -1,15 +1,13 @@
-import React, { ReactNode } from 'react'
+import { DialogContextProvider } from '@cf/context/dialogContext'
+import { OuterContentWrap } from '@cf/mui/helper'
+import Sidebar from '@cfComponents/layout/Sidebar'
+import TopBar from '@cfComponents/layout/TopBar'
+import Alert from '@cfComponents/UIPrimitives/Alert'
+import * as Reducers from '@cfRedux/Reducers'
+import { configureStore } from '@reduxjs/toolkit'
 import HtmlReactParser from 'html-react-parser'
 import { SnackbarProvider } from 'notistack'
-
-import { OuterContentWrap } from '@cf/mui/helper'
-import Alert from '@cfComponents/UIPrimitives/Alert'
-import TopBar from '@cfComponents/layout/TopBar'
-import Sidebar from '@cfComponents/layout/Sidebar'
-
-import { DialogContextProvider } from '@cf/context/dialogContext'
-import { configureStore } from '@reduxjs/toolkit'
-import * as Reducers from '@cfRedux/Reducers'
+import { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 
 type PropsType = {

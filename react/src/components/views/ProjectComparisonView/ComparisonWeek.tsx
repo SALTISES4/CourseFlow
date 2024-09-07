@@ -1,18 +1,18 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import * as Utility from '@cfUtility'
-import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
+import { _t } from '@cf/utility/utilityFunctions'
+import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
 // @components
-import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
-import { insertedAtInstant } from '@XMLHTTP/API/update'
+import * as Utility from '@cfUtility'
 import ComparisonNodeWeek from '@cfViews/ProjectComparisonView/ComparisonNodeWeek'
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
 } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
-import { _t } from '@cf/utility/utilityFunctions'
+import { insertedAtInstant } from '@XMLHTTP/API/update'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 type ConnectedProps = TGetWeekByIDType
 type OwnProps = {

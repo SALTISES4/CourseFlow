@@ -1,19 +1,18 @@
-import * as React from 'react'
-import {
-  getOutcomeByID,
-  TGetOutcomeByID,
-  getOutcomeOutcomeByID,
-  TOutcomeOutcomeByID
-} from '@cfFindState'
-import { connect } from 'react-redux'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
-import * as Utility from '@cfUtility'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
-
-import { AppState } from '@cfRedux/types/type'
-import { ChangeEvent } from 'react'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
+import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
+import {
+  TGetOutcomeByID,
+  TOutcomeOutcomeByID,
+  getOutcomeByID,
+  getOutcomeOutcomeByID
+} from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
+import * as React from 'react'
+import { ChangeEvent } from 'react'
+import { connect } from 'react-redux'
 // import $ from 'jquery'
 
 /**

@@ -1,9 +1,8 @@
-import homepageData from '@cfPages/Styleguide/views/Homepage/data'
-import { CHIP_TYPE } from '@cfPages/Styleguide/components/WorkflowCard/types'
-
-import { PropsType as WorkflowCardDumbPropsType } from '@cfPages/Styleguide/components/WorkflowCard'
-import { ResultType } from '@cfPages/Styleguide/components/FilterWorkflows'
 import { FilterOption } from '@cfPages/Styleguide/components/FilterButton'
+import { ResultType } from '@cfPages/Styleguide/components/FilterWorkflows'
+import { PropsType as WorkflowCardDumbPropsType } from '@cfPages/Styleguide/components/WorkflowCard'
+import { CHIP_TYPE } from '@cfPages/Styleguide/components/WorkflowCard/types'
+import homepageData from '@cfPages/Styleguide/views/Homepage/data'
 
 type DataType = {
   workflows: ResultType[]

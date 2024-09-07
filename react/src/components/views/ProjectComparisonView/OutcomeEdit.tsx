@@ -1,17 +1,16 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-
-import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
-import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import { insertedAtInstant } from '@XMLHTTP/API/update'
-import { AppState } from '@cfRedux/types/type'
 import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import {
   OutcomeEditViewProps,
   OutcomeEditViewState,
   OutcomeEditViewUnconnected
 } from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeEditView'
-import { _t } from '@cf/utility/utilityFunctions'
+import { insertedAtInstant } from '@XMLHTTP/API/update'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 // import $ from 'jquery'
 

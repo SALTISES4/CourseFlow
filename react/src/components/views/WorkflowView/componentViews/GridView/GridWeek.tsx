@@ -1,18 +1,19 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
-import { getNodeByID } from '@cfFindState'
-import GridNode from './GridNode'
-
-import * as Utility from '@cfUtility'
-import { AppState, TNodeweek } from '@cfRedux/types/type'
 import {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType
 } from '@cfEditableComponents/EditableComponentWithComments'
-import { CfObjectType } from '@cf/types/enum'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { getNodeByID } from '@cfFindState'
+import { AppState, TNodeweek } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
+import * as React from 'react'
+import { connect } from 'react-redux'
+
+import GridNode from './GridNode'
+
 /**
  * A block representing a term in the grid view
  */

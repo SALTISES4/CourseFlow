@@ -1,18 +1,21 @@
-import * as React from 'react'
-import { connect, DispatchProp } from 'react-redux'
-
-import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
-import OutcomeEdit from './OutcomeEdit'
-import ComparisonWorkflow from './ComparisonWorkflow'
-import ActionCreator from '@cfRedux/ActionCreator'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType, WorkflowViewType } from '@cf/types/enum.js'
-import { AppState } from '@cfRedux/types/type'
+import { _t } from '@cf/utility/utilityFunctions'
+import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import EditableComponent, {
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import {getWorkflowParentDataQuery, getWorkflowParentDataQueryLegacy} from '@XMLHTTP/API/workflow'
-import { _t } from '@cf/utility/utilityFunctions'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState } from '@cfRedux/types/type'
+import {
+  getWorkflowParentDataQuery,
+  getWorkflowParentDataQueryLegacy
+} from '@XMLHTTP/API/workflow'
+import * as React from 'react'
+import { DispatchProp, connect } from 'react-redux'
+
+import ComparisonWorkflow from './ComparisonWorkflow'
+import OutcomeEdit from './OutcomeEdit'
 
 type ConnectedProps = {
   data: any
@@ -82,7 +85,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    *******************************************************/
 
   Content = () => {
-    if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
+    if (this.context.workflowView === WorkflowViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQueryLegacy(this.props.data.id, (response) => {
         this.props.dispatch(
           ActionCreator.refreshStoreData(response.data_package)

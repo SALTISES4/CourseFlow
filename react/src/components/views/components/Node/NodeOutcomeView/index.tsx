@@ -1,14 +1,14 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import * as Constants from '@cfConstants'
-import { getNodeByID, TGetNodeByID } from '@cfFindState'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
+import * as Constants from '@cfConstants'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
+import { TGetNodeByID, getNodeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 /**
  *  Basic component to represent a node in the outcomes table

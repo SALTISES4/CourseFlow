@@ -1,21 +1,20 @@
-import { createBrowserRouter } from 'react-router-dom'
 import Base from '@cf/base'
+import { WorkflowViewType } from '@cf/types/enum'
 import Home from '@cfPages/Home'
+import Explore from '@cfPages/Library/Explore'
+import Favourites from '@cfPages/Library/Favourites'
+import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
 import NotificationsSettingsPage from '@cfPages/NotificationsSettings'
 import ProfileSettingsPage from '@cfPages/ProfileSettings'
-import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import ProjectDetail from '@cfPages/ProjectDetail'
-import WorkflowPage from '@cfPages/Workspace/Workflow'
-import { WorkflowViewType } from '@cf/types/enum'
-import MyLibrary from '@cfPages/Library/MyLibrary'
-import Favourites from '@cfPages/Library/Favourites'
-import Explore from '@cfPages/Library/Explore'
 import ProjectTabs from '@cfPages/ProjectTabs'
-
 // Styleguide views
 import Styleguide from '@cfPages/Styleguide'
 import StyleguideProject from '@cfPages/Styleguide/views/Project'
+import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
+import WorkflowPage from '@cfPages/Workspace/Workflow'
+import { createBrowserRouter } from 'react-router-dom'
 
 /*******************************************************
  * NOTE:  RR6 drastically altered it's approach and no longer robustly supports absolute paths
@@ -25,12 +24,16 @@ import StyleguideProject from '@cfPages/Styleguide/views/Project'
 const DOMAIN = 'course-flow'
 
 export enum RelativeRoutes {
+  // COMMON
   INDEX = '/',
   WORKFLOW = `workflow`,
+  // WORKFLOW
   ALIGNMENTANALYSIS = `alignment`,
   OUTCOMETABLE = `outcometable`,
   OUTCOME_EDIT = `outcomedit`,
-  GRID = `grid`
+  GRID = `grid`,
+  // PROJECT
+  COMPARISON = 'comparison'
 }
 
 export enum CFRoutes {
@@ -41,11 +44,12 @@ export enum CFRoutes {
   NOTIFICATIONS = `/${DOMAIN}/user/notifications`,
   NOTIFICATIONS_SETTINGS = `/${DOMAIN}/user/notifications-settings`,
   PROFILE_SETTINGS = `/${DOMAIN}/user/profile-settings`,
-  PROJECT_COMPARISON = `/${DOMAIN}/project/:id/comparison`,
+  //  PROJECT
   PROJECT = `/${DOMAIN}/project/:id`,
-  //
-  WORKFLOW = `/${DOMAIN}/workflow/:id/*`,
-  WORKFLOW_OVERVIEW = `/${DOMAIN}/workflow/:id`,
+  PROJECT_WORKFLOW = `/${DOMAIN}/project/:id/workflow/`,
+  PROJECT_COMPARISON = `/${DOMAIN}/project/:id/${RelativeRoutes.COMPARISON}`,
+  // WORKFLOW
+  WORKFLOW = `/${DOMAIN}/workflow/:id`,
   WORKFLOW_WORKFLOW = `/${DOMAIN}/workflow/:id/${RelativeRoutes.WORKFLOW}`,
   WORKFLOW_ALIGNMENTANALYSIS = `/${DOMAIN}/workflow/:id/${RelativeRoutes.ALIGNMENTANALYSIS}`,
   WORKFLOW_OUTCOMETABLE = `/${DOMAIN}/workflow/:id/${RelativeRoutes.OUTCOMETABLE}`,
@@ -150,15 +154,7 @@ export const CfRouter = createBrowserRouter([
     )
   },
   {
-    path: CFRoutes.PROJECT,
-    element: (
-      <Base>
-        <ProjectDetail />
-      </Base>
-    )
-  },
-  {
-    path: `${CFRoutes.TEMP_PROJECT}/*`,
+    path: `${CFRoutes.PROJECT}/*`,
     element: (
       <Base>
         <ProjectTabs />
@@ -166,7 +162,15 @@ export const CfRouter = createBrowserRouter([
     )
   },
   {
-    path: `${CFRoutes.WORKFLOW_OVERVIEW}/*`,
+    path: `${CFRoutes.TEMP_PROJECT}/*`,
+    element: (
+      <Base>
+        <ProjectDetail />
+      </Base>
+    )
+  },
+  {
+    path: `${CFRoutes.WORKFLOW}/*`,
     element: (
       <Base>
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}

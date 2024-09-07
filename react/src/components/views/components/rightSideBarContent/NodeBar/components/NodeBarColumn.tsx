@@ -1,12 +1,12 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
+import { _t } from '@cf/utility/utilityFunctions'
+import * as Constants from '@cfConstants'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
-import * as Constants from '@cfConstants'
-import { getColumnByID, TGetColumnByID } from '@cfFindState'
+import { TGetColumnByID, getColumnByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import { connect } from 'react-redux'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetColumnByID

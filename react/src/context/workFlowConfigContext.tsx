@@ -1,14 +1,14 @@
-import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
-import { WorkflowViewType } from '@cf/types/enum'
-import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
+import { CFRoutes } from '@cf/router'
+import { FieldChoice } from '@cf/types/common'
+import { WorkflowViewType } from '@cf/types/enum'
 import {
   WorkflowDetailViewDTO,
   WorkflowPermission
 } from '@cfPages/Workspace/Workflow/types'
-import { FieldChoice } from '@cf/types/common'
+import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import { EProject } from '@XMLHTTP/types/entity'
-import { CFRoutes } from '@cf/router'
+import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 
 export const WorkFlowConfigContext = React.createContext<WorkFlowContextType>(
   {} as WorkFlowContextType

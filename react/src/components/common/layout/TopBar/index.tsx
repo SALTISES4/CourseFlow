@@ -1,42 +1,41 @@
-import { useState } from 'react'
-import AppBar from '@mui/material/AppBar'
-import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
-import IconButton from '@mui/material/IconButton'
-import Link from '@mui/material/Link'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import Badge from '@mui/material/Badge'
+import ActivityCreateDialog from '@cf/components/common/dialog/common/ActivityCreateDialog'
+import CourseCreateDialog from '@cf/components/common/dialog/common/CourseCreateDialog'
+import PasswordResetDialog from '@cf/components/common/dialog/common/PasswordResetDialog'
+import ProgramCreateDialog from '@cf/components/common/dialog/common/ProgramCreateDialog'
+import ProjectCreateDialog from '@cf/components/common/dialog/common/ProjectCreateDialog'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { TopBarProps } from '@cf/types/common'
+import { _t } from '@cf/utility/utilityFunctions'
+import { getNameInitials } from '@cf/utility/utilityFunctions'
+import createActivityData from '@cfComponents/dialog/common/ActivityCreateDialog/data'
+import createCourseData from '@cfComponents/dialog/common/CourseCreateDialog/data'
+import createProgramData from '@cfComponents/dialog/common/ProgramCreateDialog/data'
+import editActivityData from '@cfComponents/dialog/Workspace/ActivityEditDialog/data'
+import editCourseData from '@cfComponents/dialog/Workspace/CourseEditDialog/data'
+import editProgramData from '@cfComponents/dialog/Workspace/ProgramEditDialog/data'
+import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
+import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
 import LogoutIcon from '@mui/icons-material/Logout'
 import NotificationsIcon from '@mui/icons-material/Notifications'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
+import AppBar from '@mui/material/AppBar'
+import Avatar from '@mui/material/Avatar'
+import Badge from '@mui/material/Badge'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
 import ListItem from '@mui/material/ListItem'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import Avatar from '@mui/material/Avatar'
+import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
-import { getNameInitials } from '@cf/utility/utilityFunctions'
-import ProjectCreateModal from '@cf/components/common/dialog/ProjectCreate'
-
-import ProgramCreateModal from '@cf/components/common/dialog/ProgramCreate'
-import editProgramData from '@cfComponents/dialog/ProgramEdit/data'
-import createProgramData from '@cfComponents/dialog/ProgramCreate/data'
-import CourseCreateModal from '@cf/components/common/dialog/CourseCreate'
-import createCourseData from '@cfComponents/dialog/CourseCreate/data'
-import editCourseData from '@cfComponents/dialog/CourseEdit/data'
-import ActivityCreateModal from '@cf/components/common/dialog/ActivityCreate'
-import editActivityData from '@cfComponents/dialog/ActivityEdit/data'
-import createActivityData from '@cfComponents/dialog/ActivityCreate/data'
-import PasswordResetModal from '@cf/components/common/dialog/PasswordReset'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import { useState } from 'react'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
-import { TopBarProps } from '@cf/types/common'
-import * as React from 'react'
-import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
-import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
 
 const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
   const navigate = useNavigate()
@@ -161,21 +160,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
 
   const NotificationsMenu = () => {
     const content = (
-      <SC.NotificationsMenu
-        anchorEl={notificationsMenuAnchorEl}
-        id="notifications-menu"
-        keepMounted
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        open={isNotificationsMenuOpen}
-        onClose={closeAllMenus}
-      >
+      <>
         <SC.NotificationsHeader>
           <Typography variant="h5">
             {COURSEFLOW_APP.globalContextData.strings.notifications}
@@ -220,7 +205,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
             </ListItem>
           ))}
         </SC.NotificationsList>
-      </SC.NotificationsMenu>
+      </>
     )
 
     const header: MenuItemType = {
@@ -285,24 +270,24 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
         // cuts down on a bit of boilerplate
         */}
 
-      <PasswordResetModal
+      <PasswordResetDialog
         onSubmit={() => (window.location.href = menus.account.resetPasswordUrl)}
       />
 
-      <ProjectCreateModal
+      <ProjectCreateDialog
         showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
         formFields={forms.createProject.formFields}
         disciplines={forms.createProject.disciplines}
       />
 
-      <ProgramCreateModal
+      <ProgramCreateDialog
         {...createProgramData}
         units={editProgramData.units}
       />
 
-      <CourseCreateModal {...createCourseData} units={editCourseData.units} />
+      <CourseCreateDialog {...createCourseData} units={editCourseData.units} />
 
-      <ActivityCreateModal
+      <ActivityCreateDialog
         {...createActivityData}
         units={editActivityData.units}
       />

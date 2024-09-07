@@ -1,3 +1,4 @@
+import { _t } from '@cf/utility/utilityFunctions'
 import {
   ColumnActions,
   CommonActions,
@@ -6,7 +7,6 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TColumn } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
-import { _t } from '@cf/utility/utilityFunctions'
 
 export default function columnReducer(
   state: TColumn[] = [],

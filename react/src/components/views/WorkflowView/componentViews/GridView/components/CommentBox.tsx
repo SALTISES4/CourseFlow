@@ -1,21 +1,21 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
-
+import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
-import * as Utility from '@cfUtility'
-// @components
-// import $ from 'jquery'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
+import { TUser } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import {
   addComment,
   removeAllComments,
   removeComment
 } from '@XMLHTTP/API/comment'
 import { getUsersForObjectQueryLegacy } from '@XMLHTTP/API/sharing'
-import { TUser } from '@cfRedux/types/type'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import * as reactDom from 'react-dom'
+
+// @components
+// import $ from 'jquery'
 
 /*******************************************************
  * @CommentBox

@@ -1,11 +1,11 @@
-import * as React from 'react'
-import { EProject } from '@XMLHTTP/types/entity'
-import { Link } from 'react-router-dom'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import { connect, DispatchProp } from 'react-redux'
-import { AppState } from '@cfRedux/types/type'
-import Typography from '@mui/material/Typography'
 import { _t } from '@cf/utility/utilityFunctions'
+import { AppState } from '@cfRedux/types/type'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import Typography from '@mui/material/Typography'
+import { EProject } from '@XMLHTTP/types/entity'
+import * as React from 'react'
+import { DispatchProp, connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 type ConnectedProps = {
   project: EProject

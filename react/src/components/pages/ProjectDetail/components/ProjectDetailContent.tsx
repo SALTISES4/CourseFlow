@@ -1,26 +1,28 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { produce } from 'immer'
-// @local
 // import WorkflowFilter from '@cfComponents/filters/WorkflowFilter'
-import { ProjectMenuProps } from '@cfPages/ProjectDetail/types'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
-import { Box, Dialog, DialogTitle, Link } from '@mui/material'
+import ProjectArchiveDialog from '@cf/components/common/dialog/Workspace/ProjectArchiveDialog'
+import ProjectExportDialog from '@cf/components/common/dialog/Workspace/ProjectExportDialog'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { _t } from '@cf/utility/utilityFunctions'
+import ProjectEditDialog from '@cfComponents/dialog/_LEGACY/ProjectEditDialog'
+import ShareMenu from '@cfComponents/dialog/_LEGACY/ShareMenu'
 import Header from '@cfPages/ProjectDetail/components/Header'
-import ProjectEditDialog from '@cfComponents/dialog/ProjectEditDialog'
-import ShareMenu from '@cfComponents/dialog/ShareMenu'
+import { ProjectMenuProps } from '@cfPages/ProjectDetail/types'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import EditIcon from '@mui/icons-material/Edit'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import { Box, Dialog, DialogTitle, Link } from '@mui/material'
+import {
+  deleteSelfQueryLegacy,
+  restoreSelfQueryLegacy
+} from '@XMLHTTP/API/delete'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
-import { deleteSelfQueryLegacy, restoreSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { getUsersForObjectQueryLegacy } from '@XMLHTTP/API/sharing'
 import { getWorkflowsForProjectQuery } from '@XMLHTTP/API/workflow'
-import { EProject, ELibraryObject } from '@XMLHTTP/types/entity'
-import ProjectExportModal from '@cf/components/common/dialog/ProjectExport'
-import ProjectArchiveModal from '@cf/components/common/dialog/ProjectArchive'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { ELibraryObject, EProject } from '@XMLHTTP/types/entity'
+import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import { produce } from 'immer'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
-import EditIcon from '@mui/icons-material/Edit'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
-import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import { _t } from '@cf/utility/utilityFunctions'
 
 /*******************************************************
  * The project library menu
@@ -426,8 +428,8 @@ function ProjectDetailContent({
 
       <EditDialog />
       <ShareDialog />
-      <ProjectExportModal data={state.project} />
-      <ProjectArchiveModal onSubmit={deleteProject} />
+      <ProjectExportDialog data={state.project} />
+      <ProjectArchiveDialog onSubmit={deleteProject} />
     </div>
   )
 }

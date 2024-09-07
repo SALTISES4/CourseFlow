@@ -1,16 +1,16 @@
-import * as React from 'react'
 import * as Constants from '@cf/constants'
 // @components
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { getCommentsForObjectQuery } from '@XMLHTTP/API/comment'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import CommentBox from '@cfViews/WorkflowView/componentViews/GridView/components/CommentBox'
-import { _t } from '@cf/utility/utilityFunctions'
+import { getCommentsForObjectQuery } from '@XMLHTTP/API/comment'
+import * as React from 'react'
 
 type StateType = {
   show_comments: boolean

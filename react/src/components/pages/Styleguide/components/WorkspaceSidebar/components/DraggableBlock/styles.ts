@@ -1,6 +1,6 @@
-import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import { yellow, blueGrey } from '@mui/material/colors'
+import { blueGrey, yellow } from '@mui/material/colors'
+import { styled } from '@mui/material/styles'
 
 export const Wrap = styled(Box, {
   shouldForwardProp: (prop) => !['group', 'highlight'].includes(prop as string)

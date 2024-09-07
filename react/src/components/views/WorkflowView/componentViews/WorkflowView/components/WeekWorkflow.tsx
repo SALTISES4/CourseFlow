@@ -1,13 +1,13 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import { TGetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { CfObjectType } from '@cf/types/enum'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
-import { CfObjectType } from '@cf/types/enum'
-import Week from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
+import { TGetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import Term from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Term'
+import Week from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 type ConnectedProps = TGetWeekWorkflowByID
 type OwnProps = {
