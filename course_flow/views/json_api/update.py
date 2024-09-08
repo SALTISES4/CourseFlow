@@ -222,6 +222,7 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
 
     except ValidationError:
         return JsonResponse({"action": "error"})
+
     workflow = model.get_workflow()
     if inserted:
         if changing_workflow:
@@ -401,72 +402,6 @@ def json_api_post_update_outcomenode_degree(
     return JsonResponse({"action": "posted"})
 
 
-# Add a parent outcome to an outcome
-@user_can_edit("outcomePk")
-@user_can_view(False)
-def json_api_post_update_outcomehorizontallink_degree(
-    request: HttpRequest,
-) -> JsonResponse:
-    outcome_id = body.get("outcomePk")
-    object_type = body.get("objectType")
-    parent_id = body.get("objectID")
-    degree = body.get("degree")
-    try:
-        outcome = Outcome.objects.get(id=outcome_id)
-        parent_outcome = get_model_from_str(object_type).objects.get(
-            id=parent_id
-        )
-        workflow = outcome.get_workflow()
-        parent_workflow = parent_outcome.get_workflow()
-        if not check_possible_parent(workflow, parent_workflow, True):
-            raise ValidationError
-        if (
-            OutcomeHorizontalLink.objects.filter(
-                parent_outcome=parent_outcome, outcome=outcome, degree=degree
-            ).count()
-            > 0
-        ):
-            return JsonResponse(
-                {"action": "posted", "outcomehorizontallink": -1}
-            )
-        model = OutcomeHorizontalLink.objects.create(
-            outcome=outcome, parent_outcome=parent_outcome, degree=degree
-        )
-        new_outcomehorizontallinks = OutcomeHorizontalLinkSerializerShallow(
-            [model]
-            + model.check_parent_outcomes()
-            + model.check_child_outcomes(),
-            many=True,
-        ).data
-        OutcomeHorizontalLink.objects.filter(
-            outcome=outcome, degree=0
-        ).delete()
-        new_outcome_data = OutcomeSerializerShallow(model.outcome).data
-        new_outcome_horizontal_links = new_outcome_data[
-            "outcome_horizontal_links"
-        ]
-        new_outcome_horizontal_links_unique = new_outcome_data[
-            "outcome_horizontal_links_unique"
-        ]
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    response_data = {
-        "data_package": new_outcomehorizontallinks,
-        "new_outcome_horizontal_links": new_outcome_horizontal_links,
-        "new_outcome_horizontal_links_unique": new_outcome_horizontal_links_unique,
-    }
-    actions.dispatch_wf(
-        workflow,
-        actions.updateOutcomehorizontallinkDegreeAction(response_data),
-    )
-    actions.dispatch_to_parent_wf(
-        workflow,
-        actions.updateOutcomehorizontallinkDegreeAction(response_data),
-    )
-    return JsonResponse({"action": "posted"})
-
-
 # The actual JSON API which sets the linked workflow
 # for a node, adding it to the project if different.
 @user_can_edit("nodePk")
@@ -514,53 +449,6 @@ def json_api_post_set_linked_workflow(request: HttpRequest) -> JsonResponse:
     actions.dispatch_wf(
         parent_workflow, actions.setLinkedWorkflowAction(response_data)
     )
-    return JsonResponse({"action": "posted"})
-
-
-# Creates strategy from week or turns strategy into week
-@user_can_edit("weekPk")
-def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    try:
-        object_id = body.get("weekPk")
-        is_strategy = body.get("is_strategy")
-        week = Week.objects.get(id=object_id)
-        workflow = WeekWorkflow.objects.get(week=week).workflow
-        # This check is to prevent people from spamming the button, which would
-        # potentially create a bunch of superfluous strategies
-        if week.is_strategy != is_strategy:
-            raise ValidationError("Request has already been processed")
-        if week.is_strategy:
-            week.is_strategy = False
-            strategy = week.original_strategy.get_subclass()
-            week.original_strategy = None
-            week.strategy_classification = 0
-            week.save()
-        else:
-            strategy = fast_create_strategy(week, workflow, request.user)
-            strategy.title = week.title
-            strategy.save()
-            week.is_strategy = True
-            week.original_strategy = strategy
-            week.save()
-        if strategy.type == "course":
-            strategy_serialized = CourseSerializerShallow(strategy).data
-        elif strategy.type == "activity":
-            strategy_serialized = ActivitySerializerShallow(strategy).data
-        else:
-            strategy_serialized = ""
-
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    response_data = {
-        "id": week.id,
-        "is_strategy": week.is_strategy,
-        "strategy": strategy_serialized,
-    }
-
-    actions.dispatch_wf(workflow, actions.toggleStrategyAction(response_data))
-
     return JsonResponse({"action": "posted"})
 
 

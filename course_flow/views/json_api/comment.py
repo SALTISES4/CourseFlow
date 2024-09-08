@@ -15,11 +15,14 @@ from course_flow.models import Notification, ObjectPermission, User
 from course_flow.serializers import CommentSerializer
 from course_flow.utils import get_model_from_str, make_user_notification
 
-"""
-API for comments
-"""
+#########################################################
+# COMMENTS
+#########################################################
 
 
+##########################################################
+# GET
+#########################################################
 @user_can_comment(False)
 def json_api__comment__list_by_object__post(
     request: HttpRequest,
@@ -43,6 +46,9 @@ def json_api__comment__list_by_object__post(
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
+##########################################################
+# CREATE
+#########################################################
 @user_can_comment(False)
 def json_api__comment__create__post(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
@@ -86,6 +92,11 @@ def json_api__comment__create__post(request: HttpRequest) -> JsonResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
+
+
+##########################################################
+# DELETE
+#########################################################
 
 
 @user_can_edit(False)

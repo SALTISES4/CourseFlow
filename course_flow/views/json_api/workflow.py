@@ -1,4 +1,5 @@
 import json
+import math
 import traceback
 
 from django.contrib.auth.decorators import login_required
@@ -22,24 +23,34 @@ from course_flow.decorators import (
 )
 from course_flow.duplication_functions import (
     cleanup_workflow_post_duplication,
+    duplicate_column,
+    fast_duplicate_week,
     fast_duplicate_workflow,
 )
+from course_flow.forms import CreateProject
 from course_flow.models import (
     Activity,
+    Column,
     Course,
     Node,
     Notification,
     ObjectPermission,
     ObjectSet,
+    Outcome,
     Project,
+    User,
+    Week,
     Workflow,
 )
 from course_flow.models.relations import (
+    ColumnWorkflow,
     NodeLink,
     NodeWeek,
     OutcomeHorizontalLink,
     OutcomeNode,
+    OutcomeOutcome,
     OutcomeWorkflow,
+    WeekWorkflow,
     WorkflowProject,
 )
 from course_flow.serializers import (
@@ -84,7 +95,7 @@ from course_flow.views import UserCanViewMixin
 
 
 #########################################################
-#
+# GET DATA
 #########################################################
 @permission_classes([UserCanViewMixin])
 @api_view(["GET"])
@@ -232,83 +243,6 @@ def json_api_post_get_workflow_context(request: HttpRequest) -> JsonResponse:
     )
 
 
-@user_is_teacher()
-def json_api_post_get_target_projects(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    try:
-        workflow_id = Workflow.objects.get(pk=body.get("workflowPk")).id
-    except ObjectDoesNotExist:
-        workflow_id = 0
-    try:
-        data_package = get_my_projects(request.user, False, for_add=True)
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": data_package,
-            "workflow_id": workflow_id,
-        }
-    )
-
-
-@user_is_teacher()
-def json_api_post_get_projects_for_create(
-    request: HttpRequest,
-) -> JsonResponse:
-    user = request.user
-    try:
-        projects = list(Project.objects.filter(author=user, deleted=False)) + [
-            user_permission.content_object
-            for user_permission in ObjectPermission.objects.filter(
-                user=user,
-                content_type=ContentType.objects.get_for_model(Project),
-                project__deleted=False,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
-            )
-        ]
-        projects_serialized = InfoBoxSerializer(
-            projects,
-            many=True,
-            context={"user": user},
-        ).data
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": projects_serialized,
-        }
-    )
-
-
-@user_is_teacher()
-def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    print(body)
-    try:
-        workflow_type = body.get("workflowType")
-        model = get_model_from_str(workflow_type)
-        templates_serialized = InfoBoxSerializer(
-            model.objects.filter(
-                deleted=False,
-                is_template=True,
-                published=True,
-                is_strategy=False,
-            ),
-            many=True,
-            context={"user": request.user},
-        ).data
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": templates_serialized,
-        }
-    )
-
-
 @public_model_access("workflow")
 def json_api_get_public_parent_workflow_info(
     request: HttpRequest, pk
@@ -363,30 +297,6 @@ def json_api_post_get_workflows_for_project(
         return JsonResponse({"action": "error"})
 
 
-@user_can_view("projectPk")
-def json_api_post_get_project_data(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    project = Project.objects.get(pk=body.get("projectPk"))
-    try:
-        project_data = (
-            JSONRenderer()
-            .render(
-                ProjectSerializerShallow(
-                    project, context={"user": request.user}
-                ).data
-            )
-            .decode("utf-8")
-        )
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {
-            "action": "posted",
-            "project_data": project_data,
-        }
-    )
-
-
 @user_can_edit("nodePk")
 def json_api_post_get_possible_linked_workflows(
     request: HttpRequest,
@@ -439,8 +349,28 @@ def json_api_post_get_possible_added_workflows(
     )
 
 
+#########################################################
+# CREATE
+#########################################################
+# Create a new workflow in a project
+@user_can_edit("projectPk")
+def json_api_post_create_workflow(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    project = Project.objects.get(pk=body.get("projectPk"))
+    workflow_type = body.get("workflow_type")
+    try:
+        print(body)
+        print(workflow_type)
+    except AttributeError:
+        return JsonResponse(
+            {
+                "action": "error",
+            }
+        )
+
+
 #################################################
-# The logic for the above views
+# HELPERS
 #################################################
 
 
@@ -665,6 +595,11 @@ def get_workflow_data_flat(workflow, user):
         ]
 
     return data_flat
+
+
+#########################################################
+# DELETE
+#########################################################
 
 
 #########################################################

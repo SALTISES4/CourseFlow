@@ -12,7 +12,7 @@ type PropsType = {
 }
 
 const CourseArchiveDialog = ({ onSubmit }: PropsType) => {
-  const { show, onClose } = useDialog(DIALOG_TYPE.COURSE_ARCHIVE)
+  const { show, onClose } = useDialog(DIALOG_TYPE.WORKFLOW_ARCHIVE)
 
   return (
     <StyledDialog

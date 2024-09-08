@@ -9,9 +9,9 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
 import { useMutation } from '@tanstack/react-query'
-import { archiveMutation } from '@XMLHTTP/API/workflow'
+import { unarchiveSelfMutation } from '@XMLHTTP/API/workflow'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { VariantType, useSnackbar } from 'notistack'
+import { useSnackbar } from 'notistack'
 import { useContext } from 'react'
 
 const ArchiveDialog = () => {
@@ -22,26 +22,26 @@ const ArchiveDialog = () => {
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const { type, show, onClose } = useDialog([
-    DIALOG_TYPE.PROJECT_ARCHIVE,
-    DIALOG_TYPE.WORKFLOW_ARCHIVE
+    DIALOG_TYPE.PROJECT_RESTORE,
+    DIALOG_TYPE.WORKFLOW_RESTORE
   ])
 
   const { mutate } = useMutation<EmptyPostResp>({
     mutationFn: () =>
-      archiveMutation(context.workflow.workflowId, resourceType),
+      unarchiveSelfMutation(context.workflow.workflowId, resourceType),
     onSuccess: (resp) => {
-      onClose()
       enqueueSnackbar(
-        COURSEFLOW_APP.globalContextData.strings.workflow_archive_success,
+        COURSEFLOW_APP.globalContextData.strings.workflow_unarchive_success,
         {
           variant: 'success'
         }
       )
+      onClose()
     },
     onError: (error) => {
       console.log(error)
       enqueueSnackbar(
-        COURSEFLOW_APP.globalContextData.strings.workflow_archive_failure,
+        COURSEFLOW_APP.globalContextData.strings.workflow_unarchive_failure,
         {
           variant: 'error'
         }
@@ -49,22 +49,30 @@ const ArchiveDialog = () => {
     }
   })
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  function onSubmitHandler() {
+    mutate()
+  }
+
+  /*******************************************************
+   * CONSTANTS
+   *******************************************************/
+
   let resourceType: WorkSpaceType = null
   switch (type) {
-    case DIALOG_TYPE.PROJECT_ARCHIVE:
+    case DIALOG_TYPE.PROJECT_RESTORE:
       resourceType = WorkSpaceType.PROJECT
       break
-    case DIALOG_TYPE.WORKFLOW_ARCHIVE:
+    case DIALOG_TYPE.WORKFLOW_RESTORE:
       resourceType = WorkSpaceType.WORKFLOW
       break
   }
 
-  function onSubmit() {
-    mutate()
-  }
-
-  if (!type) return <></>
-
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
     <StyledDialog
       open={!!show}
@@ -76,19 +84,19 @@ const ArchiveDialog = () => {
       <DialogTitle id={`archive-${resourceType}-modal`}>
         Archive {resourceType}
       </DialogTitle>
+
       <DialogContent dividers>
         <Typography gutterBottom>
-          Once your {resourceType} is archived, it won’t be visible from your
-          library. You will have to navigate to your archived project to access
-          it. From there, you will be able to restore your project if needed.
+          Do you want to restore your {resourceType}?
         </Typography>
       </DialogContent>
+
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
           Cancel
         </Button>
-        <Button variant="contained" onClick={onSubmit}>
-          Archive {resourceType}
+        <Button variant="contained" onClick={onSubmitHandler}>
+          Restore {resourceType}
         </Button>
       </DialogActions>
     </StyledDialog>

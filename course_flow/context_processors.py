@@ -463,6 +463,25 @@ def get_app_config(request: HttpRequest):
             "profile_settings": _("Profile settings"),
             "update_profile": _("Update profile"),
             "update_profile_success": _("User details updated!"),
+            # API response messages
+            "workflow_archive_success": _("The Workflow has been archived"),
+            "project_archive_success": _("The Project has been archived"),
+            "project_archive_failure": _(
+                "There was an error archiving your project"
+            ),
+            "workflow_archive_failure": _(
+                "There was an error archiving your workflow"
+            ),
+            "workflow_unarchive_failure": _(
+                "There was an error unarchiving your workflow"
+            ),
+            "project_unarchive_failure": _(
+                "There was an error unarchiving your project"
+            ),
+            "project_unarchive_success": _("The Project has been unarchived"),
+            "workflow_unarchive_success": _(
+                "The Workflow has been unarchived"
+            ),
         },
     }
     return app_config

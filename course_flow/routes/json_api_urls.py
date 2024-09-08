@@ -56,27 +56,27 @@ def json_api_patterns():
         ),
         path(
             "workflow/insert-child",  ## ??
-            views.json_api.create.json_api_post_insert_child,
+            views.json_api.create.json_api_post_insert_child_outcome,
             name="json-api-post-insert-child",
         ),
         path(
             "workflow/delete-self",
-            views.json_api.delete.json_api_post_delete_self,
+            views.json_api.workspace.json_api_post_delete_self,
             name="json-api-post-delete-self",
         ),
         path(
             "workflow/restore-self",
-            views.json_api.delete.json_api_post_restore_self,
+            views.json_api.workspace.json_api_post_restore_self,
             name="json-api-post-restore-self",
         ),
         path(
             "workflow/delete-self-soft",
-            views.json_api.delete.json_api_post_delete_self_soft,
+            views.json_api.workspace.json_api_post_delete_self_soft,
             name="json-api-post-delete-self-soft",
         ),
         path(
             "workflow/duplicate-self",
-            views.json_api.duplication.json_api_post_duplicate_self,
+            views.json_api.workspace.json_api_post_duplicate_self,
             name="json-api-post-duplicate-self",
         ),
         path(

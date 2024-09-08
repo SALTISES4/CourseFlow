@@ -1,19 +1,16 @@
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import { OuterContentWrap } from '@cf/mui/helper'
 import { EventUnion } from '@cf/types/common'
 import { CfObjectType, WorkflowType, WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import ExportMenu from '@cfComponents/dialog/_LEGACY/ExportMenu'
 import ProjectTargetDialog from '@cfComponents/dialog/Workspace/ProjectTargetDialog'
 import {
   MenuItemType,
   MenuWithOverflow,
   SimpleMenu
 } from '@cfComponents/menu/Menu'
-import Alert from '@cfComponents/UIPrimitives/Alert'
 import JumpToWeekWorkflow from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeekWorkflow'
 import { AppState } from '@cfRedux/types/type'
 import EditIcon from '@mui/icons-material/Edit'
@@ -21,16 +18,11 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
-import { Dialog, DialogTitle } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
-import {
-  deleteSelfQueryLegacy,
-  restoreSelfQueryLegacy
-} from '@XMLHTTP/API/delete'
+import { deleteSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { updateNotificationSettings } from '@XMLHTTP/API/user'
 import { NotificationSettingsUpdateQueryResp } from '@XMLHTTP/types/query'
-import HtmlReactParser from 'html-react-parser'
 import { useContext, useState } from 'react'
 import * as React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -93,6 +85,14 @@ const useMenuActions = () => {
     dispatchDialog(DIALOG_TYPE.PROJECT_EXPORT)
   }
 
+  function archiveWorkflow() {
+    dispatchDialog(DIALOG_TYPE.WORKFLOW_ARCHIVE)
+  }
+
+  function restoreWorkflow() {
+    dispatchDialog(DIALOG_TYPE.WORKFLOW_RESTORE)
+  }
+
   /*******************************************************
    * TO PROCESS
    *******************************************************/
@@ -121,12 +121,6 @@ const useMenuActions = () => {
     )
   }
 
-  function deleteWorkflow(workflowId: number) {
-    if (window.confirm(_t('Are you sure you want to delete this workflow?'))) {
-      deleteSelfQueryLegacy(workflowId, 'workflow', true, () => {})
-    }
-  }
-
   function deleteWorkflowHard(projectId: number, workflowId: number) {
     if (
       window.confirm(
@@ -143,10 +137,6 @@ const useMenuActions = () => {
         window.location.href = newPath
       })
     }
-  }
-
-  function restoreWorkflow(workflowId: number) {
-    restoreSelfQueryLegacy(workflowId, 'workflow', () => {})
   }
 
   // @todo is this ViewType or cfobjecttype
@@ -206,7 +196,6 @@ const useMenuActions = () => {
     }
   }
 
-
   return {
     openEditMenu,
     openShareDialog,
@@ -214,7 +203,7 @@ const useMenuActions = () => {
     copyToProject,
     importOutcomes,
     importNodes,
-    deleteWorkflow,
+    archiveWorkflow,
     deleteWorkflowHard,
     restoreWorkflow,
     expandAll,
@@ -252,6 +241,7 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
   const node = useSelector<AppState>((state: AppState) => state.node)
   const outcome = useSelector<AppState>((state: AppState) => state.outcome)
 
+
   /*******************************************************
    * MODALS
    *******************************************************/
@@ -282,7 +272,7 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
     copyToProject,
     importOutcomes,
     importNodes,
-    deleteWorkflow,
+    archiveWorkflow,
     restoreWorkflow,
     deleteWorkflowHard
   } = useMenuActions()
@@ -340,14 +330,14 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
       seperator: true
     },
     {
-      id: 'delete-workflow',
-      action: () => deleteWorkflow(workflowId),
+      id: 'archive-workflow',
+      action: archiveWorkflow,
       content: _t('Archive workflow'),
       show: !workflowPermission.readOnly && !isWorkflowDeleted
     },
     {
       id: 'restore-workflow',
-      action: () => restoreWorkflow(workflowId),
+      action: restoreWorkflow,
       content: _t('Restore workflow'),
       show: !workflowPermission.readOnly && isWorkflowDeleted
     },

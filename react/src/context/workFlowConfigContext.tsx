@@ -1,5 +1,4 @@
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
-import { CFRoutes } from '@cf/router'
 import { FieldChoice } from '@cf/types/common'
 import { WorkflowViewType } from '@cf/types/enum'
 import {

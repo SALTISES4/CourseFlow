@@ -26,7 +26,7 @@ from course_flow.views import UserCanViewMixin
 
 
 #########################################################
-#
+# GET
 #########################################################
 @permission_classes([UserCanViewMixin])
 @api_view(["GET"])
@@ -66,6 +66,80 @@ def json_api__project__detail__get(request):
     }
 
     return JsonResponse({"action": "GET", "data_package": response_data})
+
+
+@user_is_teacher()
+def json_api_post_get_target_projects(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    try:
+        workflow_id = Workflow.objects.get(pk=body.get("workflowPk")).id
+    except ObjectDoesNotExist:
+        workflow_id = 0
+    try:
+        data_package = get_my_projects(request.user, False, for_add=True)
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+            "workflow_id": workflow_id,
+        }
+    )
+
+
+@user_can_view("projectPk")
+def json_api_post_get_project_data(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    project = Project.objects.get(pk=body.get("projectPk"))
+    try:
+        project_data = (
+            JSONRenderer()
+            .render(
+                ProjectSerializerShallow(
+                    project, context={"user": request.user}
+                ).data
+            )
+            .decode("utf-8")
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "project_data": project_data,
+        }
+    )
+
+
+@user_is_teacher()
+def json_api_post_get_projects_for_create(
+    request: HttpRequest,
+) -> JsonResponse:
+    user = request.user
+    try:
+        projects = list(Project.objects.filter(author=user, deleted=False)) + [
+            user_permission.content_object
+            for user_permission in ObjectPermission.objects.filter(
+                user=user,
+                content_type=ContentType.objects.get_for_model(Project),
+                project__deleted=False,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+            )
+        ]
+        projects_serialized = InfoBoxSerializer(
+            projects,
+            many=True,
+            context={"user": user},
+        ).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": projects_serialized,
+        }
+    )
 
 
 @permission_classes([UserCanViewMixin])
@@ -130,6 +204,40 @@ def project__create__post(request: HttpRequest) -> JsonResponse:
                 "action": "posted",
                 "redirect": reverse(
                     "course_flow:project-detail", kwargs={"pk": project.pk}
+                ),
+            }
+        )
+
+    # otherwise, return the errors so UI can display errors accordingly
+    return JsonResponse({"action": "error", "errors": form.errors})
+
+
+@user_is_teacher()
+def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
+    # instantiate the form with the JSON params
+    data = json.loads(request.body)
+    form = CreateProject(json.loads(request.body))
+
+    # if the form is valid, save it and return a success response
+    # along with the redirect URL to the newly created project
+    if form.is_valid():
+        project = form.save()
+        project.author = request.user
+        project.save()
+
+        # Create the object sets, if any
+        object_sets = data["objectSets"]
+        for object_set in object_sets:
+            title = "Untitled Set"
+            if object_set["label"] is not None and object_set["label"] != "":
+                title = object_set["label"]
+            project.object_sets.create(term=object_set["type"], title=title)
+
+        return JsonResponse(
+            {
+                "action": "posted",
+                "redirect": reverse(
+                    "course_flow:project-update", kwargs={"pk": project.pk}
                 ),
             }
         )

@@ -1,5 +1,9 @@
-import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
-import {ReactNode, useContext} from 'react'
+import {
+  DialogContext,
+  DialogDispatchContext,
+  StateType
+} from '@cf/context/dialogContext'
+import { Dispatch, ReactNode, useContext } from 'react'
 import * as React from 'react'
 
 export enum DIALOG_TYPE {
@@ -17,11 +21,14 @@ export enum DIALOG_TYPE {
   PROJECT_EDIT = 'project_edit',
   PROJECT_EXPORT = 'project_export',
   PROJECT_ARCHIVE = 'project_archive',
+  PROJECT_RESTORE = 'project_restore',
 
   // WORKFLOW
   IMPORT_OUTCOMES = 'import_outcomes',
   IMPORT_NODES = 'import_nodes',
   WORKFLOW_LINK = 'workflow_link',
+  WORKFLOW_ARCHIVE = 'workflow_archive',
+  WORKFLOW_RESTORE = 'workflow_restore',
 
   // WORKFLOW - PROGRAM
   PROGRAM_CREATE = 'program_create',
@@ -34,7 +41,6 @@ export enum DIALOG_TYPE {
   // WORKFLOW - COURSE
   COURSE_CREATE = 'course_create',
   COURSE_EDIT = 'course_edit',
-  COURSE_ARCHIVE = 'course_archive',
 
   GENERIC = 'generic'
 

@@ -165,7 +165,13 @@ interface GlobalContextData {
   sidebar: SidebarProps
   topbar: TopBarProps
   path: Path
-  strings: Strings
+  // allow one layer of nesting
+  // @todo TBD where the final place for strings should be
+  // probably react
+  // backend should send back string 'code' only that gets matched to a real string
+  // however not sure about gettex / translation yet
+  strings:
+    | { [key: string]: string }
   notifications: {
     showNotificationRequest: boolean
     updateNotifications:
@@ -178,40 +184,6 @@ interface GlobalContextData {
 }
 
 interface ContextData {}
-
-interface Strings {
-  confirm_email_updates: string
-  unsupported_device: string
-  product_updates_agree: string
-  notifications: string
-  home: string
-  my_library: string
-  explore: string
-  my_classrooms: string
-  favourites: string
-  see_all: string
-  view_all: string
-  help_support: string
-  password_reset: string
-  password_reset_msg: string
-  notification_settings: string
-  sign_out: string
-  profile: string
-  project: string
-  program: string
-  course: string
-  activity: string
-  delete: string
-  cancel: string
-  show_notifications_menu: string
-  notification_options: string
-  mark_as_read: string
-  mark_all_as_read: string
-  no_notifications_yet: string
-  profile_settings: string
-  update_profile: string
-  update_profile_success: string
-}
 
 interface TinyLoader {
   identifier: Identifier

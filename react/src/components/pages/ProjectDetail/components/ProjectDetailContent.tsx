@@ -1,5 +1,5 @@
 // import WorkflowFilter from '@cfComponents/filters/WorkflowFilter'
-import ProjectArchiveDialog from '@cf/components/common/dialog/Workspace/ProjectArchiveDialog'
+import ProjectArchiveDialog from 'components/common/_ARCHIVE/ProjectArchiveDialog'
 import ProjectExportDialog from '@cf/components/common/dialog/Workspace/ProjectExportDialog'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'

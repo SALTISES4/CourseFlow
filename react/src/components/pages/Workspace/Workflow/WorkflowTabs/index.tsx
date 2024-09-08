@@ -10,7 +10,7 @@ import {
   JumpToMenu
 } from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/actions'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
-import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/WorkflowDialogs'
+import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/useWorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
 import { Box, Tabs } from '@mui/material'
@@ -78,16 +78,7 @@ const WorkflowTabs = () => {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  const {
-    data: usersForObjectData,
-    error: usersForObjectError,
-    isLoading: usersForObjectIsLoading,
-    isError: usersForObjectIsError
-  } = useQuery<UsersForObjectQueryResp>({
-    queryKey: ['getUsersForObjectQuery', 5],
-    queryFn: () => getUsersForObjectQuery(5, 'workflow'),
-    enabled: !context.public_view && !context.user.isStudent
-  })
+
 
   useEffect(() => {
     const match = tabs.find((tab) =>

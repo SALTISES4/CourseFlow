@@ -1,7 +1,7 @@
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import { CfObjectType } from '@cf/types/enum'
+import {CfObjectType, WorkflowType} from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -514,6 +514,7 @@ class EditableComponent<
     return <></>
   }
 
+  //
   EditForm = ({ data, noDelete }) => {
     let sets
 
@@ -598,7 +599,7 @@ class EditableComponent<
 
         {((type === CfObjectType.OUTCOME && data.depth === 0) ||
           (type === CfObjectType.WORKFLOW &&
-            data.type == CfObjectType.COURSE)) && (
+            data.type == WorkflowType.COURSE)) && (
           <this.CodeOptional data={data} readOnly={read_only} />
         )}
 
@@ -618,15 +619,19 @@ class EditableComponent<
           <this.Colour data={data} readOnly={read_only} />
         )}
 
-        {((type === CfObjectType.WORKFLOW &&
-          data.type == CfObjectType.COURSE) ||
-          (type == CfObjectType.NODE && data.node_type == 2)) && (
-          <this.Ponderation
-            data={data}
-            override={override}
-            read_only={read_only}
-          />
-        )}
+        {
+          // @todo this is mixed up data types
+          //  type should notbe able to be worklow OR course OR  outcome etc
+          ((type === CfObjectType.WORKFLOW &&
+            data.type == WorkflowType.COURSE) ||
+            (type == CfObjectType.NODE && data.node_type == 2)) && (
+            <this.Ponderation
+              data={data}
+              override={override}
+              read_only={read_only}
+            />
+          )
+        }
 
         {type === CfObjectType.NODE && data.node_type !== 0 && (
           <>
