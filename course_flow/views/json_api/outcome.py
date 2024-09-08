@@ -1,53 +1,88 @@
 import json
-import math
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import ProtectedError
 from django.http import HttpRequest, JsonResponse
 
 from course_flow.decorators import (
+    from_same_workflow,
     user_can_edit,
     user_can_view,
-    user_can_view_or_none,
-    user_is_teacher,
 )
-from course_flow.duplication_functions import (
-    duplicate_column,
-    fast_duplicate_week,
-)
-from course_flow.forms import CreateProject
-from course_flow.models import (
-    Column,
-    Node,
-    Notification,
-    ObjectPermission,
-    ObjectSet,
-    Outcome,
-    Project,
-    User,
-    Week,
-    Workflow,
-)
+from course_flow.models import Node, ObjectSet, Outcome, Workflow
 from course_flow.models.relations import (
-    ColumnWorkflow,
-    NodeWeek,
     OutcomeNode,
     OutcomeOutcome,
     OutcomeWorkflow,
-    WeekWorkflow,
 )
 from course_flow.serializers import (
-    ColumnSerializerShallow,
-    ColumnWorkflowSerializerShallow,
     NodeSerializerShallow,
-    NodeWeekSerializerShallow,
     OutcomeNodeSerializerShallow,
     OutcomeOutcomeSerializerShallow,
     OutcomeSerializerShallow,
     OutcomeWorkflowSerializerShallow,
-    serializer_lookups_shallow,
 )
 from course_flow.sockets import redux_actions as actions
-from course_flow.utils import get_model_from_str
+
+
+@user_can_edit("nodePk")
+@user_can_view("outcomePk")
+@from_same_workflow("nodePk", "outcomePk")
+def json_api_post_update_outcomenode_degree(
+    request: HttpRequest,
+) -> JsonResponse:
+    """
+    # Links an outcome to a node
+    """
+    body = json.loads(request.body)
+    node_id = body.get("nodePk")
+    outcome_id = body.get("outcomePk")
+    degree = body.get("degree")
+
+    try:
+        node = Node.objects.get(id=node_id)
+        workflow = node.get_workflow()
+        if (
+            OutcomeNode.objects.filter(
+                node__id=node_id, outcome__id=outcome_id, degree=degree
+            ).count()
+            > 0
+        ):
+            return JsonResponse({"action": "posted", "outcomenode": -1})
+        model = OutcomeNode.objects.create(
+            node=node,
+            outcome=Outcome.objects.get(id=outcome_id),
+            degree=degree,
+        )
+        new_outcomenodes = OutcomeNodeSerializerShallow(
+            [model]
+            + model.check_parent_outcomes()
+            + model.check_child_outcomes(),
+            many=True,
+        ).data
+        OutcomeNode.objects.filter(node=model.node, degree=0).delete()
+        new_node_data = NodeSerializerShallow(model.node).data
+        new_outcomenode_set = new_node_data["outcomenode_set"]
+        new_outcomenode_unique_set = new_node_data["outcomenode_unique_set"]
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+
+    response_data = {
+        "data_package": new_outcomenodes,
+        "new_outcomenode_set": new_outcomenode_set,
+        "new_outcomenode_unique_set": new_outcomenode_unique_set,
+    }
+    update_action = actions.updateOutcomenodeDegreeAction(response_data)
+    actions.dispatch_wf(
+        workflow,
+        update_action,
+    )
+    if node.linked_workflow is not None:
+        actions.dispatch_wf(
+            node.linked_workflow,
+            update_action,
+        )
+    return JsonResponse({"action": "posted"})
 
 
 @user_can_edit(False)

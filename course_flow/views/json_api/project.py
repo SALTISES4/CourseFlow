@@ -1,7 +1,8 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ValidationError
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
@@ -9,12 +10,17 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
-from course_flow.decorators import user_can_edit, user_can_view
+from course_flow.decorators import (
+    user_can_edit,
+    user_can_view,
+    user_is_teacher,
+)
 from course_flow.duplication_functions import fast_duplicate_project
 from course_flow.forms import CreateProject
-from course_flow.models import Project
+from course_flow.models import ObjectPermission, Project, Workflow
 from course_flow.models.discipline import Discipline
 from course_flow.serializers import (
     DisciplineSerializer,
@@ -22,6 +28,7 @@ from course_flow.serializers import (
     ProjectSerializerShallow,
 )
 from course_flow.utils import get_user_permission
+from course_flow.view_utils import get_my_projects
 from course_flow.views import UserCanViewMixin
 
 
@@ -244,6 +251,30 @@ def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
 
     # otherwise, return the errors so UI can display errors accordingly
     return JsonResponse({"action": "error", "errors": form.errors})
+
+
+# Add an object set to a project
+@user_can_edit("projectPk")
+def json_api_post_add_object_set(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    project = Project.objects.get(pk=body.get("projectPk"))
+    term = body.get("term")
+    title = body.get("title")
+    translation_plural = body.get("translation_plural")
+    try:
+        project.object_sets.create(
+            term=term,
+            title=title,
+            translation_plural=translation_plural,
+        )
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_dict": ProjectSerializerShallow(project).data["object_sets"],
+        }
+    )
 
 
 #########################################################

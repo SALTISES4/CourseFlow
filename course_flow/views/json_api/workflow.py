@@ -1,17 +1,15 @@
 import json
-import math
 import traceback
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
-
-# from duplication
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
+
+# from duplication
 from django.utils.translation import gettext as _
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from course_flow.decorators import (
@@ -19,40 +17,21 @@ from course_flow.decorators import (
     user_can_edit,
     user_can_view,
     user_can_view_or_none,
-    user_is_teacher,
 )
 from course_flow.duplication_functions import (
     cleanup_workflow_post_duplication,
-    duplicate_column,
-    fast_duplicate_week,
     fast_duplicate_workflow,
 )
-from course_flow.forms import CreateProject
-from course_flow.models import (
-    Activity,
-    Column,
-    Course,
-    Node,
-    Notification,
-    ObjectPermission,
-    ObjectSet,
-    Outcome,
-    Project,
-    User,
-    Week,
-    Workflow,
-)
-from course_flow.models.relations import (
-    ColumnWorkflow,
-    NodeLink,
-    NodeWeek,
+from course_flow.models import Activity, Course, Notification, Project
+from course_flow.models.node import Node
+from course_flow.models.objectset import ObjectSet
+from course_flow.models.relations import NodeLink, NodeWeek, OutcomeWorkflow
+from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    WeekWorkflow,
-    WorkflowProject,
 )
+from course_flow.models.relations.outcomeNode import OutcomeNode
+from course_flow.models.relations.workflowProject import WorkflowProject
+from course_flow.models.workflow import Workflow
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
@@ -66,7 +45,6 @@ from course_flow.serializers import (
     OutcomeOutcomeSerializerShallow,
     OutcomeSerializerShallow,
     OutcomeWorkflowSerializerShallow,
-    ProjectSerializerShallow,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
     WorkflowSerializerShallow,
@@ -75,23 +53,21 @@ from course_flow.serializers import (
 from course_flow.sockets import redux_actions as actions
 from course_flow.utils import (
     get_all_outcomes_for_workflow,
-    get_model_from_str,
     get_parent_nodes_for_workflow,
     get_user_permission,
 )
 from course_flow.view_utils import (
-    get_my_projects,
     get_workflow_context_data,
     get_workflow_data_package,
 )
 from course_flow.views import UserCanViewMixin
 
-"""
+#########################################################
 # Bulk data API for workflows
 # These are used by renderers on loading a workflow
 # view to fetch all the base JSON that can be
 # placed into the redux state
-"""
+#########################################################
 
 
 #########################################################
@@ -516,11 +492,10 @@ def get_workflow_data_flat(workflow, user):
         "week": WeekSerializerShallow(weeks, many=True).data,
         "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
         "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
+        "node": NodeSerializerShallow(
+            nodes, many=True, context={"user": user}
+        ).data,
     }
-
-    data_flat["node"] = NodeSerializerShallow(
-        nodes, many=True, context={"user": user}
-    ).data
 
     if not workflow.is_strategy:
         data_flat["outcomeworkflow"] = OutcomeWorkflowSerializerShallow(
@@ -595,11 +570,6 @@ def get_workflow_data_flat(workflow, user):
         ]
 
     return data_flat
-
-
-#########################################################
-# DELETE
-#########################################################
 
 
 #########################################################

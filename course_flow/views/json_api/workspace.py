@@ -44,12 +44,14 @@ from course_flow.serializers import (
     RefreshSerializerOutcome,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
+    serializer_lookups_shallow,
 )
 from course_flow.sockets import redux_actions as actions
 from course_flow.utils import (
     get_all_outcomes_for_outcome,
     get_descendant_outcomes,
     get_model_from_str,
+    save_serializer,
 )
 from course_flow.views.json_api._validators import DeleteRequest
 
@@ -64,6 +66,48 @@ class ObjectType(Enum):
     OUTCOME = "program"
     COLUMN = "column"
     NODELINK = "nodelink"
+
+
+# Updates an object's information using its serializer. This is
+# the most frequently used view, used to change almost any
+# non-foreign key fields on models
+@user_can_edit(False)
+def json_api_post_update_value(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    try:
+        object_id = body.get("objectID")
+        object_type = body.get("objectType")
+        data = body.get("data")
+        changeFieldID = body.get("changeFieldID", False)
+        objects = get_model_from_str(object_type).objects
+        if hasattr(objects, "get_subclass"):
+            object_to_update = objects.get_subclass(pk=object_id)
+        else:
+            object_to_update = objects.get(pk=object_id)
+        serializer = serializer_lookups_shallow[object_type](
+            object_to_update,
+            data=data,
+            partial=True,
+            context={"user": request.user},
+        )
+        save_serializer(serializer)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    try:
+        workflow = object_to_update.get_workflow()
+        actions.dispatch_wf(
+            workflow,
+            actions.changeField(object_id, object_type, data, changeFieldID),
+        )
+        if object_type == "outcome":
+            actions.dispatch_to_parent_wf(
+                workflow,
+                actions.changeField(object_id, object_type, data),
+            )
+    except AttributeError:
+        pass
+
+    return JsonResponse({"action": "posted"})
 
 
 #########################################################

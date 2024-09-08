@@ -5,17 +5,24 @@ from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
 
-from course_flow.decorators import user_can_edit, user_can_view
+from course_flow.decorators import (
+    user_can_edit,
+    user_can_view,
+    user_is_teacher,
+)
 from course_flow.duplication_functions import (
     duplicate_column,
+    fast_create_strategy,
     fast_duplicate_week,
     fast_duplicate_workflow,
 )
-from course_flow.models import ColumnWorkflow, WeekWorkflow, Workflow
+from course_flow.models import ColumnWorkflow, Week, WeekWorkflow, Workflow
 from course_flow.models.relations import NodeLink
 from course_flow.serializers import (
+    ActivitySerializerShallow,
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
+    CourseSerializerShallow,
     InfoBoxSerializer,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,

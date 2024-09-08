@@ -31,12 +31,12 @@ def json_api_patterns():
         ),
         path(
             "workflow/node/create",
-            views.json_api.create.json_api_post_new_node,
+            views.json_api.node.json_api_post_new_node,
             name="json-api-post-new-node",
         ),
         path(
             "workflow/outcome/create",
-            views.json_api.create.json_api_post_new_outcome_for_workflow,
+            views.json_api.outcome.json_api_post_new_outcome_for_workflow,
             name="json-api-post-new-outcome-for-workflow",
         ),
         path(
@@ -46,17 +46,17 @@ def json_api_patterns():
         ),
         path(
             "workflow/node-link/create",
-            views.json_api.node_link.json_api_post_new_node_link,
+            views.json_api.node.json_api_post_new_node_link,
             name="json-api-post-new-node-link",
         ),
         path(
             "workflow/insert-sibling",  # ??
-            views.json_api.create.json_api_post_insert_sibling,
+            views.json_api.workflow_objects.json_api_post_insert_sibling,
             name="json-api-post-insert-sibling",
         ),
         path(
-            "workflow/insert-child",  ## ??
-            views.json_api.create.json_api_post_insert_child_outcome,
+            "workflow/outcome/insert-child",  ## ??
+            views.json_api.outcome.json_api_post_insert_child_outcome,
             name="json-api-post-insert-child",
         ),
         path(
@@ -81,17 +81,17 @@ def json_api_patterns():
         ),
         path(
             "workflow/updatevalue",
-            views.json_api.update.json_api_post_update_value,
+            views.json_api.workspace.json_api_post_update_value,
             name="json-api-post-update-value",
         ),
         path(
             "workflow/inserted-at",
-            views.json_api.update.json_api_post_inserted_at,
+            views.json_api.workflow_objects.json_api_post_inserted_at,
             name="json-api-post-inserted-at",
         ),
         path(
             "workflow/update-outcomenode-degree",
-            views.json_api.update.json_api_post_update_outcomenode_degree,
+            views.json_api.outcome.json_api_post_update_outcomenode_degree,
             name="json-api-post-update-outcomenode-degree",
         ),
         path(
@@ -131,7 +131,7 @@ def json_api_patterns():
         ),
         path(
             "workflow/get-target-projects",
-            views.json_api.workflow.json_api_post_get_target_projects,
+            views.json_api.project.json_api_post_get_target_projects,
             name="json-api-post-get-target-projects",
         ),
         path(
@@ -156,17 +156,17 @@ def json_api_patterns():
         ),
         path(
             "workflow/node/set-linked-workflow",
-            views.json_api.update.json_api_post_set_linked_workflow,
+            views.json_api.node.json_api_post_set_linked_workflow,
             name="json-api-post-set-linked-workflow",
         ),
         path(
             "workflow/strategy/toggle",
-            views.json_api.update.json_api_post_week_toggle_strategy,
+            views.json_api.strategy.json_api_post_week_toggle_strategy,
             name="json-api-post-toggle-strategy",
         ),
         path(
             "workflow/updateobjectset",
-            views.json_api.update.json_api_post_update_object_set,
+            views.json_api.workflow_objects.json_api_post_update_object_set,
             name="json-api-post-update-object-set",
         ),
         path(
@@ -186,7 +186,7 @@ def json_api_patterns():
         # and project 'data'
         path(
             "project/get-project-data",
-            views.json_api.workflow.json_api_post_get_project_data,
+            views.json_api.project.json_api_post_get_project_data,
             name="json-api-post-get-project-data",
         ),
         path(
@@ -243,7 +243,7 @@ def json_api_patterns():
         #########################################################
         path(
             "outcome/update-outcomehorizontallink-degree",
-            views.json_api.update.json_api_post_update_outcomehorizontallink_degree,
+            views.json_api.workflow_objects.json_api_post_update_outcomehorizontallink_degree,
             name="json-api-post-update-outcomehorizontallink-degree",
         ),
         #########################################################
