@@ -220,15 +220,13 @@ export function getColumnColour(data) {
 }
 
 //get all possible object sets
-export function object_sets_types() {
-  return {
-    'program outcome': Utility.capFirst(_t('program outcome')),
-    'course outcome': Utility.capFirst(_t('course outcome')),
-    'activity outcome': Utility.capFirst(_t('activity outcome')),
-    'program node': Utility.capFirst(_t('program node')),
-    'course node': Utility.capFirst(_t('course node')),
-    'activity node': Utility.capFirst(_t('activity node'))
-  }
+export const objectSetsTypes = {
+  'program outcome': Utility.capFirst(_t('program outcome')),
+  'course outcome': Utility.capFirst(_t('course outcome')),
+  'activity outcome': Utility.capFirst(_t('activity outcome')),
+  'program node': Utility.capFirst(_t('program node')),
+  'course node': Utility.capFirst(_t('course node')),
+  'activity node': Utility.capFirst(_t('activity node'))
 }
 
 //missing_translations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated

@@ -1,5 +1,6 @@
 import { Discipline, QueryPages } from '@cf/types/common'
 import { VERB } from '@cf/types/enum'
+import { ObjectSetType } from '@cfComponents/dialog/common/ProjectCreateDialog/type'
 import { ProjectViewDTO } from '@cfPages/ProjectDetail/types'
 import { WorkflowDetailViewDTO } from '@cfPages/Workspace/Workflow/types'
 import {
@@ -201,6 +202,13 @@ export type UserListResp = {
 export type GetProjectByIdQueryResp = {
   action: VERB
   data_package: ProjectViewDTO
+}
+
+export type CreateProjectResp = {
+  action: VERB
+  data_package: {
+    id: number
+  }
 }
 
 /*******************************************************

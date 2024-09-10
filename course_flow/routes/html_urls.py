@@ -67,7 +67,7 @@ def html_patterns():
         path(
             "workflow/public/<int:pk>/",
             ratelimit(key="ip", method=["GET"], rate="5/m", block=True)(
-                views.WorkflowPublicDetailView.as_view()
+                views.html.client.default_react_view,
             ),
             name="workflow-public",
         ),

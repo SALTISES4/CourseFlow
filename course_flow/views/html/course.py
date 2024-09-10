@@ -7,12 +7,12 @@ from django.views.generic.edit import CreateView
 from course_flow.models import Project
 from course_flow.models.course import Course
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.views.HTTP.HTTP import CreateView_No_Autocomplete
+from course_flow.views.HTTP.HTTP import CreateViewNoAutocomplete
 from course_flow.views.mixins import UserCanEditProjectMixin
 
 
 class CourseCreateView(
-    LoginRequiredMixin, UserCanEditProjectMixin, CreateView_No_Autocomplete
+    LoginRequiredMixin, UserCanEditProjectMixin, CreateViewNoAutocomplete
 ):
     model = Course
     fields = ["title", "description"]
@@ -36,7 +36,7 @@ class CourseCreateView(
 
 
 class CourseStrategyCreateView(
-    LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
+    LoginRequiredMixin, UserPassesTestMixin, CreateViewNoAutocomplete
 ):
     model = Course
     fields = ["title", "description"]

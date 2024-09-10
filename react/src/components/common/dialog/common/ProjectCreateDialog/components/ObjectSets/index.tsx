@@ -1,6 +1,6 @@
 import { StyledForm } from '@cf/components/common/dialog/styles'
 import { _t } from '@cf/utility/utilityFunctions'
-import { object_sets_types } from '@cfConstants'
+import { objectSetsTypes } from '@cfConstants'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -24,7 +24,7 @@ import { OBJECT_SET_TYPE, ObjectSetType } from '../../type'
 type PropsType = {
   expanded: boolean
   toggleExpanded: () => void
-  sets: ObjectSetType[]
+  objectSets: ObjectSetType[]
   onUpdate: (props: OnUpdateType) => void
   onAddNew: () => void
 }
@@ -32,19 +32,18 @@ type PropsType = {
 function ObjectSets({
   expanded,
   toggleExpanded,
-  sets,
+  objectSets,
   onAddNew,
   onUpdate
 }: PropsType) {
   // make sure there's at least one empty object set
-  const objectSets: ObjectSetType[] = sets.length
-    ? sets
-    : [{ type: '' as OBJECT_SET_TYPE, label: '' }]
+  const objectSetsFormatted: ObjectSetType[] = objectSets.length
+    ? objectSets
+    : [{ term: '' as OBJECT_SET_TYPE, title: '' }]
 
-  const object_set_types = object_sets_types()
-  const object_set_options = Object.keys(object_set_types).map((key) => ({
+  const objectSetOptions = Object.keys(objectSetsTypes).map((key) => ({
     value: key,
-    label: object_set_types[key]
+    label: objectSetsTypes[key]
   }))
 
   return (
@@ -65,24 +64,24 @@ function ObjectSets({
           )}
         </Typography>
         <StyledForm>
-          {objectSets.map((set, index) => (
+          {objectSetsFormatted.map((objectSet, index) => (
             <Stack key={index} direction="row" spacing={2}>
               <FormControl variant="standard" fullWidth>
                 <InputLabel>{_t('Type')}</InputLabel>
                 <Select
-                  value={set.type}
+                  value={objectSet.term}
                   onChange={(event: SelectChangeEvent) =>
                     onUpdate({
                       index,
                       newVal: {
-                        type: event.target.value as OBJECT_SET_TYPE,
-                        label: set.label
+                        term: event.target.value as OBJECT_SET_TYPE,
+                        title: objectSet.title
                       }
                     })
                   }
                   label="Type"
                 >
-                  {object_set_options.map((option, idx) => (
+                  {objectSetOptions.map((option, idx) => (
                     <MenuItem key={idx} value={option.value}>
                       {option.label}
                     </MenuItem>
@@ -91,21 +90,21 @@ function ObjectSets({
               </FormControl>
               <TextField
                 label={_t('Label')}
-                value={set.label}
+                value={objectSet.title}
                 variant="standard"
                 onChange={(event: ChangeEvent<HTMLInputElement>) => {
                   onUpdate({
                     index,
                     newVal: {
-                      type: set.type,
-                      label: event.target.value
+                      term: objectSet.term,
+                      title: event.target.value
                     }
                   })
                 }}
                 fullWidth
               />
               <Box sx={{ alignSelf: 'flex-end', flexShrink: 0 }}>
-                {index === sets.length - 1 ? (
+                {index === objectSets.length - 1 ? (
                   <IconButton color="primary" onClick={onAddNew}>
                     <AddCircleIcon />
                   </IconButton>

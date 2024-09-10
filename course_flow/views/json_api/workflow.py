@@ -60,7 +60,7 @@ from course_flow.view_utils import (
     get_workflow_context_data,
     get_workflow_data_package,
 )
-from course_flow.views import UserCanViewMixin
+from course_flow.views.mixins import UserCanViewMixin
 
 #########################################################
 # Bulk data API for workflows
@@ -70,51 +70,63 @@ from course_flow.views import UserCanViewMixin
 #########################################################
 
 
-#########################################################
-# GET DATA
-#########################################################
-@permission_classes([UserCanViewMixin])
-@api_view(["GET"])
-@login_required
-def json_api__workflow__detail__get(request: HttpRequest):
-    workflows_pk = request.GET.get("id")
-    try:
-        workflow = Workflow.objects.get(pk=workflows_pk)
+class WorkflowEndpoint:
+    #########################################################
+    # GET DATA
+    #########################################################
+    @permission_classes([UserCanViewMixin])
+    @login_required
+    @api_view(["GET"])
+    def fetch_detail(self, request: HttpRequest):
+        workflows_pk = request.GET.get("id")
 
-    except Workflow.DoesNotExist:
-        return Response({"detail": "Not found."}, status=404)
+        try:
+            workflow = Workflow.objects.get(pk=workflows_pk)
 
-    current_user = request.user
+        except Workflow.DoesNotExist:
+            return Response({"detail": "Not found."}, status=404)
 
-    user_permission = get_user_permission(workflow, current_user)
+        current_user = request.user
 
-    context = get_workflow_context_data(workflow, current_user)
+        user_permission = get_user_permission(workflow, current_user)
 
-    response_data = {
-        "user_id": current_user.id if current_user else 0,
-        "user_name": current_user.username,
-        "user_permission": user_permission,
-        "public_view": False,
-        "workflow_data_package": context.get("data_package"),
-        "workflow_type": workflow.type,
-        "workflow_model_id": workflow.id,
-    }
+        context = get_workflow_context_data(workflow, current_user)
 
-    return JsonResponse({"action": "GET", "data_package": response_data})
+        data_package = {
+            "user_id": current_user.id if current_user else 0,
+            "user_name": current_user.username,
+            "user_permission": user_permission,
+            "public_view": False,
+            "workflow_data_package": context.get("data_package"),
+            "workflow_type": workflow.type,
+            "workflow_model_id": workflow.id,
+        }
 
-
-@user_can_view("workflowPk")
-def json_api_post_get_workflow_data(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
-    try:
-        data_package = get_workflow_data_flat(
-            workflow.get_subclass(), request.user
+        return JsonResponse(
+            {
+                "action": "GET",
+                "data_package": data_package,
+            }
         )
-    except AttributeError:
-        traceback.print_exc()
-        return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
+
+    @user_can_view("workflowPk")
+    @api_view(["POST"])
+    def fetch_detail_full(request: HttpRequest) -> JsonResponse:
+        body = json.loads(request.body)
+        workflow = Workflow.objects.get(pk=body.get("workflowPk"))
+        try:
+            data_package = get_workflow_data_flat(
+                workflow.get_subclass(), request.user
+            )
+        except AttributeError:
+            traceback.print_exc()
+            return JsonResponse({"action": "error"})
+        return JsonResponse(
+            {
+                "action": "posted",
+                "data_package": data_package,
+            }
+        )
 
 
 @user_can_view("workflowPk")
@@ -123,13 +135,21 @@ def json_api_post_get_workflow_parent_data(
 ) -> JsonResponse:
     body = json.loads(request.body)
     workflow = Workflow.objects.get(pk=body.get("workflowPk"))
+
     try:
         data_package = get_parent_outcome_data(
             workflow.get_subclass(), request.user
         )
+
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
+
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+        }
+    )
 
 
 @user_can_view("nodePk")
@@ -144,16 +164,24 @@ def json_api_post_get_workflow_child_data(
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
-
-
-# Public versions if the workflow is public
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+        }
+    )
 
 
 @public_model_access("workflow")
 def json_api_get_public_workflow_data(
     request: HttpRequest, pk
 ) -> JsonResponse:
+    """
+    Public versions if the workflow is public
+    :param request:
+    :param pk:
+    :return:
+    """
     workflow = Workflow.objects.get(pk=pk)
     try:
         data_package = get_workflow_data_flat(
@@ -161,7 +189,12 @@ def json_api_get_public_workflow_data(
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+        }
+    )
 
 
 @public_model_access("node", rate=50)
@@ -175,7 +208,12 @@ def json_api_get_public_workflow_child_data(
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+        }
+    )
 
 
 @public_model_access("workflow")
@@ -189,7 +227,12 @@ def json_api_get_public_workflow_parent_data(
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+        }
+    )
 
 
 ################################################
@@ -202,14 +245,17 @@ def json_api_get_public_workflow_parent_data(
 def json_api_post_get_workflow_context(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
     workflowPk = body.get("workflowPk", False)
+
     try:
         workflow = Workflow.objects.get(pk=workflowPk)
         data_package = get_workflow_context_data(
             workflow,
             request.user,
         )
+
     except AttributeError:
         return JsonResponse({"action": "error"})
+
     return JsonResponse(
         {
             "action": "posted",
@@ -231,9 +277,16 @@ def json_api_get_public_parent_workflow_info(
         data_package = InfoBoxSerializer(
             parent_workflows, many=True, context={"user": request.user}
         ).data
+
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "parent_workflows": data_package})
+
+    return JsonResponse(
+        {
+            "action": "posted",
+            "parent_workflows": data_package,
+        }
+    )
 
 
 @user_can_view("workflowPk")
@@ -252,7 +305,12 @@ def json_api_post_get_parent_workflow_info(
         ).data
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "parent_workflows": data_package})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "parent_workflows": data_package,
+        }
+    )
 
 
 @user_can_view("projectPk")
@@ -266,11 +324,16 @@ def json_api_post_get_workflows_for_project(
         workflows_serialized = InfoBoxSerializer(
             project.workflows.all(), many=True, context={"user": user}
         ).data
-        return JsonResponse(
-            {"action": "posted", "data_package": workflows_serialized}
-        )
+
     except AttributeError:
         return JsonResponse({"action": "error"})
+
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": workflows_serialized,
+        }
+    )
 
 
 @user_can_edit("nodePk")
@@ -286,10 +349,16 @@ def json_api_post_get_possible_linked_workflows(
             project,
             type_filter=Workflow.SUBCLASSES[node.node_type - 1],
         )
+
     except AttributeError:
         return JsonResponse({"action": "error"})
+
     return JsonResponse(
-        {"action": "posted", "data_package": data_package, "node_id": node.id}
+        {
+            "action": "posted",
+            "data_package": data_package,
+            "node_id": node.id,
+        }
     )
 
 
@@ -302,10 +371,12 @@ def json_api_post_get_possible_added_workflows(
     get_strategies = body.get("get_strategies", "false")
     projectPk = body.get("projectPk", False)
     self_only = body.get("self_only", "false")
+
     if projectPk:
         project = Project.objects.get(pk=body.get("projectPk"))
     else:
         project = None
+
     try:
         data_package = get_workflow_data_package(
             request.user,
@@ -314,8 +385,10 @@ def json_api_post_get_possible_added_workflows(
             get_strategies=get_strategies,
             self_only=self_only,
         )
+
     except AttributeError:
         return JsonResponse({"action": "error"})
+
     return JsonResponse(
         {
             "action": "posted",
@@ -334,9 +407,11 @@ def json_api_post_create_workflow(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
     project = Project.objects.get(pk=body.get("projectPk"))
     workflow_type = body.get("workflow_type")
+
     try:
         print(body)
         print(workflow_type)
+
     except AttributeError:
         return JsonResponse(
             {

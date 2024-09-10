@@ -1,3 +1,5 @@
+// @todo are we really storing these as uncontrolled strings in DB?
+// verify this
 export enum OBJECT_SET_TYPE {
   PROGRAM_OUTCOME = 'program outcome',
   COURSE_OUTCOME = 'course outcome',
@@ -8,6 +10,6 @@ export enum OBJECT_SET_TYPE {
 }
 
 export type ObjectSetType = {
-  type: OBJECT_SET_TYPE
-  label: string
+  term: OBJECT_SET_TYPE | ''
+  title: string
 }

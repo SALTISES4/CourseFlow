@@ -26,8 +26,13 @@ def json_api_patterns():
         #########################################################
         path(
             "workflow/detail",
-            views.json_api.workflow.json_api__workflow__detail__get,
+            views.json_api.workflow.WorkflowEndpoint.fetch_detail,
             name="workflow--detail--get",
+        ),
+        path(
+            "workflow/detail-full",
+            views.json_api.workflow.WorkflowEndpoint.fetch_detail_full,
+            name="json-api-post-get-workflow-data",
         ),
         path(
             "workflow/node/create",
@@ -93,11 +98,6 @@ def json_api_patterns():
             "workflow/update-outcomenode-degree",
             views.json_api.outcome.json_api_post_update_outcomenode_degree,
             name="json-api-post-update-outcomenode-degree",
-        ),
-        path(
-            "workflow/get-workflow-data",
-            views.json_api.workflow.json_api_post_get_workflow_data,
-            name="json-api-post-get-workflow-data",
         ),
         path(
             "workflow/get-workflow-parent-data",
@@ -191,7 +191,7 @@ def json_api_patterns():
         ),
         path(
             "project/create",
-            views.json_api.project.project__create__post,
+            views.json_api.project.ProjectEndpoint.create,
             name="project--create--post",
         ),
         path(
@@ -308,7 +308,7 @@ def json_api_patterns():
         ),
         path(
             "user/notifications-settings",
-            views.json_api.user.json_api__user__notification_settings__get,
+            views.json_api.user.json_api__user__notification_settings,
             name="user--notification-settings--get",
         ),
         path(

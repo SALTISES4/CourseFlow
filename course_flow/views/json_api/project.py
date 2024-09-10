@@ -7,10 +7,10 @@ from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from django.views.decorators.http import require_POST
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.renderers import JSONRenderer
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from course_flow.decorators import (
@@ -19,17 +19,43 @@ from course_flow.decorators import (
     user_is_teacher,
 )
 from course_flow.duplication_functions import fast_duplicate_project
-from course_flow.forms import CreateProject
 from course_flow.models import ObjectPermission, Project, Workflow
 from course_flow.models.discipline import Discipline
-from course_flow.serializers import (
-    DisciplineSerializer,
-    InfoBoxSerializer,
+from course_flow.serializers import DisciplineSerializer
+from course_flow.serializers.project import (
+    CreateProjectSerializer,
     ProjectSerializerShallow,
 )
+from course_flow.serializers.workflow import InfoBoxSerializer
 from course_flow.utils import get_user_permission
 from course_flow.view_utils import get_my_projects
-from course_flow.views import UserCanViewMixin
+from course_flow.views.mixins import UserCanViewMixin
+
+
+class ProjectEndpoint:
+    #########################################################
+    # CREATE
+    #########################################################
+
+    @staticmethod
+    @user_is_teacher()
+    @api_view(["POST"])
+    def create(request: Request) -> Response:
+        # instantiate the form with the JSON params
+        serializer = CreateProjectSerializer(data=request.data)
+        if serializer.is_valid():
+            # Save the Project instance and set the author
+            project = serializer.save(author=request.user)
+
+            return Response(
+                {"action": "posted", "data_package": {"id": project.id}},
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            return Response(
+                {"error": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 #########################################################
@@ -181,76 +207,38 @@ def json_api__project__detail__comparison__get(request):
     return JsonResponse({"action": "GET", "data_package": response_data})
 
 
-#########################################################
-# CREATE
-#########################################################
-@login_required
-@require_POST
-def project__create__post(request: HttpRequest) -> JsonResponse:
-    # instantiate the form with the JSON params
-    data = json.loads(request.body)
-    form = CreateProject(json.loads(request.body))
-
-    # if the form is valid, save it and return a success response
-    # along with the redirect URL to the newly created project
-    if form.is_valid():
-        project = form.save()
-        project.author = request.user
-        project.save()
-
-        # Create the object sets, if any
-        object_sets = data["objectSets"]
-        for object_set in object_sets:
-            title = "Untitled Set"
-            if object_set["label"] is not None and object_set["label"] != "":
-                title = object_set["label"]
-            project.object_sets.create(term=object_set["type"], title=title)
-
-        return JsonResponse(
-            {
-                "action": "posted",
-                "redirect": reverse(
-                    "course_flow:project-detail", kwargs={"pk": project.pk}
-                ),
-            }
-        )
-
-    # otherwise, return the errors so UI can display errors accordingly
-    return JsonResponse({"action": "error", "errors": form.errors})
-
-
-@user_is_teacher()
-def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
-    # instantiate the form with the JSON params
-    data = json.loads(request.body)
-    form = CreateProject(json.loads(request.body))
-
-    # if the form is valid, save it and return a success response
-    # along with the redirect URL to the newly created project
-    if form.is_valid():
-        project = form.save()
-        project.author = request.user
-        project.save()
-
-        # Create the object sets, if any
-        object_sets = data["objectSets"]
-        for object_set in object_sets:
-            title = "Untitled Set"
-            if object_set["label"] is not None and object_set["label"] != "":
-                title = object_set["label"]
-            project.object_sets.create(term=object_set["type"], title=title)
-
-        return JsonResponse(
-            {
-                "action": "posted",
-                "redirect": reverse(
-                    "course_flow:project-update", kwargs={"pk": project.pk}
-                ),
-            }
-        )
-
-    # otherwise, return the errors so UI can display errors accordingly
-    return JsonResponse({"action": "error", "errors": form.errors})
+# @user_is_teacher()
+# def json_api_post_create_project(request: HttpRequest) -> JsonResponse:
+#     # instantiate the form with the JSON params
+#     data = json.loads(request.body)
+#     form = CreateProject(json.loads(request.body))
+#
+#     # if the form is valid, save it and return a success response
+#     # along with the redirect URL to the newly created project
+#     if form.is_valid():
+#         project = form.save()
+#         project.author = request.user
+#         project.save()
+#
+#         # Create the object sets, if any
+#         object_sets = data["objectSets"]
+#         for object_set in object_sets:
+#             title = "Untitled Set"
+#             if object_set["label"] is not None and object_set["label"] != "":
+#                 title = object_set["label"]
+#             project.object_sets.create(term=object_set["type"], title=title)
+#
+#         return JsonResponse(
+#             {
+#                 "action": "posted",
+#                 "redirect": reverse(
+#                     "course_flow:project-update", kwargs={"pk": project.pk}
+#                 ),
+#             }
+#         )
+#
+#     # otherwise, return the errors so UI can display errors accordingly
+#     return JsonResponse({"action": "error", "errors": form.errors})
 
 
 # Add an object set to a project

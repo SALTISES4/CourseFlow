@@ -1,4 +1,5 @@
 import { LibraryObjectType } from '@cf/types/enum'
+import { ObjectSetType } from '@cfComponents/dialog/common/ProjectCreateDialog/type'
 import { SearchOption } from '@cfComponents/filters/types'
 
 // types of filter
@@ -30,4 +31,14 @@ export type ToggleFavouriteQueryArgs = {
   id: number
   type: LibraryObjectType
   favourite: boolean
+}
+
+/*******************************************************
+ * ARGS
+ *******************************************************/
+export type CreateProjectArgs = {
+  description: string
+  title: string
+  disciplines: number[]
+  objectSets: ObjectSetType[]
 }
