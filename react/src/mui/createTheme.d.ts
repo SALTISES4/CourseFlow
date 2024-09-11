@@ -14,6 +14,11 @@ declare module '@mui/material/styles' {
       template?: string
     }
 
+    template?: {
+      main?: string
+      contrastText?: string
+    }
+
     workspaceBlocks: {
       courseAssessment?: string
       courseProject?: string
@@ -40,6 +45,11 @@ declare module '@mui/material/styles' {
       course?: string
       activity?: string
       template?: string
+    }
+
+    template?: {
+      main?: string
+      contrastText?: string
     }
 
     workspaceBlocks: {

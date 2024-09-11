@@ -1,5 +1,11 @@
 import { Theme, createTheme } from '@mui/material/styles'
 
+declare module '@mui/material' {
+  interface ButtonPropsColorOverrides {
+    template: true
+  }
+}
+
 const theme: Theme = createTheme({
   palette: {
     primary: {
@@ -22,6 +28,10 @@ const theme: Theme = createTheme({
       course: 'rgba(183, 28, 28, 1)',
       activity: 'rgba(41, 98, 255, 1)',
       template: 'rgba(255, 64, 129, 1)'
+    },
+    template: {
+      main: 'rgba(255, 64, 129, 1)',
+      contrastText: '#fff'
     },
     workspaceBlocks: {
       courseAssessment: '#ad1d35',
@@ -58,6 +68,19 @@ const theme: Theme = createTheme({
         root: {
           textTransform: 'none',
           fontWeight: '600'
+        }
+      }
+    },
+    MuiPaginationItem: {
+      styleOverrides: {
+        root: {
+          '&.Mui-selected': {
+            color: 'currentColor',
+            backgroundColor: 'rgba(4, 186, 116, 0.12)',
+            '&:hover': {
+              backgroundColor: 'rgba(4, 186, 116, 0.12)'
+            }
+          }
         }
       }
     },
