@@ -1,3 +1,6 @@
+#########################################################
+# THIS FILE SHOULD BE ARCHIVED
+#########################################################
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db.models import Q

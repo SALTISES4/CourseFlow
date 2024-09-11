@@ -7,21 +7,12 @@ from django.utils.translation import gettext_lazy as _
 
 from course_flow.models._common import title_max_length
 
+from ._abstract import AbstractCourseFlowModel
+
 User = get_user_model()
 
 
-class Column(models.Model):
-    deleted = models.BooleanField(default=False)
-    deleted_on = models.DateTimeField(default=timezone.now)
-    title = models.CharField(
-        max_length=title_max_length, null=True, blank=True
-    )
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    icon = models.CharField(max_length=50, null=True, blank=True)
-    created_on = models.DateTimeField(default=timezone.now)
-    last_modified = models.DateTimeField(auto_now=True)
-    visible = models.BooleanField(default=True)
-    colour = models.PositiveIntegerField(null=True)
+def column_types():
     CUSTOM_ACTIVITY = 0
     OUT_OF_CLASS_INSTRUCTOR = 1
     OUT_OF_CLASS_STUDENT = 2
@@ -34,7 +25,7 @@ class Column(models.Model):
     ASSESSMENT = 14
     CUSTOM_PROGRAM = 20
 
-    COLUMN_TYPES = (
+    return (
         (CUSTOM_ACTIVITY, _("Custom Activity Column")),
         (OUT_OF_CLASS_INSTRUCTOR, _("Out of Class (Instructor)")),
         (OUT_OF_CLASS_STUDENT, _("Out of Class (Students)")),
@@ -47,9 +38,28 @@ class Column(models.Model):
         (ASSESSMENT, _("Assessment")),
         (CUSTOM_PROGRAM, _("Custom Program Category")),
     )
-    column_type = models.PositiveIntegerField(default=0, choices=COLUMN_TYPES)
+
+
+class Column(AbstractCourseFlowModel):
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    icon = models.CharField(max_length=50, null=True, blank=True)
+
+    visible = models.BooleanField(default=True)
+
+    colour = models.PositiveIntegerField(null=True)
+
+    column_type = models.PositiveIntegerField(
+        default=0, choices=column_types()
+    )
 
     is_original = models.BooleanField(default=False)
+
+    #########################################################
+    # RELATIONS
+    #########################################################
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
     parent_column = models.ForeignKey(
         "Column", on_delete=models.SET_NULL, null=True
     )
@@ -58,8 +68,16 @@ class Column(models.Model):
         "Comment", blank=True, related_name="column"
     )
 
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    #########################################################
+    # META
+    #########################################################
+    class Meta:
+        verbose_name = _("Column")
+        verbose_name_plural = _("Columns")
 
+    #########################################################
+    # MODEL METHODS / GETTERS
+    #########################################################
     def get_permission_objects(self):
         return self.get_workflow().get_permission_objects()
 
@@ -74,7 +92,3 @@ class Column(models.Model):
 
     def __str__(self):
         return self.get_column_type_display()
-
-    class Meta:
-        verbose_name = _("Column")
-        verbose_name_plural = _("Columns")

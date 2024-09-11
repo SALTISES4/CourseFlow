@@ -9,33 +9,48 @@ from course_flow.models._common import User, workflow_choices
 from .workflow import Workflow
 
 
-class ObjectPermission(models.Model):
-    content_choices = {"model__in": ["project", "workflow"]}
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    content_type = models.ForeignKey(
-        ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
-    )
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey("content_type", "object_id")
-
+def permission_choices():
     PERMISSION_NONE = 0
     PERMISSION_VIEW = 1
     PERMISSION_EDIT = 2
     PERMISSION_COMMENT = 3
     PERMISSION_STUDENT = 4
-    PERMISSION_CHOICES = (
+    return (
         (PERMISSION_NONE, _("None")),
         (PERMISSION_VIEW, _("View")),
         (PERMISSION_EDIT, _("Edit")),
         (PERMISSION_COMMENT, _("Comment")),
         (PERMISSION_STUDENT, _("Student")),
     )
-    permission_type = models.PositiveIntegerField(
-        choices=PERMISSION_CHOICES, default=PERMISSION_NONE
-    )
 
+
+class ObjectPermission(models.Model):
+    #########################################################
+    # FIELDS
+    #########################################################
+    content_choices = {"model__in": ["project", "workflow"]}
+
+    object_id = models.PositiveIntegerField()
+
+    permission_type = models.PositiveIntegerField(
+        choices=permission_choices(), default=0
+    )
     last_viewed = models.DateTimeField(default=timezone.now)
 
+    #########################################################
+    # RELATIONS
+    #########################################################
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
+    )
+
+    #########################################################
+    # MODEL METHODS / GETTERS
+    #########################################################
     def update_last_viewed(user, view_object):
         ObjectPermission.objects.filter(
             user=user,

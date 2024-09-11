@@ -3,14 +3,12 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
-from django.utils import timezone
 
 from course_flow.models.activity import Activity
 from course_flow.models.column import Column
 from course_flow.models.comment import Comment
 from course_flow.models.course import Course
 from course_flow.models.favourite import Favourite
-from course_flow.models.liveprojectmodels import UserAssignment
 from course_flow.models.node import Node
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.outcome import Outcome
@@ -583,9 +581,15 @@ def delete_existing_permission(sender, instance, **kwargs):
 def remove_permissions_to_project_objects(sender, instance, **kwargs):
     if instance.content_type == ContentType.objects.get_for_model(Project):
         for workflow in instance.content_object.workflows.all():
+            # @todo try this pattern when you are ready to fix the superclass/subclass coupling error
+            # Using ContentType to dynamically get the actual model class and id
+            # workflow_type = ContentType.objects.get_for_model(workflow, for_concrete_model=False)
+            # real_workflow = workflow_type.get_object_for_this_type(pk=workflow.pk)
+
             ObjectPermission.objects.filter(
                 user=instance.user,
                 content_type=ContentType.objects.get_for_model(workflow),
+                # @todo fix this
                 object_id=workflow.get_subclass().id,
             ).delete()
 
@@ -612,6 +616,7 @@ def set_node_type_default(sender, instance, created, **kwargs):
 def set_week_type_default(sender, instance, created, **kwargs):
     week = instance.week
     try:
+        # @todo fix this
         week.week_type = instance.workflow.get_subclass().WORKFLOW_TYPE
         week.save()
     except ValidationError:
@@ -760,6 +765,7 @@ def set_publication_workflow(sender, instance, created, **kwargs):
         workflow = instance.workflow
         workflow.published = instance.project.published
         workflow.disciplines.set(instance.project.disciplines.all())
+        # @todo fix this
         if instance.project.author != workflow.get_subclass().author:
             ObjectPermission.objects.create(
                 content_object=workflow.get_subclass(),

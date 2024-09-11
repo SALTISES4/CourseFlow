@@ -8,6 +8,7 @@ class UpdateNotification(models.Model):
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
+
     created_on = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
