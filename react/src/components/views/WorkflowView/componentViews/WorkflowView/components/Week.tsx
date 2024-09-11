@@ -1,22 +1,26 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import * as Utility from '@cf/utility/utilityFunctions'
-import { getWeekByID, TGetWeekByIDType } from '@cfFindState'
 import * as Constants from '@cf/constants'
-import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
+import { CfObjectType } from '@cf/types/enum'
+import * as Utility from '@cf/utility/utilityFunctions'
+import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles'
-import NodeWeek from './NodeWeek'
-import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
-import ActionCreator from '@cfRedux/ActionCreator'
-// import $ from 'jquery'
+import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
 import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
+import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
+import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { addStrategyQuery } from '@XMLHTTP/API/create'
-import { CfObjectType } from '@cf/types/enum'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
+import * as React from 'react'
+import { connect } from 'react-redux'
+
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+
+import NodeWeek from './NodeWeek'
+
+// import $ from 'jquery'
 
 type ConnectedProps = TGetWeekByIDType
 type OwnProps = {
@@ -300,7 +304,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
                 <div className="strategy-tab-circle">
                   <img
                     title={
-                      this.context.workflow.choices.strategy_classification_choices.find(
+                      choices.strategy_classification_choices.find(
                         (obj) => obj.type === data.strategy_classification
                       ).name
                     }

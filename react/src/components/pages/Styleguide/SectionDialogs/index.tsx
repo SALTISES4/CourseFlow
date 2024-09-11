@@ -1,8 +1,8 @@
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import Section from '@cfPages/Home/components/Section'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Section from '@cfPages/Home/components/Section'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 
 const SectionDialogs = () => {
   const { dispatch } = useDialog()
@@ -56,7 +56,7 @@ const SectionDialogs = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.COURSE_ARCHIVE)}
+            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_ARCHIVE)}
           >
             Archive Course
           </Button>

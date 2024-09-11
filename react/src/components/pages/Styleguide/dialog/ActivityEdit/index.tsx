@@ -1,20 +1,20 @@
-import { ChangeEvent, useState } from 'react'
-import { produce } from 'immer'
-import Button from '@mui/material/Button'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import { SelectChangeEvent } from '@mui/material/Select'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import ActivityForm from '@cfPages/Styleguide/dialog/CreateWizard/components/FormActivity'
 import { ActivityFormDataType } from '@cfPages/Styleguide/dialog/CreateWizard/components/FormActivity/types'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { StyledDialog } from '@cfPages/Styleguide/dialog/styles'
+import Button from '@mui/material/Button'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import { SelectChangeEvent } from '@mui/material/Select'
+import { produce } from 'immer'
+import { ChangeEvent, useState } from 'react'
 
 type StateType = Omit<ActivityFormDataType, 'units'> & {
   unit: string
 }
 
-const EditCourseDialog = (data: ActivityFormDataType) => {
+const EditActivityDialog = (data: ActivityFormDataType) => {
   const initialState: StateType = {
     title: data.title,
     description: data.description,
@@ -81,4 +81,4 @@ const EditCourseDialog = (data: ActivityFormDataType) => {
   )
 }
 
-export default EditCourseDialog
+export default EditActivityDialog

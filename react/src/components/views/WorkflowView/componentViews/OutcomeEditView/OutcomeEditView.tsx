@@ -1,20 +1,22 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-// @components
-import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
-import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
-import Outcome from './Outcome'
-import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { newOutcomeQuery } from '@XMLHTTP/API/create'
-import { CfObjectType } from '@cf/types/enum'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { AppState } from '@cfRedux/types/type'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
 import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
-import { _t } from '@cf/utility/utilityFunctions'
+import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState } from '@cfRedux/types/type'
+import { newOutcomeQuery } from '@XMLHTTP/API/create'
+import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import * as React from 'react'
+import { connect } from 'react-redux'
+// @components
+
+import Outcome from './Outcome'
+
 // import $ from 'jquery'
 
 type ConnectedProps = {

@@ -5,12 +5,12 @@ from django.views.generic.edit import CreateView
 from course_flow.models import Project
 from course_flow.models.program import Program
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.views.HTTP.HTTP import CreateView_No_Autocomplete
+from course_flow.views.HTTP.HTTP import CreateViewNoAutocomplete
 from course_flow.views.mixins import UserCanEditProjectMixin
 
 
 class ProgramCreateView(
-    LoginRequiredMixin, UserCanEditProjectMixin, CreateView_No_Autocomplete
+    LoginRequiredMixin, UserCanEditProjectMixin, CreateViewNoAutocomplete
 ):
     model = Program
     fields = ["title", "description"]

@@ -1,12 +1,13 @@
-import * as React from 'react'
 import * as Constants from '@cf/constants'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
+import { newNodeQuery } from '@XMLHTTP/API/create'
+import * as React from 'react'
+
 import EditableComponentWithActions, {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from './EditableComponentWithActions'
-import { newNodeQuery } from '@XMLHTTP/API/create'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 
 type OwnProps = {

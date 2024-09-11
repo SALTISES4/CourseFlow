@@ -1,29 +1,30 @@
-import {
-  KeyboardEvent,
-  useState,
-  useMemo,
-  useRef,
-  useEffect,
-  ChangeEvent
-} from 'react'
-import Fuse from 'fuse.js'
-import { CHIP_TYPE } from '@cfPages/Styleguide/components/WorkflowCard/types'
 import { CardChip } from '@cfPages/Styleguide/components/WorkflowCard/styles'
-import { debounce } from '@mui/material'
-import Link from '@mui/material/Link'
-import MenuItem from '@mui/material/MenuItem'
-import InputAdornment from '@mui/material/InputAdornment'
-import SearchIcon from '@mui/icons-material/Search'
+import { CHIP_TYPE } from '@cfPages/Styleguide/components/WorkflowCard/types'
 import CancelIcon from '@mui/icons-material/Cancel'
+import SearchIcon from '@mui/icons-material/Search'
+import { debounce } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import Input from '@mui/material/Input'
+import InputAdornment from '@mui/material/InputAdornment'
+import Link from '@mui/material/Link'
+import MenuItem from '@mui/material/MenuItem'
+import Fuse from 'fuse.js'
 import {
-  Wrap,
-  StyledMenu,
-  Suggestion,
+  ChangeEvent,
+  KeyboardEvent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
+
+import {
   ProjectGroup,
   ProjectName,
-  ProjectTag
+  ProjectTag,
+  StyledMenu,
+  Suggestion,
+  Wrap
 } from './styles'
 
 export type ResultType = {

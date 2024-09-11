@@ -1,13 +1,13 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { connect } from 'react-redux'
 import * as Constants from '@cf/constants'
 // import $ from 'jquery'
-import { AppState } from '@cfRedux/types/type'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
 import Slider from '@cfComponents/UIPrimitives/Slider'
+import { AppState } from '@cfRedux/types/type'
+import * as React from 'react'
+import * as reactDom from 'react-dom'
+import { connect } from 'react-redux'
 
 type StateType = {
   show_slider: boolean
@@ -20,6 +20,9 @@ type ConnectedProps = {
 }
 
 type PropsType = ConnectedProps
+
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+
 export class WorkflowLegendUnconnected<
   P extends PropsType
 > extends React.Component<P, StateType> {
@@ -86,22 +89,14 @@ export class WorkflowLegendUnconnected<
     const contexts = this.props.contexts.map((value) => (
       <LegendLine
         icon={Constants.context_keys[value]}
-        text={
-          this.context.workflow.choices.context_choices.find(
-            (obj) => obj.type == value
-          ).name
-        }
+        text={choices.context_choices.find((obj) => obj.type == value).name}
       />
     ))
 
     const tasks = this.props.tasks.map((value) => (
       <LegendLine
         icon={Constants.task_keys[value]}
-        text={
-          this.context.workflow.choices.task_choices.find(
-            (obj) => obj.type == value
-          ).name
-        }
+        text={choices.task_choices.find((obj) => obj.type == value).name}
       />
     ))
 
@@ -109,7 +104,7 @@ export class WorkflowLegendUnconnected<
       <LegendLine
         icon={Constants.strategy_keys[value]}
         text={
-          this.context.workflow.choices.strategy_classification_choices.find(
+          choices.strategy_classification_choices.find(
             (obj) => obj.type == value
           ).name
         }

@@ -20,80 +20,20 @@ from course_flow.models.workflow import Workflow
 from course_flow.utils import get_model_from_str
 
 
-# Ajax login required view decorator
-def ajax_login_required(view_func):
-    """
-    Decorator for ajax views that checks if a user is logged in and returns
-    a 401 status code otherwise.
-    """
-
+#########################################################
+# APP DECORATORS
+#########################################################
+def ignore_extra_args(view_func):
     @wraps(view_func)
-    def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return view_func(request, *args, **kwargs)
-        else:
-            response = JsonResponse({"login_url": settings.LOGIN_URL})
-            response.status_code = 401
-            return response
+    def _decorated(request, *args, **kwargs):
+        # Filter kwargs to only include those accepted by the view function
+        func_args = view_func.__code__.co_varnames[
+            : view_func.__code__.co_argcount
+        ]
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k in func_args}
+        return view_func(request, **filtered_kwargs)
 
-    return _wrapped_view
-
-
-# Ajax login required view decorator
-def ajax_login_as_teacher_required(view_func):
-    """
-    Decorator for ajax views that checks if a user is logged in and returns
-    a 401 status code otherwise.
-    """
-
-    @wraps(view_func)
-    def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_authenticated and (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in request.user.groups.all()
-        ):
-            return view_func(request, *args, **kwargs)
-        else:
-            response = JsonResponse({"login_url": settings.LOGIN_URL})
-            response.status_code = 401
-            return response
-
-    return _wrapped_view
-
-
-def is_owner(model):
-    def wrapped_view(fct):
-        @require_POST
-        @ajax_login_as_teacher_required
-        @wraps(fct)
-        def _wrapped_view(request, model=model, *args, **kwargs):
-            body = json.loads(request.body)
-            if model:
-                if model[-2:] == "Pk":
-                    pk = body.get(model, "")
-                    model = model[:-2]
-            else:
-                pk = body.get("objectId", "")
-                model = body.get("objectType", "")
-
-            if not pk or not model:
-                return HttpResponseBadRequest()
-
-            try:
-                object_type = get_model_from_str(model)
-                object = object_type.objects.get(pk=pk)
-            except ObjectDoesNotExist:
-                return HttpResponseNotFound()
-
-            # Check ownership
-            if request.user == object.author:
-                return fct(request, *args, **kwargs)
-            else:
-                raise PermissionDenied
-
-        return _wrapped_view
-
-    return wrapped_view
+    return _decorated
 
 
 def check_object_permission(instance, user, permission):
@@ -140,6 +80,93 @@ def check_objects_permission(instances, user, permission):
 def check_objects_public(instances):
     object_public = [x.public_view for x in instances]
     return reduce(lambda a, b: a & b, object_public)
+
+
+def get_permission_objects(model, body, **kwargs):
+    model_data = get_model_from_request(model, body, **kwargs)
+    object_type = get_model_from_str(model_data["model"])
+    permission_objects = object_type.objects.get(
+        pk=model_data["pk"]
+    ).get_permission_objects()
+    return permission_objects
+
+
+#########################################################
+# JSON API DECORATORS
+#########################################################
+def ajax_login_required(view_func):
+    """
+    Decorator for ajax views that checks if a user is logged in and returns
+    a 401 status code otherwise.
+    """
+
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return view_func(request, *args, **kwargs)
+        else:
+            return JsonResponse(
+                {"error": {"login_url": settings.LOGIN_URL}}, status=401
+            )
+
+    return _wrapped_view
+
+
+# Ajax login required view decorator
+def ajax_login_as_teacher_required(view_func):
+    """
+    Decorator for ajax views that checks if a user is logged in and returns
+    a 401 status code otherwise.
+    """
+
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in request.user.groups.all()
+        ):
+            return view_func(request, *args, **kwargs)
+        else:
+            return JsonResponse(
+                {"error": {"login_url": settings.LOGIN_URL}}, status=401
+            )
+
+    return _wrapped_view
+
+
+def is_owner(model):
+    def wrapped_view(fct):
+        @require_POST
+        @ajax_login_as_teacher_required
+        @wraps(fct)
+        def _wrapped_view(request, model=model, *args, **kwargs):
+            body = json.loads(request.body)
+            if model:
+                if model[-2:] == "Pk":
+                    pk = body.get(model, "")
+                    model = model[:-2]
+            else:
+                pk = body.get("objectId", "")
+                model = body.get("objectType", "")
+
+            if not pk or not model:
+                return HttpResponseBadRequest()
+
+            try:
+                object_type = get_model_from_str(model)
+                object = object_type.objects.get(pk=pk)
+            except ObjectDoesNotExist:
+                return HttpResponseNotFound()
+
+            # Check ownership
+            if request.user == object.author:
+                return fct(request, *args, **kwargs)
+            else:
+                raise PermissionDenied
+
+        return _wrapped_view
+
+    return wrapped_view
 
 
 def check_special_case_delete_permission(model_data, user):
@@ -191,18 +218,14 @@ def get_model_from_request(model, body, **kwargs):
             else:
                 pk = request_data
                 model = body.get("objectType")
+
+    # @todo check this for formatting
     return {"model": model, "pk": pk}
 
 
-def get_permission_objects(model, body, **kwargs):
-    model_data = get_model_from_request(model, body, **kwargs)
-    object_type = get_model_from_str(model_data["model"])
-    permission_objects = object_type.objects.get(
-        pk=model_data["pk"]
-    ).get_permission_objects()
-    return permission_objects
-
-
+#########################################################
+# PERMISSIONS
+#########################################################
 def user_is_author(model, **outer_kwargs):
     def wrapped_view(fct):
         @require_POST
@@ -224,13 +247,14 @@ def user_is_author(model, **outer_kwargs):
                 ):
                     return fct(request, *args, **kwargs)
                 else:
-                    response = JsonResponse({"login_url": settings.LOGIN_URL})
-                    response.status_code = 403
-                    return response
+                    return JsonResponse(
+                        {"error": {"login_url": settings.LOGIN_URL}},
+                        status=403,
+                    )
             except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
 
         return _wrapped_view
 
@@ -260,13 +284,14 @@ def user_can_edit(model, **outer_kwargs):
                 ):
                     return fct(request, *args, **kwargs)
                 else:
-                    response = JsonResponse({"login_url": settings.LOGIN_URL})
-                    response.status_code = 403
-                    return response
+                    return JsonResponse(
+                        {"error": {"login_url": settings.LOGIN_URL}},
+                        status=403,
+                    )
             except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
 
         return _wrapped_view
 
@@ -287,9 +312,9 @@ def user_can_view(model, **outer_kwargs):
                     model, body, **outer_kwargs
                 )
             except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
@@ -297,9 +322,9 @@ def user_can_view(model, **outer_kwargs):
             ):
                 return fct(request, *args, **kwargs)
             else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
 
         return _wrapped_view
 
@@ -325,9 +350,9 @@ def user_can_view_or_none(model, **outer_kwargs):
                     model, body, **outer_kwargs
                 )
             except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
@@ -335,9 +360,9 @@ def user_can_view_or_none(model, **outer_kwargs):
             ):
                 return fct(request, *args, **kwargs)
             else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
 
         return _wrapped_view
 
@@ -363,9 +388,9 @@ def user_can_edit_or_none(model, **outer_kwargs):
                     model, body, **outer_kwargs
                 )
             except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
@@ -373,9 +398,9 @@ def user_can_edit_or_none(model, **outer_kwargs):
             ):
                 return fct(request, *args, **kwargs)
             else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
 
         return _wrapped_view
 
@@ -392,6 +417,13 @@ delete_exceptions = [
 
 
 def user_can_comment(model, **outer_kwargs):
+    """
+
+    :param model:
+    :param outer_kwargs:
+    :return:
+    """
+
     def wrapped_view(fct):
         @require_POST
         @ajax_login_as_teacher_required
@@ -405,9 +437,10 @@ def user_can_comment(model, **outer_kwargs):
                     model, body, **outer_kwargs
                 )
             except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
+
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
@@ -415,9 +448,9 @@ def user_can_comment(model, **outer_kwargs):
             ):
                 return fct(request, *args, **kwargs)
             else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
 
         return _wrapped_view
 
@@ -425,6 +458,13 @@ def user_can_comment(model, **outer_kwargs):
 
 
 def user_can_delete(model, **outer_kwargs):
+    """
+
+    :param model:
+    :param outer_kwargs:
+    :return:
+    """
+
     def wrapped_view(fct):
         @require_POST
         @ajax_login_as_teacher_required
@@ -443,9 +483,7 @@ def user_can_delete(model, **outer_kwargs):
                             model_data, User.objects.get(pk=request.user.pk)
                         )
                     except Exception as e:
-                        response = JsonResponse({"error": str(e)})
-                        response.status_code = 400
-                        return response
+                        return JsonResponse({"error": str(e)}, stats=400)
                     if perm:
                         return fct(request, *args, **kwargs)
                 else:
@@ -459,22 +497,26 @@ def user_can_delete(model, **outer_kwargs):
                     ):
                         return fct(request, *args, **kwargs)
 
-                response = JsonResponse({"error": "permission"})
-                response.status_code = 403
-                return response
+                return JsonResponse({"error": "permission error"}, status=403)
+
             except Exception as e:
-                response = JsonResponse({"error": str(e)})
-                response.status_code = 403
-                return response
+                return JsonResponse({"error": str(e)}, status=400)
 
         return _wrapped_view
 
     return wrapped_view
 
 
-# check to see if the two models are from the same workflow. The second object may be parent if kwargs are used
-# The second argument can be optional; if no model info is found the decorator passes
 def from_same_workflow(model1, model2, **outer_kwargs):
+    """
+    check to see if the two models are from the same workflow. The second object may be parent if kwargs are used
+    The second argument can be optional; if no model info is found the decorator passes
+    :param model1:
+    :param model2:
+    :param outer_kwargs:
+    :return:
+    """
+
     def wrapped_view(fct):
         @wraps(fct)
         def _wrapped_view(
@@ -500,21 +542,22 @@ def from_same_workflow(model1, model2, **outer_kwargs):
                     return fct(request, *args, **kwargs)
                 if model_data2["pk"] is None or model_data2["pk"] == -1:
                     return fct(request, *args, **kwargs)
+
                 instance1 = get_model_from_str(
                     model_data1["model"]
                 ).objects.get(pk=model_data1["pk"])
+
                 instance2 = get_model_from_str(
                     model_data2["model"]
                 ).objects.get(pk=model_data2["pk"])
+
                 if instance1.get_workflow().pk == instance2.get_workflow().pk:
                     return fct(request, *args, **kwargs)
-                response = JsonResponse({"error": "workflow mismatch"})
-                response.status_code = 403
-                return response
+
+                return JsonResponse({"error": "workflow mismatch"}, status=403)
+
             except Exception as e:
-                response = JsonResponse({"error": str(e)})
-                response.status_code = 403
-                return response
+                return JsonResponse({"error": str(e)}, status=403)
 
         return _wrapped_view
 
@@ -533,13 +576,15 @@ def user_is_teacher():
                     in request.user.groups.all()
                 ):
                     return fct(request, *args, **kwargs)
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
+                )
+
             except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"login_url": settings.LOGIN_URL}, stats=403
+                )
 
         return _wrapped_view
 
@@ -556,9 +601,8 @@ def public_access(**outer_kwargs):
         def _wrapped_view(request, outer_kwargs=outer_kwargs, *args, **kwargs):
             ratelimited = getattr(request, "limited", False)
             if ratelimited:
-                response = JsonResponse({"action": "ratelimited"})
-                response.status_code = 429
-                return response
+                return JsonResponse({"error": "ratelimited"}, stats=429)
+
             return fct(request, *args, **kwargs)
 
         return _wrapped_view
@@ -579,38 +623,24 @@ def public_model_access(model, **outer_kwargs):
         ):
             ratelimited = getattr(request, "limited", False)
             if ratelimited:
-                response = JsonResponse({"action": "ratelimited"})
-                response.status_code = 429
-                return response
+                return JsonResponse({"error": "ratelimited"}, stats=429)
             try:
                 model_type = get_model_from_str(model)
                 permission_objects = model_type.objects.get(
                     pk=kwargs.get("pk")
                 ).get_permission_objects()
             except AttributeError:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, stats=403
+                )
+
             if check_objects_public(permission_objects):
                 return fct(request, *args, **kwargs)
             else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
+                return JsonResponse(
+                    {"error": {"login_url": settings.LOGIN_URL}}, stats=403
+                )
 
         return _wrapped_view
 
     return wrapped_view
-
-
-def ignore_extra_args(view_func):
-    @wraps(view_func)
-    def _decorated(request, *args, **kwargs):
-        # Filter kwargs to only include those accepted by the view function
-        func_args = view_func.__code__.co_varnames[
-            : view_func.__code__.co_argcount
-        ]
-        filtered_kwargs = {k: v for k, v in kwargs.items() if k in func_args}
-        return view_func(request, **filtered_kwargs)
-
-    return _decorated

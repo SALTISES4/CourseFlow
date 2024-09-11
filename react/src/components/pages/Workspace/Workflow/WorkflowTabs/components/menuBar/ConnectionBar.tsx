@@ -1,7 +1,7 @@
-import * as React from 'react'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { useContext } from 'react'
 import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import { useContext } from 'react'
 
 const ConnectedUser = ({
   userColour,

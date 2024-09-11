@@ -1,12 +1,12 @@
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
+import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
+import * as Constants from '@cfConstants'
+import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
+import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
+import { AppState, TColumn } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
-import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
-import * as Constants from '@cfConstants'
-import { AppState, TColumn } from '@cfRedux/types/type'
-import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
-import { CfObjectType } from '@cf/types/enum'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 
 type OwnProps = {
   // renderer: any

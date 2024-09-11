@@ -1,77 +1,42 @@
-import React from 'react'
-import { connect, DispatchProp } from 'react-redux'
-import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
+import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
+import legacyWithRouter from '@cf/HOC/legacyWithRouter'
+import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
+import WebSocketServiceConnectedUserManager, {
+  ConnectedUser
+} from '@cf/HTTP/WebsocketServiceConnectedUserManager'
+import { WorkflowViewType } from '@cf/types/enum'
+import { calcWorkflowPermissions } from '@cf/utility/permissions'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import {
   WorkflowDetailViewDTO,
   WorkflowPermission
 } from '@cfPages/Workspace/Workflow/types'
-import { AppState } from '@cfRedux/types/type'
+import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { ViewType } from '@cf/types/enum'
+import { AppState } from '@cfRedux/types/type'
+import { SelectionManager } from '@cfRedux/utility/SelectionManager'
+import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
+import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
   getWorkflowById,
   getWorkflowChildDataQuery,
   getWorkflowDataQuery,
-  getWorkflowParentDataQuery, getWorkflowParentDataQueryLegacy
+  getWorkflowParentDataQuery,
+  getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
-import { updateValueQuery } from '@XMLHTTP/API/update'
-import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
-import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
-import legacyWithRouter from '@cf/HOC/legacyWithRouter'
-import { RouterProps } from 'react-router'
-import WebSocketServiceConnectedUserManager, {
-  ConnectedUser
-} from '@cf/HTTP/WebsocketServiceConnectedUserManager'
-import { PERMISSION_KEYS } from '@cfConstants'
 import { EProject } from '@XMLHTTP/types/entity'
-import Loader from '@cfComponents/UIPrimitives/Loader'
-import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
-
-const defaultPermissions: WorkflowPermission = {
-  readOnly: false,
-  viewComments: false,
-  addComments: false,
-  canView: false
-}
+import React from 'react'
+import { DispatchProp, connect } from 'react-redux'
+import { RouterProps } from 'react-router'
 
 type StateProps = {
   connectedUsers: ConnectedUser[]
   wsConnected: boolean
   ready: boolean
-  viewType: ViewType
 }
-type OwnProps = {
-  initialView?: ViewType
-}
+type OwnProps = NonNullable<unknown>
 type ConnectedProps = Record<string, never>
 type PropsType = DispatchProp & OwnProps & ConnectedProps
-
-const calcPermissions = (userPermission: number): WorkflowPermission => {
-  switch (userPermission) {
-    case PERMISSION_KEYS.VIEW:
-      return {
-        ...defaultPermissions,
-        canView: true
-      }
-    case PERMISSION_KEYS.COMMENT:
-      return {
-        ...defaultPermissions,
-        viewComments: true,
-        addComments: true,
-        canView: true
-      }
-
-    case PERMISSION_KEYS.EDIT:
-      return {
-        ...defaultPermissions,
-        viewComments: true,
-        addComments: true,
-        canView: true
-      }
-  }
-  return defaultPermissions
-}
 
 /****************************************
  * this is a copy of the original Workflow/Workflow
@@ -92,12 +57,12 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   project_permission: number
 
   // def used
-  workflowID: number
+  workflowId: number
   private messageQueue: any[]
   private isMessagesQueued: boolean
   selectionManager: SelectionManager
   store: Store<EmptyObject & AppState, AnyAction>
-  viewType: ViewType
+  viewType: WorkflowViewType
   protected locks: any
   private wsService: WebSocketService
   workflowPermission: WorkflowPermission
@@ -118,21 +83,19 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     this.state = {
       wsConnected: false,
       connectedUsers: [],
-      ready: false,
-      viewType: props.initialView
+      ready: false
     }
 
     this.isMessagesQueued = true // why would this be true right away?
     this.messageQueue = []
-    this.updateView = this.updateView.bind(this)
   }
 
   componentDidMount() {
     const { id } = this.props.params
-    this.workflowID = id
+    this.workflowId = id
 
     // Begin websocket connection manager
-    const url = `ws/update/${this.workflowID}/`
+    const url = `ws/update/${this.workflowId}/`
     this.wsService = new WebSocketService(url)
 
     // Begin connected user manager
@@ -150,7 +113,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     // fetch the basic workflow data by id set in URL
     // @todo i think that we have everything we need in getWorkflowDataQuery
     // except for 'choices' config lists TBD
-    getWorkflowById(this.workflowID).then((response) => {
+    getWorkflowById(this.workflowId).then((response) => {
       this.workflowDetailResp = response.data_package
       this.setupData(response.data_package)
 
@@ -160,14 +123,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
         userName: response.data_package.user_name
       })
     })
-  }
-
-  componentDidUpdate(prevProps) {
-    console.log('this.props.initialView')
-    console.log(this.props.initialView)
-    if (this.props.initialView !== prevProps.initialView) {
-      this.updateView(this.props.initialView)
-    }
   }
 
   componentWillUnmount() {
@@ -187,17 +142,10 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
       this.project_permission = this.project.object_permission.permission_type
     }
 
-    this.workflowPermission = calcPermissions(response.user_permission)
+    this.workflowPermission = calcWorkflowPermissions(response.user_permission)
     this.selectionManager = new SelectionManager(
       this.workflowPermission.readOnly
     )
-  }
-
-  updateView(viewType: ViewType) {
-    this.setState({
-      ...this.state,
-      viewType
-    })
   }
 
   /*******************************************************
@@ -214,7 +162,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     // put it in redux store, and indicate that we're ready to render / done loading
     // Q: do we have race condition with main parent 'get workflow data'
     // Q: why are these separate, and how can they be better defined?
-    getWorkflowDataQuery(this.workflowID, (response) => {
+    getWorkflowDataQuery(this.workflowId, (response) => {
       // this.unread_comments = response.data_package?.unread_comments // @todo do not assign this explicitly here, not seeing this in data package yet
 
       this.props.dispatch(ActionCreator.refreshStoreData(response.data_package))
@@ -352,7 +300,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
   onParentWorkflowUpdateReceived() {
     this.isMessagesQueued = true
-    getWorkflowParentDataQueryLegacy(this.workflowID, (response) => {
+    getWorkflowParentDataQueryLegacy(this.workflowId, (response) => {
       // remove all the parent node and parent workflow data
       this.store.dispatch(
         ActionCreator.replaceStoreData({
@@ -489,7 +437,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
         initialValue={{
           workflowDetailResp: this.workflowDetailResp,
           selectionManager: this.selectionManager,
-          viewType: this.state.viewType,
           editableMethods: {
             lock_update: this.lock_update,
             micro_update: this.micro_update,
@@ -505,11 +452,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
           }
         }}
       >
-        <WorkflowTabs
-          // viewType={this.state.viewType}
-          // alwaysStatic: this.always_static use 'public view' unless the use case gets better defined
-          updateView={this.updateView}
-        />
+        <WorkflowTabs />
       </WorkFlowConfigProvider>
     )
   }

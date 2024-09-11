@@ -1,18 +1,19 @@
-import { useRef, useState, useLayoutEffect } from 'react'
 import { OuterContentWrap } from '@cf/mui/helper'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import WorkspaceSidebar from '@cfPages/Styleguide/components/WorkspaceSidebar'
-import workspaceSidebarData from '@cfPages/Styleguide/components/WorkspaceSidebar/data'
-import { yellow, grey } from '@mui/material/colors'
 import { Wrap as DraggablePlaceholder } from '@cfPages/Styleguide/components/WorkspaceSidebar/components/DraggableBlock/styles'
 import { DraggableType } from '@cfPages/Styleguide/components/WorkspaceSidebar/components/DraggableBlock/types'
+import workspaceSidebarData from '@cfPages/Styleguide/components/WorkspaceSidebar/data'
 import {
   DndContext,
   DragEndEvent,
   DragOverlay,
   DragStartEvent
 } from '@dnd-kit/core'
+import { grey, yellow } from '@mui/material/colors'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useLayoutEffect, useRef, useState } from 'react'
+
 import DropTarget from './components/DropTarget'
 
 const WorkspaceTab = () => {

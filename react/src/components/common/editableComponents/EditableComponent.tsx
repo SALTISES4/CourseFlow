@@ -1,20 +1,22 @@
-import * as React from 'react'
-import ReactDOM from 'react-dom'
 import * as Constants from '@cf/constants'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { CfObjectType, WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
+import { _t } from '@cf/utility/utilityFunctions'
+import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import WorkflowLinkDialog from '@cfComponents/dialog/Workspace/WorkflowLinkDialog'
 import QuillDiv from '@cfEditableComponents/components/QuillDiv'
+import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
+import Button from '@mui/material/Button'
 import { toggleStrategyQuery } from '@XMLHTTP/API/update'
 import { updateObjectSet } from '@XMLHTTP/API/update'
-import { CfObjectType } from '@cf/types/enum'
 import { ReactElement, ReactPortal } from 'react'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import Button from '@mui/material/Button'
-import WorkflowLinkModal from '@cfComponents/dialog/WorkflowLink'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import ReactDOM from 'react-dom'
+
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
 
 const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()
@@ -149,7 +151,7 @@ class EditableComponent<
           value={data.task_classification}
           onChange={this.inputChanged.bind(this, 'task_classification')}
         >
-          {this.context.workflow.choices.task_choices
+          {choices.task_choices
             .filter(
               (choice) =>
                 // @todo clearly not properly typed
@@ -187,7 +189,7 @@ class EditableComponent<
             value={data.time_units}
             onChange={this.inputChanged.bind(this, 'time_units')}
           >
-            {this.context.workflow.choices.time_choices.map((choice) => (
+            {choices.time_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -259,7 +261,7 @@ class EditableComponent<
           value={data.context_classification}
           onChange={this.inputChanged.bind(this, 'context_classification')}
         >
-          {this.context.workflow.choices.context_choices
+          {choices.context_choices
             .filter(
               (choice) =>
                 // @ts-ignore
@@ -342,7 +344,7 @@ class EditableComponent<
             value={data.outcomes_type}
             onChange={this.inputChanged.bind(this, 'outcomes_type')}
           >
-            {this.context.workflow.choices.context_choices.map((choice) => (
+            {choices.context_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -473,7 +475,7 @@ class EditableComponent<
           value={data.strategy_classification}
           onChange={this.inputChanged.bind(this, 'strategy_classification')}
         >
-          {this.context.workflow.choices.context_choices.map((choice) => (
+          {choices.context_choices.map((choice) => (
             <option value={choice.type}>{choice.name}</option>
           ))}
         </select>
@@ -514,6 +516,7 @@ class EditableComponent<
     return <></>
   }
 
+  //
   EditForm = ({ data, noDelete }) => {
     let sets
 
@@ -598,7 +601,7 @@ class EditableComponent<
 
         {((type === CfObjectType.OUTCOME && data.depth === 0) ||
           (type === CfObjectType.WORKFLOW &&
-            data.type == CfObjectType.COURSE)) && (
+            data.type == WorkflowType.COURSE)) && (
           <this.CodeOptional data={data} readOnly={read_only} />
         )}
 
@@ -618,19 +621,23 @@ class EditableComponent<
           <this.Colour data={data} readOnly={read_only} />
         )}
 
-        {((type === CfObjectType.WORKFLOW &&
-          data.type == CfObjectType.COURSE) ||
-          (type == CfObjectType.NODE && data.node_type == 2)) && (
-          <this.Ponderation
-            data={data}
-            override={override}
-            read_only={read_only}
-          />
-        )}
+        {
+          // @todo this is mixed up data types
+          //  type should notbe able to be worklow OR course OR  outcome etc
+          ((type === CfObjectType.WORKFLOW &&
+            data.type == WorkflowType.COURSE) ||
+            (type == CfObjectType.NODE && data.node_type == 2)) && (
+            <this.Ponderation
+              data={data}
+              override={override}
+              read_only={read_only}
+            />
+          )
+        }
 
         {type === CfObjectType.NODE && data.node_type !== 0 && (
           <>
-            <WorkflowLinkModal id={data.id} />
+            <WorkflowLinkDialog id={data.id} />
             <this.LinkedWorkflow data={data} readOnly={read_only} />
           </>
         )}

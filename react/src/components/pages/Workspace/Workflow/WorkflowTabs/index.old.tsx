@@ -1,53 +1,50 @@
 // @ts-nocheck
-import * as React from 'react'
-import { connect, DispatchProp } from 'react-redux'
 
-import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar.jsx'
-import * as Constants from '@cfConstants'
-import ConnectionBar from '@cfViews/WorkflowView/WorkflowViewLayout/components/menuBar/ConnectionBar'
-
-import { Dialog, DialogTitle } from '@mui/material'
-
-import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
-import { AppState } from '@cfRedux/types/type'
+import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
+import * as Constants from '@cfConstants'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
 import { DIALOG_TYPE, useDialog } from '@cfModule/components/common/dialog'
-import { CfObjectType, ViewType, WFContext } from '@cfModule/types/enum'
-import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
-import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
+import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
+import ImportModal from '@cfModule/components/common/dialog/Import'
+import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget'
+import MenuBar from '@cfModule/components/common/layout/MenuBar'
 import {
   WorkFlowConfigContext,
   WorkFlowContextType
 } from '@cfModule/context/workFlowConfigContext'
-
+import { EventUnion } from '@cfModule/types/common'
+import { CfObjectType, ViewType, WFContext } from '@cfModule/types/enum'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState } from '@cfRedux/types/type'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { EventUnion } from '@cfModule/types/common'
-import { DialogContextProvider } from '@cfModule/components/common/dialog/context'
-import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget'
-import ImportModal from '@cfModule/components/common/dialog/Import'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
-import MenuBar from '@cfModule/components/common/layout/MenuBar'
-import ParentWorkflowIndicator from '@cfViews/WorkflowView/WorkflowViewLayout/components/ParentWorkflowIndicator'
+import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar.jsx'
 import Header from '@cfViews/WorkflowView/WorkflowViewLayout/components/Header'
+import ConnectionBar from '@cfViews/WorkflowView/WorkflowViewLayout/components/menuBar/ConnectionBar'
+import ParentWorkflowIndicator from '@cfViews/WorkflowView/WorkflowViewLayout/components/ParentWorkflowIndicator'
+import ReturnLinks from '@cfViews/WorkflowView/WorkflowViewLayout/components/ReturnLinks'
+import WorkflowViewTabs from '@cfViews/WorkflowView/WorkflowViewLayout/components/WorkflowViewTabs'
+import EditIcon from '@mui/icons-material/Edit'
+import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import { Dialog, DialogTitle } from '@mui/material'
+import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
+import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
+import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
+import { ReactElement } from 'react'
+import * as React from 'react'
+import { DispatchProp, connect } from 'react-redux'
+
 import {
   IconMenuItem,
   ListMenuItem,
   MenuItemType
 } from './components/menuBar/MenuButtons'
-
-import WorkflowViewTabs from '@cfViews/WorkflowView/WorkflowViewLayout/components/WorkflowViewTabs'
-import ReturnLinks from '@cfViews/WorkflowView/WorkflowViewLayout/components/ReturnLinks'
-import { ReactElement } from 'react'
-import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import EditIcon from '@mui/icons-material/Edit'
 
 type ConnectedProps = {
   data: AppState['workflow']
@@ -124,7 +121,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
     this.data = this.props.data
     this.project = this.context.workflow.project
-    this.workflowId = this.context.workflow.workflowID
+    this.workflowId = this.context.workflow.workflowId
 
     this.project_permission = this.context.permissions.projectPermission
     this.always_static = this.context.public_view
@@ -618,7 +615,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
             id={this.data.id}
             actionFunction={this.duplicateItem}
           />
-          <ImportModal workflowID={this.data.id} />
+          <ImportModal workflowId={this.data.id} />
           <this.ShareDialog />
         </div>
       </DialogContextProvider>

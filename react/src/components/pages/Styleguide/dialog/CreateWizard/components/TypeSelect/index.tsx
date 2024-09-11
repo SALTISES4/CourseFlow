@@ -1,9 +1,10 @@
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize'
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch'
-import { CREATE_RESOURCE_TYPE } from '../../types'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+
 import { TypeBlock } from './styles'
+import { CREATE_RESOURCE_TYPE } from '../../types'
 
 type PropsType = {
   resourceLabel: 'course' | 'activity' | 'program'

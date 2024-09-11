@@ -17,6 +17,7 @@ graphviz
 django-extensions
 pyparsing
 pydot
+pydantic
 
 
 -e file:./#egg=saltise_course_flow

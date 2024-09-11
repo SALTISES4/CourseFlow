@@ -1,11 +1,12 @@
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
+import Outcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/Outcome'
+import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import * as Utility from '@cfUtility'
+
 import AlignmentHorizontalReverseParentOutcome from './AlignmentHorizontalReverseParentOutcome'
 import OutcomeAdder from './OutcomeAdder'
-import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
-import { AppState } from '@cfRedux/types/type'
-import Outcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/Outcome'
 
 type ConnectedProps = {
   data: any

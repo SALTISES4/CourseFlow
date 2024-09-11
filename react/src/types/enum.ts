@@ -1,9 +1,15 @@
-import { Enum } from '@cf/utility/utilityFunctions'
+// this is not a real 'datatype', but is useful for some commands which group
+// workflows together and differentiate them from project (like archive, delete),
+// argument to be made that this should be handled by CfObjectType
+export enum WorkSpaceType {
+  WORKFLOW = 'workflow',
+  PROJECT = 'project'
+}
 
-// this is guidelines for our wofklow tabs
-// each view type is more or less a tab
-
-export enum ViewType {
+// corresponds to the different presentation layers of the workspace
+// see workspace tabs, they are matched (for now)
+// WorkflowViewType additionally is one dimension which informs the workspace utility sidebar
+export enum WorkflowViewType {
   WORKFLOW = 'workflowview',
   OUTCOME_EDIT = 'outcomeedit',
   GRID = 'grid',
@@ -24,15 +30,19 @@ export enum WorkflowType {
   COURSE = 'course'
 }
 
+// simplified datatype returned to queries to the library
+// this includes the wrapping 'project' as well as the different types of 'Workflow'
 export enum LibraryObjectType {
+  PROJECT = 'project',
   PROGRAM = 'program',
   ACTIVITY = 'activity',
-  PROJECT = 'project',
-  COURSE = 'course',
-  LIVE_PROJECT = 'liveproject'
+  COURSE = 'course'
 }
 
+// all the different entity types in the project related to a 'workflow'
 export enum CfObjectType {
+  STRATEGY = 'strategy', // this is like a template, it might not belong here
+
   NODELINK = 'nodelink',
   NODE = 'node',
   WEEK = 'week',
@@ -43,14 +53,13 @@ export enum CfObjectType {
   COLUMNWORKFLOW = 'columnworkflow',
   OUTCOMENODE = 'outcomenode',
   OUTCOMEOUTCOME = 'outcomeoutcome',
-  STRATEGY = 'strategy',
   OUTCOMEHORIZONTALLINK = 'outcomehorizontallink',
   OUTCOMEWORKFLOW = 'outcomeworkflow',
   NODEWEEK = 'nodeweek',
-  WEEKWORKFLOW = 'weekworkflow',
-  COURSE = 'course'
+  WEEKWORKFLOW = 'weekworkflow'
 }
 
+// @todo unclear data type
 export enum OBJECT_TYPE {
   OUTCOME = 'outcome',
   PROJECT = 'project',

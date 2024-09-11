@@ -1,19 +1,20 @@
-import * as React from 'react'
-import ViewBar from './ViewBar'
-import RestoreBar from './RestoreBar'
-import OutcomeBar from './OutcomeBar'
-import ParentOutcomeBar from './ParentOutcomeBar'
-import ComparisonViewBar from './ComparisonViewBar'
-import NodeBar from '@cfViews/components/rightSideBarContent/NodeBar'
-import { ViewType, WFContext } from '@cf/types/enum.js'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
-import EditIcon from '@mui/icons-material/Edit'
+import { WFContext, WorkflowViewType } from '@cf/types/enum.js'
+import { _t } from '@cf/utility/utilityFunctions'
+import NodeBar from '@cfViews/components/rightSideBarContent/NodeBar'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import SpokeIcon from '@mui/icons-material/Spoke'
+import EditIcon from '@mui/icons-material/Edit'
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye'
-import { _t } from '@cf/utility/utilityFunctions'
+import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
+import SpokeIcon from '@mui/icons-material/Spoke'
+import * as React from 'react'
+
+import ComparisonViewBar from './ComparisonViewBar'
+import OutcomeBar from './OutcomeBar'
+import ParentOutcomeBar from './ParentOutcomeBar'
+import RestoreBar from './RestoreBar'
+import ViewBar from './ViewBar'
 // import $ from 'jquery'
 
 /**
@@ -37,6 +38,8 @@ type PropsType = {
   object_sets?: any
   toggleObjectSet?: any
 }
+
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
 
 class RightSideBar extends React.Component<PropsType> {
   static contextType = WorkFlowConfigContext
@@ -92,7 +95,7 @@ class RightSideBar extends React.Component<PropsType> {
           // view_type={this.props.renderer.view_type}
           // renderer={this.props.renderer}
           readOnly={this.context.permissions.workflowPermission.readOnly}
-          columnChoices={this.context.workflow.choices.column_choices}
+          columnChoices={choices.column_choices}
         />
       )
     return null
@@ -102,7 +105,7 @@ class RightSideBar extends React.Component<PropsType> {
     if (this.props.wfcontext === WFContext.COMPARISON) {
       return null
     }
-    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
+    if (this.context.workflowView === WorkflowViewType.OUTCOME_EDIT) {
       return <ParentOutcomeBar />
     }
     return (

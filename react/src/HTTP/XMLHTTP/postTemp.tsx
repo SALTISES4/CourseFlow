@@ -1,7 +1,7 @@
 //  TEMP FILE FOR AJAX FUNCTIONS UNTIL WE SOLVE CIRC DEPS
-import { dragAction } from '@XMLHTTP/API/update'
 import { VERB } from '@cf/types/enum'
-import { renderMessageBox } from '@cfComponents/menu/MenuComponents.jsx'
+import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents.jsx'
+import { dragAction } from '@XMLHTTP/API/update'
 
 // import $ from 'jquery'
 

@@ -1,10 +1,10 @@
-import TextField from '@mui/material/TextField'
-import Button from '@mui/material/Button'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import { StyledDialog, StyledForm } from '@cfPages/Styleguide/dialog/styles'
 import ObjectSets from '@cfPages/Styleguide/dialog/Project/components/ObjectSets'
+import { StyledDialog, StyledForm } from '@cfPages/Styleguide/dialog/styles'
+import Button from '@mui/material/Button'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import TextField from '@mui/material/TextField'
 
 import { TInnerDialog as PropsType } from '../'
 

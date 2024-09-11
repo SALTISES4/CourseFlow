@@ -1,20 +1,20 @@
-import React, { useEffect, useReducer } from 'react'
-import { styled } from '@mui/material/styles'
+import { OuterContentWrap } from '@cf/mui/helper'
 import Box from '@mui/material/Box'
-import FormGroup from '@mui/material/FormGroup'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import FormGroup from '@mui/material/FormGroup'
+import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { OuterContentWrap } from '@cf/mui/helper'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import {
-  NotificationSettingsQueryResp,
-  NotificationSettingsUpdateQueryResp
-} from '@XMLHTTP/types/query.js'
 import {
   getNotificationSettings,
   updateNotificationSettings
 } from '@XMLHTTP/API/user'
+import {
+  NotificationSettingsQueryResp,
+  NotificationSettingsUpdateQueryResp
+} from '@XMLHTTP/types/query.js'
+import React, { useEffect, useReducer } from 'react'
 
 const PageTitle = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),

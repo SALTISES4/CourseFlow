@@ -1,17 +1,17 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import { getOutcomeNodeByID, TOutcomeNodeByID } from '@cfFindState'
-import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
+import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
+import { TOutcomeNodeByID, getOutcomeNodeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
-import { _t } from '@cf/utility/utilityFunctions'
-import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
+import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
+import * as React from 'react'
+import { connect } from 'react-redux'
 // import $ from 'jquery'
 
 type ConnectedProps = TOutcomeNodeByID

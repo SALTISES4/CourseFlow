@@ -1,15 +1,16 @@
+import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
+import { LibraryObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import { workflowTitle } from '@cfComponents/UIPrimitives/Titles'
+import ErrorIcon from '@mui/icons-material/Error'
+import { useMutation } from '@tanstack/react-query'
+import { toggleFavouriteMutation } from '@XMLHTTP/API/library'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
+
 import WorkflowCardDumb, {
   PropsType as WorkflowCardDumbPropsType
 } from '../WorkflowCardDumb'
-import { workflowTitle } from '@cfComponents/UIPrimitives/Titles'
-import { LibraryObjectType } from '@cf/types/enum'
-import ErrorIcon from '@mui/icons-material/Error'
-import { _t } from '@cf/utility/utilityFunctions'
-import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
-import { useMutation } from '@tanstack/react-query'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { toggleFavouriteMutation } from '@XMLHTTP/API/library'
 
 /*******************************************************
  * A workflow card for a menu

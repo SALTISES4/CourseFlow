@@ -1,32 +1,10 @@
-import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
 
-export function deleteSelfSoft(
-  objectId: number,
-  objectType: any
-): Promise<EmptyPostResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self_soft
 
-  return API_POST<EmptyPostResp>(url, {
-    objectId: objectId,
-    objectType: objectType
-  })
-}
 
-export function deleteSelfHard(
-  objectId: number,
-  objectType: any,
-  soft = false
-): Promise<EmptyPostResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self_soft
-
-  return API_POST<EmptyPostResp>(url, {
-    objectId: objectId,
-    objectType: objectType
-  })
-}
-
+// TO RMOEVE WHEN READY
 export function deleteSelfQueryLegacy(
   objectId: number,
   objectType: any,
@@ -47,7 +25,7 @@ export function deleteSelfQueryLegacy(
   })
 }
 
-//Causes the specified object to undelete itself
+// TO RMOEVE WHEN READY
 export function restoreSelfQueryLegacy(
   objectId: number,
   objectType: any,

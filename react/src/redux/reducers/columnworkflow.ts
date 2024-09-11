@@ -1,5 +1,3 @@
-import { TColumnworkflow } from '@cfRedux/types/type'
-import { AnyAction } from '@reduxjs/toolkit'
 import {
   ColumnActions,
   ColumnWorkflowActions,
@@ -7,6 +5,8 @@ import {
   NodeActions,
   StrategyActions
 } from '@cfRedux/types/enumActions'
+import { TColumnworkflow } from '@cfRedux/types/type'
+import { AnyAction } from '@reduxjs/toolkit'
 
 /**
  *

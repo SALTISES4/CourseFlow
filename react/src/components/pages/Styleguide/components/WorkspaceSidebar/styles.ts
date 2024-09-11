@@ -1,7 +1,7 @@
-import { alpha, styled } from '@mui/material/styles'
-import Box from '@mui/material/Box'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { IconButton } from '@mui/material'
+import Box from '@mui/material/Box'
+import { alpha, styled } from '@mui/material/styles'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 
 export const SidebarWrap = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'collapsed'

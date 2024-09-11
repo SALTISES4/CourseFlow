@@ -1,18 +1,19 @@
 // @ts-nocheck
-import * as Constants from '../constants'
 import * as Utility from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/utilityFunctions'
 import {
   AppState,
+  TColumn,
   TColumnworkflow,
-  TNodelink,
   TNode,
+  TNodelink,
   TObjectSet,
   TOutcome,
   TOutcomeOutcome,
-  TWeek,
-  TColumn
+  TWeek
 } from '@cfRedux/types/type'
-import { _t } from '@cf/utility/utilityFunctions'
+
+import * as Constants from '../constants'
 
 /*******************************************************
  * TYPES

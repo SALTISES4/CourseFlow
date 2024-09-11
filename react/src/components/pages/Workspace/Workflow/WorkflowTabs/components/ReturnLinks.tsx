@@ -1,20 +1,14 @@
-import * as React from 'react'
-import { EProject } from '@XMLHTTP/types/entity'
-import { Link } from 'react-router-dom'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import { connect, DispatchProp } from 'react-redux'
-import { AppState } from '@cfRedux/types/type'
-import Typography from '@mui/material/Typography'
+import { CFRoutes } from '@cf/router'
 import { _t } from '@cf/utility/utilityFunctions'
+import { AppState } from '@cfRedux/types/type'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { EProject } from '@XMLHTTP/types/entity'
+import * as React from 'react'
+import { useSelector } from 'react-redux'
+import { Link, generatePath } from 'react-router-dom'
 
-type ConnectedProps = {
-  project: EProject
-  isStudent: boolean
-  publicView: boolean
-  canView: boolean
-}
-type OwnProps = NonNullable<unknown>
-type PropsType = DispatchProp & ConnectedProps & OwnProps
 const dummyProject = {
   deleted: false,
   deleted_on: '2023/12/27',
@@ -37,78 +31,85 @@ const dummyProject = {
     last_viewed: '2024-08-23T21:22:51.834Z'
   }
 }
-const ReturnLinksUnconnected = ({
-  isStudent,
-  publicView,
-  project,
-  canView
-}: PropsType) => {
-  const workflowLinks =
-    project && !isStudent && !publicView ? (
-      <Link
-        className="hover-shade no-underline"
-        id="project-return"
-        to={COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-          String(0),
-          String(project.id)
-        )}
-      >
-        <ArrowBackIosIcon />
-        <div>
-          <Typography>{_t('Return to')}</Typography>
-          {
-            // doesn't work for now because project is not in store
-            0 &&
-              // <WorkflowTitle
-              //   class_name="inline"
-              //   no_hyperlink={true}
-              //   data={project}
-              // />
-              'placeholder title'
-          }
-        </div>
-      </Link>
-    ) : (
-      <></>
-    )
 
-  const projectLink =
-    publicView && canView ? (
-      <Link
-        id="project-return"
-        // @todo no
-        to={COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-          String(0),
-          String(project.id)
-        )}
-      >
-        <ArrowBackIosIcon />
-        {_t('Return to Editable Workflow')}
+/**
+ * @todo did a first pass, but there is work to do still
+ * not currently in design but feels like functionality is still important
+ * data source and 'should show' logic not well managed currently
+ */
+const ReturnLinks = () => {
+  const project = dummyProject as unknown as EProject // @todo temp because project is not in store yet
+  const isStudent = false // @todo temp because project is not in store yet
+  const canView = true // @todo temp because project is not in store yet
+
+  /*******************************************************
+   * REDUX
+   *******************************************************/
+  const publicView = useSelector<AppState>(
+    (state: AppState) => state.workflow.public_view
+  )
+
+  const WorkflowLink = () => {
+    if (!project || isStudent || publicView) {
+      return <></>
+    }
+
+    const path = generatePath(CFRoutes.PROJECT, {
+      id: String(project.id)
+    })
+
+    const title = 'placeholder title ' // @todo,  helper function that assembles the title
+    return (
+      <Link className="hover-shade no-underline" id="project-return" to={path}>
+        <Box sx={{ display: 'flex' }}>
+          <ArrowBackIosIcon color={'primary'} />
+          <Typography color={'primary'}>
+            {_t('Return to')} {title}
+          </Typography>
+        </Box>
       </Link>
-    ) : (
-      <></>
     )
+  }
+
+  // if you are viewing the public link, and you have edit permissions (?)
+  // this returns you to the editable version
+  // not really understanding this yet, why not use the same link but with view permissions for all users?
+  const EditableProjectLink = () => {
+    if (!publicView || !canView) return <></>
+
+    const path = generatePath(CFRoutes.PROJECT, {
+      id: String(project.id)
+    })
+    return (
+      <Link data-test-id={'link-editable-workflow-return'} to={path}>
+        <ArrowBackIosIcon />
+        {_t('Return to Editable Project')}
+      </Link>
+    )
+  }
+
+  // this is not managed properly yet for if you are in a workflow or project view
+  const EditableWorkflowLink = () => {
+    if (!publicView || !canView) return <></>
+
+    const path = generatePath(CFRoutes.WORKFLOW, {
+      id: String(project.id)
+    })
+    return (
+      <Link data-test-id={'link-editable-workflow-return'} to={path}>
+        <ArrowBackIosIcon />
+        {_t('Return to Editable Project')}
+      </Link>
+    )
+  }
 
   return (
     <>
-      {workflowLinks}
-      {projectLink}
+      <WorkflowLink />
+      <EditableProjectLink />
+      <EditableWorkflowLink />
     </>
   )
 }
-
-const mapStateToProps = (state: AppState): ConnectedProps => {
-  return {
-    project: dummyProject as unknown as EProject, // @todo temp because project is not in store yet
-    isStudent: false, // @todo temp because project is not in store yet
-    publicView: state.workflow.public_view,
-    canView: true // @todo temp because project is not in store yet
-  }
-}
-
-const ReturnLinks = connect<ConnectedProps, DispatchProp, OwnProps, AppState>(
-  mapStateToProps,
-  null
-)(ReturnLinksUnconnected)
 
 export default ReturnLinks

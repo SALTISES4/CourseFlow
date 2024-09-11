@@ -1,9 +1,9 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import RestoreBarItem from '@cfViews/components/rightSideBarContent/NodeBar/components/RestoreBarItem'
-import { AppState } from '@cfRedux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import { AppState } from '@cfRedux/types/type'
+import RestoreBarItem from '@cfViews/components/rightSideBarContent/NodeBar/components/RestoreBarItem'
+import * as React from 'react'
+import { connect } from 'react-redux'
 // import $ from 'jquery'
 
 /**

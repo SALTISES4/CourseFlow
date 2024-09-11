@@ -1,11 +1,11 @@
+import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cfConstants'
+import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
+import { EditableComponentWithActionsState } from '@cfEditableComponents/EditableComponentWithActions'
+import { TGetColumnByID, getColumnByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
-import { getColumnByID, TGetColumnByID } from '@cfFindState'
-import * as Constants from '@cfConstants'
-import { CfObjectType } from '@cf/types/enum'
-import { AppState } from '@cfRedux/types/type'
-import { EditableComponentWithActionsState } from '@cfEditableComponents/EditableComponentWithActions'
 
 type ConnectedProps = TGetColumnByID
 type OwnProps = {

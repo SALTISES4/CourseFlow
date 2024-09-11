@@ -1,14 +1,14 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import { getOutcomeByID, TGetOutcomeByID } from '@cfFindState'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
-import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
+import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import { _t } from '@cf/utility/utilityFunctions'
+import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
+import * as React from 'react'
+import { connect } from 'react-redux'
 // import $ from 'jquery'
 
 type TableCellPropsType = {

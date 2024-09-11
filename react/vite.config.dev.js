@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import { VitePWA } from 'vite-plugin-pwa'
-import viteCompression from 'vite-plugin-compression'
 import reactRefresh from '@vitejs/plugin-react-refresh'
+import { defineConfig } from 'vite'
+import viteCompression from 'vite-plugin-compression'
+import { VitePWA } from 'vite-plugin-pwa'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 // https://vitejs.dev/config/
@@ -10,7 +10,7 @@ export default defineConfig({
   base: process.env.mode === 'production' ? '/static/' : '/',
   root: './',
   server: {
-    port: 3030,
+    port: 3000,
     strictPort: true
   },
   preview: {

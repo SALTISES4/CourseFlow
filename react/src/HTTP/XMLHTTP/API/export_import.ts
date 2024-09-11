@@ -1,6 +1,6 @@
-import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { VERB } from '@cf/types/enum'
 import { API_POST, API_POST_FILE } from '@XMLHTTP/CallWrapper'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
 
 //get exported data
 export function getExport(

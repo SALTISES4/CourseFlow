@@ -5,7 +5,7 @@ from django.core.cache import cache
 
 from course_flow.models.project import Project
 from course_flow.models.workflow import Workflow
-from course_flow.serializers import AnalyticsSerializer
+from course_flow.serializers.admin import AnalyticsSerializer
 
 
 def month_replace(x):

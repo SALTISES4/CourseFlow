@@ -1,39 +1,42 @@
-import { useState } from 'react'
+import { OuterContentWrap } from '@cf/mui/helper'
+import { CFRoutes, RelativeRoutes } from '@cf/router'
+import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
+import { _t } from '@cf/utility/utilityFunctions'
+import Loader from '@cfComponents/UIPrimitives/Loader'
+import StarIcon from '@mui/icons-material/Star'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import Typography from '@mui/material/Typography'
+import { useQuery } from '@tanstack/react-query'
+import { getProjectById } from '@XMLHTTP/API/project'
+import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
+import * as React from 'react'
+import { useEffect, useState } from 'react'
 import {
+  Route,
+  Routes,
+  generatePath,
+  matchPath,
   useLocation,
   useNavigate,
-  Routes,
-  Route,
   useParams
 } from 'react-router-dom'
-import { OuterContentWrap } from '@cf/mui/helper'
-import { Routes as AppRoutes } from '@cf/router'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
-import IconButton from '@mui/material/IconButton'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
+
 import TabOverview from './components/TabOverview'
 import TabWorkflows from './components/TabWorkflows'
-import StarIcon from '@mui/icons-material/Star'
-
-import { useQuery } from '@tanstack/react-query'
-import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
-import { getProjectById } from '@XMLHTTP/API/project'
-import Loader from '@cfComponents/UIPrimitives/Loader'
-import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
 
 const ProjectDetails = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const projectId = 5
-
-  const location = useLocation()
-  const [tab, setTab] = useState<AppRoutes>(location.pathname as AppRoutes)
-  const navigate = useNavigate()
   const { id } = useParams()
+  const projectId = Number(id)
+  const location = useLocation()
+  const [activeTab, setActiveTab] = useState<RelativeRoutes>()
+  const navigate = useNavigate()
 
   const { data, error, isLoading, isError } = useQuery<GetProjectByIdQueryResp>(
     {
@@ -42,11 +45,74 @@ const ProjectDetails = () => {
     }
   )
 
+  // not really a big fan of this solution...
+  // is this really how RR would implement this?
+  // here is probably a better solution
+  // https://blog.stackademic.com/how-to-implement-tabs-that-sync-with-react-router-e255e0e90cfd
+  // we use the same pattern in: workspace tabs
+  useEffect(() => {
+    const match = tabsObject.find((tab) =>
+      matchPath({ path: tab.path, end: true }, location.pathname)
+    )
+    setActiveTab(match.relativePath)
+  }, [])
+
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  const tabsObject = [
+    {
+      path: CFRoutes.PROJECT,
+      relativePath: RelativeRoutes.INDEX,
+      label: _t('Overview'),
+      action: () => {
+        const path = generatePath(CFRoutes.PROJECT, {
+          id: String(projectId)
+        })
+        navigate(path)
+      }
+    },
+    {
+      path: CFRoutes.PROJECT_WORKFLOW,
+      relativePath: RelativeRoutes.WORKFLOW,
+      label: _t('Workflows'),
+      action: () => {
+        const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
+          id: String(projectId)
+        })
+        navigate(path)
+      }
+    }
+  ]
+
+  const tabs = tabsObject.map((item, index) => {
+    return (
+      <Tab
+        key={item.relativePath}
+        label={item.label}
+        value={item.relativePath}
+        onClick={() => {
+          const path = generatePath(item.path, { id })
+          navigate(path)
+        }}
+      />
+    )
+  })
+
+  /*******************************************************
+   * CONSTANTS
+   *******************************************************/
   if (isLoading) return <Loader />
   if (isError) return <div>An error occurred: {error.message}</div>
 
-  const project = formatProjectEntity(data.data_package.project_data)
+  const project = formatProjectEntity(
+    data.data_package.project_data,
+    COURSEFLOW_APP.globalContextData.disciplines
+  )
 
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
     <>
       <OuterContentWrap sx={{ pb: 0 }}>
@@ -78,27 +144,18 @@ const ProjectDetails = () => {
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <OuterContentWrap sx={{ pb: 0 }}>
           <Tabs
-            value={tab}
-            onChange={(_, newValue: AppRoutes) => setTab(newValue)}
+            value={activeTab}
+            onChange={(_, newValue: RelativeRoutes) => setActiveTab(newValue)}
           >
-            <Tab
-              label="Overview"
-              value={AppRoutes.TEMP_PROJECT}
-              onClick={() => navigate(AppRoutes.TEMP_PROJECT)}
-            />
-            <Tab
-              label="Workflows"
-              value={AppRoutes.TEMP_PROJECT_WORKFLOWS}
-              onClick={() => navigate(AppRoutes.TEMP_PROJECT_WORKFLOWS)}
-            />
+            {tabs}
           </Tabs>
         </OuterContentWrap>
       </Box>
 
       <Routes>
-        <Route path="/" element={<TabOverview {...project} />} />
+        <Route index path="/" element={<TabOverview {...project} />} />
         <Route
-          path="/workflows"
+          path={RelativeRoutes.WORKFLOW}
           element={<TabWorkflows projectId={projectId} />}
         />
       </Routes>

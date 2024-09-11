@@ -1,7 +1,8 @@
-import { ElementType } from 'react'
-import Typography from '@mui/material/Typography'
 import { useDraggable } from '@dnd-kit/core'
-import { Wrap, DragHandle } from './styles'
+import Typography from '@mui/material/Typography'
+import { ElementType } from 'react'
+
+import { DragHandle, Wrap } from './styles'
 import { DraggableType } from './types'
 
 type PropsType = DraggableType & {

@@ -1,9 +1,10 @@
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import * as Utility from '@cfUtility'
+
 // import { getDescendantOutcomes } from '@cfFindState'
 import AlignmentHorizontalReverseWeek from './AlignmentHorizontalReverseWeek'
-import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = ConnectedType
 type OwnProps = {

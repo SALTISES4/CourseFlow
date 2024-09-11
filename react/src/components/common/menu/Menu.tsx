@@ -1,11 +1,25 @@
-import * as React from 'react'
+import { StyledMenu } from '@cfComponents/layout/TopBar/styles'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import MenuItem from '@mui/material/MenuItem'
-import Button from '@mui/material/Button'
 import { Menu } from '@mui/material'
-import { ReactElement } from 'react'
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import MenuItem from '@mui/material/MenuItem'
+import Popover from '@mui/material/Popover'
+import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { ReactElement } from 'react'
+import * as React from 'react'
+
+const StyledPopover = styled(Popover)({
+  '& .MuiPaper-root': {
+    marginLeft: '3em',
+    width: 500
+  }
+})
+/*******************************************************
+ * This file contains menu 'builders' the accept a config list, as a plain object
+ *  and construct some different menu types based around MUI menu
+ *******************************************************/
 
 export type MenuItemType = {
   content: string | ReactElement
@@ -82,9 +96,11 @@ export const ListMenuItem = ({
 }
 
 const SimpleMenu = ({
+  id,
   menuItems,
   header
 }: {
+  id: string
   menuItems: MenuItemType[]
   header: MenuItemType
 }) => {
@@ -104,7 +120,8 @@ const SimpleMenu = ({
   return (
     <>
       <Button
-        id="basic-button"
+        id={`${id}-button`}
+        data-test-id={`${id}-button`}
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
@@ -112,8 +129,9 @@ const SimpleMenu = ({
       >
         <ListMenuItem {...header} />
       </Button>
-      <Menu
-        id="basic-menu"
+      <StyledMenu
+        id={id}
+        data-test-id={id}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -122,7 +140,7 @@ const SimpleMenu = ({
         }}
       >
         {buttons}
-      </Menu>
+      </StyledMenu>
     </>
   )
 }
@@ -180,5 +198,60 @@ const MenuWithOverflow = ({
     </>
   )
 }
+type StaticMenuProps = {
+  id: string
+  menuItems?: MenuItemType[] // Optional if you might only have content
+  header: MenuItemType
+  content?: React.ReactNode // Optional content to be displayed
+}
 
-export { MenuWithOverflow, SimpleMenu }
+const StaticMenu = ({
+  id,
+  menuItems = [], // Default to an empty array if not provided
+  header,
+  content
+}: StaticMenuProps) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  return (
+    <>
+      <Button
+        id={`${id}-button`}
+        aria-controls={open ? `${id}-menu` : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}
+      >
+        {header.content}
+      </Button>
+      <StyledPopover
+        anchorEl={anchorEl}
+        id={`${id}-menu`}
+        keepMounted
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        open={open}
+        onClose={handleClose}
+      >
+        {content}
+      </StyledPopover>
+    </>
+  )
+}
+
+export { MenuWithOverflow, SimpleMenu, StaticMenu }

@@ -1,9 +1,9 @@
-import * as React from 'react'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
 import { newNodeLink } from '@XMLHTTP/API/create'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
 // import $ from 'jquery'
 
 //The ports used to connect links for the nodes

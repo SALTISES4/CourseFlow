@@ -1,8 +1,8 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
+import LegendLine from '@cf/components/common/UIPrimitives/LegendLine'
 import { AppState } from '@cfRedux/types/type.js'
 import { WorkflowLegendUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WorkflowLegend'
-import LegendLine from '@cf/components/common/UIPrimitives/LegendLine'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 type ConnectedProps = {
   outcomes_type: any

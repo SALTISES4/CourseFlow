@@ -1,9 +1,9 @@
 // A block of collapsible text.
-import * as React from 'react'
+import { _t } from '@cf/utility/utilityFunctions'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
 
 type PropsType = {
   css_class?: string

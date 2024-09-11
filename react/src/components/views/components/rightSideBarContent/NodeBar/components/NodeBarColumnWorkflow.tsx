@@ -1,11 +1,10 @@
-import * as React from 'react'
-import { AppState } from '@cfRedux/types/type'
-import { connect } from 'react-redux'
-
+import { FieldChoice } from '@cf/types/common'
 import { TColumnWorkflowByID, getColumnWorkflowByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import NodeBarColumn from '@cfViews/components/rightSideBarContent/NodeBar/components/NodeBarColumn'
 import NodeBarColumnCreator from '@cfViews/components/rightSideBarContent/NodeBar/components/NodeBarColumnCreator'
-import { FieldChoice } from '@cf/types/common'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 /**
  * More or less a dummy container which renders

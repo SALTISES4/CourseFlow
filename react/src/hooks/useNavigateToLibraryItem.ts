@@ -1,8 +1,7 @@
+import { CFRoutes } from '@cf/router'
+import { LibraryObjectType } from '@cf/types/enum'
 import { useNavigate } from 'react-router-dom'
 import { generatePath } from 'react-router-dom'
-import { ELibraryObject } from '@XMLHTTP/types/entity'
-import { LibraryObjectType } from '@cf/types/enum'
-import { Routes as AppRoutes } from '@cf/router'
 
 const useNavigateToLibraryItem = () => {
   const navigate = useNavigate()
@@ -10,8 +9,8 @@ const useNavigateToLibraryItem = () => {
   return (id: number, type: LibraryObjectType) => {
     const basePath =
       type === LibraryObjectType.PROJECT
-        ? AppRoutes.PROJECT
-        : AppRoutes.WORKFLOW_OVERVIEW
+        ? CFRoutes.PROJECT
+        : CFRoutes.WORKFLOW
 
     const path = generatePath(basePath, {
       id: String(id)

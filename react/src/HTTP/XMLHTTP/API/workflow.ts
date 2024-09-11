@@ -1,23 +1,30 @@
 //Get the data from all child workflows
 import {
+  CfObjectType,
+  LibraryObjectType,
+  VERB,
+  WorkSpaceType
+} from '@cf/types/enum'
+import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents.jsx'
+import Library from '@cfPages/Styleguide/views/Library'
+import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
+import {
+  EmptyPostResp,
+  ProjectsForCreateQueryResp,
+  TargetProjectQueryResp,
+  WorkflowChildDataQueryResp,
+  WorkflowContextQueryResp,
+  WorkflowDataQueryResp,
+  WorkflowGroupsDataPackage,
+  WorkflowParentDataQueryResp,
+  WorkflowsForProjectQueryResp
+} from '@XMLHTTP/types/query'
+import {
   GetWorkflowByIdQueryResp,
   GetWorkflowSelectQueryResp,
   LinkedWorkflowMenuQueryResp,
   ParentWorkflowInfoQueryResp
 } from '@XMLHTTP/types/query'
-import {
-  WorkflowDataQueryResp,
-  WorkflowParentDataQueryResp,
-  WorkflowChildDataQueryResp,
-  WorkflowsForProjectQueryResp,
-  WorkflowContextQueryResp,
-  TargetProjectQueryResp,
-  WorkflowGroupsDataPackage,
-  ProjectsForCreateQueryResp
-} from '@XMLHTTP/types/query'
-import { CfObjectType, VERB } from '@cf/types/enum'
-import { renderMessageBox } from '@cfComponents/menu/MenuComponents.jsx'
-import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 
 /*******************************************************
  * Bulk data API for workflows.
@@ -115,7 +122,6 @@ export function getWorkflowParentDataQueryLegacy(
     window.fail_function()
   }
 }
-
 
 // @todo combine these
 //Get the public data from all parent workflows
@@ -404,5 +410,46 @@ export function getWorkflowSelectMenuQuery(
   ).then((response: GetWorkflowSelectQueryResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
     else window.fail_function(response.action)
+  })
+}
+
+/*******************************************************
+ * DELETE AND ARCHIVE (restorable 'SOFT' DELETE with flag)
+ *******************************************************/
+export function archiveMutation(
+  objectId: number,
+  objectType: WorkSpaceType
+): Promise<EmptyPostResp> {
+  const url = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self_soft
+
+  return API_POST<EmptyPostResp>(url, {
+    objectId: objectId,
+    objectType: objectType
+  })
+}
+
+//Causes the specified object to undelete itself
+export function unarchiveSelfMutation(
+  objectId: number,
+  objectType: any
+): Promise<EmptyPostResp> {
+  return API_POST(
+    COURSEFLOW_APP.globalContextData.path.post_paths.restore_self,
+    {
+      objectId: objectId,
+      objectType: objectType
+    }
+  )
+}
+
+export function deleteSelfHard(
+  objectId: number,
+  objectType: LibraryObjectType
+): Promise<EmptyPostResp> {
+  const url = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self_soft
+
+  return API_POST<EmptyPostResp>(url, {
+    objectId: objectId,
+    objectType: objectType
   })
 }

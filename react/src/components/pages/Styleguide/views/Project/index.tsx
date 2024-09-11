@@ -1,24 +1,25 @@
-import { useState } from 'react'
-import { useLocation, useNavigate, Routes, Route } from 'react-router-dom'
 import { OuterContentWrap } from '@cf/mui/helper'
-import { Routes as AppRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router'
+import StarIcon from '@mui/icons-material/Star'
 import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import Stack from '@mui/material/Stack'
 import IconButton from '@mui/material/IconButton'
-import Tabs from '@mui/material/Tabs'
+import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import Typography from '@mui/material/Typography'
+import { useState } from 'react'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+
 import TabOverview from './components/TabOverview'
 import TabWorkflows from './components/TabWorkflows'
 import TabWorkspace from './components/TabWorkspace'
-import StarIcon from '@mui/icons-material/Star'
 
 // move to props / internal fetcher / react query
 import data from './data'
 
 const ProjectDetails = () => {
   const location = useLocation()
-  const [tab, setTab] = useState<AppRoutes>(location.pathname as AppRoutes)
+  const [tab, setTab] = useState<CFRoutes>(location.pathname as CFRoutes)
   const navigate = useNavigate()
 
   return (
@@ -53,22 +54,22 @@ const ProjectDetails = () => {
         <OuterContentWrap sx={{ pb: 0 }}>
           <Tabs
             value={tab}
-            onChange={(_, newValue: AppRoutes) => setTab(newValue)}
+            onChange={(_, newValue: CFRoutes) => setTab(newValue)}
           >
             <Tab
               label="Overview"
-              value={AppRoutes.STYLEGUIDE_PROJECT}
-              onClick={() => navigate(AppRoutes.STYLEGUIDE_PROJECT)}
+              value={CFRoutes.STYLEGUIDE_PROJECT}
+              onClick={() => navigate(CFRoutes.STYLEGUIDE_PROJECT)}
             />
             <Tab
               label="Workflows"
-              value={AppRoutes.STYLEGUIDE_PROJECT_WORKFLOWS}
-              onClick={() => navigate(AppRoutes.STYLEGUIDE_PROJECT_WORKFLOWS)}
+              value={CFRoutes.STYLEGUIDE_PROJECT_WORKFLOWS}
+              onClick={() => navigate(CFRoutes.STYLEGUIDE_PROJECT_WORKFLOWS)}
             />
             <Tab
               label="Workspaces"
-              value={AppRoutes.STYLEGUIDE_PROJECT_WORKSPACE}
-              onClick={() => navigate(AppRoutes.STYLEGUIDE_PROJECT_WORKSPACE)}
+              value={CFRoutes.STYLEGUIDE_PROJECT_WORKSPACE}
+              onClick={() => navigate(CFRoutes.STYLEGUIDE_PROJECT_WORKSPACE)}
             />
           </Tabs>
         </OuterContentWrap>

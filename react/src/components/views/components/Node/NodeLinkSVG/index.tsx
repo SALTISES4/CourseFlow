@@ -1,13 +1,13 @@
-import * as Utility from '@cfUtility'
-import * as React from 'react'
-import * as Constants from '@cfConstants'
-import * as math from 'mathjs'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 import { ObjectLock } from '@cf/types/common'
 import { NumTuple } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
+import * as Constants from '@cfConstants'
+import ComponentWithToggleDrop, {
+  ComponentWithToggleProps
+} from '@cfEditableComponents/ComponentWithToggleDrop'
+import * as Utility from '@cfUtility'
+import * as math from 'mathjs'
+import * as React from 'react'
 
 // eslint-disable-next-line no-undef
 type Direction = { source: NumTuple; target: NumTuple }

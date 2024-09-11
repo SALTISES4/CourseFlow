@@ -1,13 +1,13 @@
+import { ToDefine } from '@cf/types/common'
+import { LibraryObjectType, VERB } from '@cf/types/enum'
+import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
+import { ToggleFavouriteQueryArgs } from '@XMLHTTP/types/args'
 import {
   EmptyPostResp,
   NotificationSettingsQueryResp,
   ProfileSettingsQueryResp,
   UserListResp
 } from '@XMLHTTP/types/query'
-import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
-import { LibraryObjectType, VERB } from '@cf/types/enum'
-import { ToDefine } from '@cf/types/common'
-import { ToggleFavouriteQueryArgs } from '@XMLHTTP/types/args'
 
 /*******************************************************
  * USERS MODEL QUERY
@@ -39,11 +39,10 @@ export async function getNotificationSettings(): Promise<NotificationSettingsQue
 }
 
 export async function updateNotificationSettings(data: any) {
-  return API_POST(
+  const url =
     COURSEFLOW_APP.globalContextData.path.json_api.user
-      .notification_settings__update,
-    data
-  )
+      .notification_settings__update
+  return API_POST(url, data)
 }
 
 /*******************************************************

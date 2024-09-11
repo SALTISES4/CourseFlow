@@ -1,14 +1,12 @@
-import React, { ReactNode } from 'react'
-import HtmlReactParser from 'html-react-parser'
-
-import { OuterContentWrap } from '@cf/mui/helper'
-import Alert from '@cfComponents/UIPrimitives/Alert'
-import TopBar from '@cfComponents/layout/TopBar'
-import Sidebar from '@cfComponents/layout/Sidebar'
-
 import { DialogContextProvider } from '@cf/context/dialogContext'
-import { configureStore } from '@reduxjs/toolkit'
+import { OuterContentWrap } from '@cf/mui/helper'
+import Sidebar from '@cfComponents/layout/Sidebar'
+import TopBar from '@cfComponents/layout/TopBar'
+import Alert from '@cfComponents/UIPrimitives/Alert'
 import * as Reducers from '@cfRedux/Reducers'
+import { configureStore } from '@reduxjs/toolkit'
+import HtmlReactParser from 'html-react-parser'
+import React, { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 
 type PropsType = {
@@ -42,32 +40,30 @@ const Base = ({ showNotifications, children }: PropsType) => {
 
   return (
     <Provider store={store}>
-      <DialogContextProvider>
-        <div className="main-wrapper">
-          <div data-component="sidebar">
-            <Sidebar {...sidebar} />
+      <div className="main-wrapper">
+        <div data-component="sidebar">
+          <Sidebar {...sidebar} />
+        </div>
+
+        <div className="main-block">
+          <div data-component="topbar">
+            <TopBar {...topbar} />
           </div>
 
-          <div className="main-block">
-            <div data-component="topbar">
-              <TopBar {...topbar} />
-            </div>
+          <NotificationsAlert show={showNotifications} />
 
-            <NotificationsAlert show={showNotifications} />
+          {/* still being used as a portal in comparison view  */}
+          <div className="titlebar"></div>
 
-            {/* still being used as a portal in comparison view  */}
-            <div className="titlebar"></div>
-
-            <div className="right-panel-wrapper">
-              <div id="container" className="body-wrapper">
-                {children}
-              </div>
+          <div className="right-panel-wrapper">
+            <div id="container" className="body-wrapper">
+              {children}
             </div>
           </div>
         </div>
+      </div>
 
-        <div id="popup-container"></div>
-      </DialogContextProvider>
+      <div id="popup-container"></div>
     </Provider>
   )
 }

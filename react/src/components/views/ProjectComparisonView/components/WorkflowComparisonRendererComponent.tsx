@@ -1,15 +1,15 @@
-import * as React from 'react'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
-import { getWorkflowContextQuery } from '@XMLHTTP/API/workflow'
 import { ProjectComparisonClass } from '@cfPages/Workspace/ProjectComparison'
-import { CfObjectType } from '@cf/types/enum'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import { _t } from '@cf/utility/utilityFunctions'
+import { getWorkflowContextQuery } from '@XMLHTTP/API/workflow'
+import * as React from 'react'
 
 type OwnProps = {
-  workflowID: any
+  workflowId: any
   selection_manager: any
   view_type: CfObjectType
   object_sets: any
@@ -38,8 +38,8 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
     const workflows_added = url_params
       .getAll('workflows')
       .map((workflow_id) => parseInt(workflow_id))
-    if (workflows_added.indexOf(this.props.workflowID) < 0) {
-      url_params.append('workflows', this.props.workflowID)
+    if (workflows_added.indexOf(this.props.workflowId) < 0) {
+      url_params.append('workflows', this.props.workflowId)
 
       // @todo
       if (history.pushState) {
@@ -57,14 +57,14 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
     // @todo
     // not sure, i think it's attempting to attach the parent as eaach row in the comparions
     // leave for now
-    getWorkflowContextQuery(this.props.workflowID, (context_response_data) => {
+    getWorkflowContextQuery(this.props.workflowId, (context_response_data) => {
       const context_data = context_response_data.data_package
 
       // @todo this will need to be unpacked, type unified with parent and called into parent
       // is there a reason #workflow-inner-wrapper is a real dom element?
       // this needs to be imported directly but that would cause   Circ D.
       this.workflowComparison = new ProjectComparisonClass({
-        workflowID: this.props.workflowID,
+        workflowId: this.props.workflowId,
         selectionManager: this.props.selection_manager,
         // container: '#workflow-inner-wrapper',
         // @ts-ignore
@@ -99,8 +99,8 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
       .getAll('workflows')
       .map((workflow_id) => parseInt(workflow_id))
 
-    if (workflows_added.indexOf(this.props.workflowID) >= 0) {
-      workflows_added.splice(workflows_added.indexOf(this.props.workflowID), 1)
+    if (workflows_added.indexOf(this.props.workflowId) >= 0) {
+      workflows_added.splice(workflows_added.indexOf(this.props.workflowId), 1)
 
       // @ts-ignore @todo why are we using parseInt ?
       url_params.set('workflows', workflows_added)
@@ -124,7 +124,7 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
     return (
       <div
         className="workflow-wrapper"
-        id={'workflow-' + this.props.workflowID}
+        id={'workflow-' + this.props.workflowId}
       >
         <div className="workflow-inner-wrapper" ref={this.mainDiv}></div>
         <div

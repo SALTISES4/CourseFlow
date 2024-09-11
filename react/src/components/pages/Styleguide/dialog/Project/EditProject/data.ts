@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DataType } from '../'
 
 const data: DataType = {

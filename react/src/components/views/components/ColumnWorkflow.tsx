@@ -1,9 +1,10 @@
+import { CfObjectType } from '@cf/types/enum'
+import { TColumnWorkflowByID, getColumnWorkflowByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
 import Column from './Column'
-import { TColumnWorkflowByID, getColumnWorkflowByID } from '@cfFindState'
-import { CfObjectType } from '@cf/types/enum'
-import { AppState } from '@cfRedux/types/type'
 
 type ConnectedProps = TColumnWorkflowByID
 type OwnProps = {

@@ -1,37 +1,38 @@
-import { useState } from 'react'
+import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
-import Avatar from '@mui/material/Avatar'
-import List from '@mui/material/List'
-import ListItemText from '@mui/material/ListItemText'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import LinkIcon from '@mui/icons-material/Link'
-
-import {
-  InfoBlock,
-  InfoBlockTitle,
-  InfoBlockContent,
-  PermissionThumbnail,
-  ObjectSetThumbnail
-} from './styles'
+import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
+import { _t, getInitials } from '@cf/utility/utilityFunctions'
 import MenuButton, {
   MenuButtonOption
 } from '@cfPages/Styleguide/components/MenuButton'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
-import { _t, getInitials } from '@cf/utility/utilityFunctions'
-import { useQuery } from '@tanstack/react-query'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
-import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
 import {
-  PermissionUserType,
   PROJECT_PERMISSION_ROLE,
+  PermissionUserType,
   ProjectDetailsType
 } from '@cfPages/Styleguide/views/Project/types'
+import LinkIcon from '@mui/icons-material/Link'
+import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/Grid'
+import List from '@mui/material/List'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
+import ListItemText from '@mui/material/ListItemText'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useQuery } from '@tanstack/react-query'
+import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
+import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import { useState } from 'react'
+import { useParams } from 'react-router-dom'
+
+import {
+  InfoBlock,
+  InfoBlockContent,
+  InfoBlockTitle,
+  ObjectSetThumbnail,
+  PermissionThumbnail
+} from './styles'
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
@@ -57,11 +58,13 @@ const OverviewTab = ({
 }: ProjectDetailsType) => {
   const [removeUser, setRemoveUser] = useState<PermissionUserType | null>(null)
   const { dispatch } = useDialog()
+  const { id } = useParams()
+  const projectId = Number(id)
 
   const { data, error, isLoading, isError } = useQuery<UsersForObjectQueryResp>(
     {
-      queryKey: ['getUsersForObjectQuery', 5],
-      queryFn: () => getUsersForObjectQuery(5, 'project')
+      queryKey: ['getUsersForObjectQuery', projectId],
+      queryFn: () => getUsersForObjectQuery(projectId, 'project')
     }
   )
 
@@ -122,7 +125,8 @@ const OverviewTab = ({
     if (!objectSets) return <></>
     return (
       <InfoBlock sx={{ mt: 3 }}>
-        <InfoBlockTitle>Object sets</InfoBlockTitle>
+        <InfoBlockTitle>{_t('Object sets')}</InfoBlockTitle>
+
         <InfoBlockContent sx={{ mt: 0 }}>
           <Grid container columnSpacing={3}>
             {objectSets.map((set, idx) => (

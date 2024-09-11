@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import { getNodeWeekByID, TGetNodeWeekByID } from '@cfFindState'
+import { TGetNodeWeekByID, getNodeWeekByID } from '@cfFindState'
 // @local
 import { AppState } from '@cfRedux/types/type'
 import ComparisonNode from '@cfViews/ProjectComparisonView/ComparisonNode'
 import { NodeWeekUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 type ConnectedProps = TGetNodeWeekByID
 type OwnProps = any
@@ -36,7 +36,7 @@ class ComparisonNodeWeekUnconnected extends NodeWeekUnconnected<PropsType> {
         //   strategy_classification_choices:
         //     this.props.renderer.strategy_classification_choices,
         //   change_field: this.props.renderer.change_field,
-        //   workflowID: this.props.renderer.workflowID,
+        //   workflowId: this.props.renderer.workflowId,
         //   unread_comments: this.props.renderer.unread_comments,
         //   add_comments: this.props.renderer.add_comments,
         //   view_comments: this.props.renderer.view_comments,

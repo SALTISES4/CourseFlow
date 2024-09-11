@@ -1,12 +1,12 @@
 // @ts-ignore
-import * as React from 'react'
-import { connect } from 'react-redux'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
-import * as Constants from '@cfConstants'
-import { AppState } from '@cfRedux/types/type'
-import { getStrategyByID, TStrategyByID } from '@cfFindState'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import * as Constants from '@cfConstants'
+import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
+import { TStrategyByID, getStrategyByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import * as React from 'react'
+import { connect } from 'react-redux'
 // import $ from 'jquery'
 
 /**

@@ -1,22 +1,23 @@
 import { Discipline, QueryPages } from '@cf/types/common'
 import { VERB } from '@cf/types/enum'
-import {
-  WorkflowDataPackage,
-  WorkflowParentDataPackage,
-  WorkflowChildDataPackage,
-  WorkflowContextData
-} from '@XMLHTTP/types'
-import {
-  ENewItem,
-  EUser,
-  EComment,
-  EObjectSet,
-  ESectionGroup,
-  ELibraryObject,
-  EWorkflow
-} from '@XMLHTTP/types/entity'
+import { ObjectSetType } from '@cfComponents/dialog/common/ProjectCreateDialog/type'
 import { ProjectViewDTO } from '@cfPages/ProjectDetail/types'
 import { WorkflowDetailViewDTO } from '@cfPages/Workspace/Workflow/types'
+import {
+  WorkflowChildDataPackage,
+  WorkflowContextData,
+  WorkflowDataPackage,
+  WorkflowParentDataPackage
+} from '@XMLHTTP/types'
+import {
+  EComment,
+  ELibraryObject,
+  ENewItem,
+  EObjectSet,
+  ESectionGroup,
+  EUser,
+  EWorkflow
+} from '@XMLHTTP/types/entity'
 
 /*******************************************************
  * Primitives
@@ -203,6 +204,13 @@ export type GetProjectByIdQueryResp = {
   data_package: ProjectViewDTO
 }
 
+export type CreateProjectResp = {
+  action: VERB
+  data_package: {
+    id: number
+  }
+}
+
 /*******************************************************
  * workflow.ts
  *******************************************************/
@@ -270,7 +278,7 @@ export type GetWorkflowSelectQueryResp = {
 }
 
 export type GetWorkflowSelectMenuResp = {
-  workflowID: number
+  workflowId: number
 }
 
 /*******************************************************

@@ -1,17 +1,17 @@
 // @ts-nocheck
-import React from 'react'
+import * as Constants from '@cf/constants'
+import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
+import legacyWithRouter from '@cf/HOC/legacyWithRouter'
+import { WorkflowViewType } from '@cf/types/enum.js'
 import Loader from '@cfComponents/UIPrimitives/Loader'
+import Workflow, { WorkflowClass } from '@cfPages/Workspace/Workflow'
 import * as Reducers from '@cfRedux/Reducers'
-import { Provider } from 'react-redux'
 import ComparisonWorkflowBase from '@cfViews/ProjectComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
-import Workflow, { WorkflowClass } from '@cfPages/Workspace/Workflow'
-import { ViewType } from '@cf/types/enum.js'
-import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
-import { getWorkflowDataQuery } from '@XMLHTTP/API/workflow'
-import * as Constants from '@cf/constants'
 import { getProjectById } from '@XMLHTTP/API/project'
-import legacyWithRouter from '@cf/HOC/legacyWithRouter'
+import { getWorkflowDataQuery } from '@XMLHTTP/API/workflow'
+import React from 'react'
+import { Provider } from 'react-redux'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
 
@@ -69,10 +69,10 @@ export class ProjectComparison extends WorkflowClass {
     super(props)
     this.state = {
       ready: false,
-      viewType: ViewType.WORKFLOW
+      viewType: WorkflowViewType.WORKFLOW
     }
     this.updateView = this.updateView.bind(this)
-    this.workflowID = 1
+    this.workflowId = 1
 
     // this is the only place this occurs in the whole app now
     // so probably still a hack
@@ -99,7 +99,7 @@ export class ProjectComparison extends WorkflowClass {
 
   onConnectionOpened(reconnect = false) {
     // this makes no sense....
-    getWorkflowDataQuery(this.workflowID, (response) => {
+    getWorkflowDataQuery(this.workflowId, (response) => {
       let data_flat = response.data_package
       if (this.initial_object_sets) {
         data_flat = {
@@ -132,8 +132,8 @@ export class ProjectComparison extends WorkflowClass {
     this.locks = {}
 
     if (
-      this.state.viewType !== ViewType.WORKFLOW &&
-      this.state.viewType !== ViewType.OUTCOME_EDIT
+      this.state.viewType !== WorkflowViewType.WORKFLOW &&
+      this.state.viewType !== WorkflowViewType.OUTCOME_EDIT
     ) {
       return <>comparsion view not supported</>
     }

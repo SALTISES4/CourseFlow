@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { connect, DispatchProp } from 'react-redux'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowViewType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { ViewType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import { DispatchProp, connect } from 'react-redux'
 
 type ConnectedProps = {
   object_sets: any
@@ -13,6 +13,8 @@ type OwnProps = {
   data: any
 }
 type PropsType = DispatchProp & ConnectedProps & OwnProps
+
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
 
 /**
  * The view tab of the right side bar for workflows. Allows object sets
@@ -53,13 +55,13 @@ class ViewBarUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let sort_block
     if (
-      this.context.viewType === ViewType.OUTCOMETABLE ||
-      this.context.viewType === ViewType.HORIZONTALOUTCOMETABLE
+      this.context.workflowView === WorkflowViewType.OUTCOMETABLE ||
+      this.context.workflowView === WorkflowViewType.HORIZONTALOUTCOMETABLE
     ) {
       const table_type_value = data.table_type || 0
       const sort_type = (
         <div className="node-bar-sort-block">
-          {this.context.workflow.choices.outcome_sort_choices.map((choice) => (
+          {choices.outcome_sort_choices.map((choice) => (
             <div>
               <input
                 disabled={

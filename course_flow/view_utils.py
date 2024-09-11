@@ -19,57 +19,55 @@ from course_flow.serializers import InfoBoxSerializer, ProjectSerializerShallow
 from course_flow.utils import get_model_from_str, get_user_permission
 
 
+def get_workflow_choices():
+    return {
+        "column_choices": [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Column._meta.get_field("column_type").choices
+        ],
+        "context_choices": [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Node._meta.get_field(
+                "context_classification"
+            ).choices
+        ],
+        "task_choices": [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Node._meta.get_field("task_classification").choices
+        ],
+        "time_choices": [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Node._meta.get_field("time_units").choices
+        ],
+        "outcome_type_choices": [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Workflow._meta.get_field("outcomes_type").choices
+        ],
+        "outcome_sort_choices": [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Workflow._meta.get_field("outcomes_sort").choices
+        ],
+        "strategy_classification_choices": [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Week._meta.get_field(
+                "strategy_classification"
+            ).choices
+        ],
+    }
+
+
 def get_workflow_context_data(workflow, user):
-    if not workflow.is_strategy:
-        project = WorkflowProject.objects.get(workflow=workflow).project
     data_package = {}
 
-    column_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Column._meta.get_field("column_type").choices
-    ]
-    context_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Node._meta.get_field("context_classification").choices
-    ]
-    task_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Node._meta.get_field("task_classification").choices
-    ]
-    time_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Node._meta.get_field("time_units").choices
-    ]
-    outcome_type_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Workflow._meta.get_field("outcomes_type").choices
-    ]
-    outcome_sort_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Workflow._meta.get_field("outcomes_sort").choices
-    ]
-    strategy_classification_choices = [
-        {"type": choice[0], "name": choice[1]}
-        for choice in Week._meta.get_field("strategy_classification").choices
-    ]
-    if not workflow.is_strategy:
-        parent_project = ProjectSerializerShallow(
-            project, context={"user": user}
-        ).data
     user_permission = get_user_permission(workflow, user)
 
     data_package["is_strategy"] = workflow.is_strategy
-    data_package["column_choices"] = column_choices
-    data_package["context_choices"] = context_choices
-    data_package["task_choices"] = task_choices
-    data_package["time_choices"] = time_choices
-    data_package["outcome_type_choices"] = outcome_type_choices
-    data_package["outcome_sort_choices"] = outcome_sort_choices
-    data_package[
-        "strategy_classification_choices"
-    ] = strategy_classification_choices
 
     if not workflow.is_strategy:
+        project = WorkflowProject.objects.get(workflow=workflow).project
+        parent_project = ProjectSerializerShallow(
+            project, context={"user": user}
+        ).data
         data_package["project"] = parent_project
 
     resp = {

@@ -1,10 +1,10 @@
-import * as React from 'react'
-import { connect } from 'react-redux'
-import NodeBarColumnWorkflow from '@cfViews/components/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow'
-import Strategy from '@cfViews/components/rightSideBarContent/NodeBar/components/Strategy'
-import { AppState } from '@cfRedux/types/type'
 import { FieldChoice } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
+import { AppState } from '@cfRedux/types/type'
+import NodeBarColumnWorkflow from '@cfViews/components/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow'
+import Strategy from '@cfViews/components/rightSideBarContent/NodeBar/components/Strategy'
+import * as React from 'react'
+import { connect } from 'react-redux'
 
 /**
  * The component for the right sidebar's tab in which

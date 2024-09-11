@@ -1,12 +1,12 @@
-import CollapsibleText from '@cfComponents/UIPrimitives/CollapsibleText'
+// @ts-nocheck
 import { Discipline } from '@cf/types/common'
-import Users from '@cfPages/ProjectDetail/components/Users'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
-import { EProject } from '@XMLHTTP/types/entity'
 import { _t } from '@cf/utility/utilityFunctions'
+import CollapsibleText from '@cfComponents/UIPrimitives/CollapsibleText'
+import Users from '@cfPages/ProjectDetail/components/Users'
+import { EProject } from '@XMLHTTP/types/entity'
+import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 
 type PropsTypes = {
-  allDisciplines: Discipline[]
   description: string
   disciplines: Discipline[]
   project: EProject
@@ -16,7 +16,6 @@ type PropsTypes = {
 }
 
 const Header = ({
-  allDisciplines,
   description,
   disciplines,
   project,

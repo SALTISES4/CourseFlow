@@ -1,16 +1,16 @@
-import Button from '@mui/material/Button'
-import DialogTitle from '@mui/material/DialogTitle'
-import DialogContent from '@mui/material/DialogContent'
-import DialogActions from '@mui/material/DialogActions'
-import Typography from '@mui/material/Typography'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import Button from '@mui/material/Button'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import Typography from '@mui/material/Typography'
 
 import { StyledDialog } from '../styles'
 
 const ArchiveDialog = () => {
   const { type, show, onClose } = useDialog([
     DIALOG_TYPE.PROJECT_ARCHIVE,
-    DIALOG_TYPE.COURSE_ARCHIVE
+    DIALOG_TYPE.WORKFLOW_ARCHIVE
   ])
 
   let resourceType = ''
@@ -18,7 +18,7 @@ const ArchiveDialog = () => {
     case DIALOG_TYPE.PROJECT_ARCHIVE:
       resourceType = 'project'
       break
-    case DIALOG_TYPE.COURSE_ARCHIVE:
+    case DIALOG_TYPE.WORKFLOW_ARCHIVE:
       resourceType = 'course'
       break
   }

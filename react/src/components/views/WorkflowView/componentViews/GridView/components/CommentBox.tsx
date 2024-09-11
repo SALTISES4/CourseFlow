@@ -1,21 +1,21 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
-
+import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
-import * as Utility from '@cfUtility'
-// @components
-// import $ from 'jquery'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
+import { TUser } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import {
   addComment,
   removeAllComments,
   removeComment
 } from '@XMLHTTP/API/comment'
 import { getUsersForObjectQueryLegacy } from '@XMLHTTP/API/sharing'
-import { TUser } from '@cfRedux/types/type'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import * as reactDom from 'react-dom'
+
+// @components
+// import $ from 'jquery'
 
 /*******************************************************
  * @CommentBox
@@ -27,7 +27,7 @@ type OwnProps = {
   comments: any
   parent: any
   // renderer: any /  not used
-  workflowID: any
+  workflowId: any
   unread_comments: any
   read_only: boolean
   add_comments: any
@@ -114,7 +114,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
       const loader = COURSEFLOW_APP.tinyLoader
       loader.startLoad()
       getUsersForObjectQueryLegacy(
-        this.props.workflowID,
+        this.props.workflowId,
         'workflow',
         (response) => {
           loader.endLoad()

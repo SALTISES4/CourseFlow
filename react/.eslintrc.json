@@ -21,8 +21,15 @@
     },
     "import/resolver": {
       "node": {
-        "paths": ["src"],
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+        "paths": [
+          "src"
+        ],
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx"
+        ]
       }
     }
   },
@@ -39,7 +46,13 @@
     "JSX": true,
     "makeActiveSidebar": true
   },
-  "plugins": ["react", "prettier", "@typescript-eslint", "react-hooks"],
+  "plugins": [
+    "react",
+    "prettier",
+    "@typescript-eslint",
+    "react-hooks",
+    "import"
+  ],
   "rules": {
     "no-var": "warn",
     "no-undef": "warn",
@@ -62,7 +75,11 @@
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [".js", ".jsx", ".tsx"]
+        "extensions": [
+          ".js",
+          ".jsx",
+          ".tsx"
+        ]
       }
     ],
     "prettier/prettier": [
@@ -70,6 +87,44 @@
       {},
       {
         "usePrettierrc": true
+      }
+    ],
+    // "import/no-unresolved": "error",
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": false,
+        "ignoreDeclarationSort": true,
+        // don"t want to sort import lines, use eslint-plugin-import instead
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": [
+          "none",
+          "all",
+          "multiple",
+          "single"
+        ],
+        "allowSeparatedGroups": true
+      }
+    ],
+    "import/order": [
+      "error",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          [
+            "sibling",
+            "parent"
+          ],
+          "index",
+          "unknown"
+        ],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
       }
     ]
   }

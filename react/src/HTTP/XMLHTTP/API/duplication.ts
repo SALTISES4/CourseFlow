@@ -1,6 +1,6 @@
-import { EmptyPostResp, DuplicateBaseItemQueryResp } from '@XMLHTTP/types/query'
-import { VERB, OBJECT_TYPE } from '@cf/types/enum'
+import { OBJECT_TYPE, VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
+import { DuplicateBaseItemQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 
 /**
  *

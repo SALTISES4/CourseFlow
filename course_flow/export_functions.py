@@ -8,18 +8,18 @@ from course_flow import analytics
 from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
-
-from .models.course import Course
-from .models.node import Node
-from .models.program import Program
-from .models.week import Week
-from .serializers import (
+from course_flow.serializers import (
     NodeExportSerializer,
     NodeExportSerializerWithTime,
     OutcomeExportSerializer,
     WeekExportSerializer,
     WorkflowExportSerializer,
 )
+
+from .models.course import Course
+from .models.node import Node
+from .models.program import Program
+from .models.week import Week
 from .utils import (
     get_all_outcomes_ordered_filtered,
     get_all_outcomes_ordered_for_outcome,

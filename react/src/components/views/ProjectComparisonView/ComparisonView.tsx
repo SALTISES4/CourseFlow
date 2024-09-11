@@ -1,25 +1,23 @@
-import * as React from 'react'
-import * as reactDom from 'react-dom'
+import { ObjectSet } from '@cf/types/common'
+import { CfObjectType, WFContext, WorkflowViewType } from '@cf/types/enum.js'
+import { _t } from '@cf/utility/utilityFunctions'
+import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
+import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents'
 import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar'
-
-import { renderMessageBox } from '@cfComponents/menu/MenuComponents'
-import closeMessageBox from '@cfComponents/menu/components/closeMessageBox'
-import { CfObjectType, ViewType, WFContext } from '@cf/types/enum.js'
-
+import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
+import AddCircleIcon from '@mui/icons-material/AddCircle'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
+import { EProject } from '@XMLHTTP/types/entity'
 import {
   GetWorkflowSelectMenuResp,
   GetWorkflowSelectQueryResp
 } from '@XMLHTTP/types/query'
-import { EProject } from '@XMLHTTP/types/entity'
-import { ObjectSet } from '@cf/types/common'
-import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import AddCircleIcon from '@mui/icons-material/AddCircle'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as React from 'react'
+import * as reactDom from 'react-dom'
 // import $ from 'jquery'
 
 /**
@@ -38,7 +36,7 @@ type StateType = {
   workflows: number[]
 }
 type PropsType = {
-  view_type: ViewType
+  view_type: WorkflowViewType
   // turn this into config object
   projectData: EProject
   selection_manager: any
@@ -139,12 +137,12 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   openEdit() {}
 
   updateFunction = (responseData: GetWorkflowSelectMenuResp) => {
-    if (responseData.workflowID != null) {
+    if (responseData.workflowId != null) {
       const workflows = this.state.workflows.slice()
-      workflows.push(responseData.workflowID)
+      workflows.push(responseData.workflowId)
       const treat = this
       this.setState({
-        workflows: [...this.state.workflows, responseData.workflowID]
+        workflows: [...this.state.workflows, responseData.workflowId]
       })
     }
   }
@@ -214,7 +212,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
     return (
       <>
         {portal}
-        <div className="project-header">
+        <div>
           <div>{_t('Comparing workflows for:')}</div>
           {/*<WorkflowTitle*/}
           {/*  data={data}*/}
@@ -230,12 +228,12 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   ViewButtons = () => {
     return [
       {
-        type: ViewType.WORKFLOW,
+        type: WorkflowViewType.WORKFLOW,
         name: _t('Workflow View'),
         disabled: []
       },
       {
-        type: ViewType.OUTCOME_EDIT,
+        type: WorkflowViewType.OUTCOME_EDIT,
         name: Utility.capWords(_t('View') + ' outcomes'),
         disabled: []
       }
@@ -302,13 +300,13 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   )
 
   WorkflowContent = () => {
-    return this.state.workflows.map((workflowID) => (
+    return this.state.workflows.map((workflowId) => (
       <WorkflowComparisonRendererComponent
-        key={workflowID}
-        removeFunction={this.removeWorkflow.bind(this, workflowID)}
+        key={workflowId}
+        removeFunction={this.removeWorkflow.bind(this, workflowId)}
         // @ts-ignore
         view_type={this.props.view_type}
-        workflowID={workflowID}
+        workflowId={workflowId}
         selection_manager={this.props.selection_manager}
         object_sets={this.state.object_sets}
       />

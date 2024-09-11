@@ -1,19 +1,19 @@
-import { Fragment, MouseEvent, ReactNode, RefObject } from 'react'
 import StarIcon from '@mui/icons-material/Star'
 import StarOutlineIcon from '@mui/icons-material/StarOutline'
-import { CHIP_TYPE } from './types'
+import { Fragment, MouseEvent, ReactNode, RefObject } from 'react'
 
 import {
-  CardWrap,
-  CardHeader,
-  CardFooter,
-  CardFooterTags,
-  CardFooterActions,
-  CardTitle,
   CardCaption,
   CardChip,
-  CardFavoriteBtn
+  CardFavoriteBtn,
+  CardFooter,
+  CardFooterActions,
+  CardFooterTags,
+  CardHeader,
+  CardTitle,
+  CardWrap
 } from './styles'
+import { CHIP_TYPE } from './types'
 
 export type WorklowCardChipType = {
   type: CHIP_TYPE

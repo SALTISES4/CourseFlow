@@ -1,10 +1,10 @@
+import { _t } from '@cf/utility/utilityFunctions'
+import UserLabel from '@cfComponents/dialog/components/UserLabel'
+import * as Constants from '@cfConstants'
+import SearchIcon from '@mui/icons-material/Search'
+import { getUserListQuery } from '@XMLHTTP/API/user'
 import * as React from 'react'
 // import $ from 'jquery'
-import * as Constants from '@cfConstants'
-import UserLabel from '@cfComponents/dialog/components/UserLabel'
-import { getUserListQuery } from '@XMLHTTP/API/user'
-import SearchIcon from '@mui/icons-material/Search'
-import { _t } from '@cf/utility/utilityFunctions'
 
 type StateProps = {
   selected: number

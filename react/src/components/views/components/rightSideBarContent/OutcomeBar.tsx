@@ -1,14 +1,16 @@
+import { WorkflowType, WorkflowViewType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import {
+  TSortedOutcomes,
+  getSortedOutcomesFromOutcomeWorkflowSet
+} from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import * as Utility from '@cfUtility'
+
 import OutcomeBarOutcome from './OutcomeBarOutcome'
-import {
-  getSortedOutcomesFromOutcomeWorkflowSet,
-  TSortedOutcomes
-} from '@cfFindState'
-import { ViewType, WorkflowType } from '@cf/types/enum'
-import { AppState } from '@cfRedux/types/type'
-import { _t } from '@cf/utility/utilityFunctions'
+
 // import $ from 'jquery'
 
 /**
