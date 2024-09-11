@@ -57,7 +57,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   project_permission: number
 
   // def used
-  workflowID: number
+  workflowId: number
   private messageQueue: any[]
   private isMessagesQueued: boolean
   selectionManager: SelectionManager
@@ -92,10 +92,10 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
   componentDidMount() {
     const { id } = this.props.params
-    this.workflowID = id
+    this.workflowId = id
 
     // Begin websocket connection manager
-    const url = `ws/update/${this.workflowID}/`
+    const url = `ws/update/${this.workflowId}/`
     this.wsService = new WebSocketService(url)
 
     // Begin connected user manager
@@ -113,7 +113,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     // fetch the basic workflow data by id set in URL
     // @todo i think that we have everything we need in getWorkflowDataQuery
     // except for 'choices' config lists TBD
-    getWorkflowById(this.workflowID).then((response) => {
+    getWorkflowById(this.workflowId).then((response) => {
       this.workflowDetailResp = response.data_package
       this.setupData(response.data_package)
 
@@ -162,7 +162,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     // put it in redux store, and indicate that we're ready to render / done loading
     // Q: do we have race condition with main parent 'get workflow data'
     // Q: why are these separate, and how can they be better defined?
-    getWorkflowDataQuery(this.workflowID, (response) => {
+    getWorkflowDataQuery(this.workflowId, (response) => {
       // this.unread_comments = response.data_package?.unread_comments // @todo do not assign this explicitly here, not seeing this in data package yet
 
       this.props.dispatch(ActionCreator.refreshStoreData(response.data_package))
@@ -300,7 +300,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
   onParentWorkflowUpdateReceived() {
     this.isMessagesQueued = true
-    getWorkflowParentDataQueryLegacy(this.workflowID, (response) => {
+    getWorkflowParentDataQueryLegacy(this.workflowId, (response) => {
       // remove all the parent node and parent workflow data
       this.store.dispatch(
         ActionCreator.replaceStoreData({

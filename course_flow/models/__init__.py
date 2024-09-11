@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 
-from ._common import title_max_length
+# from ._common import title_max_length
 from .activity import Activity
 from .column import Column
 from .comment import Comment
@@ -33,7 +33,7 @@ from .liveprojectmodels import LiveAssignment
 from .liveprojectmodels import LiveProjectUser
 from .liveprojectmodels import UserAssignment
 
-from .receivers import receivers
-from .receivers import liveproject_receivers
+# from .receivers import receivers
+# from .receivers import liveproject_receivers
 
 User = get_user_model()

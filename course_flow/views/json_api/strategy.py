@@ -5,17 +5,24 @@ from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
 
-from course_flow.decorators import user_can_edit, user_can_view
+from course_flow.decorators import (
+    user_can_edit,
+    user_can_view,
+    user_is_teacher,
+)
 from course_flow.duplication_functions import (
     duplicate_column,
+    fast_create_strategy,
     fast_duplicate_week,
     fast_duplicate_workflow,
 )
-from course_flow.models import ColumnWorkflow, WeekWorkflow, Workflow
+from course_flow.models import ColumnWorkflow, Week, WeekWorkflow, Workflow
 from course_flow.models.relations import NodeLink
 from course_flow.serializers import (
+    ActivitySerializerShallow,
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
+    CourseSerializerShallow,
     InfoBoxSerializer,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
@@ -26,9 +33,32 @@ from course_flow.serializers import (
 from course_flow.sockets import redux_actions as actions
 from course_flow.utils import get_model_from_str
 
-#########################################################
-# @todo fix response shape
-#########################################################
+
+@user_is_teacher()
+def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    print(body)
+    try:
+        workflow_type = body.get("workflowType")
+        model = get_model_from_str(workflow_type)
+        templates_serialized = InfoBoxSerializer(
+            model.objects.filter(
+                deleted=False,
+                is_template=True,
+                published=True,
+                is_strategy=False,
+            ),
+            many=True,
+            context={"user": request.user},
+        ).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": templates_serialized,
+        }
+    )
 
 
 @user_can_view("workflowPk")
@@ -177,3 +207,52 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
             raise ValidationError("User cannot access this strategy")
     except ValidationError:
         return JsonResponse({"action": "error"})
+
+
+#########################################################
+# TOGGLE
+#########################################################
+@user_can_edit("weekPk")
+def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
+    body = json.loads(request.body)
+    try:
+        object_id = body.get("weekPk")
+        is_strategy = body.get("is_strategy")
+        week = Week.objects.get(id=object_id)
+        workflow = WeekWorkflow.objects.get(week=week).workflow
+        # This check is to prevent people from spamming the button, which would
+        # potentially create a bunch of superfluous strategies
+        if week.is_strategy != is_strategy:
+            raise ValidationError("Request has already been processed")
+        if week.is_strategy:
+            week.is_strategy = False
+            strategy = week.original_strategy.get_subclass()
+            week.original_strategy = None
+            week.strategy_classification = 0
+            week.save()
+        else:
+            strategy = fast_create_strategy(week, workflow, request.user)
+            strategy.title = week.title
+            strategy.save()
+            week.is_strategy = True
+            week.original_strategy = strategy
+            week.save()
+        if strategy.type == "course":
+            strategy_serialized = CourseSerializerShallow(strategy).data
+        elif strategy.type == "activity":
+            strategy_serialized = ActivitySerializerShallow(strategy).data
+        else:
+            strategy_serialized = ""
+
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    response_data = {
+        "id": week.id,
+        "is_strategy": week.is_strategy,
+        "strategy": strategy_serialized,
+    }
+
+    actions.dispatch_wf(workflow, actions.toggleStrategyAction(response_data))
+
+    return JsonResponse({"action": "posted"})

@@ -1,5 +1,5 @@
 import { OuterContentWrap } from '@cf/mui/helper'
-import { CFRoutes as AppRoutes, RelativeRoutes } from '@cf/router'
+import { CFRoutes, RelativeRoutes } from '@cf/router'
 import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/utilityFunctions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -45,44 +45,6 @@ const ProjectDetails = () => {
     }
   )
 
-  const tabsObject = [
-    {
-      path: AppRoutes.PROJECT,
-      relativePath: RelativeRoutes.INDEX,
-      label: _t('Overview'),
-      action: () => {
-        const path = generatePath(AppRoutes.PROJECT, {
-          id: String(projectId)
-        })
-        navigate(path)
-      }
-    },
-    {
-      path: AppRoutes.PROJECT_WORKFLOW,
-      relativePath: RelativeRoutes.WORKFLOW,
-      label: _t('Workflows'),
-      action: () => {
-        const path = generatePath(AppRoutes.PROJECT_WORKFLOW, {
-          id: String(projectId)
-        })
-        navigate(path)
-      }
-    }
-  ]
-
-  const tabs = tabsObject.map((item, index) => {
-    return (
-      <Tab
-        label={item.label}
-        value={item.relativePath}
-        onClick={() => {
-          const path = generatePath(item.path, { id })
-          navigate(path)
-        }}
-      />
-    )
-  })
-
   // not really a big fan of this solution...
   // is this really how RR would implement this?
   // here is probably a better solution
@@ -95,11 +57,62 @@ const ProjectDetails = () => {
     setActiveTab(match.relativePath)
   }, [])
 
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  const tabsObject = [
+    {
+      path: CFRoutes.PROJECT,
+      relativePath: RelativeRoutes.INDEX,
+      label: _t('Overview'),
+      action: () => {
+        const path = generatePath(CFRoutes.PROJECT, {
+          id: String(projectId)
+        })
+        navigate(path)
+      }
+    },
+    {
+      path: CFRoutes.PROJECT_WORKFLOW,
+      relativePath: RelativeRoutes.WORKFLOW,
+      label: _t('Workflows'),
+      action: () => {
+        const path = generatePath(CFRoutes.PROJECT_WORKFLOW, {
+          id: String(projectId)
+        })
+        navigate(path)
+      }
+    }
+  ]
+
+  const tabs = tabsObject.map((item, index) => {
+    return (
+      <Tab
+        key={item.relativePath}
+        label={item.label}
+        value={item.relativePath}
+        onClick={() => {
+          const path = generatePath(item.path, { id })
+          navigate(path)
+        }}
+      />
+    )
+  })
+
+  /*******************************************************
+   * CONSTANTS
+   *******************************************************/
   if (isLoading) return <Loader />
   if (isError) return <div>An error occurred: {error.message}</div>
 
-  const project = formatProjectEntity(data.data_package.project_data)
+  const project = formatProjectEntity(
+    data.data_package.project_data,
+    COURSEFLOW_APP.globalContextData.disciplines
+  )
 
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
     <>
       <OuterContentWrap sx={{ pb: 0 }}>

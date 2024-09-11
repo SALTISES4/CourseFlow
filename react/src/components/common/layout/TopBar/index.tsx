@@ -4,6 +4,7 @@ import PasswordResetDialog from '@cf/components/common/dialog/common/PasswordRes
 import ProgramCreateDialog from '@cf/components/common/dialog/common/ProgramCreateDialog'
 import ProjectCreateDialog from '@cf/components/common/dialog/common/ProjectCreateDialog'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { CFRoutes } from '@cf/router'
 import { TopBarProps } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
@@ -37,7 +38,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
 
-const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
+const TopBar = ({ isTeacher, notifications, forms }: TopBarProps) => {
   const navigate = useNavigate()
   const { dispatch } = useDialog()
 
@@ -124,7 +125,7 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
     const menuItems: MenuItemType[] = [
       {
         content: _t(COURSEFLOW_APP.globalContextData.strings.profile),
-        action: () => navigate(menus.account.profileUrl),
+        action: () => navigate(CFRoutes.PROFILE_SETTINGS),
         show: true
       },
       {
@@ -136,13 +137,16 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
         content: _t(
           COURSEFLOW_APP.globalContextData.strings.notification_settings
         ),
-        action: () => navigate(menus.account.notificationsSettingsUrls),
+        action: () => navigate(CFRoutes.NOTIFICATIONS_SETTINGS),
         show: true,
         seperator: true
       },
       {
-        content: `Go to ${menus.account.daliteText}`,
-        action: () => navigate(menus.account.daliteUrl),
+        content: `Go to ${COURSEFLOW_APP.globalContextData.path.html.account.daliteUrl}`,
+        action: () =>
+          navigate(
+            COURSEFLOW_APP.globalContextData.path.html.account.daliteUrl
+          ),
         show: true
       },
       {
@@ -271,13 +275,15 @@ const TopBar = ({ isTeacher, menus, notifications, forms }: TopBarProps) => {
         */}
 
       <PasswordResetDialog
-        onSubmit={() => (window.location.href = menus.account.resetPasswordUrl)}
+        onSubmit={() =>
+          (window.location.href =
+            COURSEFLOW_APP.globalContextData.path.html.account.resetPasswordUrl)
+        }
       />
 
       <ProjectCreateDialog
         showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
         formFields={forms.createProject.formFields}
-        disciplines={forms.createProject.disciplines}
       />
 
       <ProgramCreateDialog

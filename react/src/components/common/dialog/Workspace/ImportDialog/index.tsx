@@ -1,6 +1,6 @@
-import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
+import { StyledDialog } from '@cfComponents/dialog/styles'
 import FileUploader from '@cfComponents/UIPrimitives/FileUploader'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -13,7 +13,7 @@ import { useCallback, useState } from 'react'
 import { FileRejection } from 'react-dropzone'
 
 type PropsType = {
-  workflowID: number
+  workflowId: number
 }
 
 type StateType = {
@@ -26,7 +26,34 @@ const initialState: StateType = {
   queued: []
 }
 
-function ImportDialog({ workflowID }: PropsType) {
+/*
+R#EFERENCE TO ORIGIGNAL
+  // ImportDialog = () => {
+  //   return (
+  //     <Dialog open={this.state.openImportDialog}>
+  //       <>
+  //         <ImportMenu
+  //           data={{
+  //             object_id: this.data.id,
+  //             object_type: this.objectType,
+  //             import_type: 'outcomes'
+  //           }}
+  //           actionFunction={this.closeModals}
+  //         />
+  //         <ImportMenu
+  //           data={{
+  //             object_id: this.data.id,
+  //             object_type: this.objectType,
+  //             import_type: 'nodes'
+  //           }}
+  //           actionFunction={this.closeModals}
+  //         />
+  //       </>
+  //     </Dialog>
+  //   )
+  // }
+ */
+function ImportDialog({ workflowId }: PropsType) {
   const { type, show, onClose } = useDialog([
     DIALOG_TYPE.IMPORT_OUTCOMES,
     DIALOG_TYPE.IMPORT_NODES
@@ -84,7 +111,7 @@ function ImportDialog({ workflowID }: PropsType) {
   }
 
   function onSubmit() {
-    importData(workflowID, 'workflow', 'nodes', uploadableFiles[0], onClose)
+    importData(workflowId, 'workflow', 'nodes', uploadableFiles[0], onClose)
   }
 
   return (

@@ -1,4 +1,3 @@
-import { DialogContextProvider } from '@cf/context/dialogContext'
 import { OuterContentWrap } from '@cf/mui/helper'
 import Sidebar from '@cfComponents/layout/Sidebar'
 import TopBar from '@cfComponents/layout/TopBar'
@@ -41,36 +40,34 @@ const Base = ({ showNotifications, children }: PropsType) => {
 
   return (
     <Provider store={store}>
-      <DialogContextProvider>
-        <SnackbarProvider
-          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-        >
-          <div className="main-wrapper">
-            <div data-component="sidebar">
-              <Sidebar {...sidebar} />
+      <SnackbarProvider
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <div className="main-wrapper">
+          <div data-component="sidebar">
+            <Sidebar {...sidebar} />
+          </div>
+
+          <div className="main-block">
+            <div data-component="topbar">
+              <TopBar {...topbar} />
             </div>
 
-            <div className="main-block">
-              <div data-component="topbar">
-                <TopBar {...topbar} />
-              </div>
+            <NotificationsAlert show={showNotifications} />
 
-              <NotificationsAlert show={showNotifications} />
+            {/* still being used as a portal in comparison view  */}
+            <div className="titlebar"></div>
 
-              {/* still being used as a portal in comparison view  */}
-              <div className="titlebar"></div>
-
-              <div className="right-panel-wrapper">
-                <div id="container" className="body-wrapper">
-                  {children}
-                </div>
+            <div className="right-panel-wrapper">
+              <div id="container" className="body-wrapper">
+                {children}
               </div>
             </div>
           </div>
+        </div>
 
-          <div id="popup-container"></div>
-        </SnackbarProvider>
-      </DialogContextProvider>
+        <div id="popup-container"></div>
+      </SnackbarProvider>
     </Provider>
   )
 }

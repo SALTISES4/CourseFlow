@@ -6,7 +6,7 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
 
 from course_flow.decorators import user_is_teacher
 from course_flow.forms import NotificationsSettings, ProfileSettings
@@ -52,14 +52,15 @@ def json_api__user__profile_settings__update__post(
         return JsonResponse({"action": "posted"})
 
     # otherwise, return the errors so UI can display errors accordingly
-    return JsonResponse({"action": "error", "errors": form.errors})
+    return JsonResponse({"error": form.errors}, status=400)
 
 
 #########################################################
 # NOTIFICATION SETTINGS
 #########################################################
 @login_required
-def json_api__user__notification_settings__get(request):
+@require_GET
+def json_api__user__notification_settings(request):
     user = CourseFlowUser.objects.filter(user=request.user).first()
     return JsonResponse(
         {
@@ -89,6 +90,7 @@ def json_api__user__notification_settings__post(
 
 
 @user_is_teacher()
+@require_POST
 def json_api__user__list__post(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
     name_filter = body.get("filter")

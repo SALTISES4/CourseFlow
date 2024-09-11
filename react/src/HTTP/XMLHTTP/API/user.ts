@@ -39,11 +39,10 @@ export async function getNotificationSettings(): Promise<NotificationSettingsQue
 }
 
 export async function updateNotificationSettings(data: any) {
-  return API_POST(
+  const url =
     COURSEFLOW_APP.globalContextData.path.json_api.user
-      .notification_settings__update,
-    data
-  )
+      .notification_settings__update
+  return API_POST(url, data)
 }
 
 /*******************************************************

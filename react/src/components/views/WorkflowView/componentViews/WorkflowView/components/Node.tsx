@@ -35,6 +35,8 @@ type StateProps = {
 } & EditableComponentWithActionsState
 type PropsType = ConnectedProps & OwnProps
 
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+
 /**
  * Represents the node in the workflow view
  */
@@ -287,7 +289,7 @@ class NodeUnconnected extends EditableComponentWithActions<
         <div className="node-icon">
           <img
             title={
-              this.context.workflow.choices.context_choices.find(
+              choices.context_choices.find(
                 (obj) => obj.type == data.context_classification
               ).name
             }
@@ -304,7 +306,7 @@ class NodeUnconnected extends EditableComponentWithActions<
         <div className="node-icon">
           <img
             title={
-              this.context.workflow.choices.task_choices.find(
+              choices.task_choices.find(
                 (obj) => obj.type == data.task_classification
               ).name
             }
@@ -445,9 +447,7 @@ class NodeUnconnected extends EditableComponentWithActions<
                 {data_override.time_required &&
                   data_override.time_required +
                     ' ' +
-                    this.context.workflow.choices.time_choices[
-                      data_override.time_units
-                    ].name}
+                    choices.time_choices[data_override.time_units].name}
               </div>
             </div>
           </div>

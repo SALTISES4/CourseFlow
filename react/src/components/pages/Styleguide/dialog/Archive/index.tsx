@@ -10,7 +10,7 @@ import { StyledDialog } from '../styles'
 const ArchiveDialog = () => {
   const { type, show, onClose } = useDialog([
     DIALOG_TYPE.PROJECT_ARCHIVE,
-    DIALOG_TYPE.COURSE_ARCHIVE
+    DIALOG_TYPE.WORKFLOW_ARCHIVE
   ])
 
   let resourceType = ''
@@ -18,7 +18,7 @@ const ArchiveDialog = () => {
     case DIALOG_TYPE.PROJECT_ARCHIVE:
       resourceType = 'project'
       break
-    case DIALOG_TYPE.COURSE_ARCHIVE:
+    case DIALOG_TYPE.WORKFLOW_ARCHIVE:
       resourceType = 'course'
       break
   }

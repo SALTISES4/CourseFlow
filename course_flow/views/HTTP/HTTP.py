@@ -46,8 +46,7 @@ def registration_view(request):
     )
 
 
-# @todo camel case
-class CreateView_No_Autocomplete(CreateView):
+class CreateViewNoAutocomplete(CreateView):
     def get_form(self, *args, **kwargs):
         form = super(CreateView, self).get_form()
         form.fields["title"].widget.attrs.update({"autocomplete": "off"})

@@ -56,7 +56,7 @@ const SectionDialogs = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.COURSE_ARCHIVE)}
+            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_ARCHIVE)}
           >
             Archive Course
           </Button>

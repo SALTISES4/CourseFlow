@@ -1,5 +1,6 @@
 import { StyledDialog, StyledForm } from '@cf/components/common/dialog/styles'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { CFRoutes } from '@cf/router'
 import { TopBarProps } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 import Alert from '@cfComponents/UIPrimitives/Alert'
@@ -16,9 +17,14 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
-import { API_POST } from '@XMLHTTP/CallWrapper'
+import { useMutation } from '@tanstack/react-query'
+import { createProject } from '@XMLHTTP/API/project'
+import { CreateProjectArgs } from '@XMLHTTP/types/args'
+import { CreateProjectResp } from '@XMLHTTP/types/query'
 import { produce } from 'immer'
+import { enqueueSnackbar } from 'notistack'
 import { ChangeEvent, useState } from 'react'
+import { generatePath, useNavigate } from 'react-router-dom'
 
 import ObjectSets from './components/ObjectSets'
 import { OBJECT_SET_TYPE, ObjectSetType } from './type'
@@ -36,10 +42,19 @@ export type StateType = {
   objectSetsExpanded: boolean
 }
 
-function ProjectCreateDialog({
+/**
+ *
+ * @param showNoProjectsAlert
+ * @param formFields
+ * @constructor
+ */
+const ProjectCreateDialog = ({
   showNoProjectsAlert,
   formFields
-}: TopBarProps['forms']['createProject']) {
+}: TopBarProps['forms']['createProject']) => {
+  /*******************************************************
+   * HOOKS
+   *******************************************************/
   const [state, setState] = useState<StateType>({
     fields: {},
     objectSets: [],
@@ -48,24 +63,51 @@ function ProjectCreateDialog({
   const [errors, setErrors] = useState({})
   const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_CREATE)
   const [selectOpenStates, setSelectOpenStates] = useState({})
+  const navigate = useNavigate()
 
+  const { mutate } = useMutation<CreateProjectResp, Error, CreateProjectArgs>({
+    mutationFn: createProject,
+    onSuccess: (resp: CreateProjectResp) => {
+      const path = generatePath(CFRoutes.PROJECT, {
+        id: String(resp.data_package.id)
+      })
+      onDialogClose()
+      navigate(path)
+      enqueueSnackbar('created project success', {
+        variant: 'success'
+      })
+    },
+    onError: (error) => {
+      enqueueSnackbar('created project error', {
+        variant: 'error'
+      })
+      // this won't work because we're getting back errors from the serializer
+      // but it's a start
+      console.error('Error creating project:', error)
+      // setErrors(error.name)
+    }
+  })
+
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   function onSubmit() {
     // early exit if there are validation errors
     if (Object.keys(errors).length) {
       return false
     }
 
-    API_POST<{ redirect: string }>(
-      COURSEFLOW_APP.globalContextData.path.json_api.project.create,
-      {
-        ...state.fields,
-        objectSets: state.objectSets
-      }
-    )
-      .then((resp) => {
-        window.location.href = resp.redirect
-      })
-      .catch((error) => setErrors(error.data.errors))
+    // remove empty values
+    const payLoad = {
+      ...state.fields,
+      objectSets: state.objectSets.filter(
+        (item) => item.term !== '' && item.title !== ''
+      )
+      // we're asserting that this is CreateProjectArgs because we passed form validation but
+      // there has to be a better way to do this
+    } as CreateProjectArgs
+
+    mutate(payLoad)
   }
 
   function onDialogClose() {
@@ -77,7 +119,6 @@ function ProjectCreateDialog({
     })
     setErrors({})
 
-    // dispatch the close callback
     onClose()
   }
 
@@ -126,7 +167,7 @@ function ProjectCreateDialog({
   function onObjectSetAddNew() {
     setState(
       produce((draft) => {
-        draft.objectSets.push({ type: '' as OBJECT_SET_TYPE, label: '' })
+        draft.objectSets.push({ term: '' as OBJECT_SET_TYPE, title: '' })
       })
     )
   }
@@ -146,11 +187,13 @@ function ProjectCreateDialog({
     setSelectOpenStates(newState)
   }
 
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
       <DialogTitle>{_t('Create project')}</DialogTitle>
       <DialogContent dividers>
-        <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         {showNoProjectsAlert && (
           <Alert
             sx={{ mb: 3 }}
@@ -164,6 +207,7 @@ function ProjectCreateDialog({
           {formFields.map((field, index) => {
             const hasError = !!errors[field.name]
             const errorText = hasError && errors[field.name][0]
+
             if (field.type === 'text') {
               return (
                 <TextField
@@ -178,7 +222,9 @@ function ProjectCreateDialog({
                   onChange={(e) => onInputChange(e, field)}
                 />
               )
-            } else if (field.type === 'multiselect') {
+            }
+
+            if (field.type === 'multiselect') {
               return (
                 <FormControl key={index} fullWidth>
                   <InputLabel id="create-project-discipline">
@@ -242,7 +288,7 @@ function ProjectCreateDialog({
           <ObjectSets
             expanded={state.objectSetsExpanded}
             toggleExpanded={onObjectSetsClick}
-            sets={state.objectSets}
+            objectSets={state.objectSets}
             onUpdate={onObjectSetUpdate}
             onAddNew={onObjectSetAddNew}
           />

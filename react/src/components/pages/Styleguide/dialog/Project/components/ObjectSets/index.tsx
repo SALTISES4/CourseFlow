@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ObjectSet } from '@cf/types/common'
 import { StyledForm } from '@cfPages/Styleguide/dialog/styles'
 import AddCircleIcon from '@mui/icons-material/AddCircle'

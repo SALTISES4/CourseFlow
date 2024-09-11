@@ -88,7 +88,7 @@ class EditableComponentWithComments<
           comments={this.props.data.comments}
           parent={this}
           // renderer={this.props.renderer} // not used
-          workflowID={this.context.workflow.workflowID}
+          workflowId={this.context.workflow.workflowId}
           unread_comments={this.context.workflow.unread_comments}
           read_only={this.context.permissions.workflowPermission.readOnly}
           add_comments={this.context.workflow.add_comments}

@@ -9,7 +9,7 @@ const initialState: StateType = {
   show: false
 }
 
-type StateType = {
+export type StateType = {
   type: ActionType
   show: boolean
 }
@@ -20,24 +20,28 @@ export const DialogDispatchContext = createContext<Dispatch<ActionType>>(
 )
 
 export function DialogContextProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<StateType>(initialState)
+  const [state, setState] = useState<StateType>({ show: false, type: null })
+
+  // A bit more complicated state management to allow us
+  // to register multiple different types of the same dialog
+  // and keep local "variant" until it's dismissed
+
+  // ie, if there's no type provided, we fall back to whatever
+  // previous state.type value was
+  // and visibility is toggled
+
+  const handleDispatch = (action: ActionType) => {
+    const show = !action ? false : action !== state.type ? true : !state.show
+
+    setState({
+      show,
+      type: action || state.type
+    })
+  }
+
   return (
     <DialogContext.Provider value={state}>
-      <DialogDispatchContext.Provider
-        value={(type: ActionType) => {
-          // A bit more complicated state management to allow us
-          // to register multiple different types of the same dialog
-          // and keep local "variant" until it's dismissed
-
-          // ie, if there's no type provided, we fall back to whatever
-          // previous state.type value was
-          // and visibility is toggled
-          setState({
-            show: !type ? false : type !== state.type ? true : !state.show,
-            type: !type ? state.type : type
-          })
-        }}
-      >
+      <DialogDispatchContext.Provider value={handleDispatch}>
         {children}
       </DialogDispatchContext.Provider>
     </DialogContext.Provider>

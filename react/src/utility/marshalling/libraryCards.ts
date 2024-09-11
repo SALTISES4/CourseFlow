@@ -20,9 +20,10 @@ function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
   const { type, is_strategy } = workflow
   let typeText = _t(type)
 
-  if (type === LibraryObjectType.LIVE_PROJECT) {
-    typeText = _t('classroom')
-  }
+   // no
+  // if (type === LibraryObjectType.LIVE_PROJECT) {
+  //   typeText = _t('classroom')
+  // }
 
   if (is_strategy) {
     typeText += ` ${_t('strategy')}`

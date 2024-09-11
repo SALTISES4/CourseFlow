@@ -4,6 +4,7 @@ import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { SnackbarProvider } from 'notistack'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
@@ -16,6 +17,7 @@ import { SidebarRootStyles } from '@cfComponents/layout/Sidebar/styles'
 import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 import CfRouter from '@cf/router'
 import { CookieProvider } from '@cf/context/cookieContext'
+import {DialogContextProvider} from "@cf/context/dialogContext";
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -65,11 +67,15 @@ root.render(
   <CookieProvider>
     <QueryClientProvider client={reactQueryClient}>
       <CacheProvider value={cache}>
-        <ThemeProvider theme={theme}>
-          <ScopedCssBaseline sx={SidebarRootStyles}>
-            <RouterProvider router={CfRouter} />
-          </ScopedCssBaseline>
-        </ThemeProvider>
+        <SnackbarProvider>
+          <DialogContextProvider>
+            <ThemeProvider theme={theme}>
+              <ScopedCssBaseline sx={SidebarRootStyles}>
+                <RouterProvider router={CfRouter} />
+              </ScopedCssBaseline>
+            </ThemeProvider>
+          </DialogContextProvider>
+        </SnackbarProvider>
       </CacheProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

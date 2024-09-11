@@ -1,5 +1,5 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { CFRoutes as AppRoutes, RelativeRoutes } from '@cf/router'
+import { CFRoutes, RelativeRoutes } from '@cf/router'
 import { WorkflowViewType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -23,7 +23,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
 
   const tabs: {
     type: WorkflowViewType
-    route: AppRoutes
+    route: CFRoutes
     relRoute: RelativeRoutes
     label: string
     content: ReactNode
@@ -32,7 +32,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
   }[] = [
     {
       type: WorkflowViewType.WORKFLOW_OVERVIEW,
-      route: AppRoutes.WORKFLOW,
+      route: CFRoutes.WORKFLOW,
       relRoute: RelativeRoutes.INDEX,
       label: _t('Workflow Overview'),
       content: <OverviewView {...dummyOverviewData} />,
@@ -40,7 +40,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
     },
     {
       type: WorkflowViewType.WORKFLOW,
-      route: AppRoutes.WORKFLOW_WORKFLOW,
+      route: CFRoutes.WORKFLOW_WORKFLOW,
       relRoute: RelativeRoutes.WORKFLOW,
       label: _t('Workflow View'),
       content: <WorkflowView />,
@@ -48,7 +48,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
     },
     {
       type: WorkflowViewType.OUTCOME_EDIT,
-      route: AppRoutes.WORKFLOW_OUTCOME_EDIT,
+      route: CFRoutes.WORKFLOW_OUTCOME_EDIT,
       relRoute: RelativeRoutes.OUTCOME_EDIT,
       label: Utility.capWords(_t('View') + ' ' + _t(data.type + ' outcomes')),
       content: <OutcomeEditView />,
@@ -56,7 +56,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
     },
     {
       type: WorkflowViewType.OUTCOMETABLE,
-      route: AppRoutes.WORKFLOW_OUTCOMETABLE,
+      route: CFRoutes.WORKFLOW_OUTCOMETABLE,
       relRoute: RelativeRoutes.OUTCOMETABLE,
       label: Utility.capWords(_t(data.type + ' outcome') + ' ' + _t('Table')),
       content:
@@ -65,7 +65,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
     },
     {
       type: WorkflowViewType.ALIGNMENTANALYSIS,
-      route: AppRoutes.WORKFLOW_ALIGNMENTANALYSIS,
+      route: CFRoutes.WORKFLOW_ALIGNMENTANALYSIS,
       relRoute: RelativeRoutes.ALIGNMENTANALYSIS,
       label: Utility.capWords(
         _t(data.type + ' outcome') + ' ' + _t('Analytics')
@@ -76,7 +76,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
     },
     {
       type: WorkflowViewType.GRID,
-      route: AppRoutes.WORKFLOW_GRID,
+      route: CFRoutes.WORKFLOW_GRID,
       relRoute: RelativeRoutes.GRID,
       label: _t('Grid View'),
       content: <GridView />,

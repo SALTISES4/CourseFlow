@@ -1,5 +1,5 @@
+// @ts-nocheck
 // import WorkflowFilter from '@cfComponents/filters/WorkflowFilter'
-import ProjectArchiveDialog from '@cf/components/common/dialog/Workspace/ProjectArchiveDialog'
 import ProjectExportDialog from '@cf/components/common/dialog/Workspace/ProjectExportDialog'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -23,6 +23,8 @@ import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
+
+import ProjectArchiveDialog from 'components/common/_ARCHIVE/ProjectArchiveDialog'
 
 /*******************************************************
  * The project library menu
@@ -428,7 +430,12 @@ function ProjectDetailContent({
 
       <EditDialog />
       <ShareDialog />
+
+      {/*
+      // 1 - @todo this has moved to project tabs
+      // 2 - where to collect the dialogs
       <ProjectExportDialog data={state.project} />
+*/}
       <ProjectArchiveDialog onSubmit={deleteProject} />
     </div>
   )

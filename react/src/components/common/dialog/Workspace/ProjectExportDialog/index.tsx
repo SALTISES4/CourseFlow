@@ -17,6 +17,7 @@ import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EProject } from '@XMLHTTP/types/entity'
 import { produce } from 'immer'
 import { MouseEvent, useState } from 'react'
+import * as React from 'react'
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -57,7 +58,27 @@ const fields = {
   ]
 }
 
-function ProjectExportDialog({ data }: { data: EProject }) {
+//  reference for connecting
+
+// class ExportMenu extends React.Component<PropsType, StateProps> {
+// const ExportDialog = () => {
+//   return (
+//     <Dialog open={state.openExportDialog}>
+//       <DialogTitle>
+//         <h2>{_t('Export project')}</h2>
+//       </DialogTitle>
+//       <ExportMenu
+//         data={{
+//           // ...data,
+//           object_sets: objectSets
+//         }}
+//         actionFunction={closeModals}
+//       />
+//     </Dialog>
+//   )
+// }
+
+function ProjectExportDialog(data: EProject) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
@@ -76,7 +97,7 @@ function ProjectExportDialog({ data }: { data: EProject }) {
     )
   }
 
-  function onSetChange(value: string) {
+  function onSetChange(value: number) {
     setState(
       produce((draft) => {
         const found = draft.sets.indexOf(value)
@@ -187,7 +208,7 @@ function ProjectExportDialog({ data }: { data: EProject }) {
                     control={<Checkbox />}
                     label={set.title}
                     checked={state.sets.includes(set.id)}
-                    onChange={() => onSetChange(set.id.toString())}
+                    onChange={() => onSetChange(set.id)}
                   />
                 ))}
               </FormGroup>

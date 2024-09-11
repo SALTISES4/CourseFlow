@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { EProject } from '@XMLHTTP/types/entity'
 
 const data: EProject = {

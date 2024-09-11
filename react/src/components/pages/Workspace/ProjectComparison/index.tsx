@@ -72,7 +72,7 @@ export class ProjectComparison extends WorkflowClass {
       viewType: WorkflowViewType.WORKFLOW
     }
     this.updateView = this.updateView.bind(this)
-    this.workflowID = 1
+    this.workflowId = 1
 
     // this is the only place this occurs in the whole app now
     // so probably still a hack
@@ -99,7 +99,7 @@ export class ProjectComparison extends WorkflowClass {
 
   onConnectionOpened(reconnect = false) {
     // this makes no sense....
-    getWorkflowDataQuery(this.workflowID, (response) => {
+    getWorkflowDataQuery(this.workflowId, (response) => {
       let data_flat = response.data_package
       if (this.initial_object_sets) {
         data_flat = {

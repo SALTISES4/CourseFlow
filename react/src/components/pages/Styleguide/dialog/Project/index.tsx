@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { Discipline, FormFieldSerialized, ObjectSet } from '@cf/types/common'
 import { produce } from 'immer'

@@ -1,31 +1,69 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
+import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { WorkSpaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
+import { useMutation } from '@tanstack/react-query'
+import { archiveMutation } from '@XMLHTTP/API/workflow'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { VariantType, useSnackbar } from 'notistack'
+import { useContext } from 'react'
 
 const ArchiveDialog = () => {
+  /*******************************************************
+   * HOOKS
+   *******************************************************/
+  const context = useContext(WorkFlowConfigContext)
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const { type, show, onClose } = useDialog([
     DIALOG_TYPE.PROJECT_ARCHIVE,
-    DIALOG_TYPE.COURSE_ARCHIVE
+    DIALOG_TYPE.WORKFLOW_ARCHIVE
   ])
 
-  let resourceType = ''
+  const { mutate } = useMutation<EmptyPostResp>({
+    mutationFn: () =>
+      archiveMutation(context.workflow.workflowId, resourceType),
+    onSuccess: (resp) => {
+      onClose()
+      enqueueSnackbar(
+        COURSEFLOW_APP.globalContextData.strings.workflow_archive_success,
+        {
+          variant: 'success'
+        }
+      )
+    },
+    onError: (error) => {
+      console.log(error)
+      enqueueSnackbar(
+        COURSEFLOW_APP.globalContextData.strings.workflow_archive_failure,
+        {
+          variant: 'error'
+        }
+      )
+    }
+  })
+
+  let resourceType: WorkSpaceType = null
   switch (type) {
     case DIALOG_TYPE.PROJECT_ARCHIVE:
-      resourceType = 'project'
+      resourceType = WorkSpaceType.PROJECT
       break
-    case DIALOG_TYPE.COURSE_ARCHIVE:
-      resourceType = 'course'
+    case DIALOG_TYPE.WORKFLOW_ARCHIVE:
+      resourceType = WorkSpaceType.WORKFLOW
       break
   }
 
   function onSubmit() {
-    console.log('submitting', type)
+    mutate()
   }
+
+  if (!type) return <></>
 
   return (
     <StyledDialog

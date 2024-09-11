@@ -16,6 +16,8 @@ import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+
 import NodeWeek from './NodeWeek'
 
 // import $ from 'jquery'
@@ -302,7 +304,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
                 <div className="strategy-tab-circle">
                   <img
                     title={
-                      this.context.workflow.choices.strategy_classification_choices.find(
+                      choices.strategy_classification_choices.find(
                         (obj) => obj.type === data.strategy_classification
                       ).name
                     }

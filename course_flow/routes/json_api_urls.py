@@ -26,17 +26,22 @@ def json_api_patterns():
         #########################################################
         path(
             "workflow/detail",
-            views.json_api.workflow.json_api__workflow__detail__get,
+            views.json_api.workflow.WorkflowEndpoint.fetch_detail,
             name="workflow--detail--get",
         ),
         path(
+            "workflow/detail-full",
+            views.json_api.workflow.WorkflowEndpoint.fetch_detail_full,
+            name="json-api-post-get-workflow-data",
+        ),
+        path(
             "workflow/node/create",
-            views.json_api.create.json_api_post_new_node,
+            views.json_api.node.json_api_post_new_node,
             name="json-api-post-new-node",
         ),
         path(
             "workflow/outcome/create",
-            views.json_api.create.json_api_post_new_outcome_for_workflow,
+            views.json_api.outcome.json_api_post_new_outcome_for_workflow,
             name="json-api-post-new-outcome-for-workflow",
         ),
         path(
@@ -46,58 +51,53 @@ def json_api_patterns():
         ),
         path(
             "workflow/node-link/create",
-            views.json_api.node_link.json_api_post_new_node_link,
+            views.json_api.node.json_api_post_new_node_link,
             name="json-api-post-new-node-link",
         ),
         path(
             "workflow/insert-sibling",  # ??
-            views.json_api.create.json_api_post_insert_sibling,
+            views.json_api.workflow_objects.json_api_post_insert_sibling,
             name="json-api-post-insert-sibling",
         ),
         path(
-            "workflow/insert-child",  ## ??
-            views.json_api.create.json_api_post_insert_child,
+            "workflow/outcome/insert-child",  ## ??
+            views.json_api.outcome.json_api_post_insert_child_outcome,
             name="json-api-post-insert-child",
         ),
         path(
             "workflow/delete-self",
-            views.json_api.delete.json_api_post_delete_self,
+            views.json_api.workspace.json_api_post_delete_self,
             name="json-api-post-delete-self",
         ),
         path(
             "workflow/restore-self",
-            views.json_api.delete.json_api_post_restore_self,
+            views.json_api.workspace.json_api_post_restore_self,
             name="json-api-post-restore-self",
         ),
         path(
             "workflow/delete-self-soft",
-            views.json_api.delete.json_api_post_delete_self_soft,
+            views.json_api.workspace.json_api_post_delete_self_soft,
             name="json-api-post-delete-self-soft",
         ),
         path(
             "workflow/duplicate-self",
-            views.json_api.duplication.json_api_post_duplicate_self,
+            views.json_api.workspace.json_api_post_duplicate_self,
             name="json-api-post-duplicate-self",
         ),
         path(
             "workflow/updatevalue",
-            views.json_api.update.json_api_post_update_value,
+            views.json_api.workspace.json_api_post_update_value,
             name="json-api-post-update-value",
         ),
         path(
             "workflow/inserted-at",
-            views.json_api.update.json_api_post_inserted_at,
+            views.json_api.workflow_objects.json_api_post_inserted_at,
             name="json-api-post-inserted-at",
         ),
         path(
             "workflow/update-outcomenode-degree",
-            views.json_api.update.json_api_post_update_outcomenode_degree,
+            views.json_api.outcome.json_api_post_update_outcomenode_degree,
             name="json-api-post-update-outcomenode-degree",
-        ),
-        path(
-            "workflow/get-workflow-data",
-            views.json_api.workflow.json_api_post_get_workflow_data,
-            name="json-api-post-get-workflow-data",
         ),
         path(
             "workflow/get-workflow-parent-data",
@@ -131,7 +131,7 @@ def json_api_patterns():
         ),
         path(
             "workflow/get-target-projects",
-            views.json_api.workflow.json_api_post_get_target_projects,
+            views.json_api.project.json_api_post_get_target_projects,
             name="json-api-post-get-target-projects",
         ),
         path(
@@ -156,17 +156,17 @@ def json_api_patterns():
         ),
         path(
             "workflow/node/set-linked-workflow",
-            views.json_api.update.json_api_post_set_linked_workflow,
+            views.json_api.node.json_api_post_set_linked_workflow,
             name="json-api-post-set-linked-workflow",
         ),
         path(
             "workflow/strategy/toggle",
-            views.json_api.update.json_api_post_week_toggle_strategy,
+            views.json_api.strategy.json_api_post_week_toggle_strategy,
             name="json-api-post-toggle-strategy",
         ),
         path(
             "workflow/updateobjectset",
-            views.json_api.update.json_api_post_update_object_set,
+            views.json_api.workflow_objects.json_api_post_update_object_set,
             name="json-api-post-update-object-set",
         ),
         path(
@@ -179,19 +179,19 @@ def json_api_patterns():
         #########################################################
         path(
             "project/detail",
-            views.json_api.project.json_api__project__detail__get,
+            views.json_api.ProjectEndpoint.json_api__project__detail__get,
             name="project--detail--get",
         ),
         # @todo document different between project detail
         # and project 'data'
         path(
             "project/get-project-data",
-            views.json_api.workflow.json_api_post_get_project_data,
+            views.json_api.project.json_api_post_get_project_data,
             name="json-api-post-get-project-data",
         ),
         path(
             "project/create",
-            views.json_api.project.project__create__post,
+            views.json_api.project.ProjectEndpoint.create,
             name="project--create--post",
         ),
         path(
@@ -243,7 +243,7 @@ def json_api_patterns():
         #########################################################
         path(
             "outcome/update-outcomehorizontallink-degree",
-            views.json_api.update.json_api_post_update_outcomehorizontallink_degree,
+            views.json_api.workflow_objects.json_api_post_update_outcomehorizontallink_degree,
             name="json-api-post-update-outcomehorizontallink-degree",
         ),
         #########################################################
@@ -308,7 +308,7 @@ def json_api_patterns():
         ),
         path(
             "user/notifications-settings",
-            views.json_api.user.json_api__user__notification_settings__get,
+            views.json_api.user.json_api__user__notification_settings,
             name="user--notification-settings--get",
         ),
         path(

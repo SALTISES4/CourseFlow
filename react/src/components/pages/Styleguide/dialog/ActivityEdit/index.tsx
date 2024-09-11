@@ -14,7 +14,7 @@ type StateType = Omit<ActivityFormDataType, 'units'> & {
   unit: string
 }
 
-const EditCourseDialog = (data: ActivityFormDataType) => {
+const EditActivityDialog = (data: ActivityFormDataType) => {
   const initialState: StateType = {
     title: data.title,
     description: data.description,
@@ -81,4 +81,4 @@ const EditCourseDialog = (data: ActivityFormDataType) => {
   )
 }
 
-export default EditCourseDialog
+export default EditActivityDialog

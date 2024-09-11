@@ -68,8 +68,8 @@ export type EWorkflow = {
   id: number
   author: string
   deleted: boolean
-  created_on: EDate
-  last_modified: EDate
+  created_on: Date
+  last_modified: Date
   title: string
   favourite: boolean
   published: boolean
@@ -110,7 +110,7 @@ export type EProject = {
   deleted: boolean
   deleted_on: Date
   description: string
-  disciplines: Discipline[]
+  disciplines: number[]
   favourite: boolean
   id: number
   last_modified: string

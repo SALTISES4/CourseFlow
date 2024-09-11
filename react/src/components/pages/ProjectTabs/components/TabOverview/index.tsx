@@ -24,6 +24,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
 import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 import {
   InfoBlock,
@@ -57,11 +58,13 @@ const OverviewTab = ({
 }: ProjectDetailsType) => {
   const [removeUser, setRemoveUser] = useState<PermissionUserType | null>(null)
   const { dispatch } = useDialog()
+  const { id } = useParams()
+  const projectId = Number(id)
 
   const { data, error, isLoading, isError } = useQuery<UsersForObjectQueryResp>(
     {
-      queryKey: ['getUsersForObjectQuery', 5],
-      queryFn: () => getUsersForObjectQuery(5, 'project')
+      queryKey: ['getUsersForObjectQuery', projectId],
+      queryFn: () => getUsersForObjectQuery(projectId, 'project')
     }
   )
 
