@@ -18,6 +18,7 @@ import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
+import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 import { Dispatch, SetStateAction } from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
@@ -184,10 +185,11 @@ const LibrarySearchView = ({
                     searchParameters.sortOptions,
                     { name: val, value: dir }
                   )
-                  setSearchParameters({
-                    ...searchParameters,
-                    sortOptions: newFilterSortOptions
-                  })
+                  setSearchParameters(
+                    produce((draft) => {
+                      draft.sortOptions = newFilterSortOptions
+                    })
+                  )
                 }}
                 placeholder="Sort"
               />
@@ -200,13 +202,11 @@ const LibrarySearchView = ({
                     searchParameters.filterGroups.filterOptions,
                     { name: val }
                   )
-                  setSearchParameters({
-                    ...searchParameters,
-                    filterGroups: {
-                      ...searchParameters.filterGroups,
-                      filterOptions: newFilterProjectOptions
-                    }
-                  })
+                  setSearchParameters(
+                    produce((draft) => {
+                      draft.filterGroups.filterOptions = newFilterProjectOptions
+                    })
+                  )
                 }}
               />
               {searchParameters.filterGroups.disciplineOptions && (
@@ -218,13 +218,13 @@ const LibrarySearchView = ({
                       searchParameters.filterGroups.disciplineOptions,
                       { name: val }
                     )
-                    setSearchParameters({
-                      ...searchParameters,
-                      filterGroups: {
-                        ...searchParameters.filterGroups,
-                        filterOptions: newFilterProjectOptions
-                      }
-                    })
+
+                    setSearchParameters(
+                      produce((draft) => {
+                        draft.filterGroups.filterOptions =
+                          newFilterProjectOptions
+                      })
+                    )
                   }}
                 />
               )}
