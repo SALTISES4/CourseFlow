@@ -22,8 +22,10 @@ export type Discipline = {
 
 // TODO: Consolidate with the types in CreateProject/type
 export type ObjectSet = {
-  id: number | string
+  id: number
   title: string
+  term: string
+  translation_plural: null | string
 }
 
 export type ObjectLock = {
@@ -68,20 +70,7 @@ export type TopBarProps = {
   forms: {
     createProject: {
       showNoProjectsAlert: boolean
-      disciplines: Discipline[]
       formFields: FormFieldSerialized[]
-    }
-  }
-  menus: {
-    add: {
-      projectUrl: string
-    }
-    account: {
-      notificationsSettingsUrls: string
-      profileUrl: string
-      resetPasswordUrl: string
-      daliteUrl: string
-      daliteText: string
     }
   }
 }

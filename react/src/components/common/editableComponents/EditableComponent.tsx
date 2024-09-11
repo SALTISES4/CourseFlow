@@ -1,7 +1,7 @@
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import {CfObjectType, WorkflowType} from '@cf/types/enum'
+import { CfObjectType, WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -15,6 +15,8 @@ import { updateObjectSet } from '@XMLHTTP/API/update'
 import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
 import ReactDOM from 'react-dom'
+
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
 
 const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()
@@ -149,7 +151,7 @@ class EditableComponent<
           value={data.task_classification}
           onChange={this.inputChanged.bind(this, 'task_classification')}
         >
-          {this.context.workflow.choices.task_choices
+          {choices.task_choices
             .filter(
               (choice) =>
                 // @todo clearly not properly typed
@@ -187,7 +189,7 @@ class EditableComponent<
             value={data.time_units}
             onChange={this.inputChanged.bind(this, 'time_units')}
           >
-            {this.context.workflow.choices.time_choices.map((choice) => (
+            {choices.time_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -259,7 +261,7 @@ class EditableComponent<
           value={data.context_classification}
           onChange={this.inputChanged.bind(this, 'context_classification')}
         >
-          {this.context.workflow.choices.context_choices
+          {choices.context_choices
             .filter(
               (choice) =>
                 // @ts-ignore
@@ -342,7 +344,7 @@ class EditableComponent<
             value={data.outcomes_type}
             onChange={this.inputChanged.bind(this, 'outcomes_type')}
           >
-            {this.context.workflow.choices.context_choices.map((choice) => (
+            {choices.context_choices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -473,7 +475,7 @@ class EditableComponent<
           value={data.strategy_classification}
           onChange={this.inputChanged.bind(this, 'strategy_classification')}
         >
-          {this.context.workflow.choices.context_choices.map((choice) => (
+          {choices.context_choices.map((choice) => (
             <option value={choice.type}>{choice.name}</option>
           ))}
         </select>

@@ -45,6 +45,21 @@ const ProjectDetails = () => {
     }
   )
 
+  // not really a big fan of this solution...
+  // is this really how RR would implement this?
+  // here is probably a better solution
+  // https://blog.stackademic.com/how-to-implement-tabs-that-sync-with-react-router-e255e0e90cfd
+  // we use the same pattern in: workspace tabs
+  useEffect(() => {
+    const match = tabsObject.find((tab) =>
+      matchPath({ path: tab.path, end: true }, location.pathname)
+    )
+    setActiveTab(match.relativePath)
+  }, [])
+
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
   const tabsObject = [
     {
       path: CFRoutes.PROJECT,
@@ -73,6 +88,7 @@ const ProjectDetails = () => {
   const tabs = tabsObject.map((item, index) => {
     return (
       <Tab
+        key={item.relativePath}
         label={item.label}
         value={item.relativePath}
         onClick={() => {
@@ -83,23 +99,20 @@ const ProjectDetails = () => {
     )
   })
 
-  // not really a big fan of this solution...
-  // is this really how RR would implement this?
-  // here is probably a better solution
-  // https://blog.stackademic.com/how-to-implement-tabs-that-sync-with-react-router-e255e0e90cfd
-  // we use the same pattern in: workspace tabs
-  useEffect(() => {
-    const match = tabsObject.find((tab) =>
-      matchPath({ path: tab.path, end: true }, location.pathname)
-    )
-    setActiveTab(match.relativePath)
-  }, [])
-
+  /*******************************************************
+   * CONSTANTS
+   *******************************************************/
   if (isLoading) return <Loader />
   if (isError) return <div>An error occurred: {error.message}</div>
 
-  const project = formatProjectEntity(data.data_package.project_data)
+  const project = formatProjectEntity(
+    data.data_package.project_data,
+    COURSEFLOW_APP.globalContextData.disciplines
+  )
 
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
     <>
       <OuterContentWrap sx={{ pb: 0 }}>

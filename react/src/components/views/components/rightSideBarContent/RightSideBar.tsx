@@ -39,6 +39,8 @@ type PropsType = {
   toggleObjectSet?: any
 }
 
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+
 class RightSideBar extends React.Component<PropsType> {
   static contextType = WorkFlowConfigContext
 
@@ -93,7 +95,7 @@ class RightSideBar extends React.Component<PropsType> {
           // view_type={this.props.renderer.view_type}
           // renderer={this.props.renderer}
           readOnly={this.context.permissions.workflowPermission.readOnly}
-          columnChoices={this.context.workflow.choices.column_choices}
+          columnChoices={choices.column_choices}
         />
       )
     return null

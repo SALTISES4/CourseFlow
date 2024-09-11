@@ -4,19 +4,16 @@ import { WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import MenuBar from '@cfComponents/layout/MenuBar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
+import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import {
   ActionMenu,
   ExpandCollapseMenu,
   JumpToMenu
-} from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/actions'
-import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
+} from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/menus'
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
-import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/useWorkflowTabs'
+import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
 import { Box, Tabs } from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 import * as React from 'react'
 import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
@@ -78,7 +75,6 @@ const WorkflowTabs = () => {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-
 
   useEffect(() => {
     const match = tabs.find((tab) =>

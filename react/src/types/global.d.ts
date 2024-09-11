@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import jQuery from 'jQuery'
 
-import { SidebarProps, TopBarProps } from './common'
+import {Discipline, FieldChoice, SidebarProps, TopBarProps} from './common'
 export {}
 declare global {
   /*~ Here, declare things that go in the global namespace, or augment
@@ -94,6 +94,11 @@ interface HTMLPaths {
     library: string
     favourites: string
   }
+  account: {
+    resetPasswordUrl: string
+    daliteUrl: string
+    daliteText: string
+  }
 }
 
 interface GenericPath {
@@ -162,6 +167,16 @@ interface UpdatePath {
 }
 
 interface GlobalContextData {
+  disciplines: Discipline[]
+  workflow_choices: {
+    task_choices: FieldChoice[]
+    time_choices: FieldChoice[]
+    context_choices: FieldChoice[]
+    strategy_classification_choices: FieldChoice[]
+    outcome_type_choices: FieldChoice[]
+    outcome_sort_choices: FieldChoice[]
+    column_choices: FieldChoice[]
+  }
   sidebar: SidebarProps
   topbar: TopBarProps
   path: Path
@@ -170,8 +185,7 @@ interface GlobalContextData {
   // probably react
   // backend should send back string 'code' only that gets matched to a real string
   // however not sure about gettex / translation yet
-  strings:
-    | { [key: string]: string }
+  strings: { [key: string]: string }
   notifications: {
     showNotificationRequest: boolean
     updateNotifications:

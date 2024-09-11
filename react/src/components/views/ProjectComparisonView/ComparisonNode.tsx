@@ -1,4 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle, TitleText } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
 import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
@@ -21,11 +22,11 @@ type StateProps = {
   show_outcomes: boolean
 } & EditableComponentWithActionsState
 type PropsType = ConnectedProps & OwnProps
-import { _t } from '@cf/utility/utilityFunctions'
 
 /**
  * Represents the node in the comparison view
  */
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
 
 /**
  * renderer.selection_manager
@@ -116,7 +117,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
       lefticon = (
         <img
           title={
-            this.context.workflow.choices.context_choices.find(
+            choices.context_choices.find(
               (obj) => obj.type == data.context_classification
             ).name
           }
@@ -133,7 +134,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
       righticon = (
         <img
           title={
-            this.context.workflow.choices.task_choices.find(
+            choices.task_choices.find(
               (obj) => obj.type == data.task_classification
             ).name
           }

@@ -5,7 +5,6 @@ import { EProject } from '@XMLHTTP/types/entity'
 export type ProjectViewDTO = {
   project_data: EProject
   user_permission: number // not always
-  disciplines: Discipline[]
   user_id: number
   user_role: number
   user_name: string

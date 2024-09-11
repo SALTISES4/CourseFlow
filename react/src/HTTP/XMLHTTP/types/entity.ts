@@ -110,7 +110,7 @@ export type EProject = {
   deleted: boolean
   deleted_on: Date
   description: string
-  disciplines: Discipline[]
+  disciplines: number[]
   favourite: boolean
   id: number
   last_modified: string

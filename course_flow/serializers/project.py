@@ -1,6 +1,7 @@
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 from rest_framework import serializers
 
 from course_flow.models import (
@@ -44,18 +45,17 @@ class CreateProjectSerializer(serializers.ModelSerializer):
         fields = ("id", "title", "description", "disciplines", "objectSets")
 
     def create(self, validated_data):
-        disciplines_data = validated_data.pop("disciplines", [])
-        object_sets_data = validated_data.pop("objectSets", [])
-        project = Project.objects.create(**validated_data)
+        with transaction.atomic():
+            disciplines_data = validated_data.pop("disciplines", [])
+            object_sets_data = validated_data.pop("objectSets", [])
+            project = Project.objects.create(**validated_data)
 
-        # Set disciplines
-        project.disciplines.set(
-            disciplines_data
-        )  # Set discipline IDs directly
+            # Set disciplines
+            project.disciplines.set(disciplines_data)
 
-        # Create object sets
-        for os_data in object_sets_data:
-            ObjectSet.objects.create(project=project, **os_data)
+            # Create and associate object sets
+            for os_data in object_sets_data:
+                project.object_sets.create(**os_data)
 
         return project
 

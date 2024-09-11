@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { _t } from '@cf/utility/utilityFunctions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import * as Constants from '@cfConstants'

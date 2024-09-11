@@ -19,15 +19,6 @@ export type WorkFlowContextType = {
 
   workflow: {
     workflowId: number
-    choices: {
-      task_choices: FieldChoice[]
-      time_choices: FieldChoice[]
-      context_choices: FieldChoice[]
-      strategy_classification_choices: FieldChoice[]
-      outcome_type_choices: FieldChoice[]
-      outcome_sort_choices: FieldChoice[]
-      column_choices: FieldChoice[]
-    }
     project: EProject
     is_strategy?: boolean
     // verify
@@ -92,17 +83,6 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
         project: wf_data.project, // from  workflow/detail api call, workflow_data_package
         isStrategy: wf_data.is_strategy, // workflow/detail api call, workflow_data_package
 
-        // @todo organize choices better
-        choices: {
-          task_choices: wf_data.task_choices, // // from  workflow/detail api call, workflow_data_package
-          time_choices: wf_data.time_choices, // // from  workflow/detail api call, workflow_data_package
-          context_choices: wf_data.context_choices, // from  workflow/detail api call, workflow_data_package
-          outcome_type_choices: wf_data.context_choices, // from  workflow/detail api call, workflow_data_package
-          outcome_sort_choices: wf_data.outcome_sort_choices, // from  workflow/detail api call, workflow_data_package
-          column_choices: wf_data.column_choices, // workflow/detail api call, workflow_data_package
-          strategy_classification_choices:
-            wf_data.strategy_classification_choices // from  workflow/detail api call, workflow_data_package
-        },
 
         // @ts-ignore
         unread_comments: wf_data.unread_comments ?? [], // supposedly coming back from API, but currently undefined

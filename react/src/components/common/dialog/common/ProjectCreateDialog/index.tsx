@@ -22,6 +22,7 @@ import { createProject } from '@XMLHTTP/API/project'
 import { CreateProjectArgs } from '@XMLHTTP/types/args'
 import { CreateProjectResp } from '@XMLHTTP/types/query'
 import { produce } from 'immer'
+import { enqueueSnackbar } from 'notistack'
 import { ChangeEvent, useState } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
 
@@ -72,12 +73,18 @@ const ProjectCreateDialog = ({
       })
       onDialogClose()
       navigate(path)
+      enqueueSnackbar('created project success', {
+        variant: 'success'
+      })
     },
     onError: (error) => {
-      console.error('Error creating project:', error)
+      enqueueSnackbar('created project error', {
+        variant: 'error'
+      })
       // this won't work because we're getting back errors from the serializer
       // but it's a start
-      setErrors(error.name)
+      console.error('Error creating project:', error)
+      // setErrors(error.name)
     }
   })
 
@@ -187,7 +194,6 @@ const ProjectCreateDialog = ({
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
       <DialogTitle>{_t('Create project')}</DialogTitle>
       <DialogContent dividers>
-        <Alert sx={{ mb: 3 }} severity="warning" title="TODO - Backend" />
         {showNoProjectsAlert && (
           <Alert
             sx={{ mb: 3 }}
@@ -201,6 +207,7 @@ const ProjectCreateDialog = ({
           {formFields.map((field, index) => {
             const hasError = !!errors[field.name]
             const errorText = hasError && errors[field.name][0]
+
             if (field.type === 'text') {
               return (
                 <TextField
@@ -215,7 +222,9 @@ const ProjectCreateDialog = ({
                   onChange={(e) => onInputChange(e, field)}
                 />
               )
-            } else if (field.type === 'multiselect') {
+            }
+
+            if (field.type === 'multiselect') {
               return (
                 <FormControl key={index} fullWidth>
                   <InputLabel id="create-project-discipline">

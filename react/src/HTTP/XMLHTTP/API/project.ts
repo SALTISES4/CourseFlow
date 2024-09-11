@@ -39,3 +39,10 @@ export async function createProject(
   const url = COURSEFLOW_APP.globalContextData.path.json_api.project.create
   return API_POST(url, args)
 }
+
+export async function toggleFavoriteProject(
+  toggle: boolean
+): Promise<CreateProjectResp> {
+  const url = COURSEFLOW_APP.globalContextData.path.json_api.project.create
+  return API_POST(url, toggle)
+}

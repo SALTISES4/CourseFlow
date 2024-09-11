@@ -179,7 +179,7 @@ def json_api_patterns():
         #########################################################
         path(
             "project/detail",
-            views.json_api.project.json_api__project__detail__get,
+            views.json_api.ProjectEndpoint.json_api__project__detail__get,
             name="project--detail--get",
         ),
         # @todo document different between project detail

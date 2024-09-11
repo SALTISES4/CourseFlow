@@ -20,6 +20,9 @@ type ConnectedProps = {
 }
 
 type PropsType = ConnectedProps
+
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+
 export class WorkflowLegendUnconnected<
   P extends PropsType
 > extends React.Component<P, StateType> {
@@ -86,22 +89,14 @@ export class WorkflowLegendUnconnected<
     const contexts = this.props.contexts.map((value) => (
       <LegendLine
         icon={Constants.context_keys[value]}
-        text={
-          this.context.workflow.choices.context_choices.find(
-            (obj) => obj.type == value
-          ).name
-        }
+        text={choices.context_choices.find((obj) => obj.type == value).name}
       />
     ))
 
     const tasks = this.props.tasks.map((value) => (
       <LegendLine
         icon={Constants.task_keys[value]}
-        text={
-          this.context.workflow.choices.task_choices.find(
-            (obj) => obj.type == value
-          ).name
-        }
+        text={choices.task_choices.find((obj) => obj.type == value).name}
       />
     ))
 
@@ -109,7 +104,7 @@ export class WorkflowLegendUnconnected<
       <LegendLine
         icon={Constants.strategy_keys[value]}
         text={
-          this.context.workflow.choices.strategy_classification_choices.find(
+          choices.strategy_classification_choices.find(
             (obj) => obj.type == value
           ).name
         }

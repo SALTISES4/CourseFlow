@@ -22,9 +22,11 @@ from django.utils.translation import gettext as _
 from rest_framework.renderers import JSONRenderer
 
 from course_flow.forms import CreateProject
+from course_flow.models import Discipline
 from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.models.updateNotification import UpdateNotification
 from course_flow.serializers import (
+    DisciplineSerializer,
     FavouriteSerializer,
     FormFieldsSerializer,
     UpdateNotificationSerializer,
@@ -36,6 +38,7 @@ from course_flow.templatetags.course_flow_templatetags import (
     course_flow_return_url,
     has_group,
 )
+from course_flow.view_utils import get_workflow_choices
 
 
 def add_global_context(request: HttpRequest):
@@ -156,20 +159,6 @@ def get_topbar(request: HttpRequest):
                     "formFields": FormFieldsSerializer(form).prepare_fields(),
                 }
             },
-            "menus": {
-                "add": {
-                    "projectUrl": "#legacy-project-create-url",
-                },
-                "account": {
-                    "notificationsSettingsUrls": reverse(
-                        "course_flow:user-notifications-settings"
-                    ),
-                    "profileUrl": reverse("course_flow:user-update"),
-                    "resetPasswordUrl": course_flow_password_change_url(),
-                    "daliteUrl": course_flow_return_url(),
-                    "daliteText": course_flow_return_title(),
-                },
-            },
         }
     except Exception as e:
         print(f"An error occurred in get_topbar: {e}")
@@ -210,7 +199,12 @@ def get_update_notifications(request: HttpRequest):
 
 
 def get_app_config(request: HttpRequest):
+    disciplines = DisciplineSerializer(
+        Discipline.objects.order_by("title"), many=True
+    ).data
     app_config = {
+        "disciplines": disciplines,
+        "workflow_choices": get_workflow_choices(),
         "path": {
             "post_paths": {
                 "get_possible_linked_workflows": reverse(
@@ -355,6 +349,11 @@ def get_app_config(request: HttpRequest):
                 "public_update_path_temp": reverse(
                     "course_flow:workflow-detail", kwargs={"pk": "0"}
                 ),
+                "account": {
+                    "resetPasswordUrl": course_flow_password_change_url(),
+                    "daliteUrl": course_flow_return_url(),
+                    "daliteText": course_flow_return_title(),
+                },
             },
             "json_api": {
                 "library": {

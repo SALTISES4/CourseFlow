@@ -1,3 +1,4 @@
+// @ts-nocheck
 // TODO: Deprecate/remove this component in favor of "CreateProject" dialog
 // since it's used to create new or edit existing project data
 
