@@ -8,12 +8,11 @@ import {
   LibraryObjectsSearchQueryResp,
   PageExploreQueryResp
 } from '@XMLHTTP/types/query'
-import * as React from 'react'
-import { useMemo, useState } from 'react'
-
 import LibrarySearchView, {
   SearchOptionsState
 } from 'components/views/LibrarySearchView'
+import * as React from 'react'
+import { useMemo, useState } from 'react'
 
 /*
  * @todo
