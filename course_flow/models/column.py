@@ -2,10 +2,7 @@ import uuid
 
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
-from course_flow.models._common import title_max_length
 
 from ._abstract import AbstractCourseFlowModel
 
@@ -50,7 +47,7 @@ class Column(AbstractCourseFlowModel):
     colour = models.PositiveIntegerField(null=True)
 
     column_type = models.PositiveIntegerField(
-        default=0, choices=column_types()
+        choices=column_types(), default=0
     )
 
     is_original = models.BooleanField(default=False)

@@ -1,12 +1,16 @@
 import { workflowTitle } from '@cf/components/common/UIPrimitives/Titles'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { WorkflowType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
+import { _t, convertEnum } from '@cf/utility/utilityFunctions'
 import { CHIP_TYPE } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
+import Favourite from '@cfComponents/UIPrimitives/Favourite'
+import { AppState } from '@cfRedux/types/type'
+import { Box } from '@mui/material'
 import Typography from '@mui/material/Typography'
-import { useContext } from 'react'
 import * as React from 'react'
+import { useContext } from 'react'
+import { useSelector } from 'react-redux'
 
 // @todo not sure this needs its own file
 const Header = ({
@@ -23,16 +27,45 @@ const Header = ({
   deleted: boolean
 }) => {
   const context = useContext(WorkFlowConfigContext)
+  const workflow = useSelector((state: AppState) => state.workflow)
 
-  const typeText = `${_t(workflowType)} ${isStrategy && _t('strategy')}`
+  const typeText = `${_t(workflowType)} ${isStrategy ? _t('strategy') : ''}`
 
   return (
-    <div onClick={(evt) => context.selectionManager.changeSelection(evt)}>
-      <Typography component="h1" variant="h4">
+    <Box
+      sx={{
+        display: 'flex',
+
+        justifyContent: 'space-between'
+      }}
+      onClick={(evt) => context.selectionManager.changeSelection(evt)}
+    >
+      <Typography
+        sx={{
+          display: 'flex',
+          alignItems: 'center'
+        }}
+        component="h1"
+        variant="h4"
+      >
         {workflowTitle(title, code, deleted)}
+        <CardChip
+          sx={{ display: 'flex', alignItems: 'center' }}
+          className={CHIP_TYPE.ACTIVITY as string}
+          label={typeText}
+        />
       </Typography>
-      <CardChip className={CHIP_TYPE.ACTIVITY as string} label={typeText} />
-    </div>
+
+      <Favourite
+        id={workflow.id}
+        isFavorite={workflow.favourite}
+        type={convertEnum<LibraryObjectType>(
+          workflow.type,
+          LibraryObjectType,
+          LibraryObjectType.ACTIVITY
+        )}
+      />
+    </Box>
   )
 }
 

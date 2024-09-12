@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import jQuery from 'jQuery'
 
-import {Discipline, FieldChoice, SidebarProps, TopBarProps} from './common'
+import { Discipline, FieldChoice, SidebarProps, TopBarProps } from './common'
 export {}
 declare global {
   /*~ Here, declare things that go in the global namespace, or augment
@@ -119,6 +119,7 @@ interface JSONAPIPaths {
     library__objects_search: string
     library__favourites__projects: string
     library__library__projects: string
+    library__toggle_favourite__post: string
   }
   user: {
     list: string
@@ -131,7 +132,6 @@ interface JSONAPIPaths {
   project: {
     detail: string
     create: string
-    discipline__list: string
   }
   workflow: {
     detail: string

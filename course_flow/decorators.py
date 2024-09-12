@@ -15,7 +15,7 @@ from django.views.decorators.http import require_GET, require_POST
 from ratelimit.decorators import ratelimit
 
 from course_flow.models import User
-from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.models.workflow import Workflow
 from course_flow.utils import get_model_from_str
 
@@ -44,28 +44,34 @@ def check_object_permission(instance, user, permission):
         object_id=instance.pk,
         content_type=ContentType.objects.get_for_model(instance),
     )
+
     if instance.author == user:
         if object_permission.count() == 0:
             ObjectPermission.objects.create(
                 user=user,
                 content_object=instance,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
         return True
-    if permission == ObjectPermission.PERMISSION_VIEW:
+
+    if permission == Permission.PERMISSION_VIEW.value:
         if instance.published:
             return True
+
         permission_check = (
-            Q(permission_type=ObjectPermission.PERMISSION_EDIT)
-            | Q(permission_type=ObjectPermission.PERMISSION_VIEW)
-            | Q(permission_type=ObjectPermission.PERMISSION_COMMENT)
+            Q(permission_type=Permission.PERMISSION_EDIT.value)
+            | Q(permission_type=Permission.PERMISSION_VIEW.value)
+            | Q(permission_type=Permission.PERMISSION_COMMENT.value)
         )
-    elif permission == ObjectPermission.PERMISSION_COMMENT:
+
+    elif permission == Permission.PERMISSION_COMMENT.value:
         permission_check = Q(
-            permission_type=ObjectPermission.PERMISSION_EDIT
-        ) | Q(permission_type=ObjectPermission.PERMISSION_COMMENT)
+            permission_type=Permission.PERMISSION_EDIT.value
+        ) | Q(permission_type=Permission.PERMISSION_COMMENT.value)
+
     else:
         permission_check = Q(permission_type=permission)
+
     if object_permission.filter(permission_check).count() > 0:
         return True
 
@@ -179,7 +185,7 @@ def check_special_case_delete_permission(model_data, user):
     #    ):
     #        permission_objects = instance.get_permission_objects()
     #        return check_objects_permission(
-    #            permission_objects, user, ObjectPermission.PERMISSION_EDIT
+    #            permission_objects, user, Permission.PERMISSION_EDIT.value
     #        )
     if model_data["model"] == "project":
         return instance.author == user
@@ -187,7 +193,7 @@ def check_special_case_delete_permission(model_data, user):
         if instance.get_project() is None:
             return instance.author == user
         return instance.author == user or check_object_permission(
-            instance.get_project(), user, ObjectPermission.PERMISSION_EDIT
+            instance.get_project(), user, Permission.PERMISSION_EDIT.value
         )
 
 
@@ -280,7 +286,7 @@ def user_can_edit(model, **outer_kwargs):
                 if check_objects_permission(
                     permission_objects,
                     User.objects.get(pk=request.user.pk),
-                    ObjectPermission.PERMISSION_EDIT,
+                    Permission.PERMISSION_EDIT.value,
                 ):
                     return fct(request, *args, **kwargs)
                 else:
@@ -318,7 +324,7 @@ def user_can_view(model, **outer_kwargs):
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_VIEW,
+                Permission.PERMISSION_VIEW.value,
             ):
                 return fct(request, *args, **kwargs)
             else:
@@ -356,7 +362,7 @@ def user_can_view_or_none(model, **outer_kwargs):
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_VIEW,
+                Permission.PERMISSION_VIEW.value,
             ):
                 return fct(request, *args, **kwargs)
             else:
@@ -394,7 +400,7 @@ def user_can_edit_or_none(model, **outer_kwargs):
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_EDIT,
+                Permission.PERMISSION_EDIT.value,
             ):
                 return fct(request, *args, **kwargs)
             else:
@@ -444,7 +450,7 @@ def user_can_comment(model, **outer_kwargs):
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_COMMENT,
+                Permission.PERMISSION_COMMENT.value,
             ):
                 return fct(request, *args, **kwargs)
             else:
@@ -493,7 +499,7 @@ def user_can_delete(model, **outer_kwargs):
                     if check_objects_permission(
                         permission_objects,
                         User.objects.get(pk=request.user.pk),
-                        ObjectPermission.PERMISSION_EDIT,
+                        Permission.PERMISSION_EDIT.value,
                     ):
                         return fct(request, *args, **kwargs)
 

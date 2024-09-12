@@ -375,9 +375,6 @@ def get_app_config(request: HttpRequest):
                 "project": {
                     "detail": reverse("json_api:project--detail--get"),
                     "create": reverse("json_api:project--create--post"),
-                    "discipline_list": reverse(
-                        "json_api:project--discipline--list"
-                    ),
                 },
                 "workflow": {
                     "detail": reverse("json_api:workflow--detail--get"),

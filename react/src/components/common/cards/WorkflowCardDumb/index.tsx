@@ -1,15 +1,9 @@
-import { WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cfUtility'
-import StarIcon from '@mui/icons-material/Star'
-import StarOutlineIcon from '@mui/icons-material/StarOutline'
-import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { Fragment, MouseEvent, ReactNode, RefObject } from 'react'
 
 import {
   CardCaption,
   CardChip,
-  CardFavouriteBtn,
   CardFooter,
   CardFooterActions,
   CardFooterTags,
@@ -39,13 +33,12 @@ export type PropsType = {
   title: string | ReactNode
   description?: string
   isSelected?: boolean
-  isFavourite?: boolean
   onClick?: () => void
   onMouseDown?: (evt: MouseEvent<HTMLDivElement>) => void
-  onFavourite?: (evt: MouseEvent<HTMLButtonElement>) => void
   chips: (WorkflowCardChipType | ReactNode)[]
   footer?: ReactNode
   isDisabledLink?: boolean
+  favourite?: ReactNode
 }
 
 // Type guard function to check if an item is of type WorkflowCardChipType
@@ -62,23 +55,19 @@ const WorkflowCardDumb = ({
   title,
   description,
   isSelected,
-  isFavourite,
-  onFavourite,
+  favourite,
   onClick,
   onMouseDown,
   chips,
   footer,
   isDisabledLink
 }: PropsType) => (
-  <CardWrap
-    onClick={!isDisabledLink ? onClick : null}
-    onMouseDown={onMouseDown}
-    className={isSelected ? 'selected' : ''}
-  >
-    <CardHeader>
+  <CardWrap onMouseDown={onMouseDown} className={isSelected ? 'selected' : ''}>
+    <CardHeader onClick={!isDisabledLink ? onClick : null}>
       <CardTitle>{title}</CardTitle>
       {description && <CardCaption>{description}</CardCaption>}
     </CardHeader>
+
     <CardFooter>
       {chips.length && (
         <CardFooterTags>
@@ -95,19 +84,7 @@ const WorkflowCardDumb = ({
           })}
         </CardFooterTags>
       )}
-      <CardFooterActions>
-        <CardFavouriteBtn
-          aria-label={_t('Favourite')}
-          sx={{
-            color: isFavourite
-              ? 'courseflow.favouriteActive'
-              : 'courseflow.favouriteInactive'
-          }}
-          onClick={onFavourite}
-        >
-          {isFavourite ? <StarIcon /> : <StarOutlineIcon />}
-        </CardFavouriteBtn>
-      </CardFooterActions>
+      <CardFooterActions>{favourite}</CardFooterActions>
       {footer}
     </CardFooter>
   </CardWrap>

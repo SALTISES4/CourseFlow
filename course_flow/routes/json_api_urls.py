@@ -35,6 +35,16 @@ def json_api_patterns():
             name="json-api-post-get-workflow-data",
         ),
         path(
+            "workflow/get-workflow-parent-data",
+            views.json_api.WorkflowEndpoint.fetch_workflow_parent_data,
+            name="json-api-post-get-workflow-parent-data",
+        ),
+        path(
+            "workflow/get-workflow-child-data",
+            views.json_api.WorkflowEndpoint.fetch_workflow_child_data,
+            name="json-api-post-get-workflow-child-data",
+        ),
+        path(
             "workflow/node/create",
             views.json_api.node.json_api_post_new_node,
             name="json-api-post-new-node",
@@ -98,16 +108,6 @@ def json_api_patterns():
             "workflow/update-outcomenode-degree",
             views.json_api.outcome.json_api_post_update_outcomenode_degree,
             name="json-api-post-update-outcomenode-degree",
-        ),
-        path(
-            "workflow/get-workflow-parent-data",
-            views.json_api.workflow.json_api_post_get_workflow_parent_data,
-            name="json-api-post-get-workflow-parent-data",
-        ),
-        path(
-            "workflow/get-workflow-child-data",
-            views.json_api.workflow.json_api_post_get_workflow_child_data,
-            name="json-api-post-get-workflow-child-data",
         ),
         path(
             "workflow/<int:pk>/get-public-workflow-data",
@@ -219,12 +219,6 @@ def json_api_patterns():
             views.json_api.strategy.json_api_post_duplicate_strategy,
             name="json-api-post-duplicate-strategy",
         ),
-        # not used anywhere
-        path(
-            "project/discipline/list",
-            views.json_api.project.json_api__project__discipline__list,
-            name="project--discipline--list",
-        ),
         #########################################################
         # import / export
         #########################################################
@@ -257,32 +251,32 @@ def json_api_patterns():
         #########################################################
         path(
             "library/home",
-            views.json_api.library.json_api__library__home,
+            views.json_api.LibraryEndpoint.fetch__home,
             name="library--home",
         ),
         path(
             "library/explore",
-            views.json_api.library.json_api__library__explore,
+            views.json_api.LibraryEndpoint.fetch__explore,
             name="library--explore",
         ),
         path(
             "library/library/projects",
-            views.json_api.library.json_api__library__library__projects__get,
+            views.json_api.LibraryEndpoint.fetch__projects,
             name="library--library--projects--get",
         ),
         path(
             "library/favourites",
-            views.json_api.library.json_api__library__favourite_library_objects__post,
+            views.json_api.LibraryEndpoint.fetch__favourite_library_objects,
             name="library--favourites--projects--get",
         ),
         path(
             "library/objects-search",
-            views.json_api.library.json_api___library__library_objects_search__post,
+            views.json_api.LibraryEndpoint.search,
             name="library--library--objects-search--post",
         ),
         path(
             "library/toggle-favourite",
-            views.json_api.library.json_api__library__toggle_favourite__post,
+            views.json_api.LibraryEndpoint.toggle_favourite,
             name="library--toggle-favourite--post",
         ),
         #########################################################

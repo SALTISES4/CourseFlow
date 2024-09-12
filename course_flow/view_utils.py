@@ -85,7 +85,7 @@ def get_my_projects(user, add, **kwargs):
     for_add = kwargs.get("for_add", False)
     permission_filter = {}
     if for_add:
-        permission_filter["permission_type"] = ObjectPermission.PERMISSION_EDIT
+        permission_filter["permission_type"] = Permission.PERMISSION_EDIT.value
 
     data_package = {
         "owned_projects": {
@@ -256,11 +256,11 @@ def get_workflow_info_boxes(user, workflow_type, **kwargs):
     model = get_model_from_str(workflow_type)
     permissions_view = {
         "user_permissions__user": user,
-        "user_permissions__permission_type": ObjectPermission.PERMISSION_EDIT,
+        "user_permissions__permission_type": Permission.PERMISSION_EDIT.value,
     }
     permissions_edit = {
         "user_permissions__user": user,
-        "user_permissions__permission_type": ObjectPermission.PERMISSION_EDIT,
+        "user_permissions__permission_type": Permission.PERMISSION_EDIT.value,
     }
     items = []
     if project is not None:

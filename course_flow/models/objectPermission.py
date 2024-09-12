@@ -1,3 +1,5 @@
+from enum import Enum
+
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -9,18 +11,21 @@ from course_flow.models._common import User, workflow_choices
 from .workflow import Workflow
 
 
-def permission_choices():
+class Permission(Enum):
     PERMISSION_NONE = 0
     PERMISSION_VIEW = 1
     PERMISSION_EDIT = 2
     PERMISSION_COMMENT = 3
     PERMISSION_STUDENT = 4
+
+
+def permission_choices():
     return (
-        (PERMISSION_NONE, _("None")),
-        (PERMISSION_VIEW, _("View")),
-        (PERMISSION_EDIT, _("Edit")),
-        (PERMISSION_COMMENT, _("Comment")),
-        (PERMISSION_STUDENT, _("Student")),
+        (Permission.PERMISSION_NONE.value, _("None")),
+        (Permission.PERMISSION_VIEW.value, _("View")),
+        (Permission.PERMISSION_EDIT.value, _("Edit")),
+        (Permission.PERMISSION_COMMENT.value, _("Comment")),
+        (Permission.PERMISSION_STUDENT.value, _("Student")),
     )
 
 

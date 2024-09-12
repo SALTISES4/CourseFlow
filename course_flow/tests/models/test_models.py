@@ -125,7 +125,7 @@ class ModelViewTest(TestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=project,
-            permission_type=ObjectPermission.PERMISSION_VIEW,
+            permission_type=Permission.PERMISSION_VIEW.value,
         )
         response = self.client.get(
             reverse("course_flow:project-update", args=[project.pk])
@@ -134,7 +134,7 @@ class ModelViewTest(TestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=project,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
         response = self.client.get(
             reverse("course_flow:project-update", args=[project.pk])
@@ -143,7 +143,7 @@ class ModelViewTest(TestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=project,
-            permission_type=ObjectPermission.PERMISSION_NONE,
+            permission_type=Permission.PERMISSION_NONE.value,
         )
         response = self.client.get(
             reverse("course_flow:project-update", args=[project.pk])
@@ -179,7 +179,7 @@ class ModelViewTest(TestCase):
             ObjectPermission.objects.create(
                 user=user,
                 content_object=workflow,
-                permission_type=ObjectPermission.PERMISSION_VIEW,
+                permission_type=Permission.PERMISSION_VIEW.value,
             )
             response = self.client.get(
                 reverse("course_flow:workflow-detail", args=[workflow.pk])
@@ -188,7 +188,7 @@ class ModelViewTest(TestCase):
             ObjectPermission.objects.create(
                 user=user,
                 content_object=workflow,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
             response = self.client.get(
                 reverse("course_flow:workflow-detail", args=[workflow.pk])
@@ -197,7 +197,7 @@ class ModelViewTest(TestCase):
             ObjectPermission.objects.create(
                 user=user,
                 content_object=workflow,
-                permission_type=ObjectPermission.PERMISSION_NONE,
+                permission_type=Permission.PERMISSION_NONE.value,
             )
             response = self.client.get(
                 reverse("course_flow:workflow-detail", args=[workflow.pk])
@@ -2960,7 +2960,7 @@ class PermissionsTests(TestCase):
             p1 = ObjectPermission.objects.create(
                 user=user,
                 content_object=workflow,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
             p1.save()
             response = self.client.post(
@@ -2996,7 +2996,7 @@ class PermissionsTests(TestCase):
             p2 = ObjectPermission.objects.create(
                 user=user,
                 content_object=project,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
             p2.save()
             response = self.client.post(
@@ -3012,7 +3012,7 @@ class PermissionsTests(TestCase):
             p2 = ObjectPermission.objects.create(
                 user=user,
                 content_object=project,
-                permission_type=ObjectPermission.PERMISSION_NONE,
+                permission_type=Permission.PERMISSION_NONE.value,
             )
             p2.save()
 
@@ -3043,7 +3043,7 @@ class PermissionsTests(TestCase):
         p = ObjectPermission.objects.create(
             user=user,
             content_object=workflow,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
         p.save()
         response = self.client.post(
@@ -3070,7 +3070,7 @@ class PermissionsTests(TestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=project,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
         response = self.client.post(
             reverse("course_flow:json-api-post-delete-self"),
@@ -3105,7 +3105,7 @@ class PermissionsTests(TestCase):
                 "objectType": JSONRenderer().render("project").decode("utf-8"),
                 "permission_user": second_user.id,
                 "permission_type": JSONRenderer()
-                .render(ObjectPermission.PERMISSION_EDIT)
+                .render(Permission.PERMISSION_EDIT.value)
                 .decode("utf-8"),
             },
         )
@@ -3145,7 +3145,7 @@ class PermissionsTests(TestCase):
             ObjectPermission.objects.create(
                 user=user,
                 content_object=workflow,
-                permission_type=ObjectPermission.PERMISSION_VIEW,
+                permission_type=Permission.PERMISSION_VIEW.value,
             )
             response = self.client.post(
                 reverse("course_flow:json-api-post-duplicate-self"),
@@ -3167,7 +3167,7 @@ class PermissionsTests(TestCase):
             ObjectPermission.objects.create(
                 user=user,
                 content_object=workflow,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
             response = self.client.post(
                 reverse("course_flow:json-api-post-duplicate-self"),
@@ -3212,7 +3212,7 @@ class PermissionsTests(TestCase):
             ObjectPermission.objects.create(
                 user=user,
                 content_object=workflow,
-                permission_type=ObjectPermission.PERMISSION_VIEW,
+                permission_type=Permission.PERMISSION_VIEW.value,
             )
             response = self.client.post(
                 reverse("course_flow:json-api-post-update-value"),
@@ -3230,7 +3230,7 @@ class PermissionsTests(TestCase):
             ObjectPermission.objects.create(
                 user=user,
                 content_object=workflow,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
             response = self.client.post(
                 reverse("course_flow:json-api-post-update-value"),
@@ -3682,7 +3682,7 @@ class NotificationTest(TestCase):
                 "objectType": JSONRenderer().render("project").decode("utf-8"),
                 "permission_user": second_user.id,
                 "permission_type": JSONRenderer()
-                .render(ObjectPermission.PERMISSION_EDIT)
+                .render(Permission.PERMISSION_EDIT.value)
                 .decode("utf-8"),
             },
         )

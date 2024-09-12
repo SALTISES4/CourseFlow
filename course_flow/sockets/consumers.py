@@ -4,7 +4,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
 from course_flow.decorators import check_object_permission
-from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.models.workflow import Workflow
 
 
@@ -20,10 +20,10 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
     def get_permission(self):
         workflow = Workflow.objects.get(pk=self.workflow_pk)
         self.VIEW = check_object_permission(
-            workflow, self.user, ObjectPermission.PERMISSION_VIEW
+            workflow, self.user, Permission.PERMISSION_VIEW.value
         )
         self.EDIT = check_object_permission(
-            workflow, self.user, ObjectPermission.PERMISSION_EDIT
+            workflow, self.user, Permission.PERMISSION_EDIT.value
         )
 
     def connect(self):

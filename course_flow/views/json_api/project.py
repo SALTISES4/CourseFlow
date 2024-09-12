@@ -19,8 +19,7 @@ from course_flow.decorators import (
 )
 from course_flow.duplication_functions import fast_duplicate_project
 from course_flow.models import ObjectPermission, Project, Workflow
-from course_flow.models.discipline import Discipline
-from course_flow.serializers import DisciplineSerializer
+from course_flow.models.objectPermission import Permission
 from course_flow.serializers.project import (
     CreateProjectSerializer,
     ProjectSerializerShallow,
@@ -71,7 +70,6 @@ class ProjectEndpoint:
             return Response({"detail": "Not found."}, status=404)
 
         current_user = request.user
-
         serializer = ProjectSerializerShallow(
             project, context={"user": current_user, "request": request}
         )
@@ -155,7 +153,7 @@ def json_api_post_get_projects_for_create(
                 user=user,
                 content_type=ContentType.objects.get_for_model(Project),
                 project__deleted=False,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
         ]
         projects_serialized = InfoBoxSerializer(
@@ -262,10 +260,12 @@ def json_api_post_duplicate_project(request: HttpRequest) -> JsonResponse:
 @user_can_edit("projectPk")
 def json_api_post_add_object_set(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
+
     project = Project.objects.get(pk=body.get("projectPk"))
     term = body.get("term")
     title = body.get("title")
     translation_plural = body.get("translation_plural")
+
     try:
         project.object_sets.create(
             term=term,
@@ -274,18 +274,10 @@ def json_api_post_add_object_set(request: HttpRequest) -> JsonResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
+
     return JsonResponse(
         {
             "action": "posted",
             "new_dict": ProjectSerializerShallow(project).data["object_sets"],
         }
     )
-
-
-@login_required
-@api_view(["GET"])
-def json_api__project__discipline__list(request):
-    if request.method == "GET":
-        disciplines = Discipline.objects.order_by("title")
-        serializer = DisciplineSerializer(disciplines, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)

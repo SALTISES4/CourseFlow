@@ -11,7 +11,8 @@ from course_flow.decorators import (
     user_can_comment,
     user_can_edit,
 )
-from course_flow.models import Notification, ObjectPermission, User
+from course_flow.models import Notification, User
+from course_flow.models.objectPermission import Permission
 from course_flow.serializers import CommentSerializer
 from course_flow.utils import get_model_from_str, make_user_notification
 
@@ -69,7 +70,7 @@ def json_api__comment__create__post(request: HttpRequest) -> JsonResponse:
                     if check_object_permission(
                         content_object,
                         target_user,
-                        ObjectPermission.PERMISSION_COMMENT,
+                        Permission.PERMISSION_COMMENT.value,
                     ):
                         target_users += [target_user]
                     else:

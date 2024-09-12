@@ -12,7 +12,7 @@ from course_flow.models import (
     User,
     Workflow,
 )
-from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.serializers.mixin import (
     AuthorSerializerMixin,
     DescriptionSerializerMixin,
@@ -442,7 +442,7 @@ class InfoBoxSerializer(
         ).first()
         if object_permission is None:
             return {
-                "permission_type": ObjectPermission.PERMISSION_VIEW,
+                "permission_type": Permission.PERMISSION_VIEW.value,
                 "last_viewed": None,
             }
         return {

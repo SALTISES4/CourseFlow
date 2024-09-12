@@ -1353,7 +1353,7 @@ class InfoBoxSerializer(
         ).first()
         if object_permission is None:
             return {
-                "permission_type": ObjectPermission.PERMISSION_VIEW,
+                "permission_type": Permission.PERMISSION_VIEW.value,
                 "last_viewed": None,
             }
         return {

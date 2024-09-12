@@ -1239,7 +1239,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         ObjectPermission.objects.create(
             user=self.user,
             content_object=project,
-            permission_type=ObjectPermission.PERMISSION_VIEW,
+            permission_type=Permission.PERMISSION_VIEW.value,
         )
         Favourite.objects.create(user=self.user, content_object=project)
         Favourite.objects.create(
@@ -2937,7 +2937,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             ObjectPermission.objects.filter(
                 user=user2,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
                 content_type=ContentType.objects.get_for_model(project),
                 object_id=project.id,
             ).count(),
@@ -2954,7 +2954,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             ObjectPermission.objects.filter(
                 user=user2,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
                 content_type=ContentType.objects.get_for_model(project),
                 object_id=project.id,
             ).count(),
@@ -2963,7 +2963,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             ObjectPermission.objects.filter(
                 user=user2,
-                permission_type=ObjectPermission.PERMISSION_COMMENT,
+                permission_type=Permission.PERMISSION_COMMENT.value,
                 content_type=ContentType.objects.get_for_model(project),
                 object_id=project.id,
             ).count(),
@@ -2979,7 +2979,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             ObjectPermission.objects.filter(
                 user=user2,
-                permission_type=ObjectPermission.PERMISSION_COMMENT,
+                permission_type=Permission.PERMISSION_COMMENT.value,
                 content_type=ContentType.objects.get_for_model(project),
                 object_id=project.id,
             ).count(),
@@ -2988,7 +2988,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             ObjectPermission.objects.filter(
                 user=user2,
-                permission_type=ObjectPermission.PERMISSION_VIEW,
+                permission_type=Permission.PERMISSION_VIEW.value,
                 content_type=ContentType.objects.get_for_model(project),
                 object_id=project.id,
             ).count(),
@@ -3006,7 +3006,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             ObjectPermission.objects.filter(
                 user=user2,
-                permission_type=ObjectPermission.PERMISSION_VIEW,
+                permission_type=Permission.PERMISSION_VIEW.value,
                 content_type=ContentType.objects.get_for_model(project),
                 object_id=project.id,
             ).count(),
@@ -4102,12 +4102,12 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=workflow_view,
-            permission_type=ObjectPermission.PERMISSION_VIEW,
+            permission_type=Permission.PERMISSION_VIEW.value,
         )
         ObjectPermission.objects.create(
             user=user,
             content_object=workflow_edit,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
 
         application = URLRouter(websocket_urlpatterns)
@@ -4192,7 +4192,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=workflow_edit,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
 
         selenium.get(

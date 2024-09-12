@@ -21,7 +21,6 @@ import {
   getWorkflowById,
   getWorkflowChildDataQuery,
   getWorkflowDataQuery,
-  getWorkflowParentDataQuery,
   getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
 import { EProject } from '@XMLHTTP/types/entity'

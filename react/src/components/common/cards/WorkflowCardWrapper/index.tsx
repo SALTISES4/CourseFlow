@@ -1,12 +1,14 @@
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import { workflowTitle } from '@cfComponents/UIPrimitives/Titles'
 import ErrorIcon from '@mui/icons-material/Error'
 import { useMutation } from '@tanstack/react-query'
 import { toggleFavouriteMutation } from '@XMLHTTP/API/library'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
+import * as React from 'react'
 
 import WorkflowCardDumb, {
   PropsType as WorkflowCardDumbPropsType
@@ -19,8 +21,9 @@ import WorkflowCardDumb, {
 
 export type WorkflowCardWrapperPropsType = Pick<
   WorkflowCardDumbPropsType,
-  'id' | 'title' | 'description' | 'chips' | 'isFavourite'
+  'id' | 'title' | 'description' | 'chips'
 > & {
+  isFavourite: boolean
   isLinked: boolean
   type: LibraryObjectType
   isSelected?: boolean
@@ -39,23 +42,6 @@ const WorkflowCardWrapper = ({
    * FUNCTIONS
    *******************************************************/
   const navigateToItem = useNavigateToLibraryItem()
-  const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
-
-  const { mutate: toggleMutate } = useMutation<EmptyPostResp>({
-    mutationFn: () =>
-      toggleFavouriteMutation({ id, type, favourite: !isFavouriteState }),
-    onSuccess: (newNotificationsValue) => {
-      // update local state after the API call is successful
-      setFavouriteState(!isFavouriteState)
-    },
-    onError: (error) => {
-      console.error('Error updating toggle:', error)
-    }
-  })
-
-  function onFavouriteHandler() {
-    toggleMutate()
-  }
 
   const Extras = () => {
     return (
@@ -87,15 +73,16 @@ const WorkflowCardWrapper = ({
   const code = ''
   const deleted = false
 
+  const favourite = <Favourite id={id} isFavorite={isFavourite} type={type} />
+
   return (
     <WorkflowCardDumb
       id={id}
       title={workflowTitle(title, code, deleted)}
+      favourite={favourite}
       isDisabledLink={isDisabledLink}
       description={description}
       isSelected={isSelected}
-      isFavourite={isFavouriteState}
-      onFavourite={onFavouriteHandler}
       onClick={() => navigateToItem(id, type)}
       chips={chips}
       footer={<Extras />}

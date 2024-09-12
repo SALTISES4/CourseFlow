@@ -16,6 +16,7 @@ from django.utils.translation import gettext as _
 
 import course_flow.models.project
 from course_flow import models
+from course_flow.models.objectPermission import Permission
 
 owned_throughmodels = [
     "node",
@@ -241,16 +242,20 @@ def get_user_permission(obj, user):
         obj = models.Workflow.objects.get(pk=obj.pk)
 
     if user is None or not user.is_authenticated:
-        return models.ObjectPermission.PERMISSION_NONE
+        return Permission.PERMISSION_NONE.value
+
     if obj.author == user:
-        return models.ObjectPermission.PERMISSION_EDIT
+        return Permission.PERMISSION_EDIT.value
+
     permissions = models.ObjectPermission.objects.filter(
         user=user,
         content_type=ContentType.objects.get_for_model(obj),
         object_id=obj.id,
     )
+
     if permissions.count() == 0:
-        return models.ObjectPermission.PERMISSION_NONE
+        return Permission.PERMISSION_NONE.value
+
     return permissions.first().permission_type
 
 
@@ -261,7 +266,7 @@ def user_workflow_url(workflow, user):
     if user is not None and user.is_authenticated and workflow.published:
         if Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all():
             can_view = True
-    if user_permission != models.ObjectPermission.PERMISSION_NONE:
+    if user_permission != Permission.PERMISSION_NONE.value:
         can_view = True
     if can_view:
         return reverse(
@@ -280,7 +285,7 @@ def user_project_url(project, user):
     user_permission = get_user_permission(project, user)
     if not user.is_authenticated:
         return "noaccess"
-    if user_permission != models.ObjectPermission.PERMISSION_NONE:
+    if user_permission != Permission.PERMISSION_NONE.value:
         return reverse("course_flow:project-detail", kwargs={"pk": project.pk})
     return ""
 

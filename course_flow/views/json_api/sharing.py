@@ -10,7 +10,7 @@ from django.utils.translation import gettext as _
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.models import User
 from course_flow.models.notification import Notification
-from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.serializers import UserSerializer
 from course_flow.utils import get_model_from_str, make_user_notification
 
@@ -31,9 +31,9 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
         if (
             permission_type
             in [
-                ObjectPermission.PERMISSION_EDIT,
-                ObjectPermission.PERMISSION_VIEW,
-                ObjectPermission.PERMISSION_COMMENT,
+                Permission.PERMISSION_EDIT.value,
+                Permission.PERMISSION_VIEW.value,
+                Permission.PERMISSION_COMMENT.value,
             ]
             and Group.objects.get(name=settings.TEACHER_GROUP)
             not in user.groups.all()
@@ -46,7 +46,7 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
         #     item = item.get_subclass()
 
         project = item.get_project()
-        if permission_type != ObjectPermission.PERMISSION_EDIT:
+        if permission_type != Permission.PERMISSION_EDIT.value:
             if item.author == user or (
                 project is not None and project.author == user
             ):
@@ -60,7 +60,7 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
                 return response
 
         # Not currently enabled
-        if permission_type == ObjectPermission.PERMISSION_STUDENT:
+        if permission_type == Permission.PERMISSION_STUDENT.value:
             raise ValidationError
 
         ObjectPermission.objects.filter(
@@ -68,7 +68,7 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
             content_type=ContentType.objects.get_for_model(item),
             object_id=object_id,
         ).delete()
-        if permission_type != ObjectPermission.PERMISSION_NONE:
+        if permission_type != Permission.PERMISSION_NONE.value:
             ObjectPermission.objects.create(
                 user=user, content_object=item, permission_type=permission_type
             )
@@ -114,7 +114,7 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
         for object_permission in ObjectPermission.objects.filter(
             content_type=content_type,
             object_id=object_id,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         ).select_related("user"):
             editors.add(object_permission.user)
         viewers = set()
@@ -122,7 +122,7 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
         for object_permission in ObjectPermission.objects.filter(
             content_type=content_type,
             object_id=object_id,
-            permission_type=ObjectPermission.PERMISSION_VIEW,
+            permission_type=Permission.PERMISSION_VIEW.value,
         ).select_related("user"):
             viewers.add(object_permission.user)
         commentors = set()
@@ -130,7 +130,7 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
         for object_permission in ObjectPermission.objects.filter(
             content_type=content_type,
             object_id=object_id,
-            permission_type=ObjectPermission.PERMISSION_COMMENT,
+            permission_type=Permission.PERMISSION_COMMENT.value,
         ).select_related("user"):
             commentors.add(object_permission.user)
         students = set()
@@ -138,7 +138,7 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
         for object_permission in ObjectPermission.objects.filter(
             content_type=content_type,
             object_id=object_id,
-            permission_type=ObjectPermission.PERMISSION_STUDENT,
+            permission_type=Permission.PERMISSION_STUDENT.value,
         ).select_related("user"):
             students.add(object_permission.user)
 

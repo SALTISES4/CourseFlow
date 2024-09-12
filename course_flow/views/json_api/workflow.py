@@ -9,7 +9,9 @@ from django.http import HttpRequest, JsonResponse
 
 # from duplication
 from django.utils.translation import gettext as _
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from course_flow.decorators import (
@@ -74,19 +76,19 @@ class WorkflowEndpoint:
     #########################################################
     # GET DATA
     #########################################################
+    @staticmethod
     @permission_classes([UserCanViewMixin])
     @login_required
     @api_view(["GET"])
-    def fetch_detail(self, request: HttpRequest):
+    def fetch_detail(request: Request) -> Response:
         workflows_pk = request.GET.get("id")
+        current_user = request.user
 
         try:
             workflow = Workflow.objects.get(pk=workflows_pk)
 
         except Workflow.DoesNotExist:
             return Response({"detail": "Not found."}, status=404)
-
-        current_user = request.user
 
         user_permission = get_user_permission(workflow, current_user)
 
@@ -102,74 +104,91 @@ class WorkflowEndpoint:
             "workflow_model_id": workflow.id,
         }
 
-        return JsonResponse(
+        return Response(
             {
                 "action": "GET",
                 "data_package": data_package,
-            }
+            },
+            status=status.HTTP_200_OK,
         )
 
+    @staticmethod
     @user_can_view("workflowPk")
     @api_view(["POST"])
-    def fetch_detail_full(request: HttpRequest) -> JsonResponse:
+    def fetch_detail_full(request: Request) -> Response:
         body = json.loads(request.body)
         workflow = Workflow.objects.get(pk=body.get("workflowPk"))
+
         try:
             data_package = get_workflow_data_flat(
                 workflow.get_subclass(), request.user
             )
         except AttributeError:
             traceback.print_exc()
-            return JsonResponse({"action": "error"})
-        return JsonResponse(
+            return Response(
+                {"error": "hello error"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(
             {
                 "action": "posted",
                 "data_package": data_package,
-            }
+            },
+            status=status.HTTP_200_OK,
         )
 
+    @staticmethod
+    @user_can_view("workflowPk")
+    @api_view(["POST"])
+    def fetch_workflow_parent_data(
+        request: Request,
+    ) -> Response:
+        body = json.loads(request.body)
+        workflow = Workflow.objects.get(pk=body.get("workflowPk"))
 
-@user_can_view("workflowPk")
-def json_api_post_get_workflow_parent_data(
-    request: HttpRequest,
-) -> JsonResponse:
-    body = json.loads(request.body)
-    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
+        try:
+            data_package = get_parent_outcome_data(
+                workflow.get_subclass(), request.user
+            )
 
-    try:
-        data_package = get_parent_outcome_data(
-            workflow.get_subclass(), request.user
+        except AttributeError:
+            return Response(
+                {"action": "error"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(
+            {
+                "action": "posted",
+                "data_package": data_package,
+            },
+            status=status.HTTP_200_OK,
         )
 
-    except AttributeError:
-        return JsonResponse({"action": "error"})
+    @staticmethod
+    @user_can_view("nodePk")
+    @api_view(["POST"])
+    def fetch_workflow_child_data(
+        request: Request,
+    ) -> Response:
+        body = json.loads(request.body)
+        node = Node.objects.get(pk=body.get("nodePk"))
 
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": data_package,
-        }
-    )
+        try:
+            data_package = get_child_outcome_data(
+                node.linked_workflow, request.user, node.get_workflow()
+            )
+        except AttributeError:
+            return Response(
+                {"action": "error"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-
-@user_can_view("nodePk")
-def json_api_post_get_workflow_child_data(
-    request: HttpRequest,
-) -> JsonResponse:
-    body = json.loads(request.body)
-    node = Node.objects.get(pk=body.get("nodePk"))
-    try:
-        data_package = get_child_outcome_data(
-            node.linked_workflow, request.user, node.get_workflow()
+        return Response(
+            {
+                "action": "posted",
+                "data_package": data_package,
+            },
+            status=status.HTTP_200_OK,
         )
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": data_package,
-        }
-    )
 
 
 @public_model_access("workflow")

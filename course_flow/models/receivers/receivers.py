@@ -10,7 +10,7 @@ from course_flow.models.comment import Comment
 from course_flow.models.course import Course
 from course_flow.models.favourite import Favourite
 from course_flow.models.node import Node
-from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.models.outcome import Outcome
 from course_flow.models.program import Program
 from course_flow.models.project import Project
@@ -486,7 +486,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                 # If user already has edit or comment permissions and we are adding view, do not override
                 if (
                     instance.permission_type
-                    == ObjectPermission.PERMISSION_VIEW
+                    == Permission.PERMISSION_VIEW.value
                     and ObjectPermission.objects.filter(
                         user=instance.user,
                         content_type=ContentType.objects.get_for_model(
@@ -494,8 +494,8 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                         ),
                         object_id=workflow.id,
                         permission_type__in=[
-                            ObjectPermission.PERMISSION_EDIT,
-                            ObjectPermission.PERMISSION_COMMENT,
+                            Permission.PERMISSION_EDIT.value,
+                            Permission.PERMISSION_COMMENT.value,
                         ],
                     ).count()
                     > 0
@@ -503,14 +503,14 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     pass
                 elif (
                     instance.permission_type
-                    == ObjectPermission.PERMISSION_COMMENT
+                    == Permission.PERMISSION_COMMENT.value
                     and ObjectPermission.objects.filter(
                         user=instance.user,
                         content_type=ContentType.objects.get_for_model(
                             workflow
                         ),
                         object_id=workflow.id,
-                        permission_type__in=[ObjectPermission.PERMISSION_EDIT],
+                        permission_type__in=[Permission.PERMISSION_EDIT.value],
                     ).count()
                     > 0
                 ):
@@ -522,7 +522,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                             ObjectPermission.objects.filter(
                                 workflow=workflow,
                                 user=instance.user,
-                                permission_type=ObjectPermission.PERMISSION_EDIT,
+                                permission_type=Permission.PERMISSION_EDIT.value,
                             ).count()
                             == 0
                         ):
@@ -530,7 +530,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                             ObjectPermission.objects.create(
                                 user=instance.user,
                                 content_object=workflow,
-                                permission_type=ObjectPermission.PERMISSION_EDIT,
+                                permission_type=Permission.PERMISSION_EDIT.value,
                             )
                     else:
                         ObjectPermission.objects.create(
@@ -558,7 +558,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     ObjectPermission.objects.create(
                         content_object=project,
                         user=instance.user,
-                        permission_type=ObjectPermission.PERMISSION_VIEW,
+                        permission_type=Permission.PERMISSION_VIEW.value,
                     )
 
 
@@ -741,7 +741,7 @@ def add_default_editor_workflow(sender, instance, created, **kwargs):
         ObjectPermission.objects.create(
             content_object=instance,
             user=instance.author,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
 
 
@@ -754,7 +754,7 @@ def add_default_editor_other_workflow(sender, instance, created, **kwargs):
         ObjectPermission.objects.create(
             content_object=instance,
             user=instance.author,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
 
 
@@ -770,7 +770,7 @@ def set_publication_workflow(sender, instance, created, **kwargs):
             ObjectPermission.objects.create(
                 content_object=workflow.get_subclass(),
                 user=instance.project.author,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
         for op in ObjectPermission.objects.filter(
             content_type=ContentType.objects.get_for_model(instance.project),

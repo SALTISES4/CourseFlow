@@ -133,7 +133,7 @@ class ModelViewTest(TestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=project,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
         response = self.client.post(
             reverse("course_flow:json-api-post-make-project-live"),
@@ -443,7 +443,7 @@ class ModelViewTest(TestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=workflow,
-            permission_type=ObjectPermission.PERMISSION_VIEW,
+            permission_type=Permission.PERMISSION_VIEW.value,
         )
         response = self.client.post(
             reverse("course_flow:json-api-post-set-workflow-visibility"),
@@ -459,7 +459,7 @@ class ModelViewTest(TestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=workflow,
-            permission_type=ObjectPermission.PERMISSION_NONE,
+            permission_type=Permission.PERMISSION_NONE.value,
         )
         LiveProjectUser.objects.create(
             user=user,
@@ -480,7 +480,7 @@ class ModelViewTest(TestCase):
         ObjectPermission.objects.create(
             user=user,
             content_object=workflow,
-            permission_type=ObjectPermission.PERMISSION_VIEW,
+            permission_type=Permission.PERMISSION_VIEW.value,
         )
         response = self.client.post(
             reverse("course_flow:json-api-post-set-workflow-visibility"),

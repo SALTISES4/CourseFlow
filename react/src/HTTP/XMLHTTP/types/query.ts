@@ -1,6 +1,5 @@
-import { Discipline, QueryPages } from '@cf/types/common'
+import { Discipline } from '@cf/types/common'
 import { VERB } from '@cf/types/enum'
-import { ObjectSetType } from '@cfComponents/dialog/common/ProjectCreateDialog/type'
 import { ProjectViewDTO } from '@cfPages/ProjectDetail/types'
 import { WorkflowDetailViewDTO } from '@cfPages/Workspace/Workflow/types'
 import {
@@ -145,19 +144,13 @@ export type DuplicateBaseItemQueryResp = {
 /*******************************************************
  * menu.ts
  *******************************************************/
-
 export type PageLibraryQueryResp = {
-  data_package: ELibraryObject[]
-}
-export type DisciplineQueryResp = {
-  action: VERB
   data_package: ELibraryObject[]
 }
 
 /*******************************************************
  * search.ts
  *******************************************************/
-
 export type LibraryObjectsSearchQueryResp = {
   action: VERB
   data_package: {
@@ -172,7 +165,6 @@ export type LibraryObjectsSearchQueryResp = {
 /*******************************************************
  * sharing.ts
  *******************************************************/
-
 export type UsersForObjectQueryResp = {
   action: VERB
   author: EUser
@@ -284,7 +276,6 @@ export type GetWorkflowSelectMenuResp = {
 /*******************************************************
  * QUERY COMPONENTS
  *******************************************************/
-
 export type WorkflowGroupsDataPackage = {
   current_project: ESectionGroup
   all_published: ESectionGroup

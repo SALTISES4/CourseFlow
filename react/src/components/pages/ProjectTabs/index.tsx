@@ -1,5 +1,7 @@
 import { OuterContentWrap } from '@cf/mui/helper'
 import { CFRoutes, RelativeRoutes } from '@cf/router'
+import { ProjectDetailsType } from '@cf/types/common'
+import { LibraryObjectType } from '@cf/types/enum'
 import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/utilityFunctions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -10,9 +12,11 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { toggleFavouriteMutation } from '@XMLHTTP/API/library'
 import { getProjectById } from '@XMLHTTP/API/project'
-import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
+import { EmptyPostResp, GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
+import { enqueueSnackbar } from 'notistack'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import {
@@ -27,6 +31,7 @@ import {
 
 import TabOverview from './components/TabOverview'
 import TabWorkflows from './components/TabWorkflows'
+import Favourite from "@cfComponents/UIPrimitives/Favourite";
 
 const ProjectDetails = () => {
   /*******************************************************
@@ -36,6 +41,8 @@ const ProjectDetails = () => {
   const projectId = Number(id)
   const location = useLocation()
   const [activeTab, setActiveTab] = useState<RelativeRoutes>()
+  const [project, setProject] = useState<ProjectDetailsType>()
+
   const navigate = useNavigate()
 
   const { data, error, isLoading, isError } = useQuery<GetProjectByIdQueryResp>(
@@ -45,6 +52,9 @@ const ProjectDetails = () => {
     }
   )
 
+  /*******************************************************
+   * LIFE CYCLE
+   *******************************************************/
   // not really a big fan of this solution...
   // is this really how RR would implement this?
   // here is probably a better solution
@@ -56,6 +66,21 @@ const ProjectDetails = () => {
     )
     setActiveTab(match.relativePath)
   }, [])
+
+  useEffect(() => {
+    if (!data?.data_package) return
+
+    const project = formatProjectEntity(
+      data.data_package.project_data,
+      COURSEFLOW_APP.globalContextData.disciplines
+    )
+    setProject(project)
+  }, [data])
+
+  /*******************************************************
+   * QUERIES
+   *******************************************************/
+
 
   /*******************************************************
    * COMPONENTS
@@ -102,13 +127,8 @@ const ProjectDetails = () => {
   /*******************************************************
    * CONSTANTS
    *******************************************************/
-  if (isLoading) return <Loader />
+  if (isLoading || !project) return <Loader />
   if (isError) return <div>An error occurred: {error.message}</div>
-
-  const project = formatProjectEntity(
-    data.data_package.project_data,
-    COURSEFLOW_APP.globalContextData.disciplines
-  )
 
   /*******************************************************
    * RENDER
@@ -126,17 +146,11 @@ const ProjectDetails = () => {
             {project.title}
           </Typography>
           <Box>
-            <IconButton
-              aria-label="Favourite"
-              sx={{
-                color: project.isFavorite
-                  ? 'courseflow.favouriteActive'
-                  : 'courseflow.favouriteInactive'
-              }}
-              onClick={() => console.log('favorited', data)}
-            >
-              <StarIcon />
-            </IconButton>
+            <Favourite
+              id={project.id}
+              isFavorite={project.isFavorite}
+              type={LibraryObjectType.PROJECT}
+            />
           </Box>
         </Stack>
       </OuterContentWrap>

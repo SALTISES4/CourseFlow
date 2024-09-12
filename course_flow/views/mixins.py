@@ -6,7 +6,7 @@ from django.contrib.contenttypes.models import ContentType
 from course_flow.decorators import check_object_permission
 from course_flow.models import Project
 from course_flow.models.notification import Notification
-from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.objectPermission import ObjectPermission, Permission
 
 
 class ContentPublicViewMixin(UserPassesTestMixin):
@@ -23,7 +23,7 @@ class UserCanViewMixin(UserPassesTestMixin):
             check_object_permission(
                 view_object,
                 self.request.user,
-                ObjectPermission.PERMISSION_VIEW,
+                Permission.PERMISSION_VIEW.value,
             )
         ):
             ObjectPermission.update_last_viewed(self.request.user, view_object)
@@ -47,7 +47,7 @@ class UserCanEditMixin(UserPassesTestMixin):
             check_object_permission(
                 view_object,
                 self.request.user,
-                ObjectPermission.PERMISSION_EDIT,
+                Permission.PERMISSION_EDIT.value,
             )
         ):
             ObjectPermission.update_last_viewed(self.request.user, view_object)
@@ -62,6 +62,6 @@ class UserCanEditProjectMixin(UserPassesTestMixin):
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
             check_object_permission(
-                project, self.request.user, ObjectPermission.PERMISSION_EDIT
+                project, self.request.user, Permission.PERMISSION_EDIT.value
             )
         )

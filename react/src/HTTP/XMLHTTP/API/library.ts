@@ -48,12 +48,15 @@ export function toggleFavouriteMutation({
   type,
   favourite
 }: ToggleFavouriteQueryArgs): Promise<EmptyPostResp> {
-  return API_POST<EmptyPostResp>(
-    COURSEFLOW_APP.globalContextData.path.post_paths.toggle_favourite,
-    {
-      objectId: id,
-      objectType: type,
-      favourite: favourite
-    }
-  )
+  const url =
+    COURSEFLOW_APP.globalContextData.path.json_api.library
+      .library__toggle_favourite__post
+
+  console.log(url)
+
+  return API_POST<EmptyPostResp>(url, {
+    objectId: id,
+    objectType: type,
+    favourite: favourite
+  })
 }
