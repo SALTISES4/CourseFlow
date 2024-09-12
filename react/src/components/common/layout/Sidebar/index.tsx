@@ -1,3 +1,4 @@
+import { CFRoutes } from '@cf/router'
 import { SidebarProps } from '@cf/types/common'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import ParentWorkflowIndicator from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator'
@@ -14,7 +15,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 import {
@@ -191,6 +192,13 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
         <ParentWorkflowIndicator />
 
         <HelpLink>
+          {process.env.NODE_ENV !== 'production' && (
+            <ListItem disablePadding dense>
+              <ListItemButton component={Link} to={CFRoutes.STYLEGUIDE}>
+                <ListItemText primary="Styleguide" />
+              </ListItemButton>
+            </ListItem>
+          )}
           <ListItem disablePadding dense>
             <ListItemButton
               component="a"

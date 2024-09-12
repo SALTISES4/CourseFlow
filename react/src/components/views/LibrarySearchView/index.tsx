@@ -4,18 +4,23 @@ import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/utilityFunctions'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import FilterButton from '@cfComponents/filters/FilterButton'
+import FilterMultiselect from '@cfComponents/filters/FilterMultiselect'
+import FilterToggle from '@cfComponents/filters/FilterToggle'
 import FilterWorkflows from '@cfComponents/filters/FilterWorkflows'
 import { SearchOption, SortDirection } from '@cfComponents/filters/types'
 import Loader from '@cfComponents/UIPrimitives/Loader'
+import Pagination from '@cfComponents/UIPrimitives/Pagination'
 import FilterIcon from '@mui/icons-material/FilterAlt'
 import SortIcon from '@mui/icons-material/Sort'
+import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined'
 import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
+import { produce } from 'immer'
 import { useEffect, useState } from 'react'
-import * as React from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
 
 export type SearchOptionsState = {
@@ -73,9 +78,7 @@ function reduceStateToSearchArgs(
 type PropsType = {
   data: LibraryObjectsSearchQueryResp
   defaultOptionsSearchOptions?: SearchOptionsState
-  setSearchArgs: React.Dispatch<
-    React.SetStateAction<LibraryObjectsSearchQueryArgs>
-  >
+  setSearchArgs: Dispatch<SetStateAction<LibraryObjectsSearchQueryArgs>>
   isLoading: boolean
   isError: boolean
 }
@@ -182,10 +185,11 @@ const LibrarySearchView = ({
                     searchParameters.sortOptions,
                     { name: val, value: dir }
                   )
-                  setSearchParameters({
-                    ...searchParameters,
-                    sortOptions: newFilterSortOptions
-                  })
+                  setSearchParameters(
+                    produce((draft) => {
+                      draft.sortOptions = newFilterSortOptions
+                    })
+                  )
                 }}
                 placeholder="Sort"
               />
@@ -198,13 +202,11 @@ const LibrarySearchView = ({
                     searchParameters.filterGroups.filterOptions,
                     { name: val }
                   )
-                  setSearchParameters({
-                    ...searchParameters,
-                    filterGroups: {
-                      ...searchParameters.filterGroups,
-                      filterOptions: newFilterProjectOptions
-                    }
-                  })
+                  setSearchParameters(
+                    produce((draft) => {
+                      draft.filterGroups.filterOptions = newFilterProjectOptions
+                    })
+                  )
                 }}
               />
               {searchParameters.filterGroups.disciplineOptions && (
@@ -216,16 +218,36 @@ const LibrarySearchView = ({
                       searchParameters.filterGroups.disciplineOptions,
                       { name: val }
                     )
-                    setSearchParameters({
-                      ...searchParameters,
-                      filterGroups: {
-                        ...searchParameters.filterGroups,
-                        filterOptions: newFilterProjectOptions
-                      }
-                    })
+
+                    setSearchParameters(
+                      produce((draft) => {
+                        draft.filterGroups.filterOptions =
+                          newFilterProjectOptions
+                      })
+                    )
                   }}
                 />
               )}
+              {/* TODO: implement */}
+              {searchParameters.filterGroups.disciplineOptions && (
+                <FilterMultiselect
+                  placeholder="Discipline"
+                  searchPlaceholder="Find discipline"
+                  options={searchParameters.filterGroups.disciplineOptions.map(
+                    (o) => ({
+                      value: o.name,
+                      label: o.label
+                    })
+                  )}
+                  onChange={(values) => console.log('changed to', values)}
+                />
+              )}
+              {/* TODO: implement */}
+              <FilterToggle
+                label="Templates"
+                icon={<SpaceDashboardOutlinedIcon />}
+                onChange={(checked) => console.log('toggle is', checked)}
+              />
             </Stack>
             <FilterWorkflowResults />
           </Stack>
@@ -235,6 +257,13 @@ const LibrarySearchView = ({
       <GridWrap>
         <Results />
       </GridWrap>
+
+      {/* TODO: implement */}
+      <Pagination
+        current={1}
+        pages={7}
+        onChange={(page) => console.log('changed to page', page)}
+      />
     </OuterContentWrap>
   )
 }
