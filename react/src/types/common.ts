@@ -47,7 +47,6 @@ export type Lock = {
 
 export type SidebarProps = {
   isAnonymous: boolean
-  isTeacher: boolean
   favourites: {
     title: string
     url: string
@@ -55,7 +54,6 @@ export type SidebarProps = {
 }
 
 export type TopBarProps = {
-  isTeacher: boolean
   notifications: {
     url: string
     unread: number

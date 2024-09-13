@@ -3,6 +3,7 @@
 #########################################################
 from django.conf import settings
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.http import (
     HttpRequest,
@@ -15,7 +16,6 @@ from django.urls import reverse
 from django.views.generic.edit import CreateView
 
 from course_flow import export_functions
-from course_flow.decorators import ajax_login_required
 from course_flow.forms import RegistrationForm
 from course_flow.models import Project
 from course_flow.models.liveprojectmodels.liveProjectUser import (
@@ -61,7 +61,7 @@ def ratelimited_view(request, exception):
     )
 
 
-@ajax_login_required
+@login_required
 def register_as_student(request: HttpRequest, project_hash) -> HttpResponse:
     project = Project.get_from_hash(project_hash)
     if project is None:
@@ -100,7 +100,7 @@ def register_as_student(request: HttpRequest, project_hash) -> HttpResponse:
         )
 
 
-@ajax_login_required
+@login_required
 def get_saltise_download(request: HttpRequest) -> HttpResponse:
     if (
         Group.objects.get(name="SALTISE_Staff")

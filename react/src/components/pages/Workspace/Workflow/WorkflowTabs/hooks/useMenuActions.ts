@@ -91,13 +91,7 @@ export const useMenuActions = () => {
       projectId,
       (response_data) => {
         loader.endLoad()
-        // @ts-ignore
-        window.location =
-          COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-            '0',
-            // @ts-ignore
-            response_data.new_item.id
-          )
+        window.location.href = 'path top newly created item'
       }
     )
   }
@@ -109,13 +103,7 @@ export const useMenuActions = () => {
       )
     ) {
       deleteSelfQueryLegacy(workflowId, 'workflow', false, () => {
-        // @todo no
-        const newPath =
-          COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-            '0',
-            projectId.toString()
-          )
-        window.location.href = newPath
+        window.location.href = 'path to wherever you go after deletion'
       })
     }
   }
@@ -165,13 +153,7 @@ export const useMenuActions = () => {
         parentId,
         (response_data) => {
           utilLoader.endLoad()
-          // @ts-ignore
-          window.location =
-            COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-              '0',
-              // @ts-ignore
-              response_data.new_item.id
-            )
+          window.location.href = 'new iten path '
         }
       )
     }

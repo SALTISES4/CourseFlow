@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
@@ -182,13 +183,11 @@ export function setLinkedWorkflow(
   workflow_id,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.set_linked_workflow,
-    {
-      nodePk: node_id,
-      workflowPk: workflow_id
-    }
-  ).then((response: EmptyPostResp) => {
+  const url = apiPaths.json_api.workflow.link
+  API_POST(url, {
+    nodePk: node_id,
+    workflowPk: workflow_id
+  }).then((response: EmptyPostResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
     else window.fail_function(response.action)
   })
@@ -206,7 +205,8 @@ export function toggleStrategyQuery(
   is_strategy: boolean,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.toggle_strategy, {
+  const url = apiPaths.json_api.workflow.strategy__toggle
+  API_POST(url, {
     weekPk: weekPk,
     is_strategy: is_strategy
   }).then((response: EmptyPostResp) => {

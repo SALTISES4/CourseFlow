@@ -56,7 +56,6 @@ export type PageHomeQueryResp = {
   data_package: {
     projects: ELibraryObject[]
     templates: ELibraryObject[]
-    isTeacher: boolean
   }
 }
 

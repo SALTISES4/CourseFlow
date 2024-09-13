@@ -7,8 +7,9 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
+from rest_framework.request import Request
+from rest_framework.response import Response
 
-from course_flow.decorators import user_is_teacher
 from course_flow.forms import NotificationsSettings, ProfileSettings
 from course_flow.models import User
 from course_flow.models.courseFlowUser import CourseFlowUser
@@ -89,7 +90,6 @@ def json_api__user__notification_settings__post(
     return JsonResponse({"action": "error", "errors": form.errors})
 
 
-@user_is_teacher()
 @require_POST
 def json_api__user__list__post(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)

@@ -1,6 +1,8 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { AddTerminologyQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
+import { generatePath } from 'react-router-dom'
 
 //Add a new node to a week
 export function newNodeQuery(
@@ -10,7 +12,8 @@ export function newNodeQuery(
   column_type = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_node, {
+  const url = apiPaths.json_api.node.create
+  API_POST(url, {
     weekPk: weekPk,
     position: position,
     columnPk: column,
@@ -53,7 +56,8 @@ export function addStrategyQuery(
   strategyPk = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.add_strategy, {
+  const url = apiPaths.json_api.workflow.strategy__create
+  API_POST(url, {
     workflowPk: workflowPk,
     position: position,
     objectId: strategyPk,
@@ -71,7 +75,8 @@ export function newNodeLink(
   target_port,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_node_link, {
+  const url = apiPaths.json_api.node.link__create
+  API_POST(url, {
     nodePk: source_node,
     objectId: target_node,
     objectType: 'node',
@@ -128,15 +133,18 @@ export function insertSiblingQuery(
  * @param translation_plural
  * @param callBackFunction
  */
-export function addTerminologyQuery(
-  projectPk: number,
+export function addObjectSetQuery(
+  id: number,
   term: any,
   title: any,
   translation_plural: any,
   callBackFunction = (_data: AddTerminologyQueryResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.add_terminology, {
-    projectPk: projectPk,
+  const base = apiPaths.json_api.project.object_set__create
+  const url = generatePath(base, { id })
+
+  API_POST(url, {
+    projectPk: id,
     term: term,
     title: title,
     translation_plural: translation_plural

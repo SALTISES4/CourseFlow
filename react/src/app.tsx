@@ -17,7 +17,7 @@ import { SidebarRootStyles } from '@cfComponents/layout/Sidebar/styles'
 import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 import CfRouter from '@cf/router'
 import { CookieProvider } from '@cf/context/cookieContext'
-import {DialogContextProvider} from "@cf/context/dialogContext";
+import { DialogContextProvider } from '@cf/context/dialogContext'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our

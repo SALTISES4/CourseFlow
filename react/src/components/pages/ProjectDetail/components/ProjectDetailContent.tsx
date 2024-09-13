@@ -2,6 +2,7 @@
 // import WorkflowFilter from '@cfComponents/filters/WorkflowFilter'
 import ProjectExportDialog from '@cf/components/common/dialog/Workspace/ProjectExportDialog'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { CFRoutes } from '@cf/router'
 import { _t } from '@cf/utility/utilityFunctions'
 import ProjectEditDialog from '@cfComponents/dialog/_LEGACY/ProjectEditDialog'
 import ShareMenu from '@cfComponents/dialog/_LEGACY/ShareMenu'
@@ -105,8 +106,7 @@ function ProjectDetailContent({
       )
     ) {
       deleteSelfQueryLegacy(project.id, 'project', false, () => {
-        window.location.href =
-          COURSEFLOW_APP.globalContextData.path.html.library.home
+        window.location.href = CFRoutes.HOME
       })
     }
   }

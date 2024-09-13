@@ -10,7 +10,7 @@ import {
   Close as CloseIcon,
   Delete as DeleteIcon
 } from '@mui/icons-material'
-import { addTerminologyQuery } from '@XMLHTTP/API/create'
+import { addObjectSetQuery } from '@XMLHTTP/API/create'
 import { deleteSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import * as React from 'react'
@@ -81,7 +81,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     // @ts-ignore
     const title = $('#term-singular')[0].value
 
-    addTerminologyQuery(this.state.id, term, title, '', (response_data) => {
+    addObjectSetQuery(this.state.id, term, title, '', (response_data) => {
       this.setState({
         object_sets: response_data.new_dict,
         selected_set: 'none',

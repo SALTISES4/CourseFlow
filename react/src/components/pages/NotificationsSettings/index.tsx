@@ -1,4 +1,5 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import strings from '@cf/utility/strings'
 import Box from '@mui/material/Box'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
@@ -99,9 +100,7 @@ const NotificationsSettingsPage = () => {
   return (
     <OuterContentWrap>
       <PageTitle>
-        <Typography variant="h1">
-          {COURSEFLOW_APP.globalContextData.strings.notification_settings}
-        </Typography>
+        <Typography variant="h1">{strings.notification_settings}</Typography>
       </PageTitle>
 
       <FormGroup>
@@ -112,7 +111,7 @@ const NotificationsSettingsPage = () => {
               onChange={onUpdatesSwitchChange}
             />
           }
-          label={COURSEFLOW_APP.globalContextData.strings.product_updates_agree}
+          label={strings.product_updates_agree}
         />
       </FormGroup>
     </OuterContentWrap>

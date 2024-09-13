@@ -8,6 +8,8 @@ from django.db.models import ProtectedError, Q
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 from course_flow.decorators import (
     user_can_delete,

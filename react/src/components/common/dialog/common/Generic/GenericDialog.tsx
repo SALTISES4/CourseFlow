@@ -54,7 +54,11 @@ const GenericDialog = (data: ActivityFormDataType) => {
     >
       <DialogTitle>Edit activity</DialogTitle>
       <DialogContent dividers>
-        <Alert sx={{ mt: 3 }} severity="update" title={'THIS IS A PLACEHOLDER '} />
+        <Alert
+          sx={{ mt: 3 }}
+          severity="update"
+          title={'THIS IS A PLACEHOLDER '}
+        />
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>

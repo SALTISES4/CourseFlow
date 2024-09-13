@@ -5,7 +5,9 @@ import ProgramCreateDialog from '@cf/components/common/dialog/common/ProgramCrea
 import ProjectCreateDialog from '@cf/components/common/dialog/common/ProjectCreateDialog'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { TopBarProps } from '@cf/types/common'
+import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
 import createActivityData from '@cfComponents/dialog/common/ActivityCreateDialog/data'
@@ -38,7 +40,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
 
-const TopBar = ({ isTeacher, notifications, forms }: TopBarProps) => {
+const TopBar = ({ notifications, forms }: TopBarProps) => {
   const navigate = useNavigate()
   const { dispatch } = useDialog()
 
@@ -52,7 +54,7 @@ const TopBar = ({ isTeacher, notifications, forms }: TopBarProps) => {
 
   const handleLogout = () => {
     // not sure navigate can handle this
-    navigate(COURSEFLOW_APP.globalContextData.path.logout_path, {
+    navigate(apiPaths.external.logout, {
       replace: true
     })
   }
@@ -86,22 +88,22 @@ const TopBar = ({ isTeacher, notifications, forms }: TopBarProps) => {
     }
     const menuItems: MenuItemType[] = [
       {
-        content: _t(COURSEFLOW_APP.globalContextData.strings.project),
+        content: strings.project,
         action: () => handleCreateClick(DIALOG_TYPE.PROJECT_CREATE),
         show: true
       },
       {
-        content: _t(COURSEFLOW_APP.globalContextData.strings.program),
+        content: strings.program,
         action: () => handleCreateClick(DIALOG_TYPE.PROGRAM_CREATE),
         show: true
       },
       {
-        content: _t(COURSEFLOW_APP.globalContextData.strings.course),
+        content: strings.course,
         action: () => handleCreateClick(DIALOG_TYPE.COURSE_CREATE),
         show: true
       },
       {
-        content: _t(COURSEFLOW_APP.globalContextData.strings.activity),
+        content: strings.activity,
         action: () => handleCreateClick(DIALOG_TYPE.ACTIVITY_CREATE),
         show: true
       }
@@ -124,33 +126,28 @@ const TopBar = ({ isTeacher, notifications, forms }: TopBarProps) => {
     }
     const menuItems: MenuItemType[] = [
       {
-        content: _t(COURSEFLOW_APP.globalContextData.strings.profile),
+        content: strings.profile,
         action: () => navigate(CFRoutes.PROFILE_SETTINGS),
         show: true
       },
       {
-        content: _t(COURSEFLOW_APP.globalContextData.strings.password_reset),
+        content: strings.password_reset,
         action: () => dispatch(DIALOG_TYPE.PASSWORD_RESET),
         show: true
       },
       {
-        content: _t(
-          COURSEFLOW_APP.globalContextData.strings.notification_settings
-        ),
+        content: strings.notification_settings,
         action: () => navigate(CFRoutes.NOTIFICATIONS_SETTINGS),
         show: true,
         seperator: true
       },
       {
-        content: `Go to ${COURSEFLOW_APP.globalContextData.path.html.account.daliteUrl}`,
-        action: () =>
-          navigate(
-            COURSEFLOW_APP.globalContextData.path.html.account.daliteUrl
-          ),
+        content: `Go to ${apiPaths.external.daliteUrl}`,
+        action: () => navigate(apiPaths.external.daliteUrl),
         show: true
       },
       {
-        content: _t(COURSEFLOW_APP.globalContextData.strings.sign_out),
+        content: strings.sign_out,
         action: handleLogout,
         icon: <LogoutIcon />,
         showIconInList: true,
@@ -166,15 +163,13 @@ const TopBar = ({ isTeacher, notifications, forms }: TopBarProps) => {
     const content = (
       <>
         <SC.NotificationsHeader>
-          <Typography variant="h5">
-            {COURSEFLOW_APP.globalContextData.strings.notifications}
-          </Typography>
+          <Typography variant="h5">{strings.notifications}</Typography>
           <Link
             component={RouterLink}
             to={notifications.url}
             underline="always"
           >
-            {COURSEFLOW_APP.globalContextData.strings.see_all}
+            {strings.see_all}
           </Link>
         </SC.NotificationsHeader>
 
@@ -250,7 +245,7 @@ const TopBar = ({ isTeacher, notifications, forms }: TopBarProps) => {
         <ReturnLinks />
         <Box sx={{ flexGrow: 1 }} className="title" />
         <Box sx={{ display: 'flex' }}>
-          <AddMenu show={isTeacher} />
+          <AddMenu show/>
           <NotificationsMenu />
           <AccountMenu />
         </Box>
@@ -276,8 +271,7 @@ const TopBar = ({ isTeacher, notifications, forms }: TopBarProps) => {
 
       <PasswordResetDialog
         onSubmit={() =>
-          (window.location.href =
-            COURSEFLOW_APP.globalContextData.path.html.account.resetPasswordUrl)
+          (window.location.href = apiPaths.external.resetPasswordUrl)
         }
       />
 

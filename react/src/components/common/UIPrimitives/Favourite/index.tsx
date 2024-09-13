@@ -1,4 +1,4 @@
-import {LibraryObjectType, WorkflowType} from '@cf/types/enum'
+import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
 import { useMutation } from '@tanstack/react-query'

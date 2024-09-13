@@ -1,9 +1,9 @@
 import json
 
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
 
-from course_flow.decorators import ajax_login_required
 from course_flow.models import Project
 from course_flow.models.activity import Activity
 from course_flow.models.column import Column
@@ -32,7 +32,7 @@ from course_flow.serializers import (
 
 
 @require_POST
-@ajax_login_required
+@login_required
 def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
     column_type_dict = {
         "OOCI": 1,

@@ -94,11 +94,6 @@ interface HTMLPaths {
     library: string
     favourites: string
   }
-  account: {
-    resetPasswordUrl: string
-    daliteUrl: string
-    daliteText: string
-  }
 }
 
 interface GenericPath {
@@ -132,9 +127,6 @@ interface JSONAPIPaths {
   project: {
     detail: string
     create: string
-  }
-  workflow: {
-    detail: string
   }
   comment: {
     list_by_object: string

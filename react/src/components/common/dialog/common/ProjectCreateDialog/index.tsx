@@ -2,6 +2,7 @@ import { StyledDialog, StyledForm } from '@cf/components/common/dialog/styles'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router'
 import { TopBarProps } from '@cf/types/common'
+import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import CancelIcon from '@mui/icons-material/Cancel'
@@ -296,7 +297,7 @@ const ProjectCreateDialog = ({
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onDialogClose}>
-          {COURSEFLOW_APP.globalContextData.strings.cancel}
+          {strings.cancel}
         </Button>
         <Button
           variant="contained"

@@ -8,9 +8,7 @@ const useNavigateToLibraryItem = () => {
 
   return (id: number, type: LibraryObjectType) => {
     const basePath =
-      type === LibraryObjectType.PROJECT
-        ? CFRoutes.PROJECT
-        : CFRoutes.WORKFLOW
+      type === LibraryObjectType.PROJECT ? CFRoutes.PROJECT : CFRoutes.WORKFLOW
 
     const path = generatePath(basePath, {
       id: String(id)

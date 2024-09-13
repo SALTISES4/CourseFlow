@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp, UsersForObjectQueryResp } from '@XMLHTTP/types/query'
@@ -28,6 +29,7 @@ export function getUsersForObjectQuery(
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
     objectType = 'workflow'
   }
+
   return API_POST<UsersForObjectQueryResp>(
     COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
     {

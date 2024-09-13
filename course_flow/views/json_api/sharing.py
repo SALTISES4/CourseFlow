@@ -6,6 +6,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.models import User

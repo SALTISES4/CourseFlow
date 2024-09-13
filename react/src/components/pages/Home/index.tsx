@@ -26,7 +26,7 @@ const Home = () => {
   // @todo put that into the snackbar
   if (isError) return <div>An error occurred: {error.message}</div>
 
-  const { projects, isTeacher, templates } = data.data_package
+  const { projects, templates } = data.data_package
 
   const formattedProjects = formatLibraryObjects(projects)
   const formattedTemplates = formatLibraryObjects(templates)

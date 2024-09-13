@@ -60,7 +60,7 @@ export enum DIALOG_TYPE {
 
 type PossibleDialogTypes = DIALOG_TYPE | DIALOG_TYPE[] | null
 
-export function useDialog(dialogType: PossibleDialogTypes = null ) {
+export function useDialog(dialogType: PossibleDialogTypes = null) {
   const dialogContext = useContext(DialogContext)
   const dialogDispatch = useContext(DialogDispatchContext)
 

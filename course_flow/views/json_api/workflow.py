@@ -33,11 +33,13 @@ from course_flow.models.relations.outcomeHorizontalLink import (
 )
 from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.models.workflow import Workflow
+from course_flow.models.workflow import SUBCLASSES, Workflow
 from course_flow.serializers import (
+    ActivityUpdateSerializer,
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
     InfoBoxSerializer,
+    LinkedWorkflowSerializerShallow,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -54,6 +56,7 @@ from course_flow.serializers import (
 )
 from course_flow.sockets import redux_actions as actions
 from course_flow.utils import (
+    check_possible_parent,
     get_all_outcomes_for_workflow,
     get_parent_nodes_for_workflow,
     get_user_permission,
@@ -80,15 +83,13 @@ class WorkflowEndpoint:
     @permission_classes([UserCanViewMixin])
     @login_required
     @api_view(["GET"])
-    def fetch_detail(request: Request) -> Response:
-        workflows_pk = request.GET.get("id")
+    def fetch_detail(request: Request, pk: int) -> Response:
         current_user = request.user
 
         try:
-            workflow = Workflow.objects.get(pk=workflows_pk)
-
+            workflow = Workflow.objects.get(pk=pk)
         except Workflow.DoesNotExist:
-            return Response({"detail": "Not found."}, status=404)
+            return Response({"detail": "Workflow not found"}, status=404)
 
         user_permission = get_user_permission(workflow, current_user)
 
@@ -105,26 +106,24 @@ class WorkflowEndpoint:
         }
 
         return Response(
-            {
-                "action": "GET",
-                "data_package": data_package,
-            },
+            {"action": "GET", "data_package": data_package},
             status=status.HTTP_200_OK,
         )
 
     @staticmethod
-    @user_can_view("workflowPk")
-    @api_view(["POST"])
-    def fetch_detail_full(request: Request) -> Response:
-        body = json.loads(request.body)
-        workflow = Workflow.objects.get(pk=body.get("workflowPk"))
+    @api_view(["GET"])
+    # @user_can_view("pk") # @todo poorly designed
+    def fetch_detail_full(request: Request, pk: int) -> Response:
+        try:
+            workflow = Workflow.objects.get(pk=pk)
+        except Workflow.DoesNotExist:
+            return Response({"detail": "Workflow not found"}, status=404)
 
         try:
             data_package = get_workflow_data_flat(
                 workflow.get_subclass(), request.user
             )
         except AttributeError:
-            traceback.print_exc()
             return Response(
                 {"error": "hello error"}, status=status.HTTP_400_BAD_REQUEST
             )
@@ -153,7 +152,10 @@ class WorkflowEndpoint:
 
         except AttributeError:
             return Response(
-                {"action": "error"}, status=status.HTTP_400_BAD_REQUEST
+                {
+                    "action": "error",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         return Response(
@@ -167,7 +169,7 @@ class WorkflowEndpoint:
     @staticmethod
     @user_can_view("nodePk")
     @api_view(["POST"])
-    def fetch_workflow_child_data(
+    def fetch_child_workflow_data(
         request: Request,
     ) -> Response:
         body = json.loads(request.body)
@@ -179,7 +181,10 @@ class WorkflowEndpoint:
             )
         except AttributeError:
             return Response(
-                {"action": "error"}, status=status.HTTP_400_BAD_REQUEST
+                {
+                    "action": "error",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
         return Response(
@@ -189,6 +194,231 @@ class WorkflowEndpoint:
             },
             status=status.HTTP_200_OK,
         )
+
+    #########################################################
+    # UPDATE
+    #########################################################
+    @staticmethod
+    @user_can_view("nodePk")
+    @api_view(["POST"])
+    def update(request: Request, pk: int) -> Response:
+        try:
+            workflow = Workflow.objects.get(pk=pk)
+        except Workflow.DoesNotExist:
+            return Response(
+                {
+                    "error": "Workflow not found",
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = ActivityUpdateSerializer(workflow, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+    #########################################################
+    #  DUPLICATE WORKFLOW
+    #########################################################
+    @staticmethod
+    @user_can_view("workflowPk")
+    @user_can_edit("projectPk")
+    @api_view(["POST"])
+    def duplicate_to_project(request: Request, pk: int) -> Response:
+        body = json.loads(request.body)
+        workflow = Workflow.objects.get(pk=pk)
+        project = Project.objects.get(pk=body.get("projectPk"))
+
+        try:
+            with transaction.atomic():
+                clone = fast_duplicate_workflow(
+                    workflow, request.user, project
+                )
+                try:
+                    clone.title = clone.title + _("(copy)")
+                    clone.save()
+                except (ValidationError, TypeError):
+                    pass
+
+                WorkflowProject.objects.create(project=project, workflow=clone)
+
+                if workflow.get_project() != project:
+                    cleanup_workflow_post_duplication(clone, project)
+
+        except ValidationError:
+            return Response({"action": "error"})
+
+        linked_workflows = Workflow.objects.filter(
+            linked_nodes__week__workflow=clone
+        )
+        for wf in linked_workflows:
+            actions.dispatch_parent_updated(wf)
+
+        return Response(
+            {
+                "action": "posted",
+                "new_item": InfoBoxSerializer(
+                    clone, context={"user": request.user}
+                ).data,
+                "type": clone.type,
+            }
+        )
+
+    #########################################################
+    # LISTS
+    #########################################################
+
+    @user_can_edit("nodePk")
+    def possible_linked(
+        request: HttpRequest,
+    ) -> JsonResponse:
+        body = json.loads(request.body)
+        node = Node.objects.get(pk=body.get("nodePk"))
+
+        try:
+            project = node.get_workflow().get_project()
+            data_package = get_workflow_data_package(
+                request.user,
+                project,
+                type_filter=SUBCLASSES[node.node_type - 1],
+            )
+
+        except AttributeError:
+            return JsonResponse({"action": "error"})
+
+        return JsonResponse(
+            {
+                "action": "posted",
+                "data_package": data_package,
+                "node_id": node.id,
+            }
+        )
+
+    @user_can_view_or_none("projectPk")
+    def possible_added(
+        request: HttpRequest,
+    ) -> JsonResponse:
+        body = json.loads(request.body)
+        type_filter = body.get("type_filter")
+        get_strategies = body.get("get_strategies", "false")
+        projectPk = body.get("projectPk", False)
+        self_only = body.get("self_only", "false")
+
+        if projectPk:
+            project = Project.objects.get(pk=body.get("projectPk"))
+        else:
+            project = None
+
+        try:
+            data_package = get_workflow_data_package(
+                request.user,
+                project,
+                type_filter=type_filter,
+                get_strategies=get_strategies,
+                self_only=self_only,
+            )
+
+        except AttributeError:
+            return JsonResponse({"action": "error"})
+
+        return JsonResponse(
+            {
+                "action": "posted",
+                "data_package": data_package,
+                "project_id": projectPk,
+            }
+        )
+
+    @user_can_edit("nodePk")
+    @user_can_view_or_none("workflowPk")
+    def link(request: HttpRequest) -> JsonResponse:
+        """
+
+            @todo ??
+
+         # The actual JSON API which sets the linked workflow
+        # for a node, adding it to the project if different.
+            :param request:
+            :return:
+        """
+
+        body = json.loads(request.body)
+        # last_time = time.time()
+        try:
+            node_id = body.get("nodePk")
+            workflow_id = body.get("workflowPk")
+            node = Node.objects.get(pk=node_id)
+            parent_workflow = node.get_workflow()
+            original_workflow = node.linked_workflow
+            workflow = None
+
+            if workflow_id == -1:
+                node.linked_workflow = None
+                node.represents_workflow = False
+                node.save()
+                linked_workflow = None
+                linked_workflow_data = None
+            else:
+                workflow = Workflow.objects.get_subclass(pk=workflow_id)
+                if not check_possible_parent(workflow, parent_workflow, False):
+                    raise ValidationError
+                set_linked_workflow(node, workflow)
+                if node.linked_workflow is None:
+                    raise ValidationError("Project could not be found")
+                linked_workflow = node.linked_workflow.id
+                linked_workflow_data = LinkedWorkflowSerializerShallow(
+                    node.linked_workflow,
+                    context={"user": request.user},
+                ).data
+
+        except ValidationError:
+            return JsonResponse({"action": "error"})
+        response_data = {
+            "id": node_id,
+            "linked_workflow": linked_workflow,
+            "linked_workflow_data": linked_workflow_data,
+        }
+        if original_workflow is not None:
+            actions.dispatch_parent_updated(original_workflow)
+        if workflow is not None:
+            actions.dispatch_parent_updated(workflow)
+        actions.dispatch_wf(
+            parent_workflow, actions.setLinkedWorkflowAction(response_data)
+        )
+        return JsonResponse({"action": "posted"})
+
+
+def set_linked_workflow(node: Node, workflow):
+    """
+    A helper function to set the linked workflow.
+    Do not call if you are duplicating the parent workflow,
+    that gets taken care of in another manner.  ????
+
+    :param node:
+    :param workflow:
+    :return:
+    """
+    project = node.get_workflow().get_project()
+    if WorkflowProject.objects.get(workflow=workflow).project == project:
+        node.linked_workflow = workflow
+        node.save()
+    else:
+        try:
+            new_workflow = fast_duplicate_workflow(
+                workflow, node.author, project
+            )
+            WorkflowProject.objects.create(
+                workflow=new_workflow, project=project
+            )
+            node.linked_workflow = new_workflow
+            node.save()
+        except ValidationError:
+            pass
 
 
 @public_model_access("workflow")
@@ -260,28 +490,28 @@ def json_api_get_public_workflow_parent_data(
 ################################################
 
 
-@user_can_view("workflowPk")
-def json_api_post_get_workflow_context(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    workflowPk = body.get("workflowPk", False)
-
-    try:
-        workflow = Workflow.objects.get(pk=workflowPk)
-        data_package = get_workflow_context_data(
-            workflow,
-            request.user,
-        )
-
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": data_package,
-            "workflow_id": workflowPk,
-        }
-    )
+# @user_can_view("workflowPk")
+# def json_api_post_get_workflow_context(request: HttpRequest) -> JsonResponse:
+#     body = json.loads(request.body)
+#     workflowPk = body.get("workflowPk", False)
+#
+#     try:
+#         workflow = Workflow.objects.get(pk=workflowPk)
+#         data_package = get_workflow_context_data(
+#             workflow,
+#             request.user,
+#         )
+#
+#     except AttributeError:
+#         return JsonResponse({"action": "error"})
+#
+#     return JsonResponse(
+#         {
+#             "action": "posted",
+#             "data_package": data_package,
+#             "workflow_id": workflowPk,
+#         }
+#     )
 
 
 @public_model_access("workflow")
@@ -322,8 +552,10 @@ def json_api_post_get_parent_workflow_info(
         data_package = InfoBoxSerializer(
             parent_workflows, many=True, context={"user": request.user}
         ).data
+
     except AttributeError:
         return JsonResponse({"action": "error"})
+
     return JsonResponse(
         {
             "action": "posted",
@@ -332,97 +564,18 @@ def json_api_post_get_parent_workflow_info(
     )
 
 
-@user_can_view("projectPk")
-def json_api_post_get_workflows_for_project(
-    request: HttpRequest,
-) -> JsonResponse:
-    body = json.loads(request.body)
-    try:
-        user = request.user
-        project = Project.objects.get(pk=body.get("projectPk"))
-        workflows_serialized = InfoBoxSerializer(
-            project.workflows.all(), many=True, context={"user": user}
-        ).data
-
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": workflows_serialized,
-        }
-    )
-
-
-@user_can_edit("nodePk")
-def json_api_post_get_possible_linked_workflows(
-    request: HttpRequest,
-) -> JsonResponse:
-    body = json.loads(request.body)
-    node = Node.objects.get(pk=body.get("nodePk"))
-    try:
-        project = node.get_workflow().get_project()
-        data_package = get_workflow_data_package(
-            request.user,
-            project,
-            type_filter=Workflow.SUBCLASSES[node.node_type - 1],
-        )
-
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": data_package,
-            "node_id": node.id,
-        }
-    )
-
-
-@user_can_view_or_none("projectPk")
-def json_api_post_get_possible_added_workflows(
-    request: HttpRequest,
-) -> JsonResponse:
-    body = json.loads(request.body)
-    type_filter = body.get("type_filter")
-    get_strategies = body.get("get_strategies", "false")
-    projectPk = body.get("projectPk", False)
-    self_only = body.get("self_only", "false")
-
-    if projectPk:
-        project = Project.objects.get(pk=body.get("projectPk"))
-    else:
-        project = None
-
-    try:
-        data_package = get_workflow_data_package(
-            request.user,
-            project,
-            type_filter=type_filter,
-            get_strategies=get_strategies,
-            self_only=self_only,
-        )
-
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": data_package,
-            "project_id": projectPk,
-        }
-    )
-
-
 #########################################################
 # CREATE
 #########################################################
-# Create a new workflow in a project
+
+
 @user_can_edit("projectPk")
 def json_api_post_create_workflow(request: HttpRequest) -> JsonResponse:
+    """
+    Create a new workflow in a project
+    :param request:
+    :return:
+    """
     body = json.loads(request.body)
     project = Project.objects.get(pk=body.get("projectPk"))
     workflow_type = body.get("workflow_type")
@@ -439,117 +592,9 @@ def json_api_post_create_workflow(request: HttpRequest) -> JsonResponse:
         )
 
 
-#################################################
+#########################################################
 # HELPERS
-#################################################
-
-
-# For a workflow, gets all relevant info about parent workflows and their outcomes.
-# Only relevant/loaded for views that rely on parent outcomes.
-def get_parent_outcome_data(workflow, user):
-    outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
-    parent_nodes = get_parent_nodes_for_workflow(workflow)
-    parent_workflows = list(map(lambda x: x.get_workflow(), parent_nodes))
-    parent_outcomeworkflows = OutcomeWorkflow.objects.filter(
-        workflow__in=parent_workflows
-    )
-    parent_outcomenodes = OutcomeNode.objects.filter(node__in=parent_nodes)
-
-    parent_outcomes = []
-    parent_outcomeoutcomes = []
-    for parent_workflow in parent_workflows:
-        new_outcomes, new_outcomeoutcomes = get_all_outcomes_for_workflow(
-            parent_workflow
-        )
-        parent_outcomes += new_outcomes
-        parent_outcomeoutcomes += new_outcomeoutcomes
-
-    outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
-        outcome__in=outcomes, parent_outcome__in=parent_outcomes
-    )
-    if len(parent_workflows) > 0:
-        outcome_type = parent_workflows[0].type + " outcome"
-    else:
-        outcome_type = workflow.type + " outcome"
-    return {
-        "parent_workflow": WorkflowSerializerShallow(
-            parent_workflows, many=True, context={"user": user}
-        ).data,
-        "outcomeworkflow": OutcomeWorkflowSerializerShallow(
-            parent_outcomeworkflows, many=True
-        ).data,
-        "parent_node": NodeSerializerShallow(
-            parent_nodes, many=True, context={"user": user}
-        ).data,
-        "outcomenode": OutcomeNodeSerializerShallow(
-            parent_outcomenodes, many=True
-        ).data,
-        "outcome": OutcomeSerializerShallow(
-            parent_outcomes, many=True, context={"type": outcome_type}
-        ).data,
-        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
-            parent_outcomeoutcomes, many=True
-        ).data,
-        "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
-            outcomehorizontallinks, many=True
-        ).data,
-    }
-
-
-# For a workflow, get all the child outcome data. Only used for
-# views that rely on this data such as the outcome analytics view.
-def get_child_outcome_data(workflow, user, parent_workflow):
-    nodes = Node.objects.filter(
-        week__workflow=parent_workflow, linked_workflow=workflow
-    )
-    linked_workflows = [workflow]
-    child_workflow_outcomeworkflows = []
-    child_workflow_outcomes = []
-    child_workflow_outcomeoutcomes = []
-    for linked_workflow in linked_workflows:
-        child_workflow_outcomeworkflows += (
-            linked_workflow.outcomeworkflow_set.all()
-        )
-        (
-            new_child_workflow_outcomes,
-            new_child_workflow_outcomeoutcomes,
-        ) = get_all_outcomes_for_workflow(linked_workflow)
-        child_workflow_outcomes += new_child_workflow_outcomes
-        child_workflow_outcomeoutcomes += new_child_workflow_outcomeoutcomes
-
-    outcomehorizontallinks = []
-    for child_outcome in child_workflow_outcomes:
-        outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
-
-    if len(linked_workflows) > 0:
-        outcome_type = linked_workflows[0].type + " outcome"
-    else:
-        outcome_type = workflow.type + " outcome"
-
-    response_data = {
-        "node": NodeSerializerShallow(
-            nodes, many=True, context={"user": user}
-        ).data,
-        "child_workflow": WorkflowSerializerShallow(
-            linked_workflows, many=True, context={"user": user}
-        ).data,
-        "outcomeworkflow": OutcomeWorkflowSerializerShallow(
-            child_workflow_outcomeworkflows, many=True
-        ).data,
-        "outcome": OutcomeSerializerShallow(
-            child_workflow_outcomes,
-            many=True,
-            context={"type": outcome_type},
-        ).data,
-        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
-            child_workflow_outcomeoutcomes, many=True
-        ).data,
-        "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
-            outcomehorizontallinks, many=True
-        ).data,
-    }
-
-    return response_data
+#########################################################
 
 
 # Get the JSON state for a workflow, including all relevant objects.
@@ -666,45 +711,109 @@ def get_workflow_data_flat(workflow, user):
     return data_flat
 
 
-#########################################################
-#  DUPLICATE WORKFLOW
-#########################################################
-@user_can_view("workflowPk")
-@user_can_edit("projectPk")
-def json_api_post_duplicate_workflow(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    workflow = Workflow.objects.get(pk=body.get("workflowPk"))
-    project = Project.objects.get(pk=body.get("projectPk"))
-
-    try:
-        with transaction.atomic():
-            clone = fast_duplicate_workflow(workflow, request.user, project)
-            try:
-                clone.title = clone.title + _("(copy)")
-                clone.save()
-            except (ValidationError, TypeError):
-                pass
-
-            WorkflowProject.objects.create(project=project, workflow=clone)
-
-            if workflow.get_project() != project:
-                cleanup_workflow_post_duplication(clone, project)
-
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    linked_workflows = Workflow.objects.filter(
-        linked_nodes__week__workflow=clone
+# For a workflow, gets all relevant info about parent workflows and their outcomes.
+# Only relevant/loaded for views that rely on parent outcomes.
+def get_parent_outcome_data(workflow, user):
+    outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
+    parent_nodes = get_parent_nodes_for_workflow(workflow)
+    parent_workflows = list(map(lambda x: x.get_workflow(), parent_nodes))
+    parent_outcomeworkflows = OutcomeWorkflow.objects.filter(
+        workflow__in=parent_workflows
     )
-    for wf in linked_workflows:
-        actions.dispatch_parent_updated(wf)
+    parent_outcomenodes = OutcomeNode.objects.filter(node__in=parent_nodes)
 
-    return JsonResponse(
-        {
-            "action": "posted",
-            "new_item": InfoBoxSerializer(
-                clone, context={"user": request.user}
-            ).data,
-            "type": clone.type,
-        }
+    parent_outcomes = []
+    parent_outcomeoutcomes = []
+    for parent_workflow in parent_workflows:
+        new_outcomes, new_outcomeoutcomes = get_all_outcomes_for_workflow(
+            parent_workflow
+        )
+        parent_outcomes += new_outcomes
+        parent_outcomeoutcomes += new_outcomeoutcomes
+
+    outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
+        outcome__in=outcomes, parent_outcome__in=parent_outcomes
     )
+    if len(parent_workflows) > 0:
+        outcome_type = parent_workflows[0].type + " outcome"
+    else:
+        outcome_type = workflow.type + " outcome"
+    return {
+        "parent_workflow": WorkflowSerializerShallow(
+            parent_workflows, many=True, context={"user": user}
+        ).data,
+        "outcomeworkflow": OutcomeWorkflowSerializerShallow(
+            parent_outcomeworkflows, many=True
+        ).data,
+        "parent_node": NodeSerializerShallow(
+            parent_nodes, many=True, context={"user": user}
+        ).data,
+        "outcomenode": OutcomeNodeSerializerShallow(
+            parent_outcomenodes, many=True
+        ).data,
+        "outcome": OutcomeSerializerShallow(
+            parent_outcomes, many=True, context={"type": outcome_type}
+        ).data,
+        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
+            parent_outcomeoutcomes, many=True
+        ).data,
+        "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
+            outcomehorizontallinks, many=True
+        ).data,
+    }
+
+
+# For a workflow, get all the child outcome data. Only used for
+# views that rely on this data such as the outcome analytics view.
+def get_child_outcome_data(workflow, user, parent_workflow):
+    nodes = Node.objects.filter(
+        week__workflow=parent_workflow, linked_workflow=workflow
+    )
+    linked_workflows = [workflow]
+    child_workflow_outcomeworkflows = []
+    child_workflow_outcomes = []
+    child_workflow_outcomeoutcomes = []
+    for linked_workflow in linked_workflows:
+        child_workflow_outcomeworkflows += (
+            linked_workflow.outcomeworkflow_set.all()
+        )
+        (
+            new_child_workflow_outcomes,
+            new_child_workflow_outcomeoutcomes,
+        ) = get_all_outcomes_for_workflow(linked_workflow)
+        child_workflow_outcomes += new_child_workflow_outcomes
+        child_workflow_outcomeoutcomes += new_child_workflow_outcomeoutcomes
+
+    outcomehorizontallinks = []
+    for child_outcome in child_workflow_outcomes:
+        outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
+
+    if len(linked_workflows) > 0:
+        outcome_type = linked_workflows[0].type + " outcome"
+    else:
+        outcome_type = workflow.type + " outcome"
+
+    response_data = {
+        "node": NodeSerializerShallow(
+            nodes, many=True, context={"user": user}
+        ).data,
+        "child_workflow": WorkflowSerializerShallow(
+            linked_workflows, many=True, context={"user": user}
+        ).data,
+        "outcomeworkflow": OutcomeWorkflowSerializerShallow(
+            child_workflow_outcomeworkflows, many=True
+        ).data,
+        "outcome": OutcomeSerializerShallow(
+            child_workflow_outcomes,
+            many=True,
+            context={"type": outcome_type},
+        ).data,
+        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
+            child_workflow_outcomeoutcomes, many=True
+        ).data,
+        "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
+            outcomehorizontallinks, many=True
+        ).data,
+    }
+
+    return response_data

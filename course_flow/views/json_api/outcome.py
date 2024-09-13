@@ -155,6 +155,7 @@ def json_api_post_new_outcome_for_workflow(
     workflow_id = body.get("workflowPk")
     workflow = Workflow.objects.get(pk=workflow_id)
     objectset_id = body.get("objectsetPk")
+
     try:
         outcome = Outcome.objects.create(author=request.user)
         if objectset_id is not None:

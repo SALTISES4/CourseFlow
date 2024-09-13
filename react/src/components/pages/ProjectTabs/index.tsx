@@ -4,6 +4,7 @@ import { ProjectDetailsType } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
 import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/utilityFunctions'
+import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import StarIcon from '@mui/icons-material/Star'
 import Box from '@mui/material/Box'
@@ -31,7 +32,6 @@ import {
 
 import TabOverview from './components/TabOverview'
 import TabWorkflows from './components/TabWorkflows'
-import Favourite from "@cfComponents/UIPrimitives/Favourite";
 
 const ProjectDetails = () => {
   /*******************************************************
@@ -80,7 +80,6 @@ const ProjectDetails = () => {
   /*******************************************************
    * QUERIES
    *******************************************************/
-
 
   /*******************************************************
    * COMPONENTS

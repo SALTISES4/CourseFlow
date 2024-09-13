@@ -1,4 +1,6 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import { apiPaths } from '@cf/router/apiRoutes'
+import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
@@ -65,11 +67,8 @@ const ProfileSettingsPage = () => {
     const formData = {}
     state.map((field) => (formData[field.name] = field.value))
 
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.json_api.user
-        .profile_settings__update,
-      formData
-    )
+    const url = apiPaths.json_api.user.profile_settings__update
+    API_POST(url, formData)
       .then(() => setShowSnackbar(true))
       .catch((error) => setErrors(error.data.errors))
   }
@@ -159,9 +158,7 @@ const ProfileSettingsPage = () => {
   return (
     <OuterContentWrap narrow>
       <PageTitle>
-        <Typography variant="h1">
-          {COURSEFLOW_APP.globalContextData.strings.profile_settings}
-        </Typography>
+        <Typography variant="h1">{strings.profile_settings}</Typography>
       </PageTitle>
 
       <FormWrap
@@ -177,7 +174,7 @@ const ProfileSettingsPage = () => {
             onClick={onFormSubmit}
             disabled={showSnackbar || Object.keys(errors).length > 0}
           >
-            {COURSEFLOW_APP.globalContextData.strings.update_profile}
+            {strings.update_profile}
           </Button>
         </Box>
       </FormWrap>
@@ -192,7 +189,7 @@ const ProfileSettingsPage = () => {
         onClose={onSnackbarClose}
       >
         <Alert onClose={onSnackbarClose} variant="filled" severity="success">
-          {COURSEFLOW_APP.globalContextData.strings.update_profile_success}
+          {strings.update_profile_success}
         </Alert>
       </Snackbar>
     </OuterContentWrap>

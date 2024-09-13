@@ -3,7 +3,6 @@ import { Typography } from '@mui/material'
 
 import SectionDialogs from './SectionDialogs'
 import SectionLayouts from './SectionLayouts'
-
 import SectionSnackbar from './SectionSnackbar'
 
 const Styleguide = () => {

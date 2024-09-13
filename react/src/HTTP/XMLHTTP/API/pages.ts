@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import { API_GET } from '@XMLHTTP/CallWrapper'
 import {
@@ -10,7 +11,7 @@ import {
  * HOME PAGE
  *******************************************************/
 export async function getHomeContext(): Promise<PageHomeQueryResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.json_api.library.home
+  const url = apiPaths.json_api.library.home
   return API_GET<PageHomeQueryResp>(url)
 }
 
@@ -19,7 +20,7 @@ export async function getHomeContext(): Promise<PageHomeQueryResp> {
  *******************************************************/
 
 export async function getExploreContext(): Promise<PageExploreQueryResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.json_api.library.explore
+  const url = apiPaths.json_api.library.explore
   return API_GET<PageExploreQueryResp>(url)
 }
 /**
@@ -28,9 +29,7 @@ export async function getExploreContext(): Promise<PageExploreQueryResp> {
  * this uses a callback because not yet used in hook
  */
 export async function getLibraryContext(): Promise<PageLibraryQueryResp> {
-  const url =
-    COURSEFLOW_APP.globalContextData.path.json_api.library
-      .library__library__projects
+  const url = apiPaths.json_api.library.library__library__projects
 
   return API_GET<PageLibraryQueryResp>(url)
 }

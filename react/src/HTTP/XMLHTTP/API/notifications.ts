@@ -1,7 +1,9 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { API_GET } from '@XMLHTTP/CallWrapper'
 import { NotificationQueryResp } from '@XMLHTTP/types/query'
 
 export async function getNotifications(): Promise<NotificationQueryResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.json_api.notification.list
+  const url = apiPaths.json_api.notification.list
+
   return API_GET<NotificationQueryResp>(url)
 }

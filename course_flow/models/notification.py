@@ -1,3 +1,5 @@
+from enum import Enum
+
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -12,12 +14,15 @@ User = get_user_model()
 content_choices = {"model__in": ["project", "workflow"]}
 
 
-def type_choices():
+class TypeChoices(Enum):
     TYPE_SHARED = 0
     TYPE_COMMENT = 1
+
+
+def type_choices():
     return (
-        (TYPE_SHARED, _("Shared")),
-        (TYPE_COMMENT, _("Comment")),
+        (TypeChoices.TYPE_SHARED.value, _("Shared")),
+        (TypeChoices.TYPE_COMMENT.value, _("Comment")),
     )
 
 

@@ -1,26 +1,21 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 import { CreateProjectArgs } from '@XMLHTTP/types/args'
 import {
   CreateProjectResp,
   GetProjectByIdQueryResp
 } from '@XMLHTTP/types/query'
+import { generatePath } from 'react-router-dom'
 
 export async function getProjectById(id: number) {
-  const params = new URLSearchParams({ id: String(id) }).toString()
-  const url = `${COURSEFLOW_APP.globalContextData.path.json_api.project.detail}?${params}`
+  const base = apiPaths.json_api.project.detail
+  const url = generatePath(base, { id })
   return API_GET<GetProjectByIdQueryResp>(url)
 }
 
 export async function createProject(
   args: CreateProjectArgs
 ): Promise<CreateProjectResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.json_api.project.create
+  const url = apiPaths.json_api.project.create
   return API_POST(url, args)
-}
-
-export async function toggleFavoriteProject(
-  toggle: boolean
-): Promise<CreateProjectResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.json_api.project.create
-  return API_POST(url, toggle)
 }

@@ -8,15 +8,10 @@ from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.renderers import JSONRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from course_flow.decorators import (
-    user_can_edit,
-    user_can_view,
-    user_is_teacher,
-)
+from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.duplication_functions import fast_duplicate_project
 from course_flow.models import ObjectPermission, Project, Workflow
 from course_flow.models.objectPermission import Permission
@@ -35,7 +30,6 @@ class ProjectEndpoint:
     # CREATE
     #########################################################
     @staticmethod
-    @user_is_teacher()
     @api_view(["POST"])
     def create(request: Request) -> Response:
         # instantiate the form with the JSON params
@@ -61,11 +55,9 @@ class ProjectEndpoint:
     @api_view(["GET"])
     @login_required
     # @permission_classes([UserCanViewMixin])
-    def json_api__project__detail__get(request: Request) -> Response:
-        project_pk = request.GET.get("id")
-
+    def fetch_detail(request: Request, pk: int) -> Response:
         try:
-            project = Project.objects.get(pk=project_pk)
+            project = Project.objects.get(pk=pk)
         except Project.DoesNotExist:
             return Response({"detail": "Not found."}, status=404)
 
@@ -96,52 +88,117 @@ class ProjectEndpoint:
             }
         )
 
+    def list_my_projects(request: HttpRequest) -> JsonResponse:
+        body = json.loads(request.body)
+        try:
+            workflow_id = Workflow.objects.get(pk=body.get("workflowPk")).id
+        except ObjectDoesNotExist:
+            workflow_id = 0
 
-@user_is_teacher()
-def json_api_post_get_target_projects(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    try:
-        workflow_id = Workflow.objects.get(pk=body.get("workflowPk")).id
-    except ObjectDoesNotExist:
-        workflow_id = 0
-    try:
-        data_package = get_my_projects(request.user, False, for_add=True)
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {
-            "action": "posted",
-            "data_package": data_package,
-            "workflow_id": workflow_id,
-        }
-    )
+        try:
+            data_package = get_my_projects(request.user, False, for_add=True)
+        except AttributeError:
+            return JsonResponse({"action": "error"})
 
-
-@user_can_view("projectPk")
-def json_api_post_get_project_data(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    project = Project.objects.get(pk=body.get("projectPk"))
-    try:
-        project_data = (
-            JSONRenderer()
-            .render(
-                ProjectSerializerShallow(
-                    project, context={"user": request.user}
-                ).data
-            )
-            .decode("utf-8")
+        return JsonResponse(
+            {
+                "action": "posted",
+                "data_package": data_package,
+                "workflow_id": workflow_id,
+            }
         )
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {
-            "action": "posted",
-            "project_data": project_data,
-        }
-    )
+
+    #########################################################
+    # DUPLICATE
+    #########################################################
+
+    @staticmethod
+    @user_can_view("projectPk")
+    def duplicate(request: Request, pk: int) -> Response:
+        body = json.loads(request.body)
+        project = Project.objects.get(pk=body.get("projectPk"))
+        try:
+            with transaction.atomic():
+                clone = fast_duplicate_project(project, request.user)
+                try:
+                    clone.title = clone.title + _("(copy)")
+                    clone.save()
+                except (ValidationError, TypeError):
+                    pass
+        except ValidationError:
+            return Response({"action": "error"})
+
+        return Response(
+            {
+                "action": "posted",
+                "new_item": InfoBoxSerializer(
+                    clone, context={"user": request.user}
+                ).data,
+                "type": "project",
+            }
+        )
+
+    #########################################################
+    # RELATIONS
+    #########################################################
+    @staticmethod
+    @user_can_view("projectPk")
+    @api_view(["POST"])
+    def workflows__list(
+        request: Request,
+    ) -> Response:
+        body = json.loads(request.body)
+        try:
+            user = request.user
+            project = Project.objects.get(pk=body.get("projectPk"))
+            workflows_serialized = InfoBoxSerializer(
+                project.workflows.all(), many=True, context={"user": user}
+            ).data
+
+        except AttributeError:
+            return Response({"action": "error"})
+
+        return Response(
+            {
+                "action": "posted",
+                "data_package": workflows_serialized,
+            }
+        )
+
+    @staticmethod
+    @user_can_edit("projectPk")
+    def object_set__create(request: Request, pk: int) -> Response:
+        """
+        Add an object set to a project
+        :param pk:
+        :param request:
+        :return:
+        """
+        body = json.loads(request.body)
+        project = Project.objects.get(pk=pk)
+
+        term = body.get("term")
+        title = body.get("title")
+        translation_plural = body.get("translation_plural")
+
+        try:
+            project.object_sets.create(
+                term=term,
+                title=title,
+                translation_plural=translation_plural,
+            )
+        except ValidationError:
+            return Response({"action": "error"})
+        return Response(
+            {
+                "action": "posted",
+                "new_dict": ProjectSerializerShallow(project).data[
+                    "object_sets"
+                ],
+            }
+        )
 
 
-@user_is_teacher()
 def json_api_post_get_projects_for_create(
     request: HttpRequest,
 ) -> JsonResponse:
@@ -201,83 +258,3 @@ def json_api__project__detail__comparison__get(request):
     }
 
     return JsonResponse({"action": "GET", "data_package": response_data})
-
-
-# Add an object set to a project
-@user_can_edit("projectPk")
-def json_api_post_add_object_set(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    project = Project.objects.get(pk=body.get("projectPk"))
-    term = body.get("term")
-    title = body.get("title")
-    translation_plural = body.get("translation_plural")
-    try:
-        project.object_sets.create(
-            term=term,
-            title=title,
-            translation_plural=translation_plural,
-        )
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {
-            "action": "posted",
-            "new_dict": ProjectSerializerShallow(project).data["object_sets"],
-        }
-    )
-
-
-#########################################################
-# DUPLICATE
-#########################################################
-@user_can_view("projectPk")
-def json_api_post_duplicate_project(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    project = Project.objects.get(pk=body.get("projectPk"))
-    try:
-        with transaction.atomic():
-            clone = fast_duplicate_project(project, request.user)
-            try:
-                clone.title = clone.title + _("(copy)")
-                clone.save()
-            except (ValidationError, TypeError):
-                pass
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "new_item": InfoBoxSerializer(
-                clone, context={"user": request.user}
-            ).data,
-            "type": "project",
-        }
-    )
-
-
-# Add an object set to a project
-@user_can_edit("projectPk")
-def json_api_post_add_object_set(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-
-    project = Project.objects.get(pk=body.get("projectPk"))
-    term = body.get("term")
-    title = body.get("title")
-    translation_plural = body.get("translation_plural")
-
-    try:
-        project.object_sets.create(
-            term=term,
-            title=title,
-            translation_plural=translation_plural,
-        )
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "new_dict": ProjectSerializerShallow(project).data["object_sets"],
-        }
-    )

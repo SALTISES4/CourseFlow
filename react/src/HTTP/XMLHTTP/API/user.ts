@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { ToDefine } from '@cf/types/common'
 import { LibraryObjectType, VERB } from '@cf/types/enum'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
@@ -21,7 +22,8 @@ export function getUserListQuery(
   filter: any,
   callBackFunction = (_data: UserListResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.user.list, {
+  const url  = apiPaths.json_api.user.list
+  API_POST(url, {
     filter: filter
   }).then((response: UserListResp) => {
     if (response.action == VERB.POSTED) callBackFunction(response)
@@ -33,15 +35,12 @@ export function getUserListQuery(
  * NOTIFICATIONS SETTINGS
  *******************************************************/
 export async function getNotificationSettings(): Promise<NotificationSettingsQueryResp> {
-  const url =
-    COURSEFLOW_APP.globalContextData.path.json_api.user.notification_settings
+  const url = apiPaths.json_api.user.notification_settings
   return API_GET<NotificationSettingsQueryResp>(url)
 }
 
 export async function updateNotificationSettings(data: any) {
-  const url =
-    COURSEFLOW_APP.globalContextData.path.json_api.user
-      .notification_settings__update
+  const url = apiPaths.json_api.user.notification_settings__update
   return API_POST(url, data)
 }
 
@@ -49,7 +48,6 @@ export async function updateNotificationSettings(data: any) {
  * PROFILE SETTINGS
  *******************************************************/
 export async function getProfileSettings(): Promise<ProfileSettingsQueryResp> {
-  const url =
-    COURSEFLOW_APP.globalContextData.path.json_api.user.profile_settings
+  const url = apiPaths.json_api.user.profile_settings
   return API_GET<ProfileSettingsQueryResp>(url)
 }

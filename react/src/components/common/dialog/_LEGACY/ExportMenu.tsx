@@ -1,3 +1,4 @@
+// @ts-nocheck
 // TODO: Deprecate/remove this component in favor of "ExportProject" dialog
 // which could be renamed since the same dialog appears when exporting workflows
 

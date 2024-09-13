@@ -4,12 +4,10 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
+from rest_framework.request import Request
+from rest_framework.response import Response
 
-from course_flow.decorators import (
-    user_can_edit,
-    user_can_view,
-    user_is_teacher,
-)
+from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.duplication_functions import (
     duplicate_column,
     fast_create_strategy,
@@ -34,7 +32,6 @@ from course_flow.sockets import redux_actions as actions
 from course_flow.utils import get_model_from_str
 
 
-@user_is_teacher()
 def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
     print(body)
@@ -62,7 +59,7 @@ def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
 
 
 @user_can_view("workflowPk")
-def json_api_post_duplicate_strategy(request: HttpRequest) -> JsonResponse:
+def duplicate__strategy(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
     workflow = Workflow.objects.get(pk=body.get("workflowPk"))
     try:

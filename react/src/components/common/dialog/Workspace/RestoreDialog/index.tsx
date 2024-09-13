@@ -2,6 +2,7 @@ import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { WorkSpaceType } from '@cf/types/enum'
+import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -30,22 +31,16 @@ const ArchiveDialog = () => {
     mutationFn: () =>
       unarchiveSelfMutation(context.workflow.workflowId, resourceType),
     onSuccess: (resp) => {
-      enqueueSnackbar(
-        COURSEFLOW_APP.globalContextData.strings.workflow_unarchive_success,
-        {
-          variant: 'success'
-        }
-      )
+      enqueueSnackbar(strings.workflow_unarchive_success, {
+        variant: 'success'
+      })
       onClose()
     },
     onError: (error) => {
       console.log(error)
-      enqueueSnackbar(
-        COURSEFLOW_APP.globalContextData.strings.workflow_unarchive_failure,
-        {
-          variant: 'error'
-        }
-      )
+      enqueueSnackbar(strings.workflow_unarchive_failure, {
+        variant: 'error'
+      })
     }
   })
 

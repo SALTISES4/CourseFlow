@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { OBJECT_TYPE, VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { DuplicateBaseItemQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
@@ -34,27 +35,21 @@ export function duplicateBaseItemQuery(
   const projectPkString = projectID
 
   if (objectType === OBJECT_TYPE.PROJECT) {
-    sendPostRequest(
-      COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_project_ajax,
-      {
-        projectPk: itemPkString
-      }
-    )
+    const url = apiPaths.json_api.project.duplicate
+    sendPostRequest(url, {
+      projectPk: itemPkString
+    })
   } else if (objectType === OBJECT_TYPE.STRATEGY) {
-    sendPostRequest(
-      COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_strategy_ajax,
-      {
-        workflowPk: itemPkString
-      }
-    )
+    const url = apiPaths.json_api.workflow.strategy__duplicate
+    sendPostRequest(url, {
+      workflowPk: itemPkString
+    })
   } else {
-    sendPostRequest(
-      COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_workflow_ajax,
-      {
-        workflowPk: itemPkString,
-        projectPk: projectPkString
-      }
-    )
+    const url = apiPaths.json_api.workflow.duplicate
+    sendPostRequest(url, {
+      workflowPk: itemPkString,
+      projectPk: projectPkString
+    })
   }
 }
 

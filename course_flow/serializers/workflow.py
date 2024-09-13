@@ -363,6 +363,39 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
         return activity
 
 
+class ActivityUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Workflow
+        fields = [
+            "title",
+            "description",
+            "ponderation_theory",  # These might only apply if the instance is a Course
+            "ponderation_practical",
+            "ponderation_individual",
+        ]
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.description = validated_data.get(
+            "description", instance.description
+        )
+
+        # Check if the instance is of type Course before updating specific fields
+        if isinstance(instance, Course):
+            instance.ponderation_theory = validated_data.get(
+                "ponderation_theory", instance.ponderation_theory
+            )
+            instance.ponderation_practical = validated_data.get(
+                "ponderation_practical", instance.ponderation_practical
+            )
+            instance.ponderation_individual = validated_data.get(
+                "ponderation_individual", instance.ponderation_individual
+            )
+
+        instance.save()
+        return instance
+
+
 class InfoBoxSerializer(
     serializers.Serializer,
     TitleSerializerMixin,

@@ -97,53 +97,9 @@ def get_permission_objects(model, body, **kwargs):
     return permission_objects
 
 
-#########################################################
-# JSON API DECORATORS
-#########################################################
-def ajax_login_required(view_func):
-    """
-    Decorator for ajax views that checks if a user is logged in and returns
-    a 401 status code otherwise.
-    """
-
-    @wraps(view_func)
-    def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return view_func(request, *args, **kwargs)
-        else:
-            return JsonResponse(
-                {"error": {"login_url": settings.LOGIN_URL}}, status=401
-            )
-
-    return _wrapped_view
-
-
-# Ajax login required view decorator
-def ajax_login_as_teacher_required(view_func):
-    """
-    Decorator for ajax views that checks if a user is logged in and returns
-    a 401 status code otherwise.
-    """
-
-    @wraps(view_func)
-    def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_authenticated and (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in request.user.groups.all()
-        ):
-            return view_func(request, *args, **kwargs)
-        else:
-            return JsonResponse(
-                {"error": {"login_url": settings.LOGIN_URL}}, status=401
-            )
-
-    return _wrapped_view
-
-
 def is_owner(model):
     def wrapped_view(fct):
         @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(request, model=model, *args, **kwargs):
             body = json.loads(request.body)
@@ -235,7 +191,6 @@ def get_model_from_request(model, body, **kwargs):
 def user_is_author(model, **outer_kwargs):
     def wrapped_view(fct):
         @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -270,7 +225,6 @@ def user_is_author(model, **outer_kwargs):
 def user_can_edit(model, **outer_kwargs):
     def wrapped_view(fct):
         @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -307,7 +261,6 @@ def user_can_edit(model, **outer_kwargs):
 def user_can_view(model, **outer_kwargs):
     def wrapped_view(fct):
         @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -340,7 +293,6 @@ def user_can_view(model, **outer_kwargs):
 def user_can_view_or_none(model, **outer_kwargs):
     def wrapped_view(fct):
         @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -378,7 +330,6 @@ def user_can_view_or_none(model, **outer_kwargs):
 def user_can_edit_or_none(model, **outer_kwargs):
     def wrapped_view(fct):
         @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -432,7 +383,6 @@ def user_can_comment(model, **outer_kwargs):
 
     def wrapped_view(fct):
         @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -473,7 +423,6 @@ def user_can_delete(model, **outer_kwargs):
 
     def wrapped_view(fct):
         @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -564,33 +513,6 @@ def from_same_workflow(model1, model2, **outer_kwargs):
 
             except Exception as e:
                 return JsonResponse({"error": str(e)}, status=403)
-
-        return _wrapped_view
-
-    return wrapped_view
-
-
-def user_is_teacher():
-    def wrapped_view(fct):
-        @require_POST
-        @ajax_login_required
-        @wraps(fct)
-        def _wrapped_view(request, *args, **kwargs):
-            try:
-                if (
-                    Group.objects.get(name=settings.TEACHER_GROUP)
-                    in request.user.groups.all()
-                ):
-                    return fct(request, *args, **kwargs)
-
-                return JsonResponse(
-                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
-                )
-
-            except AttributeError:
-                return JsonResponse(
-                    {"login_url": settings.LOGIN_URL}, stats=403
-                )
 
         return _wrapped_view
 

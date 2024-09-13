@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 import {
   LibraryObjectsSearchQueryArgs,
@@ -18,9 +19,7 @@ import {
 export function libraryObjectsSearchQuery(
   args: LibraryObjectsSearchQueryArgs
 ): Promise<LibraryObjectsSearchQueryResp> {
-  const url =
-    COURSEFLOW_APP.globalContextData.path.json_api.library
-      .library__objects_search
+  const url = apiPaths.json_api.library.library__objects_search
   return API_POST(url, {
     args
   })
@@ -33,10 +32,7 @@ export function libraryObjectsSearchQuery(
 export function libraryFavouriteObjectsQuery(
   args: LibraryObjectsSearchQueryArgs
 ): Promise<LibraryObjectsSearchQueryResp> {
-  const url =
-    COURSEFLOW_APP.globalContextData.path.json_api.library
-      .library__favourites__projects
-
+  const url = apiPaths.json_api.library.library__favourites__projects
   return API_POST<LibraryObjectsSearchQueryResp>(url, { args })
 }
 
@@ -48,12 +44,7 @@ export function toggleFavouriteMutation({
   type,
   favourite
 }: ToggleFavouriteQueryArgs): Promise<EmptyPostResp> {
-  const url =
-    COURSEFLOW_APP.globalContextData.path.json_api.library
-      .library__toggle_favourite__post
-
-  console.log(url)
-
+  const url = apiPaths.json_api.library.library__toggle_favourite__post
   return API_POST<EmptyPostResp>(url, {
     objectId: id,
     objectType: type,

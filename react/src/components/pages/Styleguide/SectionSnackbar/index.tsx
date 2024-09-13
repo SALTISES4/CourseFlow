@@ -1,7 +1,6 @@
+import Section from '@cfPages/Home/components/Section'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-
-import Section from '@cfPages/Home/components/Section'
 import { useSnackbar } from 'notistack'
 
 const SectionSnackbar = () => {

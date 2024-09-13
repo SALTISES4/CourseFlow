@@ -1,5 +1,6 @@
 import { CFRoutes } from '@cf/router'
 import { SidebarProps } from '@cf/types/common'
+import strings from '@cf/utility/strings'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import ParentWorkflowIndicator from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -30,7 +31,7 @@ import {
   SidebarWrap
 } from './styles'
 
-const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
+const Sidebar = ({ isAnonymous,  favourites }: SidebarProps) => {
   const location = useLocation()
 
   const [collapsed, setCollapsed] = useState(
@@ -70,74 +71,49 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
             <ListItemButton
               component={Link}
               data-test-id="panel-home"
-              to={COURSEFLOW_APP.globalContextData.path.html.library.home}
-              selected={
-                location.pathname ===
-                COURSEFLOW_APP.globalContextData.path.html.library.home
-              }
+              to={CFRoutes.HOME}
+              selected={location.pathname === CFRoutes.HOME}
             >
               <ListItemIcon>
                 <HomeIcon />
               </ListItemIcon>
-              <ListItemText
-                primary={COURSEFLOW_APP.globalContextData.strings.home}
-              />
+              <ListItemText primary={strings.home} />
             </ListItemButton>
           </ListItem>
-          {isTeacher ? (
-            <>
-              <ListItem disablePadding dense>
-                <ListItemButton
-                  component={Link}
-                  data-test-id="panel-library"
-                  to={
-                    COURSEFLOW_APP.globalContextData.path.html.library.library
-                  }
-                  selected={
-                    location.pathname ===
-                    COURSEFLOW_APP.globalContextData.path.html.library.library
-                  }
-                >
-                  <ListItemIcon>
-                    <FolderCopyIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={
-                      COURSEFLOW_APP.globalContextData.strings.my_library
-                    }
-                  />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding dense>
-                <ListItemButton
-                  component={Link}
-                  to={
-                    COURSEFLOW_APP.globalContextData.path.html.library.explore
-                  }
-                  data-test-id="panel-explore"
-                  selected={
-                    location.pathname ===
-                    COURSEFLOW_APP.globalContextData.path.html.library.explore
-                  }
-                >
-                  <ListItemIcon>
-                    <SearchIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={COURSEFLOW_APP.globalContextData.strings.explore}
-                  />
-                </ListItemButton>
-              </ListItem>
-            </>
-          ) : null}
+          <ListItem disablePadding dense>
+            <ListItemButton
+              component={Link}
+              data-test-id="panel-library"
+              to={CFRoutes.LIBRARY}
+              selected={location.pathname === CFRoutes.LIBRARY}
+            >
+              <ListItemIcon>
+                <FolderCopyIcon />
+              </ListItemIcon>
+              <ListItemText primary={strings.my_library} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding dense>
+            <ListItemButton
+              component={Link}
+              to={CFRoutes.EXPLORE}
+              data-test-id="panel-explore"
+              selected={location.pathname === CFRoutes.EXPLORE}
+            >
+              <ListItemIcon>
+                <SearchIcon />
+              </ListItemIcon>
+              <ListItemText primary={strings.explore} />
+            </ListItemButton>
+          </ListItem>
         </MainMenuWrap>
 
-        {isTeacher && favourites.length ? (
+        {favourites.length ? (
           <>
             <Divider />
             <FavouritesWrap>
               <FavouritesLabel variant="body1">
-                {COURSEFLOW_APP.globalContextData.strings.favourites}
+                {strings.favourites}
               </FavouritesLabel>
               <List>
                 {favourites.map((favourite, id) => (
@@ -172,12 +148,9 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
                               py: 1
                             }}
                             // @todo convert this to a Link element
-                            href={
-                              COURSEFLOW_APP.globalContextData.path.html.library
-                                .favourites
-                            }
+                            href={CFRoutes.FAVOURITES}
                           >
-                            {COURSEFLOW_APP.globalContextData.strings.view_all}
+                            {strings.view_all}
                           </SeeAllLink>
                         }
                       />
@@ -208,9 +181,7 @@ const Sidebar = ({ isAnonymous, isTeacher, favourites }: SidebarProps) => {
               <ListItemIcon>
                 <HelpRoundedIcon color="primary" />
               </ListItemIcon>
-              <ListItemText
-                primary={COURSEFLOW_APP.globalContextData.strings.help_support}
-              />
+              <ListItemText primary={strings.help_support} />
             </ListItemButton>
           </ListItem>
         </HelpLink>

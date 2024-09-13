@@ -83,7 +83,6 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
         project: wf_data.project, // from  workflow/detail api call, workflow_data_package
         isStrategy: wf_data.is_strategy, // workflow/detail api call, workflow_data_package
 
-
         // @ts-ignore
         unread_comments: wf_data.unread_comments ?? [], // supposedly coming back from API, but currently undefined
 

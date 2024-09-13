@@ -4,6 +4,8 @@ import math
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.models.column import Column
