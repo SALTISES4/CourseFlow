@@ -79,8 +79,6 @@ interface GetPaths {
   get_library: string
   get_favourites: string
   import: string
-  get_public_workflow_data: string
-  get_public_workflow_parent_data: string
   get_public_workflow_child_data: string
   get_public_parent_workflow_info: string
 }

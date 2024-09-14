@@ -26,8 +26,7 @@ export function getUserListQuery(
   API_POST(url, {
     filter: filter
   }).then((response: UserListResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }
 

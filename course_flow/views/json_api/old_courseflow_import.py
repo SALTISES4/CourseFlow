@@ -328,4 +328,4 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
     except AttributeError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})

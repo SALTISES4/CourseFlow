@@ -48,7 +48,7 @@ def json_api_post_update_outcomenode_degree(
             ).count()
             > 0
         ):
-            return JsonResponse({"action": "posted", "outcomenode": -1})
+            return JsonResponse({"message": "success", "outcomenode": -1})
         model = OutcomeNode.objects.create(
             node=node,
             outcome=Outcome.objects.get(id=outcome_id),
@@ -82,7 +82,7 @@ def json_api_post_update_outcomenode_degree(
             node.linked_workflow,
             update_action,
         )
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})
 
 
 @user_can_edit(False)
@@ -144,7 +144,7 @@ def json_api_post_insert_child_outcome(request: HttpRequest) -> JsonResponse:
         actions.dispatch_to_parent_wf(
             workflow, actions.insertChildAction(response_data, "outcome")
         )
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})
 
 
 @user_can_edit("workflowPk")
@@ -177,4 +177,4 @@ def json_api_post_new_outcome_for_workflow(
         workflow, actions.newOutcomeAction(response_data)
     )
 
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})

@@ -29,18 +29,16 @@ export enum DIALOG_TYPE {
   WORKFLOW_LINK = 'workflow_link',
   WORKFLOW_ARCHIVE = 'workflow_archive',
   WORKFLOW_RESTORE = 'workflow_restore',
+  WORKFLOW_EDIT = 'workflow_edit',
 
   // WORKFLOW - PROGRAM
   PROGRAM_CREATE = 'program_create',
-  PROGRAM_EDIT = 'program_edit',
 
   // WORKFLOW - ACTIVITY
   ACTIVITY_CREATE = 'activity_create',
-  ACTIVITY_EDIT = 'activity_edit',
 
   // WORKFLOW - COURSE
   COURSE_CREATE = 'course_create',
-  COURSE_EDIT = 'course_edit',
 
   GENERIC = 'generic'
 

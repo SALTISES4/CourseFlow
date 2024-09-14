@@ -12,14 +12,11 @@ import { ChangeEvent } from 'react'
 
 import { CourseFormDataType } from './types'
 
-type FormValues = Omit<CourseFormDataType, 'units'> & {
-  unit: string
-}
+type FormValues = CourseFormDataType
 
 type PropsType = {
   values: FormValues
   wrapAs?: 'form' | 'div'
-  units: CourseFormDataType['units']
   onInfoChange: (e: ChangeEvent<HTMLInputElement>) => void
   onUnitChange: (e: SelectChangeEvent) => void
   onPonderationChange: (e: ChangeEvent<HTMLInputElement>) => void
@@ -28,7 +25,6 @@ type PropsType = {
 const CourseFormFields = ({
   wrapAs = 'form',
   values,
-  units,
   onInfoChange,
   onUnitChange,
   onPonderationChange

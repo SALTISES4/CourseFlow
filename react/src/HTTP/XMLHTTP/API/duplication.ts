@@ -26,8 +26,7 @@ export function duplicateBaseItemQuery(
   console.log('duplicating base item')
   const sendPostRequest = (url, data) => {
     API_POST(url, data).then((response: DuplicateBaseItemQueryResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+callBackFunction(response)
     })
   }
 
@@ -69,7 +68,6 @@ export function duplicateSelfQuery(
     objectType: objectType,
     throughType: throughType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }

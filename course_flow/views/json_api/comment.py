@@ -49,8 +49,13 @@ class CommentEndpoint:
             ).update(is_unread=False)
             data_package = CommentSerializer(comments, many=True).data
         except AttributeError:
-            return Response({"action": "error"})
-        return Response({"action": "posted", "data_package": data_package})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        return Response({"message": "success", "data_package": data_package})
 
     ##########################################################
     # CREATE
@@ -98,8 +103,13 @@ class CommentEndpoint:
                 )
 
         except ValidationError:
-            return Response({"action": "error"})
-        return Response({"action": "posted"})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        return Response({"message": "success"})
 
     ##########################################################
     # DELETE
@@ -119,9 +129,14 @@ class CommentEndpoint:
             comment.delete()
 
         except (ProtectedError, ObjectDoesNotExist):
-            return Response({"action": "error"})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
-        return Response({"action": "posted"})
+        return Response({"message": "success"})
 
     @staticmethod
     @user_can_edit(False)
@@ -136,6 +151,11 @@ class CommentEndpoint:
             model.comments.all().delete()
 
         except (ProtectedError, ObjectDoesNotExist):
-            return Response({"action": "error"})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
-        return Response({"action": "posted"})
+        return Response({"message": "success"})

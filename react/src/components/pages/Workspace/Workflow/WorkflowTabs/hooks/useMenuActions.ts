@@ -33,7 +33,7 @@ export const useMenuActions = () => {
    *******************************************************/
   function openEditMenu(evt: EventUnion) {
     // this.selection_manager.changeSelection(evt, this)
-    dispatchDialog(DIALOG_TYPE.ACTIVITY_EDIT)
+    dispatchDialog(DIALOG_TYPE.WORKFLOW_EDIT)
   }
 
   // REFERENCE ORIGINAL DATA

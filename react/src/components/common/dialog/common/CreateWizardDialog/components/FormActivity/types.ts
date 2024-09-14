@@ -4,5 +4,6 @@ export type ActivityFormDataType = {
   title: string
   description: string
   duration: string
-  units: UnitType[]
+  // units: UnitType[]
+  units: string
 }

@@ -42,3 +42,10 @@ export type CreateProjectArgs = {
   disciplines: number[]
   objectSets: ObjectSetType[]
 }
+
+export type UpdateWorkflowArgs = {
+  description: string
+  duration: string
+  title: string
+  units: number
+}

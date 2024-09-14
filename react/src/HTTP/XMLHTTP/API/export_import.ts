@@ -16,8 +16,7 @@ export function getExport(
     objectType: objectType,
     exportType: exportType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }
 
@@ -39,7 +38,6 @@ export function importData(
     },
     myFile
   ).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }

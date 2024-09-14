@@ -4,6 +4,7 @@ import math
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -127,7 +128,7 @@ def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
             workflow,
             actions.insertBelowAction(response_data, object_type),
         )
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})
 
 
 # Add a parent outcome to an outcome
@@ -157,7 +158,7 @@ def json_api_post_update_outcomehorizontallink_degree(
             > 0
         ):
             return JsonResponse(
-                {"action": "posted", "outcomehorizontallink": -1}
+                {"message": "success", "outcomehorizontallink": -1}
             )
         model = OutcomeHorizontalLink.objects.create(
             outcome=outcome, parent_outcome=parent_outcome, degree=degree
@@ -194,7 +195,7 @@ def json_api_post_update_outcomehorizontallink_degree(
         workflow,
         actions.updateOutcomehorizontallinkDegreeAction(response_data),
     )
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})
 
 
 # @todo clarify this vocabulary
@@ -259,7 +260,7 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
     except AttributeError:
         pass
 
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})
 
 
 #########################################################
@@ -351,7 +352,7 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                                 outcome__in=outcomes_list
                             ).delete()
                         else:
-                            return JsonResponse({"action": "posted"})
+                            return JsonResponse({"message": "success"})
                 if object_type == parent_type:
                     creation_kwargs = {"child": model, "parent": parent}
                     search_kwargs = {"child": model}
@@ -515,4 +516,4 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                     ),
                 )
     actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})

@@ -16,8 +16,7 @@ export function setUserPermission(
     permission_user: user_id,
     permission_type: permission_type
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }
 
@@ -64,7 +63,6 @@ export function getUsersForObjectQueryLegacy(
       objectType: objectType
     }
   ).then((response: UsersForObjectQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }

@@ -2,12 +2,10 @@ import json
 
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest, JsonResponse
-from rest_framework.request import Request
-from rest_framework.response import Response
+from rest_framework import status
 
 from course_flow.decorators import user_can_edit, user_can_view_or_none
-from course_flow.duplication_functions import fast_duplicate_workflow
-from course_flow.models import Column, Node, Week, Workflow, WorkflowProject
+from course_flow.models import Column, Node, Week
 from course_flow.models.relations import (
     ColumnWorkflow,
     NodeLink,
@@ -17,13 +15,12 @@ from course_flow.models.relations import (
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
-    LinkedWorkflowSerializerShallow,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
 )
 from course_flow.sockets import redux_actions as actions
-from course_flow.utils import check_possible_parent, get_model_from_str
+from course_flow.utils import get_model_from_str
 
 
 class NodeEndpoint:
@@ -80,7 +77,7 @@ class NodeEndpoint:
         actions.dispatch_wf(
             week.get_workflow(), actions.newNodeAction(response_data)
         )
-        return JsonResponse({"action": "posted"})
+        return JsonResponse({"message": "success"})
 
     @user_can_edit("nodePk")
     @user_can_edit(False)
@@ -111,4 +108,4 @@ class NodeEndpoint:
         actions.dispatch_wf(
             node.get_workflow(), actions.newNodeLinkAction(response_data)
         )
-        return JsonResponse({"action": "posted"})
+        return JsonResponse({"message": "success"})

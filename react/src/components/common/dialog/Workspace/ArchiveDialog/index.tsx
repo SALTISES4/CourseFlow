@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography'
 import { useMutation } from '@tanstack/react-query'
 import { archiveMutation } from '@XMLHTTP/API/workflow'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { VariantType, useSnackbar } from 'notistack'
+import { useSnackbar } from 'notistack'
 import { useContext } from 'react'
 
 const ArchiveDialog = () => {
@@ -31,10 +31,10 @@ const ArchiveDialog = () => {
     mutationFn: () =>
       archiveMutation(context.workflow.workflowId, resourceType),
     onSuccess: (resp) => {
-      onClose()
       enqueueSnackbar(strings.workflow_archive_success, {
         variant: 'success'
       })
+      onClose()
     },
     onError: (error) => {
       console.log(error)

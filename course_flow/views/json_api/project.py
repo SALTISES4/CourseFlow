@@ -39,7 +39,7 @@ class ProjectEndpoint:
             project = serializer.save(author=request.user)
 
             return Response(
-                {"action": "posted", "data_package": {"id": project.id}},
+                {"message": "success", "data_package": {"id": project.id}},
                 status=status.HTTP_201_CREATED,
             )
         else:
@@ -102,7 +102,7 @@ class ProjectEndpoint:
 
         return JsonResponse(
             {
-                "action": "posted",
+                "message": "success",
                 "data_package": data_package,
                 "workflow_id": workflow_id,
             }
@@ -126,11 +126,16 @@ class ProjectEndpoint:
                 except (ValidationError, TypeError):
                     pass
         except ValidationError:
-            return Response({"action": "error"})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "new_item": InfoBoxSerializer(
                     clone, context={"user": request.user}
                 ).data,
@@ -156,11 +161,16 @@ class ProjectEndpoint:
             ).data
 
         except AttributeError:
-            return Response({"action": "error"})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "data_package": workflows_serialized,
             }
         )
@@ -188,10 +198,15 @@ class ProjectEndpoint:
                 translation_plural=translation_plural,
             )
         except ValidationError:
-            return Response({"action": "error"})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "new_dict": ProjectSerializerShallow(project).data[
                     "object_sets"
                 ],
@@ -222,7 +237,7 @@ def json_api_post_get_projects_for_create(
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
-            "action": "posted",
+            "message": "success",
             "data_package": projects_serialized,
         }
     )

@@ -1,11 +1,10 @@
 import json
-import traceback
+from pprint import pprint
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.http import HttpRequest, JsonResponse
 
 # from duplication
 from django.utils.translation import gettext as _
@@ -35,7 +34,6 @@ from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.models.workflow import SUBCLASSES, Workflow
 from course_flow.serializers import (
-    ActivityUpdateSerializer,
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
     InfoBoxSerializer,
@@ -52,6 +50,7 @@ from course_flow.serializers import (
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
     WorkflowSerializerShallow,
+    WorkflowUpdateSerializer,
     serializer_lookups_shallow,
 )
 from course_flow.sockets import redux_actions as actions
@@ -130,7 +129,7 @@ class WorkflowEndpoint:
 
         return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "data_package": data_package,
             },
             status=status.HTTP_200_OK,
@@ -139,7 +138,7 @@ class WorkflowEndpoint:
     @staticmethod
     @user_can_view("workflowPk")
     @api_view(["POST"])
-    def fetch_workflow_parent_data(
+    def fetch_parent_detail(
         request: Request,
     ) -> Response:
         body = json.loads(request.body)
@@ -160,12 +159,13 @@ class WorkflowEndpoint:
 
         return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "data_package": data_package,
             },
             status=status.HTTP_200_OK,
         )
 
+    # @todo what is this doing, probably misnamed
     @staticmethod
     @user_can_view("nodePk")
     @api_view(["POST"])
@@ -189,8 +189,37 @@ class WorkflowEndpoint:
 
         return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "data_package": data_package,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @staticmethod
+    # @user_can_view("workflowPk") @todo permissions should not have any opinion on the request VERB
+    @api_view(["GET"])
+    def fetch_parent_detail_full(request: Request, pk: int) -> Response:
+        workflow_id = pk
+        try:
+            parent_workflows = [
+                node.get_workflow()
+                for node in Node.objects.filter(
+                    linked_workflow__id=workflow_id
+                )
+            ]
+            data_package = InfoBoxSerializer(
+                parent_workflows, many=True, context={"user": request.user}
+            ).data
+
+        except AttributeError:
+            return Response(
+                {"action": "error"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(
+            {
+                "message": "success",
+                "parent_workflows": data_package,
             },
             status=status.HTTP_200_OK,
         )
@@ -199,27 +228,28 @@ class WorkflowEndpoint:
     # UPDATE
     #########################################################
     @staticmethod
-    @user_can_view("nodePk")
+    # @todo needs permission
     @api_view(["POST"])
     def update(request: Request, pk: int) -> Response:
         try:
             workflow = Workflow.objects.get(pk=pk)
-        except Workflow.DoesNotExist:
+        except Workflow.DoesNotExist as e:
+            pprint(e)
             return Response(
-                {
-                    "error": "Workflow not found",
-                },
+                {"error": "Workflow not found"},
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        serializer = ActivityUpdateSerializer(workflow, data=request.data)
+        serializer = WorkflowUpdateSerializer(workflow, data=request.data)
 
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
+            pprint(serializer.errors)
             return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+                {"error": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     #########################################################
@@ -251,7 +281,12 @@ class WorkflowEndpoint:
                     cleanup_workflow_post_duplication(clone, project)
 
         except ValidationError:
-            return Response({"action": "error"})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         linked_workflows = Workflow.objects.filter(
             linked_nodes__week__workflow=clone
@@ -261,7 +296,7 @@ class WorkflowEndpoint:
 
         return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "new_item": InfoBoxSerializer(
                     clone, context={"user": request.user}
                 ).data,
@@ -272,11 +307,15 @@ class WorkflowEndpoint:
     #########################################################
     # LISTS
     #########################################################
-
+    @staticmethod
     @user_can_edit("nodePk")
     def possible_linked(
-        request: HttpRequest,
-    ) -> JsonResponse:
+        request: Request,
+    ) -> Response:
+        """
+        @todo what does this do?
+        :return:
+        """
         body = json.loads(request.body)
         node = Node.objects.get(pk=body.get("nodePk"))
 
@@ -289,11 +328,11 @@ class WorkflowEndpoint:
             )
 
         except AttributeError:
-            return JsonResponse({"action": "error"})
+            return Response({"action": "error"})
 
-        return JsonResponse(
+        return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "data_package": data_package,
                 "node_id": node.id,
             }
@@ -301,8 +340,12 @@ class WorkflowEndpoint:
 
     @user_can_view_or_none("projectPk")
     def possible_added(
-        request: HttpRequest,
-    ) -> JsonResponse:
+        request: Request,
+    ) -> Response:
+        """
+        @todo what does this do?
+        :return:
+        """
         body = json.loads(request.body)
         type_filter = body.get("type_filter")
         get_strategies = body.get("get_strategies", "false")
@@ -324,11 +367,11 @@ class WorkflowEndpoint:
             )
 
         except AttributeError:
-            return JsonResponse({"action": "error"})
+            return Response({"action": "error"})
 
-        return JsonResponse(
+        return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "data_package": data_package,
                 "project_id": projectPk,
             }
@@ -336,13 +379,11 @@ class WorkflowEndpoint:
 
     @user_can_edit("nodePk")
     @user_can_view_or_none("workflowPk")
-    def link(request: HttpRequest) -> JsonResponse:
+    def link_to_node(request: Request) -> Response:
         """
-
             @todo ??
-
-         # The actual JSON API which sets the linked workflow
-        # for a node, adding it to the project if different.
+         The actual JSON API which sets the linked workflow
+        for a node, adding it to the project is different.
             :param request:
             :return:
         """
@@ -377,7 +418,7 @@ class WorkflowEndpoint:
                 ).data
 
         except ValidationError:
-            return JsonResponse({"action": "error"})
+            return Response({"action": "error"})
         response_data = {
             "id": node_id,
             "linked_workflow": linked_workflow,
@@ -390,7 +431,7 @@ class WorkflowEndpoint:
         actions.dispatch_wf(
             parent_workflow, actions.setLinkedWorkflowAction(response_data)
         )
-        return JsonResponse({"action": "posted"})
+        return Response({"message": "success"})
 
 
 def set_linked_workflow(node: Node, workflow):
@@ -422,9 +463,7 @@ def set_linked_workflow(node: Node, workflow):
 
 
 @public_model_access("workflow")
-def json_api_get_public_workflow_data(
-    request: HttpRequest, pk
-) -> JsonResponse:
+def json_api_get_public_workflow_data(request: Request, pk) -> Response:
     """
     Public versions if the workflow is public
     :param request:
@@ -437,48 +476,45 @@ def json_api_get_public_workflow_data(
             workflow.get_subclass(), request.user
         )
     except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
+        return Response({"action": "error"})
+    return Response(
         {
-            "action": "posted",
+            "message": "success",
             "data_package": data_package,
         }
     )
 
 
 @public_model_access("node", rate=50)
-def json_api_get_public_workflow_child_data(
-    request: HttpRequest, pk
-) -> JsonResponse:
+def json_api_get_public_workflow_child_data(request: Request, pk) -> Response:
     node = Node.objects.get(pk=pk)
     try:
         data_package = get_child_outcome_data(
             node.linked_workflow, request.user, node.get_workflow()
         )
     except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
+        return Response({"action": "error"})
+    return Response(
         {
-            "action": "posted",
+            "message": "success",
             "data_package": data_package,
         }
     )
 
 
 @public_model_access("workflow")
-def json_api_get_public_workflow_parent_data(
-    request: HttpRequest, pk
-) -> JsonResponse:
+@api_view(["POST"])
+def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
     workflow = Workflow.objects.get(pk=pk)
     try:
         data_package = get_parent_outcome_data(
             workflow.get_subclass(), request.user
         )
     except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(
+        return Response({"action": "error"})
+    return Response(
         {
-            "action": "posted",
+            "message": "success",
             "data_package": data_package,
         }
     )
@@ -491,7 +527,7 @@ def json_api_get_public_workflow_parent_data(
 
 
 # @user_can_view("workflowPk")
-# def json_api_post_get_workflow_context(request: HttpRequest) -> JsonResponse:
+# def json_api_post_get_workflow_context(request: Request) -> Response:
 #     body = json.loads(request.body)
 #     workflowPk = body.get("workflowPk", False)
 #
@@ -503,11 +539,11 @@ def json_api_get_public_workflow_parent_data(
 #         )
 #
 #     except AttributeError:
-#         return JsonResponse({"action": "error"})
+#         return Response({"action": "error"})
 #
-#     return JsonResponse(
+#     return Response(
 #         {
-#             "action": "posted",
+#             "message": "success",
 #             "data_package": data_package,
 #             "workflow_id": workflowPk,
 #         }
@@ -515,9 +551,10 @@ def json_api_get_public_workflow_parent_data(
 
 
 @public_model_access("workflow")
+@api_view(["GET"])
 def json_api_get_public_parent_workflow_info(
-    request: HttpRequest, pk
-) -> JsonResponse:
+    request: Request, pk: int
+) -> Response:
     try:
         parent_workflows = [
             node.get_workflow()
@@ -527,40 +564,11 @@ def json_api_get_public_parent_workflow_info(
             parent_workflows, many=True, context={"user": request.user}
         ).data
 
-    except AttributeError:
-        return JsonResponse({"action": "error"})
+    except AttributeError as e:
+        return Response({"error": str(e)})
 
-    return JsonResponse(
-        {
-            "action": "posted",
-            "parent_workflows": data_package,
-        }
-    )
-
-
-@user_can_view("workflowPk")
-def json_api_post_get_parent_workflow_info(
-    request: HttpRequest,
-) -> JsonResponse:
-    body = json.loads(request.body)
-    workflow_id = body.get("workflowPk")
-    try:
-        parent_workflows = [
-            node.get_workflow()
-            for node in Node.objects.filter(linked_workflow__id=workflow_id)
-        ]
-        data_package = InfoBoxSerializer(
-            parent_workflows, many=True, context={"user": request.user}
-        ).data
-
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "parent_workflows": data_package,
-        }
+    return Response(
+        {"message": "success", "parent_workflows": data_package},
     )
 
 
@@ -570,7 +578,7 @@ def json_api_post_get_parent_workflow_info(
 
 
 @user_can_edit("projectPk")
-def json_api_post_create_workflow(request: HttpRequest) -> JsonResponse:
+def json_api_post_create_workflow(request: Request) -> Response:
     """
     Create a new workflow in a project
     :param request:
@@ -585,7 +593,7 @@ def json_api_post_create_workflow(request: HttpRequest) -> JsonResponse:
         print(workflow_type)
 
     except AttributeError:
-        return JsonResponse(
+        return Response(
             {
                 "action": "error",
             }

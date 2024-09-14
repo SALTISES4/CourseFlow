@@ -1,14 +1,21 @@
 import { addPrefixToLeafStrings } from '@cf/utility/utilityFunctions'
 
-const apiPathBase = '/course-flow/json-api/v1/'
+const apiPathBase = '/course-flow/json-api/v1'
 const domainPath = '/course-flow/'
 export const apiPathRoutes = {
   json_api: {
-    workspace: {
-      delete_self_soft: 'workflow/delete-self-soft',
-      delete_self: 'workflow/delete-self',
-      restore_self: 'workflow/restore-self',
-      duplicate_self: 'workflow/duplicate-self'
+    user: {
+      list: '/user/list',
+      profile_settings: '/user/profile-settings',
+      profile_settings__update: '/user/profile-settings/update',
+      notification_settings: '/user/notifications-settings',
+      notification_settings__update: '/user/notifications-settings/update'
+    },
+    notification: {
+      list: '/notification/list',
+      delete: '/notification/delete',
+      mark_all_as_read: '/notification/mark-all-as-read',
+      select: '/notification/select'
     },
     library: {
       home: '/library/home',
@@ -23,39 +30,39 @@ export const apiPathRoutes = {
       detail: '/project/:id/detail',
       duplicate: '/project/:id/duplicate',
       object_set__create: 'project/:id/object-set/create',
-      list__by_current_user: 'projects/my-projects',
-      workflows__list: 'project/:id/list-workflows'
+      list__by_current_user: 'project/my-projects',
+      workflows__list: 'project/:id/workflow'
     },
     workflow: {
       detail: '/workflow/:id/detail',
       detail__full: '/workflow/:id/detail-full',
-      parent: '/workflow/:id/parent',
-      parent__detail: '/workflow/:id/parent-detail',
-      child: '/workflow/:id/child',
-      list__possible_added: '/workflow/list--added',
-      list__possible_linked: '/workflow/list--linked',
-      duplicate: 'workflow/:id/duplicate-to-project',
-      strategy__duplicate: 'workflow/:id/strategy/duplicate',
-      strategy__toggle: 'workflow/:id/strategy/toggle',
-      strategy__create: 'workflow/:id/strategy/create',
-      link: 'workflow/link'
+      parent__detail: '/workflow/:id/parent/detail',
+      parent__detail__full: '/workflow/:id/parent/detail-full',
+      child__detail: '/workflow/:id/child/detail',
+      list__possible_linked: '/workflow/linked',
+      list__possible_added: '/workflow/added',
+      public__detail: '/workflow/:id/public/detail',
+      public__parent__detail: '/workflow/:id/public/parent/detail',
+      public__parent__detail_full: '/workflow/:id/public/parent/detail-full',
+      public__child__detail: '/workflow/:id/public/child/detail',
+      // editing
+      duplicate: '/workflow/:id/duplicate-to-project',
+      update: '/workflow/:id/update',
+      link: '/workflow/:id/link-to-node',
+      strategy__toggle: '/workflow/:id/strategy/toggle',
+      strategy__duplicate: '/workflow/:id/strategy/duplicate',
+      strategy__add_to_workflow: '/workflow/:id/strategy/add-to-workflow'
+    },
+    workspace: {
+      duplicate: '/workspace/:id/duplicate',
+      delete_soft: '/workspace/:id/delete-soft',
+      delete: '/workspace/:id/delete',
+      restore: '/workspace/:id/restore',
+      field__update: '/workspace/:id/update-field'
     },
     node: {
       create: '/node/create',
       link__create: '/node-link/create'
-    },
-    user: {
-      list: '/user/list',
-      profile_settings: '/user/profile-settings',
-      profile_settings__update: '/user/profile-settings/update',
-      notification_settings: '/user/notifications-settings',
-      notification_settings__update: '/user/notifications-settings/update'
-    },
-    notification: {
-      list: '/notification/list',
-      delete: '/notification/delete',
-      mark_all_as_read: '/notification/mark-all-as-read',
-      select: '/notification/select'
     },
     comment: {
       list_by_object: '/comment/list',

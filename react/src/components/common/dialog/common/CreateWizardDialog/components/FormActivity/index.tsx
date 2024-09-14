@@ -10,22 +10,30 @@ import { ChangeEvent } from 'react'
 
 import { ActivityFormDataType } from './types'
 
-type FormValues = Omit<ActivityFormDataType, 'units'> & {
-  unit: string
-}
+type FormValues = ActivityFormDataType
 
 type PropsType = {
   values: FormValues
   wrapAs?: 'form' | 'div'
-  units: ActivityFormDataType['units']
   onInfoChange: (e: ChangeEvent<HTMLInputElement>) => void
   onUnitChange: (e: SelectChangeEvent) => void
 }
 
+const timeUnits = [
+  '',
+  'Second',
+  'Minutes',
+  'Hours',
+  'Days',
+  'Weeks',
+  'Months',
+  'Years',
+  'Credits'
+]
+
 const ActivityFormFields = ({
   wrapAs = 'form',
   values,
-  units,
   onInfoChange,
   onUnitChange
 }: PropsType) => {
@@ -59,10 +67,14 @@ const ActivityFormFields = ({
         />
         <FormControl variant="standard" fullWidth>
           <InputLabel>Unit type</InputLabel>
-          <Select value={values.unit} label="Unit type" onChange={onUnitChange}>
-            {units.map((u, idx) => (
-              <MenuItem key={idx} value={u.value}>
-                {u.label}
+          <Select
+            value={String(values.units)}
+            label="Unit type"
+            onChange={onUnitChange}
+          >
+            {timeUnits.map((u, idx) => (
+              <MenuItem key={idx} value={idx}>
+                {u}
               </MenuItem>
             ))}
           </Select>

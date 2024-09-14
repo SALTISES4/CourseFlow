@@ -48,7 +48,7 @@ class LibraryEndpoint:
 
         return Response(
             {
-                "action": "posted",
+                "message": "success",
                 "data_package": {
                     "results": library_objects_serialized,
                     "meta": {
@@ -96,10 +96,7 @@ class LibraryEndpoint:
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return Response(
-            {"action": "posted"},
-            status=status.HTTP_200_OK,
-        )
+        return Response({"message": "success"}, status=status.HTTP_200_OK)
 
     #########################################################
     # HOME
@@ -231,43 +228,48 @@ class LibraryEndpoint:
     def search(
         request: Request,
     ) -> Response:
-        body = json.loads(request.body)
+        try:
+            data = request.data
+            # name_filter = body.get("filter").lower()
+            name_filter = data.get("filter", "").lower()
+            args = data.get("args", "{}")
+            nresults = args.get("nresults", 10)
+            full_search = args.get("full_search", False)
+            published = args.get("published", False)
 
-        # name_filter = body.get("filter").lower()
-        name_filter = ""
-        data = body.get("args", "{}")
-        nresults = data.get("nresults", 10)
-        full_search = data.get("full_search", False)
-        published = data.get("published", False)
+            # A full search of all objects, paginated
+            if full_search:
+                return_objects, pages = get_explore_objects(
+                    request.user, name_filter, nresults, published, args
+                )
+            # Small search for library
+            else:
+                return_objects = get_library_objects(
+                    request.user, name_filter, nresults
+                )
+                pages = {}
 
-        # A full search of all objects, paginated
-        if full_search:
-            return_objects, pages = get_explore_objects(
-                request.user, name_filter, nresults, published, data
+            data_package = {
+                "results": InfoBoxSerializer(
+                    return_objects, context={"user": request.user}, many=True
+                ).data,
+                "meta": {
+                    "pages": pages,
+                },
+            }
+
+            return Response(
+                {
+                    "message": "success",
+                    "data_package": data_package,
+                },
+                status=status.HTTP_200_OK,
             )
-        # Small search for library
-        else:
-            return_objects = get_library_objects(
-                request.user, name_filter, nresults
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
-            pages = {}
-
-        data_package = {
-            "results": InfoBoxSerializer(
-                return_objects, context={"user": request.user}, many=True
-            ).data,
-            "meta": {
-                "pages": pages,
-            },
-        }
-
-        return Response(
-            {
-                "action": "posted",
-                data_package: data_package,
-            },
-            status=status.HTTP_200_OK,
-        )
 
 
 #########################################################

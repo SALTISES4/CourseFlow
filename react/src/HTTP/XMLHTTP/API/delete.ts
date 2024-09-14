@@ -18,8 +18,7 @@ export function deleteSelfQueryLegacy(
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }
 
@@ -33,7 +32,6 @@ export function restoreSelfQueryLegacy(
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }

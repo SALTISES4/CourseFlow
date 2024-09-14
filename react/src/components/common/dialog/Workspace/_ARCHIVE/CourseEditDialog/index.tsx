@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import CourseForm from '@cfComponents/dialog/common/CreateWizardDialog/components/FormCourse'
@@ -79,7 +80,6 @@ const CourseEditDialog = (data: CourseFormDataType) => {
       <DialogContent dividers>
         <CourseForm
           values={state}
-          units={data.units}
           onInfoChange={onInfoChange}
           onPonderationChange={onPonderationChange}
           onUnitChange={onUnitChange}

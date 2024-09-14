@@ -11,8 +11,8 @@ import OutcomeTableView from '@cfViews/WorkflowView/componentViews/OutcomeTableV
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
 import dummyOverviewData from '@cfViews/WorkflowView/componentViews/OverviewView/dummyData'
 import WorkflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
-import { Tab, Tabs } from '@mui/material'
-import { ReactNode, useContext, useEffect } from 'react'
+import { Tab } from '@mui/material'
+import { ReactNode, useContext } from 'react'
 import * as React from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
 

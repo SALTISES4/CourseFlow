@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -52,7 +53,7 @@ def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
-            "action": "posted",
+            "message": "success",
             "data_package": templates_serialized,
         }
     )
@@ -75,7 +76,7 @@ def duplicate__strategy(request: HttpRequest) -> JsonResponse:
 
     return JsonResponse(
         {
-            "action": "posted",
+            "message": "success",
             "new_item": InfoBoxSerializer(
                 clone, context={"user": request.user}
             ).data,
@@ -198,7 +199,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
             actions.dispatch_wf(
                 workflow, actions.newStrategyAction(response_data)
             )
-            return JsonResponse({"action": "posted"})
+            return JsonResponse({"message": "success"})
 
         else:
             raise ValidationError("User cannot access this strategy")
@@ -209,6 +210,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
 #########################################################
 # TOGGLE
 #########################################################
+# @todo don't understand this purpose
 @user_can_edit("weekPk")
 def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
@@ -217,6 +219,7 @@ def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
         is_strategy = body.get("is_strategy")
         week = Week.objects.get(id=object_id)
         workflow = WeekWorkflow.objects.get(week=week).workflow
+        # @todo no
         # This check is to prevent people from spamming the button, which would
         # potentially create a bunch of superfluous strategies
         if week.is_strategy != is_strategy:
@@ -252,4 +255,4 @@ def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
 
     actions.dispatch_wf(workflow, actions.toggleStrategyAction(response_data))
 
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})

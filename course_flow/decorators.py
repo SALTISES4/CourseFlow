@@ -11,7 +11,6 @@ from django.http import (
     HttpResponseNotFound,
     JsonResponse,
 )
-from django.views.decorators.http import require_GET, require_POST
 from ratelimit.decorators import ratelimit
 
 from course_flow.models import User
@@ -99,7 +98,6 @@ def get_permission_objects(model, body, **kwargs):
 
 def is_owner(model):
     def wrapped_view(fct):
-        @require_POST
         @wraps(fct)
         def _wrapped_view(request, model=model, *args, **kwargs):
             body = json.loads(request.body)
@@ -190,7 +188,6 @@ def get_model_from_request(model, body, **kwargs):
 #########################################################
 def user_is_author(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -224,7 +221,6 @@ def user_is_author(model, **outer_kwargs):
 
 def user_can_edit(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -260,7 +256,6 @@ def user_can_edit(model, **outer_kwargs):
 
 def user_can_view(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -292,7 +287,6 @@ def user_can_view(model, **outer_kwargs):
 
 def user_can_view_or_none(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -329,7 +323,6 @@ def user_can_view_or_none(model, **outer_kwargs):
 
 def user_can_edit_or_none(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -382,7 +375,6 @@ def user_can_comment(model, **outer_kwargs):
     """
 
     def wrapped_view(fct):
-        @require_POST
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -422,7 +414,6 @@ def user_can_delete(model, **outer_kwargs):
     """
 
     def wrapped_view(fct):
-        @require_POST
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -523,7 +514,6 @@ def public_access(**outer_kwargs):
     rate_per_min = outer_kwargs.get("rate", 5)
 
     def wrapped_view(fct):
-        @require_GET
         @ratelimit(key="ip", rate=str(rate_per_min) + "/m", method=["GET"])
         @wraps(fct)
         def _wrapped_view(request, outer_kwargs=outer_kwargs, *args, **kwargs):
@@ -543,7 +533,6 @@ def public_model_access(model, **outer_kwargs):
     rate_per_min = outer_kwargs.get("rate", 5)
 
     def wrapped_view(fct):
-        @require_GET
         @ratelimit(key="ip", rate=str(rate_per_min) + "/m", method=["GET"])
         @wraps(fct)
         def _wrapped_view(

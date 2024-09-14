@@ -13,9 +13,7 @@ import { getNameInitials } from '@cf/utility/utilityFunctions'
 import createActivityData from '@cfComponents/dialog/common/ActivityCreateDialog/data'
 import createCourseData from '@cfComponents/dialog/common/CourseCreateDialog/data'
 import createProgramData from '@cfComponents/dialog/common/ProgramCreateDialog/data'
-import editActivityData from '@cfComponents/dialog/Workspace/ActivityEditDialog/data'
-import editCourseData from '@cfComponents/dialog/Workspace/CourseEditDialog/data'
-import editProgramData from '@cfComponents/dialog/Workspace/ProgramEditDialog/data'
+import editActivityData from '@cfComponents/dialog/Workspace/_ARCHIVE/ActivityEditDialog/data'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
 import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -280,17 +278,17 @@ const TopBar = ({ notifications, forms }: TopBarProps) => {
         formFields={forms.createProject.formFields}
       />
 
-      <ProgramCreateDialog
-        {...createProgramData}
-        units={editProgramData.units}
-      />
+      {/*<ProgramCreateDialog*/}
+      {/*  {...createProgramData}*/}
+      {/*  units={editProgramData.units}*/}
+      {/*/>*/}
 
-      <CourseCreateDialog {...createCourseData} units={editCourseData.units} />
+      {/*<CourseCreateDialog {...createCourseData} units={editCourseData.units} />*/}
 
-      <ActivityCreateDialog
-        {...createActivityData}
-        units={editActivityData.units}
-      />
+      {/*<ActivityCreateDialog*/}
+      {/*  {...createActivityData}*/}
+      {/*  units={editActivityData.units}*/}
+      {/*/>*/}
     </SC.TopBarWrap>
   )
 }

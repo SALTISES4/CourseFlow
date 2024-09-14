@@ -2,15 +2,11 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.humanize.templatetags import humanize
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
-from django.views.decorators.http import require_POST
+from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.request import Request
-from rest_framework.response import Response
 
-from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.serializers import UserSerializer
 
 
@@ -73,7 +69,7 @@ class NotificationEndPoint:
         if "notification_id" in post_data:
             notification_id = post_data["notification_id"]
             request.user.notifications.filter(id=notification_id).delete()
-            return JsonResponse({"action": "posted"})
+            return JsonResponse({"message": "success"})
 
         return JsonResponse({"action": "error"})
 
@@ -96,4 +92,4 @@ class NotificationEndPoint:
                 is_unread=False
             )
 
-        return JsonResponse({"action": "posted"})
+        return JsonResponse({"message": "success"})

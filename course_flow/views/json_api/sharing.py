@@ -161,7 +161,7 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
 
     return JsonResponse(
         {
-            "action": "posted",
+            "message": "success",
             "author": author,
             "viewers": UserSerializer(viewers, many=True).data,
             "commentors": UserSerializer(commentors, many=True).data,

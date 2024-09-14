@@ -1,5 +1,4 @@
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import { CFRoutes } from '@cf/router'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActivityForm from '@cfComponents/dialog/common/CreateWizardDialog/components/FormActivity'
 import { ActivityFormDataType } from '@cfComponents/dialog/common/CreateWizardDialog/components/FormActivity/types'
@@ -11,30 +10,29 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import { SelectChangeEvent } from '@mui/material/Select'
 import { useMutation } from '@tanstack/react-query'
-import { createProject } from '@XMLHTTP/API/project'
-import { CreateProjectArgs } from '@XMLHTTP/types/args'
-import { CreateProjectResp } from '@XMLHTTP/types/query'
+import { updateMutation } from '@XMLHTTP/API/workflow'
+import { UpdateWorkflowArgs } from '@XMLHTTP/types/args'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { produce } from 'immer'
 import { enqueueSnackbar } from 'notistack'
 import { ChangeEvent, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { generatePath, useNavigate } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
-type StateType = Omit<ActivityFormDataType, 'units'> & {
-  unit: string
-}
+type StateType = ActivityFormDataType
 
-const ActivityEditDialog = (data: ActivityFormDataType) => {
+const ActivityEditDialog = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
+  const { id } = useParams()
+
   const workflow = useSelector((state: AppState) => state.workflow)
-  const navigate = useNavigate()
   const initialState: StateType = {
     title: workflow.title,
     description: workflow.description,
-    duration: data.duration,
-    unit: data.units.find((u) => u.selected)?.value || ''
+    duration: workflow.time_required,
+    units: String(workflow.time_units) ?? '0'
   }
 
   const [state, setState] = useState<StateType>(initialState)
@@ -43,26 +41,19 @@ const ActivityEditDialog = (data: ActivityFormDataType) => {
   /*******************************************************
    * QUERIES
    *******************************************************/
-  const { mutate } = useMutation<CreateProjectResp, Error, CreateProjectArgs>({
-    mutationFn: createProject,
-    onSuccess: (resp: CreateProjectResp) => {
-      const path = generatePath(CFRoutes.PROJECT, {
-        id: String(resp.data_package.id)
-      })
-      // onDialogClose()
-      navigate(path)
-      enqueueSnackbar('created project success', {
+  const { mutate } = useMutation<EmptyPostResp, Error, UpdateWorkflowArgs>({
+    mutationFn: (args) => updateMutation(Number(id), args),
+    onSuccess: (resp: EmptyPostResp) => {
+      enqueueSnackbar('created workflow success', {
         variant: 'success'
       })
+      onClose()
     },
     onError: (error) => {
-      enqueueSnackbar('created project error', {
+      enqueueSnackbar('created workflow error', {
         variant: 'error'
       })
-      // this won't work because we're getting back errors from the serializer
-      // but it's a start
-      console.error('Error creating project:', error)
-      // setErrors(error.name)
+      console.error('Error updating workflow asdfasdf :', error)
     }
   })
 
@@ -81,7 +72,7 @@ const ActivityEditDialog = (data: ActivityFormDataType) => {
   function onUnitChange(e: SelectChangeEvent) {
     setState(
       produce((draft) => {
-        draft.unit = e.target.value
+        draft.units = e.target.value
       })
     )
   }
@@ -91,7 +82,10 @@ const ActivityEditDialog = (data: ActivityFormDataType) => {
   }
 
   function onSubmit() {
-    console.log('submitting EDIT ACTIVITY with', state)
+    mutate({
+      ...state,
+      units: Number(state.units)
+    })
   }
 
   /*******************************************************
@@ -111,7 +105,6 @@ const ActivityEditDialog = (data: ActivityFormDataType) => {
       <DialogContent dividers>
         <ActivityForm
           values={state}
-          units={data.units}
           onInfoChange={onInfoChange}
           onUnitChange={onUnitChange}
         />

@@ -224,17 +224,8 @@ def get_app_config(request: HttpRequest):
                 "set_permission": reverse(
                     "json_api:json-api-post-set-permission"
                 ),
-                "update_value": reverse("json_api:json-api-post-update-value"),
             },
             "get_paths": {
-                "get_public_workflow_data": reverse(
-                    "json_api:json-api-get-public-workflow-data",
-                    kwargs={"pk": "0"},
-                ),
-                "get_public_workflow_parent_data": reverse(
-                    "json_api:json-api-get-public-workflow-parent-data",
-                    kwargs={"pk": "0"},
-                ),
                 "get_public_workflow_child_data": reverse(
                     "json_api:json-api-get-public-workflow-child-data",
                     kwargs={"pk": "0"},

@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -363,15 +365,27 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
         return activity
 
 
-class ActivityUpdateSerializer(serializers.ModelSerializer):
+class WorkflowUpdateSerializer(serializers.ModelSerializer):
+    duration = serializers.CharField(
+        write_only=True, required=False, source="time_required"
+    )
+    units = serializers.IntegerField(
+        write_only=True, required=False, source="time_units"
+    )
+    courseNumber = serializers.CharField(
+        write_only=True, required=False, source="code"
+    )
+    ponderation = serializers.DictField(write_only=True, required=False)
+
     class Meta:
         model = Workflow
         fields = [
             "title",
             "description",
-            "ponderation_theory",  # These might only apply if the instance is a Course
-            "ponderation_practical",
-            "ponderation_individual",
+            "duration",
+            "units",
+            "courseNumber",
+            "ponderation",
         ]
 
     def update(self, instance, validated_data):
@@ -379,18 +393,29 @@ class ActivityUpdateSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
+        instance.time_required = validated_data.get(
+            "time_required", instance.time_required
+        )
+        instance.time_units = validated_data.get(
+            "time_units", instance.time_units
+        )
 
         # Check if the instance is of type Course before updating specific fields
-        if isinstance(instance, Course):
-            instance.ponderation_theory = validated_data.get(
-                "ponderation_theory", instance.ponderation_theory
-            )
-            instance.ponderation_practical = validated_data.get(
-                "ponderation_practical", instance.ponderation_practical
-            )
-            instance.ponderation_individual = validated_data.get(
-                "ponderation_individual", instance.ponderation_individual
-            )
+        # @todo  i don't think we need this check unless we correct the schema, in which case, there
+        # is a case that this should not be one serializer
+        # if isinstance(instance, Course):
+        instance.code = validated_data.get("code", instance.code)
+
+        ponderation_data = validated_data.pop("ponderation", {})
+        instance.ponderation_theory = ponderation_data.get(
+            "theory", instance.ponderation_theory
+        )
+        instance.ponderation_practical = ponderation_data.get(
+            "practice", instance.ponderation_practical
+        )
+        instance.ponderation_individual = ponderation_data.get(
+            "individual", instance.ponderation_individual
+        )
 
         instance.save()
         return instance

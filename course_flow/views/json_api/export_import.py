@@ -49,10 +49,20 @@ class ExportImport:
                     request.user.id,
                 )
             else:
-                return Response({"action": "error"})
+                return Response(
+                    {
+                        "error": "you have error",
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
         except AttributeError:
-            return Response({"action": "error"})
-        return Response({"action": "posted"})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        return Response({"message": "success"})
 
     @staticmethod
     @user_can_view(False)
@@ -79,5 +89,10 @@ class ExportImport:
             )
 
         except AttributeError:
-            return Response({"action": "error"})
-        return Response({"action": "posted"})
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+        return Response({"message": "success"})

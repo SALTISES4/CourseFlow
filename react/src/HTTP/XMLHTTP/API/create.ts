@@ -19,8 +19,7 @@ export function newNodeQuery(
     columnPk: column,
     columnType: column_type
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -44,8 +43,7 @@ export function newOutcomeQuery(
     workflowPk: workflowPk,
     objectsetPk: object_set_id
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -56,15 +54,14 @@ export function addStrategyQuery(
   strategyPk = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  const url = apiPaths.json_api.workflow.strategy__create
+  const url = apiPaths.json_api.workflow.strategy__add_to_workflow
   API_POST(url, {
     workflowPk: workflowPk,
     position: position,
     objectId: strategyPk,
     objectType: 'workflow'
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -83,8 +80,7 @@ export function newNodeLink(
     sourcePort: source_port,
     targetPort: target_port
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -98,8 +94,7 @@ export function insertChildQuery(
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -119,8 +114,7 @@ export function insertSiblingQuery(
     objectType: objectType,
     throughType: throughType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -149,7 +143,6 @@ export function addObjectSetQuery(
     title: title,
     translation_plural: translation_plural
   }).then((response: AddTerminologyQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }

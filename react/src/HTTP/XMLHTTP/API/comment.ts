@@ -16,8 +16,7 @@ export function getCommentsForObjectQuery(
     objectId: objectId,
     objectType: objectType
   }).then((response: CommentsForObjectQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }
 //add a comment to an object
@@ -33,8 +32,7 @@ export function addComment(
     objectType: objectType,
     text: text
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }
 
@@ -50,8 +48,7 @@ export function removeComment(
     commentPk: commentPk,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }
 
@@ -66,7 +63,6 @@ export function removeAllComments(
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+callBackFunction(response)
   })
 }
