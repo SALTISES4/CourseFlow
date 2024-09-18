@@ -19,17 +19,7 @@ import Typography from '@mui/material/Typography'
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
-import {
-  Collapse,
-  FavouritesLabel,
-  FavouritesWrap,
-  HelpLink,
-  LogoWrap,
-  MainMenuWrap,
-  SeeAllLink,
-  SidebarInner,
-  SidebarWrap
-} from './styles'
+import * as SC from './styles'
 
 const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
   const location = useLocation()
@@ -48,9 +38,77 @@ const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
     setCollapsed(!collapsed)
   }
 
+  const Favourites = () => {
+    if (!favourites?.length) return <></>
+
+    const SeeAll = () => {
+      if (favourites.length < 5) {
+        return <></>
+      }
+
+      return (
+        <ListItem disablePadding dense sx={{ mt: 1 }}>
+          <ListItemButton
+            component="div"
+            sx={{
+              padding: 0
+            }}
+          >
+            <ListItemText
+              sx={{
+                margin: 0
+              }}
+              primary={
+                <SC.SeeAllLink
+                  sx={{
+                    px: 2,
+                    py: 1
+                  }}
+                  // @todo convert this to a Link element
+                  href={CFRoutes.FAVOURITES}
+                >
+                  {strings.view_all}
+                </SC.SeeAllLink>
+              }
+            />
+          </ListItemButton>
+        </ListItem>
+      )
+    }
+
+    return (
+      <>
+        <Divider />
+
+        <SC.SectionWrap>
+          <SC.SectionLabel variant="body1">
+            {strings.favourites}
+          </SC.SectionLabel>
+
+          <List>
+            {favourites.map((favourite, id) => (
+              <ListItem disablePadding dense key={id}>
+                <ListItemButton
+                  component={Link}
+                  to={favourite.url}
+                  data-test-id="panel-favourite"
+                  selected={location.pathname === favourite.url}
+                >
+                  <ListItemText primary={favourite.title} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+
+            <SeeAll />
+          </List>
+        </SC.SectionWrap>
+      </>
+    )
+  }
+
   return (
-    <SidebarWrap collapsed={collapsed}>
-      <Collapse
+    <SC.SidebarWrap collapsed={collapsed}>
+      <SC.Collapse
         color="primary"
         size="small"
         aria-label="collapse sidebar"
@@ -58,15 +116,15 @@ const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
         onClick={toggleCollapse}
       >
         {collapsed ? <MenuIcon /> : <ArrowBackIcon />}
-      </Collapse>
+      </SC.Collapse>
 
-      <SidebarInner elevation={8}>
-        <LogoWrap>
+      <SC.SidebarInner elevation={8}>
+        <SC.LogoWrap>
           <CFLogo />
           <Typography component="span">CourseFlow</Typography>
-        </LogoWrap>
+        </SC.LogoWrap>
 
-        <MainMenuWrap sx={{ pt: 0 }}>
+        <SC.MainMenuWrap sx={{ pt: 0 }}>
           <ListItem disablePadding dense>
             <ListItemButton
               component={Link}
@@ -80,6 +138,7 @@ const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
               <ListItemText primary={strings.home} />
             </ListItemButton>
           </ListItem>
+
           <ListItem disablePadding dense>
             <ListItemButton
               component={Link}
@@ -93,6 +152,7 @@ const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
               <ListItemText primary={strings.my_library} />
             </ListItemButton>
           </ListItem>
+
           <ListItem disablePadding dense>
             <ListItemButton
               component={Link}
@@ -106,65 +166,12 @@ const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
               <ListItemText primary={strings.explore} />
             </ListItemButton>
           </ListItem>
-        </MainMenuWrap>
+        </SC.MainMenuWrap>
 
-        {favourites?.length ? (
-          <>
-            <Divider />
-            <FavouritesWrap>
-              <FavouritesLabel variant="body1">
-                {strings.favourites}
-              </FavouritesLabel>
-              <List>
-                {favourites.map((favourite, id) => (
-                  <ListItem disablePadding dense key={id}>
-                    <ListItemButton
-                      component={Link}
-                      to={favourite.url}
-                      data-test-id="panel-favourite"
-                      selected={location.pathname === favourite.url}
-                    >
-                      <ListItemText primary={favourite.title} />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-
-                {favourites.length >= 5 ? (
-                  <ListItem disablePadding dense sx={{ mt: 1 }}>
-                    <ListItemButton
-                      component="div"
-                      sx={{
-                        padding: 0
-                      }}
-                    >
-                      <ListItemText
-                        sx={{
-                          margin: 0
-                        }}
-                        primary={
-                          <SeeAllLink
-                            sx={{
-                              px: 2,
-                              py: 1
-                            }}
-                            // @todo convert this to a Link element
-                            href={CFRoutes.FAVOURITES}
-                          >
-                            {strings.view_all}
-                          </SeeAllLink>
-                        }
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                ) : null}
-              </List>
-            </FavouritesWrap>
-          </>
-        ) : null}
-
+        <Favourites />
         <ParentWorkflowIndicator />
 
-        <HelpLink>
+        <SC.HelpLink>
           {process.env.NODE_ENV !== 'production' && (
             <ListItem disablePadding dense>
               <ListItemButton component={Link} to={CFRoutes.STYLEGUIDE}>
@@ -184,9 +191,9 @@ const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
               <ListItemText primary={strings.help_support} />
             </ListItemButton>
           </ListItem>
-        </HelpLink>
-      </SidebarInner>
-    </SidebarWrap>
+        </SC.HelpLink>
+      </SC.SidebarInner>
+    </SC.SidebarWrap>
   )
 }
 

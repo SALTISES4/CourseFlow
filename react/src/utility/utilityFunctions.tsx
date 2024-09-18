@@ -285,6 +285,7 @@ export function formatDate(dateString: Date) {
   })
   return formatter.format(date)
 }
+
 /*******************************************************
  * SORT / MISC
  *******************************************************/

@@ -8,16 +8,17 @@ export default function parentProjectReducer(
 ): TProject {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
-      if (action.payload.workflow) {
-        return action.payload.workflow
+      if (action.payload.parentProject) {
+        return action.payload.parentProject
       }
       return state
 
     case CommonActions.REFRESH_STOREDATA:
-      if (action.payload.workflow) {
-        return action.payload.workflow
+      if (action.payload.parentProject) {
+        return action.payload.parentProject
       }
       return state
+
     default:
       return state
   }

@@ -1,165 +1,142 @@
+import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
+import * as SC from '@cfComponents/layout/Sidebar/styles'
+import Loader from '@cfComponents/UIPrimitives/Loader'
+import { WorkflowNavLink, workflowUrl } from '@cfComponents/UIPrimitives/Titles'
 import { AppState } from '@cfRedux/types/type'
 import { Typography } from '@mui/material'
 import Divider from '@mui/material/Divider'
-import {
-  getParentWorkflowInfoQuery,
-  getPublicParentWorkflowInfo
-} from '@XMLHTTP/API/workflow'
-import * as React from 'react'
-import { DispatchProp, connect } from 'react-redux'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
+import { useQuery } from '@tanstack/react-query'
+import { getParentWorkflowInfoQuery } from '@XMLHTTP/API/workflow'
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { Link, useParams } from 'react-router-dom'
 
-type ConnectedProps = {
-  childWorkflows: any
-  workflowId: number
-  publicView: boolean
+type WorkflowNode = {
+  id: number
+  title: string
+  description: string
+  url: string
+  deleted: boolean
 }
-type OwnProps = NonNullable<unknown>
-type StateProps = {
-  hasLoaded: boolean
-  parentWorkflows: any
+
+type WorkflowReduxState = {
+  childWorkflows: WorkflowNode[]
 }
-type PropsType = ConnectedProps & OwnProps
-/**
- * Shows the parent workflows for the current workflow, as well
- * as the workflows that have been used, for quick navigation in the
- * left-hand sidebar.
- */
-class ParentWorkflowIndicatorUnconnected extends React.Component<
-  PropsType,
-  StateProps
-> {
-  constructor(props: PropsType) {
-    super(props)
-    this.state = {} as StateProps
-  }
+
+function ParentWorkflowIndicator() {
+  const { id } = useParams()
+
+  const { childWorkflows } = useSelector<AppState, WorkflowReduxState>(
+    (state) => ({
+      childWorkflows: state.node
+        .filter((node) => node.linkedWorkflowData)
+        .map((node) => ({
+          id: node.linkedWorkflow,
+          title: node.linkedWorkflowData?.title || '',
+          description: node.linkedWorkflowData?.description || '',
+          url: node.linkedWorkflowData?.url || '',
+          deleted: node.linkedWorkflowData?.deleted || false
+        }))
+    })
+  )
+
+  const [parentWorkflows, setParentWorkflows] = useState<WorkflowNode[]>([])
+
+  const { data, error, isLoading, isError } = useQuery<any>({
+    queryKey: ['getParentWorkflowInfoQuery', id], // how to manager the cache key
+    queryFn: () => getParentWorkflowInfoQuery(Number(id))
+  })
+
+  if (!id) return null
 
   /*******************************************************
-   * LIFECYCLE
+   * RENDER COMPONENTS
    *******************************************************/
-  componentDidUpdate(prevProps: PropsType) {
-    if (!this.props.workflowId) {
-      console.log('not defined')
-      return
-    }
-    if (this.props.workflowId === prevProps.workflowId) {
-      return
+  const ParentWorkflows = () => {
+    if (isLoading) return <Loader />
+
+    if (!data || !data.parentWorkflows.length) {
+      return <></>
     }
 
-    if (this.props.publicView) {
-      getPublicParentWorkflowInfo(this.props.workflowId, (responseData) =>
-        this.setState({
-          parentWorkflows: responseData.parentWorkflows,
-          hasLoaded: true
-        })
-      )
-    } else {
-      getParentWorkflowInfoQuery(this.props.workflowId, (responseData) =>
-        this.setState({
-          parentWorkflows: responseData.parentWorkflows,
-          hasLoaded: true
-        })
-      )
-    }
+    return (
+      <>
+        <Divider />
+        <SC.SectionWrap>
+          <SC.SectionLabel variant="body1">
+            {_t('Workflows used')}
+          </SC.SectionLabel>
+          <List>
+            {data.parentWorkflows.map((workflow, index) => {
+              const url = workflowUrl(workflow)
+              return (
+                <ListItem disablePadding dense key={workflow.id}>
+                  <ListItemButton
+                    component={Link}
+                    to={url}
+                    data-test-id="panel-other-worflows"
+                    selected={location.pathname === url}
+                  >
+                    <ListItemText primary={workflow.title} />
+                  </ListItemButton>
+                </ListItem>
+              )
+            })}
+          </List>
+        </SC.SectionWrap>
+      </>
+    )
   }
 
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  getTypeIndicator(data) {
-    const type = data.type
+  const ChildWorkflows = () => {
+    if (!childWorkflows.length) {
+      return <></>
+    }
 
-    const text = [_t(type), data.isStrategy ? _t(' strategy') : ''].join('')
-
-    return <div className={'workflow-type-indicator ' + type}>{text}</div>
+    return (
+      <>
+        <Divider />
+        <SC.SectionWrap>
+          <SC.SectionLabel variant="body1">
+            {_t('Used in this Workflow')}
+          </SC.SectionLabel>
+          <List>
+            {childWorkflows.map((workflow, index) => {
+              const url = workflowUrl(workflow)
+              return (
+                <ListItem disablePadding dense key={workflow.id}>
+                  <ListItemButton
+                    component={Link}
+                    to={url}
+                    data-test-id="panel-other-worflows"
+                    selected={location.pathname === url}
+                  >
+                    <ListItemText primary={workflow.title} />
+                  </ListItemButton>
+                </ListItem>
+              )
+            })}
+          </List>
+        </SC.SectionWrap>
+      </>
+    )
   }
 
   /*******************************************************
    * RENDER
    *******************************************************/
-  render() {
-    if (this.state.hasLoaded) {
-      if (
-        this.state.parentWorkflows.length == 0 &&
-        this.props.childWorkflows.length == 0
-      ) {
-        return null
-      }
 
-      const ParentWorkflows = () => {
-        if (this.state.parentWorkflows.length > 0) {
-          return (
-            <>
-              <Typography>{_t('Used in:')}</Typography>
-              {/*{this.state.parentWorkflows.map((workflow, index) => (*/}
-              {/*  // <WorkflowTitle*/}
-              {/*  //   key={`WorkflowTitleParent-${index}`}*/}
-              {/*  //   data={workflow}*/}
-              {/*  //   test_id="panel-favourite"*/}
-              {/*  // />*/}
-              {/*  placeholder title*/}
-              {/*))}*/}
-            </>
-          )
-        }
-        return null
-      }
-
-      const ChildWorkflows = () => {
-        if (this.props.childWorkflows.length > 0) {
-          return (
-            <>
-              <Typography>{_t('Workflows Used:')}</Typography>
-              {/*{this.props.childWorkflows.map((workflow, index) => (*/}
-              {/*  <WorkflowTitle*/}
-              {/*    key={`WorkflowTitleParent-${index}`}*/}
-              {/*    data={workflow}*/}
-              {/*    test_id="panel-favourite"*/}
-              {/*  />*/}
-              {/*))}*/}
-            </>
-          )
-        }
-        return null
-      }
-
-      return (
-        <>
-          <Divider />
-          <Typography>{_t('Quick Navigation')}</Typography>
-          <ParentWorkflows />
-          <ChildWorkflows />
-        </>
-      )
-    }
-  }
+  return (
+    <>
+      <ChildWorkflows />
+      <ParentWorkflows />
+    </>
+  )
 }
-
-const mapStateToProps = (state: AppState) => {
-  return {
-    workflowId: state.workflow.id,
-    publicView: state.workflow.publicView,
-    childWorkflows: state.node
-      .filter((node) => node.linkedWorkflowData)
-      .map((node) => {
-        return {
-          id: node.linkedWorkflow,
-          title: node?.linkedWorkflowData?.title || '',
-          description: node?.linkedWorkflowData?.description || '',
-          url: node?.linkedWorkflowData?.url || '',
-          deleted: node?.linkedWorkflowData?.deleted || false
-        }
-      })
-  }
-}
-const ParentWorkflowIndicator = connect<
-  ConnectedProps,
-  DispatchProp,
-  OwnProps,
-  AppState
->(
-  mapStateToProps,
-  null
-)(ParentWorkflowIndicatorUnconnected)
 
 export default ParentWorkflowIndicator

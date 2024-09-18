@@ -21,8 +21,6 @@ import {
   getWorkflowParentDataQueryLegacy,
   getWorkflowQuery
 } from '@XMLHTTP/API/workflow'
-import { WorkflowDetailViewDTO } from '@XMLHTTP/types/dto'
-import { EProject } from '@XMLHTTP/types/entity'
 import React from 'react'
 import { DispatchProp, connect } from 'react-redux'
 import { RouterProps } from 'react-router'
@@ -43,7 +41,6 @@ type PropsType = DispatchProp & OwnProps & ConnectedProps
  * the hope is that there unpacking this will be less work when Workflow/Workflow is revised first
  * ****************************************/
 class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
-
   static contextType = UserContext
   declare context: React.ContextType<typeof UserContext>
 
@@ -55,7 +52,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   private messageQueue: any[]
   private isMessagesQueued: boolean
   selectionManager: SelectionManager
-  store: Store<EmptyObject & AppState, AnyAction>
+  // store: Store<EmptyObject & AppState, AnyAction>
   viewType: WorkflowViewType
   protected locks: any
   private wsService: WebSocketService
@@ -109,6 +106,14 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   }
 
   componentWillUnmount() {
+    // this.props.dispatch(
+    //   ActionCreator.replaceStoreData({
+    //     parentProject: {},
+    //     parentNode: [],
+    //     parentWorkflow: [],
+    //     week: []
+    //   })
+    // )
     this.wsService.disconnect()
   }
 
@@ -273,7 +278,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     // ...should not need this
     if (data.lock) {
       this.locks[objectType][objectId] = setTimeout(() => {
-        this.store.dispatch(
+        this.props.dispatch(
           ActionCreator.createLockAction(objectId, objectType, false)
         )
       }, data.expires - Date.now())
@@ -291,32 +296,34 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     this.isMessagesQueued = true
     getWorkflowParentDataQueryLegacy(this.workflowId, (response) => {
       // remove all the parent node and parent workflow data
-      this.store.dispatch(
+      this.props.dispatch(
         ActionCreator.replaceStoreData({
           parentNode: [],
           parentWorkflow: []
         })
       )
-      this.store.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      this.props.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
       this.clearQueue(0)
     })
   }
 
+  // another redux anti pattern
   onChildWorkflowUpdateReceived(childWorkflowId) {
-    this.isMessagesQueued = true
-    const state = this.store.getState()
-    const node = state.node.find(
-      (node) => node.linkedWorkflow == childWorkflowId
-    )
-
-    if (!node) {
-      return
-    }
-
-    getWorkflowChildDataQuery(node.id, (response) => {
-      this.store.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
-      this.clearQueue()
-    })
+    // @todo sort this out later...
+    // this.isMessagesQueued = true
+    // const state = this.store.getState()
+    // const node = state.node.find(
+    //   (node) => node.linkedWorkflow == childWorkflowId
+    // )
+    //
+    // if (!node) {
+    //   return
+    // }
+    //
+    // getWorkflowChildDataQuery(node.id, (response) => {
+    //   this.props.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+    //   this.clearQueue()
+    // })
   }
 
   /*******************************************************
@@ -337,7 +344,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     getWorkflowChildDataQuery(
       this.childDataNeeded[this.childDataCompleted],
       (response) => {
-        this.store.dispatch(
+        this.props.dispatch(
           ActionCreator.refreshStoreData(response.dataPackage)
         )
         setTimeout(() => this.getDataForChildWorkflow(), 50) // why another timeout here
@@ -367,7 +374,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   changeField(id, objectType, field, value) {
     const json = {}
     json[field] = value
-    this.store.dispatch(ActionCreator.changeField(id, objectType, json))
+    this.props.dispatch(ActionCreator.changeField(id, objectType, json))
     updateValueQuery(id, objectType, json, true)
   }
 

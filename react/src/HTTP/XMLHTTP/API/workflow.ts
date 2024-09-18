@@ -241,7 +241,6 @@ export function getTemplates<T>(
   })
 }
 
-
 //Get the public data from the workflow
 export function getPublicParentWorkflowInfo(
   workflowPk,
@@ -272,16 +271,10 @@ export function getPublicParentWorkflowInfo(
  * @param workflowPk
  * @param callBackFunction
  */
-export function getParentWorkflowInfoQuery(
-  workflowPk: number,
-  callBackFunction = (_data: ParentWorkflowInfoQueryResp) =>
-    console.log('success')
-) {
+export function getParentWorkflowInfoQuery(workflowPk: number): Promise<any> {
   const base = apiPaths.json_api.workflow.parent__detail__full
   const url = generatePath(base, { id: workflowPk })
-  API_GET(url).then((response: ParentWorkflowInfoQueryResp) => {
-    callBackFunction(response)
-  })
+  return API_GET<any>(url)
 }
 
 /**

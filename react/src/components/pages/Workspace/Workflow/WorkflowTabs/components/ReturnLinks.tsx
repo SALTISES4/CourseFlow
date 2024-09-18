@@ -9,38 +9,14 @@ import * as React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, generatePath } from 'react-router-dom'
 
-const dummyProject = {
-  deleted: false,
-  deletedOn: '2023/12/27',
-  id: 3,
-  title: 'test project(copy)',
-  description: 'i am a test project description',
-  author: 'adray3',
-  authorId: 2,
-  published: false,
-  createdOn: '2023/12/27',
-  isTemplate: false,
-  lastModified: '2023/12/27',
-  workflowprojectSet: [8, 9, 10, 11],
-  disciplines: [],
-  type: 'project',
-  objectSets: [],
-  favourite: true,
-  objectPermission: {
-    permissionType: 2,
-    lastViewed: '2024-08-23T21:22:51.834Z'
-  }
-}
-
 /**
  * @todo did a first pass, but there is work to do still
  * not currently in design but feels like functionality is still important
  * data source and 'should show' logic not well managed currently
  */
 const ReturnLinks = () => {
-  const project = dummyProject as unknown as EProject // @todo temp because project is not in store yet
-  const isStudent = false // @todo temp because project is not in store yet
   const canView = true // @todo temp because project is not in store yet
+  const project = useSelector((state: AppState) => state.parentProject)
 
   /*******************************************************
    * REDUX
@@ -50,7 +26,8 @@ const ReturnLinks = () => {
   )
 
   const WorkflowLink = () => {
-    if (!project || isStudent || publicView) {
+    // @todo not sure about this check yet, redux store is not stable
+    if (!project || !project?.id || publicView) {
       return <></>
     }
 
@@ -58,13 +35,12 @@ const ReturnLinks = () => {
       id: String(project.id)
     })
 
-    const title = 'placeholder title ' // @todo,  helper function that assembles the title
     return (
       <Link className="hover-shade no-underline" id="project-return" to={path}>
         <Box sx={{ display: 'flex' }}>
           <ArrowBackIosIcon color={'primary'} />
           <Typography color={'primary'}>
-            {_t('Return to')} {title}
+            {_t('Return to')} {project.title}
           </Typography>
         </Box>
       </Link>

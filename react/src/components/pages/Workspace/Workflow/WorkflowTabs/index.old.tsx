@@ -160,7 +160,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   getUserData() {
     // @todo should not be querying directly
     // needs a new permission, like canGetUserData
-    if (this.publicView || this.context.user.isStudent) {
+    if (this.publicView ) {
       return null
     }
     getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
@@ -572,7 +572,6 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         {this.addEditable(this.props.data)}
         <ReturnLinks
           project={this.project}
-          isStudent={this.context.user.isStudent}
           publicView={this.publicView}
           canView={this.context.permissions.workflowPermission.canView}
         />

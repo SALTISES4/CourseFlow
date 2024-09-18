@@ -69,7 +69,7 @@ function reduceStateToSearchArgs(
   return {
     resultsPerPage: 10,
     page: 1,
-    fullSearch: true,
+    fullSearch: false,
     sort: activeSort,
     filters: activeFilters
   }

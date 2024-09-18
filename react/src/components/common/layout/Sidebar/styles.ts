@@ -82,7 +82,7 @@ export const MainMenuWrap = styled(List)({
   }
 })
 
-export const FavouritesWrap = styled(Box)({
+export const SectionWrap = styled(Box)({
   overflow: 'auto',
   '& .MuiListItemText-primary': {
     whiteSpace: 'nowrap',
@@ -94,7 +94,7 @@ export const FavouritesWrap = styled(Box)({
   }
 })
 
-export const FavouritesLabel = styled(Typography)(({ theme }) => ({
+export const SectionLabel = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(1),
   paddingLeft: 16,

@@ -1,5 +1,7 @@
+import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as React from 'react'
+import { NavLink, generatePath } from 'react-router-dom'
 
 //Text that can be passed a default value. HTML is dangerously set.
 export class TitleText extends React.Component {
@@ -37,6 +39,19 @@ export function workflowTitle(title, code, deleted) {
     text += ' (deleted)'
   }
   return text
+}
+
+export function workflowUrl(workflow) {
+  const base = CFRoutes.WORKFLOW
+  return generatePath(base, { id: workflow.id })
+}
+
+export const WorkflowNavLink = ({ workflow }) => {
+  const title = workflowTitle(workflow.title, workflow.code, workflow.deleted)
+
+  const url = workflowUrl(workflow)
+
+  return <NavLink to={url}>{title}</NavLink>
 }
 
 //Title text for a week
