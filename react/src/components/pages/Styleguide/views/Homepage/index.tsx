@@ -1,6 +1,6 @@
 import { CookieTypes } from '@cf/context/cookieContext'
 import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
-import { CFRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import WorkflowCardDumb, {

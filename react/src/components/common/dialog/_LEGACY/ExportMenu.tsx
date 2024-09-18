@@ -26,9 +26,9 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
    *******************************************************/
   inputChange(type, id, evt) {
     if (type == 'set') {
-      const new_state = {}
-      new_state[id] = !evt.target.checked
-      this.setState(new_state)
+      const newState = {}
+      newState[id] = !evt.target.checked
+      this.setState(newState)
     } else if (type == 'type' && evt.target.checked) {
       this.setState({ type: evt.target.value })
     }
@@ -130,15 +130,15 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
    * RENDER
    *******************************************************/
   render() {
-    let object_sets
-    if (this.props.data.object_sets.length > 0) {
-      object_sets = [
+    let objectSets
+    if (this.props.data.objectSets.length > 0) {
+      objectSets = [
         <h4>{_t('Object Set Visibility')}:</h4>,
-        this.props.data.object_sets.map((objectset) => (
+        this.props.data.objectSets.map((objectset) => (
           <div>
             <input
               onChange={this.inputChange.bind(this, 'set', objectset.id)}
-              name="object_sets[]"
+              name="objectSets[]"
               value={objectset.id}
               type="checkbox"
               id={objectset.id}
@@ -174,7 +174,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
             <option value="excel">Excel</option>
             <option value="csv">CSV</option>
           </select>
-          {object_sets}
+          {objectSets}
           <input
             type="hidden"
             id="objectId"

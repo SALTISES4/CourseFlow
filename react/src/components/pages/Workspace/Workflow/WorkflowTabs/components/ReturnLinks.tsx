@@ -1,4 +1,4 @@
-import { CFRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import { AppState } from '@cfRedux/types/type'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
@@ -11,24 +11,24 @@ import { Link, generatePath } from 'react-router-dom'
 
 const dummyProject = {
   deleted: false,
-  deleted_on: '2023/12/27',
+  deletedOn: '2023/12/27',
   id: 3,
   title: 'test project(copy)',
   description: 'i am a test project description',
   author: 'adray3',
-  author_id: 2,
+  authorId: 2,
   published: false,
-  created_on: '2023/12/27',
-  is_template: false,
-  last_modified: '2023/12/27',
-  workflowproject_set: [8, 9, 10, 11],
+  createdOn: '2023/12/27',
+  isTemplate: false,
+  lastModified: '2023/12/27',
+  workflowprojectSet: [8, 9, 10, 11],
   disciplines: [],
   type: 'project',
-  object_sets: [],
+  objectSets: [],
   favourite: true,
-  object_permission: {
-    permission_type: 2,
-    last_viewed: '2024-08-23T21:22:51.834Z'
+  objectPermission: {
+    permissionType: 2,
+    lastViewed: '2024-08-23T21:22:51.834Z'
   }
 }
 
@@ -46,7 +46,7 @@ const ReturnLinks = () => {
    * REDUX
    *******************************************************/
   const publicView = useSelector<AppState>(
-    (state: AppState) => state.workflow.public_view
+    (state: AppState) => state.workflow.publicView
   )
 
   const WorkflowLink = () => {

@@ -5,7 +5,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = {
-  outcomes_type: any
+  outcomesType: any
 }
 type OwnProps = any
 type PropsType = OwnProps & ConnectedProps
@@ -28,7 +28,7 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
           <LegendLine icon="check" text="Completed (Auto-Calculated)" />
           <LegendLine icon="nocheck" text="Partially Complete" />
         </div>
-        {this.props.outcomes_type == 1 && (
+        {this.props.outcomesType == 1 && (
           <div className="legend-section">
             <hr />
             <h5>Advanced Outcomes:</h5>
@@ -78,7 +78,7 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
 }
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
-    outcomes_type: state.workflow.outcomes_type
+    outcomesType: state.workflow.outcomesType
   }
 }
 

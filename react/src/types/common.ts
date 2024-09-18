@@ -3,8 +3,8 @@ import { MouseEvent } from 'react'
 export type ToDefine = any
 
 export type ObjectPermission = {
-  permission_type: number
-  last_viewed: Date
+  permissionType: number
+  lastViewed: Date
   role_type: number
 }
 
@@ -25,12 +25,12 @@ export type ObjectSet = {
   id: number
   title: string
   term: string
-  translation_plural: null | string
+  translationPlural: null | string
 }
 
 export type ObjectLock = {
-  user_id: number
-  user_colour: string
+  userId: number
+  userColour: string
 }
 
 export type NumTuple = [number, number]
@@ -41,8 +41,8 @@ export type FieldChoice = {
 }
 
 export type Lock = {
-  user_colour: string
-  user_id: string
+  userColour: string
+  userId: string
 }
 
 export type SidebarProps = {
@@ -65,12 +65,6 @@ export type TopBarProps = {
       date: string
     }[]
   }
-  forms: {
-    createProject: {
-      showNoProjectsAlert: boolean
-      formFields: FormFieldSerialized[]
-    }
-  }
 }
 
 export type FormFieldSerialized = {
@@ -79,8 +73,8 @@ export type FormFieldSerialized = {
   type: string
   required?: boolean
   options?: { value: string; label: string }[]
-  max_length?: number
-  help_text?: string
+  maxLength?: number
+  helpText?: string
   value?: string
 }
 
@@ -92,7 +86,7 @@ export type EventUnion =
 /*******************************************************
  *
  *******************************************************/
-export enum PROJECT_PERMISSION_ROLE {
+export enum projectPermission_ROLE {
   'OWNER' = 'owner',
   'EDITOR' = 'editor',
   'COMMENTER' = 'commenter',
@@ -103,7 +97,7 @@ export type PermissionUserType = {
   id: number
   name: string
   email: string
-  role: PROJECT_PERMISSION_ROLE
+  role: projectPermission_ROLE
 }
 
 export type ObjectSetType = {

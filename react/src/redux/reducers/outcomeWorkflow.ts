@@ -42,13 +42,13 @@ function outcomeworkflowReducer(
 
     case OutcomeWorkflowActions.MOVED_TO:
       return state.map((item) =>
-        item.id === action.payload.id ? { ...item, no_drag: true } : item
+        item.id === action.payload.id ? { ...item, noDrag: true } : item
       )
 
     case OutcomeWorkflowActions.CHANGE_ID:
       return state.map((item) =>
         item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, no_drag: false }
+          ? { ...item, id: action.payload.new_id, noDrag: false }
           : item
       )
 
@@ -78,48 +78,48 @@ export default outcomeworkflowReducer
 //       return state
 //
 //     case CommonActions.REFRESH_STOREDATA: {
-//       const new_state = state.slice()
+//       const newState = state.slice()
 //       if (action.payload.outcomeworkflow) {
 //         for (let i = 0; i < action.payload.outcomeworkflow.length; i++) {
 //           const new_obj = action.payload.outcomeworkflow[i]
 //           let added = false
-//           for (let j = 0; j < new_state.length; j++) {
-//             if (new_state[j].id === new_obj.id) {
-//               new_state.splice(j, 1, new_obj)
+//           for (let j = 0; j < newState.length; j++) {
+//             if (newState[j].id === new_obj.id) {
+//               newState.splice(j, 1, new_obj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           new_state.push(new_obj)
+//           newState.push(new_obj)
 //         }
 //       }
-//       return new_state
+//       return newState
 //     }
 //
 //     case OutcomeWorkflowActions.MOVED_TO: {
-//       const new_state = state.slice()
+//       const newState = state.slice()
 //       for (let i = 0; i < state.length; i++) {
 //         if (state[i].id === action.payload.id) {
-//           new_state[i] = {
+//           newState[i] = {
 //             ...state[i],
-//             no_drag: true
+//             noDrag: true
 //           }
 //         }
 //       }
-//       return new_state
+//       return newState
 //     }
 //
 //     case OutcomeWorkflowActions.CHANGE_ID: {
 //       for (let i = 0; i < state.length; i++) {
 //         if (state[i].id === action.payload.old_id) {
-//           const new_state = state.slice()
-//           new_state[i] = {
-//             ...new_state[i],
+//           const newState = state.slice()
+//           newState[i] = {
+//             ...newState[i],
 //             id: action.payload.new_id,
-//             no_drag: false
+//             noDrag: false
 //           }
-//           return new_state
+//           return newState
 //         }
 //       }
 //       return state
@@ -128,24 +128,24 @@ export default outcomeworkflowReducer
 //     case OutcomeBaseActions.DELETE_SELF: {
 //       for (let i = 0; i < state.length; i++) {
 //         if (state[i].outcome == action.payload.id) {
-//           const new_state = state.slice()
-//           new_state.splice(i, 1)
-//           return new_state
+//           const newState = state.slice()
+//           newState.splice(i, 1)
+//           return newState
 //         }
 //       }
 //       return state
 //     }
 //
 //     case OutcomeBaseActions.INSERT_BELOW: {
-//       const new_state = state.slice()
-//       new_state.push(action.payload.new_through)
-//       return new_state
+//       const newState = state.slice()
+//       newState.push(action.payload.new_through)
+//       return newState
 //     }
 //
 //     case OutcomeActions.NEW_OUTCOME: {
-//       const new_state = state.slice()
-//       new_state.push(action.payload.new_through)
-//       return new_state
+//       const newState = state.slice()
+//       newState.push(action.payload.new_through)
+//       return newState
 //     }
 //
 //     default:

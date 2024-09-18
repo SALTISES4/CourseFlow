@@ -16,8 +16,8 @@ type ConnectedProps = {
 }
 type OwnProps = NonNullable<unknown>
 type StateProps = {
-  has_loaded: boolean
-  parent_workflows: any
+  hasLoaded: boolean
+  parentWorkflows: any
 }
 type PropsType = ConnectedProps & OwnProps
 /**
@@ -47,17 +47,17 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
     }
 
     if (this.props.publicView) {
-      getPublicParentWorkflowInfo(this.props.workflowId, (response_data) =>
+      getPublicParentWorkflowInfo(this.props.workflowId, (responseData) =>
         this.setState({
-          parent_workflows: response_data.parent_workflows,
-          has_loaded: true
+          parentWorkflows: responseData.parentWorkflows,
+          hasLoaded: true
         })
       )
     } else {
-      getParentWorkflowInfoQuery(this.props.workflowId, (response_data) =>
+      getParentWorkflowInfoQuery(this.props.workflowId, (responseData) =>
         this.setState({
-          parent_workflows: response_data.parent_workflows,
-          has_loaded: true
+          parentWorkflows: responseData.parentWorkflows,
+          hasLoaded: true
         })
       )
     }
@@ -69,7 +69,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
   getTypeIndicator(data) {
     const type = data.type
 
-    const text = [_t(type), data.is_strategy ? _t(' strategy') : ''].join('')
+    const text = [_t(type), data.isStrategy ? _t(' strategy') : ''].join('')
 
     return <div className={'workflow-type-indicator ' + type}>{text}</div>
   }
@@ -78,20 +78,20 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
    * RENDER
    *******************************************************/
   render() {
-    if (this.state.has_loaded) {
+    if (this.state.hasLoaded) {
       if (
-        this.state.parent_workflows.length == 0 &&
+        this.state.parentWorkflows.length == 0 &&
         this.props.childWorkflows.length == 0
       ) {
         return null
       }
 
       const ParentWorkflows = () => {
-        if (this.state.parent_workflows.length > 0) {
+        if (this.state.parentWorkflows.length > 0) {
           return (
             <>
               <Typography>{_t('Used in:')}</Typography>
-              {/*{this.state.parent_workflows.map((workflow, index) => (*/}
+              {/*{this.state.parentWorkflows.map((workflow, index) => (*/}
               {/*  // <WorkflowTitle*/}
               {/*  //   key={`WorkflowTitleParent-${index}`}*/}
               {/*  //   data={workflow}*/}
@@ -138,16 +138,16 @@ class ParentWorkflowIndicatorUnconnected extends React.Component<
 const mapStateToProps = (state: AppState) => {
   return {
     workflowId: state.workflow.id,
-    publicView: state.workflow.public_view,
+    publicView: state.workflow.publicView,
     childWorkflows: state.node
-      .filter((node) => node.linked_workflow_data)
+      .filter((node) => node.linkedWorkflowData)
       .map((node) => {
         return {
-          id: node.linked_workflow,
-          title: node?.linked_workflow_data?.title || '',
-          description: node?.linked_workflow_data?.description || '',
-          url: node?.linked_workflow_data?.url || '',
-          deleted: node?.linked_workflow_data?.deleted || false
+          id: node.linkedWorkflow,
+          title: node?.linkedWorkflowData?.title || '',
+          description: node?.linkedWorkflowData?.description || '',
+          url: node?.linkedWorkflowData?.url || '',
+          deleted: node?.linkedWorkflowData?.deleted || false
         }
       })
   }

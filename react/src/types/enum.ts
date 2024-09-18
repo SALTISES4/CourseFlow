@@ -60,14 +60,8 @@ export enum CfObjectType {
 }
 
 // @todo unclear data type
-export enum OBJECT_TYPE {
+export enum objectType {
   OUTCOME = 'outcome',
   PROJECT = 'project',
   STRATEGY = 'strategy'
-}
-
-export enum VERB {
-  POSTED = 'posted',
-  ERROR = 'error',
-  GET = 'get'
 }

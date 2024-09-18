@@ -54,7 +54,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
   //     <img
   //       src={
   //         COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-  //         Constants.default_column_settings[this.props.data.column_type].icon +
+  //         Constants.defaultColumnSettings[this.props.data.columnType].icon +
   //         '.svg'
   //       }
   //     />
@@ -66,16 +66,16 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
    *******************************************************/
   render() {
     const data = this.props.data
-    const title = data.title ?? data.column_type_display
+    const title = data.title ?? data.columnTypeDisplay
 
     const style: React.CSSProperties = {}
     if (data.lock) {
-      style.border = '2px solid ' + data.lock.user_colour
+      style.border = '2px solid ' + data.lock.userColour
     }
 
     const cssClass = [
       'column',
-      data.lock ? 'locked locked-' + data.lock.user_id : ''
+      data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
     const mouseoverActions = []
@@ -86,7 +86,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
       mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
 
-    if (this.context.workflow.view_comments) {
+    if (this.context.workflow.viewComments) {
       mouseoverActions.push(<this.AddCommenting />)
     }
     console.log()
@@ -103,7 +103,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
         <div className="column-line">
           {this.colorChooser(
             this.props.data.colour,
-            this.props.data.column_type
+            this.props.data.columnType
           )}
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>

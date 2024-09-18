@@ -1,3 +1,4 @@
+import logging
 from smtplib import SMTPException
 
 import pandas as pd
@@ -7,13 +8,11 @@ from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
-from course_flow import export_functions, import_functions
-from course_flow.models import User
+from course_flow.models import ObjectSet, User
+from course_flow.services import DAO, Utility
+from course_flow.services.export_import import Exporter, Importer
+from course_flow.sockets import redux_actions as actions
 from course_flow.sockets.celery import logger, try_async
-
-from .models.objectset import ObjectSet
-from .sockets import redux_actions as actions
-from .utils import dateTimeFormatNoSpace, get_model_from_str
 
 
 @try_async
@@ -28,7 +27,9 @@ def async_send_export_email(
     email_subject,
     email_text,
 ):
-    model_object = get_model_from_str(object_type).objects.get(pk=pk)
+    model_object = DAO.get_model_from_str(object_type).objects.get(pk=pk)
+    exporter = Exporter()
+
     if object_type == "project":
         project_sets = ObjectSet.objects.filter(project=model_object)
     else:
@@ -37,23 +38,23 @@ def async_send_export_email(
         )
     allowed_sets = project_sets.filter(id__in=allowed_sets)
     if export_type == "outcome":
-        file = export_functions.get_outcomes_export(
+        file = exporter.get_outcomes_export(
             model_object, object_type, export_format, allowed_sets
         )
     elif export_type == "framework":
-        file = export_functions.get_course_frameworks_export(
+        file = exporter.get_course_frameworks_export(
             model_object, object_type, export_format, allowed_sets
         )
     elif export_type == "matrix":
-        file = export_functions.get_program_matrix_export(
+        file = exporter.get_program_matrix_export(
             model_object, object_type, export_format, allowed_sets
         )
     elif export_type == "sobec":
-        file = export_functions.get_sobec_export(
+        file = exporter.get_sobec_export(
             model_object, object_type, export_format, allowed_sets
         )
     elif export_type == "node":
-        file = export_functions.get_nodes_export(
+        file = exporter.get_nodes_export(
             model_object, object_type, export_format, allowed_sets
         )
     if export_format == "excel":
@@ -67,7 +68,7 @@ def async_send_export_email(
         + "_"
         + export_type
         + "_"
-        + timezone.now().strftime(dateTimeFormatNoSpace())
+        + timezone.now().strftime(Utility.dateTimeFormatNoSpace())
         + "."
         + file_ext
     )
@@ -106,23 +107,33 @@ def async_send_export_email(
 @try_async
 @shared_task
 def async_import_file_data(pk, object_type, task_type, file_json, user_id):
-    model_object = get_model_from_str(object_type).objects.get(pk=pk)
+    importer = Importer()
+
+    model_object = DAO.get_model_from_str(object_type).objects.get(pk=pk)
     user = User.objects.get(pk=user_id)
+
     if object_type == "workflow":
         actions.dispatch_wf(
             model_object,
             actions.changeField(pk, "workflow", {"importing": True}, False),
         )
+
     cache.set(object_type + str(pk) + "importing", True, 300)
     df = pd.read_json(file_json)
+
     try:
         if task_type == "outcomes":
-            import_functions.import_outcomes(df, model_object, user)
+            importer.import_outcomes(df, model_object, user)
+
         if task_type == "nodes":
-            import_functions.import_nodes(df, model_object, user)
-    except Exception:
+            importer.import_nodes(df, model_object, user)
+
+    except Exception as e:
+        logger.log(logging.INFO, e)
         pass
+
     cache.delete(object_type + str(pk) + "importing")
+
     if object_type == "workflow":
         actions.dispatch_wf(
             model_object,

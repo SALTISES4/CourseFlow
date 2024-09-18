@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from ._common import title_max_length
+from course_flow.models.common import title_max_length
 
 
 class UpdateNotification(models.Model):

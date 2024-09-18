@@ -9,7 +9,7 @@ import * as Reducers from '@cfRedux/Reducers'
 import ComparisonWorkflowBase from '@cfViews/ProjectComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
 import { getProjectById } from '@XMLHTTP/API/project'
-import { getWorkflowDataQuery } from '@XMLHTTP/API/workflow'
+import { getWorkflowQuery } from '@XMLHTTP/API/workflow'
 import React from 'react'
 import { Provider } from 'react-redux'
 
@@ -23,13 +23,13 @@ const defaultPermissions = {
 
 const getProjectPermissions = (userPermission) => {
   switch (userPermission) {
-    case Constants.permission_keys['none']:
-    case Constants.permission_keys['view']:
+    case Constants.permissionKeys['none']:
+    case Constants.permissionKeys['view']:
       return {
         ...defaultPermissions,
         readOnly: true
       }
-    case Constants.permission_keys['comment']:
+    case Constants.permissionKeys['comment']:
       return {
         ...defaultPermissions,
         readOnly: true,
@@ -37,7 +37,7 @@ const getProjectPermissions = (userPermission) => {
         addComments: true
       }
 
-    case Constants.permission_keys['edit']:
+    case Constants.permissionKeys['edit']:
       return {
         ...defaultPermissions,
         readOnly: false,
@@ -54,7 +54,7 @@ const getProjectPermissions = (userPermission) => {
  *  @todo this is possibly where the channel leak is
  * ****************************************/
 export class ProjectComparison extends WorkflowClass {
-  private initial_object_sets: any
+  private initialObjectSets: any
   private projectData: any
   private userPermission: any
 
@@ -62,7 +62,7 @@ export class ProjectComparison extends WorkflowClass {
     // need to get project data and use it here see
     // legacy comparison
 
-    //     this.projectData = props.project_data
+    //     this.projectData = props.projectData
     // then swithc on the proejct permissiongs using
     // getProjectPermissions
 
@@ -78,20 +78,20 @@ export class ProjectComparison extends WorkflowClass {
     // so probably still a hack
     // makeActiveSidebar('#project' + this.projectData.id)
 
-    // this.initial_object_sets = initial_object_sets
+    // this.initialObjectSets = initialObjectSets
   }
   componentDidMount() {
     const id = '1'
 
     getProjectById(id).then((response) => {
-      this.setupNewData(response.data_package)
+      this.setupNewData(response.dataPackage)
       // this.init()
     })
   }
 
   setupNewData(response) {
-    this.projectData = response.project_data
-    this.userPermission = response.user_permission // @todo double check we're getting this from data object
+    this.projectData = response.projectData
+    this.userPermission = response.userPermission // @todo double check we're getting this from data object
 
     //@todo this a jquery global function and needs to be refactored / removed
     makeActiveSidebar('#project' + this.projectData.id)
@@ -99,12 +99,12 @@ export class ProjectComparison extends WorkflowClass {
 
   onConnectionOpened(reconnect = false) {
     // this makes no sense....
-    getWorkflowDataQuery(this.workflowId, (response) => {
-      let data_flat = response.data_package
-      if (this.initial_object_sets) {
-        data_flat = {
-          ...data_flat,
-          objectset: this.initial_object_sets
+    getWorkflowQuery(this.workflowId, (response) => {
+      let dataFlat = response.dataPackage
+      if (this.initialObjectSets) {
+        dataFlat = {
+          ...dataFlat,
+          objectset: this.initialObjectSets
         }
       }
 
@@ -119,11 +119,11 @@ export class ProjectComparison extends WorkflowClass {
         ready: true
       })
 
-      this.clearQueue(data_flat.workflow.edit_count)
+      this.clearQueue(dataFlat.workflow.editCount)
 
       if (reconnect) {
         // @ts-ignore
-        this.attempt_reconnect() // @todo where is this defined
+        this.attemptReconnect() // @todo where is this defined
       }
     })
   }
@@ -153,7 +153,7 @@ export class ProjectComparison extends WorkflowClass {
             for why this is not rendering
             don't bother troubleshooting this until you are ready to unpack that
           */}
-          <ComparisonWorkflowBase view_type={this.state.viewType} />
+          <ComparisonWorkflowBase viewType={this.state.viewType} />
         </WorkFlowConfigProvider>
       </Provider>
     )

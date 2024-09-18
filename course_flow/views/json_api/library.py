@@ -2,10 +2,12 @@
 @todo what is this file doing
 """
 import json
+import logging
 import math
 from functools import reduce
 from itertools import chain
 from operator import attrgetter
+from pprint import pprint
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -18,6 +20,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from course_flow.apps import logger
 from course_flow.decorators import user_can_view
 from course_flow.models import Project
 from course_flow.models.discipline import Discipline
@@ -25,12 +28,8 @@ from course_flow.models.favourite import Favourite
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.workflow import Workflow
 from course_flow.serializers import DisciplineSerializer, InfoBoxSerializer
+from course_flow.services import DAO, Utility
 from course_flow.templatetags.course_flow_templatetags import has_group
-from course_flow.utils import (
-    get_model_from_str,
-    get_nondeleted_favourites,
-    get_relevance,
-)
 
 
 class LibraryEndpoint:
@@ -41,7 +40,7 @@ class LibraryEndpoint:
         request: Request,
     ) -> Response:
         library_objects_serialized = InfoBoxSerializer(
-            get_nondeleted_favourites(request.user),
+            DAO.get_nondeleted_favourites(request.user),
             many=True,
             context={"user": request.user},
         ).data
@@ -60,7 +59,7 @@ class LibraryEndpoint:
         )
 
     @staticmethod
-    @user_can_view(False)
+    # @user_can_view(False)
     @api_view(["POST"])
     def toggle_favourite(
         request: Request,
@@ -70,15 +69,21 @@ class LibraryEndpoint:
         :param request:
         :return:
         """
-        body = json.loads(request.body)
-        object_id = body.get("objectId")
-        object_type = body.get("objectType")
-        favourite = body.get("favourite")
+        data = request.data
+
+        object_id = data["id"]
+        object_type = data["object_type"]
+        favourite = data["favourite"]
 
         if object_type in ["activity", "course", "program"]:
             object_type = "workflow"
+
         try:
-            item = get_model_from_str(object_type).objects.get(pk=object_id)
+            item = DAO.get_model_from_str(object_type).objects.get(
+                pk=object_id
+            )
+
+            # @todo fix this unecessary operation
             Favourite.objects.filter(
                 user=request.user,
                 content_type=ContentType.objects.get_for_model(item),
@@ -90,7 +95,8 @@ class LibraryEndpoint:
                     user=request.user, content_object=item
                 )
 
-        except ValidationError:
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
             return Response(
                 {"error": "error toggling favourites"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -267,6 +273,7 @@ class LibraryEndpoint:
             )
 
         except Exception as e:
+            logger.log(logging.INFO, e)
             return Response(
                 {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
             )
@@ -343,7 +350,7 @@ def get_explore_objects(user, name_filter, nresults, published, data):
             queryset = reduce(
                 lambda x, y: chain(x, y),
                 [
-                    get_model_from_str(model_type)
+                    DAO.get_model_from_str(model_type)
                     .objects.filter(published=True)
                     .annotate(num_nodes=Count("workflows__weeks__nodes"))
                     .filter(**filter_kwargs)
@@ -351,7 +358,7 @@ def get_explore_objects(user, name_filter, nresults, published, data):
                     .exclude(deleted=True)
                     .distinct()
                     if model_type == "project"
-                    else get_model_from_str(model_type)
+                    else DAO.get_model_from_str(model_type)
                     .objects.filter(published=True)
                     .annotate(num_nodes=Count("weeks__nodes"))
                     .filter(**filter_kwargs)
@@ -367,7 +374,7 @@ def get_explore_objects(user, name_filter, nresults, published, data):
                 elif sort == "relevance":
 
                     def sort_key(x):
-                        return get_relevance(x, name_filter, keywords)
+                        return Utility.get_relevance(x, name_filter, keywords)
 
                 queryset = sorted(
                     queryset, key=sort_key, reverse=sort_reversed
@@ -387,9 +394,12 @@ def get_explore_objects(user, name_filter, nresults, published, data):
                 "current_page": page,
                 "results_per_page": nresults,
             }
-        except TypeError:
+
+        except TypeError as e:
+            logger.log(logging.INFO, e)
             return_objects = Project.objects.none()
             pages = {}
+
     else:
         return_objects = Project.objects.none()
         pages = {}
@@ -429,7 +439,7 @@ def get_explore_objects(user, name_filter, nresults, published, data):
 #     # Prepare querysets for each type and combine using chain
 #     querysets = []
 #     for model_type in types:
-#         model = get_model_from_str(model_type)
+#         model = DAO.get_model_from_str(model_type)
 #         extra_excludes = (
 #             {} if model_type == "project" else {"project__deleted": True}
 #         )

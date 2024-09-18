@@ -1,11 +1,7 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import { API_GET } from '@XMLHTTP/CallWrapper'
-import {
-  PageExploreQueryResp,
-  PageHomeQueryResp,
-  PageLibraryQueryResp
-} from '@XMLHTTP/types/query'
+import { PageHomeQueryResp, PageLibraryQueryResp } from '@XMLHTTP/types/query'
 
 /*******************************************************
  * HOME PAGE
@@ -19,10 +15,6 @@ export async function getHomeContext(): Promise<PageHomeQueryResp> {
  * LIBRARY PAGES
  *******************************************************/
 
-export async function getExploreContext(): Promise<PageExploreQueryResp> {
-  const url = apiPaths.json_api.library.explore
-  return API_GET<PageExploreQueryResp>(url)
-}
 /**
  * Get the library projects
  * @param callBackFunction

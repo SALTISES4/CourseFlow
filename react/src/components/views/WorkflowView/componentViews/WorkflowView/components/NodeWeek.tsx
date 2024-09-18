@@ -51,7 +51,7 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
   render() {
     const data = this.props.data
     let my_class = 'node-week'
-    if (data.no_drag) my_class += ' no-drag'
+    if (data.noDrag) my_class += ' no-drag'
 
     return (
       <div

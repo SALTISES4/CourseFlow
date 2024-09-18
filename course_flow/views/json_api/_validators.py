@@ -1,4 +1,4 @@
-from pydantic import BaseModel, conint
+from pydantic import BaseModel
 
 
 class DeleteRequest(BaseModel):

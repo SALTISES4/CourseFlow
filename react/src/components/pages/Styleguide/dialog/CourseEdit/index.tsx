@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import CourseForm from '@cfPages/Styleguide/dialog/CreateWizard/components/FormCourse'
 import { CourseFormDataType } from '@cfPages/Styleguide/dialog/CreateWizard/components/FormCourse/types'

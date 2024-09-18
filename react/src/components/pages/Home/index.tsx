@@ -1,6 +1,6 @@
 import { CookieTypes } from '@cf/context/cookieContext'
 import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
-import { CFRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
 import { _t } from '@cf/utility/utilityFunctions'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
@@ -26,7 +26,7 @@ const Home = () => {
   // @todo put that into the snackbar
   if (isError) return <div>An error occurred: {error.message}</div>
 
-  const { projects, templates } = data.data_package
+  const { projects, templates } = data.dataPackage
 
   const formattedProjects = formatLibraryObjects(projects)
   const formattedTemplates = formatLibraryObjects(templates)

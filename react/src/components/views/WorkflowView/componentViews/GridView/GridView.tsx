@@ -62,7 +62,7 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => {
-  const weeks = state.workflow.weekworkflow_set
+  const weeks = state.workflow.weekworkflowSet
     .map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week)
     .map((week) => getWeekByID(state, week))
 

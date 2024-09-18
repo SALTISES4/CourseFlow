@@ -33,7 +33,4 @@ from .liveprojectmodels import LiveAssignment
 from .liveprojectmodels import LiveProjectUser
 from .liveprojectmodels import UserAssignment
 
-# from .receivers import receivers
-# from .receivers import liveproject_receivers
-
 User = get_user_model()

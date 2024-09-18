@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
 
+from course_flow.apps import logger
 from course_flow.models import Project
 from course_flow.models.activity import Activity
 from course_flow.models.column import Column
@@ -210,7 +211,8 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
             try:
                 new_node.has_autolink = node["has_autolink"]
                 new_node.save()
-            except KeyError:
+            except KeyError as e:
+                logger.log(logging.INFO, e)
                 pass
             id_dict["node"][node["id"]] = new_node
 
@@ -322,10 +324,12 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
                     elif target_port == "n":
                         nl.target_port = nl.NORTH
                     nl.save()
-                except Exception:
+                except Exception as e:
+                    logger.log(logging.INFO, e)
                     pass
 
-    except AttributeError:
+    except AttributeError as e:
+        logger.log(logging.INFO, e)
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"message": "success"})

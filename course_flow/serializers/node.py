@@ -11,11 +11,7 @@ from course_flow.serializers.mixin import (
     TimeRequiredSerializerMixin,
     TitleSerializerMixin,
 )
-from course_flow.utils import (
-    dateTimeFormat,
-    get_unique_outcomenodes,
-    linkIDMap,
-)
+from course_flow.services import DAO, Utility
 
 
 class RefreshSerializerNode(serializers.ModelSerializer):
@@ -36,10 +32,13 @@ class RefreshSerializerNode(serializers.ModelSerializer):
             | Q(outcome__parent_outcomes__deleted=True)
             | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
         )
-        return list(map(linkIDMap, links))
+        return list(map(Utility.linkIDMap, links))
 
-    def get_outcomenode_unique_set(self, instance):
-        return list(map(linkIDMap, get_unique_outcomenodes(instance)))
+    @staticmethod
+    def get_outcomenode_unique_set(instance):
+        return list(
+            map(Utility.linkIDMap, DAO.get_unique_outcomenodes(instance))
+        )
 
 
 class NodeLinkSerializerShallow(
@@ -60,7 +59,7 @@ class NodeLinkSerializerShallow(
             "text_position",
         ]
 
-    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -126,7 +125,7 @@ class NodeSerializerShallow(
             "sets",
         ]
 
-    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
     def get_columnworkflow(self, instance):
         if instance.column is None:
@@ -180,7 +179,7 @@ class NodeSerializerShallow(
             | Q(outcome__parent_outcomes__deleted=True)
             | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
         )
-        return list(map(linkIDMap, links))
+        return list(map(Utility.linkIDMap, links))
 
     def get_outgoing_links(self, instance):
         links = instance.outgoing_links.exclude(
@@ -188,10 +187,13 @@ class NodeSerializerShallow(
             | Q(target_node__deleted=True)
             | Q(target_node__week__deleted=True)
         )
-        return list(map(linkIDMap, links))
+        return list(map(Utility.linkIDMap, links))
 
-    def get_outcomenode_unique_set(self, instance):
-        return list(map(linkIDMap, get_unique_outcomenodes(instance)))
+    @staticmethod
+    def get_outcomenode_unique_set(instance):
+        return list(
+            map(Utility.linkIDMap, DAO.get_unique_outcomenodes(instance))
+        )
 
     def get_linked_workflow_data(self, instance):
         linked_workflow = instance.linked_workflow

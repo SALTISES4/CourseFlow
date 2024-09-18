@@ -70,7 +70,7 @@ const fields = {
 //       <ExportMenu
 //         data={{
 //           // ...data,
-//           object_sets: objectSets
+//           objectSets: objectSets
 //         }}
 //         actionFunction={closeModals}
 //       />
@@ -82,7 +82,7 @@ function ProjectExportDialog(data: EProject) {
   const [state, setState] = useState({
     type: EXPORT_TYPE.OUTCOME,
     format: EXPORT_FORMAT.EXCEL,
-    sets: data.object_sets.map((set) => set.id)
+    sets: data.objectSets.map((set) => set.id)
   })
   const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_EXPORT)
 
@@ -195,13 +195,13 @@ function ProjectExportDialog(data: EProject) {
             </RadioGroup>
           </FormControl>
 
-          {data.object_sets.length > 0 && (
+          {data.objectSets.length > 0 && (
             <FormControl>
               <FormLabel id="export-sets-group-label">
                 {_t('Object set visibility')}
               </FormLabel>
               <FormGroup>
-                {data.object_sets.map((set, index) => (
+                {data.objectSets.map((set, index) => (
                   <FormControlLabel
                     key={index}
                     value={set.id}

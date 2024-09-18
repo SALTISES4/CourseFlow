@@ -1,13 +1,12 @@
 import json
+import logging
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
-from rest_framework import status
-from rest_framework.request import Request
-from rest_framework.response import Response
 
+from course_flow.apps import logger
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.duplication_functions import (
     duplicate_column,
@@ -29,8 +28,8 @@ from course_flow.serializers import (
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
 )
+from course_flow.services import DAO
 from course_flow.sockets import redux_actions as actions
-from course_flow.utils import get_model_from_str
 
 
 def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
@@ -38,7 +37,7 @@ def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
     print(body)
     try:
         workflow_type = body.get("workflowType")
-        model = get_model_from_str(workflow_type)
+        model = DAO.get_model_from_str(workflow_type)
         templates_serialized = InfoBoxSerializer(
             model.objects.filter(
                 deleted=False,
@@ -49,7 +48,8 @@ def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
             many=True,
             context={"user": request.user},
         ).data
-    except AttributeError:
+    except AttributeError as e:
+        logger.log(logging.INFO, e)
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
@@ -71,7 +71,8 @@ def duplicate__strategy(request: HttpRequest) -> JsonResponse:
                 clone.save()
             except (ValidationError, TypeError):
                 pass
-    except ValidationError:
+    except ValidationError as e:
+        logger.log(logging.INFO, e)
         return JsonResponse({"action": "error"})
 
     return JsonResponse(
@@ -99,7 +100,9 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
     strategy_type = body.get("objectType")
     position = body.get("position")
     workflow = Workflow.objects.get(pk=workflow_id)
-    strategy = get_model_from_str(strategy_type).objects.get(pk=strategy_id)
+    strategy = DAO.get_model_from_str(strategy_type).objects.get(
+        pk=strategy_id
+    )
     try:
         if strategy.author == request.user or strategy.published:
             # first, check compatibility between types (activity/course)
@@ -203,7 +206,8 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
 
         else:
             raise ValidationError("User cannot access this strategy")
-    except ValidationError:
+    except ValidationError as e:
+        logger.log(logging.INFO, e)
         return JsonResponse({"action": "error"})
 
 
@@ -244,7 +248,8 @@ def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
         else:
             strategy_serialized = ""
 
-    except ValidationError:
+    except ValidationError as e:
+        logger.log(logging.INFO, e)
         return JsonResponse({"action": "error"})
 
     response_data = {

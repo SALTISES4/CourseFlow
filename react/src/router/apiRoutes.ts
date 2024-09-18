@@ -5,6 +5,7 @@ const domainPath = '/course-flow/'
 export const apiPathRoutes = {
   json_api: {
     user: {
+      current_user: '/user/current-user',
       list: '/user/list',
       profile_settings: '/user/profile-settings',
       profile_settings__update: '/user/profile-settings/update',
@@ -35,7 +36,6 @@ export const apiPathRoutes = {
     },
     workflow: {
       detail: '/workflow/:id/detail',
-      detail__full: '/workflow/:id/detail-full',
       parent__detail: '/workflow/:id/parent/detail',
       parent__detail__full: '/workflow/:id/parent/detail-full',
       child__detail: '/workflow/:id/child/detail',

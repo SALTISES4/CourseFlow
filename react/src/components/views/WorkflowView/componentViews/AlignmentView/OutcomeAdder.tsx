@@ -58,7 +58,7 @@ class OutcomeAdder extends React.Component<OutcomeAdderProps> {
   onChange(evt) {
     if (evt.target.value == 0) return
     COURSEFLOW_APP.tinyLoader.startLoad()
-    this.props.addFunction(evt.target.value, 1, (response_data) => {
+    this.props.addFunction(evt.target.value, 1, (responseData) => {
       COURSEFLOW_APP.tinyLoader.endLoad()
     })
     $('.outcome-adder').val(0)

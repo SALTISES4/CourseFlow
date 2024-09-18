@@ -1,4 +1,4 @@
-import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
+import { LibraryObjectType } from '@cf/types/enum'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
 import { useMutation } from '@tanstack/react-query'
@@ -22,9 +22,9 @@ const Favourite = ({ id, isFavorite, type }: PropsType) => {
       toggleFavouriteMutation({
         id,
         type: type,
-        favourite: !isFavorite
+        favourite: !isFavouriteState
       }),
-    onSuccess: (newNotificationsValue) => {
+    onSuccess: (_resp) => {
       setFavouriteState(!isFavouriteState)
       enqueueSnackbar('Success toggling favourites', {
         variant: 'success'

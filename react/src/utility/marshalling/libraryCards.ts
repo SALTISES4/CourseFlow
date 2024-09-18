@@ -17,7 +17,7 @@ function mapChipType(type: LibraryObjectType): CHIP_TYPE {
 }
 
 function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
-  const { type, is_strategy } = workflow
+  const { type, isStrategy } = workflow
   let typeText = _t(type)
 
   // no
@@ -25,7 +25,7 @@ function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
   //   typeText = _t('classroom')
   // }
 
-  if (is_strategy) {
+  if (isStrategy) {
     typeText += ` ${_t('strategy')}`
   }
 
@@ -38,8 +38,8 @@ function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
 }
 
 function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
-  const is_template = workflow.is_template
-  if (is_template)
+  const isTemplate = workflow.isTemplate
+  if (isTemplate)
     return {
       type: CHIP_TYPE.TEMPLATE,
       label: _t('Template')
@@ -50,13 +50,13 @@ function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
 function getWorkflowCountChip(workflow: ELibraryObject): WorkflowCardChipType {
   if (
     workflow.type === LibraryObjectType.PROJECT &&
-    workflow.workflow_count !== null &&
-    workflow.workflow_count > 0
+    workflow.workflowCount !== null &&
+    workflow.workflowCount > 0
   ) {
     return {
       type: CHIP_TYPE.DEFAULT,
-      label: `${workflow.workflow_count} ${_t(
-        `workflow` + (workflow.workflow_count > 1 ? 's' : '')
+      label: `${workflow.workflowCount} ${_t(
+        `workflow` + (workflow.workflowCount > 1 ? 's' : '')
       )}`
     }
   }
@@ -84,7 +84,7 @@ export function formatLibraryObject(
     description:
       libraryObject.author && `${_t('Owned by')} ${libraryObject.author}`,
     isFavourite: libraryObject.favourite,
-    isLinked: libraryObject.is_linked,
+    isLinked: libraryObject.isLinked,
     type: libraryObject.type,
     chips: [type_chip, template_chip, count_chip].filter(
       (entry) => entry != null

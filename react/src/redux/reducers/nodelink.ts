@@ -43,7 +43,7 @@ export default function nodelinkReducer(
           : item
       )
 
-    case NodeLinkActions.CHANGE_FIELD:
+    case NodeLinkActions.changeField:
       if (
         action.payload.changeFieldID ===
         //@ts-ignore
@@ -69,7 +69,7 @@ export default function nodelinkReducer(
           ? {
               ...item,
               deleted: true,
-              deleted_on: _t('This session')
+              deletedOn: _t('This session')
             }
           : item
       )

@@ -4,7 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.humanize.templatetags import humanize
 from django.http import HttpRequest, JsonResponse
 from django.urls import reverse
-from rest_framework import status
 from rest_framework.decorators import api_view
 
 from course_flow.serializers import UserSerializer

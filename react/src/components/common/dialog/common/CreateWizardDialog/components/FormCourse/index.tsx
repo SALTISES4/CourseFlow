@@ -68,7 +68,11 @@ const CourseFormFields = ({
         />
         <FormControl variant="standard" fullWidth>
           <InputLabel>Unit type</InputLabel>
-          <Select value={values.unit} label="Unit type" onChange={onUnitChange}>
+          <Select
+            value={values.units}
+            label="Unit type"
+            onChange={onUnitChange}
+          >
             {units.map((u, idx) => (
               <MenuItem key={idx} value={u.value}>
                 {u.label}

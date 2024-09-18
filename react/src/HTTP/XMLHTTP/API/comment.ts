@@ -1,6 +1,5 @@
 //Removes the specified comment from the object
 import { apiPaths } from '@cf/router/apiRoutes'
-import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { CommentsForObjectQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -16,7 +15,7 @@ export function getCommentsForObjectQuery(
     objectId: objectId,
     objectType: objectType
   }).then((response: CommentsForObjectQueryResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }
 //add a comment to an object
@@ -32,7 +31,7 @@ export function addComment(
     objectType: objectType,
     text: text
   }).then((response: EmptyPostResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }
 
@@ -48,7 +47,7 @@ export function removeComment(
     commentPk: commentPk,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }
 
@@ -63,6 +62,6 @@ export function removeAllComments(
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }

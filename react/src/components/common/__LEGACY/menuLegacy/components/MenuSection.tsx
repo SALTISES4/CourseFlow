@@ -7,7 +7,7 @@ import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import * as React from 'react'
 
 type PropsType = {
-  no_hyperlink: any
+  noHyperlink: any
   type: any
   replacement_text: any
   section_data: any
@@ -37,15 +37,15 @@ class MenuSection extends React.Component<PropsType> {
    * RENDER
    *******************************************************/
   render() {
-    const section_type = this.props.section_data.object_type
-    const is_strategy = this.props.section_data.is_strategy
+    const section_type = this.props.section_data.objectType
+    const isStrategy = this.props.section_data.isStrategy
     const parentID = this.props.parentID
     let add_button
 
     let objects = this.props.section_data.objects.map((object) => (
       <WorkflowCard
         key={object.id}
-        no_hyperlink={this.props.no_hyperlink}
+        noHyperlink={this.props.noHyperlink}
         type={this.props.type}
         workflowData={object}
         objectType={section_type}
@@ -73,14 +73,14 @@ class MenuSection extends React.Component<PropsType> {
           </a>
         ))
         let import_text = _t('Import ') + _t(section_type)
-        if (is_strategy) import_text += _t(' strategy')
+        if (isStrategy) import_text += _t(' strategy')
       }
       add_button = (
         <div className="menu-create hover-shade" ref={this.dropdownDiv}>
           <img
             className={
               'create-button create-button-' +
-              this.props.section_data.object_type +
+              this.props.section_data.objectType +
               ' link-image'
             }
             title={_t('Add New')}
@@ -95,7 +95,7 @@ class MenuSection extends React.Component<PropsType> {
       )
     }
     return (
-      <div className={'section-' + this.props.section_data.object_type}>
+      <div className={'section-' + this.props.section_data.objectType}>
         {add_button}
         <GridWrap>{objects}</GridWrap>
       </div>

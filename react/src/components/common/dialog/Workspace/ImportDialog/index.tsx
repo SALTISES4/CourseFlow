@@ -34,17 +34,17 @@ R#EFERENCE TO ORIGIGNAL
   //       <>
   //         <ImportMenu
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'outcomes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'outcomes'
   //           }}
   //           actionFunction={this.closeModals}
   //         />
   //         <ImportMenu
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'nodes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'nodes'
   //           }}
   //           actionFunction={this.closeModals}
   //         />

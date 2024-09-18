@@ -23,19 +23,19 @@ import ViewBar from './ViewBar'
  */
 
 // type ChildRenderer = {
-//   view_type: any
-//   is_strategy: any
-//   read_only: any
+//   viewType: any
+//   isStrategy: any
+//   readOnly: any
 //   column_choices: any
 // }
 
 type PropsType = {
   // renderer: ChildRenderer
   wfcontext: WFContext
-  // parentRender: (container: any, view_type: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
+  // parentRender: (container: any, viewType: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
   data: any
   readOnly: boolean
-  object_sets?: any
+  objectSets?: any
   toggleObjectSet?: any
 }
 
@@ -49,9 +49,9 @@ class RightSideBar extends React.Component<PropsType> {
   /*******************************************************
    * props from renderer
    *
-   *  view_type
-   *  is_strategy
-   *  read_only
+   *  viewType
+   *  isStrategy
+   *  readOnly
    *  column_choices
    *******************************************************/
 
@@ -92,7 +92,7 @@ class RightSideBar extends React.Component<PropsType> {
     if (this.props.wfcontext === WFContext.WORKFLOW)
       return (
         <NodeBar
-          // view_type={this.props.renderer.view_type}
+          // viewType={this.props.renderer.viewType}
           // renderer={this.props.renderer}
           readOnly={this.context.permissions.workflowPermission.readOnly}
           columnChoices={choices.column_choices}
@@ -127,7 +127,7 @@ class RightSideBar extends React.Component<PropsType> {
       return (
         <ComparisonViewBar
           toggleObjectSet={this.props.toggleObjectSet}
-          objectSets={this.props.object_sets}
+          objectSets={this.props.objectSets}
           // renderer={this.props.renderer}
         />
       )
@@ -164,7 +164,7 @@ class RightSideBar extends React.Component<PropsType> {
             </a>
           </li>
 
-          {!this.context.workflow.is_strategy && (
+          {!this.context.workflow.isStrategy && (
             <>
               <li className="hover-shade">
                 <a href="#outcome-bar">
@@ -197,7 +197,7 @@ class RightSideBar extends React.Component<PropsType> {
           <this.NodeBarWrapper />
         </div>
 
-        {!this.context.workflow.is_strategy && (
+        {!this.context.workflow.isStrategy && (
           <>
             <div id="outcome-bar" className="right-panel-container">
               <this.OutcomeBarWrapper />

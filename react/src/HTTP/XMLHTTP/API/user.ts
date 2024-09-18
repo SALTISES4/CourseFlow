@@ -1,14 +1,21 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { ToDefine } from '@cf/types/common'
-import { LibraryObjectType, VERB } from '@cf/types/enum'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
-import { ToggleFavouriteQueryArgs } from '@XMLHTTP/types/args'
 import {
-  EmptyPostResp,
+  CurrentUserQueryResp,
   NotificationSettingsQueryResp,
   ProfileSettingsQueryResp,
   UserListResp
 } from '@XMLHTTP/types/query'
+
+/**
+ *
+ * @param filter
+ * @param callBackFunction
+ */
+export async function getCurrentUserQuery(): Promise<CurrentUserQueryResp> {
+  const url = apiPaths.json_api.user.current_user
+  return API_GET<CurrentUserQueryResp>(url)
+}
 
 /*******************************************************
  * USERS MODEL QUERY
@@ -22,11 +29,11 @@ export function getUserListQuery(
   filter: any,
   callBackFunction = (_data: UserListResp) => console.log('success')
 ) {
-  const url  = apiPaths.json_api.user.list
+  const url = apiPaths.json_api.user.list
   API_POST(url, {
     filter: filter
   }).then((response: UserListResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }
 

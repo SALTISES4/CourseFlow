@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 import {
   LibraryObjectsSearchQueryArgs,
   ToggleFavouriteQueryArgs
@@ -46,7 +46,7 @@ export function toggleFavouriteMutation({
 }: ToggleFavouriteQueryArgs): Promise<EmptyPostResp> {
   const url = apiPaths.json_api.library.library__toggle_favourite__post
   return API_POST<EmptyPostResp>(url, {
-    objectId: id,
+    id,
     objectType: type,
     favourite: favourite
   })

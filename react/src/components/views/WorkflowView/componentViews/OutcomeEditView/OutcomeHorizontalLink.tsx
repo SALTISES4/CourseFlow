@@ -57,7 +57,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
     if (
       window.confirm(
         _t('Are you sure you want to delete this ') +
-          Constants.get_verbose(
+          Constants.getVerbose(
             this.props.data,
             this.objectType
           ).toLowerCase() +
@@ -67,9 +67,9 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
       COURSEFLOW_APP.tinyLoader.startLoad()
       updateOutcomehorizontallinkDegree(
         data.outcome,
-        data.parent_outcome,
+        data.parentOutcome,
         0,
-        (response_data) => {
+        (responseData) => {
           COURSEFLOW_APP.tinyLoader.endLoad()
         }
       )
@@ -87,16 +87,16 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
     const indicator = $(this.mainDiv.current).closest('.outcome-node-indicator')
 
     if (indicator.length >= 0) {
-      const num_outcomenodes = indicator
+      const numOutcomenodes = indicator
         .children('.outcome-node-container')
         .children('.outcome-node:not([style*="display: none"])').length
 
       indicator
         .children('.outcome-node-indicator-number')
         // @ts-ignore // @todo what is this
-        .html(num_outcomenodes)
+        .html(numOutcomenodes)
 
-      if (num_outcomenodes == 0) {
+      if (numOutcomenodes == 0) {
         indicator.css('display', 'none')
       } else {
         indicator.css('display', '')
@@ -147,7 +147,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
         <SimpleOutcome
           // renderer={this.context}
           checkHidden={this.checkHidden.bind(this)}
-          objectId={data.parent_outcome}
+          objectId={data.parentOutcome}
           parentID={this.props.parentID}
           throughParentID={data.id}
         />

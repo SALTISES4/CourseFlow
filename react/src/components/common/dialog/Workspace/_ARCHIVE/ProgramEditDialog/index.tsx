@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import ProgramForm from '@cfComponents/dialog/common/CreateWizardDialog/components/FormProgram'

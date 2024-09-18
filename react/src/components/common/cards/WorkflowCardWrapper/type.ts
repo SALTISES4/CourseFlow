@@ -10,7 +10,7 @@ export type WorkflowCardProps = {
   selectAction?: any
   context?: any
   objectType?: any
-  no_hyperlink?: any
+  noHyperlink?: any
   type?: any // @todo i don't think this is used
   dispatch?: any // @todo i don't think this is used
 }
@@ -20,5 +20,5 @@ export type CreateDiv = {
 }
 
 export type State = {
-  project_data: ELibraryObject[]
+  projectData: ELibraryObject[]
 }

@@ -32,7 +32,7 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let my_class = 'outcome-outcome outcome-outcome-' + this.props.parent_depth
     // @ts-ignore
-    if (data.no_drag) my_class += ' no-drag'
+    if (data.noDrag) my_class += ' no-drag'
 
     //Child outcomes. See comment in models/outcome.py for more info.
     return (

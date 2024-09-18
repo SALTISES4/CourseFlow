@@ -75,7 +75,7 @@ export class OutcomeEditViewUnconnected<
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.context.editableMethods.micro_update(
+    this.context.editableMethods.microUpdate(
       ActionCreator.moveOutcomeWorkflow(
         id,
         new_position,
@@ -146,7 +146,7 @@ export class OutcomeEditViewUnconnected<
             <div className="outcome-category-block">
               {category.outcomes.map((outcome) => {
                 let my_class = 'outcome-workflow'
-                if (outcome.through_no_drag) my_class += ' no-drag'
+                if (outcome.through_noDrag) my_class += ' no-drag'
                 return (
                   <div
                     className={my_class}
@@ -188,7 +188,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: getSortedOutcomesFromOutcomeWorkflowSet(
       state,
-      state.workflow.outcomeworkflow_set
+      state.workflow.outcomeworkflowSet
     ),
     workflow: state.workflow
   }

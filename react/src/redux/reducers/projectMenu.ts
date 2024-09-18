@@ -10,13 +10,13 @@ export default function projectMenuReducer(
     case GridMenuActions.ITEM_ADDED:
       return {
         ...state,
-        current_project: {
-          ...state.current_project,
-          sections: state.current_project.sections.map((section) =>
-            section.object_type === action.payload.type
+        currentProject: {
+          ...state.currentProject,
+          sections: state.currentProject.sections.map((section) =>
+            section.objectType === action.payload.type
               ? {
                   ...section,
-                  objects: [...section.objects, action.payload.new_item]
+                  objects: [...section.objects, action.payload.newItem]
                 }
               : section
           )
@@ -31,23 +31,23 @@ export default function projectMenuReducer(
 // export default function projectMenuReducer(state = {}, action) {
 //   switch (action.type) {
 //     case 'gridmenu/itemAdded':
-//       var new_state = { ...state } // @todo why the shallow copy here?
-//       new_state.current_project = { ...new_state.current_project }
-//       new_state.current_project.sections =
-//         new_state.current_project.sections.slice()
-//       for (let i = 0; i < new_state.current_project.sections.length; i++) {
+//       var newState = { ...state } // @todo why the shallow copy here?
+//       newState.currentProject = { ...newState.currentProject }
+//       newState.currentProject.sections =
+//         newState.currentProject.sections.slice()
+//       for (let i = 0; i < newState.currentProject.sections.length; i++) {
 //         if (
-//           new_state.current_project.sections[i].object_type ==
+//           newState.currentProject.sections[i].objectType ==
 //           action.payload.type
 //         ) {
-//           new_state.current_project.sections[i].objects =
-//             new_state.current_project.sections[i].objects.slice()
-//           new_state.current_project.sections[i].objects.push(
-//             action.payload.new_item
+//           newState.currentProject.sections[i].objects =
+//             newState.currentProject.sections[i].objects.slice()
+//           newState.currentProject.sections[i].objects.push(
+//             action.payload.newItem
 //           )
 //         }
 //       }
-//       return new_state
+//       return newState
 //     default:
 //       return state
 //   }

@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -6,15 +7,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
-from rest_framework.request import Request
-from rest_framework.response import Response
 
+from course_flow.apps import logger
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.models import User
 from course_flow.models.notification import Notification
 from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.serializers import UserSerializer
-from course_flow.utils import get_model_from_str, make_user_notification
+from course_flow.services import DAO
 
 
 # change permissions on an object for a user
@@ -43,7 +43,7 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
             return JsonResponse(
                 {"action": "error", "error": _("User is not a teacher.")}
             )
-        item = get_model_from_str(objectType).objects.get(id=object_id)
+        item = DAO.get_model_from_str(objectType).objects.get(id=object_id)
         # if hasattr(item, "get_subclass"):
         #     item = item.get_subclass()
 
@@ -74,14 +74,16 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
             ObjectPermission.objects.create(
                 user=user, content_object=item, permission_type=permission_type
             )
-            make_user_notification(
+            DAO.make_user_notification(
                 source_user=request.user,
                 target_user=user,
                 notification_type=Notification.TYPE_SHARED,
                 content_object=item,
             )
         response["action"] = "posted"
-    except ValidationError:
+
+    except ValidationError as e:
+        logger.log(logging.INFO, e)
         response["action"] = "error"
 
     return JsonResponse(response)
@@ -96,14 +98,16 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
     if object_type in ["activity", "course", "program"]:
         object_type = "workflow"
     content_type = ContentType.objects.get(model=object_type)
-    this_object = get_model_from_str(object_type).objects.get(id=object_id)
+    this_object = DAO.get_model_from_str(object_type).objects.get(id=object_id)
     published = this_object.published
     public_view = False
 
     if object_type == "workflow":
         public_view = this_object.public_view
     try:
-        this_object = get_model_from_str(object_type).objects.get(id=object_id)
+        this_object = DAO.get_model_from_str(object_type).objects.get(
+            id=object_id
+        )
         cannot_change = []
         if this_object.author is not None:
             cannot_change = [this_object.author.id]
@@ -156,7 +160,8 @@ def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
             saltise_user = False
         is_template = this_object.is_template
 
-    except ValidationError:
+    except ValidationError as e:
+        logger.log(logging.INFO, e)
         return JsonResponse({"action": "error"})
 
     return JsonResponse(

@@ -15,20 +15,20 @@ class AutoLink extends React.Component<PropsType> {
   private eventNameSpace: string
   private rerenderEvents: string
   private target: any
-  private source_port_handle: d3.Selection<
+  private sourcePort_handle: d3.Selection<
     SVGElement,
     unknown,
     HTMLElement,
     any
   >
-  private target_port_handle: d3.Selection<
+  private targetPort_handle: d3.Selection<
     SVGElement,
     unknown,
     HTMLElement,
     any
   >
-  private target_node: JQuery<HTMLElement>
-  private source_node: JQuery<HTMLElement>
+  private targetNode: JQuery<HTMLElement>
+  private sourceNode: JQuery<HTMLElement>
   constructor(props) {
     super(props)
     this.eventNameSpace = 'autolink' + this.props.nodeID
@@ -39,9 +39,9 @@ class AutoLink extends React.Component<PropsType> {
    * LIFECYCLE
    *******************************************************/
   componentWillUnmount() {
-    if (this.target_node && this.target_node.length > 0) {
-      this.source_node.off(this.rerenderEvents)
-      this.target_node.off(this.rerenderEvents)
+    if (this.targetNode && this.targetNode.length > 0) {
+      this.sourceNode.off(this.rerenderEvents)
+      this.targetNode.off(this.rerenderEvents)
     }
   }
 
@@ -50,7 +50,7 @@ class AutoLink extends React.Component<PropsType> {
    *******************************************************/
   findAutoTarget() {
     let target = null
-    const ns = this.source_node.closest('.node-week')
+    const ns = this.sourceNode.closest('.node-week')
     const next_ns = ns
       .nextAll('.node-week:not(.ui-sortable-placeholder)')
       .first()
@@ -77,10 +77,10 @@ class AutoLink extends React.Component<PropsType> {
 
   setTarget(target) {
     if (target) {
-      if (this.target_node && target == this.target_node.attr('id')) {
-        if (!this.target_port_handle || this.target_port_handle.empty()) {
+      if (this.targetNode && target == this.targetNode.attr('id')) {
+        if (!this.targetPort_handle || this.targetPort_handle.empty()) {
           // @ts-ignore
-          this.target_port_handle = d3.select(
+          this.targetPort_handle = d3.select(
             'g.port-' +
               target +
               " circle[data-port-type='target'][data-port='n']"
@@ -88,26 +88,26 @@ class AutoLink extends React.Component<PropsType> {
         }
         return
       }
-      if (this.target_node) {
-        this.target_node.off(this.rerenderEvents)
+      if (this.targetNode) {
+        this.targetNode.off(this.rerenderEvents)
       }
 
-      this.target_node = $('.week #' + target + '.node')
+      this.targetNode = $('.week #' + target + '.node')
 
       // @ts-ignore
-      this.target_port_handle = d3.select(
+      this.targetPort_handle = d3.select(
         'g.port-' + target + " circle[data-port-type='target'][data-port='n']"
       )
 
-      this.target_node.on(this.rerenderEvents, this.rerender.bind(this))
+      this.targetNode.on(this.rerenderEvents, this.rerender.bind(this))
       this.target = target
     } else {
-      if (this.target_node) {
-        this.target_node.off(this.rerenderEvents)
+      if (this.targetNode) {
+        this.targetNode.off(this.rerenderEvents)
       }
 
-      this.target_node = null
-      this.target_port_handle = null
+      this.targetNode = null
+      this.targetPort_handle = null
       this.target = null
     }
   }
@@ -117,57 +117,57 @@ class AutoLink extends React.Component<PropsType> {
    *******************************************************/
   render() {
     if (
-      !this.source_node ||
-      this.source_node.length == 0 ||
-      !this.source_port_handle ||
-      this.source_port_handle.empty()
+      !this.sourceNode ||
+      this.sourceNode.length == 0 ||
+      !this.sourcePort_handle ||
+      this.sourcePort_handle.empty()
     ) {
-      this.source_node = $(this.props.node_div.current)
+      this.sourceNode = $(this.props.node_div.current)
 
       // @ts-ignore
-      this.source_port_handle = d3.select(
+      this.sourcePort_handle = d3.select(
         'g.port-' +
           this.props.nodeID +
           " circle[data-port-type='source'][data-port='s']"
       )
-      this.source_node.on(this.rerenderEvents, this.rerender.bind(this))
+      this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
     }
-    if (this.target_node && this.target_node.parent().parent().length == 0) {
-      this.target_node = null
+    if (this.targetNode && this.targetNode.parent().parent().length == 0) {
+      this.targetNode = null
     }
 
     this.findAutoTarget()
 
-    if (!this.target_node) {
+    if (!this.targetNode) {
       return null
     }
 
     const source_dims = {
-      width: this.source_node.outerWidth(),
-      height: this.source_node.outerHeight()
+      width: this.sourceNode.outerWidth(),
+      height: this.sourceNode.outerHeight()
     }
     const target_dims = {
-      width: this.target_node.outerWidth(),
-      height: this.target_node.outerHeight()
+      width: this.targetNode.outerWidth(),
+      height: this.targetNode.outerHeight()
     }
 
     const node_selected =
-      this.source_node.attr('data-selected') === 'true' ||
-      this.target_node.attr('data-selected') === 'true'
+      this.sourceNode.attr('data-selected') === 'true' ||
+      this.targetNode.attr('data-selected') === 'true'
 
     const node_hovered =
-      this.source_node.attr('data-hovered') === 'true' ||
-      this.target_node.attr('data-hovered') === 'true'
+      this.sourceNode.attr('data-hovered') === 'true' ||
+      this.targetNode.attr('data-hovered') === 'true'
 
     //  .workflow-canvas is dynamic portal
     const portal = reactDom.createPortal(
       <NodeLinkSVG
         hovered={node_hovered}
         node_selected={node_selected}
-        source_port_handle={this.source_port_handle}
-        source_port={2}
-        target_port_handle={this.target_port_handle}
-        target_port={0}
+        sourcePort_handle={this.sourcePort_handle}
+        sourcePort={2}
+        targetPort_handle={this.targetPort_handle}
+        targetPort={0}
         source_dimensions={source_dims}
         target_dimensions={target_dims}
       />,

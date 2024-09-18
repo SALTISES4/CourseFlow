@@ -24,7 +24,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected<PropsTyp
   render() {
     const data = this.props.data
 
-    const cssClasses = ['week-workflow', data.no_drag ? 'no-drag' : ''].join(
+    const cssClasses = ['week-workflow', data.noDrag ? 'no-drag' : ''].join(
       ' '
     )
 

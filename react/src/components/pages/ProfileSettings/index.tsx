@@ -56,7 +56,7 @@ const ProfileSettingsPage = () => {
 
   useEffect(() => {
     if (data) {
-      setState(data.data_package.formData)
+      setState(data.dataPackage.formData)
     }
   }, [data])
 

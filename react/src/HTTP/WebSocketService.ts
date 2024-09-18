@@ -8,7 +8,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 
 export enum DATA_TYPE {
   WORKFLOW_ACTION = 'workflow_action',
-  LOCK_UPDATE = 'lock_update',
+  LOCK_UPDATE = 'lockUpdate',
   CONNECTION_UPDATE = 'connection_update',
   WORKFLOW_PARENT_UPDATED = 'workflow_parent_updated',
   WORKFLOW_CHILD_UPDATED = 'workflow_child_updated'

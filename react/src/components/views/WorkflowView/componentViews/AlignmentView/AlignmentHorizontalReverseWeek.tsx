@@ -45,8 +45,8 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
   render() {
     const data = this.props.data
 
-    const default_text =
-      data.week_type_display + ' ' + (this.props.week_rank + 1)
+    const defaultText =
+      data.weekTypeDisplay + ' ' + (this.props.week_rank + 1)
 
     const nodeweeks = this.props.nodeweeks.map((nodeweek, index) => {
       if (
@@ -64,7 +64,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
       )
     })
 
-    const comments = this.context.workflow.view_comments ? (
+    const comments = this.context.workflow.viewComments ? (
       <this.AddCommenting />
     ) : null
 
@@ -77,7 +77,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
           this.context.selectionManager.changeSelection(evt, this)
         }
       >
-        <TitleText text={data.title} defaultText={default_text} />
+        <TitleText text={data.title} defaultText={defaultText} />
         <div className="node-block">{nodeweeks}</div>
         {this.addEditable(data, true)}
         <div className="side-actions">
@@ -98,7 +98,7 @@ const mapStateToProps = (
       const week = state.week[i]
       const nodeweeks = Utility.filterThenSortByID(
         state.nodeweek,
-        week.nodeweek_set
+        week.nodeweekSet
       )
       return {
         data: week,

@@ -1,4 +1,4 @@
-import { PROJECT_PERMISSION_ROLE, PermissionUserType } from '@cf/types/common'
+import { projectPermission_ROLE, PermissionUserType } from '@cf/types/common'
 import { EUser } from '@XMLHTTP/types/entity'
 
 export function groupUsersFromRoleGroups({
@@ -16,33 +16,33 @@ export function groupUsersFromRoleGroups({
     ...viewers.map((item) => {
       return {
         id: item.id,
-        name: item.first_name + ' ' + item.last_name,
+        name: item.firstName + ' ' + item.lastName,
         email: 'plceholder@email.com',
-        role: PROJECT_PERMISSION_ROLE.VIEWER
+        role: projectPermission_ROLE.VIEWER
       }
     }),
     ...commentors.map((item) => {
       return {
         id: item.id,
-        name: item.first_name + ' ' + item.last_name,
+        name: item.firstName + ' ' + item.lastName,
         email: 'plceholder@email.com',
-        role: PROJECT_PERMISSION_ROLE.COMMENTER
+        role: projectPermission_ROLE.COMMENTER
       }
     }),
     ...editors.map((item) => {
       return {
         id: item.id,
-        name: item.first_name + ' ' + item.last_name,
+        name: item.firstName + ' ' + item.lastName,
         email: 'plceholder@email.com',
-        role: PROJECT_PERMISSION_ROLE.EDITOR
+        role: projectPermission_ROLE.EDITOR
       }
     }),
     ...students.map((item) => {
       return {
         id: item.id,
-        name: item.first_name + ' ' + item.last_name,
+        name: item.firstName + ' ' + item.lastName,
         email: 'plceholder@email.com',
-        role: PROJECT_PERMISSION_ROLE.VIEWER
+        role: projectPermission_ROLE.VIEWER
       }
     })
   ]

@@ -13,7 +13,7 @@ type OwnProps = {
   nodecategory: any
   updateParentCompletion: any
   completion_status_from_parents: any
-  outcomes_type: any
+  outcomesType: any
 }
 type PropsType = ConnectedProps & OwnProps
 
@@ -48,7 +48,7 @@ class TableOutcomeOutcomeUnconnected extends React.Component<PropsType> {
           completion_status_from_parents={
             this.props.completion_status_from_parents
           }
-          outcomes_type={this.props.outcomes_type}
+          outcomesType={this.props.outcomesType}
         />
       </div>
     )

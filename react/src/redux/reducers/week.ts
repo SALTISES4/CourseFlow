@@ -38,7 +38,7 @@ export default function weekReducer(
       return state.map((item) =>
         item.id === action.payload.id ? { ...item, ...action.payload } : item
       )
-    case WeekActions.CHANGE_FIELD:
+    case WeekActions.changeField:
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }
@@ -60,7 +60,7 @@ export default function weekReducer(
           ? {
               ...item,
               deleted: !item.deleted,
-              deleted_on: item.deleted ? undefined : 'This session'
+              deletedOn: item.deleted ? undefined : 'This session'
             }
           : item
       )
@@ -68,20 +68,20 @@ export default function weekReducer(
     case NodeWeekActions.CHANGE_ID:
       return state.map((item) => ({
         ...item,
-        nodeweek_set: item.nodeweek_set.map((id) =>
+        nodeweekSet: item.nodeweekSet.map((id) =>
           id === action.payload.old_id ? action.payload.new_id : id
         )
       }))
 
     case NodeWeekActions.MOVED_TO:
       return state.map((item) => {
-        const newSet = item.nodeweek_set.filter(
+        const newSet = item.nodeweekSet.filter(
           (id) => id !== action.payload.id
         )
         if (item.id === action.payload.new_parent) {
           newSet.splice(action.payload.new_index, 0, action.payload.id)
         }
-        return { ...item, nodeweek_set: newSet }
+        return { ...item, nodeweekSet: newSet }
         return item
       })
 
@@ -90,9 +90,9 @@ export default function weekReducer(
     case NodeActions.NEW_NODE:
       return state.map((item) => {
         if (item.id === action.payload.parentID) {
-          const newSet = [...item.nodeweek_set]
+          const newSet = [...item.nodeweekSet]
           newSet.splice(action.payload.index, 0, action.payload.new_through.id)
-          return { ...item, nodeweek_set: newSet }
+          return { ...item, nodeweekSet: newSet }
         }
         return item
       })
@@ -124,23 +124,23 @@ export default function weekReducer(
 //       return state
 //
 //     case CommonActions.REFRESH_STOREDATA: {
-//       var new_state = state.slice()
+//       var newState = state.slice()
 //       if (action.payload.week) {
 //         for (var i = 0; i < action.payload.week.length; i++) {
 //           const new_obj = action.payload.week[i]
 //           let added = false
-//           for (let j = 0; j < new_state.length; j++) {
-//             if (new_state[j].id == new_obj.id) {
-//               new_state.splice(j, 1, new_obj)
+//           for (let j = 0; j < newState.length; j++) {
+//             if (newState[j].id == new_obj.id) {
+//               newState.splice(j, 1, new_obj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           new_state.push(new_obj)
+//           newState.push(new_obj)
 //         }
 //       }
-//       return new_state
+//       return newState
 //     }
 //
 //     /*******************************************************
@@ -149,25 +149,25 @@ export default function weekReducer(
 //     case WeekActions.CREATE_LOCK: {
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...new_state[i], lock: action.payload.lock }
-//           return new_state
+//           var newState = state.slice()
+//           newState[i] = { ...newState[i], lock: action.payload.lock }
+//           return newState
 //         }
 //       }
 //       return state
 //     }
 //     case WeekActions.INSERT_BELOW: {
-//       new_state = state.slice()
-//       new_state.push(action.payload.new_model)
-//       return new_state
+//       newState = state.slice()
+//       newState.push(action.payload.new_model)
+//       return newState
 //     }
 //
 //     case WeekActions.DELETE_SELF: {
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state.splice(i, 1)
-//           return new_state
+//           var newState = state.slice()
+//           newState.splice(i, 1)
+//           return newState
 //         }
 //       }
 //       return state
@@ -176,13 +176,13 @@ export default function weekReducer(
 //     case WeekActions.DELETE_SELF_SOFT: {
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state[i] = {
-//             ...new_state[i],
+//           var newState = state.slice()
+//           newState[i] = {
+//             ...newState[i],
 //             deleted: true,
-//             deleted_on: _t('This session')
+//             deletedOn: _t('This session')
 //           }
-//           return new_state
+//           return newState
 //         }
 //       }
 //       return state
@@ -191,15 +191,15 @@ export default function weekReducer(
 //     case WeekActions.RESTORE_SELF: {
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...new_state[i], deleted: false }
-//           return new_state
+//           var newState = state.slice()
+//           newState[i] = { ...newState[i], deleted: false }
+//           return newState
 //         }
 //       }
 //       return state
 //     }
 //
-//     case WeekActions.CHANGE_FIELD: {
+//     case WeekActions.changeField: {
 //       if (
 //         // @ts-ignore
 //         action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
@@ -209,21 +209,21 @@ export default function weekReducer(
 //
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...state[i], ...action.payload.json }
-//           return new_state
+//           var newState = state.slice()
+//           newState[i] = { ...state[i], ...action.payload.json }
+//           return newState
 //         }
 //       }
 //       return state
 //     }
 //
 //     case WeekActions.RELOAD_COMMENTS: {
-//       var new_state = state.slice()
-//       for (var i = 0; i < new_state.length; i++) {
-//         const obj = new_state[i]
+//       var newState = state.slice()
+//       for (var i = 0; i < newState.length; i++) {
+//         const obj = newState[i]
 //         if (obj.id == action.payload.id) {
-//           new_state[i] = { ...obj, comments: action.payload.comment_data }
-//           return new_state
+//           newState[i] = { ...obj, comments: action.payload.comment_data }
+//           return newState
 //         }
 //       }
 //       return state
@@ -233,22 +233,22 @@ export default function weekReducer(
 //      * NODE WEEK
 //      *******************************************************/
 //     case NodeWeekActions.CHANGE_ID: {
-//       var new_state = state.slice()
+//       var newState = state.slice()
 //       for (var i = 0; i < state.length; i++) {
-//         const old_index = state[i].nodeweek_set.indexOf(action.payload.old_id)
+//         const old_index = state[i].nodeweekSet.indexOf(action.payload.old_id)
 //         if (old_index >= 0) {
-//           new_state[i] = { ...new_state[i] }
-//           new_state[i].nodeweek_set = new_state[i].nodeweek_set.slice()
-//           new_state[i].nodeweek_set.splice(old_index, 1, action.payload.new_id)
+//           newState[i] = { ...newState[i] }
+//           newState[i].nodeweekSet = newState[i].nodeweekSet.slice()
+//           newState[i].nodeweekSet.splice(old_index, 1, action.payload.new_id)
 //         }
 //       }
-//       return new_state
+//       return newState
 //     }
 //
 //     case NodeWeekActions.MOVED_TO: {
 //       let old_parent, old_parent_index, new_parent, new_parent_index
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].nodeweek_set.indexOf(action.payload.id) >= 0) {
+//         if (state[i].nodeweekSet.indexOf(action.payload.id) >= 0) {
 //           old_parent_index = i
 //           old_parent = { ...state[i] }
 //         }
@@ -259,21 +259,21 @@ export default function weekReducer(
 //       }
 //       const new_index = action.payload.new_index
 //
-//       var new_state = state.slice()
-//       old_parent.nodeweek_set = old_parent.nodeweek_set.slice()
-//       old_parent.nodeweek_set.splice(
-//         old_parent.nodeweek_set.indexOf(action.payload.id),
+//       var newState = state.slice()
+//       old_parent.nodeweekSet = old_parent.nodeweekSet.slice()
+//       old_parent.nodeweekSet.splice(
+//         old_parent.nodeweekSet.indexOf(action.payload.id),
 //         1
 //       )
 //       if (old_parent_index == new_parent_index) {
-//         old_parent.nodeweek_set.splice(new_index, 0, action.payload.id)
+//         old_parent.nodeweekSet.splice(new_index, 0, action.payload.id)
 //       } else {
-//         new_parent.nodeweek_set = new_parent.nodeweek_set.slice()
-//         new_parent.nodeweek_set.splice(new_index, 0, action.payload.id)
-//         new_state.splice(new_parent_index, 1, new_parent)
+//         new_parent.nodeweekSet = new_parent.nodeweekSet.slice()
+//         new_parent.nodeweekSet.splice(new_index, 0, action.payload.id)
+//         newState.splice(new_parent_index, 1, new_parent)
 //       }
-//       new_state.splice(old_parent_index, 1, old_parent)
-//       return new_state
+//       newState.splice(old_parent_index, 1, old_parent)
+//       return newState
 //     }
 //
 //     /*******************************************************
@@ -282,15 +282,15 @@ export default function weekReducer(
 //     case NodeActions.DELETE_SELF:
 //     case NodeActions.DELETE_SELF_SOFT:
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].nodeweek_set.indexOf(action.payload.parent_id) >= 0) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...new_state[i] }
-//           new_state[i].nodeweek_set = state[i].nodeweek_set.slice()
-//           new_state[i].nodeweek_set.splice(
-//             new_state[i].nodeweek_set.indexOf(action.payload.parent_id),
+//         if (state[i].nodeweekSet.indexOf(action.payload.parent_id) >= 0) {
+//           var newState = state.slice()
+//           newState[i] = { ...newState[i] }
+//           newState[i].nodeweekSet = state[i].nodeweekSet.slice()
+//           newState[i].nodeweekSet.splice(
+//             newState[i].nodeweekSet.indexOf(action.payload.parent_id),
 //             1
 //           )
-//           return new_state
+//           return newState
 //         }
 //       }
 //       return state
@@ -298,15 +298,15 @@ export default function weekReducer(
 //     case NodeActions.RESTORE_SELF:
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.parent_id) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...new_state[i] }
-//           new_state[i].nodeweek_set = state[i].nodeweek_set.slice()
-//           new_state[i].nodeweek_set.splice(
+//           var newState = state.slice()
+//           newState[i] = { ...newState[i] }
+//           newState[i].nodeweekSet = state[i].nodeweekSet.slice()
+//           newState[i].nodeweekSet.splice(
 //             action.payload.throughparent_index,
 //             0,
 //             action.payload.throughparent_id
 //           )
-//           return new_state
+//           return newState
 //         }
 //       }
 //       return state
@@ -314,16 +314,16 @@ export default function weekReducer(
 //     case NodeActions.INSERT_BELOW:
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.parentID) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...state[i] }
-//           var new_nodeweek_set = state[i].nodeweek_set.slice()
-//           new_nodeweek_set.splice(
+//           var newState = state.slice()
+//           newState[i] = { ...state[i] }
+//           var new_nodeweekSet = state[i].nodeweekSet.slice()
+//           new_nodeweekSet.splice(
 //             action.payload.new_through.rank,
 //             0,
 //             action.payload.new_through.id
 //           )
-//           new_state[i].nodeweek_set = new_nodeweek_set
-//           return new_state
+//           newState[i].nodeweekSet = new_nodeweekSet
+//           return newState
 //         }
 //       }
 //       return state
@@ -331,16 +331,16 @@ export default function weekReducer(
 //     case NodeActions.NEW_NODE:
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.parentID) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...state[i] }
-//           var new_nodeweek_set = state[i].nodeweek_set.slice()
-//           new_nodeweek_set.splice(
+//           var newState = state.slice()
+//           newState[i] = { ...state[i] }
+//           var new_nodeweekSet = state[i].nodeweekSet.slice()
+//           new_nodeweekSet.splice(
 //             action.payload.index,
 //             0,
 //             action.payload.new_through.id
 //           )
-//           new_state[i].nodeweek_set = new_nodeweek_set
-//           return new_state
+//           newState[i].nodeweekSet = new_nodeweekSet
+//           return newState
 //         }
 //       }
 //       return state
@@ -351,19 +351,19 @@ export default function weekReducer(
 //     case StrategyActions.TOGGLE_STRATEGY: {
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...state[i] }
-//           new_state[i].is_strategy = action.payload.is_strategy
-//           return new_state
+//           var newState = state.slice()
+//           newState[i] = { ...state[i] }
+//           newState[i].isStrategy = action.payload.isStrategy
+//           return newState
 //         }
 //       }
 //       return state
 //     }
 //
 //     case StrategyActions.ADD_STRATEGY: {
-//       new_state = state.slice()
-//       new_state.push(action.payload.strategy)
-//       return new_state
+//       newState = state.slice()
+//       newState.push(action.payload.strategy)
+//       return newState
 //     }
 //
 //     default:

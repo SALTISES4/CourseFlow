@@ -1,5 +1,4 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { VERB } from '@cf/types/enum'
 import { API_POST, API_POST_FILE } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -16,7 +15,7 @@ export function getExport(
     objectType: objectType,
     exportType: exportType
   }).then((response: EmptyPostResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }
 
@@ -38,6 +37,6 @@ export function importData(
     },
     myFile
   ).then((response: EmptyPostResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }

@@ -21,10 +21,10 @@ class WorkflowCardCondensed extends Component<PropsType, StateType> {
    * FUNCTIONS
    *******************************************************/
   ProjectTitle = () => {
-    if (this.props.workflowData.project_title) {
+    if (this.props.workflowData.projectTitle) {
       return (
         <div className="project-title">
-          {this.props.workflowData.project_title}
+          {this.props.workflowData.projectTitle}
         </div>
       )
     } else {
@@ -44,7 +44,7 @@ class WorkflowCardCondensed extends Component<PropsType, StateType> {
     //     title={
     //       <>
     //         <WorkflowTitle
-    //           no_hyperlink={this.props.no_hyperlink}
+    //           noHyperlink={this.props.noHyperlink}
     //           class_name="workflow-title"
     //           data={data}
     //         />

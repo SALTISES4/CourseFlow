@@ -1,6 +1,9 @@
+import logging
+
 from django.db.models import Q
 from django.utils import timezone
 
+from course_flow.apps import logger
 from course_flow.models import OutcomeNode, Project, User
 from course_flow.models.activity import Activity
 from course_flow.models.column import Column
@@ -21,11 +24,7 @@ from course_flow.models.relations.weekWorkflow import WeekWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.models.week import Week
 from course_flow.models.workflow import Workflow
-from course_flow.utils import (
-    get_all_outcomes_for_outcome,
-    get_all_outcomes_for_workflow,
-    get_model_from_str,
-)
+from course_flow.services import DAO
 
 #############################################
 # Duplication methods that quickly duplicate
@@ -410,7 +409,8 @@ def fast_duplicate_week(week: Week, author: User) -> Week:
                     id_dict["node"][node.id].sets.add(set)
                 node.save()
 
-    except IndexError:
+    except IndexError as e:
+        logger.log(logging.INFO, e)
         return None
 
     return new_week
@@ -434,7 +434,7 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
         # Speed is critical here. querying through __ has come out much faster (by a factor of up to 100) in testing than moving vertically through the heirarchy, even when prefetc_related is used.
         # In order to speed the creation of the throughmodels, select_related is used for any foreignkeys that need to be traversed
 
-        outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(outcome)
+        outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(outcome)
 
         # Create the new content, and keep track of old_id:new_instance pairs in a dict
         id_dict = {}
@@ -472,7 +472,8 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
                     id_dict["outcome"][outcome_inst.id].sets.add(set)
                 outcome_inst.save()
 
-    except IndexError:
+    except IndexError as e:
+        logger.log(logging.INFO, e)
         return None
 
     return new_outcome
@@ -481,7 +482,7 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 def fast_duplicate_workflow(
     workflow: Workflow, author: User, project
 ) -> Workflow:
-    model = get_model_from_str(workflow.type)
+    model = DAO.get_model_from_str(workflow.type)
 
     try:
         # Duplicate the workflow
@@ -513,7 +514,7 @@ def fast_duplicate_workflow(
         outcomeworkflows = OutcomeWorkflow.objects.filter(
             workflow=workflow
         ).select_related("outcome")
-        outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
+        outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_workflow(workflow)
 
         columnworkflows = ColumnWorkflow.objects.filter(
             workflow=workflow
@@ -679,7 +680,8 @@ def fast_duplicate_workflow(
                         id_dict["outcome"][outcome.id].sets.add(set)
                     outcome.save()
 
-    except IndexError:
+    except IndexError as e:
+        logger.log(logging.INFO, e)
         return None
 
     return new_workflow
@@ -949,7 +951,8 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
                     )
                 outcome.save()
 
-    except IndexError:
+    except IndexError as e:
+        logger.log(logging.INFO, e)
         return None
 
     for discipline in project.disciplines.all():
@@ -961,7 +964,7 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
 def fast_create_strategy(
     week: Week, workflow: Workflow, author: User
 ) -> Workflow:
-    model = get_model_from_str(workflow.type)
+    model = DAO.get_model_from_str(workflow.type)
 
     try:
         # Duplicate the workflow
@@ -1066,7 +1069,8 @@ def fast_create_strategy(
             ]
         )
 
-    except IndexError:
+    except IndexError as e:
+        logger.log(logging.INFO, e)
         return None
 
     return new_strategy

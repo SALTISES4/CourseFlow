@@ -29,11 +29,11 @@ type PropsType = ConnectedProps & OwnProps
 const choices = COURSEFLOW_APP.globalContextData.workflow_choices
 
 /**
- * renderer.selection_manager
- * renderer.view_comments
- * renderer.context_choices
+ * renderer.selectionManager
+ * renderer.viewComments
+ * renderer.contextChoices
  * renderer.task_choices
- * renderer.read_only
+ * renderer.readOnly
  */
 class ComparisonNodeUnconnected extends EditableComponentWithActions<
   PropsType,
@@ -55,24 +55,24 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
 
     const data = this.props.data
 
-    if (data.represents_workflow) {
+    if (data.representsWorkflow) {
       data_override = {
         ...data,
-        ...data.linked_workflow_data,
+        ...data.linkedWorkflowData,
         id: data.id
       }
     } else {
       data_override = { ...data }
     }
-    const selection_manager = this.context.selectionManager
+    const selectionManager = this.context.selectionManager
 
     const style: React.CSSProperties = {
       backgroundColor: Constants.getColumnColour(this.props.column)
     }
     if (data.lock) {
-      style.outline = '2px solid ' + data.lock.user_colour
+      style.outline = '2px solid ' + data.lock.userColour
     }
-    if (Utility.checkSetHidden(data, this.props.object_sets)) {
+    if (Utility.checkSetHidden(data, this.props.objectSets)) {
       style.display = 'none'
     }
 
@@ -88,13 +88,13 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
           }}
           style={{ borderColor: Constants.getColumnColour(this.props.column) }}
         >
-          {data.outcomenode_unique_set.map((outcomenode) => (
+          {data.outcomenodeUniqueSet.map((outcomenode) => (
             <OutcomeNode key={outcomenode} objectId={outcomenode} />
           ))}
         </div>
       )
 
-    if (data.outcomenode_unique_set.length > 0) {
+    if (data.outcomenodeUniqueSet.length > 0) {
       side_actions.push(
         <div className="outcome-node-indicator">
           <div
@@ -106,41 +106,41 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
               borderColor: Constants.getColumnColour(this.props.column)
             }}
           >
-            {data.outcomenode_unique_set.length}
+            {data.outcomenodeUniqueSet.length}
           </div>
           {outcomenodes}
         </div>
       )
     }
 
-    if (data.context_classification > 0) {
+    if (data.contextClassification > 0) {
       lefticon = (
         <img
           title={
-            choices.context_choices.find(
-              (obj) => obj.type == data.context_classification
+            choices.contextChoices.find(
+              (obj) => obj.type == data.contextClassification
             ).name
           }
           src={
             COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-            Constants.context_keys[data.context_classification] +
+            Constants.contextKeys[data.contextClassification] +
             '.svg'
           }
         />
       )
     }
 
-    if (data.task_classification > 0) {
+    if (data.taskClassification > 0) {
       righticon = (
         <img
           title={
             choices.task_choices.find(
-              (obj) => obj.type == data.task_classification
+              (obj) => obj.type == data.taskClassification
             ).name
           }
           src={
             COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-            Constants.task_keys[data.task_classification] +
+            Constants.taskKeys[data.taskClassification] +
             '.svg'
           }
         />
@@ -149,13 +149,13 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
 
     const titleText = <NodeTitle data={data} />
 
-    // let css_class =
-    //   'node column-' + data.column + ' ' + Constants.node_keys[data.node_type]
-    // if (data.lock) css_class += ' locked locked-' + data.lock.user_id
+    // let cssClass =
+    //   'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType]
+    // if (data.lock) cssClass += ' locked locked-' + data.lock.userId
 
     const cssClasses = [
-      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type],
-      data.lock ? 'locked locked-' + data.lock.user_id : ''
+      'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],
+      data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
     const mouseover_actions = []
@@ -164,7 +164,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.context.workflow.view_comments) {
+    if (this.context.workflow.viewComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -177,7 +177,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
           id={data.id}
           ref={this.mainDiv}
           onClick={(evt) => {
-            return () => selection_manager.changeSelection(evt, this)
+            return () => selectionManager.changeSelection(evt, this)
           }}
         >
           <div className="node-top-row">

@@ -7,7 +7,7 @@ import * as React from 'react'
 import { DispatchProp, connect } from 'react-redux'
 
 type ConnectedProps = {
-  object_sets: any
+  objectSets: any
 }
 type OwnProps = {
   data: any
@@ -36,7 +36,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
   changeSort(evt) {
     this.props.dispatch(
       ActionCreator.changeField(this.props.data.id, 'workflow', {
-        outcomes_sort: evt.target.value
+        outcomesSort: evt.target.value
       })
     )
   }
@@ -73,7 +73,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
                 id={'sort_type_choice' + choice.type}
                 name={'sort_type_choice' + choice.type}
                 value={choice.type}
-                checked={data.outcomes_sort === choice.type}
+                checked={data.outcomesSort === choice.type}
                 onChange={this.changeSort.bind(this)}
               />
               <label htmlFor={'sort_type_choice' + choice.type}>
@@ -123,7 +123,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
 
     const sets = (
       <div className="node-bar-sort-block">
-        {this.props.object_sets
+        {this.props.objectSets
           .sort((a, b) => {
             const x = a.term
             const y = b.term
@@ -158,7 +158,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
   }
 }
 const mapStateToProps = (state: AppState): ConnectedProps => ({
-  object_sets: state.objectset
+  objectSets: state.objectset
 })
 
 export default connect<ConnectedProps, DispatchProp, OwnProps, AppState>(

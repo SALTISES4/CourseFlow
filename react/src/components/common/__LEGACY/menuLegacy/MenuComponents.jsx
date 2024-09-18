@@ -22,7 +22,7 @@ import WorkflowsMenu from '../../dialog/_LEGACY/WorkflowsMenu.tsx'
 export class MessageBox extends Component {
   getMenu = () => {
     switch (this.props.message_type) {
-      case 'linked_workflow_menu':
+      case 'linkedWorkflow_menu':
       case 'target_project_menu':
       case 'added_workflow_menu':
       case 'workflow_select_menu':

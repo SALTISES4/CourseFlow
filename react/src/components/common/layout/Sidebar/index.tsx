@@ -1,4 +1,4 @@
-import { CFRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { SidebarProps } from '@cf/types/common'
 import strings from '@cf/utility/strings'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
@@ -31,7 +31,7 @@ import {
   SidebarWrap
 } from './styles'
 
-const Sidebar = ({ isAnonymous,  favourites }: SidebarProps) => {
+const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
   const location = useLocation()
 
   const [collapsed, setCollapsed] = useState(
@@ -108,7 +108,7 @@ const Sidebar = ({ isAnonymous,  favourites }: SidebarProps) => {
           </ListItem>
         </MainMenuWrap>
 
-        {favourites.length ? (
+        {favourites?.length ? (
           <>
             <Divider />
             <FavouritesWrap>

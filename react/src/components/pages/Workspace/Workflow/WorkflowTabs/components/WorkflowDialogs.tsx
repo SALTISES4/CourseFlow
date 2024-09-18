@@ -8,13 +8,13 @@ import WorkflowLinkDialog from '@cfComponents/dialog/Workspace/WorkflowLinkDialo
 import contributorAddData from '@cfPages/Styleguide/dialog/AddContributor/data'
 import ImportDialog from '@cfPages/Styleguide/dialog/Import'
 import dummyProjectExportData from '@cfPages/Styleguide/dialog/ProjectExport/data'
-import { PROJECT_PERMISSION_ROLE } from '@cfPages/Styleguide/views/Project/types'
+import { projectPermission_ROLE } from '@cfPages/Styleguide/views/Project/types'
 
 const userData = {
   id: 12313,
   name: 'Xin Yue',
   email: 'xin@xueeee.com',
-  role: PROJECT_PERMISSION_ROLE.OWNER
+  role: projectPermission_ROLE.OWNER
 }
 
 

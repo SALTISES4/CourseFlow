@@ -29,7 +29,7 @@ class AlignmentHorizontalReverseParentOutcome extends React.Component<PropsType>
               props.child_outcome,
               data.outcome,
               0,
-              (response_data) => {
+              (responseData) => {
                 COURSEFLOW_APP.tinyLoader.endLoad()
               }
             )

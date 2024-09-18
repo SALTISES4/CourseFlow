@@ -40,14 +40,14 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
       let children
 
       if (
-        props.outcome[i].child_outcome_links.length === 0 ||
+        props.outcome[i].childOutcomeLinks.length === 0 ||
         props.outcome[i].depth >= 2
       )
         children = []
       else
         children = filterThenSortByID(
           props.outcomeoutcome,
-          props.outcome[i].child_outcome_links
+          props.outcome[i].childOutcomeLinks
         ).map((outcomeoutcome) =>
           // @ts-ignore
           createOutcomeNodeBranch(props, outcomeoutcome.child, nodecategory)
@@ -67,7 +67,7 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           ).data
           if (outcomenode) {
             outcomenodes_group.push({
-              node_id: node,
+              nodeId: node,
               degree: outcomenode.degree
             })
             continue
@@ -76,12 +76,12 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           let added = false
           for (let k = 0; k < children.length; k++) {
             if (children[k].outcomenodes[ii][j].degree !== null) {
-              outcomenodes_group.push({ node_id: node, degree: 0 })
+              outcomenodes_group.push({ nodeId: node, degree: 0 })
               added = true
               break
             }
           }
-          if (!added) outcomenodes_group.push({ node_id: node, degree: null })
+          if (!added) outcomenodes_group.push({ nodeId: node, degree: null })
         }
         let total = null
         if (children.length > 0) {
@@ -130,9 +130,9 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
 }
 
 function createChildren(outcome, props, nodeCategories) {
-  if (outcome.child_outcome_links.length === 0 || outcome.depth >= 2) return []
+  if (outcome.childOutcomeLinks.length === 0 || outcome.depth >= 2) return []
 
-  return outcome.child_outcome_links.map((link) =>
+  return outcome.childOutcomeLinks.map((link) =>
     createOutcomeNodeBranch(props, link.child, nodeCategories)
   )
 }
@@ -146,7 +146,7 @@ function createOutcomeNodesGroup(
 ) {
   const outcomenodesGroup = category.nodes.map((node) => {
     const outcomenode = getOutcomeNode(props, node, outcomeId)
-    if (outcomenode) return { node_id: node, degree: outcomenode.degree }
+    if (outcomenode) return { nodeId: node, degree: outcomenode.degree }
 
     return createOutcomeNodeForChildren(node, children, categoryIndex)
   })
@@ -164,12 +164,12 @@ function createOutcomeNodeForChildren(nodeId, children, categoryIndex) {
   for (const child of children) {
     if (child?.outcomenodes[categoryIndex][nodeId].degree !== null) {
       return {
-        node_id: nodeId,
+        nodeId: nodeId,
         degree: 0
       }
     }
   }
-  return { node_id: nodeId, degree: null }
+  return { nodeId: nodeId, degree: null }
 }
 
 function calculateGroupTotal(children, outcomenodesGroup) {
@@ -215,14 +215,14 @@ function calculateTotal(children, outcomenodes) {
 //       let children
 //
 //       if (
-//         props.outcome[i].child_outcome_links.length === 0 ||
+//         props.outcome[i].childOutcomeLinks.length === 0 ||
 //         props.outcome[i].depth >= 2
 //       )
 //         children = []
 //       else
 //         children = filterThenSortByID(
 //           props.outcomeoutcome,
-//           props.outcome[i].child_outcome_links
+//           props.outcome[i].childOutcomeLinks
 //         ).map((outcomeoutcome) =>
 //           createOutcomeNodeBranch(props, outcomeoutcome.child, nodecategory)
 //         )
@@ -241,7 +241,7 @@ function calculateTotal(children, outcomenodes) {
 //           ).data
 //           if (outcomenode) {
 //             outcomenodes_group.push({
-//               node_id: node,
+//               nodeId: node,
 //               degree: outcomenode.degree
 //             })
 //             continue
@@ -250,12 +250,12 @@ function calculateTotal(children, outcomenodes) {
 //           let added = false
 //           for (var k = 0; k < children.length; k++) {
 //             if (children[k].outcomenodes[ii][j].degree !== null) {
-//               outcomenodes_group.push({ node_id: node, degree: 0 })
+//               outcomenodes_group.push({ nodeId: node, degree: 0 })
 //               added = true
 //               break
 //             }
 //           }
-//           if (!added) outcomenodes_group.push({ node_id: node, degree: null })
+//           if (!added) outcomenodes_group.push({ nodeId: node, degree: null })
 //         }
 //         let total = null
 //         if (children.length > 0) {

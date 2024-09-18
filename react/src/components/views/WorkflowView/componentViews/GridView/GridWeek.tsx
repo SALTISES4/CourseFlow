@@ -47,8 +47,8 @@ class GridWeekUnconnected extends EditableComponentWithComments<
     super(props)
 
     // from this.renderer
-    // view_comments
-    // selection_manager
+    // viewComments
+    // selectionManager
     this.objectType = CfObjectType.WEEK // @todo check addEditable
   }
 
@@ -58,10 +58,10 @@ class GridWeekUnconnected extends EditableComponentWithComments<
   render() {
     const data = this.props.data
 
-    const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
+    const defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)
     const nodes = this.props.nodes.map((node) => <GridNode data={node} />)
 
-    const comments = this.context.workflow.view_comments ? (
+    const comments = this.context.workflow.viewComments ? (
       <this.AddCommenting />
     ) : (
       <></>
@@ -79,7 +79,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<
         }
       >
         <div className="week-title">
-          <TitleText title={data.title} defaultText={default_text} />
+          <TitleText title={data.title} defaultText={defaultText} />
           <div className="grid-ponderation">
             {this.props.total_theory +
               '/' +
@@ -107,7 +107,7 @@ const mapStateToProps = (
 
   const node_weeks = Utility.filterThenSortByID<TNodeweek>(
     state.nodeweek,
-    data.nodeweek_set
+    data.nodeweekSet
   )
   const nodes_data = node_weeks
     .map((nodeweek) => getNodeByID(state, nodeweek.node).data)
@@ -115,23 +115,23 @@ const mapStateToProps = (
   // let nodes_data = Utility.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Utility.checkSetHidden(node,state.objectset));
 
   // @todo getNodeByID returns GetNodeByIDType
-  // which does not contain represents_workflow property
+  // which does not contain representsWorkflow property
   // so this will always be false, verify and remove check
   const override_data = nodes_data.map((node) => {
     // @ts-ignore
-    if (node.represents_workflow)
+    if (node.representsWorkflow)
       return {
         ...node,
         // @ts-ignore
-        ...node.linked_workflow_data
+        ...node.linkedWorkflowData
       }
     else return node
   })
 
   const general_education = override_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.time_general_hours)
-        return previousValue + currentValue.time_general_hours
+      if (currentValue && currentValue.timeGeneralHours)
+        return previousValue + currentValue.timeGeneralHours
       return previousValue
     },
     0
@@ -139,23 +139,23 @@ const mapStateToProps = (
 
   const specific_education = override_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.time_specific_hours)
-        return previousValue + currentValue.time_specific_hours
+      if (currentValue && currentValue.timeSpecificHours)
+        return previousValue + currentValue.timeSpecificHours
       return previousValue
     },
     0
   )
 
   const total_theory = override_data.reduce((previousValue, currentValue) => {
-    if (currentValue && currentValue.ponderation_theory)
-      return previousValue + currentValue.ponderation_theory
+    if (currentValue && currentValue.ponderationTheory)
+      return previousValue + currentValue.ponderationTheory
     return previousValue
   }, 0)
 
   const total_practical = override_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderation_practical)
-        return previousValue + currentValue.ponderation_practical
+      if (currentValue && currentValue.ponderationPractical)
+        return previousValue + currentValue.ponderationPractical
       return previousValue
     },
     0
@@ -163,8 +163,8 @@ const mapStateToProps = (
 
   const total_individual = override_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderation_individual)
-        return previousValue + currentValue.ponderation_individual
+      if (currentValue && currentValue.ponderationIndividual)
+        return previousValue + currentValue.ponderationIndividual
       return previousValue
     },
     0
@@ -173,8 +173,8 @@ const mapStateToProps = (
   const total_time = total_theory + total_practical + total_individual
 
   const total_required = override_data.reduce((previousValue, currentValue) => {
-    if (currentValue && currentValue.time_required)
-      return previousValue + parseInt(currentValue.time_required)
+    if (currentValue && currentValue.timeRequired)
+      return previousValue + parseInt(currentValue.timeRequired)
     return previousValue
   }, 0)
 

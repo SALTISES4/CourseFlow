@@ -1,9 +1,11 @@
 import json
+import logging
 
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ProtectedError
 from django.http import HttpRequest, JsonResponse
 
+from course_flow.apps import logger
 from course_flow.decorators import (
     from_same_workflow,
     user_can_edit,
@@ -121,7 +123,8 @@ def json_api_post_insert_child_outcome(request: HttpRequest) -> JsonResponse:
         else:
             raise ValidationError("Uknown component type")
 
-    except ValidationError:
+    except ValidationError as e:
+        logger.log(logging.INFO, e)
         return JsonResponse({"action": "error"})
 
     response_data = {
@@ -164,7 +167,8 @@ def json_api_post_new_outcome_for_workflow(
         outcome_workflow = OutcomeWorkflow.objects.create(
             workflow=workflow, outcome=outcome, rank=workflow.outcomes.count()
         )
-    except ValidationError:
+    except ValidationError as e:
+        logger.log(logging.INFO, e)
         return JsonResponse({"action": "error"})
 
     response_data = {

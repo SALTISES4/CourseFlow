@@ -1,6 +1,6 @@
 import { StyledDialog, StyledForm } from '@cf/components/common/dialog/styles'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import { CFRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { TopBarProps } from '@cf/types/common'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -70,7 +70,7 @@ const ProjectCreateDialog = ({
     mutationFn: createProject,
     onSuccess: (resp: CreateProjectResp) => {
       const path = generatePath(CFRoutes.PROJECT, {
-        id: String(resp.data_package.id)
+        id: String(resp.dataPackage.id)
       })
       onDialogClose()
       navigate(path)

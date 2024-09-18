@@ -90,7 +90,7 @@ class NodeUnconnected extends EditableComponentWithActions<
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.data.is_dropped == prevProps.data.is_dropped) {
+    if (this.props.data.isDropped == prevProps.data.isDropped) {
       this.updatePorts()
     } else {
       Utility.triggerHandlerEach($('.node'), 'component-updated')
@@ -116,8 +116,8 @@ class NodeUnconnected extends EditableComponentWithActions<
 
   doubleClick(evt) {
     evt.stopPropagation()
-    if (this.props.data.linked_workflow) {
-      window.open(this.props.data.linked_workflow_data.url)
+    if (this.props.data.linkedWorkflow) {
+      window.open(this.props.data.linkedWorkflowData.url)
     }
   }
 
@@ -161,7 +161,7 @@ class NodeUnconnected extends EditableComponentWithActions<
             // @ts-ignore // data draggable is custom
             drag_item[0].dataDraggable.outcome,
             1,
-            (response_data) => {
+            (responseData) => {
               COURSEFLOW_APP.tinyLoader.endLoad()
             }
           )
@@ -221,10 +221,10 @@ class NodeUnconnected extends EditableComponentWithActions<
     const mouseover_actions = []
 
     const data = this.props.data
-    const selection_manager = this.context.selectionManager
+    const selectionManager = this.context.selectionManager
 
-    if (data.represents_workflow) {
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id }
+    if (data.representsWorkflow) {
+      data_override = { ...data, ...data.linkedWorkflowData, id: data.id }
     } else {
       data_override = { ...data }
     }
@@ -240,10 +240,10 @@ class NodeUnconnected extends EditableComponentWithActions<
         />,
         $('.workflow-canvas')[0]
       )
-      node_links = data.outgoing_links.map((link) => (
+      node_links = data.outgoingLinks.map((link) => (
         <NodeLink key={link} objectId={link} node_div={this.mainDiv} />
       ))
-      if (data.has_autolink)
+      if (data.hasAutolink)
         auto_link = (
           <AutoLink nodeID={this.props.objectId} node_div={this.mainDiv} />
         )
@@ -258,14 +258,14 @@ class NodeUnconnected extends EditableComponentWithActions<
           }}
           style={{ borderColor: Constants.getColumnColour(this.props.column) }}
         >
-          {data.outcomenode_unique_set.map((outcomenode) => (
+          {data.outcomenodeUniqueSet.map((outcomenode) => (
             <OutcomeNode key={outcomenode} objectId={outcomenode} />
           ))}
         </div>
       )
 
     const side_actions = []
-    if (data.outcomenode_unique_set.length > 0) {
+    if (data.outcomenodeUniqueSet.length > 0) {
       side_actions.push(
         <div className="outcome-node-indicator">
           <div
@@ -277,42 +277,42 @@ class NodeUnconnected extends EditableComponentWithActions<
               borderColor: Constants.getColumnColour(this.props.column)
             }}
           >
-            {data.outcomenode_unique_set.length}
+            {data.outcomenodeUniqueSet.length}
           </div>
           {outcomenodes}
         </div>
       )
     }
 
-    if (data.context_classification > 0)
+    if (data.contextClassification > 0)
       lefticon = (
         <div className="node-icon">
           <img
             title={
-              choices.context_choices.find(
-                (obj) => obj.type == data.context_classification
+              choices.contextChoices.find(
+                (obj) => obj.type == data.contextClassification
               ).name
             }
             src={
               COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              Constants.context_keys[data.context_classification] +
+              Constants.contextKeys[data.contextClassification] +
               '.svg'
             }
           />
         </div>
       )
-    if (data.task_classification > 0) {
+    if (data.taskClassification > 0) {
       righticon = (
         <div className="node-icon">
           <img
             title={
               choices.task_choices.find(
-                (obj) => obj.type == data.task_classification
+                (obj) => obj.type == data.taskClassification
               ).name
             }
             src={
               COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              Constants.task_keys[data.task_classification] +
+              Constants.taskKeys[data.taskClassification] +
               '.svg'
             }
           />
@@ -320,7 +320,7 @@ class NodeUnconnected extends EditableComponentWithActions<
       )
     }
 
-    if (data.is_dropped) {
+    if (data.isDropped) {
       dropIcon = 'droptriangleup'
     } else {
       dropIcon = 'droptriangledown'
@@ -331,15 +331,15 @@ class NodeUnconnected extends EditableComponentWithActions<
 
     let clickfunc = this.doubleClick.bind(this)
 
-    if (data.linked_workflow_data) {
+    if (data.linkedWorkflowData) {
       if (
-        data.linked_workflow_data.url == 'noaccess' ||
-        data.linked_workflow_data.url == 'nouser'
+        data.linkedWorkflowData.url == 'noaccess' ||
+        data.linkedWorkflowData.url == 'nouser'
       ) {
         linktext = _t('<Inaccessible>')
         clickfunc = null
         link_class += ' link-noaccess'
-      } else if (data.linked_workflow_data.deleted) {
+      } else if (data.linkedWorkflowData.deleted) {
         linktext = _t('<Deleted>')
         clickfunc = null
         link_class += ' link-noaccess'
@@ -348,7 +348,7 @@ class NodeUnconnected extends EditableComponentWithActions<
       }
     }
 
-    if (data.linked_workflow)
+    if (data.linkedWorkflow)
       linkIcon = (
         <div className={link_class} onClick={clickfunc}>
           <img
@@ -379,17 +379,17 @@ class NodeUnconnected extends EditableComponentWithActions<
     }
 
     if (data.lock) {
-      style.outline = '2px solid ' + data.lock.user_colour
+      style.outline = '2px solid ' + data.lock.userColour
     }
 
-    if (Utility.checkSetHidden(data, this.props.object_sets)) {
+    if (Utility.checkSetHidden(data, this.props.objectSets)) {
       style.display = 'none'
     }
 
     const cssClass = [
-      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type],
-      data.is_dropped ? 'dropped' : '',
-      data.lock ? 'locked locked-' + data.lock.user_id : ''
+      'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],
+      data.isDropped ? 'dropped' : '',
+      data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
     if (!this.context.permissions.workflowPermission.readOnly) {
@@ -398,7 +398,7 @@ class NodeUnconnected extends EditableComponentWithActions<
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
 
-    if (this.context.workflow.view_comments) {
+    if (this.context.workflow.viewComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -444,10 +444,10 @@ class NodeUnconnected extends EditableComponentWithActions<
             </div>
             <div className="node-drop-side node-drop-right">
               <div className="node-drop-time">
-                {data_override.time_required &&
-                  data_override.time_required +
+                {data_override.timeRequired &&
+                  data_override.timeRequired +
                     ' ' +
-                    choices.time_choices[data_override.time_units].name}
+                    choices.time_choices[data_override.timeUnits].name}
               </div>
             </div>
           </div>

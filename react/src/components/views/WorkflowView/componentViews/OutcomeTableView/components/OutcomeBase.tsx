@@ -10,7 +10,7 @@ import { connect } from 'react-redux'
  * regardless of the orientation of the table
  */
 type ConnectedProps = {
-  outcomes_type: any
+  outcomesType: any
   outcome: any
   outcomenode: any
   outcomeoutcome: any
@@ -34,7 +34,7 @@ class OutcomeBaseUnconnected extends ComponentWithToggleDrop<PropsType> {
     if (this.props.type === 'outcome_table') {
       return (
         <Outcome
-          outcomes_type={this.props.outcomes_type}
+          outcomesType={this.props.outcomesType}
           // objectId={this.outcome_tree.id} @todo these were the original vars, but they don't exist
           // outcome_tree={this.outcome_tree}
           objectId={outcomeTree.id}
@@ -45,7 +45,7 @@ class OutcomeBaseUnconnected extends ComponentWithToggleDrop<PropsType> {
     }
     return (
       <CompetencyMatrixView
-        outcomes_type={this.props.outcomes_type}
+        outcomesType={this.props.outcomesType}
         //objectId={this.outcome_tree.id} @todo these were the original vars, but they don't exist
         // outcome_tree={this.outcome_tree}
         objectId={outcomeTree.id}
@@ -84,7 +84,7 @@ class OutcomeBaseUnconnected extends ComponentWithToggleDrop<PropsType> {
  *******************************************************/
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
-    outcomes_type: state.workflow.outcomes_type,
+    outcomesType: state.workflow.outcomesType,
     outcome: state.outcome,
     outcomenode: state.outcomenode,
     outcomeoutcome: state.outcomeoutcome

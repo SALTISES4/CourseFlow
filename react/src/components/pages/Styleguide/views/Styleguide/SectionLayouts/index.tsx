@@ -1,4 +1,4 @@
-import { CFRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router/appRoutes'
 import Section from '@cfPages/Styleguide/views/Homepage/components/Section'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'

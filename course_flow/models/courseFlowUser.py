@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models._common import User, title_max_length
+from course_flow.models.common import User, title_max_length
 
 # EN/FR language preferences
 LANGUAGE_CHOICES = [

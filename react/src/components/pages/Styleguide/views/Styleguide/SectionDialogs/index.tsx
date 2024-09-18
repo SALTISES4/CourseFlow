@@ -73,7 +73,7 @@ const SectionDialogs = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.ACTIVITY_EDIT)}
+            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_EDIT)}
           >
             Edit Activity
           </Button>
@@ -90,7 +90,7 @@ const SectionDialogs = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.PROGRAM_EDIT)}
+            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_EDIT)}
           >
             Edit Program
           </Button>
@@ -107,7 +107,7 @@ const SectionDialogs = () => {
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.COURSE_EDIT)}
+            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_EDIT)}
           >
             Edit Course
           </Button>

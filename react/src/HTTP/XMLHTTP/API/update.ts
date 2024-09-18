@@ -1,5 +1,4 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -172,14 +171,14 @@ export function updateOutcomehorizontallinkDegree(
 
 //Set the linked workflow for the node
 export function setLinkedWorkflow(
-  node_id,
-  workflow_id,
+  nodeId,
+  workflowId,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   const url = apiPaths.json_api.workflow.link
   API_POST(url, {
-    nodePk: node_id,
-    workflowPk: workflow_id
+    nodePk: nodeId,
+    workflowPk: workflowId
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)
   })
@@ -189,18 +188,18 @@ export function setLinkedWorkflow(
  * Turn a week into a strategy or vice versa
  *
  * @param weekPk
- * @param is_strategy
+ * @param isStrategy
  * @param callBackFunction
  */
 export function toggleStrategyQuery(
   weekPk: number,
-  is_strategy: boolean,
+  isStrategy: boolean,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   const url = apiPaths.json_api.workflow.strategy__toggle
   API_POST(url, {
     weekPk: weekPk,
-    is_strategy: is_strategy
+    isStrategy: isStrategy
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)
   })

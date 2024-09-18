@@ -11,7 +11,7 @@ export function formatProjectEntity(
     return allDisciplines.find((item) => item.id === projDisc).title
   })
 
-  const formattedObjectSets: ObjectSetType[] = project.object_sets.map(
+  const formattedObjectSets: ObjectSetType[] = project.objectSets.map(
     (item) => {
       return {
         title: item.title,
@@ -25,7 +25,7 @@ export function formatProjectEntity(
     title: project.title,
     description: project.description,
     isFavorite: project.favourite,
-    created: formatDate(project.created_on),
+    created: formatDate(project.createdOn),
     disciplines: formattedDisciplines,
     objectSets: formattedObjectSets
   }

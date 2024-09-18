@@ -7,7 +7,7 @@ import MenuButton, {
 } from '@cfPages/Styleguide/components/MenuButton'
 import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
 import {
-  PROJECT_PERMISSION_ROLE,
+  projectPermission_ROLE,
   PermissionUserType,
   ProjectDetailsType
 } from '@cfPages/Styleguide/views/Project/types'
@@ -36,15 +36,15 @@ import {
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
-    name: PROJECT_PERMISSION_ROLE.EDITOR,
+    name: projectPermission_ROLE.EDITOR,
     label: _t('Editor')
   },
   {
-    name: PROJECT_PERMISSION_ROLE.COMMENTER,
+    name: projectPermission_ROLE.COMMENTER,
     label: _t('Commenter')
   },
   {
-    name: PROJECT_PERMISSION_ROLE.VIEWER,
+    name: projectPermission_ROLE.VIEWER,
     label: _t('Viewer')
   }
 ]
@@ -92,7 +92,7 @@ const OverviewTab = ({
               <ListItemText primary={user.name} secondary={user.email} />
               <MenuButton
                 selected={user.role}
-                disabled={user.role === PROJECT_PERMISSION_ROLE.OWNER}
+                disabled={user.role === projectPermission_ROLE.OWNER}
                 options={[
                   ...roleMenuOptions,
                   {
@@ -109,7 +109,7 @@ const OverviewTab = ({
                 ]}
                 onChange={(role) => console.log('changed to', role)}
                 placeholder={
-                  user.role === PROJECT_PERMISSION_ROLE.OWNER
+                  user.role === projectPermission_ROLE.OWNER
                     ? 'Owner'
                     : roleMenuOptions.find((p) => p.name === user.role)?.label
                 }

@@ -15,18 +15,18 @@ const cache = createCache({
 })
 
 export class Comparison {
-  private selection_manager: SelectionManager
+  private selectionManager: SelectionManager
   private readOnly: boolean
   private viewComments: boolean
   private addComments: boolean
-  private view_type: WorkflowViewType
+  private viewType: WorkflowViewType
   private container: JQuery
   private projectData: any
   private userPermission: any
 
   constructor(props: WorkflowComparisonViewDTO) {
-    this.projectData = props.project_data
-    this.userPermission = props.user_permission // @todo double check we're getting this from data object
+    this.projectData = props.projectData
+    this.userPermission = props.userPermission // @todo double check we're getting this from data object
 
     //@todo this a jquery global function and needs to be refactored / removed
     makeActiveSidebar('#project' + this.projectData.id)
@@ -38,25 +38,25 @@ export class Comparison {
   //  -- then pass a 'view type' state handler to the child
   //  -- not sure why there's a loader at level since we don't make a query here, but it can probably go
   //
-  render(container, view_type = WorkflowViewType.WORKFLOW) {
+  render(container, viewType = WorkflowViewType.WORKFLOW) {
     this.container = container
-    this.view_type = view_type
+    this.viewType = viewType
 
     reactDom.render(<Loader />, container[0])
 
     switch (this.userPermission) {
-      case Constants.permission_keys['none']:
-      case Constants.permission_keys['view']:
+      case Constants.permissionKeys['none']:
+      case Constants.permissionKeys['view']:
         this.readOnly = true
         break
 
-      case Constants.permission_keys['comment']:
+      case Constants.permissionKeys['comment']:
         this.readOnly = true
         this.viewComments = true
         this.addComments = true
         break
 
-      case Constants.permission_keys['edit']:
+      case Constants.permissionKeys['edit']:
         this.readOnly = false
         this.viewComments = true
         this.addComments = true
@@ -65,21 +65,21 @@ export class Comparison {
         break
     }
 
-    this.selection_manager = new SelectionManager(this.readOnly)
+    this.selectionManager = new SelectionManager(this.readOnly)
 
     if (
-      view_type === WorkflowViewType.WORKFLOW ||
-      view_type === WorkflowViewType.OUTCOME_EDIT
+      viewType === WorkflowViewType.WORKFLOW ||
+      viewType === WorkflowViewType.OUTCOME_EDIT
     ) {
       const theme = createTheme({})
       reactDom.render(
         <ComparisonView
-          view_type={view_type}
+          viewType={viewType}
           container={this.container}
           parentRender={(a, b) => this.render(a, b)}
-          read_only={this.readOnly}
+          readOnly={this.readOnly}
           projectData={this.projectData}
-          selection_manager={this.selection_manager}
+          selectionManager={this.selectionManager}
         />,
         container[0]
       )

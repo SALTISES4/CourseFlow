@@ -105,7 +105,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
     })
   }
 
-  nodeLinkAdded(target, source_port, target_port) {
+  nodeLinkAdded(target, sourcePort, targetPort) {
     const props = this.props
     if (target == this.props.nodeID) {
       return
@@ -114,8 +114,8 @@ export class NodePorts extends React.Component<PropsType, StateType> {
     newNodeLink(
       props.nodeID,
       target,
-      Constants.port_keys.indexOf(source_port),
-      Constants.port_keys.indexOf(target_port)
+      Constants.portKeys.indexOf(sourcePort),
+      Constants.portKeys.indexOf(targetPort)
     )
   }
 
@@ -133,8 +133,8 @@ export class NodePorts extends React.Component<PropsType, StateType> {
       node_dimensions = { width: 0, height: 0 }
     }
 
-    for (const port_type in Constants.node_ports) {
-      for (const port in Constants.node_ports[port_type]) {
+    for (const port_type in Constants.nodePorts) {
+      for (const port in Constants.nodePorts[port_type]) {
         ports.push(
           <circle
             data-port-type={port_type}
@@ -143,10 +143,10 @@ export class NodePorts extends React.Component<PropsType, StateType> {
             r="6"
             key={port_type + port}
             cx={
-              Constants.node_ports[port_type][port][0] * node_dimensions.width
+              Constants.nodePorts[port_type][port][0] * node_dimensions.width
             }
             cy={
-              Constants.node_ports[port_type][port][1] * node_dimensions.height
+              Constants.nodePorts[port_type][port][1] * node_dimensions.height
             }
           />
         )

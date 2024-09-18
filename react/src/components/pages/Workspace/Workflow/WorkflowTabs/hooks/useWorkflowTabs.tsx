@@ -1,5 +1,5 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { CFRoutes, RelativeRoutes } from '@cf/router'
+import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { WorkflowViewType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 import { _t } from '@cf/utility/utilityFunctions'

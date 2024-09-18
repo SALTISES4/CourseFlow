@@ -1,19 +1,12 @@
-import ActivityCreateDialog from '@cf/components/common/dialog/common/ActivityCreateDialog'
-import CourseCreateDialog from '@cf/components/common/dialog/common/CourseCreateDialog'
 import PasswordResetDialog from '@cf/components/common/dialog/common/PasswordResetDialog'
-import ProgramCreateDialog from '@cf/components/common/dialog/common/ProgramCreateDialog'
 import ProjectCreateDialog from '@cf/components/common/dialog/common/ProjectCreateDialog'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import { CFRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { TopBarProps } from '@cf/types/common'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
-import createActivityData from '@cfComponents/dialog/common/ActivityCreateDialog/data'
-import createCourseData from '@cfComponents/dialog/common/CourseCreateDialog/data'
-import createProgramData from '@cfComponents/dialog/common/ProgramCreateDialog/data'
-import editActivityData from '@cfComponents/dialog/Workspace/_ARCHIVE/ActivityEditDialog/data'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
 import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -33,32 +26,19 @@ import ListItemText from '@mui/material/ListItemText'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import * as React from 'react'
-import { useState } from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
 
-const TopBar = ({ notifications, forms }: TopBarProps) => {
+const TopBar = ({ notifications }: TopBarProps) => {
   const navigate = useNavigate()
   const { dispatch } = useDialog()
-
-  const [notificationsMenuAnchorEl, setNotificationsMenuAnchorEl] =
-    useState(null)
-  const isNotificationsMenuOpen = Boolean(notificationsMenuAnchorEl)
-
-  const handleNotificationsMenuOpen = (event) => {
-    setNotificationsMenuAnchorEl(event.currentTarget)
-  }
 
   const handleLogout = () => {
     // not sure navigate can handle this
     navigate(apiPaths.external.logout, {
       replace: true
     })
-  }
-
-  const closeAllMenus = () => {
-    setNotificationsMenuAnchorEl(null)
   }
 
   const handleCreateClick = (resourceType: DIALOG_TYPE) => {
@@ -243,7 +223,7 @@ const TopBar = ({ notifications, forms }: TopBarProps) => {
         <ReturnLinks />
         <Box sx={{ flexGrow: 1 }} className="title" />
         <Box sx={{ display: 'flex' }}>
-          <AddMenu show/>
+          <AddMenu show />
           <NotificationsMenu />
           <AccountMenu />
         </Box>
@@ -273,10 +253,10 @@ const TopBar = ({ notifications, forms }: TopBarProps) => {
         }
       />
 
-      <ProjectCreateDialog
-        showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
-        formFields={forms.createProject.formFields}
-      />
+      {/*<ProjectCreateDialog*/}
+      {/*  showNoProjectsAlert={forms.createProject.showNoProjectsAlert}*/}
+      {/*  formFields={forms.createProject.formFields}*/}
+      {/*/>*/}
 
       {/*<ProgramCreateDialog*/}
       {/*  {...createProgramData}*/}

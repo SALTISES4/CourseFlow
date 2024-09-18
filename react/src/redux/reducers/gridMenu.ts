@@ -9,30 +9,30 @@ export default function gridMenuReducer(
   switch (action.type) {
     case GridMenuActions.ITEM_ADDED:
       // Create a deep copy of the relevant part of the state
-      const new_state = {
+      const newState = {
         ...state,
         owned_strategies: { ...state.owned_strategies },
-        owned_projects: { ...state.owned_projects }
+        ownedProjects: { ...state.ownedProjects }
       }
 
       // Determine which part of the state to update
       const target =
         action.payload.type === 'project'
-          ? 'owned_projects'
+          ? 'ownedProjects'
           : 'owned_strategies'
 
       // Deep copy the sections to maintain immutability
-      new_state[target].sections = new_state[target].sections.map(
+      newState[target].sections = newState[target].sections.map(
         (section) => ({
           ...section,
           objects:
-            section.object_type === action.payload.type
-              ? [...section.objects, action.payload.new_item]
+            section.objectType === action.payload.type
+              ? [...section.objects, action.payload.newItem]
               : [...section.objects]
         })
       )
 
-      return new_state
+      return newState
 
     default:
       return state
@@ -42,41 +42,41 @@ export default function gridMenuReducer(
 // export default function gridMenuReducer(state = {}, action) {
 //   switch (action.type) {
 //     case GridMenuActions.ITEM_ADDED:
-//       var new_state = { ...state } // @todo why the shallow copy here?
+//       var newState = { ...state } // @todo why the shallow copy here?
 //       if (action.payload.type !== 'project') {
-//         new_state.owned_strategies = { ...new_state.owned_strategies }
-//         new_state.owned_strategies.sections =
-//           new_state.owned_strategies.sections.slice()
-//         for (var i = 0; i < new_state.owned_projects.sections.length; i++) {
+//         newState.owned_strategies = { ...newState.owned_strategies }
+//         newState.owned_strategies.sections =
+//           newState.owned_strategies.sections.slice()
+//         for (var i = 0; i < newState.ownedProjects.sections.length; i++) {
 //           if (
-//             new_state.owned_strategies.sections[i].object_type ==
+//             newState.owned_strategies.sections[i].objectType ==
 //             action.payload.type
 //           ) {
-//             new_state.owned_strategies.sections[i].objects =
-//               new_state.owned_strategies.sections[i].objects.slice()
-//             new_state.owned_strategies.sections[i].objects.push(
-//               action.payload.new_item
+//             newState.owned_strategies.sections[i].objects =
+//               newState.owned_strategies.sections[i].objects.slice()
+//             newState.owned_strategies.sections[i].objects.push(
+//               action.payload.newItem
 //             )
 //           }
 //         }
 //       } else {
-//         new_state.owned_projects = { ...new_state.owned_projects }
-//         new_state.owned_projects.sections =
-//           new_state.owned_projects.sections.slice()
-//         for (var i = 0; i < new_state.owned_projects.sections.length; i++) {
+//         newState.ownedProjects = { ...newState.ownedProjects }
+//         newState.ownedProjects.sections =
+//           newState.ownedProjects.sections.slice()
+//         for (var i = 0; i < newState.ownedProjects.sections.length; i++) {
 //           if (
-//             new_state.owned_projects.sections[i].object_type ==
+//             newState.ownedProjects.sections[i].objectType ==
 //             action.payload.type
 //           ) {
-//             new_state.owned_projects.sections[i].objects =
-//               new_state.owned_projects.sections[i].objects.slice()
-//             new_state.owned_projects.sections[i].objects.push(
-//               action.payload.new_item
+//             newState.ownedProjects.sections[i].objects =
+//               newState.ownedProjects.sections[i].objects.slice()
+//             newState.ownedProjects.sections[i].objects.push(
+//               action.payload.newItem
 //             )
 //           }
 //         }
 //       }
-//       return new_state
+//       return newState
 //     default:
 //       return state
 //   }

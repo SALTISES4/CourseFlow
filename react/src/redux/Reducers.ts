@@ -32,8 +32,8 @@ const rootWorkflowReducers = {
   outcomeworkflow: outcomeworkflowReducer,
   outcomeoutcome: outcomeOutcomeReducer,
   outcomehorizontallink: outcomeHorizontalLinkReducer,
-  parent_workflow: parentWorkflowReducer,
-  parent_node: parentNodeReducer,
+  parentWorkflow: parentWorkflowReducer,
+  parentNode: parentNodeReducer,
   child_workflow: childWorkflowReducer,
   strategy: strategyReducer,
   objectset: objectSetReducer

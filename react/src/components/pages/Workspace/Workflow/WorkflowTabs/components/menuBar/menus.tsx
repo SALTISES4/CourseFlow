@@ -1,4 +1,5 @@
 import * as Constants from '@cf/constants'
+import { UserContext } from '@cf/context/userContext'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType, WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -30,16 +31,19 @@ type StateType = {
 }
 
 const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
-  const context = useContext(WorkFlowConfigContext)
+  const userContext = useContext(UserContext)
+  const workflowContext = useContext(WorkFlowConfigContext)
+  const workflow = useSelector((state: AppState) => state.workflow)
+  const project = useSelector((state: AppState) => state.parentProject)
 
-  const isStrategy = context.workflow.is_strategy
-  const userId = context.user.user_id
-  const workflowPermission = context.permissions.workflowPermission
-  const projectPermission = context.permissions.projectPermission
-  const workflowId = context.workflow.workflowId
-  const projectId = context.workflow.project.id
-  const workflowType = context.workflow
-  const publicView = context.public_view
+  const isStrategy = workflow.isStrategy
+  const userId = userContext.id
+  const workflowPermission = workflowContext.permissions.workflowPermission
+  const projectPermission = workflowContext.permissions.projectPermission
+  const workflowId = workflow.id
+  const projectId = project
+  const workflowType = workflow.type
+  const publicView = workflow.publicView
 
   const [state, setState] = useState<StateType>({
     openShareDialog: false,
@@ -60,13 +64,13 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
     console.log('duplicateItem')
   }
 
-  // clickImport(import_type, evt) {
+  // clickImport(importType, evt) {
   //   evt.preventDefault()
   //   renderMessageBox(
   //     {
-  //       object_id: this.props.data.id,
-  //       object_type: this.objectType,
-  //       import_type: import_type
+  //       objectId: this.props.data.id,
+  //       objectType: this.objectType,
+  //       importType: importType
   //     },
   //     'import',
   //     () => {
@@ -118,7 +122,7 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
       show:
         userId &&
         !isStrategy &&
-        projectPermission === Constants.permission_keys.edit
+        projectPermission === Constants.permissionKeys.edit
     },
     {
       id: 'copy-to-library',

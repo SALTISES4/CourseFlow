@@ -32,15 +32,15 @@ type ObjectSetsType = ObjectSet & {
 }
 
 type StateType = {
-  object_sets: ObjectSetsType[]
+  objectSets: ObjectSetsType[]
   workflows: number[]
 }
 type PropsType = {
-  view_type: WorkflowViewType
+  viewType: WorkflowViewType
   // turn this into config object
   projectData: EProject
-  selection_manager: any
-  read_only: boolean
+  selectionManager: any
+  readOnly: boolean
   parentRender: any
   container: any
 }
@@ -60,11 +60,11 @@ class ComparisonView extends React.Component<PropsType, StateType> {
     const url_params = new URLSearchParams(querystring)
     const workflows_added = url_params
       .getAll('workflows')
-      .map((workflow_id) => parseInt(workflow_id))
+      .map((workflowId) => parseInt(workflowId))
 
     this.state = {
       workflows: workflows_added,
-      object_sets: props.projectData.object_sets
+      objectSets: props.projectData.objectSets
     }
   }
 
@@ -83,7 +83,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
 
   componentDidUpdate(prev_props: PropsType) {
     this.makeSortable()
-    if (prev_props.view_type != this.props.view_type) {
+    if (prev_props.viewType != this.props.viewType) {
       this.updateTabs()
     }
   }
@@ -101,7 +101,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
 
   updateTabs() {
     // Clear current selection
-    this.props.selection_manager.changeSelection(null, null)
+    this.props.selectionManager.changeSelection(null, null)
 
     // Determine disabled tabs
     const disabledTabs = [0, 1, 2, 3].filter(
@@ -126,7 +126,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   }
 
   changeView(type) {
-    this.props.selection_manager.changeSelection(null, null)
+    this.props.selectionManager.changeSelection(null, null)
 
     // force re-render the parent, see comment in react/src/components/views/ComparisonView/ComparisonView.tsx
     // this can be our state updater
@@ -172,15 +172,15 @@ class ComparisonView extends React.Component<PropsType, StateType> {
 
   toggleObjectSet(id: number) {
     let hidden: boolean
-    const object_sets = this.state.object_sets.slice()
+    const objectSets = this.state.objectSets.slice()
 
-    const object = object_sets.find((objectSet) => objectSet.id === id)
+    const object = objectSets.find((objectSet) => objectSet.id === id)
     if (object) {
       hidden = !object.hidden
       object.hidden = hidden
     }
 
-    this.setState({ object_sets: object_sets })
+    this.setState({ objectSets: objectSets })
 
     // @todo what is this doing?
     $(document).triggerHandler('object_set_toggled', { id: id, hidden: hidden })
@@ -216,7 +216,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
           <div>{_t('Comparing workflows for:')}</div>
           {/*<WorkflowTitle*/}
           {/*  data={data}*/}
-          {/*  no_hyperlink={true}*/}
+          {/*  noHyperlink={true}*/}
           {/*  class_name="project-title"*/}
           {/*/>*/}
           placeholder title
@@ -244,7 +244,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       .map((item, index) => {
         const viewClasses = [
           'hover-shade',
-          item.type === this.props.view_type ? 'active' : ''
+          item.type === this.props.viewType ? 'active' : ''
         ].join(' ')
 
         return (
@@ -261,7 +261,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   }
 
   Share = () => {
-    if (!this.props.read_only)
+    if (!this.props.readOnly)
       return (
         <div
           id="share-button"
@@ -305,10 +305,10 @@ class ComparisonView extends React.Component<PropsType, StateType> {
         key={workflowId}
         removeFunction={this.removeWorkflow.bind(this, workflowId)}
         // @ts-ignore
-        view_type={this.props.view_type}
+        viewType={this.props.viewType}
         workflowId={workflowId}
-        selection_manager={this.props.selection_manager}
-        object_sets={this.state.object_sets}
+        selectionManager={this.props.selectionManager}
+        objectSets={this.state.objectSets}
       />
     ))
   }
@@ -320,7 +320,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
 
     // @todo, not used
     // const style: React.CSSProperties = {
-    //   border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
+    //   border: data.lock ? '2px solid ' + data.lock.userColour : undefined
     // }
 
     // @todo, this share portal target does not exist
@@ -351,10 +351,10 @@ class ComparisonView extends React.Component<PropsType, StateType> {
             <RightSideBar
               wfcontext={WFContext.COMPARISON}
               // parentRender={this.props.parentRender}
-              readOnly={this.props.read_only}
+              readOnly={this.props.readOnly}
               data={data}
               toggleObjectSet={this.toggleObjectSet.bind(this)}
-              object_sets={this.state.object_sets}
+              objectSets={this.state.objectSets}
             />
           </div>
         </div>

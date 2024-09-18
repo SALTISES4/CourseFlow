@@ -1,5 +1,5 @@
 import { OuterContentWrap } from '@cf/mui/helper'
-import { CFRoutes, RelativeRoutes } from '@cf/router'
+import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { ProjectDetailsType } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
 import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
@@ -68,10 +68,10 @@ const ProjectDetails = () => {
   }, [])
 
   useEffect(() => {
-    if (!data?.data_package) return
+    if (!data?.dataPackage) return
 
     const project = formatProjectEntity(
-      data.data_package.project_data,
+      data.dataPackage.projectData,
       COURSEFLOW_APP.globalContextData.disciplines
     )
     setProject(project)

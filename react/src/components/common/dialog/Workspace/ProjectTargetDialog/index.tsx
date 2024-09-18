@@ -10,7 +10,7 @@ import { useState } from 'react'
 
 function ProjectTargetDialog({ id, actionFunction }: any) {
   const { show, onClose } = useDialog(DIALOG_TYPE.TARGET_PROJECT)
-  const [project_data, setProjectData] = useState<TargetProjectQueryResp>(null)
+  const [projectData, setProjectData] = useState<TargetProjectQueryResp>(null)
 
   const onDialogClose = (response: any) => {
     onClose()
@@ -23,12 +23,12 @@ function ProjectTargetDialog({ id, actionFunction }: any) {
       return null
     }
 
-    if (project_data == null) {
+    if (projectData == null) {
       getTargetProjectMenuQuery(id, setProjectData)
     } else {
       return (
         <TargetProjectDialogContents
-          data={project_data}
+          data={projectData}
           onDialogClose={onDialogClose}
         />
       )

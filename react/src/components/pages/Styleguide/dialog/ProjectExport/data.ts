@@ -3,22 +3,22 @@ import { EProject } from '@XMLHTTP/types/entity'
 
 const data: EProject = {
   author: 'Johnzy',
-  author_id: 3,
-  created_on: new Date(),
-  deleted_on: new Date(),
+  authorId: 3,
+  createdOn: new Date(),
+  deletedOn: new Date(),
   deleted: false,
   title: 'This is da project title',
   description: 'Well well well',
   disciplines: [],
   favourite: true,
   id: 12,
-  last_modified: 'Yesterday',
-  object_permission: {
-    permission_type: 1,
+  lastModified: 'Yesterday',
+  objectPermission: {
+    permissionType: 1,
     role_type: 2,
-    last_viewed: new Date()
+    lastViewed: new Date()
   },
-  object_sets: [
+  objectSets: [
     {
       id: 3,
       title: 'First object set'
@@ -34,7 +34,7 @@ const data: EProject = {
   ],
   published: true,
   type: 'project',
-  workflowproject_set: []
+  workflowprojectSet: []
 }
 
 export default data

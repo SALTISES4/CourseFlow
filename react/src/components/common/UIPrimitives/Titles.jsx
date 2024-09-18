@@ -43,8 +43,8 @@ export function workflowTitle(title, code, deleted) {
 export class WeekTitle extends React.Component {
   render() {
     const data = this.props.data
-    const default_text = data.week_type_display + ' ' + (this.props.rank + 1)
-    return <TitleText text={data.title} defaultText={default_text} />
+    const defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)
+    return <TitleText text={data.title} defaultText={defaultText} />
   }
 }
 
@@ -53,10 +53,10 @@ export class NodeTitle extends React.Component {
   render() {
     const data = this.props.data
     let text
-    if (data.represents_workflow && data.linked_workflow_data) {
-      text = data.linked_workflow_data.title
-      if (data.linked_workflow_data.code)
-        text = data.linked_workflow_data.code + ' - ' + text
+    if (data.representsWorkflow && data.linkedWorkflowData) {
+      text = data.linkedWorkflowData.title
+      if (data.linkedWorkflowData.code)
+        text = data.linkedWorkflowData.code + ' - ' + text
     } else text = data.title
 
     if (text == null || text == '') {

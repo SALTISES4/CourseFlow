@@ -1,9 +1,12 @@
+import logging
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 
+from course_flow.apps import logger
 from course_flow.models.activity import Activity
 from course_flow.models.column import Column
 from course_flow.models.comment import Comment
@@ -27,7 +30,7 @@ from course_flow.models.relations.weekWorkflow import WeekWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.models.week import Week
 from course_flow.models.workflow import Workflow
-from course_flow.utils import get_all_outcomes_for_outcome
+from course_flow.services import DAO
 
 
 @receiver(pre_delete, sender=Project)
@@ -337,7 +340,7 @@ def delete_existing_node_week(sender, instance, **kwargs):
         try:
             NodeWeek.objects.filter(node=instance.node).delete()
         except Exception as e:
-            print(e)
+            logger.log(logging.INFO, e)
         if instance.rank < 0:
             instance.rank = 0
         new_parent_count = NodeWeek.objects.filter(week=instance.week).count()
@@ -544,7 +547,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
         ):
             workflow = instance.content_object
             project = workflow.get_project()
-            if not project is None:
+            if project is not None:
                 if (
                     ObjectPermission.objects.filter(
                         user=instance.user,
@@ -608,7 +611,8 @@ def set_node_type_default(sender, instance, created, **kwargs):
     try:
         node.node_type = instance.week.week_type
         node.save()
-    except ValidationError:
+    except ValidationError as e:
+        logger.log(logging.INFO, e)
         print("couldn't set default node type")
 
 
@@ -619,7 +623,8 @@ def set_week_type_default(sender, instance, created, **kwargs):
         # @todo fix this
         week.week_type = instance.workflow.get_subclass().WORKFLOW_TYPE
         week.save()
-    except ValidationError:
+    except ValidationError as e:
+        logger.log(logging.INFO, e)
         print("couldn't set default week type")
 
 
@@ -628,7 +633,7 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
     if created:
         try:
             set_list = list(instance.parent.sets.all())
-            outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
+            outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(
                 instance.child
             )
             outcomenodes_to_add = OutcomeNode.objects.filter(
@@ -656,7 +661,8 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
                         parent_outcome=outcomeoutcome.child,
                         degree=horizontallink.degree,
                     )
-        except ValidationError:
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
             print("couldn't set default outcome depth or copy sets")
 
 

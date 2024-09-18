@@ -26,7 +26,7 @@ type StateProps = ReturnType<typeof mapStateToProps>
 
 type SelfProps = {
   readOnly: boolean
-  // renderMethod: (container, view_type: ViewType) => void
+  // renderMethod: (container, viewType: ViewType) => void
 }
 
 type PropsType = SelfProps & StateProps
@@ -105,7 +105,7 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
 const mapStateToProps = (state: AppState): ConnectedProps => ({
   data: getSortedOutcomesFromOutcomeWorkflowSet(
     state,
-    state.workflow.outcomeworkflow_set
+    state.workflow.outcomeworkflowSet
   ),
   workflow_type: state.workflow.type
 })

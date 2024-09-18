@@ -30,9 +30,9 @@ class PathGenerator {
   private last_point: Direction
   constructor(
     source_point: NumTuple,
-    source_port: number,
+    sourcePort: number,
     target_point: NumTuple,
-    target_port: number,
+    targetPort: number,
     source_dims: NumTuple,
     target_dims: NumTuple
   ) {
@@ -42,8 +42,8 @@ class PathGenerator {
     }
     this.last_point = { source: source_point, target: target_point }
     this.direction = {
-      source: Constants.port_direction[source_port] as NumTuple,
-      target: Constants.port_direction[target_port] as NumTuple
+      source: Constants.portDirection[sourcePort] as NumTuple,
+      target: Constants.portDirection[targetPort] as NumTuple
     }
     this.hasTicked = { source: false, target: false }
     this.node_dims = { source: source_dims, target: target_dims }
@@ -149,7 +149,7 @@ class PathGenerator {
   padOut(port: Port) {
     this.addDelta(
       // is of type MathType
-      math.multiply(Constants.port_padding, this.direction[port]) as NumTuple,
+      math.multiply(Constants.portPadding, this.direction[port]) as NumTuple,
       port
     )
   }
@@ -249,13 +249,13 @@ class PathGenerator {
 export type OwnProps = {
   hovered: boolean
   node_selected: boolean
-  source_port_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
-  source_port: number
-  target_port_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
-  target_port: number
+  sourcePort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  sourcePort: number
+  targetPort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  targetPort: number
   source_dimensions: Dimensions
   target_dimensions: Dimensions
-  text_position?: number
+  textPosition?: number
   style?: Style
   clickFunction?: (evt: React.MouseEvent) => void
   title?: string | null
@@ -277,9 +277,9 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
   private parentNode: string
   getPathArray(
     source_point: NumTuple,
-    source_port: number,
+    sourcePort: number,
     target_point: NumTuple,
-    target_port: number
+    targetPort: number
   ) {
     const source_dims: NumTuple = [
       this.props.source_dimensions.width,
@@ -291,9 +291,9 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
     ]
     return new PathGenerator(
       source_point,
-      source_port,
+      sourcePort,
       target_point,
-      target_port,
+      targetPort,
       source_dims,
       target_dims
     )
@@ -345,7 +345,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
     if (this.props.lock) {
       return {
         ...this.props.style,
-        stroke: this.props.lock?.user_colour ?? '',
+        stroke: this.props.lock?.userColour ?? '',
         opacity: 1
       }
     }
@@ -362,16 +362,16 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
    *******************************************************/
   Title = ({ pathArray }) => {
     if (this.props.title && this.props.title !== '') {
-      const text_position = pathArray.getFractionalPoint(
-        this.props.text_position / 100.0
+      const textPosition = pathArray.getFractionalPoint(
+        this.props.textPosition / 100.0
       )
 
       return (
         <foreignObject
           width="100"
           height="100"
-          x={text_position[0] - 50}
-          y={text_position[1] - 50}
+          x={textPosition[0] - 50}
+          y={textPosition[1] - 50}
         >
           <div className="nodelinkwrapper">
             <div
@@ -389,7 +389,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
   render() {
     try {
       const source_transform = Utility.getSVGTranslation(
-        this.props.source_port_handle
+        this.props.sourcePort_handle
           .select(function () {
             // @todo be careful of the scope of this here
             // we need to sort this out
@@ -398,7 +398,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
           .attr('transform')
       )
 
-      this.props.target_port_handle
+      this.props.targetPort_handle
         .select(function () {
           // @todo be careful of the scope of this here
           return this.parentNode as Element
@@ -406,7 +406,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
         .attr('transform')
 
       const target_transform = Utility.getSVGTranslation(
-        this.props.target_port_handle
+        this.props.targetPort_handle
           .select(function () {
             // @todo be careful of the scope of this here
             return this.parentNode as Element
@@ -416,24 +416,24 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
 
       // @todo what is all this doing?
       const source_point: NumTuple = [
-        parseInt(this.props.source_port_handle.attr('cx')) +
+        parseInt(this.props.sourcePort_handle.attr('cx')) +
           parseInt(source_transform[0]),
-        parseInt(this.props.source_port_handle.attr('cy')) +
+        parseInt(this.props.sourcePort_handle.attr('cy')) +
           parseInt(source_transform[1])
       ]
 
       const target_point: NumTuple = [
-        parseInt(this.props.target_port_handle.attr('cx')) +
+        parseInt(this.props.targetPort_handle.attr('cx')) +
           parseInt(target_transform[0]),
-        parseInt(this.props.target_port_handle.attr('cy')) +
+        parseInt(this.props.targetPort_handle.attr('cy')) +
           parseInt(target_transform[1])
       ]
 
       const path_array = this.getPathArray(
         source_point,
-        this.props.source_port,
+        this.props.sourcePort,
         target_point,
-        this.props.target_port
+        this.props.targetPort
       )
 
       const path = this.getPath(path_array.findPath())

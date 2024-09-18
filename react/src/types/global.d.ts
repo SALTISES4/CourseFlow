@@ -80,7 +80,7 @@ interface GetPaths {
   get_favourites: string
   import: string
   get_public_workflow_child_data: string
-  get_public_parent_workflow_info: string
+  get_public_parentWorkflow_info: string
 }
 
 interface HTMLPaths {
@@ -161,8 +161,8 @@ interface GlobalContextData {
   workflow_choices: {
     task_choices: FieldChoice[]
     time_choices: FieldChoice[]
-    context_choices: FieldChoice[]
-    strategy_classification_choices: FieldChoice[]
+    contextChoices: FieldChoice[]
+    strategyClassification_choices: FieldChoice[]
     outcome_type_choices: FieldChoice[]
     outcome_sort_choices: FieldChoice[]
     column_choices: FieldChoice[]

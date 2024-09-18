@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { OBJECT_TYPE, VERB } from '@cf/types/enum'
+import { objectType } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { DuplicateBaseItemQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -26,19 +26,19 @@ export function duplicateBaseItemQuery(
   console.log('duplicating base item')
   const sendPostRequest = (url, data) => {
     API_POST(url, data).then((response: DuplicateBaseItemQueryResp) => {
-callBackFunction(response)
+      callBackFunction(response)
     })
   }
 
   const itemPkString = itemPk
   const projectPkString = projectID
 
-  if (objectType === OBJECT_TYPE.PROJECT) {
+  if (objectType === objectType.PROJECT) {
     const url = apiPaths.json_api.project.duplicate
     sendPostRequest(url, {
       projectPk: itemPkString
     })
-  } else if (objectType === OBJECT_TYPE.STRATEGY) {
+  } else if (objectType === objectType.STRATEGY) {
     const url = apiPaths.json_api.workflow.strategy__duplicate
     sendPostRequest(url, {
       workflowPk: itemPkString
@@ -68,6 +68,6 @@ export function duplicateSelfQuery(
     objectType: objectType,
     throughType: throughType
   }).then((response: EmptyPostResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }

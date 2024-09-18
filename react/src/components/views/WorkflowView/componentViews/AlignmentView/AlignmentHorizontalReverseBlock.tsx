@@ -68,7 +68,7 @@ type ConnectedType = {
   restriction_set: {
     weeks: number[]
     nodes: number[]
-    parent_outcomes: number[]
+    parentOutcomes: number[]
     child_outcomes: number[]
   }
 }
@@ -78,10 +78,10 @@ const mapStateToProps = (
 ): ConnectedType => {
   const weekworkflows = Utility.filterThenSortByID(
     state.weekworkflow,
-    state.workflow.weekworkflow_set
+    state.workflow.weekworkflowSet
   ).map((weekworkflow) => ({
     weekworkflow: weekworkflow,
-    rank: state.workflow.weekworkflow_set.indexOf(weekworkflow.id)
+    rank: state.workflow.weekworkflowSet.indexOf(weekworkflow.id)
   }))
 
   if (ownProps.sort == 'outcome') {
@@ -96,7 +96,7 @@ const mapStateToProps = (
     // )
 
     const allowed_child_outcome_ids_from_outcomes = state.outcomehorizontallink
-      .filter((hl) => allowed_outcome_ids.indexOf(hl.parent_outcome) >= 0)
+      .filter((hl) => allowed_outcome_ids.indexOf(hl.parentOutcome) >= 0)
       .map((hl) => hl.outcome)
 
     const allowed_child_outcome_ids = state.outcome
@@ -107,19 +107,19 @@ const mapStateToProps = (
       .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectset))
       .map((outcome) => outcome.id)
 
-    const allowed_node_ids_from_outcomes = state.outcomenode
+    const allowed_nodeIds_from_outcomes = state.outcomenode
       .filter((outcomenode) =>
         allowed_outcome_ids.includes(outcomenode.outcome)
       )
       .map((outcomenode) => outcomenode.node)
 
-    const allowed_node_ids = state.node
-      .filter((node) => allowed_node_ids_from_outcomes.indexOf(node.id) >= 0)
+    const allowed_nodeIds = state.node
+      .filter((node) => allowed_nodeIds_from_outcomes.indexOf(node.id) >= 0)
       .filter((node) => !Utility.checkSetHidden(node, state.objectset))
       .map((node) => node.id)
 
     const nodeweeks = state.nodeweek.filter((nodeweek) =>
-      allowed_node_ids.includes(nodeweek.node)
+      allowed_nodeIds.includes(nodeweek.node)
     )
     const allowed_week_ids = nodeweeks.map((nodeweek) => nodeweek.week)
 
@@ -127,15 +127,15 @@ const mapStateToProps = (
       weekworkflows: weekworkflows,
       restriction_set: {
         weeks: allowed_week_ids,
-        nodes: allowed_node_ids,
-        parent_outcomes: allowed_outcome_ids,
+        nodes: allowed_nodeIds,
+        parentOutcomes: allowed_outcome_ids,
         child_outcomes: allowed_child_outcome_ids
       }
     }
   } else if (ownProps.sort == 'week') {
     const allowed_outcome_ids = []
 
-    const allowed_node_ids = state.node
+    const allowed_nodeIds = state.node
       .filter((node) => !Utility.checkSetHidden(node, state.objectset))
       .map((node) => node.id)
 
@@ -158,8 +158,8 @@ const mapStateToProps = (
       weekworkflows: weekworkflows,
       restriction_set: {
         weeks: [ownProps.data.id],
-        nodes: allowed_node_ids,
-        parent_outcomes: allowed_outcome_ids,
+        nodes: allowed_nodeIds,
+        parentOutcomes: allowed_outcome_ids,
         child_outcomes: allowed_child_outcome_ids
       }
     }

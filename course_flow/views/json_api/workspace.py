@@ -1,4 +1,5 @@
 import json
+import logging
 from enum import Enum
 
 # from duplication
@@ -13,6 +14,7 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from course_flow.apps import logger
 from course_flow.decorators import (
     user_can_delete,
     user_can_edit,
@@ -50,13 +52,8 @@ from course_flow.serializers import (
     WeekWorkflowSerializerShallow,
     serializer_lookups_shallow,
 )
+from course_flow.services import DAO, Utility
 from course_flow.sockets import redux_actions as actions
-from course_flow.utils import (
-    get_all_outcomes_for_outcome,
-    get_descendant_outcomes,
-    get_model_from_str,
-    save_serializer,
-)
 from course_flow.views.json_api._validators import DeleteRequest
 
 
@@ -86,7 +83,7 @@ class WorkspaceEndpoint:
             object_type = body.get("objectType")
             data = body.get("data")
             changeFieldID = body.get("changeFieldID", False)
-            objects = get_model_from_str(object_type).objects
+            objects = DAO.get_model_from_str(object_type).objects
             if hasattr(objects, "get_subclass"):
                 object_to_update = objects.get_subclass(pk=object_id)
             else:
@@ -97,9 +94,10 @@ class WorkspaceEndpoint:
                 partial=True,
                 context={"user": request.user},
             )
-            save_serializer(serializer)
-        except ValidationError:
-            return JsonResponse({"action": "error"})
+            Utility.save_serializer(serializer)
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
+            return Response({"action": "error"})
         try:
             workflow = object_to_update.get_workflow()
             actions.dispatch_wf(
@@ -113,7 +111,8 @@ class WorkspaceEndpoint:
                     workflow,
                     actions.changeField(object_id, object_type, data),
                 )
-        except AttributeError:
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
             pass
 
         return Response({"message": "success"}, status=status.HTTP_200_OK)
@@ -138,15 +137,19 @@ class WorkspaceEndpoint:
         body = json.loads(request.body)
         object_id = body.get("objectID")
         object_type = body.get("objectType")
+
         try:
-            model = get_model_from_str(object_type).objects.get(id=object_id)
+            model = DAO.get_model_from_str(object_type).objects.get(
+                id=object_id
+            )
             workflow = None
             extra_data = None
             parent_id = None
             # object_suffix = ""
             try:
                 workflow = model.get_workflow()
-            except AttributeError:
+            except AttributeError as e:
+                logger.log(logging.INFO, e)
                 pass
             # Check to see if we have any linked workflows that need to be updated
             linked_workflows = False
@@ -176,7 +179,7 @@ class WorkspaceEndpoint:
                         Q(
                             linked_nodes__outcomes__in=[model.id]
                             + list(
-                                get_descendant_outcomes(model).values_list(
+                                DAO.get_descendant_outcomes(model).values_list(
                                     "pk", flat=True
                                 )
                             )
@@ -188,7 +191,7 @@ class WorkspaceEndpoint:
                     Node.objects.filter(
                         outcomes__in=[object_id]
                         + list(
-                            get_descendant_outcomes(model).values_list(
+                            DAO.get_descendant_outcomes(model).values_list(
                                 "pk", flat=True
                             )
                         )
@@ -196,15 +199,20 @@ class WorkspaceEndpoint:
                 )
             if object_type == "week":
                 parent_id = WeekWorkflow.objects.get(week=model).id
+
             elif object_type == "column":
                 parent_id = ColumnWorkflow.objects.get(column=model).id
+
             elif object_type == "node":
                 parent_id = NodeWeek.objects.get(node=model).id
+
             elif object_type == "nodelink":
                 parent_id = Node.objects.get(outgoing_links=model).id
+
             elif object_type == "outcome" and model.depth == 0:
                 parent_id = OutcomeWorkflow.objects.get(outcome=model).id
                 object_type = "outcome_base"
+
             elif object_type == "outcome":
                 parent_id = OutcomeOutcome.objects.get(child=model).id
             # Delete the object
@@ -266,10 +274,11 @@ class WorkspaceEndpoint:
         try:
             # Parse and validate the input data using Pydantic
             data = DeleteRequest(**json.loads(request.body))
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            logger.log(logging.INFO, e)
             return Response({"error": "Invalid JSON format"}, status=400)
         except ValidationError as e:
-            # Handle errors in validation
+            logger.log(logging.INFO, e)
             return Response({"error": str(e)}, status=401)
 
         # assing payload data to local objects
@@ -277,7 +286,9 @@ class WorkspaceEndpoint:
         object_type = data.objectType
 
         try:
-            model = get_model_from_str(object_type).objects.get(id=object_id)
+            model = DAO.get_model_from_str(object_type).objects.get(
+                id=object_id
+            )
             workflow = None
             extra_data = None
             parent_id = None
@@ -309,7 +320,7 @@ class WorkspaceEndpoint:
                         Q(
                             linked_nodes__outcomes__in=[model.id]
                             + list(
-                                get_descendant_outcomes(model).values_list(
+                                DAO.get_descendant_outcomes(model).values_list(
                                     "pk", flat=True
                                 )
                             )
@@ -345,7 +356,9 @@ class WorkspaceEndpoint:
 
             if object_type == "outcome" or object_type == "outcome_base":
                 outcomes_list = [object_id] + list(
-                    get_descendant_outcomes(model).values_list("pk", flat=True)
+                    DAO.get_descendant_outcomes(model).values_list(
+                        "pk", flat=True
+                    )
                 )
                 extra_data = RefreshSerializerNode(
                     Node.objects.filter(outcomes__in=outcomes_list),
@@ -370,8 +383,9 @@ class WorkspaceEndpoint:
 
         try:
             workflow = model.get_workflow()
-        except AttributeError:
-            pass
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
+        pass
         if workflow is not None:
             action = actions.deleteSelfSoftAction(
                 object_id, object_type, parent_id, extra_data
@@ -421,10 +435,10 @@ class WorkspaceEndpoint:
         try:
             with transaction.atomic():
                 if object_type == "week":
-                    model = get_model_from_str(object_type).objects.get(
+                    model = DAO.get_model_from_str(object_type).objects.get(
                         id=object_id
                     )
-                    parent = get_model_from_str(parent_type).objects.get(
+                    parent = DAO.get_model_from_str(parent_type).objects.get(
                         id=parent_id
                     )
                     through = WeekWorkflow.objects.get(
@@ -464,10 +478,10 @@ class WorkspaceEndpoint:
                         ).data,
                     }
                 elif object_type == "node":
-                    model = get_model_from_str(object_type).objects.get(
+                    model = DAO.get_model_from_str(object_type).objects.get(
                         id=object_id
                     )
-                    parent = get_model_from_str(parent_type).objects.get(
+                    parent = DAO.get_model_from_str(parent_type).objects.get(
                         id=parent_id
                     )
                     through = NodeWeek.objects.get(node=model, week=parent)
@@ -493,10 +507,10 @@ class WorkspaceEndpoint:
                         ).data,
                     }
                 elif object_type == "column":
-                    model = get_model_from_str(object_type).objects.get(
+                    model = DAO.get_model_from_str(object_type).objects.get(
                         id=object_id
                     )
-                    parent = get_model_from_str(parent_type).objects.get(
+                    parent = DAO.get_model_from_str(parent_type).objects.get(
                         id=parent_id
                     )
                     through = ColumnWorkflow.objects.get(
@@ -519,7 +533,7 @@ class WorkspaceEndpoint:
                     ).data
                     new_children_serialized = None
                 elif object_type == "outcome":
-                    model = get_model_from_str(object_type).objects.get(
+                    model = DAO.get_model_from_str(object_type).objects.get(
                         id=object_id
                     )
                     newmodel = fast_duplicate_outcome(model, request.user)
@@ -531,9 +545,9 @@ class WorkspaceEndpoint:
                         pass
 
                     if parent_type == "outcome":
-                        parent = get_model_from_str(parent_type).objects.get(
-                            id=parent_id
-                        )
+                        parent = DAO.get_model_from_str(
+                            parent_type
+                        ).objects.get(id=parent_id)
                         through = OutcomeOutcome.objects.get(
                             child=model, parent=parent
                         )
@@ -548,9 +562,9 @@ class WorkspaceEndpoint:
                             ).data
                         )
                     elif parent_type == "workflow":
-                        parent = get_model_from_str(parent_type).objects.get(
-                            id=parent_id
-                        )
+                        parent = DAO.get_model_from_str(
+                            parent_type
+                        ).objects.get(id=parent_id)
                         through = OutcomeWorkflow.objects.get(
                             outcome=model, workflow=parent
                         )
@@ -568,9 +582,10 @@ class WorkspaceEndpoint:
                     new_model_serialized = OutcomeSerializerShallow(
                         newmodel
                     ).data
-                    outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
-                        newmodel
-                    )
+                    (
+                        outcomes,
+                        outcomeoutcomes,
+                    ) = DAO.get_all_outcomes_for_outcome(newmodel)
                     outcomenodes = OutcomeNode.objects.filter(
                         outcome__id__in=[newmodel.id]
                         + [x.id for x in outcomes]
@@ -592,7 +607,8 @@ class WorkspaceEndpoint:
                     }
                 else:
                     raise ValidationError("Uknown component type")
-        except ValidationError:
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
             return JsonResponse({"error": "ObjectDoesNotExist"}, status=400)
 
         response_data = {
@@ -644,7 +660,8 @@ class WorkspaceEndpoint:
         try:
             # Parse and validate the input data using Pydantic
             data = DeleteRequest(**json.loads(request.body))
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            logger.log(logging.INFO, e)
             return Response({"error": "Invalid JSON format"}, status=400)
         except ValidationError as e:
             # Handle errors in validation
@@ -654,7 +671,9 @@ class WorkspaceEndpoint:
         object_type = data.objectType
 
         try:
-            model = get_model_from_str(object_type).objects.get(id=object_id)
+            model = DAO.get_model_from_str(object_type).objects.get(
+                id=object_id
+            )
             workflow = None
             extra_data = None
             parent_id = None
@@ -669,8 +688,9 @@ class WorkspaceEndpoint:
 
             try:
                 workflow = model.get_workflow()
-            except AttributeError:
-                pass
+            except AttributeError as e:
+                logger.log(logging.INFO, e)
+            pass
             # Check to see if we have any linked workflows that need to be updated
             linked_workflows = False
             if object_type == ObjectType.NODE:
@@ -697,7 +717,7 @@ class WorkspaceEndpoint:
                         Q(
                             linked_nodes__outcomes__in=[model.id]
                             + list(
-                                get_descendant_outcomes(model).values_list(
+                                DAO.get_descendant_outcomes(model).values_list(
                                     "pk", flat=True
                                 )
                             )
@@ -706,7 +726,9 @@ class WorkspaceEndpoint:
                 )
             if object_type == ObjectType.OUTCOME:
                 outcomes_list = [object_id] + list(
-                    get_descendant_outcomes(model).values_list("pk", flat=True)
+                    DAO.get_descendant_outcomes(model).values_list(
+                        "pk", flat=True
+                    )
                 )
                 extra_data = RefreshSerializerNode(
                     Node.objects.filter(outcomes__in=outcomes_list),

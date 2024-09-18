@@ -21,7 +21,7 @@ from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.utils import get_model_from_str
+from course_flow.services import DAO
 
 from ...models.activity import Activity
 from ...models.column import Column
@@ -2348,7 +2348,7 @@ class ModelViewTest(TestCase):
             "course",
             "program",
         ]:
-            item = get_model_from_str(object_type).objects.create(
+            item = DAO.get_model_from_str(object_type).objects.create(
                 author=author, published=True
             )
             response = self.client.post(
@@ -2372,7 +2372,7 @@ class ModelViewTest(TestCase):
             "course",
             "program",
         ]:
-            item = get_model_from_str(object_type).objects.create(
+            item = DAO.get_model_from_str(object_type).objects.create(
                 author=author, published=False
             )
             response = self.client.post(
@@ -2399,7 +2399,7 @@ class ModelViewTest(TestCase):
             model_str = "workflow"
             if object_type == "project":
                 model_str = "project"
-            item = get_model_from_str(object_type).objects.create(
+            item = DAO.get_model_from_str(object_type).objects.create(
                 author=author, published=True
             )
             response = self.client.post(

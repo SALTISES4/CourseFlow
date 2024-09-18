@@ -1,11 +1,6 @@
 //Get the data from all child workflows
-import { apiPathRoutes, apiPaths } from '@cf/router/apiRoutes'
-import {
-  CfObjectType,
-  LibraryObjectType,
-  VERB,
-  WorkSpaceType
-} from '@cf/types/enum'
+import { apiPaths } from '@cf/router/apiRoutes'
+import { CfObjectType, LibraryObjectType, WorkSpaceType } from '@cf/types/enum'
 import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents.jsx'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 import { UpdateWorkflowArgs } from '@XMLHTTP/types/args'
@@ -14,7 +9,7 @@ import {
   ProjectsForCreateQueryResp,
   TargetProjectQueryResp,
   WorkflowChildDataQueryResp,
-  WorkflowContextQueryResp,
+  // WorkflowContextQueryResp,
   WorkflowDataQueryResp,
   WorkflowParentDataQueryResp,
   WorkflowsForProjectQueryResp
@@ -39,8 +34,6 @@ export async function getWorkflowById(
   const base = apiPaths.json_api.workflow.detail
   const url = generatePath(base, { id })
 
-  console.log(url)
-
   return API_GET<GetWorkflowByIdQueryResp>(url)
 }
 
@@ -53,11 +46,11 @@ export async function getWorkflowById(
  * @param workflowPk
  * @param callBackFunction
  */
-export function getWorkflowDataQuery(
+export function getWorkflowQuery(
   id,
   callBackFunction = (_data: WorkflowDataQueryResp) => console.log('success')
 ) {
-  const base = apiPaths.json_api.workflow.detail__full
+  const base = apiPaths.json_api.workflow.detail
   const url = generatePath(base, { id })
 
   try {
@@ -181,23 +174,23 @@ export function getPublicWorkflowChildDataQuery(
  *******************************************************/
 
 //get the workflow's context data
-export function getWorkflowContextQuery(
-  workflowPk,
-  callBackFunction = (_data: WorkflowContextQueryResp) => console.log('success')
-) {
-  try {
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.post_paths.get_workflow_context,
-      {
-        workflowPk: workflowPk
-      }
-    ).then((response: WorkflowContextQueryResp) => {
-      callBackFunction(response)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
+// export function getWorkflowContextQuery(
+//   workflowPk,
+//   callBackFunction = (_data: WorkflowContextQueryResp) => console.log('success')
+// ) {
+//   try {
+//     API_POST(
+//       COURSEFLOW_APP.globalContextData.path.post_paths.get_workflow_context,
+//       {
+//         workflowPk: workflowPk
+//       }
+//     ).then((response: WorkflowContextQueryResp) => {
+//       callBackFunction(response)
+//     })
+//   } catch (err) {
+//     window.fail_function()
+//   }
+// }
 
 /**
  * Get possible projects that can be a target for the workflow to be duplicated into
@@ -248,13 +241,6 @@ export function getTemplates<T>(
   })
 }
 
-function openTargetProjectMenu(response, updateFunction) {
-  if (response.action === VERB.POSTED) {
-    renderMessageBox(response, 'target_project_menu', updateFunction)
-  } else {
-    alert('Failed to find potential projects.')
-  }
-}
 
 //Get the public data from the workflow
 export function getPublicParentWorkflowInfo(
@@ -264,7 +250,7 @@ export function getPublicParentWorkflowInfo(
 ) {
   try {
     $.get(
-      COURSEFLOW_APP.globalContextData.path.get_paths.get_public_parent_workflow_info.replace(
+      COURSEFLOW_APP.globalContextData.path.get_paths.get_public_parentWorkflow_info.replace(
         '0',
         workflowPk
       )

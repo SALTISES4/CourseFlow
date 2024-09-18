@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 
 from course_flow.models.courseFlowUser import CourseFlowUser
-from course_flow.models.discipline import Discipline
-from course_flow.models.project import Project
 
 
 class RegistrationForm(UserCreationForm):
@@ -68,19 +66,19 @@ class DisciplineIterator(forms.models.ModelChoiceIterator):
         )
 
 
-class CreateProject(forms.ModelForm):
-    title = forms.CharField(
-        label=_("Title"),
-        max_length=200,
-    )
-
-    disciplines = forms.ModelMultipleChoiceField(
-        label=_("Discipline"),
-        required=False,
-        queryset=Discipline.objects.all(),
-    )
-    disciplines.iterator = DisciplineIterator
-
-    class Meta:
-        model = Project
-        fields = ("title", "description", "disciplines")
+# class CreateProject(forms.ModelForm):
+#     title = forms.CharField(
+#         label=_("Title"),
+#         max_length=200,
+#     )
+#
+#     disciplines = forms.ModelMultipleChoiceField(
+#         label=_("Discipline"),
+#         required=False,
+#         queryset=Discipline.objects.all(),
+#     )
+#     disciplines.iterator = DisciplineIterator
+#
+#     class Meta:
+#         model = Project
+#         fields = ("title", "description", "disciplines")

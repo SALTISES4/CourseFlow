@@ -162,7 +162,7 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
 const mapStateToProps = (state: AppState): ConnectedProps => {
   const outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
     state,
-    state.workflow.outcomeworkflow_set
+    state.workflow.outcomeworkflowSet
   ).map((category) => ({
     ...category,
     outcomes: category.outcomes.map((outcome) =>
@@ -174,7 +174,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
     outcomes: outcomes,
     terms: Utility.filterThenSortByID(
       state.weekworkflow,
-      state.workflow.weekworkflow_set
+      state.workflow.weekworkflowSet
       // @ts-ignore
     ).map((wwf) => getWeekByID(state, wwf.week).data)
   }

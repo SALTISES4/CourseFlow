@@ -10,7 +10,7 @@ import { useState } from 'react'
 
 function WorkflowLinkDialog({ id }: any) {
   const { show, onClose } = useDialog(DIALOG_TYPE.LINK_WORKFLOW)
-  const [workflow_data, setWorkflowData] =
+  const [workflowData, setWorkflowData] =
     useState<LinkedWorkflowMenuQueryResp>(null)
 
   const onDialogClose = () => {
@@ -20,11 +20,11 @@ function WorkflowLinkDialog({ id }: any) {
 
   const getContent = () => {
     if (show) {
-      if (workflow_data == null) getLinkedWorkflowMenuQuery(id, setWorkflowData)
+      if (workflowData == null) getLinkedWorkflowMenuQuery(id, setWorkflowData)
       else
         return (
           <LinkWorkflowDialogContents
-            data={workflow_data}
+            data={workflowData}
             onDialogClose={onDialogClose}
           />
         )
@@ -49,7 +49,7 @@ function LinkWorkflowDialogContents({
 }: LinkWorkflowDialogContentsType) {
   return (
     <WorkflowsMenu
-      type={'linked_workflow_menu'}
+      type={'linkedWorkflow_menu'}
       data={data}
       actionFunction={onDialogClose}
     />

@@ -66,7 +66,7 @@ export enum CFRoutes {
   TEMP_PROJECT_WORKFLOWS = `/${DOMAIN}/temp-project/workflows`
 }
 
-export const CfRouter = createBrowserRouter([
+export const CFRouter = createBrowserRouter([
   {
     path: CFRoutes.HOME,
     element: (
@@ -251,4 +251,4 @@ export const CfRouter = createBrowserRouter([
   }
 ])
 
-export default CfRouter
+export default CFRouter

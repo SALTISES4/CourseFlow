@@ -8,9 +8,13 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see:
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
+import logging
 import os
 
+from csp.middleware import MiddlewareMixin
 from django.http import HttpRequest
+
+from .apps import logger
 
 #########################################################
 # PATHS
@@ -70,7 +74,6 @@ TEMPLATES = [
 # LOGGING
 #########################################################
 
-"""
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -106,7 +109,6 @@ LOGGING = {
         },
     },
 }
-"""
 
 DEFAULT_FROM_EMAIL = "noreply@courseflow.org"
 
@@ -128,7 +130,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -136,8 +137,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "csp.middleware.CSPMiddleware",
     "ratelimit.middleware.RatelimitMiddleware",
+    "csp.middleware.CSPMiddleware",
+    "djangorestframework_camel_case.middleware.CamelCaseMiddleWare",
+    "django.middleware.csrf.CsrfViewMiddleware",
 ]
 
 # ASGI
@@ -255,9 +258,21 @@ STATICFILES_FINDERS = (
 )
 
 REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": (
+        "djangorestframework_camel_case.render.CamelCaseJSONRenderer",
+        "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer",
+        # Any other renders
+    ),
+    "DEFAULT_PARSER_CLASSES": (
+        # If you use MultiPartFormParser or FormParser, we also have a camel case version
+        "djangorestframework_camel_case.parser.CamelCaseFormParser",
+        "djangorestframework_camel_case.parser.CamelCaseMultiPartParser",
+        "djangorestframework_camel_case.parser.CamelCaseJSONParser",
+        # Any other parsers
+    ),
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication"
-    ]
+    ],
 }
 
 COURSE_FLOW_RETURN_URL = {"name": "course_flow:home", "title": "myDalite"}
@@ -269,9 +284,11 @@ try:
 
     try:
         INSTALLED_APPS += LOCAL_APPS  # noqa F405
-    except NameError:
+    except NameError as e:
+        logger.log(logging.INFO, e)
         pass
-except ImportError:
+except ImportError as e:
+    logger.log(logging.INFO, e)
     import warnings
 
     warnings.warn(

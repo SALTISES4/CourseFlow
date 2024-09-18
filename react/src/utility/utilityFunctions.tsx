@@ -140,8 +140,8 @@ export function unescapeCharacters(string) {
 
 export function getUserDisplay(user) {
   let str = ''
-  if (user.first_name) str += user.first_name + ' '
-  if (user.last_name) str += user.last_name + ' '
+  if (user.firstName) str += user.firstName + ' '
+  if (user.lastName) str += user.lastName + ' '
   if (!str && user.username) str = user.username + ' '
   return str || user.email
 }

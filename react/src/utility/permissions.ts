@@ -7,8 +7,8 @@ export const calcIsProjectReadOnly = (
   data: GetProjectByIdQueryResp
 ): boolean => {
   return (
-    data.data_package.project_data.object_permission.permission_type ===
-    Constants.permission_keys['edit']
+    data.dataPackage.projectData.objectPermission.permissionType ===
+    Constants.permissionKeys['edit']
   )
 }
 const defaultWorkflowPermissions: WorkflowPermission = {

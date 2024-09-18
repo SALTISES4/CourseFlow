@@ -18,7 +18,7 @@ type ConnectedProps = TOutcomeNodeByID
 
 type OwnProps = {
   parentID?: number // is this required:
-  outcomes_type?: any
+  outcomesType?: any
   deleteSelfOverride?: any
 } & ComponentWithToggleProps
 type PropsType = ConnectedProps & OwnProps
@@ -27,7 +27,7 @@ type PropsType = ConnectedProps & OwnProps
  * The link between nodes and their tagged outcomes,
  * primarily used in the outcome edit view
  *
- * renderer.read_only
+ * renderer.readOnly
  *
  */
 class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
@@ -63,7 +63,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
     //Temporary confirmation; add better confirmation dialogue later
     else {
       COURSEFLOW_APP.tinyLoader.startLoad()
-      updateOutcomenodeDegree(data.node, data.outcome, 0, (response_data) => {
+      updateOutcomenodeDegree(data.node, data.outcome, 0, (responseData) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
       })
     }
@@ -79,15 +79,15 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
     const indicator = $(this.mainDiv.current).closest('.outcome-node-indicator')
 
     if (indicator.length >= 0) {
-      const num_outcomenodes = indicator
+      const numOutcomenodes = indicator
         .children('.outcome-node-container')
         .children('.outcome-node:not([style*="display: none"])').length
 
       indicator
         .children('.outcome-node-indicator-number')
-        .html(String(num_outcomenodes))
+        .html(String(numOutcomenodes))
 
-      if (num_outcomenodes === 0) {
+      if (numOutcomenodes === 0) {
         indicator.css('display', 'none')
       } else indicator.css('display', '')
     }
@@ -137,7 +137,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
 
         <CompletionImg
           completionStatus={data.degree}
-          outcomesType={this.props.outcomes_type}
+          outcomesType={this.props.outcomesType}
         />
 
         <SimpleOutcome

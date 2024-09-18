@@ -1,5 +1,4 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { AddTerminologyQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
@@ -9,7 +8,7 @@ export function newNodeQuery(
   weekPk,
   position = -1,
   column = -1,
-  column_type = -1,
+  columnType = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   const url = apiPaths.json_api.node.create
@@ -17,7 +16,7 @@ export function newNodeQuery(
     weekPk: weekPk,
     position: position,
     columnPk: column,
-    columnType: column_type
+    columnType: columnType
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)
   })
@@ -66,19 +65,19 @@ export function addStrategyQuery(
 }
 
 export function newNodeLink(
-  source_node,
-  target_node,
-  source_port,
-  target_port,
+  sourceNode,
+  targetNode,
+  sourcePort,
+  targetPort,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   const url = apiPaths.json_api.node.link__create
   API_POST(url, {
-    nodePk: source_node,
-    objectId: target_node,
+    nodePk: sourceNode,
+    objectId: targetNode,
     objectType: 'node',
-    sourcePort: source_port,
-    targetPort: target_port
+    sourcePort: sourcePort,
+    targetPort: targetPort
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)
   })
@@ -124,14 +123,14 @@ export function insertSiblingQuery(
  * @param projectPk
  * @param term
  * @param title
- * @param translation_plural
+ * @param translationPlural
  * @param callBackFunction
  */
 export function addObjectSetQuery(
   id: number,
   term: any,
   title: any,
-  translation_plural: any,
+  translationPlural: any,
   callBackFunction = (_data: AddTerminologyQueryResp) => console.log('success')
 ) {
   const base = apiPaths.json_api.project.object_set__create
@@ -141,7 +140,7 @@ export function addObjectSetQuery(
     projectPk: id,
     term: term,
     title: title,
-    translation_plural: translation_plural
+    translationPlural: translationPlural
   }).then((response: AddTerminologyQueryResp) => {
     callBackFunction(response)
   })

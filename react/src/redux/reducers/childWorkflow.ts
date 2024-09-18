@@ -39,7 +39,7 @@ function childWorkflowReducer(state = [], action: AnyAction) {
     case OutcomeBaseActions.DELETE_SELF_SOFT: {
       return state.map((item) => ({
         ...item,
-        outcomeworkflow_set: item.outcomeworkflow_set.filter(
+        outcomeworkflowSet: item.outcomeworkflowSet.filter(
           (id) => id !== action.payload.parent_id
         )
       }))
@@ -53,18 +53,18 @@ function childWorkflowReducer(state = [], action: AnyAction) {
           item.id === action.payload.parent_id ||
           item.id === action.payload.new_through.workflow
         ) {
-          const new_outcomeworkflow_set = [...item.outcomeworkflow_set]
+          const new_outcomeworkflowSet = [...item.outcomeworkflowSet]
           const index =
             action.type === OutcomeBaseActions.RESTORE_SELF
               ? action.payload.throughparent_index
               : action.payload.new_through.rank
 
-          new_outcomeworkflow_set.splice(
+          new_outcomeworkflowSet.splice(
             index,
             0,
             action.payload.throughparent_id || action.payload.new_through.id
           )
-          return { ...item, outcomeworkflow_set: new_outcomeworkflow_set }
+          return { ...item, outcomeworkflowSet: new_outcomeworkflowSet }
         }
         return item
       })
@@ -107,9 +107,9 @@ export default childWorkflowReducer
 //
 //     case OutcomeBaseActions.DELETE_SELF:
 //     case OutcomeBaseActions.DELETE_SELF_SOFT: {
-//       // Find index of the state item that contains the parent_id in its outcomeworkflow_set
+//       // Find index of the state item that contains the parent_id in its outcomeworkflowSet
 //       const index = state.findIndex((item) =>
-//         item.outcomeworkflow_set.includes(action.payload.parent_id)
+//         item.outcomeworkflowSet.includes(action.payload.parent_id)
 //       )
 //
 //       // If found, create a new state with the modified item
@@ -118,7 +118,7 @@ export default childWorkflowReducer
 //           idx === index
 //             ? {
 //                 ...item,
-//                 outcomeworkflow_set: item.outcomeworkflow_set.filter(
+//                 outcomeworkflowSet: item.outcomeworkflowSet.filter(
 //                   (id) => id !== action.payload.parent_id
 //                 )
 //               }
@@ -132,16 +132,16 @@ export default childWorkflowReducer
 //     case OutcomeBaseActions.RESTORE_SELF: {
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.parent_id) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...state[i] }
-//           new_state[i].outcomeworkflow_set =
-//             state[i].outcomeworkflow_set.slice()
-//           new_state[i].outcomeworkflow_set.splice(
+//           var newState = state.slice()
+//           newState[i] = { ...state[i] }
+//           newState[i].outcomeworkflowSet =
+//             state[i].outcomeworkflowSet.slice()
+//           newState[i].outcomeworkflowSet.splice(
 //             action.payload.throughparent_index,
 //             0,
 //             action.payload.throughparent_id
 //           )
-//           return new_state
+//           return newState
 //         }
 //       }
 //       return state
@@ -151,16 +151,16 @@ export default childWorkflowReducer
 //     case OutcomeActions.NEW_OUTCOME: {
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.new_through.workflow) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...state[i] }
-//           const new_outcomeworkflow_set = state[i].outcomeworkflow_set.slice()
-//           new_outcomeworkflow_set.splice(
+//           var newState = state.slice()
+//           newState[i] = { ...state[i] }
+//           const new_outcomeworkflowSet = state[i].outcomeworkflowSet.slice()
+//           new_outcomeworkflowSet.splice(
 //             action.payload.new_through.rank,
 //             0,
 //             action.payload.new_through.id
 //           )
-//           new_state[i].outcomeworkflow_set = new_outcomeworkflow_set
-//           return new_state
+//           newState[i].outcomeworkflowSet = new_outcomeworkflowSet
+//           return newState
 //         }
 //       }
 //       return state

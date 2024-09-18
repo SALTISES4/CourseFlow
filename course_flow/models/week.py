@@ -7,8 +7,9 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from course_flow.models.common import User
+
 from ._abstract import AbstractCourseFlowModel
-from ._common import User
 from .node import Node
 
 

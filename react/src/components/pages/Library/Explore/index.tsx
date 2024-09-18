@@ -2,12 +2,8 @@ import { _t } from '@cf/utility/utilityFunctions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useQuery } from '@tanstack/react-query'
 import { libraryObjectsSearchQuery } from '@XMLHTTP/API/library'
-import { getExploreContext } from '@XMLHTTP/API/pages'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
-import {
-  LibraryObjectsSearchQueryResp,
-  PageExploreQueryResp
-} from '@XMLHTTP/types/query'
+import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 import * as React from 'react'
 import { useMemo, useState } from 'react'
 
@@ -98,16 +94,6 @@ const ExplorePage = () => {
   )
 
   const {
-    data: exploreData,
-    error: exploreError,
-    isLoading: exploreIsLoading,
-    isError: exploreIsError
-  } = useQuery<PageExploreQueryResp>({
-    queryKey: ['getExploreContext'],
-    queryFn: getExploreContext
-  })
-
-  const {
     data: libData,
     error: libError,
     isLoading: libIsLoading,
@@ -124,9 +110,8 @@ const ExplorePage = () => {
   // there is probably a better way to do this, but i think it's fine for now until everything else has settled \
   // this lib filter patterm might not stay here for long
   const options = useMemo(() => {
-    if (!exploreData) return
-
-    const { disciplines } = exploreData.data_package
+    const { disciplines } = COURSEFLOW_APP.globalContextData
+    console.log(COURSEFLOW_APP.globalContextData)
     return {
       ...defaultOptionsSearchOptions,
       filterGroups: {
@@ -140,13 +125,13 @@ const ExplorePage = () => {
         })
       }
     }
-  }, [exploreData])
+  }, [])
 
   /*******************************************************
    * RENDER
    *******************************************************/
-  if (libIsLoading || exploreIsLoading) return <Loader />
-  if (libIsError || exploreIsError) {
+  if (libIsLoading) return <Loader />
+  if (libIsError) {
     return <div>An error occurred: {libError.message} </div>
   }
 

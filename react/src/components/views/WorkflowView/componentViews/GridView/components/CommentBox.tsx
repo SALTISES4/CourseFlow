@@ -28,14 +28,14 @@ type OwnProps = {
   parent: any
   // renderer: any /  not used
   workflowId: any
-  unread_comments: any
-  read_only: boolean
+  unreadComments: any
+  readOnly: boolean
   add_comments: any
 } & ComponentWithToggleProps
 
 type StateType = {
   tagging?: boolean
-  user_list?: any[]
+  userList?: any[]
   has_rendered?: boolean
 }
 
@@ -44,14 +44,14 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
   private input: React.RefObject<HTMLTextAreaElement>
   private submit: React.RefObject<HTMLImageElement>
   private tagPosition: number // @todo this was previously not defined
-  private unread_comments: any
+  private unreadComments: any
   constructor(props: PropsType) {
     super(props)
     this.input = React.createRef()
     this.submit = React.createRef()
     this.state = {}
     this.tagPosition = 0 // @todo this was previously not set
-    this.unread_comments = this.props.unread_comments
+    this.unreadComments = this.props.unreadComments
   }
 
   /*******************************************************
@@ -88,12 +88,12 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
 
     to_add += '@' + user.username + ' '
 
-    const new_value =
+    const newValue =
       current_value.slice(0, cursor_pos) +
       to_add +
       current_value.slice(cursor_pos + 1)
 
-    this.input.current.value = new_value
+    this.input.current.value = newValue
     this.input.current.selectionStart = this.input.current.value.length
     this.setState({
       tagging: false
@@ -120,7 +120,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
           loader.endLoad()
           this.setState({
             tagging: true,
-            user_list: response.editors.concat(response.commentors)
+            userList: response.editors.concat(response.commentors)
           })
         }
       )
@@ -139,7 +139,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     ) {
       removeComment(
         props.objectId,
-        Constants.object_dictionary[parent.objectType],
+        Constants.objectDictionary[parent.objectType],
         id,
         parent.reloadComments.bind(parent)
       )
@@ -158,7 +158,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     ) {
       removeAllComments(
         props.objectId,
-        Constants.object_dictionary[parent.objectType],
+        Constants.objectDictionary[parent.objectType],
         parent.reloadComments.bind(parent)
       )
     }
@@ -173,18 +173,18 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     $(this.submit.current).addClass('hidden')
     addComment(
       props.objectId,
-      Constants.object_dictionary[parent.objectType],
+      Constants.objectDictionary[parent.objectType],
       text,
       parent.reloadComments.bind(parent)
     )
   }
 
   commentsSeen() {
-    const unread_comments = this.unread_comments.slice()
+    const unreadComments = this.unreadComments.slice()
 
     const comments = this.props.comments.map((comment) => comment.id)
 
-    this.unread_comments = unread_comments.filter(
+    this.unreadComments = unreadComments.filter(
       (comment) => comments.indexOf(comment) < 0
     )
   }
@@ -197,8 +197,8 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
 
     const has_unread =
       this.props.comments.filter((value) => {
-        // @todo unread_comments is undefined
-        return this.unread_comments?.includes(value)
+        // @todo unreadComments is undefined
+        return this.unreadComments?.includes(value)
       }).length > 0
 
     if (this.state.has_rendered) {
@@ -238,7 +238,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     let comments
     if (this.props.comments)
       comments = this.props.comments.map((comment) => {
-        const is_unread = this.unread_comments.indexOf(comment.id) >= 0
+        const is_unread = this.unreadComments.indexOf(comment.id) >= 0
         let comment_class = 'comment'
         if (is_unread) comment_class += ' unread'
         const text = comment.text.replace(
@@ -251,13 +251,13 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
               <div className="comment-user">
                 {Utility.getUserDisplay(comment.user)}
               </div>
-              <div className="comment-on">{comment.created_on}</div>
+              <div className="comment-on">{comment.createdOn}</div>
             </div>
             <div
               className="comment-text"
               dangerouslySetInnerHTML={{ __html: text }}
             />
-            {!this.props.read_only && (
+            {!this.props.readOnly && (
               <div className="mouseover-actions">
                 <div
                   className="action-button"
@@ -292,7 +292,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
         />
       </div>
     )
-    if (!this.props.read_only && comments.length > 1)
+    if (!this.props.readOnly && comments.length > 1)
       top_contents.push(
         <div
           className="hover-shade"
@@ -316,7 +316,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     if (this.state.tagging) {
       tag_box = (
         <div className="comment-tag-box">
-          {this.state.user_list.map((user) => (
+          {this.state.userList.map((user) => (
             <div
               className="user-name hover-shade"
               onClick={this.addUserTag.bind(this, user)}

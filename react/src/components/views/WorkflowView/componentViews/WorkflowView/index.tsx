@@ -18,7 +18,7 @@ import { connect } from 'react-redux'
 
 type ConnectedProps = {
   data: AppState['workflow']
-  object_sets: AppState['objectset']
+  objectSets: AppState['objectset']
   week: AppState['week']
   node: AppState['node']
   outcome: AppState['outcome']
@@ -96,7 +96,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     child_id: number
   ) {
     if (type === 'columnworkflow') {
-      this.context.editableMethods.micro_update(
+      this.context.editableMethods.microUpdate(
         ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
@@ -110,7 +110,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
       )
     }
     if (type === 'weekworkflow') {
-      this.context.editableMethods.micro_update(
+      this.context.editableMethods.microUpdate(
         ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
@@ -133,7 +133,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     console.log('data in workflow view ')
     console.log(data)
 
-    const columnworkflows = data.columnworkflow_set?.map(
+    const columnworkflows = data.columnworkflowSet?.map(
       (columnworkflow, index) => (
         <ColumnWorkflow
           key={`columnworkflow-${columnworkflow}`}
@@ -142,7 +142,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
         />
       )
     )
-    const weekworkflows = data.weekworkflow_set?.map((weekworkflow, index) => (
+    const weekworkflows = data.weekworkflowSet?.map((weekworkflow, index) => (
       <WeekWorkflow
         condensed={data.condensed}
         key={`weekworkflow-${weekworkflow}`}
@@ -151,13 +151,13 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
       />
     ))
 
-    let css_class = 'workflow-details'
-    if (data.condensed) css_class += ' condensed'
+    let cssClass = 'workflow-details'
+    if (data.condensed) cssClass += ' condensed'
 
     // We render an svg canvas in front of the rest of
     // the workflow for drawing node ports and links
     return (
-      <div className={css_class}>
+      <div className={cssClass}>
         <WorkflowLegend />
         <div className="column-row" id={data.id + '-column-block'}>
           {columnworkflows}
@@ -186,7 +186,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
 }
 const mapStateToProps = (state: AppState): ConnectedProps => ({
   data: state.workflow,
-  object_sets: state.objectset,
+  objectSets: state.objectset,
   week: state.week,
   node: state.node,
   outcome: state.outcome

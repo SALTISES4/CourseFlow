@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
@@ -11,6 +12,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from course_flow.apps import logger
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.duplication_functions import fast_duplicate_project
 from course_flow.models import ObjectPermission, Project, Workflow
@@ -20,8 +22,8 @@ from course_flow.serializers.project import (
     ProjectSerializerShallow,
 )
 from course_flow.serializers.workflow import InfoBoxSerializer
-from course_flow.utils import get_user_permission
-from course_flow.view_utils import get_my_projects
+from course_flow.services import DAO
+from course_flow.services.project import ProjectService
 from course_flow.views.mixins import UserCanViewMixin
 
 
@@ -66,7 +68,7 @@ class ProjectEndpoint:
             project, context={"user": current_user, "request": request}
         )
 
-        user_permission = get_user_permission(project, current_user)
+        user_permission = DAO.get_user_permission(project, current_user)
 
         public_view = False  # moved from template layer
         is_strategy = False
@@ -96,8 +98,11 @@ class ProjectEndpoint:
             workflow_id = 0
 
         try:
-            data_package = get_my_projects(request.user, False, for_add=True)
-        except AttributeError:
+            data_package = ProjectService.get_my_projects(
+                request.user, False, for_add=True
+            )
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
             return JsonResponse({"action": "error"})
 
         return JsonResponse(
@@ -125,7 +130,8 @@ class ProjectEndpoint:
                     clone.save()
                 except (ValidationError, TypeError):
                     pass
-        except ValidationError:
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
             return Response(
                 {
                     "error": "you have error",
@@ -160,13 +166,14 @@ class ProjectEndpoint:
                 project.workflows.all(), many=True, context={"user": user}
             ).data
 
-        except AttributeError:
-            return Response(
-                {
-                    "error": "you have error",
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
+        return Response(
+            {
+                "error": "you have error",
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
         return Response(
             {
@@ -197,13 +204,14 @@ class ProjectEndpoint:
                 title=title,
                 translation_plural=translation_plural,
             )
-        except ValidationError:
-            return Response(
-                {
-                    "error": "you have error",
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
+        return Response(
+            {
+                "error": "you have error",
+            },
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
         return Response(
             {
                 "message": "success",
@@ -233,8 +241,10 @@ def json_api_post_get_projects_for_create(
             many=True,
             context={"user": user},
         ).data
-    except AttributeError:
+    except AttributeError as e:
+        logger.log(logging.INFO, e)
         return JsonResponse({"action": "error"})
+
     return JsonResponse(
         {
             "message": "success",
@@ -259,7 +269,7 @@ def json_api__project__detail__comparison__get(request):
     is_strategy = False
 
     current_user = request.user
-    user_permission = get_user_permission(project, current_user)
+    user_permission = DAO.get_user_permission(project, current_user)
 
     response_data = {
         "project_data": ProjectSerializerShallow(

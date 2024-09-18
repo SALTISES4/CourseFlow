@@ -20,7 +20,7 @@ import ParentOutcome from './ParentOutcomeBarOutcome'
 type ConnectedProps = {
   data: TSortedOutcomeNodes
   workflow: AppState['workflow']
-  parent_nodes: AppState['parent_node']
+  parentNodes: AppState['parentNode']
 }
 type SelfProps = {
   // renderer: any
@@ -74,7 +74,7 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
     })
 
     let multiple_parent_warning
-    if (this.props.parent_nodes.length > 1) {
+    if (this.props.parentNodes.length > 1) {
       multiple_parent_warning = (
         <div>
           {/* filled red small-inline */}
@@ -99,9 +99,9 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
 }
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
-    data: getSortedOutcomeNodesFromNodes(state, state.parent_node),
+    data: getSortedOutcomeNodesFromNodes(state, state.parentNode),
     workflow: state.workflow,
-    parent_nodes: state.parent_node
+    parentNodes: state.parentNode
   }
 }
 export default connect<ConnectedProps, object, SelfProps, AppState>(

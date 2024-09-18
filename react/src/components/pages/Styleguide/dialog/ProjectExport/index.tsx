@@ -179,13 +179,13 @@ function ExportProjectDialog({ project }: { project: EProject }) {
             </RadioGroup>
           </FormControl>
 
-          {project.object_sets.length > 0 && (
+          {project.objectSets.length > 0 && (
             <FormControl>
               <FormLabel id="export-sets-group-label">
                 Object set visibility
               </FormLabel>
               <FormGroup>
-                {project.object_sets.map((set, index) => (
+                {project.objectSets.map((set, index) => (
                   <FormControlLabel
                     key={index}
                     value={set.id}

@@ -125,7 +125,7 @@ const LibrarySearchView = ({
 
     if (!data || isError) return <div>error</div>
 
-    const cards = formatLibraryObjects(data.data_package.results)
+    const cards = formatLibraryObjects(data.dataPackage.results)
 
     return (
       <>
@@ -150,10 +150,10 @@ const LibrarySearchView = ({
     if (!data || isError) return <div>error</div>
     return (
       <FilterWorkflows
-        workflows={formatLibraryObjects(data.data_package.results)} // @todo memoize
+        workflows={formatLibraryObjects(data.dataPackage.results)} // @todo memoize
         // @todo need to handle key down (enter) which will trigger the main search results
         onChange={(workflow) => {
-          const match = data.data_package.results.find(
+          const match = data.dataPackage.results.find(
             (el) => workflow.id === el.id
           )
           navigateToItem(match.id, match.type)

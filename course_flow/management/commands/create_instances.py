@@ -3,7 +3,7 @@ import json
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
-from course_flow.serializers import ActivitySerializer
+from course_flow.serializers import WorkflowSerializerShallow
 
 User = get_user_model()
 
@@ -24,7 +24,10 @@ class Command(BaseCommand):
         json_data = open(kwargs["path"])
         fixtures = json.load(json_data)
         fixtures["author"] = kwargs["username"]
-        serializer = ActivitySerializer(data=fixtures)
+
+        # serializer = ActivitySerializer(data=fixtures)
+        serializer = WorkflowSerializerShallow(data=fixtures)
+
         if serializer.is_valid():
             serializer.save()
             self.stdout.write("Default strategies have been built")

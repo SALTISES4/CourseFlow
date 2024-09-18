@@ -77,7 +77,7 @@ const NotificationsSettingsPage = () => {
     if (data) {
       dispatch({
         type: 'SET_UPDATES',
-        value: data.data_package.formData.receiveNotifications
+        value: data.dataPackage.formData.receiveNotifications
       })
     }
   }, [data])

@@ -55,7 +55,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
     return getSortedOutcomeIDFromOutcomeWorkflowSet(
       this.props.outcome,
       this.props.outcomeworkflow,
-      this.props.workflow.outcomeworkflow_set,
+      this.props.workflow.outcomeworkflowSet,
       this.props.objectset
     )
   }
@@ -63,7 +63,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
   getNodecategory() {
     const week_order = Utility.filterThenSortByID<TWeekworkflow>(
       this.props.weekworkflow,
-      this.props.workflow.weekworkflow_set
+      this.props.workflow.weekworkflowSet
     ).map((weekworkflow) => weekworkflow.week)
 
     const weeks_ordered = Utility.filterThenSortByID<TWeek>(
@@ -72,7 +72,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
     )
 
     const nodeweek_order = [].concat(
-      ...weeks_ordered.map((week) => week.nodeweek_set)
+      ...weeks_ordered.map((week) => week.nodeweekSet)
     )
     let nodeweeks_ordered = Utility.filterThenSortByID<TNodeweek>(
       this.props.nodeweek,
@@ -84,9 +84,9 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
     const nodes_ordered = Utility.filterThenSortByID<TNode>(
       this.props.node,
       node_order
-    ).filter((node) => !Utility.checkSetHidden(node, this.props.object_sets))
+    ).filter((node) => !Utility.checkSetHidden(node, this.props.objectSets))
 
-    switch (parseInt(this.props.workflow.outcomes_sort)) {
+    switch (parseInt(this.props.workflow.outcomesSort)) {
       case 0: {
         const nodes_allowed = nodes_ordered.map((node) => node.id)
         nodeweeks_ordered = nodeweeks_ordered.filter(
@@ -99,7 +99,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
         }
         return weeks_ordered.map((week, index) => {
           return {
-            title: week.title || week.week_type_display + ' ' + (index + 1),
+            title: week.title || week.weekTypeDisplay + ' ' + (index + 1),
             nodes: nodes_by_week[week.id] || []
           }
         })
@@ -108,7 +108,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
       case 1: {
         const column_order = Utility.filterThenSortByID<TColumnworkflow>(
           this.props.columnworkflow,
-          this.props.workflow.columnworkflow_set
+          this.props.workflow.columnworkflowSet
         ).map((columnworkflow) => columnworkflow.column)
         const columns_ordered = Utility.filterThenSortByID<TColumn>(
           this.props.column,
@@ -121,7 +121,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
         }
         return columns_ordered.map((column, index) => {
           return {
-            title: column.title || column.column_type_display,
+            title: column.title || column.columnTypeDisplay,
             nodes: nodes_by_column[column_order[index]] || []
           }
         })
@@ -139,7 +139,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
         const nodes_by_task = {}
         for (let i = 0; i < nodes_ordered.length; i++) {
           const node = nodes_ordered[i]
-          Utility.pushOrCreate(nodes_by_task, node.task_classification, node.id)
+          Utility.pushOrCreate(nodes_by_task, node.taskClassification, node.id)
         }
         return task_ordered.map((task) => {
           return { title: task.name, nodes: nodes_by_task[task.type] || [] }
@@ -150,7 +150,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
         const workflow_type = ['activity', 'course', 'program'].indexOf(
           this.props.workflow.type
         )
-        const context_ordered = this.props.renderer.context_choices.filter(
+        const context_ordered = this.props.renderer.contextChoices.filter(
           (x) =>
             x.type == 0 ||
             (x.type > 100 * workflow_type && x.type < 100 * (workflow_type + 1))
@@ -160,7 +160,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
           const node = nodes_ordered[i]
           Utility.pushOrCreate(
             nodes_by_context,
-            node.context_classification,
+            node.contextClassification,
             node.id
           )
         }
@@ -189,7 +189,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
     //   this.nodecategory_json = nodecategory_json
     // }
 
-    const outcomes_sorted = this.getOutcomesSorted()
+    const outcomesSorted = this.getOutcomesSorted()
 
     let has_nodes = false
     for (let i = 0; i < nodecategory.length; i++) {
@@ -199,7 +199,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
       }
     }
 
-    if (outcomes_sorted.length === 0 || !has_nodes) {
+    if (outcomesSorted.length === 0 || !has_nodes) {
       let text
       if (this.context.workflowView === WorkflowViewType.OUTCOMETABLE) {
         text = _t(
@@ -225,12 +225,12 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
         </div>
       ))
 
-      const outcomes = outcomes_sorted.map((category) => (
+      const outcomes = outcomesSorted.map((category) => (
         <div>
           {
-            // @todo  should object_sets be set?
+            // @todo  should objectSets be set?
             // @ts-ignore
-            this.props?.object_sets?.length > 0 && (
+            this.props?.objectSets?.length > 0 && (
               <div className="outcome-row outcome-category">
                 <div className="outcome-head">
                   <h4>{category.objectset.title}</h4>
@@ -255,7 +255,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
         <div className="workflow-details">
           <OutcomeLegend
             renderer={this.props.renderer}
-            //  outcomes_type={this.props.workflow.outcomes_type} @todo this was supplied by redux
+            //  outcomesType={this.props.workflow.outcomesType} @todo this was supplied by redux
           />
           <div className="outcome-table node-rows">
             <div className="outcome-row node-row">

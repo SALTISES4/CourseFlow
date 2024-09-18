@@ -11,6 +11,7 @@ import {
   EOutcomeOutcome,
   EOutcomeWorkflow,
   EOutcomenode,
+  EProject,
   EStrategy,
   EUser,
   EWeek,
@@ -34,8 +35,9 @@ export type AppState = {
   objectset: TObjectSet[]
   strategy: TStrategy[]
   //
-  parent_workflow?: TParentWorkflow[]
-  parent_node?: TParentNode[]
+  parentWorkflow?: TParentWorkflow[]
+  parentNode?: TParentNode[]
+  parentProject?: TProject
   outcomehorizontallink?: TOutcomeHorizontalLink[]
   child_workflow?: TChildWorkflow[]
 }
@@ -60,29 +62,29 @@ export type TUser = EUser
 
 export type TColumnworkflow = EOutcomeWorkflow & {
   outcome?: number
-  no_drag?: boolean
+  noDrag?: boolean
   column?: number
 }
 
 export type TNodeweek = ENodeweek
 
 export type TWeek = EWeek & {
-  is_dropped?: boolean
+  isDropped?: boolean
 }
 
 export type TWeekworkflow = EWeekworkflow & {
-  no_drag?: boolean
+  noDrag?: boolean
 }
 
 export type TOutcomeWorkflow = EOutcomeWorkflow
 
 export type TWorkflow = EWorkflow & {
   lock?: boolean
-  edit_count?: number
+  editCount?: number
   type?: WorkflowType
   strategy_icon?: number
-  DEFAULT_COLUMNS?: number[]
-  DEFAULT_CUSTOM_COLUMN?: number
+  defaultColumns?: number[]
+  defaultCustomColumn?: number
 }
 
 export type TNodelink = ENodelink
@@ -98,6 +100,7 @@ export type TChildWorkflow = any
 export type TOutcomeHorizontalLink = any
 export type TParentNode = any
 export type TDate = EDate
+export type TProject = EProject
 
 // ENUM
 export enum NodeTypeDisplay {

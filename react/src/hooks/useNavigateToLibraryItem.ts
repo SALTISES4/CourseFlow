@@ -1,4 +1,4 @@
-import { CFRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { LibraryObjectType } from '@cf/types/enum'
 import { useNavigate } from 'react-router-dom'
 import { generatePath } from 'react-router-dom'

@@ -179,7 +179,7 @@ const NotificationsPage = (): JSX.Element => {
   if (isLoading) return <Loader />
   if (isError) return <div>An error occurred: {error.message}</div>
 
-  const { notifications, unreadCount } = data.data_package
+  const { notifications, unreadCount } = data.dataPackage
   const totalPaginationPages = Math.ceil(
     pageState.notifications.length / pagination.countPerPage
   )

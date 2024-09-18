@@ -205,7 +205,7 @@ const ActivityCreateDialog = ({ steps, units }: PropsType) => {
               setTemplateData={setTemplateData}
               templates={templates}
               onTemplateSelect={onTemplateSelect}
-              template_type={'course'}
+              templateType={'course'}
             />
           )}
         </StyledForm>

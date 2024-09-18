@@ -5,22 +5,12 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
-from django.http import (
-    HttpRequest,
-    HttpResponse,
-    HttpResponseForbidden,
-    JsonResponse,
-)
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
-from django.urls import reverse
 from django.views.generic.edit import CreateView
 
-from course_flow import export_functions
 from course_flow.forms import RegistrationForm
-from course_flow.models import Project
-from course_flow.models.liveprojectmodels.liveProjectUser import (
-    LiveProjectUser,
-)
+from course_flow.services.export_import import Exporter
 
 
 def registration_view(request):
@@ -61,43 +51,44 @@ def ratelimited_view(request, exception):
     )
 
 
-@login_required
-def register_as_student(request: HttpRequest, project_hash) -> HttpResponse:
-    project = Project.get_from_hash(project_hash)
-    if project is None:
-        return HttpResponseForbidden(
-            "Couldn't find a classroom associated with that link"
-        )
-    # @todo shouldn't this be gone?
-    if project.liveproject is not None and not project.deleted:
-        user = request.user
-        if (
-            LiveProjectUser.objects.filter(
-                liveproject=project.liveproject, user=user
-            ).count()
-            == 0
-        ):
-            if project.author == user:
-                LiveProjectUser.objects.create(
-                    user=user,
-                    liveproject=project.liveproject,
-                    role_type=LiveProjectUser.ROLE_TEACHER,
-                )
-            else:
-                LiveProjectUser.objects.create(
-                    user=user,
-                    liveproject=project.liveproject,
-                    role_type=LiveProjectUser.ROLE_STUDENT,
-                )
-        return redirect(
-            reverse(
-                "course_flow:live-project-update", kwargs={"pk": project.pk}
-            )
-        )
-    else:
-        return HttpResponseForbidden(
-            "The selected classroom has been deleted or does not exist"
-        )
+#
+# @login_required
+# def register_as_student(request: HttpRequest, project_hash) -> HttpResponse:
+#     project = Project.get_from_hash(project_hash)
+#     if project is None:
+#         return HttpResponseForbidden(
+#             "Couldn't find a classroom associated with that link"
+#         )
+#     # @todo shouldn't this be gone?
+#     if project.liveproject is not None and not project.deleted:
+#         user = request.user
+#         if (
+#             LiveProjectUser.objects.filter(
+#                 liveproject=project.liveproject, user=user
+#             ).count()
+#             == 0
+#         ):
+#             if project.author == user:
+#                 LiveProjectUser.objects.create(
+#                     user=user,
+#                     liveproject=project.liveproject,
+#                     role_type=LiveProjectUser.ROLE_TEACHER,
+#                 )
+#             else:
+#                 LiveProjectUser.objects.create(
+#                     user=user,
+#                     liveproject=project.liveproject,
+#                     role_type=LiveProjectUser.ROLE_STUDENT,
+#                 )
+#         return redirect(
+#             reverse(
+#                 "course_flow:live-project-update", kwargs={"pk": project.pk}
+#             )
+#         )
+#     else:
+#         return HttpResponseForbidden(
+#             "The selected classroom has been deleted or does not exist"
+#         )
 
 
 @login_required
@@ -111,7 +102,7 @@ def get_saltise_download(request: HttpRequest) -> HttpResponse:
     file_ext = "xlsx"
 
     filename = "saltise-analytics-data" + "." + file_ext
-    file = export_functions.get_saltise_analytics()
+    file = Exporter.get_saltise_analytics()
     file_data = (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )

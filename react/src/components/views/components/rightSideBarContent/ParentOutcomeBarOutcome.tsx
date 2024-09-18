@@ -80,7 +80,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
   render() {
     const data = this.props.data
     //Child outcomes. See comment in models/outcome.py for more info.
-    const children = data.child_outcome_links.map((item) => (
+    const children = data.childOutcomeLinks.map((item) => (
       <ParentOutcomeOutcome
         key={item}
         objectId={item}
@@ -90,13 +90,13 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
       />
     ))
 
-    const dropIcon = this.state.is_dropped
+    const dropIcon = this.state.isDropped
       ? 'droptriangleup'
       : 'droptriangledown'
 
     let droptext
 
-    if (this.state.is_dropped) {
+    if (this.state.isDropped) {
       droptext = _t('hide')
     } else {
       droptext =
@@ -110,7 +110,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
       <div
         className={
           'outcome' +
-          ((this.state.is_dropped && ' dropped') || '') +
+          ((this.state.isDropped && ' dropped') || '') +
           ' outcome-' +
           data.id
         }
@@ -129,7 +129,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
           title="Toggle highlighting"
           onChange={this.clickFunction.bind(this)}
         />
-        {data.depth < 2 && data.child_outcome_links.length > 0 && (
+        {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
               <img
@@ -164,7 +164,7 @@ const MapStateToProps = (
     .filter((outcomeNode) => outcomeNode.outcome == own_props.objectId)
     .map((outcomeNode) => outcomeNode.node),
   horizontaloutcomes: state.outcomehorizontallink
-    .filter((ochl) => ochl.parent_outcome == own_props.objectId)
+    .filter((ochl) => ochl.parentOutcome == own_props.objectId)
     .map((ochl) => ochl.outcome)
 })
 

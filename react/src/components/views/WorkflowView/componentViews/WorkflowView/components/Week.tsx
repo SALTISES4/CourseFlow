@@ -115,7 +115,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     }
 
     this.lockChild(id, true, 'nodeweek')
-    this.context.editableMethods.micro_update(
+    this.context.editableMethods.microUpdate(
       ActionCreator.columnChangeNode(id, new_column)
     )
     columnChanged(this.context, id, new_column) // @todo again dragaction needs to be designed and is not on renderer (context) any more
@@ -127,12 +127,12 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       for (const col in this.props.nodes_by_column) {
         if (this.props.nodes_by_column[col].indexOf(id) >= 0) {
           const previous = this.props.nodes_by_column[col][new_position]
-          new_position = this.props.data.nodeweek_set.indexOf(previous)
+          new_position = this.props.data.nodeweekSet.indexOf(previous)
         }
       }
     }
 
-    this.context.editableMethods.micro_update(
+    this.context.editableMethods.microUpdate(
       ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     )
     insertedAt(
@@ -185,7 +185,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
             new_index,
             // @ts-ignore
             drag_item[0].dataDraggable.strategy,
-            (response_data) => {
+            (responseData) => {
               loader.endLoad()
             }
           )
@@ -198,14 +198,14 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
    * COMPONENTS
    *******************************************************/
   Nodes = () => {
-    if (!this.props.data.nodeweek_set.length) {
+    if (!this.props.data.nodeweekSet.length) {
       return (
         <div className="node-week placeholder" style={{ height: '100%' }}>
           Drag and drop nodes from the sidebar to add.
         </div>
       )
     }
-    return this.props.data.nodeweek_set.map((nodeweek) => (
+    return this.props.data.nodeweekSet.map((nodeweek) => (
       <NodeWeek
         key={nodeweek}
         objectId={nodeweek}
@@ -221,35 +221,35 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
    *******************************************************/
   render() {
     const data = this.props.data
-    const selection_manager = this.context.selectionManager
-    // const css_class = 'week'
+    const selectionManager = this.context.selectionManager
+    // const cssClass = 'week'
 
     const cssClasses = [
       'week',
-      data.is_strategy ? 'strategy' : '',
-      data.lock ? 'locked locked-' + data.lock.user_id : '',
-      data.is_dropped ? ' dropped' : ''
+      data.isStrategy ? 'strategy' : '',
+      data.lock ? 'locked locked-' + data.lock.userId : '',
+      data.isDropped ? ' dropped' : ''
     ].join(' ')
 
-    const default_text = !this.context.workflow.is_strategy
-      ? data.week_type_display + ' ' + (this.props.rank + 1)
+    const defaultText = !this.context.workflow.isStrategy
+      ? data.weekTypeDisplay + ' ' + (this.props.rank + 1)
       : undefined
-    const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
+    const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
 
     const style: React.CSSProperties = {
-      border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
+      border: data.lock ? '2px solid ' + data.lock.userColour : undefined
     }
 
     const mouseoverActions = []
     if (
       !this.context.permissions.workflowPermission.readOnly &&
-      !this.context.workflow.is_strategy
+      !this.context.workflow.isStrategy
     ) {
       mouseoverActions.push(<this.AddInsertSibling data={data} />)
       mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
       mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.context.workflow.view_comments) {
+    if (this.context.workflow.viewComments) {
       mouseoverActions.push(<this.AddCommenting />)
     }
 
@@ -262,12 +262,12 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           style={style}
           className={cssClasses}
           ref={this.mainDiv}
-          onClick={(evt) => selection_manager.changeSelection(evt, this)}
+          onClick={(evt) => selectionManager.changeSelection(evt, this)}
         >
           <div className="mouseover-container-bypass">
             <div className="mouseover-actions">{mouseoverActions}</div>
           </div>
-          <TitleText text={data.title} defaultText={default_text} />
+          <TitleText text={data.title} defaultText={defaultText} />
           <div
             className="node-block"
             id={this.props.objectId + '-node-block'}
@@ -297,20 +297,20 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
             // this.addEditable(data)
           }
           {/*// @todo verify this*/}
-          {data.strategy_classification > 0 && (
+          {data.strategyClassification > 0 && (
             <div className="strategy-tab">
               <div className="strategy-tab-triangle" />
               <div className="strategy-tab-square">
                 <div className="strategy-tab-circle">
                   <img
                     title={
-                      choices.strategy_classification_choices.find(
-                        (obj) => obj.type === data.strategy_classification
+                      choices.strategyClassification_choices.find(
+                        (obj) => obj.type === data.strategyClassification
                       ).name
                     }
                     src={
                       COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                      Constants.strategy_keys[data.strategy_classification] +
+                      Constants.strategyKeys[data.strategyClassification] +
                       '.svg'
                     }
                   />

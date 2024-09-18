@@ -48,7 +48,7 @@ import {
 
 type ConnectedProps = {
   data: AppState['workflow']
-  object_sets: AppState['objectset']
+  objectSets: AppState['objectset']
   week: AppState['week']
   node: AppState['node']
   outcome: AppState['outcome']
@@ -101,14 +101,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   private readOnly: boolean
 
-  private public_view: any
+  private publicView: any
   private data: ConnectedProps['data']
   private project: any
-  private selection_manager: SelectionManager
+  private selectionManager: SelectionManager
   private always_static: boolean
-  private user_id: any
-  private project_permission: number
-  private object_sets: any
+  private userId: any
+  private projectPermission: number
+  private objectSets: any
   private workflowId: number
 
   constructor(props: PropsType, context: WorkFlowContextType) {
@@ -123,8 +123,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     this.project = this.context.workflow.project
     this.workflowId = this.context.workflow.workflowId
 
-    this.project_permission = this.context.permissions.projectPermission
-    this.always_static = this.context.public_view
+    this.projectPermission = this.context.permissions.projectPermission
+    this.always_static = this.context.publicView
 
     this.state = {
       users: null,
@@ -132,7 +132,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       openExportDialog: false,
       openImportDialog: false
     } as StateType
-    this.selection_manager = this.context.selectionManager
+    this.selectionManager = this.context.selectionManager
   }
 
   /*******************************************************
@@ -148,7 +148,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     if (this.context.viewType === ViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQuery(this.workflowId, (response) => {
         this.props.dispatch(
-          ActionCreator.refreshStoreData(response.data_package)
+          ActionCreator.refreshStoreData(response.dataPackage)
         )
       })
     }
@@ -160,7 +160,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   getUserData() {
     // @todo should not be querying directly
     // needs a new permission, like canGetUserData
-    if (this.public_view || this.context.user.isStudent) {
+    if (this.publicView || this.context.user.isStudent) {
       return null
     }
     getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
@@ -172,7 +172,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * MENU HANDLERS
    *******************************************************/
   openEditMenu(evt: EventUnion) {
-    this.selection_manager.changeSelection(evt, this)
+    this.selectionManager.changeSelection(evt, this)
   }
 
   copyToProject = () => {
@@ -182,14 +182,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
       this.data.id,
       this.data.type,
       this.project.id,
-      (response_data) => {
+      (responseData) => {
         loader.endLoad()
         // @ts-ignore
         window.location =
           COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
             '0',
             // @ts-ignore
-            response_data.new_item.id
+            responseData.newItem.id
           )
       }
     )
@@ -252,27 +252,27 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     )
   }
 
-  pushImport(imports, import_type, text, disabled) {
+  pushImport(imports, importType, text, disabled) {
     let a_class = 'hover-shade'
     if (disabled) a_class = ' disabled'
     imports.push()
   }
 
-  duplicateItem(response_data) {
-    if (response_data.parentID != null) {
+  duplicateItem(responseData) {
+    if (responseData.parentID != null) {
       const utilLoader = new UtilityLoader('body')
       duplicateBaseItemQuery(
         this.data.id,
         this.data.type,
-        response_data.parentID,
-        (response_data) => {
+        responseData.parentID,
+        (responseData) => {
           utilLoader.endLoad()
           // @ts-ignore
           window.location =
             COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
               '0',
               // @ts-ignore
-              response_data.new_item.id
+              responseData.newItem.id
             )
         }
       )
@@ -283,7 +283,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   // @todo this can be rewritten already
   updateTabs() {
     //If the view type has changed, enable only appropriate tabs, and change the selection to none
-    this.selection_manager.changeSelection(null, null)
+    this.selectionManager.changeSelection(null, null)
     const disabled_tabs = []
 
     for (let i = 0; i <= 4; i++) {
@@ -369,15 +369,15 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     })
   }
 
-  updateFunction(new_data) {
-    if (new_data.liveproject) {
+  updateFunction(newData) {
+    if (newData.liveproject) {
       console.log('liveproject updated')
     } else {
       this.setState({
         ...this.state,
         data: {
           ...this.state.data,
-          ...new_data
+          ...newData
         },
         openEditDialog: false
       })
@@ -411,7 +411,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
           <h2>{window.gettext('Export project')}</h2>
         </DialogTitle>
         <ExportMenu
-          data={{ ...this.props.data, object_sets: this.object_sets }}
+          data={{ ...this.props.data, objectSets: this.objectSets }}
           actionFunction={this.closeModals}
         />
       </Dialog>
@@ -441,7 +441,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         action: this.openExportDialog.bind(this),
         icon: null,
         show:
-          (!this.public_view || this.user_id) &&
+          (!this.publicView || this.userId) &&
           this.context.permissions.workflowPermission.canView,
         seperator: true
       },
@@ -452,9 +452,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         action: this.copyToProject.bind(this),
         icon: null,
         show:
-          this.user_id &&
-          !this.data.is_strategy &&
-          this.project_permission === Constants.permission_keys.edit
+          this.userId &&
+          !this.data.isStrategy &&
+          this.projectPermission === Constants.permissionKeys.edit
       },
       {
         id: 'copy-to-library',
@@ -462,8 +462,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         action: this.openExportDialog.bind(this),
         icon: null,
         show:
-          !(this.public_view && !this.user_id) &&
-          !(this.public_view && !this.user_id)
+          !(this.publicView && !this.userId) &&
+          !(this.publicView && !this.userId)
       },
       {
         id: 'import-outcomes',
@@ -471,8 +471,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         action: this.importOutcomes.bind(this),
         icon: null,
         show:
-          !(this.public_view && !this.user_id) &&
-          !(this.public_view && !this.user_id)
+          !(this.publicView && !this.userId) &&
+          !(this.publicView && !this.userId)
       },
       {
         id: 'import-nodes',
@@ -480,8 +480,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         action: this.importNodes.bind(this),
         icon: null,
         show:
-          !(this.public_view && !this.user_id) &&
-          !(this.public_view && !this.user_id),
+          !(this.publicView && !this.userId) &&
+          !(this.publicView && !this.userId),
         seperator: true
       },
       {
@@ -521,13 +521,13 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     return [withIcons, withoutIcons] // Returns a tuple of arrays
   }
 
-  // clickImport(import_type, evt) {
+  // clickImport(importType, evt) {
   //   evt.preventDefault()
   //   renderMessageBox(
   //     {
-  //       object_id: this.props.data.id,
-  //       object_type: this.objectType,
-  //       import_type: import_type
+  //       objectId: this.props.data.id,
+  //       objectType: this.objectType,
+  //       importType: importType
   //     },
   //     'import',
   //     () => {
@@ -542,17 +542,17 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   //       <>
   //         <ImportMenu
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'outcomes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'outcomes'
   //           }}
   //           actionFunction={this.closeModals}
   //         />
   //         <ImportMenu
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'nodes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'nodes'
   //           }}
   //           actionFunction={this.closeModals}
   //         />
@@ -573,7 +573,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <ReturnLinks
           project={this.project}
           isStudent={this.context.user.isStudent}
-          publicView={this.public_view}
+          publicView={this.publicView}
           canView={this.context.permissions.workflowPermission.canView}
         />
         <div className="main-block">
@@ -594,13 +594,13 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
                 />
 
                 <WorkflowViewTabs
-                  isStrategy={this.context.workflow.is_strategy}
+                  isStrategy={this.context.workflow.isStrategy}
                   viewType={this.context.viewType}
                   data={this.data} // @todo clean this up
                   changeView={this.changeView.bind(this)}
                 />
 
-                <ParentWorkflowIndicator workflow_id={this.workflowId} />
+                <ParentWorkflowIndicator workflowId={this.workflowId} />
               </div>
             </div>
 
@@ -626,7 +626,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    object_sets: state.objectset,
+    objectSets: state.objectset,
     week: state.week,
     node: state.node,
     outcome: state.outcome

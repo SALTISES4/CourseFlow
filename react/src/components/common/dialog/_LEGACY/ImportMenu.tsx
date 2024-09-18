@@ -58,19 +58,19 @@ class ImportMenu extends React.Component<PropsType> {
             type="hidden"
             id="objectId"
             name="objectId"
-            value={JSON.stringify(this.props.data.object_id)}
+            value={JSON.stringify(this.props.data.objectId)}
           />
           <input
             type="hidden"
             id="objectType"
             name="objectType"
-            value={JSON.stringify(this.props.data.object_type)}
+            value={JSON.stringify(this.props.data.objectType)}
           />
           <input
             type="hidden"
             id="importType"
             name="importType"
-            value={this.props.data.import_type}
+            value={this.props.data.importType}
           />
           <input
             type="file"

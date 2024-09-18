@@ -1,13 +1,9 @@
-import { Discipline } from '@cf/types/common'
-import { VERB } from '@cf/types/enum'
-import { ProjectViewDTO } from '@cfPages/ProjectDetail/types'
-import { WorkflowDetailViewDTO } from '@cfPages/Workspace/Workflow/types'
 import {
   WorkflowChildDataPackage,
-  WorkflowContextData,
   WorkflowDataPackage,
   WorkflowParentDataPackage
 } from '@XMLHTTP/types'
+import { ProjectViewDTO, WorkflowDetailViewDTO } from '@XMLHTTP/types/dto'
 import {
   EComment,
   ELibraryObject,
@@ -32,8 +28,8 @@ export type ProfileField = {
   type: string
   required: boolean
   options: FieldOption[] | null
-  max_length: number | null
-  help_text: string
+  maxLength: number | null
+  helpText: string
   value: string | number
 }
 /*******************************************************
@@ -44,7 +40,7 @@ export type ProfileField = {
  * processed
  *******************************************************/
 export type EmptyPostResp = {
-  action: VERB
+  message: string
   error?: string
 }
 
@@ -52,27 +48,30 @@ export type EmptyPostResp = {
  * Page
  *******************************************************/
 export type PageHomeQueryResp = {
-  action: VERB
-  data_package: {
+  message: string
+  dataPackage: {
     projects: ELibraryObject[]
     templates: ELibraryObject[]
-  }
-}
-
-export type PageExploreQueryResp = {
-  action: VERB
-  data_package: {
-    disciplines: Discipline[]
-    user_id: number
   }
 }
 
 /*******************************************************
  * User
  *******************************************************/
+export type CurrentUserQueryResp = {
+  message: string
+  dataPackage: {
+    id: number
+    firstName: string
+    lastName: string
+    userName: string
+    language: string
+  }
+}
+
 export type NotificationSettingsQueryResp = {
-  action: VERB
-  data_package: {
+  message: string
+  dataPackage: {
     formData: {
       receiveNotifications: boolean
     }
@@ -80,8 +79,8 @@ export type NotificationSettingsQueryResp = {
 }
 
 export type NotificationSettingsUpdateQueryResp = {
-  action: VERB
-  data_package: {
+  message: string
+  dataPackage: {
     formData: {
       receiveNotifications: boolean
     }
@@ -89,8 +88,8 @@ export type NotificationSettingsUpdateQueryResp = {
 }
 
 export type ProfileSettingsQueryResp = {
-  action: VERB
-  data_package: {
+  message: string
+  dataPackage: {
     formData: ProfileField[]
   }
 }
@@ -99,8 +98,8 @@ export type ProfileSettingsQueryResp = {
  *  Notification
  *******************************************************/
 export type NotificationQueryResp = {
-  action: VERB
-  data_package: {
+  message: string
+  dataPackage: {
     notifications: any
     unreadCount: number
   }
@@ -110,29 +109,25 @@ export type NotificationQueryResp = {
  * comment.ts
  *******************************************************/
 export type CommentsForObjectQueryResp = {
-  action: VERB
-  data_package: EComment[]
+  message: string
+  dataPackage: EComment[]
 }
 
 /*******************************************************
  * create.ts
  *******************************************************/
 export type AddTerminologyQueryResp = {
-  action: VERB
-  new_dict: EObjectSet[]
+  message: string
+  newDict: EObjectSet[]
 }
-
-/*******************************************************
- * delete.ts
- *******************************************************/
 
 /*******************************************************
  * duplication.ts
  *******************************************************/
 
 export type DuplicateBaseItemQueryResp = {
-  action: VERB
-  new_item: ENewItem
+  message: string
+  newItem: ENewItem
   type: string
 }
 
@@ -144,15 +139,15 @@ export type DuplicateBaseItemQueryResp = {
  * menu.ts
  *******************************************************/
 export type PageLibraryQueryResp = {
-  data_package: ELibraryObject[]
+  dataPackage: ELibraryObject[]
 }
 
 /*******************************************************
  * search.ts
  *******************************************************/
 export type LibraryObjectsSearchQueryResp = {
-  action: VERB
-  data_package: {
+  message: string
+  dataPackage: {
     results: ELibraryObject[]
     meta: {
       count: number
@@ -165,7 +160,7 @@ export type LibraryObjectsSearchQueryResp = {
  * sharing.ts
  *******************************************************/
 export type UsersForObjectQueryResp = {
-  action: VERB
+  message: string
   author: EUser
 
   viewers: EUser[]
@@ -174,16 +169,16 @@ export type UsersForObjectQueryResp = {
   students: EUser[]
 
   published: boolean // why here, should move it
-  public_view: boolean // why here, should move it
-  cannot_change: number[] // what is
-  saltise_user: boolean // what is
-  is_template: boolean // why here, should move it
+  publicView: boolean // why here, should move it
+  cannotChange: number[] // what is
+  saltiseUser: boolean // what is
+  isTemplate: boolean // why here, should move it
 }
 
 export type UserListResp = {
-  action: VERB
-  data_package: {
-    user_list: EUser[]
+  message: string
+  dataPackage: {
+    userList: EUser[]
   }
 }
 
@@ -191,13 +186,13 @@ export type UserListResp = {
  * project.ts
  *******************************************************/
 export type GetProjectByIdQueryResp = {
-  action: VERB
-  data_package: ProjectViewDTO
+  message: string
+  dataPackage: ProjectViewDTO
 }
 
 export type CreateProjectResp = {
-  action: VERB
-  data_package: {
+  message: string
+  dataPackage: {
     id: number
   }
 }
@@ -206,68 +201,66 @@ export type CreateProjectResp = {
  * workflow.ts
  *******************************************************/
 export type GetWorkflowByIdQueryResp = {
-  action: VERB
-  data_package: WorkflowDetailViewDTO
+  message: string
+  dataPackage: WorkflowDetailViewDTO
 }
 
 export type WorkflowDataQueryResp = {
-  action: VERB
-  data_package: WorkflowDataPackage
+  message: string
+  dataPackage: WorkflowDataPackage
 }
 
-
-
 export type WorkflowParentDataQueryResp = {
-  action: VERB
-  data_package: WorkflowParentDataPackage
+  message: string
+  dataPackage: WorkflowParentDataPackage
 }
 
 export type WorkflowChildDataQueryResp = {
-  action: VERB
-  data_package: WorkflowChildDataPackage
+  message: string
+  dataPackage: WorkflowChildDataPackage
 }
 
-export type WorkflowContextQueryResp = {
-  action: VERB
-  data_package: WorkflowContextData
-  workflow_id: number
-}
+// export type WorkflowContextQueryResp = {
+//   message: string
+//   dataPackage: WorkflowContextData
+//   workflowId: number
+// }
 
 export type TargetProjectQueryResp = {
-  action: VERB
-  data_package: {
-    owned_projects: ESectionGroup
-    edit_projects: ESectionGroup
-    deleted_projects?: ESectionGroup
+  message: string
+  dataPackage: {
+    ownedProjects: ESectionGroup
+    editProjects: ESectionGroup
+    deletedProjects?: ESectionGroup
   }
-  workflow_id: number
+  workflowId: number
 }
 
 export type ProjectsForCreateQueryResp = {
-  action: VERB
-  data_package: ELibraryObject[]
+  message: string
+  dataPackage: ELibraryObject[]
 }
 
 export type ParentWorkflowInfoQueryResp = {
-  action: VERB
-  parent_workflows: EWorkflow[]
+  message: string
+  parentWorkflows: EWorkflow[]
 }
 
 export type WorkflowsForProjectQueryResp = {
-  action: VERB
-  data_package: EWorkflow[]
+  message: string
+  dataPackage: EWorkflow[]
 }
 
 export type LinkedWorkflowMenuQueryResp = {
-  action: VERB
-  data_package: WorkflowGroupsDataPackage
-  node_id: number
+  message: string
+  dataPackage: WorkflowGroupsDataPackage
+  nodeId: number
 }
 
 export type GetWorkflowSelectQueryResp = {
-  action: VERB
-  data_package: WorkflowGroupsDataPackage
-  project_id: number
+  message: string
+  dataPackage: WorkflowGroupsDataPackage
+  projectId: number
 }
 
 export type GetWorkflowSelectMenuResp = {
@@ -278,6 +271,6 @@ export type GetWorkflowSelectMenuResp = {
  * QUERY COMPONENTS
  *******************************************************/
 export type WorkflowGroupsDataPackage = {
-  current_project: ESectionGroup
-  all_published: ESectionGroup
+  currentProject: ESectionGroup
+  allPublished: ESectionGroup
 }

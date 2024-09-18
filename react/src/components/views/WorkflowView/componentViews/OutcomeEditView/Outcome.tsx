@@ -76,14 +76,14 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       '.outcome-outcome-' + this.props.data.depth,
       false,
       false,
-      '#workflow-' + this.props.workflow_id,
+      '#workflow-' + this.props.workflowId,
       '.outcome'
     )
     if (this.props.data.depth === 0) this.makeDroppable()
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.context.editableMethods.micro_update(
+    this.context.editableMethods.microUpdate(
       ActionCreator.moveOutcomeOutcome(id, new_position, new_parent, child_id)
     )
     insertedAt(
@@ -168,7 +168,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
             // @ts-ignore
             drag_item[0].dataDraggable.outcome,
             1,
-            (response_data) => {
+            (responseData) => {
               COURSEFLOW_APP.tinyLoader.endLoad()
             }
           )
@@ -187,10 +187,10 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     const side_actions = []
     const mouseover_actions = []
 
-    if (Utility.checkSetHidden(data, this.props.object_sets)) return null
+    if (Utility.checkSetHidden(data, this.props.objectSets)) return null
     //Child outcomes. See comment in models/outcome.py for more info.
-    if (data.is_dropped)
-      children = data.child_outcome_links.map((outcomeoutcome) => (
+    if (data.isDropped)
+      children = data.childOutcomeLinks.map((outcomeoutcome) => (
         <OutcomeOutcome
           key={outcomeoutcome}
           objectId={outcomeoutcome}
@@ -211,7 +211,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
             })
           }}
         >
-          {data.outcome_horizontal_links_unique.map((horizontal_link) => (
+          {data.outcomeHorizontalLinksUnique.map((horizontal_link) => (
             <OutcomeHorizontalLink
               key={horizontal_link}
               objectId={horizontal_link}
@@ -223,7 +223,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
 
     if (
       this.props.show_horizontal &&
-      data.outcome_horizontal_links_unique.length > 0
+      data.outcomeHorizontalLinksUnique.length > 0
     ) {
       side_actions.push(
         <div className="outcome-node-indicator">
@@ -235,7 +235,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
               })
             }}
           >
-            {data.outcome_horizontal_links_unique.length}
+            {data.outcomeHorizontalLinksUnique.length}
           </div>
           {outcomehorizontallinks}
         </div>
@@ -250,28 +250,28 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         mouseover_actions.push(<this.AddInsertChild data={data} />)
       }
     }
-    if (this.context.workflow.view_comments) {
+    if (this.context.workflow.viewComments) {
       // mouseover_actions.push(this.addCommenting(data))
       mouseover_actions.push(<this.AddCommenting />)
     }
 
-    const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
+    const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
 
-    const droptext = data.is_dropped
+    const droptext = data.isDropped
       ? _t('hide')
       : _t('show ') +
-        data.child_outcome_links.length +
+        data.childOutcomeLinks.length +
         ' ' +
         window.ngettext(
           'descendant',
           'descendants',
-          data.child_outcome_links.length
+          data.childOutcomeLinks.length
         )
 
     if (
       !this.context.permissions.workflowPermission.readOnly &&
       data.depth < 2 &&
-      data.child_outcome_links.length === 0 &&
+      data.childOutcomeLinks.length === 0 &&
       children
     ) {
       children.push(
@@ -286,13 +286,13 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
 
     const style: React.CSSProperties = {}
     if (data.lock) {
-      style.border = '2px solid ' + data.lock.user_colour
+      style.border = '2px solid ' + data.lock.userColour
     }
 
     const cssClass = [
       'outcome outcome-' + data.id,
-      data.is_dropped ? ' dropped' : '',
-      data.lock ? 'locked locked-' + data.lock.user_id : ''
+      data.isDropped ? ' dropped' : '',
+      data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
     return (
@@ -317,7 +317,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
             />
           </div>
 
-          {data.depth < 2 && data.child_outcome_links.length > 0 && (
+          {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
                 <img

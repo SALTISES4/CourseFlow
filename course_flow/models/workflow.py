@@ -1,4 +1,6 @@
+import logging
 import uuid
+from pprint import pprint
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
@@ -7,8 +9,10 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
+from course_flow.apps import logger
+from course_flow.models.common import title_max_length
+
 from ._abstract import AbstractCourseFlowModel
-from ._common import title_max_length
 from .column import Column
 from .outcome import Outcome
 from .week import Week
@@ -194,7 +198,8 @@ class Workflow(AbstractCourseFlowModel):
         for subclass in SUBCLASSES:
             try:
                 return getattr(self, subclass).type
-            except AttributeError:
+            except AttributeError as e:
+                logger.log(logging.INFO, e)
                 pass
         return "workflow"
 
@@ -228,7 +233,8 @@ class Workflow(AbstractCourseFlowModel):
     # def get_live_project(self):
     #     try:
     #         liveproject = self.get_project().liveproject
-    #     except AttributeError:
+    #     except AttributeError as e:
+    #                logger.log(logging.INFO, e)
     #         liveproject = None
     #     return liveproject
 
@@ -237,16 +243,22 @@ class Workflow(AbstractCourseFlowModel):
         subclass = self
         try:
             subclass = self.activity
-        except AttributeError:
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
             pass
         try:
             subclass = self.course
-        except AttributeError:
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
             pass
         try:
             subclass = self.program
-        except AttributeError:
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
             pass
+
+        pprint("subclass")
+        pprint(subclass)
 
         return subclass
 

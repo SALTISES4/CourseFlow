@@ -45,6 +45,8 @@ type StateType = {
 const WorkflowTabs = () => {
   const data = useSelector((state: AppState) => state.workflow)
   const context = useContext(WorkFlowConfigContext)
+  const workflow = useSelector((state: AppState) => state.workflow)
+
   // @todo should be memoized (calling the tabs per render)
   const { tabRoutes, tabButtons, tabs } = useWorkflowTabs({
     data
@@ -54,7 +56,7 @@ const WorkflowTabs = () => {
   //    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
   //    getWorkflowParentDataQuery(this.workflowId, (response) => {
   //      this.props.dispatch(
-  //        ActionCreator.refreshStoreData(response.data_package)
+  //        ActionCreator.refreshStoreData(response.dataPackage)
   //      )
   //    })
   //  }
@@ -92,7 +94,7 @@ const WorkflowTabs = () => {
   const ViewBar = () => {
     return (
       <>
-        <JumpToMenu weekWorkflowSet={data.weekworkflow_set} />
+        <JumpToMenu weekWorkflowSet={data.weekworkflowSet} />
         <ExpandCollapseMenu />
       </>
     )
@@ -151,13 +153,13 @@ const WorkflowTabs = () => {
         <MenuBar
           leftSection={<ActionMenu isWorkflowDeleted={data.deleted} />}
           viewbar={<ViewBar />}
-          userbar={<ConnectionBar show={!context.public_view} />}
+          userbar={<ConnectionBar show={!workflow.publicView} />}
         />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
               <Header
-                isStrategy={data.is_strategy}
+                isStrategy={data.isStrategy}
                 workflowType={data.type}
                 title={data.title}
                 code={data.code}
@@ -165,7 +167,7 @@ const WorkflowTabs = () => {
               />
 
               <WorkflowTabsManager
-                isStrategy={context.workflow.is_strategy}
+                isStrategy={workflow.isStrategy}
                 data={data} // @todo clean this up
               />
             </div>

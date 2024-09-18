@@ -37,7 +37,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let nodebar_nodes = []
 
-    const nodebarColumnWorkflows = data.columnworkflow_set.map(
+    const nodebarColumnWorkflows = data.columnworkflowSet.map(
       (columnWorkflow: number, index: number) => (
         <NodeBarColumnWorkflow
           key={`NodeBarColumnWorkflow-${columnWorkflow}`}
@@ -46,15 +46,15 @@ class NodeBarUnconnected extends React.Component<PropsType> {
         />
       )
     )
-    const columns_present = this.props.columns.map((col) => col.column_type)
+    const columns_present = this.props.columns.map((col) => col.columnType)
 
-    for (let i = 0; i < data.DEFAULT_COLUMNS.length; i++) {
-      if (columns_present.indexOf(data.DEFAULT_COLUMNS[i]) < 0) {
+    for (let i = 0; i < data.defaultColumns.length; i++) {
+      if (columns_present.indexOf(data.defaultColumns[i]) < 0) {
         nodebarColumnWorkflows.push(
           <NodeBarColumnWorkflow
             // renderer={this.props.renderer}
             // @todo do we need to pass in objectId ?
-            columnType={data.DEFAULT_COLUMNS[i]}
+            columnType={data.defaultColumns[i]}
             columnChoices={this.props.columnChoices}
           />
         )
@@ -68,7 +68,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
         key={`NodeBarColumnWorkflow-last-${i}`}
         // @todo do we need to pass in objectId ?
         // renderer={this.props.renderer}
-        columnType={data.DEFAULT_CUSTOM_COLUMN}
+        columnType={data.defaultCustomColumn}
         columnChoices={this.props.columnChoices}
       />
     )

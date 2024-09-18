@@ -1,21 +1,23 @@
 import json
+import logging
 
 import pandas as pd
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
+from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from course_flow import tasks
+import course_flow.services.export_import.tasks as tasks
+from course_flow.apps import logger
 from course_flow.decorators import user_can_edit, user_can_view
+
 
 ######################################
 # Export and import API, actual logic
 # handled in import_functions.py and
 # export_functions.py
 ######################################
-
-
 class ExportImport:
     @staticmethod
     @user_can_edit(False)
@@ -55,7 +57,8 @@ class ExportImport:
                     },
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
-        except AttributeError:
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
             return Response(
                 {
                     "error": "you have error",
@@ -88,11 +91,13 @@ class ExportImport:
                 text,
             )
 
-        except AttributeError:
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
             return Response(
                 {
                     "error": "you have error",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
         return Response({"message": "success"})

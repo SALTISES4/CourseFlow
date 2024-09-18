@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import ActivityForm from '@cfPages/Styleguide/dialog/CreateWizard/components/FormActivity'
 import { ActivityFormDataType } from '@cfPages/Styleguide/dialog/CreateWizard/components/FormActivity/types'

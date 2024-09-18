@@ -20,7 +20,7 @@ from course_flow.serializers.mixin import (
     DescriptionSerializerMixin,
     TitleSerializerMixin,
 )
-from course_flow.utils import dateTimeFormat, linkIDMap, user_workflow_url
+from course_flow.services import DAO, Utility
 
 
 class WorkflowSerializerShallow(
@@ -29,8 +29,6 @@ class WorkflowSerializerShallow(
     DescriptionSerializerMixin,
     AuthorSerializerMixin,
 ):
-    author_id = serializers.SerializerMethodField()
-
     class Meta:
         model = Workflow
         fields = [
@@ -68,20 +66,21 @@ class WorkflowSerializerShallow(
             "importing",
             "public_view",
             "url",
+            "user_permissions",
         ]
 
-    created_on = serializers.DateTimeField(format=dateTimeFormat())
-    last_modified = serializers.DateTimeField(format=dateTimeFormat())
+    author_id = serializers.SerializerMethodField()
+    created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=Utility.dateTimeFormat())
     weekworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
-    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
     author = serializers.SerializerMethodField()
     outcomes_sort = serializers.SerializerMethodField()
-
+    user_permissions = serializers.SerializerMethodField()
     strategy_icon = serializers.SerializerMethodField()
-
     url = serializers.SerializerMethodField()
 
     # Although we'll hang onto outcomes_sort as a field for now, this should just reset to 0
@@ -90,9 +89,10 @@ class WorkflowSerializerShallow(
 
     def get_url(self, instance):
         user = self.context.get("user", None)
-        return user_workflow_url(instance, user)
+        return DAO.user_workflow_url(instance, user)
 
-    def get_author_id(self, instance):
+    @staticmethod
+    def get_author_id(instance):
         if instance.author is not None:
             return instance.author.id
         return None
@@ -101,8 +101,29 @@ class WorkflowSerializerShallow(
         user = self.context.get("user", None)
         if user is None or not user.is_authenticated:
             return False
-        if user is None:
-            return False
+
+        ppp = Favourite.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(
+                instance.get_subclass()
+            ),
+            object_id=instance.id,
+        )
+        print("instance.id")
+        print(instance.id)
+        print("instance.get_subclass()")
+        print(ContentType.objects.get_for_model(instance.get_subclass()).id)
+
+        print(
+            Favourite.objects.filter(
+                user=user,
+                content_type=ContentType.objects.get_for_model(
+                    instance.get_subclass()
+                ),
+                object_id=instance.id,
+            )
+        )
+
         if Favourite.objects.filter(
             user=user,
             content_type=ContentType.objects.get_for_model(
@@ -111,32 +132,41 @@ class WorkflowSerializerShallow(
             object_id=instance.id,
         ):
             return True
-        else:
-            return False
 
-    def get_strategy_icon(self, instance):
+        return False
+
+    @staticmethod
+    def get_strategy_icon(instance):
         if instance.is_strategy:
             return instance.weeks.first().strategy_classification
         else:
             return None
 
-    def get_weekworkflow_set(self, instance):
+    @staticmethod
+    def get_weekworkflow_set(instance):
         links = instance.weekworkflow_set.filter(week__deleted=False).order_by(
             "rank"
         )
-        return list(map(linkIDMap, links))
+        return list(map(Utility.linkIDMap, links))
 
-    def get_columnworkflow_set(self, instance):
+    @staticmethod
+    def get_columnworkflow_set(instance):
         links = instance.columnworkflow_set.filter(
             column__deleted=False
         ).order_by("rank")
-        return list(map(linkIDMap, links))
+        return list(map(Utility.linkIDMap, links))
 
-    def get_outcomeworkflow_set(self, instance):
+    @staticmethod
+    def get_outcomeworkflow_set(instance):
         links = instance.outcomeworkflow_set.filter(
             outcome__deleted=False
         ).order_by("rank")
-        return list(map(linkIDMap, links))
+        return list(map(Utility.linkIDMap, links))
+
+    def get_user_permissions(self, instance):
+        user = self.context.get("user", None)
+        user_permission = DAO.get_user_permission(instance, user)
+        return user_permission
 
     def validate_is_template(self, value):
         user = self.context.get("user")
@@ -295,7 +325,12 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "url",
         ]
 
-    def get_author_id(self, instance):
+    @staticmethod
+    def get_outcomes_sort(instance):
+        return 0
+
+    @staticmethod
+    def get_author_id(instance):
         if instance.author is not None:
             return instance.author.id
         return None
@@ -350,6 +385,9 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "url",
         ]
 
+    def get_outcomes_sort(self, instance):
+        return 0
+
     def get_author_id(self, instance):
         if instance.author is not None:
             return instance.author.id
@@ -372,7 +410,7 @@ class WorkflowUpdateSerializer(serializers.ModelSerializer):
     units = serializers.IntegerField(
         write_only=True, required=False, source="time_units"
     )
-    courseNumber = serializers.CharField(
+    course_number = serializers.CharField(
         write_only=True, required=False, source="code"
     )
     ponderation = serializers.DictField(write_only=True, required=False)
@@ -384,7 +422,7 @@ class WorkflowUpdateSerializer(serializers.ModelSerializer):
             "description",
             "duration",
             "units",
-            "courseNumber",
+            "course_number",
             "ponderation",
         ]
 
@@ -429,8 +467,8 @@ class InfoBoxSerializer(
 ):
     deleted = serializers.ReadOnlyField()
     id = serializers.ReadOnlyField()
-    created_on = serializers.DateTimeField(format=dateTimeFormat())
-    last_modified = serializers.DateTimeField(format=dateTimeFormat())
+    created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=Utility.dateTimeFormat())
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     type = serializers.ReadOnlyField()
@@ -439,15 +477,14 @@ class InfoBoxSerializer(
     is_strategy = serializers.ReadOnlyField()
     published = serializers.ReadOnlyField()
     author = serializers.SerializerMethodField()
-    title = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
     project_title = serializers.SerializerMethodField()
     object_permission = serializers.SerializerMethodField()
     workflow_count = serializers.SerializerMethodField()
     is_linked = serializers.SerializerMethodField()
     is_template = serializers.ReadOnlyField()
 
-    def get_workflow_count(self, instance):
+    @staticmethod
+    def get_workflow_count(instance):
         if instance.type == "project":
             return instance.workflows.all().count()
         return None
@@ -456,9 +493,14 @@ class InfoBoxSerializer(
         if instance.type == "project":
             return None
         user = self.context.get("user", None)
-        return user_workflow_url(instance, user)
+        if user is None:
+            # Handle the scenario where user is not available
+            return None  # Or raise an exception, based on your application's needs
 
-    def get_project_title(self, instance):
+        return DAO.user_workflow_url(instance, user)
+
+    @staticmethod
+    def get_project_title(instance):
         if instance.type == "project":
             return None
         if instance.get_project() is None:
@@ -474,8 +516,12 @@ class InfoBoxSerializer(
 
     def get_favourite(self, instance):
         user = self.context.get("user")
+        pprint("user")
+        pprint(user)
+
         if user is None or not user.is_authenticated:
             return False
+
         if Favourite.objects.filter(
             user=user,
             content_type=ContentType.objects.get_for_model(
@@ -484,8 +530,8 @@ class InfoBoxSerializer(
             object_id=instance.id,
         ):
             return True
-        else:
-            return False
+
+        return False
 
     def get_object_permission(self, instance):
         user = self.context.get("user")
@@ -508,7 +554,8 @@ class InfoBoxSerializer(
             "last_viewed": object_permission.last_viewed,
         }
 
-    def get_is_linked(self, instance):
+    @staticmethod
+    def get_is_linked(instance):
         if instance.type != "project":
             return len(Node.objects.filter(linked_workflow=instance)) > 0
         return False

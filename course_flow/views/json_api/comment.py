@@ -1,13 +1,16 @@
 import json
+import logging
 import re
 
 import bleach
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import ProtectedError
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from course_flow.apps import logger
 from course_flow.decorators import (
     check_object_permission,
     user_can_comment,
@@ -17,7 +20,7 @@ from course_flow.models import Notification, User
 from course_flow.models.notification import TypeChoices
 from course_flow.models.objectPermission import Permission
 from course_flow.serializers import CommentSerializer
-from course_flow.utils import get_model_from_str, make_user_notification
+from course_flow.services import DAO
 
 #########################################################
 # COMMENTS
@@ -39,7 +42,7 @@ class CommentEndpoint:
         object_type = body.get("objectType")
         try:
             comments = (
-                get_model_from_str(object_type)
+                DAO.get_model_from_str(object_type)
                 .objects.get(id=object_id)
                 .comments.all()
                 .order_by("created_on")
@@ -48,7 +51,9 @@ class CommentEndpoint:
                 comment__in=comments, user=request.user
             ).update(is_unread=False)
             data_package = CommentSerializer(comments, many=True).data
-        except AttributeError:
+
+        except AttributeError as e:
+            logger.log(logging.INFO, e)
             return Response(
                 {
                     "error": "you have error",
@@ -69,7 +74,7 @@ class CommentEndpoint:
         object_type = body.get("objectType")
         text = bleach.clean(body.get("text"))
         try:
-            obj = get_model_from_str(object_type).objects.get(id=object_id)
+            obj = DAO.get_model_from_str(object_type).objects.get(id=object_id)
 
             # check if we are notifying any users
             usernames = re.findall(r"@\w[@a-zA-Z0-9_.]{1,}", text)
@@ -93,7 +98,7 @@ class CommentEndpoint:
             # create the comment
             comment = obj.comments.create(text=text, user=request.user)
             for target_user in target_users:
-                make_user_notification(
+                DAO.make_user_notification(
                     source_user=request.user,
                     target_user=target_user,
                     notification_type=TypeChoices.TYPE_COMMENT.value,
@@ -102,7 +107,8 @@ class CommentEndpoint:
                     comment=comment,
                 )
 
-        except ValidationError:
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
             return Response(
                 {
                     "error": "you have error",
@@ -124,7 +130,7 @@ class CommentEndpoint:
         comment_id = body.get("commentPk")
 
         try:
-            model = get_model_from_str(object_type).objects.get(id=pk)
+            model = DAO.get_model_from_str(object_type).objects.get(id=pk)
             comment = model.comments.get(id=comment_id)
             comment.delete()
 
@@ -147,7 +153,9 @@ class CommentEndpoint:
         object_type = body.get("objectType")
 
         try:
-            model = get_model_from_str(object_type).objects.get(id=object_id)
+            model = DAO.get_model_from_str(object_type).objects.get(
+                id=object_id
+            )
             model.comments.all().delete()
 
         except (ProtectedError, ObjectDoesNotExist):

@@ -15,9 +15,10 @@ import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 import { SidebarRootStyles } from '@cfComponents/layout/Sidebar/styles'
 import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
-import CfRouter from '@cf/router'
+import CfRouter from '@cf/router/appRoutes'
 import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
+import UserProvider from '@cf/context/userContext'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -69,11 +70,13 @@ root.render(
       <CacheProvider value={cache}>
         <SnackbarProvider>
           <DialogContextProvider>
-            <ThemeProvider theme={theme}>
-              <ScopedCssBaseline sx={SidebarRootStyles}>
-                <RouterProvider router={CfRouter} />
-              </ScopedCssBaseline>
-            </ThemeProvider>
+            <UserProvider>
+              <ThemeProvider theme={theme}>
+                <ScopedCssBaseline sx={SidebarRootStyles}>
+                  <RouterProvider router={CfRouter} />
+                </ScopedCssBaseline>
+              </ThemeProvider>
+            </UserProvider>
           </DialogContextProvider>
         </SnackbarProvider>
       </CacheProvider>

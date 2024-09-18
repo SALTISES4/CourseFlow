@@ -6,7 +6,7 @@ export enum CommonActions {
 
 export enum WorkFlowActions {
   CREATELOCK = 'workflow/createLock',
-  CHANGE_FIELD = 'workflow/changeField',
+  changeField = 'workflow/changeField',
   DELETE_SELF_SOFT = 'workflow/deleteSelfSoft',
   RESTORE_SELF = 'workflow/restoreSelf'
 }
@@ -17,7 +17,7 @@ export enum WeekActions {
   RESTORE_SELF = 'week/restoreSelf',
   INSERT_BELOW = 'week/insertBelow',
   CREATE_LOCK = 'week/createLock',
-  CHANGE_FIELD = 'week/changeField',
+  changeField = 'week/changeField',
   RELOAD_COMMENTS = 'week/reloadComments'
 }
 
@@ -36,8 +36,8 @@ export enum OutcomeActions {
   CREATE_LOCK = 'outcome/createLock',
   RELOAD_COMMENTS = 'outcome/reloadComments',
   UPDATE_HORIZONTAL_LINK = 'outcome/updateHorizontalLinks',
-  CHANGE_FIELD = 'outcome/changeField',
-  CHANGE_FIELD_MANY = 'outcome/changeFieldMany'
+  changeField = 'outcome/changeField',
+  changeField_MANY = 'outcome/changeFieldMany'
 }
 
 export enum OutcomeNodeActions {
@@ -45,14 +45,14 @@ export enum OutcomeNodeActions {
 }
 
 export enum OutcomeBaseActions {
-  DELETE_SELF = 'outcome_base/deleteSelf',
-  DELETE_SELF_SOFT = 'outcome_base/deleteSelfSoft',
-  RESTORE_SELF = 'outcome_base/restoreSelf',
-  INSERT_BELOW = 'outcome_base/insertBelow',
-  INSERT_CHILD = 'outcome_base/insertChild',
-  RELOAD_COMMENTS = 'outcome_base/reloadComments',
-  CHANGE_FIELD = 'outcome_base/changeField',
-  CHANGE_FIELD_MANY = 'outcome_base/changeFieldMany'
+  DELETE_SELF = 'outcomeBase/deleteSelf',
+  DELETE_SELF_SOFT = 'outcomeBase/deleteSelfSoft',
+  RESTORE_SELF = 'outcomeBase/restoreSelf',
+  INSERT_BELOW = 'outcomeBase/insertBelow',
+  INSERT_CHILD = 'outcomeBase/insertChild',
+  RELOAD_COMMENTS = 'outcomeBase/reloadComments',
+  changeField = 'outcomeBase/changeField',
+  changeField_MANY = 'outcomeBase/changeFieldMany'
 }
 
 export enum OutcomeWorkflowActions {
@@ -77,7 +77,7 @@ export enum ColumnActions {
   INSERT_BELOW = 'column/insertBelow',
   CREATE_LOCK = 'column/createLock',
   RELOAD_COMMENTS = 'column/reloadComments',
-  CHANGE_FIELD = 'column/changeField'
+  changeField = 'column/changeField'
 }
 
 export enum ColumnWorkflowActions {
@@ -99,14 +99,14 @@ export enum NodeActions {
   CHANGED_COLUMN = 'node/changedColumn',
   CREATE_LOCK = 'node/createLock',
   INSERT_BELOW = 'node/insertBelow',
-  CHANGE_FIELD = 'node/changeField',
+  changeField = 'node/changeField',
   RELOAD_COMMENTS = 'node/reloadComments',
-  SET_LINKED_WORKFLOW = 'node/setLinkedWorkflow'
+  SET_linkedWorkflow = 'node/setLinkedWorkflow'
 }
 
 export enum NodeLinkActions {
   CREATE_LOCK = 'nodelink/createLock',
-  CHANGE_FIELD = 'nodelink/changeField',
+  changeField = 'nodelink/changeField',
   RESTORE_SELF = 'nodelink/restoreSelf',
   DELETE_SELF = 'nodelink/deleteSelf',
   DELETE_SELF_SOFT = 'nodelink/deleteSelfSoft',

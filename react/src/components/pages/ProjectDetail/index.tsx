@@ -26,8 +26,8 @@ const ProjectPage = () => {
    *******************************************************/
   const calcIsReadOnly = (): boolean => {
     return (
-      data.data_package.project_data.object_permission.permission_type ===
-      Constants.permission_keys['edit']
+      data.dataPackage.projectData.objectPermission.permissionType ===
+      Constants.permissionKeys['edit']
     )
   }
 
@@ -44,11 +44,11 @@ const ProjectPage = () => {
 
   return (
     <ProjectDetailContent
-      projectPaths={data.data_package.create_path_this_project}
-      allDisciplines={data.data_package.disciplines}
+      projectPaths={data.dataPackage.create_path_this_project}
+      allDisciplines={data.dataPackage.disciplines}
       readOnly={calcIsReadOnly()}
-      project={data.data_package.project_data}
-      userId={data.data_package.user_id}
+      project={data.dataPackage.projectData}
+      userId={data.dataPackage.userId}
     />
   )
 }

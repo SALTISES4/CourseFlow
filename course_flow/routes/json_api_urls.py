@@ -47,12 +47,12 @@ def json_api_patterns():
         path(
             "project/my-projects",
             views.json_api.ProjectEndpoint.list_my_projects,
-            name="json-api-post-get-target-projects",
+            name="project--my-projects",
         ),
         path(
             "project/<int:pk>/workflow",
             views.json_api.ProjectEndpoint.workflows__list,
-            name="json-api-post-get-workflows-for-project",
+            name="project--workflows--list",
         ),
         ######## to sort ######
         path(
@@ -71,13 +71,13 @@ def json_api_patterns():
         path(
             "workflow/<int:pk>/detail",
             views.json_api.WorkflowEndpoint.fetch_detail,
-            name="workflow--fetch-detail",
+            name="workflow--detail",
         ),
-        path(
-            "workflow/<int:pk>/detail-full",
-            views.json_api.WorkflowEndpoint.fetch_detail_full,
-            name="workflow--fetch-detail-full",
-        ),
+        # path(
+        #     "workflow/<int:pk>/detail-full",
+        #     views.json_api.WorkflowEndpoint.fetch_detail_full,
+        #     name="workflow--detail--full",
+        # ),
         path(
             "workflow/<int:pk>/parent/detail",
             views.json_api.WorkflowEndpoint.fetch_parent_detail,
@@ -305,6 +305,11 @@ def json_api_patterns():
         #########################################################
         # User
         #########################################################
+        path(
+            "user/current-user",
+            views.json_api.UserEndpoint.fetch__current,
+            name="user--current-user",
+        ),
         path(
             "user/list",
             views.json_api.UserEndpoint.list,

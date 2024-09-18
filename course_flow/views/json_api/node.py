@@ -1,9 +1,10 @@
 import json
+import logging
 
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest, JsonResponse
-from rest_framework import status
 
+from course_flow.apps import logger
 from course_flow.decorators import user_can_edit, user_can_view_or_none
 from course_flow.models import Column, Node, Week
 from course_flow.models.relations import (
@@ -19,8 +20,8 @@ from course_flow.serializers import (
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
 )
+from course_flow.services import DAO
 from course_flow.sockets import redux_actions as actions
-from course_flow.utils import get_model_from_str
 
 
 class NodeEndpoint:
@@ -61,7 +62,8 @@ class NodeEndpoint:
                 week=week, node=node, rank=position
             )
 
-        except ValidationError:
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
             return JsonResponse({"action": "error"})
 
         response_data = {
@@ -89,7 +91,7 @@ class NodeEndpoint:
         source_port = body.get("sourcePort")
         target_port = body.get("targetPort")
         node = Node.objects.get(pk=node_id)
-        target = get_model_from_str(target_type).objects.get(pk=target_id)
+        target = DAO.get_model_from_str(target_type).objects.get(pk=target_id)
 
         try:
             node_link = NodeLink.objects.create(
@@ -99,7 +101,8 @@ class NodeEndpoint:
                 source_port=source_port,
                 target_port=target_port,
             )
-        except ValidationError:
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
             return JsonResponse({"action": "error"})
 
         response_data = {

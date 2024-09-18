@@ -23,8 +23,8 @@ import * as React from 'react'
 type PropsType = {
   workflows: ELibraryObject[]
   context: string
-  read_only?: any
-  project_data?: any
+  readOnly?: any
+  projectData?: any
   updateWorkflow?: any
 }
 
@@ -69,9 +69,9 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
       { name: 'archived', display: _t('Archived') }
     ]
     this.sorts = [
-      { name: 'last_viewed', display: _t('Recent') },
+      { name: 'lastViewed', display: _t('Recent') },
       { name: 'title', display: _t('A-Z') },
-      { name: 'created_on', display: _t('Creation date') },
+      { name: 'createdOn', display: _t('Creation date') },
       { name: 'type', display: _t('Type') }
     ]
     const url_params = new URL(window.location.href).searchParams
@@ -126,9 +126,9 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
     // Create a new sorted array
     const sortedWorkflows = [...workflows].sort((a, b) => {
       const aValue =
-        sort === 'last_viewed' ? a.object_permission[sort] : a[sort]
+        sort === 'lastViewed' ? a.objectPermission[sort] : a[sort]
       const bValue =
-        sort === 'last_viewed' ? b.object_permission[sort] : b[sort]
+        sort === 'lastViewed' ? b.objectPermission[sort] : b[sort]
 
       return String(aValue).localeCompare(String(bValue))
     })
@@ -162,9 +162,9 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
       workflows = workflows.filter((workflow) => !workflow.deleted)
     else return workflows.filter((workflow) => workflow.deleted)
     if (filter === 'owned')
-      return workflows.filter((workflow) => workflow.is_owned)
+      return workflows.filter((workflow) => workflow.isOwned)
     if (filter === 'shared')
-      return workflows.filter((workflow) => !workflow.is_owned)
+      return workflows.filter((workflow) => !workflow.isOwned)
     if (filter === 'favourite')
       return workflows.filter((workflow) => workflow.favourite)
     return workflows
@@ -273,12 +273,12 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
     const activeFilter = this.filters[this.state.activeFilter]
 
     const filters = this.filters.map((filter, i) => {
-      let css_class = 'filter-option'
-      if (this.state.activeFilter === i) css_class += ' active'
+      let cssClass = 'filter-option'
+      if (this.state.activeFilter === i) cssClass += ' active'
 
       return (
         <div
-          className={css_class}
+          className={cssClass}
           onClick={() =>
             this.setState({
               ...this.state,
@@ -372,8 +372,8 @@ class WorkflowFilter extends React.Component<PropsType, StateType> {
         key={workflow.type + workflow.id}
         workflowData={workflow}
         updateWorkflow={this.props.updateWorkflow}
-        readOnly={this.props.read_only} // from renderer
-        projectData={this.props.project_data} // from renderer
+        readOnly={this.props.readOnly} // from renderer
+        projectData={this.props.projectData} // from renderer
       />
     ))
   }

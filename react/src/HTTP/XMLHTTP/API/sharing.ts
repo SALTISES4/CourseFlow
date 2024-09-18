@@ -1,22 +1,21 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp, UsersForObjectQueryResp } from '@XMLHTTP/types/query'
 
 export function setUserPermission(
-  user_id,
+  userId,
   objectId,
   objectType,
-  permission_type,
+  permissionType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.set_permission, {
     objectId: objectId,
     objectType: objectType,
-    permission_user: user_id,
-    permission_type: permission_type
+    permission_user: userId,
+    permissionType: permissionType
   }).then((response: EmptyPostResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }
 
@@ -63,6 +62,6 @@ export function getUsersForObjectQueryLegacy(
       objectType: objectType
     }
   ).then((response: UsersForObjectQueryResp) => {
-callBackFunction(response)
+    callBackFunction(response)
   })
 }

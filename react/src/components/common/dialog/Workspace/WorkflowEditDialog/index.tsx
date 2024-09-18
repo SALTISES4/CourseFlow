@@ -62,20 +62,24 @@ const WorkflowEditDialog = () => {
   const { id } = useParams()
 
   const workflow = useSelector((state: AppState) => state.workflow)
+
+  console.log('workflow')
+  console.log(workflow)
+
   const config = configFields(workflow)
   const initialState: StateType = {
     title: workflow.title,
     description: workflow.description,
-    duration: workflow.time_required,
+    duration: workflow.timeRequired,
     courseNumber: workflow.code,
     ponderation: {
-      theory: String(workflow.ponderation_theory),
-      practice: String(workflow.ponderation_practical),
-      individual: String(workflow.ponderation_individual),
-      generalEdu: String(workflow.ponderation_individual),
-      specificEdu: String(workflow.ponderation_theory)
+      theory: String(workflow.ponderationTheory),
+      practice: String(workflow.ponderationPractical),
+      individual: String(workflow.ponderationIndividual),
+      generalEdu: String(workflow.ponderationIndividual),
+      specificEdu: String(workflow.ponderationTheory)
     },
-    units: String(workflow.time_units) ?? '0'
+    units: String(workflow.timeUnits) ?? '0'
   }
 
   const [state, setState] = useState<StateType>(initialState)

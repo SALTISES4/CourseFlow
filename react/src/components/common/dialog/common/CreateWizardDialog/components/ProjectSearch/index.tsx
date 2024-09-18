@@ -16,7 +16,7 @@ type PropsType = {
   selected?: number
   projects: ProjectType[] | null
   onProjectSelect: (id: number) => void
-  setProjectData: (project_data: ProjectType[]) => void
+  setProjectData: (projectData: ProjectType[]) => void
 }
 
 type StateType = ProjectType[]
@@ -50,12 +50,12 @@ const ProjectSearch = ({
   }
 
   if (projects === null) {
-    getProjectsForCreate((response_data) => {
-      const project_data = response_data.data_package.map((project) => {
+    getProjectsForCreate((responseData) => {
+      const projectData = responseData.dataPackage.map((project) => {
         return formatLibraryObject(project)
       })
-      setProjectData(project_data)
-      setResults(project_data)
+      setProjectData(projectData)
+      setResults(projectData)
     })
     return <Loader />
   }

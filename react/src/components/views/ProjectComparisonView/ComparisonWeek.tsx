@@ -54,7 +54,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.context.editableMethods.micro_update(
+    this.context.editableMethods.microUpdate(
       ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
     )
 
@@ -129,7 +129,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
       '.node-week',
       false,
       [200, 1], // @todo // grid is not used
-      '#workflow-' + this.props.workflow_id,
+      '#workflow-' + this.props.workflowId,
       '.node',
       '.workflow-array'
     )
@@ -140,7 +140,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
    * COMPONENTS
    *******************************************************/
   Nodes = () => {
-    const nodes = this.props.data.nodeweek_set.map((nodeweek) => (
+    const nodes = this.props.data.nodeweekSet.map((nodeweek) => (
       <ComparisonNodeWeek
         key={nodeweek}
         objectId={nodeweek}

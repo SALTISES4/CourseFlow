@@ -1,5 +1,5 @@
 import { OuterContentWrap } from '@cf/mui/helper'
-import { CFRoutes } from '@cf/router'
+import { CFRoutes } from '@cf/router/appRoutes'
 import StarIcon from '@mui/icons-material/Star'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'

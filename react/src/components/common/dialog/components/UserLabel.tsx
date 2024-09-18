@@ -12,8 +12,8 @@ type PropsType = {
   user: any
   type: any
   permissionChange?: any
-  cannot_change?: any
-  share_info?: any
+  cannotChange?: any
+  shareInfo?: any
   addFunction?: any
 }
 
@@ -36,7 +36,7 @@ class UserLabel extends React.Component<PropsType, StateProps> {
         break
       default:
         this.props.permissionChange(
-          Constants.permission_keys[evt.target.value],
+          Constants.permissionKeys[evt.target.value],
           this.props.user
         )
     }
@@ -49,8 +49,8 @@ class UserLabel extends React.Component<PropsType, StateProps> {
     let permission_select
     let disabled = false
     if (
-      this.props.cannot_change &&
-      this.props.cannot_change.indexOf(this.props.user.id) >= 0
+      this.props.cannotChange &&
+      this.props.cannotChange.indexOf(this.props.user.id) >= 0
     )
       disabled = true
     if (this.props.type !== 'owner') {
@@ -96,7 +96,7 @@ class UserLabel extends React.Component<PropsType, StateProps> {
       <li className="user-label">
         <div>
           <div className="user-name">
-            {this.props.user.first_name + ' ' + this.props.user.last_name}
+            {this.props.user.firstName + ' ' + this.props.user.lastName}
           </div>
           <div className="user-username">{this.props.user.username}</div>
         </div>

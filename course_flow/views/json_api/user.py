@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -6,12 +7,11 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
-from django.views.decorators.http import require_GET, require_POST
-from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from course_flow.apps import logger
 from course_flow.forms import NotificationsSettings, ProfileSettings
 from course_flow.models import User
 from course_flow.models.courseFlowUser import CourseFlowUser
@@ -22,6 +22,23 @@ from course_flow.serializers import FormFieldsSerializer, UserSerializer
 # PROFILE SETTINGS
 #########################################################
 class UserEndpoint:
+    @staticmethod
+    @login_required
+    @api_view(["GET"])
+    def fetch__current(request: Request) -> Response:
+        """ "
+        there are two types of users, they need to be combined
+        """
+        user = CourseFlowUser.objects.filter(user=request.user).first()
+        data_package = {
+            "id": user.user.id,
+            "first_name": user.user.first_name,
+            "last_name": user.user.last_name,
+            "user_name": user.user.username,
+            "language": user.language,
+        }
+        return Response({"data_package": data_package})
+
     @staticmethod
     @login_required
     @api_view(["GET"])
@@ -140,7 +157,8 @@ class UserEndpoint:
                     ]
                 )
 
-        except ValidationError:
+        except ValidationError as e:
+            logger.log(logging.INFO, e)
             return JsonResponse({"action": "error"})
 
         return JsonResponse(

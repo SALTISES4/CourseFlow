@@ -29,7 +29,7 @@ from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.routes.routing import websocket_urlpatterns
-from course_flow.utils import get_model_from_str
+from course_flow.services import DAO
 
 from ...models.activity import Activity
 from ...models.course import Course
@@ -94,12 +94,14 @@ class SeleniumBase:
 
         try:
             self.test_headless = settings.COURSEFLOW_TEST_HEADLESS
-        except AttributeError:
+        except AttributeError as e:
+                    logger.log(logging.INFO, e)
             self.test_headless = False
         try:
             if settings.COURSEFLOW_TEST_BROWSER == "ff":
                 return self.create_ff_browser()
-        except AttributeError:
+        except AttributeError as e:
+                    logger.log(logging.INFO, e)
             pass
         return self.create_chrome_browser(options)
 
@@ -1367,7 +1369,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         author = get_author()
         project = Project.objects.create(author=author, published=True)
         for workflow_type in ["activity", "course", "program"]:
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=author
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -1404,7 +1406,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
         for workflow_type in ["activity", "course", "program"]:
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -1560,7 +1562,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
         for workflow_type in ["activity", "course", "program"]:
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -1833,7 +1835,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
         for i, workflow_type in enumerate(["activity", "course", "program"]):
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -1916,7 +1918,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             author=self.user, title="project title"
         )
         for i, workflow_type in enumerate(["activity", "course", "program"]):
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -1948,7 +1950,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             author=self.user, title="project title"
         )
         for i, workflow_type in enumerate(["activity", "course"]):
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -2021,7 +2023,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             author=self.user, title="project title"
         )
         for i, workflow_type in enumerate(["activity", "course", "program"]):
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -2468,7 +2470,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
         for i, workflow_type in enumerate(workflow_types):
             print("creating: " + workflow_type)
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user, title=workflow_type
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -2625,7 +2627,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             "project",
         ]:
             for i in range(10):
-                item = get_model_from_str(object_type).objects.create(
+                item = DAO.get_model_from_str(object_type).objects.create(
                     author=author,
                     published=published,
                     title=object_type + str(i),
@@ -3057,7 +3059,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             "project",
         ]:
             for i in range(10):
-                item = get_model_from_str(object_type).objects.create(
+                item = DAO.get_model_from_str(object_type).objects.create(
                     author=author,
                     published=published,
                     title=object_type + str(i),
@@ -3092,7 +3094,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         for workflow_type in ["activity", "course", "program"]:
             # create test data
             # create one of activity, course, program and add to the previously created project
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -3202,7 +3204,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
         for workflow_type in ["activity", "course", "program"]:
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
@@ -3303,7 +3305,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
         for workflow_type in ["activity", "course", "program"]:
-            workflow = get_model_from_str(workflow_type).objects.create(
+            workflow = DAO.get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)

@@ -29,15 +29,15 @@ type OwnProps = {
   edit?: boolean
   // throughParentID: number
   // legacyRenderer: EditableComponentWithCommentsType['legacyRenderer'] & {
-  //   view_comments: any
-  //   selection_manager: any
+  //   viewComments: any
+  //   selectionManager: any
   // }
 } & EditableComponentWithCommentsType
 
 export type SimpleOutcomeUnconnectedPropsType = OwnProps
 
 type StateProps = {
-  is_dropped: boolean
+  isDropped: boolean
 } & EditableComponentWithCommentsStateType
 type PropsType = ConnectedProps & OwnProps
 
@@ -55,7 +55,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
     super(props)
     this.objectType = CfObjectType.OUTCOME
     this.children_block = React.createRef()
-    this.state = { is_dropped: false } as StateProps
+    this.state = { isDropped: false } as StateProps
   }
 
   /*******************************************************
@@ -73,7 +73,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
    * FUNCTIONS
    *******************************************************/
   toggleDrop = (_evt: React.MouseEvent) => {
-    this.setState({ is_dropped: !this.state.is_dropped })
+    this.setState({ isDropped: !this.state.isDropped })
   }
 
   /*******************************************************
@@ -99,33 +99,33 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
   render() {
     const data = this.props.data
 
-    if (Utility.checkSetHidden(data, this.props.object_sets)) return null
+    if (Utility.checkSetHidden(data, this.props.objectSets)) return null
 
     //Child outcomes. See comment in models/outcome.py for more info.
-    const children = this.state.is_dropped ? (
-      data.child_outcome_links.map((outcomeoutcome) => (
+    const children = this.state.isDropped ? (
+      data.childOutcomeLinks.map((outcomeoutcome) => (
         <this.ChildType outcomeoutcome={outcomeoutcome} />
       ))
     ) : (
       <></>
     )
 
-    const dropIcon = this.state.is_dropped
+    const dropIcon = this.state.isDropped
       ? 'droptriangleup'
       : 'droptriangledown'
 
-    const droptext = this.state.is_dropped
+    const droptext = this.state.isDropped
       ? _t('hide')
       : _t('show ') +
-        data.child_outcome_links.length +
+        data.childOutcomeLinks.length +
         ' ' +
         window.ngettext(
           'descendant',
           'descendants',
-          data.child_outcome_links.length
+          data.childOutcomeLinks.length
         )
 
-    const comments = this.context.workflow.view_comments ? (
+    const comments = this.context.workflow.viewComments ? (
       <this.AddCommenting />
     ) : null
     const editPortal = this.props.edit ? this.addEditable(data, true) : null
@@ -136,8 +136,8 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
 
     const cssClass = [
       'outcome outcome-' + data.id,
-      this.state.is_dropped ? ' dropped' : '',
-      data.lock ? 'locked locked-' + data.lock.user_id : ''
+      this.state.isDropped ? ' dropped' : '',
+      data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
     return (
@@ -157,7 +157,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
             />
           </div>
 
-          {data.depth < 2 && data.child_outcome_links.length > 0 && (
+          {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
                 <img

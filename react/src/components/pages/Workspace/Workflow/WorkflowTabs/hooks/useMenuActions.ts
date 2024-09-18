@@ -32,23 +32,23 @@ export const useMenuActions = () => {
    * MENU HANDLERS
    *******************************************************/
   function openEditMenu(evt: EventUnion) {
-    // this.selection_manager.changeSelection(evt, this)
+    // this.selectionManager.changeSelection(evt, this)
     dispatchDialog(DIALOG_TYPE.WORKFLOW_EDIT)
   }
 
   // REFERENCE ORIGINAL DATA
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'outcomes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'outcomes'
   //           }}
   //           actionFunction={this.closeModals}
   //         />
   //         <ImportMenu
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'nodes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'nodes'
   //           }}
   function importOutcomes() {
     dispatchDialog(DIALOG_TYPE.IMPORT_OUTCOMES)
@@ -89,7 +89,7 @@ export const useMenuActions = () => {
       workflowId,
       workflowType,
       projectId,
-      (response_data) => {
+      (responseData) => {
         loader.endLoad()
         window.location.href = 'path top newly created item'
       }
@@ -133,7 +133,7 @@ export const useMenuActions = () => {
     // )
   }
 
-  function pushImport(imports, import_type, text, disabled) {
+  function pushImport(imports, importType, text, disabled) {
     let a_class = 'hover-shade'
     if (disabled) a_class = ' disabled'
     imports.push()
@@ -151,7 +151,7 @@ export const useMenuActions = () => {
         workflowId,
         workflowType,
         parentId,
-        (response_data) => {
+        (responseData) => {
           utilLoader.endLoad()
           window.location.href = 'new iten path '
         }

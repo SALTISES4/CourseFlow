@@ -50,7 +50,7 @@ export default function columnReducer(
           ? {
               ...item,
               deleted: true,
-              deleted_on: _t('This session')
+              deletedOn: _t('This session')
             }
           : item
       )
@@ -63,7 +63,7 @@ export default function columnReducer(
     case ColumnActions.INSERT_BELOW:
       return [...state, action.payload.new_model]
 
-    case ColumnActions.CHANGE_FIELD:
+    case ColumnActions.changeField:
       if (
         action.payload.changeFieldID ===
         // @ts-ignore
@@ -108,31 +108,31 @@ export default function columnReducer(
 //       return state
 //
 //     case CommonActions.REFRESH_STOREDATA: {
-//       const new_state = state.slice()
+//       const newState = state.slice()
 //       if (action.payload.column) {
 //         for (var i = 0; i < action.payload.column.length; i++) {
 //           const new_obj = action.payload.collumn[i]
 //           let added = false
-//           for (let j = 0; j < new_state.length; j++) {
-//             if (new_state[j].id == new_obj.id) {
-//               new_state.splice(j, 1, new_obj)
+//           for (let j = 0; j < newState.length; j++) {
+//             if (newState[j].id == new_obj.id) {
+//               newState.splice(j, 1, new_obj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           new_state.push(new_obj)
+//           newState.push(new_obj)
 //         }
 //       }
-//       return new_state
+//       return newState
 //     }
 //
 //     case ColumnActions.CREATE_LOCK:
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...new_state[i], lock: action.payload.lock }
-//           return new_state
+//           var newState = state.slice()
+//           newState[i] = { ...newState[i], lock: action.payload.lock }
+//           return newState
 //         }
 //       }
 //       return state
@@ -143,9 +143,9 @@ export default function columnReducer(
 //     case ColumnActions.DELETE_SELF:
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state.splice(i, 1)
-//           return new_state
+//           var newState = state.slice()
+//           newState.splice(i, 1)
+//           return newState
 //         }
 //       }
 //       return state
@@ -153,13 +153,13 @@ export default function columnReducer(
 //     case ColumnActions.DELETE_SELF_SOFT:
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state[i] = {
-//             ...new_state[i],
+//           var newState = state.slice()
+//           newState[i] = {
+//             ...newState[i],
 //             deleted: true,
-//             deleted_on: _t('This session')
+//             deletedOn: _t('This session')
 //           }
-//           return new_state
+//           return newState
 //         }
 //       }
 //       return state
@@ -167,39 +167,39 @@ export default function columnReducer(
 //     case ColumnActions.RESTORE_SELF:
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...new_state[i], deleted: false }
-//           return new_state
+//           var newState = state.slice()
+//           newState[i] = { ...newState[i], deleted: false }
+//           return newState
 //         }
 //       }
 //       return state
 //
 //     case ColumnActions.INSERT_BELOW:
-//       new_state = state.slice()
-//       new_state.push(action.payload.new_model)
-//       return new_state
+//       newState = state.slice()
+//       newState.push(action.payload.new_model)
+//       return newState
 //
-//     case ColumnActions.CHANGE_FIELD:
+//     case ColumnActions.changeField:
 //       if (
 //         action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
 //       )
 //         return state
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.id) {
-//           var new_state = state.slice()
-//           new_state[i] = { ...state[i], ...action.payload.json }
-//           return new_state
+//           var newState = state.slice()
+//           newState[i] = { ...state[i], ...action.payload.json }
+//           return newState
 //         }
 //       }
 //       return state
 //
 //     case ColumnActions.RELOAD_COMMENTS: {
-//       var new_state = state.slice()
-//       for (var i = 0; i < new_state.length; i++) {
-//         const obj = new_state[i]
+//       var newState = state.slice()
+//       for (var i = 0; i < newState.length; i++) {
+//         const obj = newState[i]
 //         if (obj.id == action.payload.id) {
-//           new_state[i] = { ...obj, comments: action.payload.comment_data }
-//           return new_state
+//           newState[i] = { ...obj, comments: action.payload.comment_data }
+//           return newState
 //         }
 //       }
 //       return state
@@ -211,18 +211,18 @@ export default function columnReducer(
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].id == action.payload.column.id) return state
 //       }
-//       new_state = state.slice()
-//       new_state.push(action.payload.column)
-//       return new_state
+//       newState = state.slice()
+//       newState.push(action.payload.column)
+//       return newState
 //
 //     /*******************************************************
 //      * STRATEGY
 //      *******************************************************/
 //     case StrategyActions.ADD_STRATEGY:
 //       if (action.payload.columns_added.length == 0) return state
-//       new_state = state.slice()
-//       new_state.push(...action.payload.columns_added)
-//       return new_state
+//       newState = state.slice()
+//       newState.push(...action.payload.columns_added)
+//       return newState
 //
 //     default:
 //       return state

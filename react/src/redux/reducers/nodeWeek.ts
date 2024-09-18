@@ -38,7 +38,7 @@ export default function nodeweekReducer(
     case NodeWeekActions.CHANGE_ID:
       return state.map((item) =>
         item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, no_drag: false }
+          ? { ...item, id: action.payload.new_id, noDrag: false }
           : item
       )
 
@@ -51,7 +51,7 @@ export default function nodeweekReducer(
           ? {
               ...item,
               week: action.payload.new_parent,
-              no_drag: true
+              noDrag: true
             }
           : item
       )

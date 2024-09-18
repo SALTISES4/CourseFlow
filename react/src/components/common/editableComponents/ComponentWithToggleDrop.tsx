@@ -16,9 +16,9 @@ export type ComponentWithToggleProps = {
   dispatch?: Dispatch<Action>
   data?: {
     id?: number
-    is_dropped?: boolean
+    isDropped?: boolean
     depth?: number
-    column_type_display?: string
+    columnTypeDisplay?: string
     title?: any
   }
 }
@@ -46,8 +46,8 @@ class ComponentWithToggleDrop<
     toggleDropReduxAction(
       this.props.objectId,
       // @ts-ignore
-      Constants.object_dictionary[this.objectType],
-      !this.props.data.is_dropped,
+      Constants.objectDictionary[this.objectType],
+      !this.props.data.isDropped,
       this.props.dispatch,
       this.props.data.depth
     )

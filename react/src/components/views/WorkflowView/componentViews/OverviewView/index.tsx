@@ -5,7 +5,7 @@ import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import {
-  PROJECT_PERMISSION_ROLE,
+  projectPermission_ROLE,
   PermissionUserType,
   ProjectDetailsType
 } from '@cf/types/common'
@@ -38,15 +38,15 @@ import {
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
-    name: PROJECT_PERMISSION_ROLE.EDITOR,
+    name: projectPermission_ROLE.EDITOR,
     label: 'Editor'
   },
   {
-    name: PROJECT_PERMISSION_ROLE.COMMENTER,
+    name: projectPermission_ROLE.COMMENTER,
     label: 'Commenter'
   },
   {
-    name: PROJECT_PERMISSION_ROLE.VIEWER,
+    name: projectPermission_ROLE.VIEWER,
     label: 'Viewer'
   }
 ]
@@ -55,7 +55,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
   const [removeUser, setRemoveUser] = useState<PermissionUserType | null>(null)
   const { dispatch } = useDialog()
   const data = useSelector((state: AppState) => state.workflow)
-  const context = useContext(WorkFlowConfigContext)
+  const workflow = useSelector((state: AppState) => state.workflow)
 
   const {
     data: usersForObjectData,
@@ -65,7 +65,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
   } = useQuery<UsersForObjectQueryResp>({
     queryKey: ['getUsersForObjectQuery', 5],
     queryFn: () => getUsersForObjectQuery(5, 'workflow'),
-    enabled: !context.public_view && !context.user.isStudent
+    enabled: !workflow.publicView
   })
 
   // @todo this is shared with project and should be merged
@@ -92,7 +92,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
               <ListItemText primary={perm.name} secondary={perm.email} />
               <MenuButton
                 selected={perm.role}
-                disabled={perm.role === PROJECT_PERMISSION_ROLE.OWNER}
+                disabled={perm.role === projectPermission_ROLE.OWNER}
                 options={[
                   ...roleMenuOptions,
                   {
@@ -109,7 +109,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
                 ]}
                 onChange={(role) => console.log('changed to', role)}
                 placeholder={
-                  perm.role === PROJECT_PERMISSION_ROLE.OWNER
+                  perm.role === projectPermission_ROLE.OWNER
                     ? 'Owner'
                     : roleMenuOptions.find((p) => p.name === perm.role)?.label
                 }
@@ -162,7 +162,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
         <Grid item xs={6}>
           <InfoBlock>
             <InfoBlockTitle>Created on</InfoBlockTitle>
-            <InfoBlockContent>{formatDate(data.created_on)}</InfoBlockContent>
+            <InfoBlockContent>{formatDate(data.createdOn)}</InfoBlockContent>
           </InfoBlock>
         </Grid>
       </Grid>

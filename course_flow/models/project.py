@@ -1,4 +1,5 @@
 import base64
+import logging
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -6,6 +7,8 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from course_flow.apps import logger
 
 from ._abstract import AbstractCourseFlowModel
 
@@ -84,7 +87,8 @@ class Project(AbstractCourseFlowModel):
     def get_from_hash(hash_):
         try:
             hash_ = base64.urlsafe_b64decode(hash_.encode()).decode()
-        except UnicodeDecodeError:
+        except UnicodeDecodeError as e:
+            logger.log(logging.INFO, e)
             hash_ = None
         if hash_:
             try:
@@ -105,7 +109,8 @@ class Project(AbstractCourseFlowModel):
     # def get_live_project(self):
     #     try:
     #         liveproject = self.liveproject
-    #     except AttributeError:
+    #     except AttributeError as e:
+    #                logger.log(logging.INFO, e)
     #         liveproject = None
     #     return liveproject
 

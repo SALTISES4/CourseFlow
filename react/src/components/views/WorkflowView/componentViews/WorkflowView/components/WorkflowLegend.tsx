@@ -88,23 +88,23 @@ export class WorkflowLegendUnconnected<
 
     const contexts = this.props.contexts.map((value) => (
       <LegendLine
-        icon={Constants.context_keys[value]}
-        text={choices.context_choices.find((obj) => obj.type == value).name}
+        icon={Constants.contextKeys[value]}
+        text={choices.contextChoices.find((obj) => obj.type == value).name}
       />
     ))
 
     const tasks = this.props.tasks.map((value) => (
       <LegendLine
-        icon={Constants.task_keys[value]}
+        icon={Constants.taskKeys[value]}
         text={choices.task_choices.find((obj) => obj.type == value).name}
       />
     ))
 
     const strategies = this.props.strategies.map((value) => (
       <LegendLine
-        icon={Constants.strategy_keys[value]}
+        icon={Constants.strategyKeys[value]}
         text={
-          choices.strategy_classification_choices.find(
+          choices.strategyClassification_choices.find(
             (obj) => obj.type == value
           ).name
         }
@@ -161,19 +161,19 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
   }
   contexts = state.node
     // @ts-ignore
-    .map((node) => parseInt(node.context_classification))
+    .map((node) => parseInt(node.contextClassification))
     .filter(uniqueTest)
     .filter((value) => value > 0)
 
   tasks = state.node
     // @ts-ignore
-    .map((node) => parseInt(node.task_classification))
+    .map((node) => parseInt(node.taskClassification))
     .filter(uniqueTest)
     .filter((value) => value > 0)
 
   strategies = state.week
     // @ts-ignore
-    .map((week) => parseInt(week.strategy_classification))
+    .map((week) => parseInt(week.strategyClassification))
     .filter(uniqueTest)
     .filter((value) => value > 0)
 

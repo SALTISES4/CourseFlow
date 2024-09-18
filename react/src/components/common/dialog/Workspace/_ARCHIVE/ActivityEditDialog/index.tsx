@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActivityForm from '@cfComponents/dialog/common/CreateWizardDialog/components/FormActivity'
@@ -31,8 +32,8 @@ const ActivityEditDialog = () => {
   const initialState: StateType = {
     title: workflow.title,
     description: workflow.description,
-    duration: workflow.time_required,
-    units: String(workflow.time_units) ?? '0'
+    duration: workflow.timeRequired,
+    units: String(workflow.timeUnits) ?? '0'
   }
 
   const [state, setState] = useState<StateType>(initialState)

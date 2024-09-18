@@ -16,7 +16,7 @@ from course_flow.serializers.mixin import (
     DescriptionSerializerMixin,
     TitleSerializerMixin,
 )
-from course_flow.utils import dateTimeFormat, linkIDMap
+from course_flow.services import Utility
 
 
 #########################################################
@@ -91,12 +91,12 @@ class ProjectSerializerShallow(
             "object_permission",
         ]
 
-    created_on = serializers.DateTimeField(format=dateTimeFormat())
-    last_modified = serializers.DateTimeField(format=dateTimeFormat())
+    created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=Utility.dateTimeFormat())
     workflowproject_set = serializers.SerializerMethodField()
     object_sets = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
-    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
     author = serializers.SerializerMethodField()
     object_permission = serializers.SerializerMethodField()
 
@@ -128,7 +128,7 @@ class ProjectSerializerShallow(
         links = instance.workflowproject_set.filter(
             workflow__deleted=False
         ).order_by("rank")
-        return list(map(linkIDMap, links))
+        return list(map(Utility.linkIDMap, links))
 
     def get_object_permission(self, instance):
         user = self.context.get("user")

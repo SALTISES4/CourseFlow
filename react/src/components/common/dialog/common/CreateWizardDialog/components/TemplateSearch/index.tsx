@@ -19,8 +19,8 @@ type PropsType = {
   selected?: number
   templates: TemplateType[]
   onTemplateSelect: (id: number) => void
-  setTemplateData: (project_data: TemplateType[]) => void
-  template_type: string
+  setTemplateData: (projectData: TemplateType[]) => void
+  templateType: string
 }
 
 type StateType = TemplateType[]
@@ -30,7 +30,7 @@ const TemplateSearch = ({
   templates,
   onTemplateSelect,
   setTemplateData,
-  template_type
+  templateType
 }: PropsType) => {
   const [results, setResults] = useState<StateType>(templates)
 
@@ -49,12 +49,12 @@ const TemplateSearch = ({
   }
 
   if (templates === null) {
-    getTemplates(template_type, (response_data) => {
-      const project_data = response_data.data_package.map((project) => {
+    getTemplates(templateType, (responseData) => {
+      const projectData = responseData.dataPackage.map((project) => {
         return formatLibraryObject(project)
       })
-      setTemplateData(project_data)
-      setResults(project_data)
+      setTemplateData(projectData)
+      setResults(projectData)
     })
     return <Loader />
   }
