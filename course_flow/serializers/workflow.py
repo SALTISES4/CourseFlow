@@ -102,33 +102,9 @@ class WorkflowSerializerShallow(
         if user is None or not user.is_authenticated:
             return False
 
-        ppp = Favourite.objects.filter(
-            user=user,
-            content_type=ContentType.objects.get_for_model(
-                instance.get_subclass()
-            ),
-            object_id=instance.id,
-        )
-        print("instance.id")
-        print(instance.id)
-        print("instance.get_subclass()")
-        print(ContentType.objects.get_for_model(instance.get_subclass()).id)
-
-        print(
-            Favourite.objects.filter(
-                user=user,
-                content_type=ContentType.objects.get_for_model(
-                    instance.get_subclass()
-                ),
-                object_id=instance.id,
-            )
-        )
-
         if Favourite.objects.filter(
             user=user,
-            content_type=ContentType.objects.get_for_model(
-                instance.get_subclass()
-            ),
+            content_type=ContentType.objects.get_for_model(Workflow),
             object_id=instance.id,
         ):
             return True

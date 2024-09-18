@@ -35,6 +35,7 @@ const rootWorkflowReducers = {
   parentWorkflow: parentWorkflowReducer,
   parentNode: parentNodeReducer,
   child_workflow: childWorkflowReducer,
+  parentProject: parentProjectReducer,
   strategy: strategyReducer,
   objectset: objectSetReducer
 }

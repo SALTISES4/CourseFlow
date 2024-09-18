@@ -43,19 +43,12 @@ type PropsType = DispatchProp & OwnProps & ConnectedProps
  * the hope is that there unpacking this will be less work when Workflow/Workflow is revised first
  * ****************************************/
 class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
-  private workflowDetailResp: WorkflowDetailViewDTO
-  static contextType = UserContext
 
+  static contextType = UserContext
   declare context: React.ContextType<typeof UserContext>
 
-  // publicView: boolean
-
-  // isStrategy: boolean
-  project: EProject
-  // isStrategy: boolean
-  // userId: number
-  // userName: string
   projectPermission: number
+  workflowPermission: WorkflowPermission
 
   // def used
   workflowId: number
@@ -66,7 +59,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   viewType: WorkflowViewType
   protected locks: any
   private wsService: WebSocketService
-  workflowPermission: WorkflowPermission
 
   wsUserConnectedService: WebSocketServiceConnectedUserManager
 
@@ -149,8 +141,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
     // as soon as the socket connection is opened, fetch the 'additional workflow data query'
     // put it in redux store, and indicate that we're ready to render / done loading
-    // Q: do we have race condition with main parent 'get workflow data'
-    // Q: why are these separate, and how can they be better defined?
     getWorkflowQuery(this.workflowId, (response) => {
       // this.unreadComments = response.dataPackage?.unreadComments // @todo do not assign this explicitly here, not seeing this in data package yet
 
