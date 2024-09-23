@@ -1,53 +1,17 @@
 // @ts-nocheck
-import * as Constants from '@cf/constants'
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import legacyWithRouter from '@cf/HOC/legacyWithRouter'
 import { WorkflowViewType } from '@cf/types/enum.js'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import Workflow, { WorkflowClass } from '@cfPages/Workspace/Workflow'
+import { WorkflowClass } from '@cfPages/Workspace/Workflow'
 import * as Reducers from '@cfRedux/Reducers'
 import ComparisonWorkflowBase from '@cfViews/ProjectComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
-import { getProjectById } from '@XMLHTTP/API/project'
-import { getWorkflowQuery } from '@XMLHTTP/API/workflow'
+import { getWorkflowByIdQuery } from '@XMLHTTP/API/workflow'
 import React from 'react'
 import { Provider } from 'react-redux'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-
-const defaultPermissions = {
-  readOnly: false,
-  viewComments: false,
-  addComments: false
-}
-
-const getProjectPermissions = (userPermission) => {
-  switch (userPermission) {
-    case Constants.permissionKeys['none']:
-    case Constants.permissionKeys['view']:
-      return {
-        ...defaultPermissions,
-        readOnly: true
-      }
-    case Constants.permissionKeys['comment']:
-      return {
-        ...defaultPermissions,
-        readOnly: true,
-        viewComments: true,
-        addComments: true
-      }
-
-    case Constants.permissionKeys['edit']:
-      return {
-        ...defaultPermissions,
-        readOnly: false,
-        viewComments: true,
-        addComments: true
-      }
-    default:
-      return defaultPermissions
-  }
-}
 
 /****************************************
  *  @WorkflowComparisonRenderer
@@ -56,7 +20,6 @@ const getProjectPermissions = (userPermission) => {
 export class ProjectComparison extends WorkflowClass {
   private initialObjectSets: any
   private projectData: any
-  private userPermission: any
 
   constructor(props) {
     // need to get project data and use it here see
@@ -99,7 +62,7 @@ export class ProjectComparison extends WorkflowClass {
 
   onConnectionOpened(reconnect = false) {
     // this makes no sense....
-    getWorkflowQuery(this.workflowId, (response) => {
+    getWorkflowByIdQuery(this.workflowId, (response) => {
       let dataFlat = response.dataPackage
       if (this.initialObjectSets) {
         dataFlat = {

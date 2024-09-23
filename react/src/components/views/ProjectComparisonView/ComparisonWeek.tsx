@@ -28,6 +28,7 @@ type PropsType = ConnectedProps & OwnProps
  * wide. In addition, we have the ability to move nodes out of the
  * week and into the week of another workflow.
  */
+// @ts-ignore
 export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
   /*******************************************************
    * LIFECYCLE

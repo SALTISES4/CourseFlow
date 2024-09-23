@@ -17,7 +17,6 @@ graphviz
 django-extensions
 pyparsing
 pydot
-pydantic
 flake8
 djangorestframework-camel-case
 

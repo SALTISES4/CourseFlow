@@ -51,6 +51,7 @@ class Project(AbstractCourseFlowModel):
         "Project", on_delete=models.SET_NULL, null=True
     )
 
+    # @todo this is wrong, no reason for this to be n2m
     workflows = models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )

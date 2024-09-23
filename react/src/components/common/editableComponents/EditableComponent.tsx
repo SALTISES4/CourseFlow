@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'

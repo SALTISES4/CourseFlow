@@ -42,7 +42,7 @@ export enum LibraryObjectType {
 // all the different entity types in the project related to a 'workflow'
 export enum CfObjectType {
   STRATEGY = 'strategy', // this is like a template, it might not belong here
-
+  PROJECT = 'project',
   NODELINK = 'nodelink',
   NODE = 'node',
   WEEK = 'week',

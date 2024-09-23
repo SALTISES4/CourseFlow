@@ -14,10 +14,9 @@ import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
-import { getNotifications } from '@XMLHTTP/API/notifications'
+import { getErrorMessage } from '@XMLHTTP/API/api'
+import { useGetNotificationsQuery } from '@XMLHTTP/API/notifications.rtk'
 import { API_POST } from '@XMLHTTP/CallWrapper'
-import { NotificationQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 
 import * as Styled from './style'
@@ -33,10 +32,7 @@ const NotificationsPage = (): JSX.Element => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { data, error, isLoading, isError } = useQuery<NotificationQueryResp>({
-    queryKey: ['getNotifications'],
-    queryFn: getNotifications
-  })
+  const { data, error, isLoading, isError } = useGetNotificationsQuery()
 
   const [pagination, setPagination] = useState<{
     page: number
@@ -177,7 +173,7 @@ const NotificationsPage = (): JSX.Element => {
    * CONSTANTS / VARIABLES for render
    *******************************************************/
   if (isLoading) return <Loader />
-  if (isError) return <div>An error occurred: {error.message}</div>
+  if (isError) return <div>An error occurred: {getErrorMessage(error)}</div>
 
   const { notifications, unreadCount } = data.dataPackage
   const totalPaginationPages = Math.ceil(

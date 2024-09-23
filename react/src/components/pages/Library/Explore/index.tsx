@@ -1,9 +1,8 @@
 import { _t } from '@cf/utility/utilityFunctions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import { useQuery } from '@tanstack/react-query'
-import { libraryObjectsSearchQuery } from '@XMLHTTP/API/library'
+import { getErrorMessage } from '@XMLHTTP/API/api'
+import { useLibraryObjectsSearchQuery } from '@XMLHTTP/API/library.rtk'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
-import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 import * as React from 'react'
 import { useMemo, useState } from 'react'
 
@@ -93,25 +92,20 @@ const ExplorePage = () => {
     {}
   )
 
+  /*******************************************************
+   * QUERIES
+   *******************************************************/
   const {
     data: libData,
     error: libError,
     isLoading: libIsLoading,
     isError: libIsError
-  } = useQuery<LibraryObjectsSearchQueryResp>({
-    queryKey: ['libraryObjectsSearchQuery', searchArgs], // how to manager the cache key
-    queryFn: () => {
-      // translate the UI filter state to 'flat' search arguments that can be used to call the query
-      return libraryObjectsSearchQuery(searchArgs)
-    }
-    // select: (res: Response) => res.entry.map((entry) => entry.resource) // picks only resource array from entry that was in response
-  })
+  } = useLibraryObjectsSearchQuery(searchArgs)
 
   // there is probably a better way to do this, but i think it's fine for now until everything else has settled \
   // this lib filter patterm might not stay here for long
   const options = useMemo(() => {
     const { disciplines } = COURSEFLOW_APP.globalContextData
-    console.log(COURSEFLOW_APP.globalContextData)
     return {
       ...defaultOptionsSearchOptions,
       filterGroups: {
@@ -132,7 +126,7 @@ const ExplorePage = () => {
    *******************************************************/
   if (libIsLoading) return <Loader />
   if (libIsError) {
-    return <div>An error occurred: {libError.message} </div>
+    return <div>An error occurred: {getErrorMessage(libError)} </div>
   }
 
   return (

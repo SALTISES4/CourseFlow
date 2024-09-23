@@ -1,6 +1,10 @@
 import json
 import logging
 from enum import Enum
+from pprint import pprint
+
+from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
 
 # from duplication
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -27,6 +31,7 @@ from course_flow.duplication_functions import (
     fast_duplicate_week,
 )
 from course_flow.models import Node, Outcome, Workflow
+from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.models.relations import (
     ColumnWorkflow,
     NodeLink,
@@ -48,13 +53,14 @@ from course_flow.serializers import (
     OutcomeWorkflowSerializerShallow,
     RefreshSerializerNode,
     RefreshSerializerOutcome,
+    UserSerializer,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
     serializer_lookups_shallow,
 )
 from course_flow.services import DAO, Utility
 from course_flow.sockets import redux_actions as actions
-from course_flow.views.json_api._validators import DeleteRequest
+from course_flow.views.json_api._validators import DeleteRequestSerializer
 
 
 class ObjectType(Enum):
@@ -271,19 +277,13 @@ class WorkspaceEndpoint:
     @user_can_delete(False)
     @api_view(["POST"])
     def delete_soft(request: Request, pk: int) -> Response:
-        try:
-            # Parse and validate the input data using Pydantic
-            data = DeleteRequest(**json.loads(request.body))
-        except json.JSONDecodeError as e:
-            logger.log(logging.INFO, e)
-            return Response({"error": "Invalid JSON format"}, status=400)
-        except ValidationError as e:
-            logger.log(logging.INFO, e)
-            return Response({"error": str(e)}, status=401)
+        serializer = DeleteRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
 
         # assing payload data to local objects
         object_id = pk
-        object_type = data.objectType
+        object_type = serializer.validated_data["objectType"]
 
         try:
             model = DAO.get_model_from_str(object_type).objects.get(
@@ -657,18 +657,13 @@ class WorkspaceEndpoint:
         :param request:
         :return:
         """
-        try:
-            # Parse and validate the input data using Pydantic
-            data = DeleteRequest(**json.loads(request.body))
-        except json.JSONDecodeError as e:
-            logger.log(logging.INFO, e)
-            return Response({"error": "Invalid JSON format"}, status=400)
-        except ValidationError as e:
-            # Handle errors in validation
-            return Response({"error": str(e)}, status=401)
+        serializer = DeleteRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
 
+        # assing payload data to local objects
         object_id = pk
-        object_type = data.objectType
+        object_type = serializer.validated_data["objectType"]
 
         try:
             model = DAO.get_model_from_str(object_type).objects.get(
@@ -837,3 +832,116 @@ class WorkspaceEndpoint:
                     parent_workflow, model.get_workflow()
                 )
         return Response({"message": "success"}, status=status.HTTP_200_OK)
+
+    #########################################################
+    # USERS
+    #########################################################
+    @staticmethod
+    # @user_can_view(False)
+    @api_view(["POST"])
+    def user__list(request: Request, pk: int) -> Response:
+        """
+        This is about getting users by workspace object (project or workflow only)
+        :param pk:
+        :param request:
+        :return:
+        """
+        serializer = DeleteRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            logger.log(logging.INFO, "invalid serializer")
+            return Response(serializer.errors, status=400)
+
+        # passing payload data to local objects
+        object_id = pk
+        object_type = serializer.validated_data["object_type"]
+
+        if object_type in ["activity", "course", "program"]:
+            object_type = "workflow"
+
+        content_type = ContentType.objects.get(model=object_type)
+        this_object = DAO.get_model_from_str(object_type).objects.get(
+            id=object_id
+        )
+        published = this_object.published
+        public_view = False
+
+        if object_type == "workflow":
+            public_view = this_object.public_view
+        try:
+            this_object = DAO.get_model_from_str(object_type).objects.get(
+                id=object_id
+            )
+            cannot_change = []
+            if this_object.author is not None:
+                cannot_change = [this_object.author.id]
+                author = UserSerializer(this_object.author).data
+                if object_type == "workflow" and not this_object.is_strategy:
+                    cannot_change.append(this_object.get_project().author.id)
+            else:
+                author = None
+            editors = set()
+            for object_permission in ObjectPermission.objects.filter(
+                content_type=content_type,
+                object_id=object_id,
+                permission_type=Permission.PERMISSION_EDIT.value,
+            ).select_related("user"):
+                editors.add(object_permission.user)
+            viewers = set()
+
+            for object_permission in ObjectPermission.objects.filter(
+                content_type=content_type,
+                object_id=object_id,
+                permission_type=Permission.PERMISSION_VIEW.value,
+            ).select_related("user"):
+                viewers.add(object_permission.user)
+            commentors = set()
+
+            for object_permission in ObjectPermission.objects.filter(
+                content_type=content_type,
+                object_id=object_id,
+                permission_type=Permission.PERMISSION_COMMENT.value,
+            ).select_related("user"):
+                commentors.add(object_permission.user)
+            students = set()
+
+            for object_permission in ObjectPermission.objects.filter(
+                content_type=content_type,
+                object_id=object_id,
+                permission_type=Permission.PERMISSION_STUDENT.value,
+            ).select_related("user"):
+                students.add(object_permission.user)
+
+            try:
+                if (
+                    Group.objects.get(name="SALTISE_Staff")
+                    in request.user.groups.all()
+                ):
+                    saltise_user = True
+                else:
+                    saltise_user = False
+            except ObjectDoesNotExist as e:
+                logger.log(logging.INFO, e)
+                saltise_user = False
+            is_template = this_object.is_template
+
+        except ValidationError as e:
+            logger.log(logging.INFO, "d;kfjhasdpfihbsdflvjihb")
+            logger.log(logging.INFO, e)
+            return Response({"action": "error"})
+
+        return Response(
+            {
+                "message": "success",
+                "author": author,
+                "viewers": UserSerializer(viewers, many=True).data,
+                "commentors": UserSerializer(commentors, many=True).data,
+                "editors": UserSerializer(editors, many=True).data,
+                "students": UserSerializer(students, many=True).data,
+                "published": published,
+                "public_view": public_view,
+                "cannot_change": cannot_change,
+                "saltise_user": saltise_user,
+                "is_template": is_template,
+            },
+            status=status.HTTP_200_OK,
+        )

@@ -9,17 +9,15 @@ import { ObjectPermission } from '@cf/types/common'
 import { WorkflowViewType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import { WorkflowPermission } from '@cfPages/Workspace/Workflow/types'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
+  getWorkflowByIdQuery,
   getWorkflowChildDataQuery,
-  getWorkflowParentDataQueryLegacy,
-  getWorkflowQuery
+  getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
 import React from 'react'
 import { DispatchProp, connect } from 'react-redux'
@@ -45,7 +43,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   declare context: React.ContextType<typeof UserContext>
 
   projectPermission: number
-  workflowPermission: WorkflowPermission
 
   // def used
   workflowId: number
@@ -117,23 +114,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     this.wsService.disconnect()
   }
 
-  selectionManagerInit(
-    isStrategy: boolean,
-    objectPermission: ObjectPermission,
-    workflowPermissions: number
-  ) {
-    // @todo no...
-    if (!isStrategy && objectPermission) {
-      this.projectPermission = objectPermission.permissionType
-    }
-
-    // @todo no...
-    this.workflowPermission = calcWorkflowPermissions(workflowPermissions)
-    this.selectionManager = new SelectionManager(
-      this.workflowPermission.readOnly
-    )
-  }
-
   /*******************************************************
    * WEBSOCKET HANDLERS
    *******************************************************/
@@ -146,21 +126,15 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
     // as soon as the socket connection is opened, fetch the 'additional workflow data query'
     // put it in redux store, and indicate that we're ready to render / done loading
-    getWorkflowQuery(this.workflowId, (response) => {
+    getWorkflowByIdQuery(this.workflowId, (response) => {
       // this.unreadComments = response.dataPackage?.unreadComments // @todo do not assign this explicitly here, not seeing this in data package yet
 
       this.props.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
 
-      const isStrategy = response.dataPackage.workflow.isStrategy
-      const projectPermissions =
-        response.dataPackage.parentProject.objectPermission
-      const workflowPermissions = response.dataPackage.workflow.userPermission
-
-      this.selectionManagerInit(
-        isStrategy,
-        projectPermissions,
-        workflowPermissions
+      this.selectionManager = new SelectionManager(
+        response.dataPackage.workflow.workflowPermission.read
       )
+
       this.setState({
         ...this.state,
         ready: true
@@ -440,10 +414,6 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
           ws: {
             wsConnected: this.state.wsConnected,
             connectedUsers: this.state.connectedUsers
-          },
-          permissions: {
-            projectPermission: this.projectPermission,
-            workflowPermission: this.workflowPermission
           }
         }}
       >

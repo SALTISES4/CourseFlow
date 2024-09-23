@@ -186,12 +186,14 @@ class WorkflowEndpoint:
     def fetch_parent_detail_full(request: Request, pk: int) -> Response:
         workflow_id = pk
         try:
+            # @todo still unclear
             parent_workflows = [
                 node.get_workflow()
                 for node in Node.objects.filter(
                     linked_workflow__id=workflow_id
                 )
             ]
+
             data_package = InfoBoxSerializer(
                 parent_workflows, many=True, context={"user": request.user}
             ).data

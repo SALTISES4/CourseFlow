@@ -10,13 +10,16 @@ import {
   TOutcomeHorizontalLinkByID,
   getOutcomeHorizontalLinkByID
 } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-type ConnectedProps = TOutcomeHorizontalLinkByID
+type ConnectedProps = {
+  workflow: TWorkflow
+  outcomeHorizontalLink: TOutcomeHorizontalLinkByID
+}
 type OwnProps = { parentID?: number } & ComponentWithToggleProps
 type PropsType = ConnectedProps & OwnProps
 
@@ -57,10 +60,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
     if (
       window.confirm(
         _t('Are you sure you want to delete this ') +
-          Constants.getVerbose(
-            this.props.data,
-            this.objectType
-          ).toLowerCase() +
+          Constants.getVerbose(this.props.data, this.objectType).toLowerCase() +
           '?'
       )
     ) {
@@ -129,7 +129,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const data = this.props.outcomeHorizontalLink.data
     //It's possible we don't actually have this data, if the horizontal link is dead
     if (!data) return null
     return (
@@ -138,7 +138,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
         id={data.id}
         ref={this.mainDiv}
       >
-        {!this.context.permissions.workflowPermission.readOnly && (
+        {this.props.workflow.workflowPermission.write && (
           <div>
             <this.DeleteSelf data={data} />{' '}
           </div>
@@ -159,8 +159,14 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
 const mapOutcomeHorizontalLinkStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TOutcomeHorizontalLinkByID => {
-  return getOutcomeHorizontalLinkByID(state, ownProps.objectId)
+): ConnectedProps => {
+  return {
+    outcomeHorizontalLink: getOutcomeHorizontalLinkByID(
+      state,
+      ownProps.objectId
+    ),
+    workflow: state.workflow
+  }
 }
 
 /*******************************************************

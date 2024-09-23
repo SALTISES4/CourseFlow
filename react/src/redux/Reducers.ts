@@ -19,7 +19,7 @@ import weekworkflowReducer from '@cfRedux/reducers/weekworkflow'
 import workflowReducer from '@cfRedux/reducers/workflow'
 import * as Redux from 'redux'
 
-const rootWorkflowReducers = {
+export const rootWorkflowReducers = {
   workflow: workflowReducer,
   columnworkflow: columnworkflowReducer,
   column: columnReducer,

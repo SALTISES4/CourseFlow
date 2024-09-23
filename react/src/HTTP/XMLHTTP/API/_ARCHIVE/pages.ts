@@ -6,10 +6,10 @@ import { PageHomeQueryResp, PageLibraryQueryResp } from '@XMLHTTP/types/query'
 /*******************************************************
  * HOME PAGE
  *******************************************************/
-export async function getHomeContext(): Promise<PageHomeQueryResp> {
-  const url = apiPaths.json_api.library.home
-  return API_GET<PageHomeQueryResp>(url)
-}
+// export async function getHomeContext(): Promise<PageHomeQueryResp> {
+//   const url = apiPaths.json_api.library.home
+//   return API_GET<PageHomeQueryResp>(url)
+// }
 
 /*******************************************************
  * LIBRARY PAGES
@@ -20,8 +20,8 @@ export async function getHomeContext(): Promise<PageHomeQueryResp> {
  * @param callBackFunction
  * this uses a callback because not yet used in hook
  */
-export async function getLibraryContext(): Promise<PageLibraryQueryResp> {
-  const url = apiPaths.json_api.library.library__library__projects
-
-  return API_GET<PageLibraryQueryResp>(url)
-}
+// export async function getLibraryContext(): Promise<PageLibraryQueryResp> {
+//   const url = apiPaths.json_api.library.library__library__projects
+//
+//   return API_GET<PageLibraryQueryResp>(url)
+// }

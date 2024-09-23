@@ -10,7 +10,6 @@ export type WorkflowCardProps = {
   selectAction?: any
   context?: any
   objectType?: any
-  noHyperlink?: any
   type?: any // @todo i don't think this is used
   dispatch?: any // @todo i don't think this is used
 }

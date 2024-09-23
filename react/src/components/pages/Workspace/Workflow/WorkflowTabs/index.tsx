@@ -21,7 +21,6 @@ import { Routes, matchPath } from 'react-router-dom'
 
 type WorkflowTabsManagerPropsType = {
   isStrategy: boolean
-  data: any
 }
 
 // & EditableComponentProps
@@ -151,25 +150,15 @@ const WorkflowTabs = () => {
 
       <div className="main-block">
         <MenuBar
-          leftSection={<ActionMenu isWorkflowDeleted={data.deleted} />}
+          leftSection={<ActionMenu />}
           viewbar={<ViewBar />}
           userbar={<ConnectionBar show={!workflow.publicView} />}
         />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
-              <Header
-                isStrategy={data.isStrategy}
-                workflowType={data.type}
-                title={data.title}
-                code={data.code}
-                deleted={data.deleted}
-              />
-
-              <WorkflowTabsManager
-                isStrategy={workflow.isStrategy}
-                data={data} // @todo clean this up
-              />
+              <Header />
+              <WorkflowTabsManager isStrategy={workflow.isStrategy} />
             </div>
           </div>
 

@@ -1,4 +1,5 @@
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { WorkSpaceType } from '@cf/types/enum'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -7,7 +8,13 @@ import Typography from '@mui/material/Typography'
 
 import { StyledDialog } from '../styles'
 
-const ArchiveDialog = () => {
+const ArchiveDialog = ({
+  id,
+  objectType
+}: {
+  id: number
+  objectType: WorkSpaceType
+}) => {
   const { type, show, onClose } = useDialog([
     DIALOG_TYPE.PROJECT_ARCHIVE,
     DIALOG_TYPE.WORKFLOW_ARCHIVE

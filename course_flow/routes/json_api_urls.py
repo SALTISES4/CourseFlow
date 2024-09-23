@@ -56,11 +56,6 @@ def json_api_patterns():
         ),
         ######## to sort ######
         path(
-            "project/get-users-for-object",
-            views.json_api.sharing.json_api_post_get_users_for_object,
-            name="json-api-post-get-users-for-object",
-        ),
-        path(
             "project/from-json",
             views.json_api.old_courseflow_import.json_api_post_project_from_json,
             name="json-api-post-project-from-json",
@@ -71,7 +66,7 @@ def json_api_patterns():
         path(
             "workflow/<int:pk>/detail",
             views.json_api.WorkflowEndpoint.fetch_detail,
-            name="workflow--detail",
+            name="workflow__detail",
         ),
         # path(
         #     "workflow/<int:pk>/detail-full",
@@ -81,13 +76,13 @@ def json_api_patterns():
         path(
             "workflow/<int:pk>/parent/detail",
             views.json_api.WorkflowEndpoint.fetch_parent_detail,
-            name="json-api-post-get-workflow-parent-data",
+            name="workflow__parent__detail",
         ),
         # @todo this is really, get workflows by node
         path(
             "workflow/<int:pk>/parent/detail-full",
             views.json_api.WorkflowEndpoint.fetch_parent_detail_full,
-            name="json-api-post-get-parent-workflow-info",
+            name="workflow__parent__detail__full",
         ),
         # @todo this is really, get workflows by node
         path(
@@ -227,6 +222,11 @@ def json_api_patterns():
             "workspace/<int:pk>/update-field",
             views.json_api.WorkspaceEndpoint.update_value,
             name="json-api-post-update-value",
+        ),
+        path(
+            "workspace/<int:pk>/user/list",
+            views.json_api.WorkspaceEndpoint.user__list,
+            name="workspace--user--list",
         ),
         ##########################################################
         # NODE

@@ -24,6 +24,7 @@ from course_flow.serializers import DisciplineSerializer, InfoBoxSerializer
 from course_flow.services import DAO
 from course_flow.services.library import LibraryService
 from course_flow.templatetags.course_flow_templatetags import has_group
+from course_flow.views.json_api._validators import SearchSerializer
 
 
 class LibraryEndpoint:
@@ -228,23 +229,26 @@ class LibraryEndpoint:
     def search(
         request: Request,
     ) -> Response:
-        try:
-            data = request.data
-            pprint("data")
-            pprint(data)
-            # name_filter = body.get("filter").lower()
+        serializer = SearchSerializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            nresults = data.get("results_per_page", 10)
+            full_search = data.get("full_search", False)
+            published = data.get("published", False)
             name_filter = data.get("filter", "").lower()
-            args = data.get("args", "{}")
-            nresults = args.get("results_per_page", 10)
-            full_search = args.get("full_search", False)
-            published = args.get("published", False)
 
-            print(nresults, full_search, published)
+            # Perform your search logic here with the validated data
+            # e.g., query the database, filter results
+        else:
+            return Response(serializer.errors, status=400)
+
+        try:
+            # name_filter = body.get("filter").lower()
 
             # A full search of all objects, paginated
             if full_search:
                 return_objects, pages = LibraryService.get_explore_objects(
-                    request.user, name_filter, nresults, published, args
+                    request.user, name_filter, nresults, published, {}
                 )
             # Small search for library
             else:
@@ -271,7 +275,7 @@ class LibraryEndpoint:
             )
 
         except Exception as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
             )

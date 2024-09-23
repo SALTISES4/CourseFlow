@@ -85,6 +85,7 @@ export type TTermByID = {
   nodes_by_column: any
   nodeweeks: any
 }
+
 export const getTermByID = (state: AppState, id: number): TTermByID => {
   for (const i in state.week) {
     const week = state.week[i]

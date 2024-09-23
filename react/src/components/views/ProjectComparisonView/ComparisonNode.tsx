@@ -8,13 +8,13 @@ import {
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
 import { TGetNodeByID, getNodeByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-type ConnectedProps = TGetNodeByID
+type ConnectedProps = { node: TGetNodeByID; workflow: TWorkflow }
 type OwnProps = {
   objectId: number
 } & EditableComponentWithActionsProps
@@ -67,7 +67,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
     const selectionManager = this.context.selectionManager
 
     const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour(this.props.column)
+      backgroundColor: Constants.getColumnColour(this.props.node.column)
     }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.userColour
@@ -86,7 +86,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
               show_outcomes: false
             })
           }}
-          style={{ borderColor: Constants.getColumnColour(this.props.column) }}
+          style={{ borderColor: Constants.getColumnColour(this.props.node.column) }}
         >
           {data.outcomenodeUniqueSet.map((outcomenode) => (
             <OutcomeNode key={outcomenode} objectId={outcomenode} />
@@ -103,7 +103,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
               this.setState({ show_outcomes: true })
             }}
             style={{
-              borderColor: Constants.getColumnColour(this.props.column)
+              borderColor: Constants.getColumnColour(this.props.node.column)
             }}
           >
             {data.outcomenodeUniqueSet.length}
@@ -159,12 +159,12 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
     ].join(' ')
 
     const mouseover_actions = []
-    if (!this.context.permissions.workflowPermission.readOnly) {
+    if (this.props.workflow.workflowPermission.write) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.context.workflow.viewComments) {
+    if (this.props.workflow.workflowPermission.viewComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -198,8 +198,14 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
     )
   }
 }
-const mapStateToProps = (state: AppState, ownProps: OwnProps): TGetNodeByID => {
-  return getNodeByID(state, ownProps.objectId)
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => {
+  return {
+    node: getNodeByID(state, ownProps.objectId),
+    workflow: state.workflow
+  }
 }
 
 const ComparisonNode = connect<ConnectedProps, object, OwnProps, AppState>(

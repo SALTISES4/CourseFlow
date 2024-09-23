@@ -6,9 +6,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import { useQuery } from '@tanstack/react-query'
-import { getHomeContext } from '@XMLHTTP/API/pages'
-import { PageHomeQueryResp } from '@XMLHTTP/types/query'
+import { useGetHomeContextQuery } from '@XMLHTTP/API/library.rtk'
 
 import Section from './components/Section'
 import Welcome from './components/Welcome'
@@ -17,14 +15,9 @@ const Home = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { data, error, isLoading, isError } = useQuery<PageHomeQueryResp>({
-    queryKey: ['getHomeContext'],
-    queryFn: getHomeContext
-  })
+  const { data, error, isLoading } = useGetHomeContextQuery()
 
   if (isLoading) return <Loader />
-  // @todo put that into the snackbar
-  if (isError) return <div>An error occurred: {error.message}</div>
 
   const { projects, templates } = data.dataPackage
 

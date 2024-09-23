@@ -8,7 +8,7 @@ import {
   EditableComponentWithCommentsType
 } from '@cfEditableComponents/EditableComponentWithComments'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -19,7 +19,10 @@ import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
  *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
  */
 
-type ConnectedProps = TGetOutcomeByID
+type ConnectedProps = {
+  outcome: TGetOutcomeByID
+  workflow: TWorkflow
+}
 type OwnProps = {
   objectId: number
   parentID: number
@@ -39,6 +42,7 @@ export type SimpleOutcomeUnconnectedPropsType = OwnProps
 type StateProps = {
   isDropped: boolean
 } & EditableComponentWithCommentsStateType
+
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -125,7 +129,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
           data.childOutcomeLinks.length
         )
 
-    const comments = this.context.workflow.viewComments ? (
+    const comments = this.props.workflow.workflowPermission.viewComments ? (
       <this.AddCommenting />
     ) : null
     const editPortal = this.props.edit ? this.addEditable(data, true) : null
@@ -152,8 +156,8 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
           <div className="outcome-title">
             <OutcomeTitle
               data={data}
-              prefix={this.props.prefix}
-              hovertext={this.props.hovertext}
+              prefix={this.props.outcome.prefix}
+              hovertext={this.props.outcome.hovertext}
             />
           </div>
 
@@ -198,8 +202,11 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
 const mapOutcomeStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TGetOutcomeByID => {
-  return getOutcomeByID(state, ownProps.objectId)
+): ConnectedProps => {
+  return {
+    outcome: getOutcomeByID(state, ownProps.objectId),
+    workflow: state.workflow
+  }
 }
 /*******************************************************
  * CONNECT REDUX

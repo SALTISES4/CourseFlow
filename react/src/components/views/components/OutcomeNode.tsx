@@ -7,14 +7,17 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TOutcomeNodeByID, getOutcomeNodeByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
 // import $ from 'jquery'
 
-type ConnectedProps = TOutcomeNodeByID
+type ConnectedProps = {
+  outcomeNode: TOutcomeNodeByID
+  workflow: TWorkflow
+}
 
 type OwnProps = {
   parentID?: number // is this required:
@@ -116,7 +119,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const data = this.props.outcomeNode.data
 
     // @todo component blows up on re-render by losing redux state
     // results in
@@ -129,7 +132,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
         id={data.id}
         ref={this.mainDiv}
       >
-        {!this.context.permissions.workflowPermission.readOnly && (
+        {this.props.workflow.workflowPermission.write && (
           <div>
             <this.AddDeleteSelf data={data} />
           </div>
@@ -155,8 +158,11 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TOutcomeNodeByID => {
-  return getOutcomeNodeByID(state, ownProps.objectId)
+): ConnectedProps => {
+  return {
+    outcomeNode: getOutcomeNodeByID(state, ownProps.objectId),
+    workflow: state.workflow
+  }
 }
 
 const OutcomeNode = connect<ConnectedProps, object, OwnProps, AppState>(

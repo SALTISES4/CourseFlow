@@ -1,14 +1,14 @@
 import MenuButton, {
   MenuButtonOption
 } from '@cf/components/common/menu/MenuButton'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import {
-  projectPermission_ROLE,
   PermissionUserType,
-  ProjectDetailsType
+  ProjectDetailsType,
+  projectPermission_ROLE
 } from '@cf/types/common'
+import { CfObjectType } from '@cf/types/enum'
 import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
 import { _t, formatDate, getInitials } from '@cf/utility/utilityFunctions'
 import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
@@ -22,10 +22,11 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
-import { useContext, useState } from 'react'
+import {
+  UsersForObjectQueryResp,
+  useGetUsersForObjectQuery
+} from '@XMLHTTP/API/workspace.rtk'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import {
@@ -62,11 +63,23 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
     error: usersForObjectError,
     isLoading: usersForObjectIsLoading,
     isError: usersForObjectIsError
-  } = useQuery<UsersForObjectQueryResp>({
-    queryKey: ['getUsersForObjectQuery', 5],
-    queryFn: () => getUsersForObjectQuery(5, 'workflow'),
-    enabled: !workflow.publicView
-  })
+  } = useGetUsersForObjectQuery(
+    {
+      id: workflow.id,
+      payload: {
+        objectType: CfObjectType.WORKFLOW
+      }
+    },
+    {
+      skip: !workflow.publicView
+    }
+  )
+
+  // useQuery<UsersForObjectQueryResp>({
+  //   queryKey: ['getUsersForObjectQuery', 5],
+  //   queryFn: () => getUsersForObjectQuery(5, 'workflow'),
+  //   enabled: !workflow.publicView
+  // })
 
   // @todo this is shared with project and should be merged
   const Users = (data: UsersForObjectQueryResp) => {

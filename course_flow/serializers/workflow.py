@@ -435,6 +435,7 @@ class WorkflowUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 
+# @todo, change to a relevant title
 class InfoBoxSerializer(
     serializers.Serializer,
     TitleSerializerMixin,

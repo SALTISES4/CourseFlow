@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { apiPaths } from '@cf/router/apiRoutes'
 import { API_GET } from '@XMLHTTP/CallWrapper'
 import { NotificationQueryResp } from '@XMLHTTP/types/query'

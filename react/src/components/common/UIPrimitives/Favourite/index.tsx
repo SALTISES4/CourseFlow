@@ -1,11 +1,9 @@
 import { LibraryObjectType } from '@cf/types/enum'
 import StarIcon from '@mui/icons-material/Star'
 import IconButton from '@mui/material/IconButton'
-import { useMutation } from '@tanstack/react-query'
-import { toggleFavouriteMutation } from '@XMLHTTP/API/library'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { useToggleFavouriteMutation } from '@XMLHTTP/API/library.rtk'
 import { enqueueSnackbar } from 'notistack'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as React from 'react'
 
 type PropsType = {
@@ -17,26 +15,31 @@ type PropsType = {
 const Favourite = ({ id, isFavorite, type }: PropsType) => {
   const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavorite)
 
-  const { mutate: toggleMutate } = useMutation<EmptyPostResp>({
-    mutationFn: () =>
-      toggleFavouriteMutation({
-        id,
-        type: type,
-        favourite: !isFavouriteState
-      }),
-    onSuccess: (_resp) => {
-      setFavouriteState(!isFavouriteState)
-      enqueueSnackbar('Success toggling favourites', {
-        variant: 'success'
-      })
-    },
-    onError: (error) => {
-      console.error('Error updating toggle:', error)
-      enqueueSnackbar('Error toggling favourites', {
-        variant: 'error'
-      })
+  const [toggleMutate, { isError, error, isSuccess }] =
+    useToggleFavouriteMutation()
+
+  function onSuccess() {
+    setFavouriteState(!isFavouriteState)
+    enqueueSnackbar('Success toggling favourites', {
+      variant: 'success'
+    })
+  }
+
+  function onError(error) {
+    console.error('Error updating toggle:', error)
+    enqueueSnackbar('Error toggling favourites', {
+      variant: 'error'
+    })
+  }
+
+  useEffect(() => {
+    if (isError) {
+      onError(error)
     }
-  })
+    if (isSuccess) {
+      onSuccess()
+    }
+  }, [isError, error, isSuccess])
 
   return (
     <IconButton
@@ -46,7 +49,13 @@ const Favourite = ({ id, isFavorite, type }: PropsType) => {
           ? 'courseflow.favouriteActive'
           : 'courseflow.favouriteInactive'
       }}
-      onClick={() => toggleMutate()}
+      onClick={() =>
+        toggleMutate({
+          id,
+          type: type,
+          favourite: !isFavouriteState
+        })
+      }
     >
       <StarIcon />
     </IconButton>

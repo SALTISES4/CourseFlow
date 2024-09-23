@@ -1,16 +1,9 @@
 import {
-  WorkflowChildDataPackage,
-  WorkflowDataPackage,
-  WorkflowParentDataPackage
-} from '@XMLHTTP/types'
-import { ProjectViewDTO, WorkflowDetailViewDTO } from '@XMLHTTP/types/dto'
-import {
   EComment,
   ELibraryObject,
   ENewItem,
   EObjectSet,
   ESectionGroup,
-  EUser,
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
@@ -32,6 +25,7 @@ export type ProfileField = {
   helpText: string
   value: string | number
 }
+
 /*******************************************************
  * EmptyPostResp
  * Used for all queries that do not export
@@ -56,56 +50,6 @@ export type PageHomeQueryResp = {
 }
 
 /*******************************************************
- * User
- *******************************************************/
-export type CurrentUserQueryResp = {
-  message: string
-  dataPackage: {
-    id: number
-    firstName: string
-    lastName: string
-    userName: string
-    language: string
-  }
-}
-
-export type NotificationSettingsQueryResp = {
-  message: string
-  dataPackage: {
-    formData: {
-      receiveNotifications: boolean
-    }
-  }
-}
-
-export type NotificationSettingsUpdateQueryResp = {
-  message: string
-  dataPackage: {
-    formData: {
-      receiveNotifications: boolean
-    }
-  }
-}
-
-export type ProfileSettingsQueryResp = {
-  message: string
-  dataPackage: {
-    formData: ProfileField[]
-  }
-}
-
-/*******************************************************
- *  Notification
- *******************************************************/
-export type NotificationQueryResp = {
-  message: string
-  dataPackage: {
-    notifications: any
-    unreadCount: number
-  }
-}
-
-/*******************************************************
  * comment.ts
  *******************************************************/
 export type CommentsForObjectQueryResp = {
@@ -124,7 +68,6 @@ export type AddTerminologyQueryResp = {
 /*******************************************************
  * duplication.ts
  *******************************************************/
-
 export type DuplicateBaseItemQueryResp = {
   message: string
   newItem: ENewItem
@@ -143,82 +86,12 @@ export type PageLibraryQueryResp = {
 }
 
 /*******************************************************
- * search.ts
- *******************************************************/
-export type LibraryObjectsSearchQueryResp = {
-  message: string
-  dataPackage: {
-    results: ELibraryObject[]
-    meta: {
-      count: number
-      pageCount: number
-    }
-  }
-}
-
-/*******************************************************
- * sharing.ts
- *******************************************************/
-export type UsersForObjectQueryResp = {
-  message: string
-  author: EUser
-
-  viewers: EUser[]
-  commentors: EUser[]
-  editors: EUser[]
-  students: EUser[]
-
-  published: boolean // why here, should move it
-  publicView: boolean // why here, should move it
-  cannotChange: number[] // what is
-  saltiseUser: boolean // what is
-  isTemplate: boolean // why here, should move it
-}
-
-export type UserListResp = {
-  message: string
-  dataPackage: {
-    userList: EUser[]
-  }
-}
-
-/*******************************************************
- * project.ts
- *******************************************************/
-export type GetProjectByIdQueryResp = {
-  message: string
-  dataPackage: ProjectViewDTO
-}
-
-export type CreateProjectResp = {
-  message: string
-  dataPackage: {
-    id: number
-  }
-}
-
-/*******************************************************
  * workflow.ts
  *******************************************************/
-export type GetWorkflowByIdQueryResp = {
-  message: string
-  dataPackage: WorkflowDetailViewDTO
-}
-
-export type WorkflowDataQueryResp = {
-  message: string
-  dataPackage: WorkflowDataPackage
-}
-
-export type WorkflowParentDataQueryResp = {
-  message: string
-  dataPackage: WorkflowParentDataPackage
-}
-
-export type WorkflowChildDataQueryResp = {
-  message: string
-  dataPackage: WorkflowChildDataPackage
-}
+// export type GetWorkflowByIdQueryResp = {
+//   message: string
+//   dataPackage: WorkflowDetailViewDTO
+// }
 
 // export type WorkflowContextQueryResp = {
 //   message: string

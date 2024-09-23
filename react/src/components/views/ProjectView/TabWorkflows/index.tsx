@@ -1,14 +1,11 @@
 import { _t } from '@cf/utility/utilityFunctions'
-import { useQuery } from '@tanstack/react-query'
-import { libraryObjectsSearchQuery } from '@XMLHTTP/API/library'
-import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
-import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
-import { useState } from 'react'
-import * as React from 'react'
-
 import LibrarySearchView, {
   SearchOptionsState
-} from 'components/views/LibrarySearchView'
+} from '@cfViews/LibrarySearchView'
+import { useLibraryObjectsSearchQuery } from '@XMLHTTP/API/library.rtk'
+import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
+import { useState } from 'react'
+import * as React from 'react'
 
 const defaultOptionsSearchOptions: SearchOptionsState = {
   page: 0,
@@ -77,14 +74,7 @@ const TabWorkflows = ({ projectId }: PropsType) => {
     {}
   )
   const { data, error, isLoading, isError } =
-    useQuery<LibraryObjectsSearchQueryResp>({
-      queryKey: ['libraryObjectsSearchQuery', searchArgs], // how to manager the cache key
-      queryFn: () => {
-        // translate the UI filter state to 'flat' search arguments that can be used to call the query
-        return libraryObjectsSearchQuery(searchArgs)
-      }
-      // select: (res: Response) => res.entry.map((entry) => entry.resource) // picks only resource array from entry that was in response
-    })
+    useLibraryObjectsSearchQuery(searchArgs)
 
   return (
     <LibrarySearchView

@@ -18,6 +18,7 @@ import {
   EWeekworkflow,
   EWorkflow
 } from '@XMLHTTP/types/entity'
+import {WorkflowPermission} from "@cf/utility/permissions";
 
 export type AppState = {
   workflow: TWorkflow
@@ -79,6 +80,7 @@ export type TWeekworkflow = EWeekworkflow & {
 export type TOutcomeWorkflow = EOutcomeWorkflow
 
 export type TWorkflow = EWorkflow & {
+  workflowPermission: WorkflowPermission
   lock?: boolean
   editCount?: number
   type?: WorkflowType

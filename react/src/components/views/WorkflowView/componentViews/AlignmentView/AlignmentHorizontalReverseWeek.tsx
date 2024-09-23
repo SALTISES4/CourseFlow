@@ -1,10 +1,11 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
+import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TNodeweek, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -13,7 +14,8 @@ import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode'
 
 type ConnectedProps = {
   data: any
-  nodeweeks: any
+  workflow: TWorkflow
+  nodeweeks: TNodeweek[]
 }
 type OwnProps = {
   objectId: number
@@ -45,8 +47,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
   render() {
     const data = this.props.data
 
-    const defaultText =
-      data.weekTypeDisplay + ' ' + (this.props.week_rank + 1)
+    const defaultText = data.weekTypeDisplay + ' ' + (this.props.week_rank + 1)
 
     const nodeweeks = this.props.nodeweeks.map((nodeweek, index) => {
       if (
@@ -64,9 +65,11 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
       )
     })
 
-    const comments = this.context.workflow.viewComments ? (
-      <this.AddCommenting />
-    ) : null
+    const permissions = calcWorkflowPermissions(
+      this.props.workflow.userPermission
+    )
+
+    const comments = permissions.read ? <this.AddCommenting /> : null
 
     return (
       <div
@@ -101,6 +104,7 @@ const mapStateToProps = (
         week.nodeweekSet
       )
       return {
+        workflow: state.workflow,
         data: week,
         nodeweeks: nodeweeks
       }

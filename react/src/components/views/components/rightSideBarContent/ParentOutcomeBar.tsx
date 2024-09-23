@@ -61,9 +61,7 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
                   // renderer={this.props.renderer} // @todo previous props were undefined, are they needed?
                   // @ts-ignore // @todo
                   parentID={null}
-                  readOnly={
-                    this.context.permissions.workflowPermission.readOnly
-                  }
+                  readOnly={!this.props.workflow.workflowPermission.write}
                   throughParentID={null}
                 />
               </div>

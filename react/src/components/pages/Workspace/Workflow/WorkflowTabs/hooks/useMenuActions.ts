@@ -3,30 +3,13 @@ import { EventUnion } from '@cf/types/common'
 import { CfObjectType, WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import { useMutation } from '@tanstack/react-query'
 import { deleteSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
-import { updateNotificationSettings } from '@XMLHTTP/API/user'
-import { NotificationSettingsUpdateQueryResp } from '@XMLHTTP/types/query'
 import { useDispatch } from 'react-redux'
 
 export const useMenuActions = () => {
   const dispatch = useDispatch()
   const { dispatch: dispatchDialog } = useDialog()
-
-  const { mutate } = useMutation<NotificationSettingsUpdateQueryResp>({
-    mutationFn: updateNotificationSettings,
-    onSuccess: (newNotificationsValue) => {
-      // Dispatch the action to update local state after the API call is successful
-      dispatch({
-        type: 'SET_UPDATES',
-        value: newNotificationsValue
-      })
-    },
-    onError: (error) => {
-      console.error('Error updating notifications:', error)
-    }
-  })
 
   /*******************************************************
    * MENU HANDLERS
@@ -71,30 +54,16 @@ export const useMenuActions = () => {
   }
 
   function restoreWorkflow() {
-    dispatchDialog(DIALOG_TYPE.WORKFLOW_RESTORE)
+    dispatchDialog(DIALOG_TYPE.RESTORE)
+  }
+
+  function copyToProject() {
+    dispatchDialog(DIALOG_TYPE.WORKFLOW_COPY_TO_PROJECT)
   }
 
   /*******************************************************
    * TO PROCESS
    *******************************************************/
-
-  function copyToProject(
-    workflowId: number,
-    projectId: number,
-    workflowType: WorkflowType
-  ) {
-    const loader = COURSEFLOW_APP.tinyLoader
-    loader.startLoad()
-    duplicateBaseItemQuery(
-      workflowId,
-      workflowType,
-      projectId,
-      (responseData) => {
-        loader.endLoad()
-        window.location.href = 'path top newly created item'
-      }
-    )
-  }
 
   function deleteWorkflowHard(projectId: number, workflowId: number) {
     if (
@@ -131,12 +100,6 @@ export const useMenuActions = () => {
     // this.props[type].forEach((week) =>
     //   toggleDropReduxAction(week.id, type, false, dispatch)
     // )
-  }
-
-  function pushImport(imports, importType, text, disabled) {
-    let a_class = 'hover-shade'
-    if (disabled) a_class = ' disabled'
-    imports.push()
   }
 
   function duplicateItem(

@@ -8,8 +8,27 @@ import { getTargetProjectMenuQuery } from '@XMLHTTP/API/workflow'
 import { TargetProjectQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 
-function ProjectTargetDialog({ id, actionFunction }: any) {
-  const { show, onClose } = useDialog(DIALOG_TYPE.TARGET_PROJECT)
+
+ // function copyToProject(
+ //    workflowId: number,
+ //    projectId: number,
+ //    workflowType: WorkflowType
+ //  ) {
+ //    const loader = COURSEFLOW_APP.tinyLoader
+ //    loader.startLoad()
+ //    duplicateBaseItemQuery(
+ //      workflowId,
+ //      workflowType,
+ //      projectId,
+ //      (responseData) => {
+ //        loader.endLoad()
+ //        window.location.href = 'path top newly created item'
+ //      }
+ //    )
+ //  }
+
+function WorkflowCopyToProjectDialog({ id, actionFunction }: any) {
+  const { show, onClose } = useDialog(DIALOG_TYPE.WORKFLOW_COPY_TO_PROJECT)
   const [projectData, setProjectData] = useState<TargetProjectQueryResp>(null)
 
   const onDialogClose = (response: any) => {
@@ -61,4 +80,4 @@ function TargetProjectDialogContents({
   )
 }
 
-export default ProjectTargetDialog
+export default WorkflowCopyToProjectDialog

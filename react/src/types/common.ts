@@ -4,8 +4,8 @@ export type ToDefine = any
 
 export type ObjectPermission = {
   permissionType: number
-  lastViewed: Date
   role_type: number
+  lastViewed?: Date
 }
 
 export type QueryPages = {
@@ -65,6 +65,12 @@ export type TopBarProps = {
       date: string
     }[]
   }
+  forms: {
+    createProject: {
+      showNoProjectsAlert: boolean
+      formFields: FormFieldSerialized[]
+    }
+  }
 }
 
 export type FormFieldSerialized = {
@@ -105,6 +111,9 @@ export type ObjectSetType = {
   type: string
 }
 
+/*******************************************************
+ * simplified project for UI
+ *******************************************************/
 export type ProjectDetailsType = {
   id: number
   title: string

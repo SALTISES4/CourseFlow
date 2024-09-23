@@ -192,9 +192,6 @@ def get_app_config():
                     "json_api:json-api-post-update-object-set"
                 ),
                 # generic
-                "get_users_for_object": reverse(
-                    "json_api:json-api-post-get-users-for-object"
-                ),
                 "insert_sibling": reverse(
                     "json_api:json-api-post-insert-sibling"
                 ),

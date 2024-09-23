@@ -10,6 +10,7 @@ export enum DIALOG_TYPE {
   // General
   LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
+  RESTORE = 'restore',
 
   // USER
   PASSWORD_RESET = 'password_reset',
@@ -22,22 +23,20 @@ export enum DIALOG_TYPE {
   PROJECT_EXPORT = 'project_export',
   PROJECT_ARCHIVE = 'project_archive',
   PROJECT_RESTORE = 'project_restore',
+  PROJECT_DELETE = 'project_delete',
 
   // WORKFLOW
   IMPORT_OUTCOMES = 'import_outcomes',
   IMPORT_NODES = 'import_nodes',
   WORKFLOW_LINK = 'workflow_link',
   WORKFLOW_ARCHIVE = 'workflow_archive',
-  WORKFLOW_RESTORE = 'workflow_restore',
+
+  WORKFLOW_DELETE = 'workflow_DELETE',
   WORKFLOW_EDIT = 'workflow_edit',
+  WORKFLOW_COPY_TO_PROJECT = 'workflow_copy_to_project',
 
-  // WORKFLOW - PROGRAM
   PROGRAM_CREATE = 'program_create',
-
-  // WORKFLOW - ACTIVITY
   ACTIVITY_CREATE = 'activity_create',
-
-  // WORKFLOW - COURSE
   COURSE_CREATE = 'course_create',
 
   GENERIC = 'generic'

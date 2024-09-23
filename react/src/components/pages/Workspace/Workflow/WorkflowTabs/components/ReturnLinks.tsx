@@ -4,7 +4,6 @@ import { AppState } from '@cfRedux/types/type'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { EProject } from '@XMLHTTP/types/entity'
 import * as React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, generatePath } from 'react-router-dom'
@@ -22,7 +21,7 @@ const ReturnLinks = () => {
    * REDUX
    *******************************************************/
   const publicView = useSelector<AppState>(
-    (state: AppState) => state.workflow.publicView
+    (state: AppState) => state.workflow?.publicView
   )
 
   const WorkflowLink = () => {

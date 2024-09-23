@@ -1,6 +1,8 @@
-import { apiPaths } from '@cf/router/apiRoutes'
+import {apiPathRoutes, apiPaths} from '@cf/router/apiRoutes'
 import { API_POST } from '@XMLHTTP/CallWrapper'
-import { EmptyPostResp, UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { generatePath } from 'react-router-dom'
+import {UsersForObjectQueryResp} from "@XMLHTTP/API/workspace.rtk";
 
 export function setUserPermission(
   userId,
@@ -19,23 +21,23 @@ export function setUserPermission(
   })
 }
 
-export function getUsersForObjectQuery(
-  objectId: number,
-  objectType: string
-): Promise<UsersForObjectQueryResp> {
-  //@todo fix this
-  if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
-    objectType = 'workflow'
-  }
-
-  return API_POST<UsersForObjectQueryResp>(
-    COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
-    {
-      objectId: objectId,
-      objectType: objectType
-    }
-  )
-}
+// export function getUsersForObjectQuery(
+//   objectId: number,
+//   objectType: string
+// ): Promise<UsersForObjectQueryResp> {
+//   //@todo fix this
+//   if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
+//     objectType = 'workflow'
+//   }
+//
+//   return API_POST<UsersForObjectQueryResp>(
+//     COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
+//     {
+//       objectId: objectId,
+//       objectType: objectType
+//     }
+//   )
+// }
 
 // to remove
 /**
@@ -55,13 +57,11 @@ export function getUsersForObjectQueryLegacy(
 ) {
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
     objectType = 'workflow'
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
-    {
-      objectId: objectId,
-      objectType: objectType
-    }
-  ).then((response: UsersForObjectQueryResp) => {
+  const base = apiPaths.json_api.workspace.user__list
+  const url = generatePath(base, { id: objectId })
+  API_POST(url, {
+    objectType: objectType
+  }).then((response: UsersForObjectQueryResp) => {
     callBackFunction(response)
   })
 }

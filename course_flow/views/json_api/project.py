@@ -68,20 +68,7 @@ class ProjectEndpoint:
             project, context={"user": current_user, "request": request}
         )
 
-        user_permission = DAO.get_user_permission(project, current_user)
-
-        public_view = False  # moved from template layer
-        is_strategy = False
-
-        response_data = {
-            "project_data": serializer.data,
-            # @todo bad
-            "userId": current_user.id if current_user else 0,
-            "userName": current_user.username,
-            "userPermission": user_permission,
-            "isStrategy": is_strategy,
-            "publicView": public_view,
-        }
+        response_data = serializer.data
 
         return Response(
             {

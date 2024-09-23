@@ -1,7 +1,5 @@
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import { useQuery } from '@tanstack/react-query'
-import { getCurrentUserQuery } from '@XMLHTTP/API/user'
-import { CurrentUserQueryResp } from '@XMLHTTP/types/query'
+import { useGetCurrentUserQuery } from '@XMLHTTP/API/user.rtk'
 import React, { ReactNode } from 'react'
 
 type UserContextType = {
@@ -18,12 +16,7 @@ interface UserProviderProps {
 }
 
 const UserProvider = ({ children }: UserProviderProps) => {
-  const { data, error, isLoading, isError } = useQuery<CurrentUserQueryResp>({
-    queryKey: ['getCurrentUserQuery'], // how to manager the cache key
-    queryFn: () => {
-      return getCurrentUserQuery()
-    }
-  })
+  const { data, error, isLoading, isError } = useGetCurrentUserQuery()
 
   const changeFieldId = Math.floor(Math.random() * 10000)
 
@@ -33,7 +26,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     <UserContext.Provider
       value={{
         id: data.dataPackage.id,
-        name: data.dataPackage.name,
+        name: data.dataPackage.firstName,
         changeFieldID: changeFieldId
       }}
     >

@@ -23,7 +23,7 @@ export class TitleText extends React.Component {
   }
 }
 
-export function workflowTitle(title, code, deleted) {
+export function workflowTitle({ title, code, deleted }) {
   let text = title || _t('Untitled')
 
   if (code) {
@@ -47,7 +47,11 @@ export function workflowUrl(workflow) {
 }
 
 export const WorkflowNavLink = ({ workflow }) => {
-  const title = workflowTitle(workflow.title, workflow.code, workflow.deleted)
+  const title = workflowTitle({
+    title: workflow.title,
+    code: workflow.code,
+    deleted: workflow.deleted
+  })
 
   const url = workflowUrl(workflow)
 

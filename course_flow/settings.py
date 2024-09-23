@@ -127,6 +127,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "channels",
     "django_extensions",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -258,6 +259,7 @@ STATICFILES_FINDERS = (
 )
 
 REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_RENDERER_CLASSES": (
         "djangorestframework_camel_case.render.CamelCaseJSONRenderer",
         "djangorestframework_camel_case.render.CamelCaseBrowsableAPIRenderer",
@@ -273,6 +275,13 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication"
     ],
+}
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Courseflow API",
+    "DESCRIPTION": "Courseflow description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
 }
 
 COURSE_FLOW_RETURN_URL = {"name": "course_flow:home", "title": "myDalite"}

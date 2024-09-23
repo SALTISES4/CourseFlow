@@ -1,10 +1,11 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
+import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
-import { AppState, TColumn } from '@cfRedux/types/type'
+import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -14,6 +15,7 @@ type OwnProps = {
 }
 type ConnectedProps = {
   column: TColumn
+  workflow: TWorkflow
 }
 type PropsType = OwnProps & ConnectedProps
 type StateProps = EditableComponentWithCommentsStateType
@@ -66,9 +68,10 @@ class GridNodeUnconnected extends EditableComponentWithComments<
       data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
-    const comments = this.context.workflow.viewComments ? (
-      <this.AddCommenting />
-    ) : undefined
+    const permissions = calcWorkflowPermissions(
+      this.props.workflow.userPermission
+    )
+    const comments = permissions.read ? <this.AddCommenting /> : ''
 
     const portal = this.addEditable(data_override, true)
     return (
@@ -99,7 +102,8 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => ({
-  column: state.column.find((column) => column.id == ownProps.data.column)
+  column: state.column.find((column) => column.id == ownProps.data.column),
+  workflow: state.workflow
 })
 const GridNode = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,

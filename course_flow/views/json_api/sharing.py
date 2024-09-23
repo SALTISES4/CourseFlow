@@ -13,7 +13,6 @@ from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.models import User
 from course_flow.models.notification import Notification
 from course_flow.models.objectPermission import ObjectPermission, Permission
-from course_flow.serializers import UserSerializer
 from course_flow.services import DAO
 
 
@@ -87,95 +86,3 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
         response["action"] = "error"
 
     return JsonResponse(response)
-
-
-@user_can_view(False)
-def json_api_post_get_users_for_object(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    object_id = body.get("objectId")
-    object_type = body.get("objectType")
-
-    if object_type in ["activity", "course", "program"]:
-        object_type = "workflow"
-    content_type = ContentType.objects.get(model=object_type)
-    this_object = DAO.get_model_from_str(object_type).objects.get(id=object_id)
-    published = this_object.published
-    public_view = False
-
-    if object_type == "workflow":
-        public_view = this_object.public_view
-    try:
-        this_object = DAO.get_model_from_str(object_type).objects.get(
-            id=object_id
-        )
-        cannot_change = []
-        if this_object.author is not None:
-            cannot_change = [this_object.author.id]
-            author = UserSerializer(this_object.author).data
-            if object_type == "workflow" and not this_object.is_strategy:
-                cannot_change.append(this_object.get_project().author.id)
-        else:
-            author = None
-        editors = set()
-        for object_permission in ObjectPermission.objects.filter(
-            content_type=content_type,
-            object_id=object_id,
-            permission_type=Permission.PERMISSION_EDIT.value,
-        ).select_related("user"):
-            editors.add(object_permission.user)
-        viewers = set()
-
-        for object_permission in ObjectPermission.objects.filter(
-            content_type=content_type,
-            object_id=object_id,
-            permission_type=Permission.PERMISSION_VIEW.value,
-        ).select_related("user"):
-            viewers.add(object_permission.user)
-        commentors = set()
-
-        for object_permission in ObjectPermission.objects.filter(
-            content_type=content_type,
-            object_id=object_id,
-            permission_type=Permission.PERMISSION_COMMENT.value,
-        ).select_related("user"):
-            commentors.add(object_permission.user)
-        students = set()
-
-        for object_permission in ObjectPermission.objects.filter(
-            content_type=content_type,
-            object_id=object_id,
-            permission_type=Permission.PERMISSION_STUDENT.value,
-        ).select_related("user"):
-            students.add(object_permission.user)
-
-        try:
-            if (
-                Group.objects.get(name="SALTISE_Staff")
-                in request.user.groups.all()
-            ):
-                saltise_user = True
-            else:
-                saltise_user = False
-        except ObjectDoesNotExist:
-            saltise_user = False
-        is_template = this_object.is_template
-
-    except ValidationError as e:
-        logger.log(logging.INFO, e)
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "message": "success",
-            "author": author,
-            "viewers": UserSerializer(viewers, many=True).data,
-            "commentors": UserSerializer(commentors, many=True).data,
-            "editors": UserSerializer(editors, many=True).data,
-            "students": UserSerializer(students, many=True).data,
-            "published": published,
-            "public_view": public_view,
-            "cannot_change": cannot_change,
-            "saltise_user": saltise_user,
-            "is_template": is_template,
-        }
-    )

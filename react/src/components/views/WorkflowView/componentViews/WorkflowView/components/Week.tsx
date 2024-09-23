@@ -10,7 +10,7 @@ import {
 } from '@cfEditableComponents/EditableComponentWithSorting'
 import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import { addStrategyQuery } from '@XMLHTTP/API/create'
 import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
 import * as React from 'react'
@@ -22,7 +22,10 @@ import NodeWeek from './NodeWeek'
 
 // import $ from 'jquery'
 
-type ConnectedProps = TGetWeekByIDType
+type ConnectedProps = {
+  week: TGetWeekByIDType
+  workflow: TWorkflow
+}
 type OwnProps = {
   throughParentID?: number
   rank?: number
@@ -231,7 +234,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       data.isDropped ? ' dropped' : ''
     ].join(' ')
 
-    const defaultText = !this.context.workflow.isStrategy
+    const defaultText = !this.props.workflow.isStrategy
       ? data.weekTypeDisplay + ' ' + (this.props.rank + 1)
       : undefined
     const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
@@ -242,14 +245,14 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
     const mouseoverActions = []
     if (
-      !this.context.permissions.workflowPermission.readOnly &&
-      !this.context.workflow.isStrategy
+      this.props.workflow.workflowPermission.write &&
+      !this.props.workflow.isStrategy
     ) {
       mouseoverActions.push(<this.AddInsertSibling data={data} />)
       mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
       mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.context.workflow.viewComments) {
+    if (this.props.workflow.workflowPermission.viewComments) {
       mouseoverActions.push(<this.AddCommenting />)
     }
 
@@ -327,7 +330,10 @@ const mapWeekStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => {
-  return getWeekByID(state, ownProps.objectId)
+  return {
+    week: getWeekByID(state, ownProps.objectId),
+    workflow: state.workflow
+  }
 }
 
 const Week = connect<ConnectedProps, object, OwnProps, AppState>(

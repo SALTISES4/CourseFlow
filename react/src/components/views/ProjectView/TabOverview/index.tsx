@@ -1,5 +1,7 @@
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
+import { PermissionUserType } from '@cf/types/common'
+import { CfObjectType } from '@cf/types/enum'
 import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
 import { _t, getInitials } from '@cf/utility/utilityFunctions'
 import MenuButton, {
@@ -7,9 +9,8 @@ import MenuButton, {
 } from '@cfPages/Styleguide/components/MenuButton'
 import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
 import {
-  projectPermission_ROLE,
-  PermissionUserType,
-  ProjectDetailsType
+  ProjectDetailsType,
+  projectPermission_ROLE
 } from '@cfPages/Styleguide/views/Project/types'
 import LinkIcon from '@mui/icons-material/Link'
 import Avatar from '@mui/material/Avatar'
@@ -20,9 +21,10 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import {
+  UsersForObjectQueryResp,
+  useGetUsersForObjectQuery
+} from '@XMLHTTP/API/workspace.rtk'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -61,12 +63,12 @@ const OverviewTab = ({
   const { id } = useParams()
   const projectId = Number(id)
 
-  const { data, error, isLoading, isError } = useQuery<UsersForObjectQueryResp>(
-    {
-      queryKey: ['getUsersForObjectQuery', projectId],
-      queryFn: () => getUsersForObjectQuery(projectId, 'project')
+  const { data, error, isLoading, isError } = useGetUsersForObjectQuery({
+    id: projectId,
+    payload: {
+      objectType: CfObjectType.PROJECT
     }
-  )
+  })
 
   /*******************************************************
    * COMPONENTS

@@ -1,4 +1,5 @@
 import uuid
+from pprint import pprint
 
 from django.contrib.auth import get_user_model
 from django.db import models
@@ -215,7 +216,17 @@ class Node(AbstractCourseFlowModel):
         return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
-        return self.week_set.first().get_workflow()
+        """
+        The self.week_set.first() method in Django performs a database operation to fetch the
+        first record of a queryset related to the self object (i.e. the current node instance),
+        self.week_set is a relationship manager
+        self.week_set.first gets first record in the query set
+
+        developer has chained on YET another relationship via get_workflow on the found node
+        :return:
+        """
+        workflow = self.week_set.first().get_workflow()
+        return workflow
 
     def __str__(self):
         if self.title is not None:

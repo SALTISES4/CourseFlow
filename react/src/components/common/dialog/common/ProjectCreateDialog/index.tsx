@@ -18,13 +18,11 @@ import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
-import { useMutation } from '@tanstack/react-query'
-import { createProject } from '@XMLHTTP/API/project'
+import { useCreateProjectMutation } from '@XMLHTTP/API/project.rtk'
 import { CreateProjectArgs } from '@XMLHTTP/types/args'
-import { CreateProjectResp } from '@XMLHTTP/types/query'
 import { produce } from 'immer'
 import { enqueueSnackbar } from 'notistack'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
 
 import ObjectSets from './components/ObjectSets'
@@ -66,28 +64,41 @@ const ProjectCreateDialog = ({
   const [selectOpenStates, setSelectOpenStates] = useState({})
   const navigate = useNavigate()
 
-  const { mutate } = useMutation<CreateProjectResp, Error, CreateProjectArgs>({
-    mutationFn: createProject,
-    onSuccess: (resp: CreateProjectResp) => {
-      const path = generatePath(CFRoutes.PROJECT, {
-        id: String(resp.dataPackage.id)
-      })
-      onDialogClose()
-      navigate(path)
-      enqueueSnackbar('created project success', {
-        variant: 'success'
-      })
-    },
-    onError: (error) => {
-      enqueueSnackbar('created project error', {
-        variant: 'error'
-      })
-      // this won't work because we're getting back errors from the serializer
-      // but it's a start
-      console.error('Error creating project:', error)
-      // setErrors(error.name)
+  /*******************************************************
+   * QUERY HOOK
+   *******************************************************/
+  const [mutate, { isSuccess, isError, error, data: updateData }] =
+    useCreateProjectMutation()
+
+  useEffect(() => {
+    if (isSuccess) {
+      onSuccess(String(updateData.dataPackage.id))
     }
-  })
+    if (isError) {
+      onError(error)
+    }
+  }, [isSuccess, isError, updateData, error])
+
+  function onSuccess(id: string) {
+    const path = generatePath(CFRoutes.PROJECT, {
+      id
+    })
+    onDialogClose()
+    navigate(path)
+    enqueueSnackbar('created project success', {
+      variant: 'success'
+    })
+  }
+
+  function onError(error) {
+    enqueueSnackbar('created project error', {
+      variant: 'error'
+    })
+    // this won't work because we're getting back errors from the serializer
+    // but it's a start
+    console.error('Error creating project:', error)
+    // setErrors(error.name)
+  }
 
   /*******************************************************
    * FUNCTIONS

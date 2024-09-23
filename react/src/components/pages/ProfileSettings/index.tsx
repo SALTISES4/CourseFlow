@@ -15,10 +15,9 @@ import Snackbar from '@mui/material/Snackbar'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
-import { getProfileSettings } from '@XMLHTTP/API/user'
+import { useGetProfileSettingsQuery } from '@XMLHTTP/API/user.rtk'
 import { API_POST } from '@XMLHTTP/CallWrapper'
-import { ProfileField, ProfileSettingsQueryResp } from '@XMLHTTP/types/query'
+import { ProfileField } from '@XMLHTTP/types/query'
 import React, { useEffect, useState } from 'react'
 
 const PageTitle = styled(Box)(({ theme }) => ({
@@ -41,11 +40,7 @@ const ProfileSettingsPage = () => {
   /*******************************************************
    * QUERY HOOKS
    *******************************************************/
-  const { data, error, isLoading, isError } =
-    useQuery<ProfileSettingsQueryResp>({
-      queryKey: ['getProfileSettings'],
-      queryFn: getProfileSettings
-    })
+  const { data, error, isLoading, isError } = useGetProfileSettingsQuery()
 
   /*******************************************************
    * HOOKS

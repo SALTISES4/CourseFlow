@@ -1,5 +1,6 @@
 import { workflowTitle } from '@cf/components/common/UIPrimitives/Titles'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { OuterContentWrap } from '@cf/mui/helper'
 import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
 import { _t, convertEnum } from '@cf/utility/utilityFunctions'
 import { CHIP_TYPE } from '@cfComponents/cards/WorkflowCardDumb'
@@ -13,59 +14,51 @@ import { useContext } from 'react'
 import { useSelector } from 'react-redux'
 
 // @todo not sure this needs its own file
-const Header = ({
-  isStrategy,
-  workflowType,
-  title,
-  code,
-  deleted
-}: {
-  isStrategy: boolean
-  workflowType: WorkflowType
-  title: string
-  code: any
-  deleted: boolean
-}) => {
+const Header = () => {
   const context = useContext(WorkFlowConfigContext)
   const workflow = useSelector((state: AppState) => state.workflow)
 
-  const typeText = `${_t(workflowType)} ${isStrategy ? _t('strategy') : ''}`
+  const typeText = `${_t(workflow.type)} ${
+    workflow.isStrategy ? _t('strategy') : ''
+  }`
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-
-        justifyContent: 'space-between'
-      }}
-      onClick={(evt) => context.selectionManager.changeSelection(evt)}
-    >
-      <Typography
+    <OuterContentWrap sx={{ pb: 0 }}>
+      <Box
         sx={{
           display: 'flex',
-          alignItems: 'center'
-        }}
-        component="h1"
-        variant="h4"
-      >
-        {workflowTitle(title, code, deleted)}
-        <CardChip
-          sx={{ display: 'flex', alignItems: 'center' }}
-          className={CHIP_TYPE.ACTIVITY as string}
-          label={typeText}
-        />
-      </Typography>
 
-      <Favourite
-        id={workflow.id}
-        isFavorite={workflow.favourite}
-        type={convertEnum<LibraryObjectType>(
-          workflow.type,
-          LibraryObjectType,
-          LibraryObjectType.ACTIVITY
-        )}
-      />
-    </Box>
+          justifyContent: 'space-between'
+        }}
+        onClick={(evt) => context.selectionManager.changeSelection(evt)}
+      >
+        <Typography
+          sx={{
+            display: 'flex',
+            alignItems: 'center'
+          }}
+          component="h1"
+          variant="h4"
+        >
+          {workflowTitle(workflow)}
+          <CardChip
+            sx={{ display: 'flex', alignItems: 'center' }}
+            className={CHIP_TYPE.ACTIVITY as string}
+            label={typeText}
+          />
+        </Typography>
+
+        <Favourite
+          id={workflow.id}
+          isFavorite={workflow.favourite}
+          type={convertEnum<LibraryObjectType>(
+            workflow.type,
+            LibraryObjectType,
+            LibraryObjectType.ACTIVITY
+          )}
+        />
+      </Box>
+    </OuterContentWrap>
   )
 }
 

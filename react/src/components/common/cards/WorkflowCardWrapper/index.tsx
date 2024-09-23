@@ -4,10 +4,6 @@ import { _t } from '@cf/utility/utilityFunctions'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import { workflowTitle } from '@cfComponents/UIPrimitives/Titles'
 import ErrorIcon from '@mui/icons-material/Error'
-import { useMutation } from '@tanstack/react-query'
-import { toggleFavouriteMutation } from '@XMLHTTP/API/library'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { useState } from 'react'
 import * as React from 'react'
 
 import WorkflowCardDumb, {
@@ -78,7 +74,7 @@ const WorkflowCardWrapper = ({
   return (
     <WorkflowCardDumb
       id={id}
-      title={workflowTitle(title, code, deleted)}
+      title={workflowTitle({ title, code, deleted })}
       favourite={favourite}
       isDisabledLink={isDisabledLink}
       description={description}

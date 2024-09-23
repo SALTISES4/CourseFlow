@@ -2,6 +2,11 @@ import { ObjectPermission, ObjectSet } from '@cf/types/common'
 import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
+/*******************************************************
+ * 'E' prefix symbolizes 'Entity', this is because these are essentially dumps from the
+ * python/django datamodels.
+ * the abstraction leaks are problematic
+ *******************************************************/
 export type EDate = string
 
 export type EUser = {
@@ -11,6 +16,7 @@ export type EUser = {
   lastName: string
   userColour?: string
 }
+
 /*******************************************************
  * LIBRARY
  *******************************************************/
@@ -55,9 +61,10 @@ export type EProject = {
   published: boolean
   title: string
   // TODO: identify these really are the types / convert to enum?
-  type: 'project' | 'program' | 'course' | 'activity'
+  type: 'project'
   workflowprojectSet: number[]
 }
+
 /*******************************************************
  * WORKFLOW
  *******************************************************/

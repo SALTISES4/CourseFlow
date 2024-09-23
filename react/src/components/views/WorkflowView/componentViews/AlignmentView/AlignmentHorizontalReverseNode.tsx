@@ -1,11 +1,12 @@
 import { CfObjectType } from '@cf/types/enum'
+import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
 import { getChildWorkflowByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
 import { newOutcomeQuery } from '@XMLHTTP/API/create'
@@ -17,9 +18,9 @@ import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverse
 import OutcomeAdder from './OutcomeAdder'
 
 type ConnectedProps = {
-  workflow: any
+  workflow: TWorkflow
   data: any
-  column: any
+  column: TColumn
   child_outcomes: any
   outcomenodes: any
   all_node_outcomes: any
@@ -222,7 +223,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
     let outcomeadder
 
-    if (!this.context.permissions.workflowPermission.readOnly)
+    if (this.props.workflow.workflowPermission.write)
       outcomeadder = (
         <OutcomeAdder
           outcome_set={outcome_restriction}
@@ -243,10 +244,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
     let add_new_outcome
 
-    if (
-      !this.context.permissions.workflowPermission.readOnly &&
-      data.linkedWorkflow
-    )
+    if (this.props.workflow.workflowPermission.write && data.linkedWorkflow)
       add_new_outcome = (
         <div
           id="add-new-outcome"
@@ -306,11 +304,10 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
       style.outline = '2px solid ' + data.lock.userColour
     }
 
-    const comments = this.context.workflow.viewComments ? (
-      <this.AddCommenting />
-    ) : (
-      ''
+    const permissions = calcWorkflowPermissions(
+      this.props.workflow.userPermission
     )
+    const comments = permissions.read ? <this.AddCommenting /> : ''
 
     return (
       <div className="node-week">
@@ -351,10 +348,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
         state.outcomenode,
         node.outcomenodeUniqueSet
       )
-      if (
-        ownProps.restriction_set &&
-        ownProps.restriction_set.parentOutcomes
-      ) {
+      if (ownProps.restriction_set && ownProps.restriction_set.parentOutcomes) {
         outcomenodes = outcomenodes.filter(
           (ocn) =>
             ownProps.restriction_set.parentOutcomes.indexOf(ocn.outcome) >= 0

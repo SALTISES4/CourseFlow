@@ -16,7 +16,7 @@ from course_flow.serializers.mixin import (
     DescriptionSerializerMixin,
     TitleSerializerMixin,
 )
-from course_flow.services import Utility
+from course_flow.services import DAO, Utility
 
 
 #########################################################

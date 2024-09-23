@@ -16,10 +16,8 @@ type StateType = {
   node_offset: any
   node_dimensions: any
 }
-export class NodePorts extends React.Component<PropsType, StateType> {
-  static contextType = WorkFlowConfigContext
 
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+export class NodePorts extends React.Component<PropsType, StateType> {
   private positioned: boolean
   constructor(props: PropsType) {
     super(props)
@@ -32,7 +30,10 @@ export class NodePorts extends React.Component<PropsType, StateType> {
 
   componentDidMount() {
     const thisComponent = this
-    if (!this.context.permissions.workflowPermission)
+
+    // @todo this needs to get workflow permissions out of store
+    // if (!this.props.workflow.workflowPermission)
+    if (true)
       d3.selectAll<SVGCircleElement, any>(
         'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
       ).call(
@@ -142,9 +143,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
             data-node-id={this.props.nodeID}
             r="6"
             key={port_type + port}
-            cx={
-              Constants.nodePorts[port_type][port][0] * node_dimensions.width
-            }
+            cx={Constants.nodePorts[port_type][port][0] * node_dimensions.width}
             cy={
               Constants.nodePorts[port_type][port][1] * node_dimensions.height
             }

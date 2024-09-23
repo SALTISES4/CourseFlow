@@ -8,7 +8,7 @@ import {
 } from '@cfEditableComponents/EditableComponentWithSorting'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import OutcomeHorizontalLink from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeHorizontalLink'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
@@ -22,7 +22,10 @@ import OutcomeOutcome from './OutcomeOutcome'
 
 // import $ from 'jquery'
 
-type ConnectedProps = TGetOutcomeByID
+type ConnectedProps = {
+  outcome: TGetOutcomeByID
+  workflow: TWorkflow
+}
 type OwnProps = {
   throughParentID?: number
   show_horizontal?: boolean
@@ -76,7 +79,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       '.outcome-outcome-' + this.props.data.depth,
       false,
       false,
-      '#workflow-' + this.props.workflowId,
+      '#workflow-' + this.props.workflow.id,
       '.outcome'
     )
     if (this.props.data.depth === 0) this.makeDroppable()
@@ -242,7 +245,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       )
     }
 
-    if (!this.context.permissions.workflowPermission.readOnly) {
+    if (this.props.workflow.workflowPermission.write) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
@@ -250,8 +253,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         mouseover_actions.push(<this.AddInsertChild data={data} />)
       }
     }
-    if (this.context.workflow.viewComments) {
-      // mouseover_actions.push(this.addCommenting(data))
+    if (this.props.workflow.workflowPermission.viewComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -269,7 +271,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         )
 
     if (
-      !this.context.permissions.workflowPermission.readOnly &&
+      this.props.workflow.workflowPermission.write &&
       data.depth < 2 &&
       data.childOutcomeLinks.length === 0 &&
       children
@@ -312,8 +314,8 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           <div className="outcome-title">
             <OutcomeTitle
               data={this.props.data}
-              prefix={this.props.prefix}
-              hovertext={this.props.hovertext}
+              prefix={this.props.outcome.prefix}
+              hovertext={this.props.outcome.hovertext}
             />
           </div>
 
@@ -344,15 +346,14 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
             </ol>
           )}
 
-          {!this.context.permissions.workflowPermission.readOnly &&
-            data.depth < 2 && (
-              <div
-                className="outcome-create-child"
-                onClick={this.insertChild.bind(this, data)}
-              >
-                {_t('+ Add New')}
-              </div>
-            )}
+          {this.props.workflow.workflowPermission.write && data.depth < 2 && (
+            <div
+              className="outcome-create-child"
+              onClick={this.insertChild.bind(this, data)}
+            >
+              {_t('+ Add New')}
+            </div>
+          )}
 
           <div className="mouseover-actions">{mouseover_actions}</div>
 
@@ -369,8 +370,11 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TGetOutcomeByID => {
-  return getOutcomeByID(state, ownProps.objectId)
+): ConnectedProps => {
+  return {
+    outcome: getOutcomeByID(state, ownProps.objectId),
+    workflow: state.workflow
+  }
 }
 
 /*******************************************************

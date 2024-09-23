@@ -18,11 +18,11 @@ import { connect } from 'react-redux'
 import Outcome from './Outcome'
 
 // import $ from 'jquery'
-
 type ConnectedProps = {
   data: any
   workflow: any
 }
+
 type StateType = EditableComponentWithSortingState
 type OwnProps = EditableComponentWithSortingProps
 type PropsType = ConnectedProps & OwnProps
@@ -103,7 +103,7 @@ export class OutcomeEditViewUnconnected<
    * COMPONENTS
    *******************************************************/
   AddNew = ({ objectset }: any) => {
-    if (!this.context.permissions.workflowPermission.readOnly) {
+    if (this.props.workflow.workflowPermission.write) {
       return (
         <div
           id="add-new-outcome"

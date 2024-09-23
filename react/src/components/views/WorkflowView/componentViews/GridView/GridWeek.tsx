@@ -7,7 +7,7 @@ import {
   EditableComponentWithCommentsType
 } from '@cfEditableComponents/EditableComponentWithComments'
 import { getNodeByID } from '@cfFindState'
-import { AppState, TNodeweek } from '@cfRedux/types/type'
+import { AppState, TNodeweek, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -17,7 +17,6 @@ import GridNode from './GridNode'
 /**
  * A block representing a term in the grid view
  */
-
 type OwnProps = {
   // renderer: any
   rank: number
@@ -25,6 +24,7 @@ type OwnProps = {
 } & EditableComponentWithCommentsType
 
 type ConnectedProps = {
+  workflow: TWorkflow
   nodes: any
   general_education: number
   specific_education: number
@@ -34,15 +34,13 @@ type ConnectedProps = {
   total_time: number
   total_required: number
 }
+
 type PropsType = OwnProps & ConnectedProps
+
 class GridWeekUnconnected extends EditableComponentWithComments<
   PropsType,
   EditableComponentWithCommentsStateType
 > {
-  static contextType = WorkFlowConfigContext
-
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
-
   constructor(props: PropsType) {
     super(props)
 
@@ -61,7 +59,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<
     const defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)
     const nodes = this.props.nodes.map((node) => <GridNode data={node} />)
 
-    const comments = this.context.workflow.viewComments ? (
+    const comments = this.props.workflow.workflowPermission.viewComments ? (
       <this.AddCommenting />
     ) : (
       <></>
@@ -179,6 +177,7 @@ const mapStateToProps = (
   }, 0)
 
   return {
+    workflow: state.workflow,
     nodes: override_data,
     general_education: general_education,
     specific_education: specific_education,

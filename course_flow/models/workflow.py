@@ -141,8 +141,10 @@ class Workflow(AbstractCourseFlowModel):
     # parts in activities
     # terms in programs
     # this is a mistake, but maybe not worth fixing
+    # what is reasoning for this being n2m
     weeks = models.ManyToManyField(Week, through="WeekWorkflow", blank=True)
 
+    # what is reasoning for this being n2m
     columns = models.ManyToManyField(
         Column, through="ColumnWorkflow", blank=True
     )
@@ -189,10 +191,12 @@ class Workflow(AbstractCourseFlowModel):
     #########################################################
     # PROPERTIES
     #########################################################
+    # @todo this is wrong, should be in dedicated table
     @property
     def importing(self):
         return cache.get("workflow" + str(self.pk) + "importing", False)
 
+    # @todo this is wrong, should not be method
     @property
     def type(self):
         for subclass in SUBCLASSES:
@@ -219,9 +223,11 @@ class Workflow(AbstractCourseFlowModel):
     #########################################################
     # MODEL METHODS / GETTERS
     #########################################################
+    # @todo this is wrong, no current n2m usecase
     def get_project(self):
         return self.project_set.first()
 
+    # @todo this is wrong,
     def get_workflow(self):
         return Workflow.objects.get(pk=self.pk)
 
@@ -244,21 +250,18 @@ class Workflow(AbstractCourseFlowModel):
         try:
             subclass = self.activity
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            # logger.log(logging.INFO, e)
             pass
         try:
             subclass = self.course
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            # logger.log(logging.INFO, e)
             pass
         try:
             subclass = self.program
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            # logger.log(logging.INFO, e)
             pass
-
-        pprint("subclass")
-        pprint(subclass)
 
         return subclass
 

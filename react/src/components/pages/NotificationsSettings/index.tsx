@@ -6,15 +6,10 @@ import FormGroup from '@mui/material/FormGroup'
 import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { useMutation, useQuery } from '@tanstack/react-query'
 import {
-  getNotificationSettings,
-  updateNotificationSettings
-} from '@XMLHTTP/API/user'
-import {
-  NotificationSettingsQueryResp,
-  NotificationSettingsUpdateQueryResp
-} from '@XMLHTTP/types/query.js'
+  useGetNotificationSettingsQuery,
+  useUpdateNotificationSettingsMutation
+} from '@XMLHTTP/API/user.rtk'
 import React, { useEffect, useReducer } from 'react'
 
 const PageTitle = styled(Box)(({ theme }) => ({
@@ -46,25 +41,29 @@ const NotificationsSettingsPage = () => {
   /*******************************************************
    * QUERY HOOKS
    *******************************************************/
-  const { data, error, isLoading, isError } =
-    useQuery<NotificationSettingsQueryResp>({
-      queryKey: ['getNotificationSettings'],
-      queryFn: getNotificationSettings
-    })
+  const {
+    data,
+    error,
+    isLoading,
+    isError: isQueryError
+  } = useGetNotificationSettingsQuery()
 
-  const { mutate } = useMutation<NotificationSettingsUpdateQueryResp>({
-    mutationFn: updateNotificationSettings,
-    onSuccess: (newNotificationsValue) => {
-      // Dispatch the action to update local state after the API call is successful
-      dispatch({
-        type: 'SET_UPDATES',
-        value: newNotificationsValue
-      })
-    },
-    onError: (error) => {
-      console.error('Error updating notifications:', error)
-    }
-  })
+  // const { mutate } = useMutation<NotificationSettingsUpdateQueryResp>({
+  //   mutationFn: updateNotificationSettings,
+  //   onSuccess: (newNotificationsValue) => {
+  //     // Dispatch the action to update local state after the API call is successful
+  //     dispatch({
+  //       type: 'SET_UPDATES',
+  //       value: newNotificationsValue
+  //     })
+  //   },
+  //   onError: (error) => {
+  //     console.error('Error updating notifications:', error)
+  //   }
+  // })
+
+  const [mutate, { isSuccess, isError, data: updateData }] =
+    useUpdateNotificationSettingsMutation()
 
   /*******************************************************
    *
@@ -72,6 +71,19 @@ const NotificationsSettingsPage = () => {
   const [state, dispatch] = useReducer(reducer, {
     notifications: false
   })
+
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch({
+        type: 'SET_UPDATES',
+        value: updateData
+      })
+    }
+
+    if (isError) {
+      console.error('Error updating notifications:', error)
+    }
+  }, [isSuccess, isError, updateData])
 
   useEffect(() => {
     if (data) {

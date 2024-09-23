@@ -1,8 +1,6 @@
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import { WorkflowViewType } from '@cf/types/enum'
-import { WorkflowPermission } from '@cfPages/Workspace/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { WorkflowDetailViewDTO } from '@XMLHTTP/types/dto'
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 
 export const WorkFlowConfigContext = React.createContext<WorkFlowContextType>(
@@ -21,12 +19,6 @@ export type WorkFlowContextType = {
     connectedUsers: ConnectedUser[]
     wsConnected: boolean
   }
-  permissions: {
-    projectPermission: number
-    workflowPermission: WorkflowPermission
-    add_comments: boolean
-    viewComments: boolean
-  }
   container: any
   workflowView: WorkflowViewType
   setWorkflowView: Dispatch<SetStateAction<WorkflowViewType>>
@@ -36,10 +28,8 @@ type PropsType = {
   children: ReactNode
   initialValue: Pick<
     WorkFlowContextType,
-    'editableMethods' | 'permissions' | 'ws' | 'selectionManager'
-  > & {
-    workflowDetailResp: WorkflowDetailViewDTO
-  }
+    'editableMethods' | 'ws' | 'selectionManager'
+  >
 }
 
 const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
@@ -62,12 +52,6 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       editableMethods: initialValue.editableMethods,
 
       ws: initialValue.ws,
-      permissions: {
-        ...initialValue.permissions,
-        add_comments: true,
-        viewComments: true
-      },
-
       container: ''
     }
     return formattedValue

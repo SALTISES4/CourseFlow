@@ -27,7 +27,8 @@ export type LibraryObjectsSearchQueryArgs = {
   filters?: SearchOption[]
 }
 
-export type ToggleFavouriteQueryArgs = {
+// @todo rename this, it's not toggling
+export type ToggleFavouriteMutationArgs = {
   id: number
   type: LibraryObjectType
   favourite: boolean

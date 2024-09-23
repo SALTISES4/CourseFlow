@@ -1,21 +1,16 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
-import {
-  CurrentUserQueryResp,
-  NotificationSettingsQueryResp,
-  ProfileSettingsQueryResp,
-  UserListResp
-} from '@XMLHTTP/types/query'
+import { API_POST } from '@XMLHTTP/CallWrapper'
+import {UserListResp} from "@XMLHTTP/API/workspace.rtk";
 
 /**
  *
  * @param filter
  * @param callBackFunction
  */
-export async function getCurrentUserQuery(): Promise<CurrentUserQueryResp> {
-  const url = apiPaths.json_api.user.current_user
-  return API_GET<CurrentUserQueryResp>(url)
-}
+// export async function getCurrentUserQuery(): Promise<CurrentUserQueryResp> {
+//   const url = apiPaths.json_api.user.current_user
+//   return API_GET<CurrentUserQueryResp>(url)
+// }
 
 /*******************************************************
  * USERS MODEL QUERY
@@ -40,20 +35,20 @@ export function getUserListQuery(
 /*******************************************************
  * NOTIFICATIONS SETTINGS
  *******************************************************/
-export async function getNotificationSettings(): Promise<NotificationSettingsQueryResp> {
-  const url = apiPaths.json_api.user.notification_settings
-  return API_GET<NotificationSettingsQueryResp>(url)
-}
+// export async function getNotificationSettings(): Promise<NotificationSettingsQueryResp> {
+//   const url = apiPaths.json_api.user.notification_settings
+//   return API_GET<NotificationSettingsQueryResp>(url)
+// }
 
-export async function updateNotificationSettings(data: any) {
-  const url = apiPaths.json_api.user.notification_settings__update
-  return API_POST(url, data)
-}
+// export async function updateNotificationSettings(data: any) {
+//   const url = apiPaths.json_api.user.notification_settings__update
+//   return API_POST(url, data)
+// }
 
 /*******************************************************
  * PROFILE SETTINGS
  *******************************************************/
-export async function getProfileSettings(): Promise<ProfileSettingsQueryResp> {
-  const url = apiPaths.json_api.user.profile_settings
-  return API_GET<ProfileSettingsQueryResp>(url)
-}
+// export async function getProfileSettings(): Promise<ProfileSettingsQueryResp> {
+//   const url = apiPaths.json_api.user.profile_settings
+//   return API_GET<ProfileSettingsQueryResp>(url)
+// }

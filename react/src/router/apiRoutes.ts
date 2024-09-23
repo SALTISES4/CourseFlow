@@ -1,7 +1,6 @@
 import { addPrefixToLeafStrings } from '@cf/utility/utilityFunctions'
 
 const apiPathBase = '/course-flow/json-api/v1'
-const domainPath = '/course-flow/'
 export const apiPathRoutes = {
   json_api: {
     user: {
@@ -58,7 +57,8 @@ export const apiPathRoutes = {
       delete_soft: '/workspace/:id/delete-soft',
       delete: '/workspace/:id/delete',
       restore: '/workspace/:id/restore',
-      field__update: '/workspace/:id/update-field'
+      field__update: '/workspace/:id/update-field',
+      user__list: '/workspace/:id/user/list'
     },
     node: {
       create: '/node/create',

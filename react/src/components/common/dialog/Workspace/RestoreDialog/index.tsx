@@ -1,5 +1,4 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { WorkSpaceType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
@@ -9,60 +8,60 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
-import { useMutation } from '@tanstack/react-query'
-import { unarchiveSelfMutation } from '@XMLHTTP/API/workflow'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { useUnarchiveMutation } from '@XMLHTTP/API/workflow.rtk'
 import { useSnackbar } from 'notistack'
-import { useContext } from 'react'
+import { useEffect } from 'react'
 
-const ArchiveDialog = () => {
+const RestoreDialog = ({
+  objectType,
+  id
+}: {
+  id: number
+  objectType: WorkSpaceType
+}) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const context = useContext(WorkFlowConfigContext)
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-  const { type, show, onClose } = useDialog([
-    DIALOG_TYPE.PROJECT_RESTORE,
-    DIALOG_TYPE.WORKFLOW_RESTORE
-  ])
+  const { type, show, onClose } = useDialog([DIALOG_TYPE.RESTORE])
 
-  const { mutate } = useMutation<EmptyPostResp>({
-    mutationFn: () =>
-      unarchiveSelfMutation(context.workflow.workflowId, resourceType),
-    onSuccess: (resp) => {
-      enqueueSnackbar(strings.workflow_unarchive_success, {
-        variant: 'success'
-      })
-      onClose()
-    },
-    onError: (error) => {
-      console.log(error)
-      enqueueSnackbar(strings.workflow_unarchive_failure, {
-        variant: 'error'
-      })
+  const [mutate, { isLoading, data, isError, isSuccess, error }] =
+    useUnarchiveMutation()
+
+  function onError(error) {
+    console.log(error)
+    enqueueSnackbar(strings.workflow_unarchive_failure, {
+      variant: 'error'
+    })
+  }
+
+  function onSuccess() {
+    enqueueSnackbar(strings.workflow_unarchive_success, {
+      variant: 'success'
+    })
+    onClose()
+  }
+
+  useEffect(() => {
+    if (isSuccess) {
+      onSuccess()
     }
-  })
+    if (isError && error) {
+      onError(error)
+    }
+  }, [isSuccess, isError, error])
 
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
   function onSubmitHandler() {
-    mutate()
-  }
-
-  /*******************************************************
-   * CONSTANTS
-   *******************************************************/
-
-  let resourceType: WorkSpaceType = null
-  switch (type) {
-    case DIALOG_TYPE.PROJECT_RESTORE:
-      resourceType = WorkSpaceType.PROJECT
-      break
-    case DIALOG_TYPE.WORKFLOW_RESTORE:
-      resourceType = WorkSpaceType.WORKFLOW
-      break
+    mutate({
+      id,
+      payload: {
+        objectType: objectType
+      }
+    })
   }
 
   /*******************************************************
@@ -74,15 +73,15 @@ const ArchiveDialog = () => {
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      aria-labelledby={`archive-${resourceType}-modal`}
+      aria-labelledby={`archive-${objectType}-modal`}
     >
-      <DialogTitle id={`archive-${resourceType}-modal`}>
-        Archive {resourceType}
+      <DialogTitle id={`archive-${objectType}-modal`}>
+        Archive {objectType}
       </DialogTitle>
 
       <DialogContent dividers>
         <Typography gutterBottom>
-          Do you want to restore your {resourceType}?
+          Do you want to restore your {objectType}?
         </Typography>
       </DialogContent>
 
@@ -91,11 +90,11 @@ const ArchiveDialog = () => {
           Cancel
         </Button>
         <Button variant="contained" onClick={onSubmitHandler}>
-          Restore {resourceType}
+          Restore {objectType}
         </Button>
       </DialogActions>
     </StyledDialog>
   )
 }
 
-export default ArchiveDialog
+export default RestoreDialog

@@ -1,18 +1,14 @@
-import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as SC from '@cfComponents/layout/Sidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import { WorkflowNavLink, workflowUrl } from '@cfComponents/UIPrimitives/Titles'
+import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
 import { AppState } from '@cfRedux/types/type'
-import { Typography } from '@mui/material'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
-import { useQuery } from '@tanstack/react-query'
-import { getParentWorkflowInfoQuery } from '@XMLHTTP/API/workflow'
-import React, { useState } from 'react'
+import { useGetParentWorkflowInfoQuery } from '@XMLHTTP/API/workflow.rtk'
 import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 
@@ -45,12 +41,14 @@ function ParentWorkflowIndicator() {
     })
   )
 
-  const [parentWorkflows, setParentWorkflows] = useState<WorkflowNode[]>([])
-
-  const { data, error, isLoading, isError } = useQuery<any>({
-    queryKey: ['getParentWorkflowInfoQuery', id], // how to manager the cache key
-    queryFn: () => getParentWorkflowInfoQuery(Number(id))
-  })
+  const { data, error, isLoading, isError } = useGetParentWorkflowInfoQuery(
+    {
+      id: Number(id)
+    },
+    {
+      skip: !id
+    }
+  )
 
   if (!id) return null
 

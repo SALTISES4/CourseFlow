@@ -9,7 +9,7 @@ import {
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
 import { TGetNodeByID, getNodeByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import NodePorts from '@cfViews/components/Node/NodePorts'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
@@ -23,16 +23,22 @@ import NodeLink from './NodeLink'
 
 // import $ from 'jquery'
 
-type ConnectedProps = TGetNodeByID
+type ConnectedProps = {
+  node: TGetNodeByID
+  workflow: TWorkflow
+}
+
 type OwnProps = {
   objectId: number
   column_order: any
 } & EditableComponentWithActionsProps
+
 type StateProps = {
   initial_render: boolean
   show_outcomes: boolean
   hovered: boolean
 } & EditableComponentWithActionsState
+
 type PropsType = ConnectedProps & OwnProps
 
 const choices = COURSEFLOW_APP.globalContextData.workflow_choices
@@ -174,7 +180,7 @@ class NodeUnconnected extends EditableComponentWithActions<
     const myComponent = this
 
     if ($('.workflow-canvas').hasClass('creating-node-link')) return
-    if (!this.context.permissions.workflowPermission.readOnly)
+    if (this.props.workflow.workflowPermission.write)
       $(
         "circle[data-node-id='" +
           this.props.objectId +
@@ -256,7 +262,9 @@ class NodeUnconnected extends EditableComponentWithActions<
           onMouseLeave={() => {
             this.setState({ show_outcomes: false })
           }}
-          style={{ borderColor: Constants.getColumnColour(this.props.column) }}
+          style={{
+            borderColor: Constants.getColumnColour(this.props.node.column)
+          }}
         >
           {data.outcomenodeUniqueSet.map((outcomenode) => (
             <OutcomeNode key={outcomenode} objectId={outcomenode} />
@@ -274,7 +282,7 @@ class NodeUnconnected extends EditableComponentWithActions<
               this.setState({ show_outcomes: true })
             }}
             style={{
-              borderColor: Constants.getColumnColour(this.props.column)
+              borderColor: Constants.getColumnColour(this.props.node.column)
             }}
           >
             {data.outcomenodeUniqueSet.length}
@@ -375,7 +383,7 @@ class NodeUnconnected extends EditableComponentWithActions<
       left:
         Constants.columnwidth * this.props.column_order.indexOf(data.column) +
         'px',
-      backgroundColor: Constants.getColumnColour(this.props.column)
+      backgroundColor: Constants.getColumnColour(this.props.node.column)
     }
 
     if (data.lock) {
@@ -392,13 +400,13 @@ class NodeUnconnected extends EditableComponentWithActions<
       data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
-    if (!this.context.permissions.workflowPermission.readOnly) {
+    if (this.props.workflow.workflowPermission.write) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
 
-    if (this.context.workflow.viewComments) {
+    if (this.props.workflow.workflowPermission.addComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -466,8 +474,11 @@ class NodeUnconnected extends EditableComponentWithActions<
   }
 }
 
-const mapStateToProps = (state: AppState, ownProps: OwnProps): TGetNodeByID => {
-  return getNodeByID(state, ownProps.objectId)
+const mapStateToProps = (state: AppState, ownProps: OwnProps): ConnectedProps => {
+  return {
+    workflow: state.workflow,
+    node: getNodeByID(state, ownProps.objectId)
+  }
 }
 
 const Node = connect<ConnectedProps, object, OwnProps, AppState>(

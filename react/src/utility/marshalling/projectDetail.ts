@@ -7,6 +7,10 @@ export function formatProjectEntity(
   project: EProject,
   allDisciplines: Discipline[]
 ): ProjectDetailsType {
+
+  console.log('project')
+  console.log(project)
+
   const formattedDisciplines: string[] = project.disciplines.map((projDisc) => {
     return allDisciplines.find((item) => item.id === projDisc).title
   })

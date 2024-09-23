@@ -1,10 +1,10 @@
+// @ts-nocheck
 import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import ActionCreator from '@cfRedux/ActionCreator'
 import {
   getWorkflowChildDataQuery,
-  getWorkflowQuery,
-  getWorkflowParentDataQueryLegacy
+  getWorkflowByIdQuery
 } from '@XMLHTTP/API/workflow'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
@@ -29,7 +29,7 @@ const useWebSocketManager = (
   const onConnectionOpened = useCallback(
     (reconnect = false) => {
       setWsConnected(true)
-      getWorkflowQuery(workflowId, (response) => {
+      getWorkflowByIdQuery(workflowId, (response) => {
         dispatch(ActionCreator.refreshStoreData(response.dataPackage))
         clearQueue(response.dataPackage?.workflow.editCount)
       })
@@ -77,8 +77,7 @@ const useWebSocketManager = (
 
   const onLockUpdateReceived = useCallback(
     (data) => {
-      const { objectType, objectId, lock, userId, userColour, expires } =
-        data
+      const { objectType, objectId, lock, userId, userColour, expires } = data
 
       if (!locksRef.current[objectType]) {
         locksRef.current[objectType] = {}
@@ -100,9 +99,7 @@ const useWebSocketManager = (
 
       if (lock) {
         locksRef.current[objectType][objectId] = setTimeout(() => {
-          dispatch(
-            ActionCreator.createLockAction(objectId, objectType, false)
-          )
+          dispatch(ActionCreator.createLockAction(objectId, objectType, false))
         }, expires - Date.now())
       } else {
         locksRef.current[objectType][objectId] = null

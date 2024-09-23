@@ -12,13 +12,10 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import { SelectChangeEvent } from '@mui/material/Select'
-import { useMutation } from '@tanstack/react-query'
-import { updateMutation } from '@XMLHTTP/API/workflow'
-import { UpdateWorkflowArgs } from '@XMLHTTP/types/args'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { useUpdateMutation } from '@XMLHTTP/API/workflow.rtk'
 import { produce } from 'immer'
 import { enqueueSnackbar } from 'notistack'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
@@ -63,10 +60,8 @@ const WorkflowEditDialog = () => {
 
   const workflow = useSelector((state: AppState) => state.workflow)
 
-  console.log('workflow')
-  console.log(workflow)
-
   const config = configFields(workflow)
+
   const initialState: StateType = {
     title: workflow.title,
     description: workflow.description,
@@ -88,21 +83,42 @@ const WorkflowEditDialog = () => {
   /*******************************************************
    * QUERIES
    *******************************************************/
-  const { mutate } = useMutation<EmptyPostResp, Error, UpdateWorkflowArgs>({
-    mutationFn: (args) => updateMutation(Number(id), args),
-    onSuccess: (resp: EmptyPostResp) => {
-      enqueueSnackbar('edited workflow success', {
-        variant: 'success'
-      })
-      onClose()
-    },
-    onError: (error) => {
-      enqueueSnackbar('edited workflow error', {
-        variant: 'error'
-      })
-      console.error('Error updating workflow asdfasdf :', error)
-    }
-  })
+  // const { mutate } = useMutation<EmptyPostResp, Error, UpdateWorkflowArgs>({
+  //   mutationFn: (args) => updateMutation(Number(id), args),
+  //   onSuccess: (resp: EmptyPostResp) => {
+  //     enqueueSnackbar('edited workflow success', {
+  //       variant: 'success'
+  //     })
+  //     onClose()
+  //   },
+  //   onError: (error) => {
+  //     enqueueSnackbar('edited workflow error', {
+  //       variant: 'error'
+  //     })
+  //     console.error('Error updating workflow asdfasdf :', error)
+  //   }
+  // })
+
+  const [mutate, { error, isSuccess, isError }] = useUpdateMutation()
+
+  function onSuccess() {
+    enqueueSnackbar('edited workflow success', {
+      variant: 'success'
+    })
+    onClose()
+  }
+
+  function onError(error) {
+    enqueueSnackbar('edited workflow error', {
+      variant: 'error'
+    })
+    console.error('Error updating workflow asdfasdf :', error)
+  }
+
+  useEffect(() => {
+    isSuccess && onSuccess()
+    isError && onError(error)
+  }, [error, isSuccess, isError])
 
   /*******************************************************
    * FUNCTIONS
@@ -139,8 +155,11 @@ const WorkflowEditDialog = () => {
 
   function onSubmit() {
     mutate({
-      ...state,
-      units: Number(state.units)
+      id: Number(id),
+      payload: {
+        ...state,
+        units: Number(state.units)
+      }
     })
   }
 
