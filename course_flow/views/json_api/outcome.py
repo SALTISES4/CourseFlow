@@ -124,7 +124,7 @@ def json_api_post_insert_child_outcome(request: HttpRequest) -> JsonResponse:
             raise ValidationError("Uknown component type")
 
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     response_data = {
@@ -168,7 +168,7 @@ def json_api_post_new_outcome_for_workflow(
             workflow=workflow, outcome=outcome, rank=workflow.outcomes.count()
         )
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     response_data = {

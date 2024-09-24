@@ -18,6 +18,7 @@ import {
 } from '@XMLHTTP/types/query'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
+import {apiPaths} from "@cf/router/apiRoutes";
 // import $ from 'jquery'
 
 /**
@@ -277,7 +278,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
         >
           <img
             src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+               apiPaths.external.static_assets.icon +
               'add_person.svg'
             }
           />

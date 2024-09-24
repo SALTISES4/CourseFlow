@@ -58,7 +58,7 @@ def get_sidebar(request: HttpRequest):
             "favourites": favourites,
         }
     except Exception as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         print(f"An error occurred in get_sidebar: {e}")
         pass
 
@@ -130,7 +130,7 @@ def get_topbar(request: HttpRequest):
             #     }
         }
     except Exception as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         pass
 
     return {}
@@ -158,7 +158,7 @@ def get_update_notifications(request: HttpRequest):
                     "showNotificationRequest": show_notification_request,
                 }
     except Exception as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         pass
 
     return {

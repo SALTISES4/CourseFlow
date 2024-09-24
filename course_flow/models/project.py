@@ -89,7 +89,7 @@ class Project(AbstractCourseFlowModel):
         try:
             hash_ = base64.urlsafe_b64decode(hash_.encode()).decode()
         except UnicodeDecodeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             hash_ = None
         if hash_:
             try:
@@ -111,7 +111,7 @@ class Project(AbstractCourseFlowModel):
     #     try:
     #         liveproject = self.liveproject
     #     except AttributeError as e:
-    #                logger.log(logging.INFO, e)
+    #                logger.exception("An error occurred")
     #         liveproject = None
     #     return liveproject
 

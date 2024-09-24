@@ -211,7 +211,7 @@ def user_is_author(model, **outer_kwargs):
                         status=403,
                     )
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
@@ -247,7 +247,7 @@ def user_can_edit(model, **outer_kwargs):
                         status=403,
                     )
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
@@ -269,7 +269,7 @@ def user_can_view(model, **outer_kwargs):
                     model, body, **outer_kwargs
                 )
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
@@ -306,7 +306,7 @@ def user_can_view_or_none(model, **outer_kwargs):
                     model, body, **outer_kwargs
                 )
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
@@ -343,7 +343,7 @@ def user_can_edit_or_none(model, **outer_kwargs):
                     model, body, **outer_kwargs
                 )
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
@@ -391,7 +391,7 @@ def user_can_comment(model, **outer_kwargs):
                     model, body, **outer_kwargs
                 )
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
@@ -436,7 +436,7 @@ def user_can_delete(model, **outer_kwargs):
                             model_data, User.objects.get(pk=request.user.pk)
                         )
                     except Exception as e:
-                        logger.log(logging.INFO, e)
+                        logger.exception("An error occurred")
                         return JsonResponse({"error": str(e)}, stats=400)
                     if perm:
                         return fct(request, *args, **kwargs)
@@ -454,7 +454,7 @@ def user_can_delete(model, **outer_kwargs):
                 return JsonResponse({"error": "permission error"}, status=403)
 
             except Exception as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return JsonResponse({"error": str(e)}, status=400)
 
         return _wrapped_view
@@ -512,7 +512,7 @@ def from_same_workflow(model1, model2, **outer_kwargs):
                 return JsonResponse({"error": "workflow mismatch"}, status=403)
 
             except Exception as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return JsonResponse({"error": str(e)}, status=403)
 
         return _wrapped_view
@@ -557,7 +557,7 @@ def public_model_access(model, **outer_kwargs):
                     pk=kwargs.get("pk")
                 ).get_permission_objects()
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, stats=403
                 )

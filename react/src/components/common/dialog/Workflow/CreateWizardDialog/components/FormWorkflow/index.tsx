@@ -1,8 +1,5 @@
-import {
-  WorkflowFormType,
-  timeUnits
-} from '@cfComponents/dialog/common/CreateWizardDialog/types'
 import { StyledForm } from '@cfComponents/dialog/styles'
+import {timeUnits, WorkflowFormType} from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'

@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
 import ComponentWithToggleDrop, {
@@ -220,12 +221,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
           className={indicator_class}
           onClick={this.props.parent.commentClick.bind(this.props.parent)}
         >
-          <img
-            src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              'comment_new.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'comment_new.svg'} />
         </div>,
         render_div
       )
@@ -265,10 +261,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
                   onClick={this.removeComment.bind(this, comment.id)}
                 >
                   <img
-                    src={
-                      COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                      'rubbish.svg'
-                    }
+                    src={apiPaths.external.static_assets.icon + 'rubbish.svg'}
                   />
                 </div>
               </div>
@@ -284,12 +277,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
         title={_t('Close')}
         onClick={this.props.parent.commentClick.bind(this.props.parent)}
       >
-        <img
-          src={
-            COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-            'close.svg'
-          }
-        />
+        <img src={apiPaths.external.static_assets.icon + 'close.svg'} />
       </div>
     )
     if (!this.props.readOnly && comments.length > 1)
@@ -299,12 +287,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
           title={_t('Clear All Comments')}
           onClick={this.removeAllComments.bind(this)}
         >
-          <img
-            src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              'rubbish.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'rubbish.svg'} />
         </div>
       )
 
@@ -349,10 +332,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
               />
               <img
                 ref={this.submit}
-                src={
-                  COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                  'add_new.svg'
-                }
+                src={apiPaths.external.static_assets.icon + 'add_new.svg'}
                 className="add-comment-button hidden hover-shade"
                 onClick={this.appendComment.bind(this)}
                 title={_t('Submit')}

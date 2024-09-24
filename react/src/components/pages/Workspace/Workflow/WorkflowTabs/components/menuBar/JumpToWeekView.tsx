@@ -1,10 +1,10 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles'
 import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -67,12 +67,10 @@ export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
       defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)
     }
 
-    let src =
-      COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'plus.svg'
+    let src = apiPaths.external.static_assets.icon + 'plus.svg'
 
     if (data.isDropped) {
-      src =
-        COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'minus.svg'
+      src = apiPaths.external.static_assets.icon + 'minus.svg'
     }
     return (
       <div className="hover-shade" onClick={this.jumpTo.bind(this)}>

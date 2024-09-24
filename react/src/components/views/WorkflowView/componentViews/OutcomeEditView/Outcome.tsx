@@ -1,6 +1,7 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
+import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
 import {
   EditableComponentWithSortingProps,
@@ -16,7 +17,6 @@ import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
-// @components
 
 import OutcomeOutcome from './OutcomeOutcome'
 
@@ -30,9 +30,11 @@ type OwnProps = {
   throughParentID?: number
   show_horizontal?: boolean
 } & EditableComponentWithSortingProps
+
 type StateProps = {
   show_horizontal_links: boolean
 } & EditableComponentWithSortingState
+
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -76,13 +78,13 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         .not('ui-draggable'),
       this.props.objectId,
       'outcomeoutcome',
-      '.outcome-outcome-' + this.props.data.depth,
+      '.outcome-outcome-' + this.props.outcome.data.depth,
       false,
       false,
       '#workflow-' + this.props.workflow.id,
       '.outcome'
     )
-    if (this.props.data.depth === 0) this.makeDroppable()
+    if (this.props.outcome.data.depth === 0) this.makeDroppable()
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
@@ -184,7 +186,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const data = this.props.outcome.data
     let children
     let outcomehorizontallinks
     const side_actions = []
@@ -200,7 +202,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           parentID={data.id}
           // renderer={this.context}
           show_horizontal={this.props.show_horizontal}
-          parent_depth={this.props.data.depth}
+          parent_depth={this.props.outcome.data.depth}
         />
       ))
 
@@ -245,7 +247,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       )
     }
 
-    if (this.props.workflow.workflowPermission.write) {
+    if (this.props.workflow.workflowPermissions.write) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
@@ -253,7 +255,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         mouseover_actions.push(<this.AddInsertChild data={data} />)
       }
     }
-    if (this.props.workflow.workflowPermission.viewComments) {
+    if (this.props.workflow.workflowPermissions.viewComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -271,7 +273,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         )
 
     if (
-      this.props.workflow.workflowPermission.write &&
+      this.props.workflow.workflowPermissions.write &&
       data.depth < 2 &&
       data.childOutcomeLinks.length === 0 &&
       children
@@ -313,7 +315,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         >
           <div className="outcome-title">
             <OutcomeTitle
-              data={this.props.data}
+              title={this.props.outcome.data.title}
               prefix={this.props.outcome.prefix}
               hovertext={this.props.outcome.hovertext}
             />
@@ -323,11 +325,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
                 <img
-                  src={
-                    COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                    dropIcon +
-                    '.svg'
-                  }
+                  src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
                 />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
@@ -337,7 +335,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           {data.depth < 2 && (
             <ol
               className={
-                'children-block children-block-' + this.props.data.depth
+                'children-block children-block-' + this.props.outcome.data.depth
               }
               id={this.props.objectId + '-children-block'}
               ref={this.children_block}
@@ -346,7 +344,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
             </ol>
           )}
 
-          {this.props.workflow.workflowPermission.write && data.depth < 2 && (
+          {this.props.workflow.workflowPermissions.write && data.depth < 2 && (
             <div
               className="outcome-create-child"
               onClick={this.insertChild.bind(this, data)}

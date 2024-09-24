@@ -1,7 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CreateProjectArgs } from '@XMLHTTP/types/args'
 import { EProject } from '@XMLHTTP/types/entity'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
 import { Verb, cfApi } from './api'

@@ -57,6 +57,7 @@ export type EProject = {
   id: number
   lastModified: string
   objectPermission: ObjectPermission
+  userPermissions: number
   objectSets: ObjectSet[]
   published: boolean
   title: string
@@ -70,7 +71,7 @@ export type EProject = {
  *******************************************************/
 export type EWorkflow = {
   id: number
-  userPermission: number
+  userPermissions: number
   author: string
   authorId: number | null
   deleted: boolean

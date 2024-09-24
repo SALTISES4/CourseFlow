@@ -1,5 +1,5 @@
 import { _t } from '@cf/utility/utilityFunctions'
-import * as SC from '@cfComponents/layout/Sidebar/styles'
+import * as SC from '@cfComponents/globalNav/Sidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
 import { AppState } from '@cfRedux/types/type'
@@ -128,6 +128,8 @@ function ParentWorkflowIndicator() {
   /*******************************************************
    * RENDER
    *******************************************************/
+  // @todo this is causing fails when we move between tabs
+  return <></>
 
   return (
     <>

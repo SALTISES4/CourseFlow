@@ -3,6 +3,7 @@ import { AppState } from '@cfRedux/types/type.js'
 import { WorkflowLegendUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WorkflowLegend'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import {apiPaths} from "@cf/router/apiRoutes";
 
 type ConnectedProps = {
   outcomesType: any
@@ -67,7 +68,7 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
           <img
             src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+               apiPaths.external.static_assets.icon +
               'close.svg'
             }
           />

@@ -74,20 +74,20 @@ const ActionMenu = () => {
       title: _t('Edit Workflow'),
       action: openEditMenu,
       content: <EditIcon />,
-      show: workflow.workflowPermission.write
+      show: workflow.workflowPermissions.write
     },
     {
       id: 'share',
       title: _t('Sharing'),
       content: <PersonAddIcon />,
       action: openShareDialog,
-      show: workflow.workflowPermission.write
+      show: workflow.workflowPermissions.write
     },
     {
       id: 'export',
       content: _t('Export'),
       action: openExportDialog,
-      show: (!publicView || userId) && workflow.workflowPermission.read,
+      show: (!publicView || userId) && workflow.workflowPermissions.read,
       seperator: true
     },
     // hidden
@@ -123,19 +123,19 @@ const ActionMenu = () => {
       id: 'archive-workflow',
       action: archiveWorkflow,
       content: _t('Archive workflow'),
-      show: workflow.workflowPermission.write && !workflow.deleted
+      show: workflow.workflowPermissions.write && !workflow.deleted
     },
     {
       id: 'restore-workflow',
       action: restoreWorkflow,
       content: _t('Restore workflow'),
-      show: workflow.workflowPermission.write && workflow.deleted
+      show: workflow.workflowPermissions.write && workflow.deleted
     },
     {
       id: 'hard-delete-workflow',
       action: () => deleteWorkflowHard(projectId, workflowId),
       content: _t('Permanently delete workflow'),
-      show: workflow.workflowPermission.write && workflow.deleted
+      show: workflow.workflowPermissions.write && workflow.deleted
     }
   ]
 

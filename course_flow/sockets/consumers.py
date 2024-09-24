@@ -36,7 +36,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         try:
             self.get_permission()
         except Exception as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return self.close()
         if self.VIEW or self.EDIT:
             async_to_sync(self.channel_layer.group_add)(
@@ -51,7 +51,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
                 {"type": "lock_update", "action": self.last_lock},
             )
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             pass
 
         async_to_sync(self.channel_layer.group_discard)(

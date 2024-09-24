@@ -134,7 +134,7 @@ class LibraryService:
                 }
 
             except TypeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 return_objects = Project.objects.none()
                 pages = {}
 

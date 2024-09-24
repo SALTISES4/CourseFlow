@@ -1,6 +1,7 @@
+import { OutcomeTitle } from '@cf/components/common/UIPrimitives/Titles.ts'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import {
   TGetOutcomeByID,
@@ -256,7 +257,7 @@ export class OutcomeBarOutcomeUnconnected<
       >
         <div className="outcome-title">
           <OutcomeTitle
-            data={this.props.data}
+            title={this.props.data.title}
             prefix={this.props.prefix}
             hovertext={this.props.hovertext}
           />
@@ -271,11 +272,7 @@ export class OutcomeBarOutcomeUnconnected<
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
               <img
-                src={
-                  COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                  dropIcon +
-                  '.svg'
-                }
+                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
               />
             </div>
             <div className="outcome-drop-text">{droptext}</div>

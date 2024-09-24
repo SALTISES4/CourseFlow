@@ -212,7 +212,7 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
                 new_node.has_autolink = node["has_autolink"]
                 new_node.save()
             except KeyError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 pass
             id_dict["node"][node["id"]] = new_node
 
@@ -325,11 +325,11 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
                         nl.target_port = nl.NORTH
                     nl.save()
                 except Exception as e:
-                    logger.log(logging.INFO, e)
+                    logger.exception("An error occurred")
                     pass
 
     except AttributeError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"message": "success"})

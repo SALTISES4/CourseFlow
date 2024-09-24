@@ -8,32 +8,24 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { ChangeEvent } from 'react'
 
-import { ActivityFormDataType } from './types'
+import { ProgramFormDataType } from './types'
 
-type FormValues = ActivityFormDataType
+type FormValues = Omit<ProgramFormDataType, 'units'> & {
+  unit: string
+}
 
 type PropsType = {
   values: FormValues
   wrapAs?: 'form' | 'div'
+  units: ProgramFormDataType['units']
   onInfoChange: (e: ChangeEvent<HTMLInputElement>) => void
   onUnitChange: (e: SelectChangeEvent) => void
 }
 
-const timeUnits = [
-  '',
-  'Second',
-  'Minutes',
-  'Hours',
-  'Days',
-  'Weeks',
-  'Months',
-  'Years',
-  'Credits'
-]
-
-const ActivityFormFields = ({
+const FormProgram = ({
   wrapAs = 'form',
   values,
+  units,
   onInfoChange,
   onUnitChange
 }: PropsType) => {
@@ -44,7 +36,7 @@ const ActivityFormFields = ({
         name="title"
         value={values.title}
         variant="standard"
-        label="Activity title"
+        label="Program title"
         onChange={onInfoChange}
       />
       <TextField
@@ -53,7 +45,7 @@ const ActivityFormFields = ({
         name="description"
         value={values.description}
         variant="standard"
-        label="Activity description"
+        label="Program description"
         onChange={onInfoChange}
       />
       <Stack direction="row" spacing={2}>
@@ -67,14 +59,10 @@ const ActivityFormFields = ({
         />
         <FormControl variant="standard" fullWidth>
           <InputLabel>Unit type</InputLabel>
-          <Select
-            value={String(values.units)}
-            label="Unit type"
-            onChange={onUnitChange}
-          >
-            {timeUnits.map((u, idx) => (
-              <MenuItem key={idx} value={idx}>
-                {u}
+          <Select value={values.unit} label="Unit type" onChange={onUnitChange}>
+            {units.map((u, idx) => (
+              <MenuItem key={idx} value={u.value}>
+                {u.label}
               </MenuItem>
             ))}
           </Select>
@@ -84,4 +72,4 @@ const ActivityFormFields = ({
   )
 }
 
-export default ActivityFormFields
+export default FormProgram

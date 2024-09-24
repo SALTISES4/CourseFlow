@@ -1,6 +1,5 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles'
+import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import {
   EditableComponentWithCommentsStateType,
@@ -59,7 +58,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<
     const defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)
     const nodes = this.props.nodes.map((node) => <GridNode data={node} />)
 
-    const comments = this.props.workflow.workflowPermission.viewComments ? (
+    const comments = this.props.workflow.workflowPermissions.viewComments ? (
       <this.AddCommenting />
     ) : (
       <></>
@@ -77,7 +76,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<
         }
       >
         <div className="week-title">
-          <TitleText title={data.title} defaultText={defaultText} />
+          <TitleText text={data.title} defaultText={defaultText} />
           <div className="grid-ponderation">
             {this.props.total_theory +
               '/' +

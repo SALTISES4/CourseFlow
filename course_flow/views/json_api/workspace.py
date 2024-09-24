@@ -1,7 +1,6 @@
 import json
 import logging
 from enum import Enum
-from pprint import pprint
 
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
@@ -102,7 +101,7 @@ class WorkspaceEndpoint:
             )
             Utility.save_serializer(serializer)
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response({"action": "error"})
         try:
             workflow = object_to_update.get_workflow()
@@ -118,7 +117,7 @@ class WorkspaceEndpoint:
                     actions.changeField(object_id, object_type, data),
                 )
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             pass
 
         return Response({"message": "success"}, status=status.HTTP_200_OK)
@@ -132,10 +131,7 @@ class WorkspaceEndpoint:
     @api_view(["POST"])
     def delete(request: HttpRequest) -> JsonResponse:
         """
-         Hard delete. Actually deletes the object. Tend not to use
-        this very often. Most of this method is just ensuring
-        that workflows that use the object are kept up to date
-        about it being deleted.
+         Hard delete. Actually deletes the object instead of just marking a flag. This is used infrequently.
         :param request:
         :return:
         """
@@ -155,7 +151,7 @@ class WorkspaceEndpoint:
             try:
                 workflow = model.get_workflow()
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 pass
             # Check to see if we have any linked workflows that need to be updated
             linked_workflows = False
@@ -384,7 +380,7 @@ class WorkspaceEndpoint:
         try:
             workflow = model.get_workflow()
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
         pass
         if workflow is not None:
             action = actions.deleteSelfSoftAction(
@@ -608,7 +604,7 @@ class WorkspaceEndpoint:
                 else:
                     raise ValidationError("Uknown component type")
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return JsonResponse({"error": "ObjectDoesNotExist"}, status=400)
 
         response_data = {
@@ -684,7 +680,7 @@ class WorkspaceEndpoint:
             try:
                 workflow = model.get_workflow()
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
             pass
             # Check to see if we have any linked workflows that need to be updated
             linked_workflows = False
@@ -920,13 +916,12 @@ class WorkspaceEndpoint:
                 else:
                     saltise_user = False
             except ObjectDoesNotExist as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 saltise_user = False
             is_template = this_object.is_template
 
         except ValidationError as e:
-            logger.log(logging.INFO, "d;kfjhasdpfihbsdflvjihb")
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response({"action": "error"})
 
         return Response(

@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
@@ -131,12 +132,7 @@ class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnPro
           className="window-close-button"
           onClick={this.props.removeFunction}
         >
-          <img
-            src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              'close.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'close.svg'} />
         </div>
       </div>
     )

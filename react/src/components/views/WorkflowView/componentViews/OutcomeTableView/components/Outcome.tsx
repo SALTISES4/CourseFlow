@@ -1,6 +1,6 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
@@ -9,6 +9,7 @@ import { AppState } from '@cfRedux/types/type'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 // import $ from 'jquery'
 
 type TableCellPropsType = {
@@ -64,11 +65,7 @@ class TableCell extends React.Component<TableCellPropsType> {
 
   Contents = ({ completionStatus, selfCompletion }) => {
     if (completionStatus === 0) {
-      return (
-        <img
-          src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}nocheck.svg`}
-        />
-      )
+      return <img src={`${apiPaths.external.static_assets.icon}nocheck.svg`} />
     } else if (!completionStatus) {
       return ''
     }
@@ -78,7 +75,7 @@ class TableCell extends React.Component<TableCellPropsType> {
       return (
         <img
           className={selfCompletion ? 'self-completed' : ''}
-          src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}${icon}`}
+          src={`${apiPaths.external.static_assets.icon}${icon}`}
         />
       )
     }
@@ -244,7 +241,7 @@ export class OutcomeUnconnected<
           {/*<div className="outcome-title" style={style}> @todo style is not defined */}
           <div className="outcome-title">
             <OutcomeTitle
-              data={this.props.data}
+              title={this.props.data.title}
               prefix={this.props.prefix}
               hovertext={this.props.hovertext}
             />
@@ -253,11 +250,7 @@ export class OutcomeUnconnected<
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
                 <img
-                  src={
-                    COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                    dropIcon +
-                    '.svg'
-                  }
+                  src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
                 />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
@@ -350,7 +343,7 @@ export default Outcome
 //     let divclass = ''
 //
 //     if (completionStatus === 0) {
-//       return <img src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'nocheck.svg'} />
+//       return <img src={ apiPaths.external.static_assets.icon + 'nocheck.svg'} />
 //     } else if (!completionStatus) {
 //       return ''
 //     }
@@ -359,10 +352,10 @@ export default Outcome
 //         return (
 //           <img
 //             className="self-completed"
-//             src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'solid_check.svg'}
+//             src={ apiPaths.external.static_assets.icon + 'solid_check.svg'}
 //           />
 //         )
-//       else return <img src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'check.svg'} />
+//       else return <img src={ apiPaths.external.static_assets.icon + 'check.svg'} />
 //     }
 //
 //     // @todo why is bitwise being used here? needs explanation comments

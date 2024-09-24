@@ -22,7 +22,7 @@ type PropsType = {
   onPonderationChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
-const CourseFormFields = ({
+const FormCourse = ({
   wrapAs = 'form',
   values,
   onInfoChange,
@@ -131,4 +131,4 @@ const CourseFormFields = ({
   )
 }
 
-export default CourseFormFields
+export default FormCourse

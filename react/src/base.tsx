@@ -1,6 +1,6 @@
 import { OuterContentWrap } from '@cf/mui/helper'
-import Sidebar from '@cfComponents/layout/Sidebar'
-import TopBar from '@cfComponents/layout/TopBar'
+import Sidebar from '@cfComponents/globalNav/Sidebar'
+import TopBar from '@cfComponents/globalNav/TopBar'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import HtmlReactParser from 'html-react-parser'
 import { ReactNode } from 'react'

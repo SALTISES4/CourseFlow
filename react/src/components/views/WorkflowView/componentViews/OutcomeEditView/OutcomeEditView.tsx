@@ -16,6 +16,7 @@ import { connect } from 'react-redux'
 // @components
 
 import Outcome from './Outcome'
+import {apiPaths} from "@cf/router/apiRoutes";
 
 // import $ from 'jquery'
 type ConnectedProps = {
@@ -103,7 +104,7 @@ export class OutcomeEditViewUnconnected<
    * COMPONENTS
    *******************************************************/
   AddNew = ({ objectset }: any) => {
-    if (this.props.workflow.workflowPermission.write) {
+    if (this.props.workflow.workflowPermissions.write) {
       return (
         <div
           id="add-new-outcome"
@@ -113,7 +114,7 @@ export class OutcomeEditViewUnconnected<
           <img
             className="create-button"
             src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+               apiPaths.external.static_assets.icon +
               'add_new_white.svg'
             }
           />

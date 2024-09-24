@@ -1,4 +1,3 @@
-import PasswordResetDialog from '@cf/components/common/dialog/common/PasswordResetDialog'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
@@ -6,6 +5,8 @@ import { TopBarProps } from '@cf/types/common'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
+import ProjectCreateDialog from '@cfComponents/dialog/Project/ProjectCreateDialog'
+import PasswordResetDialog from '@cfComponents/dialog/User/PasswordResetDialog'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
 import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -28,6 +29,22 @@ import * as React from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
+const formFields = [
+  {
+    name: 'title',
+    label: 'Title',
+    type: 'text',
+    value: '',
+    required: true
+  },
+  {
+    name: 'description',
+    label: 'Description',
+    type: 'text',
+    value: ''
+  }
+]
+
 
 const TopBar = ({ notifications }: TopBarProps) => {
   const navigate = useNavigate()
@@ -252,10 +269,12 @@ const TopBar = ({ notifications }: TopBarProps) => {
         }
       />
 
-      {/*<ProjectCreateDialog*/}
-      {/*  showNoProjectsAlert={forms.createProject.showNoProjectsAlert}*/}
-      {/*  formFields={forms.createProject.formFields}*/}
-      {/*/>*/}
+      <ProjectCreateDialog
+        // showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
+        //formFields={forms.createProject.formFields}
+        showNoProjectsAlert={true}
+        formFields={formFields}
+      />
 
       {/*<ProgramCreateDialog*/}
       {/*  {...createProgramData}*/}

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
@@ -7,7 +6,7 @@ import * as Utility from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import WorkflowLinkDialog from '@cfComponents/dialog/Workspace/WorkflowLinkDialog'
+import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
 import QuillDiv from '@cfEditableComponents/components/QuillDiv'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import Button from '@mui/material/Button'
@@ -246,7 +245,7 @@ class EditableComponent<
           // maxlength={500}
           textChangeFunction={this.valueChanged.bind(this, 'description')}
           placeholder="Insert description here"
-          readOnly={this.context.permissions.workflowPermission.readOnly}
+          readOnly={this.context.permissions.workflowPermissions.readOnly}
         />
       </div>
     )
@@ -521,7 +520,7 @@ class EditableComponent<
   EditForm = ({ data, noDelete }) => {
     let sets
 
-    const readOnly = this.context.permissions.workflowPermission.readOnly
+    const readOnly = this.context.permissions.workflowPermissions.readOnly
     const title = Utility.unescapeCharacters(data.title || '')
     const type = Constants.objectDictionary[this.objectType]
     const override = data.representsWorkflow ? true : false

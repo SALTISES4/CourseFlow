@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -223,7 +224,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
     let outcomeadder
 
-    if (this.props.workflow.workflowPermission.write)
+    if (this.props.workflow.workflowPermissions.write)
       outcomeadder = (
         <OutcomeAdder
           outcome_set={outcome_restriction}
@@ -244,7 +245,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
     let add_new_outcome
 
-    if (this.props.workflow.workflowPermission.write && data.linkedWorkflow)
+    if (this.props.workflow.workflowPermissions.write && data.linkedWorkflow)
       add_new_outcome = (
         <div
           id="add-new-outcome"
@@ -253,10 +254,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
         >
           <img
             className="create-button"
-            src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              'add_new_white.svg'
-            }
+            src={apiPaths.external.static_assets.icon + 'add_new_white.svg'}
           />
           <div>{_t('Add new')}</div>
         </div>
@@ -305,7 +303,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     }
 
     const permissions = calcWorkflowPermissions(
-      this.props.workflow.userPermission
+      this.props.workflow.userPermissions
     )
     const comments = permissions.read ? <this.AddCommenting /> : ''
 

@@ -1,5 +1,5 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
 import {
   TGetOutcomeByID,
   TOutcomeOutcomeByID,
@@ -14,6 +14,7 @@ import {
   OutcomeBarOutcomePropsType,
   OutcomeBarOutcomeUnconnected
 } from './OutcomeBarOutcome'
+import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 
 /**
  * Used for the parent outcome bar.
@@ -118,7 +119,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
       >
         <div className="outcome-title">
           <OutcomeTitle
-            data={this.props.data}
+            title={this.props.data.title}
             prefix={this.props.prefix}
             hovertext={this.props.hovertext}
           />
@@ -133,11 +134,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
               <img
-                src={
-                  COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                  dropIcon +
-                  '.svg'
-                }
+                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
               />
             </div>
             <div className="outcome-drop-text">{droptext}</div>

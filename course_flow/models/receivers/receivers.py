@@ -340,7 +340,7 @@ def delete_existing_node_week(sender, instance, **kwargs):
         try:
             NodeWeek.objects.filter(node=instance.node).delete()
         except Exception as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
         if instance.rank < 0:
             instance.rank = 0
         new_parent_count = NodeWeek.objects.filter(week=instance.week).count()
@@ -612,7 +612,7 @@ def set_node_type_default(sender, instance, created, **kwargs):
         node.node_type = instance.week.week_type
         node.save()
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         print("couldn't set default node type")
 
 
@@ -624,7 +624,7 @@ def set_week_type_default(sender, instance, created, **kwargs):
         week.week_type = instance.workflow.get_subclass().WORKFLOW_TYPE
         week.save()
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         print("couldn't set default week type")
 
 
@@ -662,7 +662,7 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
                         degree=horizontallink.degree,
                     )
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             print("couldn't set default outcome depth or copy sets")
 
 

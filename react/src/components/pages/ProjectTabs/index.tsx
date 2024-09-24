@@ -5,7 +5,6 @@ import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { ProjectDetailsType } from '@cf/types/common'
 import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
 import { _t } from '@cf/utility/utilityFunctions'
-import MenuBar from '@cfComponents/layout/MenuBar'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import Header from '@cfPages/ProjectTabs/components/Header'
 import { ActionMenu } from '@cfPages/ProjectTabs/components/menuBar/menus'
@@ -26,6 +25,7 @@ import {
   useNavigate,
   useParams
 } from 'react-router-dom'
+import MenuBar from "@cfComponents/globalNav/MenuBar";
 
 const ProjectDetails = () => {
   /*******************************************************

@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as React from 'react'
 // import $ from 'jquery'
@@ -91,12 +92,7 @@ class ImportMenu extends React.Component<PropsType> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img
-            src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              'close.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'close.svg'} />
         </div>
       </div>
     )

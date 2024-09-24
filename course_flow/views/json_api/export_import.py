@@ -58,7 +58,7 @@ class ExportImport:
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {
                     "error": "you have error",
@@ -92,7 +92,7 @@ class ExportImport:
             )
 
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {
                     "error": "you have error",

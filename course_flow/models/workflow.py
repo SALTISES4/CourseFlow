@@ -203,7 +203,7 @@ class Workflow(AbstractCourseFlowModel):
             try:
                 return getattr(self, subclass).type
             except AttributeError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 pass
         return "workflow"
 
@@ -240,7 +240,7 @@ class Workflow(AbstractCourseFlowModel):
     #     try:
     #         liveproject = self.get_project().liveproject
     #     except AttributeError as e:
-    #                logger.log(logging.INFO, e)
+    #                logger.exception("An error occurred")
     #         liveproject = None
     #     return liveproject
 
@@ -250,17 +250,17 @@ class Workflow(AbstractCourseFlowModel):
         try:
             subclass = self.activity
         except AttributeError as e:
-            # logger.log(logging.INFO, e)
+            # logger.exception("An error occurred")
             pass
         try:
             subclass = self.course
         except AttributeError as e:
-            # logger.log(logging.INFO, e)
+            # logger.exception("An error occurred")
             pass
         try:
             subclass = self.program
         except AttributeError as e:
-            # logger.log(logging.INFO, e)
+            # logger.exception("An error occurred")
             pass
 
         return subclass

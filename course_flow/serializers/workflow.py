@@ -244,6 +244,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "importing",
             "public_view",
             "url",
+            "user_permissions",
         ]
 
     def get_author_id(self, instance):
@@ -299,6 +300,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "importing",
             "public_view",
             "url",
+            "user_permissions",
         ]
 
     @staticmethod
@@ -359,6 +361,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "importing",
             "public_view",
             "url",
+            "user_permissions",
         ]
 
     def get_outcomes_sort(self, instance):
@@ -387,7 +390,7 @@ class WorkflowUpdateSerializer(serializers.ModelSerializer):
         write_only=True, required=False, source="time_units"
     )
     course_number = serializers.CharField(
-        write_only=True, required=False, source="code"
+        write_only=True, required=False, source="code", allow_null=True
     )
     ponderation = serializers.DictField(write_only=True, required=False)
 
@@ -421,6 +424,7 @@ class WorkflowUpdateSerializer(serializers.ModelSerializer):
         instance.code = validated_data.get("code", instance.code)
 
         ponderation_data = validated_data.pop("ponderation", {})
+
         instance.ponderation_theory = ponderation_data.get(
             "theory", instance.ponderation_theory
         )

@@ -4,6 +4,7 @@
 
 import { _t } from '@cf/utility/utilityFunctions'
 import * as React from 'react'
+import {apiPaths} from "@cf/router/apiRoutes";
 // import $ from 'jquery'
 
 type StateProps = {
@@ -200,7 +201,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
         >
           <img
             src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+               apiPaths.external.static_assets.icon +
               'close.svg'
             }
           />

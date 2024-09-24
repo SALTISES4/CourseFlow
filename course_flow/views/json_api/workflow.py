@@ -106,9 +106,7 @@ class WorkflowEndpoint:
             )
         except AttributeError as e:
             detailed_traceback = traceback.format_exc()
-            logger.debug(detailed_traceback)
-            logger.log(logging.DEBUG, e)
-            logger.log(logging.INFO, "log of the errors ")
+            logger.exception("log of the errors ")
             return Response(
                 {"error": "hello error"}, status=status.HTTP_400_BAD_REQUEST
             )
@@ -136,7 +134,7 @@ class WorkflowEndpoint:
             )
 
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {"action": "error"}, status=status.HTTP_400_BAD_REQUEST
             )
@@ -164,7 +162,7 @@ class WorkflowEndpoint:
                 node.linked_workflow, request.user, node.get_workflow()
             )
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {
                     "action": "error",
@@ -199,7 +197,7 @@ class WorkflowEndpoint:
             ).data
 
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {"action": "error"}, status=status.HTTP_400_BAD_REQUEST
             )
@@ -222,7 +220,7 @@ class WorkflowEndpoint:
         try:
             workflow = Workflow.objects.get(pk=pk)
         except Workflow.DoesNotExist as e:
-            pprint(e)
+            logger.exception("")
             return Response(
                 {"error": "Workflow not found"},
                 status=status.HTTP_404_NOT_FOUND,
@@ -230,14 +228,11 @@ class WorkflowEndpoint:
 
         serializer = WorkflowUpdateSerializer(workflow, data=request.data)
 
-        pprint(request.data)
-        pprint(serializer)
-
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            pprint(serializer.errors)
+            logger.exception("")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -272,7 +267,7 @@ class WorkflowEndpoint:
                     cleanup_workflow_post_duplication(clone, project)
 
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {
                     "error": "you have error",
@@ -321,7 +316,7 @@ class WorkflowEndpoint:
             )
 
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response({"action": "error"})
 
         return Response(
@@ -362,7 +357,7 @@ class WorkflowEndpoint:
             )
 
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response({"action": "error"})
 
         return Response(
@@ -417,7 +412,7 @@ class WorkflowEndpoint:
                 ).data
 
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response({"action": "error"})
 
         response_data = {
@@ -460,7 +455,7 @@ def set_linked_workflow(node: Node, workflow):
             node.linked_workflow = new_workflow
             node.save()
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
         pass
 
 
@@ -478,7 +473,7 @@ def json_api_get_public_workflow_data(request: Request, pk) -> Response:
             workflow.get_subclass(), request.user
         )
     except AttributeError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return Response({"action": "error"})
 
     return Response(
@@ -497,7 +492,7 @@ def json_api_get_public_workflow_child_data(request: Request, pk) -> Response:
             node.linked_workflow, request.user, node.get_workflow()
         )
     except AttributeError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return Response({"action": "error"})
     return Response(
         {
@@ -516,7 +511,7 @@ def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
             workflow.get_subclass(), request.user
         )
     except AttributeError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return Response({"action": "error"})
 
     return Response(
@@ -544,7 +539,7 @@ def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
     #         )
     #
     #     except AttributeError as e:
-    # logger.log(logging.INFO, e)
+    # logger.exception("An error occurred")
 
 
 #         return Response({"action": "error"})
@@ -601,7 +596,7 @@ def json_api_post_create_workflow(request: Request) -> Response:
         print(workflow_type)
 
     except AttributeError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
     return Response(
         {
             "action": "error",

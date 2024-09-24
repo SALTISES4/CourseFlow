@@ -53,7 +53,7 @@ class CommentEndpoint:
             data_package = CommentSerializer(comments, many=True).data
 
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {
                     "error": "you have error",
@@ -108,7 +108,7 @@ class CommentEndpoint:
                 )
 
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {
                     "error": "you have error",

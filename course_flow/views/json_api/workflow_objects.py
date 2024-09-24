@@ -101,7 +101,7 @@ def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
             node_updates = []
 
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     response_data = {
@@ -175,7 +175,7 @@ def json_api_post_update_outcomehorizontallink_degree(
             "outcome_horizontal_links_unique"
         ]
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     response_data = {
@@ -225,7 +225,7 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
                 object_to_update.save()
 
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
     try:
         workflow = objects_to_update[0].get_workflow()
@@ -255,7 +255,7 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
         if object_type == "outcome":
             actions.dispatch_to_parent_wf(workflow, action)
     except AttributeError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         pass
 
     return JsonResponse({"message": "success"})
@@ -394,7 +394,7 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                 ).objects.create(rank=new_position, **creation_kwargs)
 
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     workflow = model.get_workflow()

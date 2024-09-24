@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import * as React from 'react'
 
 /**
@@ -17,10 +18,7 @@ const CompletionImg = ({
     return (
       <img
         className="self-completed"
-        src={
-          COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-          'solid_check.svg'
-        }
+        src={apiPaths.external.static_assets.icon + 'solid_check.svg'}
       />
     )
   }

@@ -5,9 +5,7 @@ import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
-import { ObjectPermission } from '@cf/types/common'
 import { WorkflowViewType } from '@cf/types/enum'
-import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
@@ -132,7 +130,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
       this.props.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
 
       this.selectionManager = new SelectionManager(
-        response.dataPackage.workflow.workflowPermission.read
+        response.dataPackage.workflow.workflowPermissions.read
       )
 
       this.setState({

@@ -129,7 +129,7 @@ def async_import_file_data(pk, object_type, task_type, file_json, user_id):
             importer.import_nodes(df, model_object, user)
 
     except Exception as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         pass
 
     cache.delete(object_type + str(pk) + "importing")

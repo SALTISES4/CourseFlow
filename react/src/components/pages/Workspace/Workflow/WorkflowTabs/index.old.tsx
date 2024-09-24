@@ -425,7 +425,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         title: window.gettext('Edit Workflow'),
         action: this.openEditMenu.bind(this),
         icon: <EditIcon />,
-        show: !this.context.permissions.workflowPermission.readOnly
+        show: !this.context.permissions.workflowPermissions.readOnly
       },
 
       {
@@ -433,7 +433,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         title: window.gettext('Sharing'),
         action: this.openShareDialog.bind(this),
         icon: <PersonAddIcon />,
-        show: !this.context.permissions.workflowPermission.readOnly
+        show: !this.context.permissions.workflowPermissions.readOnly
       },
       {
         id: 'export',
@@ -442,7 +442,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         icon: null,
         show:
           (!this.publicView || this.userId) &&
-          this.context.permissions.workflowPermission.canView,
+          this.context.permissions.workflowPermissions.canView,
         seperator: true
       },
       // hidden
@@ -573,7 +573,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
         <ReturnLinks
           project={this.project}
           publicView={this.publicView}
-          canView={this.context.permissions.workflowPermission.canView}
+          canView={this.context.permissions.workflowPermissions.canView}
         />
         <div className="main-block">
           <MenuBar

@@ -48,5 +48,5 @@ class Command(BaseCommand):
             try:
                 Discipline.objects.get(title=title)
             except Exception as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 Discipline.objects.create(title=title)

@@ -53,7 +53,7 @@ class Importer:
             try:
                 depth = int(row["depth"])
             except ValueError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 depth = 0
             if last_outcome is None:
                 depth = 0
@@ -126,7 +126,7 @@ class Importer:
                         outcome.code = ""
                         outcome.save()
             except ValueError as e:
-                logger.log(logging.INFO, e)
+                logger.exception("An error occurred")
                 pass
 
             last_outcome = outcome
@@ -146,7 +146,7 @@ class Importer:
                     )[week_rank]
                     weekworkflow = WeekWorkflow.objects.get(week=week)
                 except IndexError as e:
-                    logger.log(logging.INFO, e)
+                    logger.exception("An error occurred")
                     week = Week.objects.create(
                         author=user,
                         week_type=workflow.get_subclass().WORKFLOW_TYPE,

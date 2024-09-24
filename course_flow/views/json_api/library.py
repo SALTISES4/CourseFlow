@@ -91,7 +91,7 @@ class LibraryEndpoint:
                 )
 
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {"error": "error toggling favourites"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -237,8 +237,6 @@ class LibraryEndpoint:
             published = data.get("published", False)
             name_filter = data.get("filter", "").lower()
 
-            # Perform your search logic here with the validated data
-            # e.g., query the database, filter results
         else:
             return Response(serializer.errors, status=400)
 

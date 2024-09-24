@@ -63,7 +63,7 @@ class NodeEndpoint:
             )
 
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return JsonResponse({"action": "error"})
 
         response_data = {
@@ -102,7 +102,7 @@ class NodeEndpoint:
                 target_port=target_port,
             )
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return JsonResponse({"action": "error"})
 
         response_data = {

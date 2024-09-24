@@ -47,7 +47,7 @@ export type StateType = {
  * @param formFields
  * @constructor
  */
-const ProjectCreateDialog = ({
+const ProjectEditDialog = ({
   showNoProjectsAlert,
   formFields
 }: TopBarProps['forms']['createProject']) => {
@@ -60,7 +60,10 @@ const ProjectCreateDialog = ({
     objectSetsExpanded: false
   })
   const [errors, setErrors] = useState({})
-  const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_CREATE)
+  const { show, onClose } = useDialog([
+    DIALOG_TYPE.PROJECT_CREATE,
+    DIALOG_TYPE.PROJECT_EDIT
+  ])
   const [selectOpenStates, setSelectOpenStates] = useState({})
   const navigate = useNavigate()
 
@@ -322,4 +325,4 @@ const ProjectCreateDialog = ({
   )
 }
 
-export default ProjectCreateDialog
+export default ProjectEditDialog

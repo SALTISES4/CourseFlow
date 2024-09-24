@@ -1,6 +1,8 @@
+import { TitleText } from '@cf/components/common/UIPrimitives/Titles.ts'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { NodeTitle, TitleText } from '@cfComponents/UIPrimitives/Titles'
+import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
 import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
 import {
@@ -86,7 +88,9 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
               show_outcomes: false
             })
           }}
-          style={{ borderColor: Constants.getColumnColour(this.props.node.column) }}
+          style={{
+            borderColor: Constants.getColumnColour(this.props.node.column)
+          }}
         >
           {data.outcomenodeUniqueSet.map((outcomenode) => (
             <OutcomeNode key={outcomenode} objectId={outcomenode} />
@@ -122,7 +126,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
             ).name
           }
           src={
-            COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+            apiPaths.external.static_assets.icon +
             Constants.contextKeys[data.contextClassification] +
             '.svg'
           }
@@ -139,7 +143,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
             ).name
           }
           src={
-            COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+            apiPaths.external.static_assets.icon +
             Constants.taskKeys[data.taskClassification] +
             '.svg'
           }
@@ -159,12 +163,12 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
     ].join(' ')
 
     const mouseover_actions = []
-    if (this.props.workflow.workflowPermission.write) {
+    if (this.props.workflow.workflowPermissions.write) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.props.workflow.workflowPermission.viewComments) {
+    if (this.props.workflow.workflowPermissions.viewComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 

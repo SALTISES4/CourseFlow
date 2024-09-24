@@ -78,7 +78,9 @@ class EditableComponentWithSorting<
     handle: string | boolean = false, // @todo review this union
     containment = '.workflow-container'
   ) {
-    if (this.context.permissions.workflowPermission.readOnly) {
+
+    // if (this.context.permissions.workflowPermissions.readOnly) {
+    if (false) {
       return
     }
 

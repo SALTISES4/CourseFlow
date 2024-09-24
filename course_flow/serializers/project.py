@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -89,6 +91,7 @@ class ProjectSerializerShallow(
             "object_sets",
             "favourite",
             "object_permission",
+            "user_permissions",
         ]
 
     created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
@@ -99,6 +102,7 @@ class ProjectSerializerShallow(
     deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
     author = serializers.SerializerMethodField()
     object_permission = serializers.SerializerMethodField()
+    user_permissions = serializers.SerializerMethodField()
 
     def get_favourite(self, instance):
         user = self.context.get("user")
@@ -139,12 +143,18 @@ class ProjectSerializerShallow(
             content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.id,
         ).first()
+
         if object_permission is None:
             return None
         return {
             "permission_type": object_permission.permission_type,
             "last_viewed": object_permission.last_viewed,
         }
+
+    def get_user_permissions(self, instance):
+        user = self.context.get("user", None)
+        user_permission = DAO.get_user_permission(instance, user)
+        return user_permission
 
     def validate_is_template(self, value):
         user = self.context.get("user")

@@ -3,44 +3,6 @@ import { _t } from '@cf/utility/utilityFunctions'
 import * as React from 'react'
 import { NavLink, generatePath } from 'react-router-dom'
 
-//Text that can be passed a default value. HTML is dangerously set.
-export class TitleText extends React.Component {
-  render() {
-    let text = this.props.text
-    if (
-      (this.props.text == null || this.props.text == '') &&
-      this.props.defaultText != null
-    ) {
-      text = this.props.defaultText
-    }
-    return (
-      <div
-        className="title-text"
-        title={text}
-        dangerouslySetInnerHTML={{ __html: text }}
-      />
-    )
-  }
-}
-
-export function workflowTitle({ title, code, deleted }) {
-  let text = title || _t('Untitled')
-
-  if (code) {
-    text = `${code} - ${text}`
-  }
-
-  // @todo check this condition
-  // if (['noaccess', 'nouser'].includes(data.url)) {
-  //   text += ` ${_t(' (no access)')}`
-  // }
-
-  if (deleted) {
-    text += ' (deleted)'
-  }
-  return text
-}
-
 export function workflowUrl(workflow) {
   const base = CFRoutes.WORKFLOW
   return generatePath(base, { id: workflow.id })
@@ -90,32 +52,4 @@ export class NodeTitle extends React.Component {
       />
     )
   }
-}
-
-//Title for an outcome
-export class OutcomeTitle extends React.Component {
-  render() {
-    const data = this.props.data
-    let text = data.title
-    if (data.title == null || data.title == '') {
-      text = _t('Untitled')
-    }
-
-    return (
-      <div title={this.props.hovertext} className="title-text">
-        <span>{this.props.prefix + ' - '}</span>
-        <span dangerouslySetInnerHTML={{ __html: text }} />
-      </div>
-    )
-  }
-}
-
-//Returns the outcome title as a string
-export function getOutcomeTitle(data, prefix) {
-  let text = data.title
-  if (data.title == null || data.title == '') {
-    text = _t('Untitled')
-  }
-
-  return prefix + ' - ' + text
 }

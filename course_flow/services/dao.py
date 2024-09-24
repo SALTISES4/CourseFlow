@@ -217,7 +217,7 @@ class DAO:
                 else:
                     return True
         except IndexError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             pass
         return False
 

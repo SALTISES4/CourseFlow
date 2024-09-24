@@ -2,7 +2,7 @@ import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles'
+import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
 import { AppState, TNodeweek, TWorkflow } from '@cfRedux/types/type'
@@ -66,7 +66,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
     })
 
     const permissions = calcWorkflowPermissions(
-      this.props.workflow.userPermission
+      this.props.workflow.userPermissions
     )
 
     const comments = permissions.read ? <this.AddCommenting /> : null

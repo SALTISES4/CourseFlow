@@ -49,7 +49,7 @@ def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
             context={"user": request.user},
         ).data
     except AttributeError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
@@ -72,7 +72,7 @@ def duplicate__strategy(request: HttpRequest) -> JsonResponse:
             except (ValidationError, TypeError):
                 pass
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     return JsonResponse(
@@ -207,7 +207,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
         else:
             raise ValidationError("User cannot access this strategy")
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
 
@@ -249,7 +249,7 @@ def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
             strategy_serialized = ""
 
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     response_data = {

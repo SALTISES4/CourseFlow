@@ -3,8 +3,8 @@ import { WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import FormWorkflow, {
   FormField
-} from '@cfComponents/dialog/common/CreateWizardDialog/components/FormWorkflow'
-import { WorkflowFormType } from '@cfComponents/dialog/common/CreateWizardDialog/types'
+} from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormWorkflow'
+import { WorkflowFormType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import { AppState } from '@cfRedux/types/type'
 import Button from '@mui/material/Button'
@@ -83,21 +83,6 @@ const WorkflowEditDialog = () => {
   /*******************************************************
    * QUERIES
    *******************************************************/
-  // const { mutate } = useMutation<EmptyPostResp, Error, UpdateWorkflowArgs>({
-  //   mutationFn: (args) => updateMutation(Number(id), args),
-  //   onSuccess: (resp: EmptyPostResp) => {
-  //     enqueueSnackbar('edited workflow success', {
-  //       variant: 'success'
-  //     })
-  //     onClose()
-  //   },
-  //   onError: (error) => {
-  //     enqueueSnackbar('edited workflow error', {
-  //       variant: 'error'
-  //     })
-  //     console.error('Error updating workflow asdfasdf :', error)
-  //   }
-  // })
 
   const [mutate, { error, isSuccess, isError }] = useUpdateMutation()
 

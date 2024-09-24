@@ -1,8 +1,8 @@
 import * as Constants from '@cf/constants'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
 import {
   EditableComponentWithSortingProps,
@@ -16,9 +16,10 @@ import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-const choices = COURSEFLOW_APP.globalContextData.workflow_choices
-
 import NodeWeek from './NodeWeek'
+import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
+
+const choices = COURSEFLOW_APP.globalContextData.workflow_choices
 
 // import $ from 'jquery'
 
@@ -201,20 +202,20 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
    * COMPONENTS
    *******************************************************/
   Nodes = () => {
-    if (!this.props.data.nodeweekSet.length) {
+    if (!this.props.week.data.nodeweekSet.length) {
       return (
         <div className="node-week placeholder" style={{ height: '100%' }}>
           Drag and drop nodes from the sidebar to add.
         </div>
       )
     }
-    return this.props.data.nodeweekSet.map((nodeweek) => (
+    return this.props.week.data.nodeweekSet.map((nodeweek) => (
       <NodeWeek
         key={nodeweek}
         objectId={nodeweek}
-        parentID={this.props.data.id}
+        parentID={this.props.week.data.id}
         // renderer={this.props.renderer}
-        column_order={this.props.column_order}
+        column_order={this.props.week.column_order}
       />
     ))
   }
@@ -223,7 +224,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const data = this.props.week.data
     const selectionManager = this.context.selectionManager
     // const cssClass = 'week'
 
@@ -245,14 +246,14 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
     const mouseoverActions = []
     if (
-      this.props.workflow.workflowPermission.write &&
+      this.props.workflow.workflowPermissions.write &&
       !this.props.workflow.isStrategy
     ) {
       mouseoverActions.push(<this.AddInsertSibling data={data} />)
       mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
       mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.props.workflow.workflowPermission.viewComments) {
+    if (this.props.workflow.workflowPermissions.viewComments) {
       mouseoverActions.push(<this.AddCommenting />)
     }
 
@@ -285,11 +286,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
             <div className="node-drop-side node-drop-left" />
             <div className="node-drop-middle">
               <img
-                src={
-                  COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                  dropIcon +
-                  '.svg'
-                }
+                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
               />
             </div>
             <div className="node-drop-side node-drop-right" />
@@ -312,7 +309,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
                       ).name
                     }
                     src={
-                      COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+                      apiPaths.external.static_assets.icon +
                       Constants.strategyKeys[data.strategyClassification] +
                       '.svg'
                     }

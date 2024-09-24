@@ -1,4 +1,4 @@
-import { TitleText } from '@cfComponents/UIPrimitives/Titles'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { TTermByID, getTermByID } from '@cfFindState'
 // import $ from 'jquery'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
@@ -9,6 +9,7 @@ import {
 } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 
 type OwnProps = {
   objectId: number
@@ -109,13 +110,13 @@ class Term extends WeekUnconnected<PropsType> {
 
     const mouseover_actions = []
 
-    if (this.props.workflow.workflowPermission.write) {
+    if (this.props.workflow.workflowPermissions.write) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
 
-    if (this.props.workflow.workflowPermission.viewComments) {
+    if (this.props.workflow.workflowPermissions.viewComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -152,11 +153,7 @@ class Term extends WeekUnconnected<PropsType> {
             <div className="node-drop-side node-drop-left"></div>
             <div className="node-drop-middle">
               <img
-                src={
-                  COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                  dropIcon +
-                  '.svg'
-                }
+                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
               />
             </div>
             <div className="node-drop-side node-drop-right"></div>

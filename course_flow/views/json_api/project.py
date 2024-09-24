@@ -89,7 +89,7 @@ class ProjectEndpoint:
                 request.user, False, for_add=True
             )
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return JsonResponse({"action": "error"})
 
         return JsonResponse(
@@ -118,7 +118,7 @@ class ProjectEndpoint:
                 except (ValidationError, TypeError):
                     pass
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
             return Response(
                 {
                     "error": "you have error",
@@ -154,7 +154,7 @@ class ProjectEndpoint:
             ).data
 
         except AttributeError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
         return Response(
             {
                 "error": "you have error",
@@ -192,7 +192,7 @@ class ProjectEndpoint:
                 translation_plural=translation_plural,
             )
         except ValidationError as e:
-            logger.log(logging.INFO, e)
+            logger.exception("An error occurred")
         return Response(
             {
                 "error": "you have error",
@@ -229,7 +229,7 @@ def json_api_post_get_projects_for_create(
             context={"user": user},
         ).data
     except AttributeError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     return JsonResponse(

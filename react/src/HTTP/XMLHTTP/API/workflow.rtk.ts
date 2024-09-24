@@ -69,7 +69,7 @@ const extendedApi = cfApi.injectEndpoints({
           dataPackage: {
             ...response.dataPackage,
             workflowPermissions: calcWorkflowPermissions(
-              response.dataPackage.workflow.userPermission
+              response.dataPackage.workflow.userPermissions
             )
           }
         }
@@ -102,7 +102,7 @@ const extendedApi = cfApi.injectEndpoints({
         return {
           method: Verb.POST,
           url: generatePath(base, { id: args.id }),
-          body: args
+          body: args.payload
         }
       }
     }),

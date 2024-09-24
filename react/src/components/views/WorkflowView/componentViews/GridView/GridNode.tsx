@@ -69,7 +69,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
     ].join(' ')
 
     const permissions = calcWorkflowPermissions(
-      this.props.workflow.userPermission
+      this.props.workflow.userPermissions
     )
     const comments = permissions.read ? <this.AddCommenting /> : ''
 

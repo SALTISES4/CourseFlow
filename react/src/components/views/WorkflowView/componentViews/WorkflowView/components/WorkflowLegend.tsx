@@ -8,6 +8,7 @@ import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
+import {apiPaths} from "@cf/router/apiRoutes";
 
 type StateType = {
   show_slider: boolean
@@ -142,7 +143,7 @@ export class WorkflowLegendUnconnected<
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
           <img
             src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+               apiPaths.external.static_assets.icon +
               'close.svg'
             }
           />

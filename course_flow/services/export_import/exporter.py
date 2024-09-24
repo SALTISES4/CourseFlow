@@ -568,7 +568,7 @@ class Exporter:
                 try:
                     this_value = float(value)
                 except Exception as e:
-                    logger.log(logging.INFO, e)
+                    logger.exception("An error occurred")
                     this_value = 0
                 total += this_value
             else:

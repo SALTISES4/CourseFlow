@@ -1,7 +1,7 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import {
   EditableComponentWithCommentsStateType,
@@ -14,6 +14,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 
 import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
+import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 
 /**
  *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
@@ -129,7 +130,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
           data.childOutcomeLinks.length
         )
 
-    const comments = this.props.workflow.workflowPermission.viewComments ? (
+    const comments = this.props.workflow.workflowPermissions.viewComments ? (
       <this.AddCommenting />
     ) : null
     const editPortal = this.props.edit ? this.addEditable(data, true) : null
@@ -155,7 +156,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
         >
           <div className="outcome-title">
             <OutcomeTitle
-              data={data}
+              title={this.props.outcome.data.title}
               prefix={this.props.outcome.prefix}
               hovertext={this.props.outcome.hovertext}
             />
@@ -165,11 +166,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
                 <img
-                  src={
-                    COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                    dropIcon +
-                    '.svg'
-                  }
+                  src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
                 />
               </div>
               <div className="outcome-drop-text">{droptext}</div>

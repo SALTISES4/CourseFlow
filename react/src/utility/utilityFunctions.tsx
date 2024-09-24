@@ -317,7 +317,7 @@ export function getUserTag(user_type) {
  * @param objectsets
  */
 export function checkSetHidden(data, objectsets) {
-  if (data.sets.length === 0 || !objectsets) {
+  if (!(data?.sets.length > 0) || !objectsets) {
     return false
   }
 

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { GridWrap } from '@cf/mui/helper'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
@@ -84,10 +85,7 @@ class MenuSection extends React.Component<PropsType> {
               ' link-image'
             }
             title={_t('Add New')}
-            src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              'add_new_white.svg'
-            }
+            src={apiPaths.external.static_assets.icon + 'add_new_white.svg'}
           />
           <div>{this.props.section_data.title}</div>
           <div className="create-dropdown">{adds}</div>

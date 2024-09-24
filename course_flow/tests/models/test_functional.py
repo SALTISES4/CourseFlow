@@ -95,13 +95,13 @@ class SeleniumBase:
         try:
             self.test_headless = settings.COURSEFLOW_TEST_HEADLESS
         except AttributeError as e:
-                    logger.log(logging.INFO, e)
+                    logger.exception("An error occurred")
             self.test_headless = False
         try:
             if settings.COURSEFLOW_TEST_BROWSER == "ff":
                 return self.create_ff_browser()
         except AttributeError as e:
-                    logger.log(logging.INFO, e)
+                    logger.exception("An error occurred")
             pass
         return self.create_chrome_browser(options)
 

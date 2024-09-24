@@ -2,7 +2,7 @@ import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
-import { workflowTitle } from '@cfComponents/UIPrimitives/Titles'
+import { workflowTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import ErrorIcon from '@mui/icons-material/Error'
 import * as React from 'react'
 
@@ -17,8 +17,9 @@ import WorkflowCardDumb, {
 
 export type WorkflowCardWrapperPropsType = Pick<
   WorkflowCardDumbPropsType,
-  'id' | 'title' | 'description' | 'chips'
+  'id' | 'description' | 'chips'
 > & {
+  title: string
   isFavourite: boolean
   isLinked: boolean
   type: LibraryObjectType

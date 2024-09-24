@@ -62,8 +62,9 @@ export function getWorkflowByIdQuery(
           ...response.dataPackage,
           workflow: {
             ...response.dataPackage.workflow,
+            isStrategy: false,
             workflowPermissions: calcWorkflowPermissions(
-              response.dataPackage.workflow.userPermission
+              response.dataPackage.workflow.userPermissions
             )
           }
         }

@@ -410,7 +410,7 @@ def fast_duplicate_week(week: Week, author: User) -> Week:
                 node.save()
 
     except IndexError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return None
 
     return new_week
@@ -473,7 +473,7 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
                 outcome_inst.save()
 
     except IndexError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return None
 
     return new_outcome
@@ -681,7 +681,7 @@ def fast_duplicate_workflow(
                     outcome.save()
 
     except IndexError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return None
 
     return new_workflow
@@ -952,7 +952,7 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
                 outcome.save()
 
     except IndexError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return None
 
     for discipline in project.disciplines.all():
@@ -1070,7 +1070,7 @@ def fast_create_strategy(
         )
 
     except IndexError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         return None
 
     return new_strategy

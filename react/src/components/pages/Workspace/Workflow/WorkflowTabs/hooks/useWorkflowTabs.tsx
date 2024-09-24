@@ -44,7 +44,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       relRoute: RelativeRoutes.WORKFLOW,
       label: _t('Workflow View'),
       content: <WorkflowView />,
-      allowedTabs: [1, 2, 3, 4] // if context.permissions.workflowPermission.readOnly [2,3]
+      allowedTabs: [1, 2, 3, 4] // if context.permissions.workflowPermissions.readOnly [2,3]
     },
     {
       type: WorkflowViewType.OUTCOME_EDIT,

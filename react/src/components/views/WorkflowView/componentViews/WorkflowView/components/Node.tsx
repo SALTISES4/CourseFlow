@@ -1,7 +1,8 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { NodeTitle, TitleText } from '@cfComponents/UIPrimitives/Titles'
+import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
 import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
 import {
@@ -20,6 +21,7 @@ import { connect } from 'react-redux'
 
 import AutoLink from './AutoLink'
 import NodeLink from './NodeLink'
+import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 
 // import $ from 'jquery'
 
@@ -96,7 +98,7 @@ class NodeUnconnected extends EditableComponentWithActions<
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.data.isDropped == prevProps.data.isDropped) {
+    if (this.props.node.data.isDropped == prevProps.node.data.isDropped) {
       this.updatePorts()
     } else {
       Utility.triggerHandlerEach($('.node'), 'component-updated')
@@ -180,7 +182,7 @@ class NodeUnconnected extends EditableComponentWithActions<
     const myComponent = this
 
     if ($('.workflow-canvas').hasClass('creating-node-link')) return
-    if (this.props.workflow.workflowPermission.write)
+    if (this.props.workflow.workflowPermissions.write)
       $(
         "circle[data-node-id='" +
           this.props.objectId +
@@ -226,8 +228,7 @@ class NodeUnconnected extends EditableComponentWithActions<
     let linkIcon
     const mouseover_actions = []
 
-    const data = this.props.data
-    const selectionManager = this.context.selectionManager
+    const data = this.props.node.data
 
     if (data.representsWorkflow) {
       data_override = { ...data, ...data.linkedWorkflowData, id: data.id }
@@ -302,7 +303,7 @@ class NodeUnconnected extends EditableComponentWithActions<
               ).name
             }
             src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+              apiPaths.external.static_assets.icon +
               Constants.contextKeys[data.contextClassification] +
               '.svg'
             }
@@ -319,7 +320,7 @@ class NodeUnconnected extends EditableComponentWithActions<
               ).name
             }
             src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+              apiPaths.external.static_assets.icon +
               Constants.taskKeys[data.taskClassification] +
               '.svg'
             }
@@ -359,12 +360,7 @@ class NodeUnconnected extends EditableComponentWithActions<
     if (data.linkedWorkflow)
       linkIcon = (
         <div className={link_class} onClick={clickfunc}>
-          <img
-            src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              'wflink.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
       )
@@ -400,13 +396,13 @@ class NodeUnconnected extends EditableComponentWithActions<
       data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
-    if (this.props.workflow.workflowPermission.write) {
+    if (this.props.workflow.workflowPermissions.write) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
 
-    if (this.props.workflow.workflowPermission.addComments) {
+    if (this.props.workflow.workflowPermissions.addComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -443,11 +439,7 @@ class NodeUnconnected extends EditableComponentWithActions<
             <div className="node-drop-side node-drop-left">{dropText}</div>
             <div className="node-drop-middle">
               <img
-                src={
-                  COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                  dropIcon +
-                  '.svg'
-                }
+                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
               />
             </div>
             <div className="node-drop-side node-drop-right">
@@ -474,7 +466,10 @@ class NodeUnconnected extends EditableComponentWithActions<
   }
 }
 
-const mapStateToProps = (state: AppState, ownProps: OwnProps): ConnectedProps => {
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): ConnectedProps => {
   return {
     workflow: state.workflow,
     node: getNodeByID(state, ownProps.objectId)

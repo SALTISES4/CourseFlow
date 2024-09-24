@@ -1,5 +1,5 @@
 import { _t } from '@cf/utility/utilityFunctions'
-import { OutcomeTitle, WeekTitle } from '@cfComponents/UIPrimitives/Titles'
+import { WeekTitle } from '@cfComponents/UIPrimitives/Titles'
 import {
   getOutcomeByID,
   getSortedOutcomesFromOutcomeWorkflowSet,
@@ -12,6 +12,7 @@ import { connect } from 'react-redux'
 
 import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
 import AlignmentOutcomesBlock from './AlignmentOutcomesBlock'
+import { OutcomeTitle } from '@cf/components/common/UIPrimitives/Titles.ts'
 
 type ConnectedProps = {
   data: any
@@ -68,7 +69,7 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
                 onClick={this.changeView.bind(this, i, 'outcome', j)}
               >
                 <OutcomeTitle
-                  data={outcome.data}
+                  title={outcome.title}
                   prefix={outcome.prefix}
                   hovertext={outcome.hovertext}
                 />

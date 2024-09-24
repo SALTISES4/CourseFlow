@@ -14,13 +14,13 @@ import theme from './mui/theme'
 
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
-import { SidebarRootStyles } from '@cfComponents/layout/Sidebar/styles'
-import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 import CfRouter from '@cf/router/appRoutes'
+import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
 import UserProvider from '@cf/context/userContext'
 import { rootWorkflowReducers } from '@cfRedux/Reducers'
+import { SidebarRootStyles } from '@cfComponents/globalNav/Sidebar/styles'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our

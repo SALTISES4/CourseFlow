@@ -294,10 +294,10 @@ try:
     try:
         INSTALLED_APPS += LOCAL_APPS  # noqa F405
     except NameError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         pass
 except ImportError as e:
-    logger.log(logging.INFO, e)
+    logger.exception("An error occurred")
     import warnings
 
     warnings.warn(

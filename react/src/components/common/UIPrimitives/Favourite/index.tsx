@@ -52,7 +52,7 @@ const Favourite = ({ id, isFavorite, type }: PropsType) => {
       onClick={() =>
         toggleMutate({
           id,
-          type: type,
+          objectType: type,
           favourite: !isFavouriteState
         })
       }

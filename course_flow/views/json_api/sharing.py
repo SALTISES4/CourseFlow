@@ -82,7 +82,7 @@ def json_api_post_set_permission(request: HttpRequest) -> JsonResponse:
         response["action"] = "posted"
 
     except ValidationError as e:
-        logger.log(logging.INFO, e)
+        logger.exception("An error occurred")
         response["action"] = "error"
 
     return JsonResponse(response)

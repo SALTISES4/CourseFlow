@@ -1,8 +1,8 @@
 // @ts-nocheck
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
-import ProgramForm from '@cfComponents/dialog/common/CreateWizardDialog/components/FormProgram'
-import { ProgramFormDataType } from '@cfComponents/dialog/common/CreateWizardDialog/components/FormProgram/types'
+import ProgramForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram'
+import { ProgramFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram/types'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'

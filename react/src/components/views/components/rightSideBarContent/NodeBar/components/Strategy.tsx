@@ -7,6 +7,7 @@ import { TStrategyByID, getStrategyByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import {apiPaths} from "@cf/router/apiRoutes";
 // import $ from 'jquery'
 
 /**
@@ -80,7 +81,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
     const strategyIcon =
       data && data.strategy_icon ? (
         <img
-          src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}${
+          src={`${ apiPaths.external.static_assets.icon}${
             Constants.strategyKeys[data.strategy_icon]
           }.svg`}
         />

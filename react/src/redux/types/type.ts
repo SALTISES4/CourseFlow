@@ -1,5 +1,6 @@
 import { Lock } from '@cf/types/common'
 import { WorkflowType } from '@cf/types/enum'
+import { WorkflowPermission } from '@cf/utility/permissions'
 import {
   EColumn,
   EDate,
@@ -18,7 +19,6 @@ import {
   EWeekworkflow,
   EWorkflow
 } from '@XMLHTTP/types/entity'
-import {WorkflowPermission} from "@cf/utility/permissions";
 
 export type AppState = {
   workflow: TWorkflow
@@ -80,7 +80,7 @@ export type TWeekworkflow = EWeekworkflow & {
 export type TOutcomeWorkflow = EOutcomeWorkflow
 
 export type TWorkflow = EWorkflow & {
-  workflowPermission: WorkflowPermission
+  workflowPermissions: WorkflowPermission
   lock?: boolean
   editCount?: number
   type?: WorkflowType

@@ -1,8 +1,8 @@
 // @ts-nocheck
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
-import ActivityForm from '@cfComponents/dialog/common/CreateWizardDialog/components/FormActivity'
-import { ActivityFormDataType } from '@cfComponents/dialog/common/CreateWizardDialog/components/FormActivity/types'
+import ActivityForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormActivity'
+import { ActivityFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormActivity/types'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import { AppState } from '@cfRedux/types/type'
 import Button from '@mui/material/Button'

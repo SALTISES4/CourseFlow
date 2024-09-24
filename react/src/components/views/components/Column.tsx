@@ -55,7 +55,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
   //   return (
   //     <img
   //       src={
-  //         COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+  //          apiPaths.external.static_assets.icon +
   //         Constants.defaultColumnSettings[this.props.data.columnType].icon +
   //         '.svg'
   //       }
@@ -82,13 +82,13 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
 
     const mouseoverActions = []
 
-    if (this.props.workflow.workflowPermission.write) {
+    if (this.props.workflow.workflowPermissions.write) {
       mouseoverActions.push(<this.AddInsertSibling data={data} />)
       mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
       mouseoverActions.push(<this.AddDeleteSelf data={data} />)
     }
 
-    if (this.props.workflow.workflowPermission.viewComments) {
+    if (this.props.workflow.workflowPermissions.viewComments) {
       mouseoverActions.push(<this.AddCommenting />)
     }
 

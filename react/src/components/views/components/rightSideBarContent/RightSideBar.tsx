@@ -95,7 +95,7 @@ class RightSideBar extends React.Component<PropsType> {
         <NodeBar
           // viewType={this.props.renderer.viewType}
           // renderer={this.props.renderer}
-          readOnly={this.context.permissions.workflowPermission.readOnly}
+          readOnly={this.context.permissions.workflowPermissions.readOnly}
           columnChoices={choices.column_choices}
         />
       )
@@ -209,7 +209,7 @@ class RightSideBar extends React.Component<PropsType> {
           </>
         )}
 
-        {!this.context.permissions.workflowPermission.readOnly && (
+        {!this.context.permissions.workflowPermissions.readOnly && (
           <div id="restore-bar" className="right-panel-container">
             <this.RestoreBarWrapper />
           </div>

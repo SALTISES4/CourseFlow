@@ -28,9 +28,9 @@ const ActionMenu = () => {
 
   if (isLoading) return <></>
   const project = data.dataPackage
-  const projectPermission = calcProjectPermissions(
-    project.objectPermission.permissionType
-  )
+  console.log('project')
+  console.log(project)
+  const projectPermission = calcProjectPermissions(project.userPermissions)
 
   /*******************************************************
    * MODALS
