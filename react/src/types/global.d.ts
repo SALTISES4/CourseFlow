@@ -1,7 +1,13 @@
 import * as d3 from 'd3'
 import jQuery from 'jQuery'
 
-import { Discipline, FieldChoice, SidebarProps, TopBarProps } from './common'
+import {
+  Discipline,
+  FieldChoice,
+  FormFieldSerialized,
+  SidebarProps,
+  TopBarProps
+} from './common'
 export {}
 declare global {
   /*~ Here, declare things that go in the global namespace, or augment
@@ -158,25 +164,27 @@ interface UpdatePath {
 
 interface GlobalContextData {
   disciplines: Discipline[]
+  favourites: {
+    title: string
+    url: string
+  }[]
   workflow_choices: {
-    task_choices: FieldChoice[]
-    time_choices: FieldChoice[]
+    taskChoices: FieldChoice[]
+    timeChoices: FieldChoice[]
     contextChoices: FieldChoice[]
     strategyClassification_choices: FieldChoice[]
-    outcome_type_choices: FieldChoice[]
-    outcome_sort_choices: FieldChoice[]
-    column_choices: FieldChoice[]
+    outcomeTypeChoices: FieldChoice[]
+    outcomeSortChoices: FieldChoice[]
+    columnChoices: FieldChoice[]
   }
-  sidebar: SidebarProps
-  topbar: TopBarProps
+  forms: {
+    createProject: {
+      showNoProjectsAlert: boolean
+      formFields: FormFieldSerialized[]
+    }
+  }
   path: Path
-  // allow one layer of nesting
-  // @todo TBD where the final place for strings should be
-  // probably react
-  // backend should send back string 'code' only that gets matched to a real string
-  // however not sure about gettex / translation yet
-  strings: { [key: string]: string }
-  notifications: {
+  appNotifications: {
     showNotificationRequest: boolean
     updateNotifications:
       | {

@@ -1,5 +1,4 @@
 import { Lock } from '@cf/types/common'
-import { WorkflowType } from '@cf/types/enum'
 import { WorkflowPermission } from '@cf/utility/permissions'
 import {
   EColumn,
@@ -7,6 +6,7 @@ import {
   ENode,
   ENodelink,
   ENodeweek,
+  ENotification,
   EObjectSet,
   EOutcome,
   EOutcomeOutcome,
@@ -52,13 +52,20 @@ export type TOutcomenode = EOutcomenode
 
 export type TOutcomeOutcome = EOutcomeOutcome
 
-export type TOutcome = EOutcome
+// @todo look into where lock comes from
+export type TOutcome = EOutcome & {
+  lock?: Lock
+}
 
+// @todo look into where lock comes from
 export type TColumn = EColumn & {
   lock?: Lock
 }
 
-export type TNode = ENode
+// @todo look into where lock comes from
+export type TNode = ENode & {
+  lock?: Lock
+}
 export type TUser = EUser
 
 export type TColumnworkflow = EOutcomeWorkflow & {
@@ -82,11 +89,6 @@ export type TOutcomeWorkflow = EOutcomeWorkflow
 export type TWorkflow = EWorkflow & {
   workflowPermissions: WorkflowPermission
   lock?: boolean
-  editCount?: number
-  type?: WorkflowType
-  strategy_icon?: number
-  defaultColumns?: number[]
-  defaultCustomColumn?: number
 }
 
 export type TNodelink = ENodelink
@@ -103,6 +105,9 @@ export type TOutcomeHorizontalLink = any
 export type TParentNode = any
 export type TDate = EDate
 export type TProject = EProject
+export type TNotification = ENotification & {
+  url: string
+}
 
 // ENUM
 export enum NodeTypeDisplay {

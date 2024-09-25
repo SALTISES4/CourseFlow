@@ -1,11 +1,11 @@
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import { StyledDialog } from '@cfComponents/dialog/styles'
 import FormWorkflow, {
   FormField
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormWorkflow'
 import { WorkflowFormType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-import { StyledDialog } from '@cfComponents/dialog/styles'
 import { AppState } from '@cfRedux/types/type'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'

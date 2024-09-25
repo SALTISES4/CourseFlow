@@ -24,13 +24,20 @@ class WeekWorkflowSerializerShallow(serializers.ModelSerializer):
         model = WeekWorkflow
         fields = ["workflow", "week", "rank", "id", "week_type"]
 
+    #########################################################
+    # GETTERS
+    #########################################################
+    @staticmethod
+    def get_week_type(instance):
+        return instance.week.week_type
+
+    #########################################################
+    # ACTIONS
+    #########################################################
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
         return instance
-
-    def get_week_type(self, instance):
-        return instance.week.week_type
 
 
 class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
@@ -38,6 +45,9 @@ class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
         model = ColumnWorkflow
         fields = ["workflow", "column", "rank", "id"]
 
+    #########################################################
+    # ACTIONS
+    #########################################################
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
@@ -49,6 +59,9 @@ class WorkflowSerializerFinder(serializers.ModelSerializer):
         model = Workflow
         fields = ["id", "type"]
 
+    #########################################################
+    # ACTIONS
+    #########################################################
     def update(self, instance, validated_data):
         return instance
 
@@ -61,9 +74,16 @@ class CommentSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
-    def get_user(self, instance):
+    #########################################################
+    # GETTERS
+    #########################################################
+    @staticmethod
+    def get_user(instance):
         return UserSerializer(instance.user).data
 
+    #########################################################
+    # ACTIONS
+    #########################################################
     def update(self, instance, validated_data):
         instance.text = validated_data.get("text", instance.text)
         instance.save()

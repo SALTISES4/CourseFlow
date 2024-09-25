@@ -229,7 +229,9 @@ class LibraryEndpoint:
     def search(
         request: Request,
     ) -> Response:
+        meta = {}
         serializer = SearchSerializer(data=request.data)
+
         if serializer.is_valid():
             data = serializer.validated_data
             nresults = data.get("results_per_page", 10)
@@ -241,11 +243,9 @@ class LibraryEndpoint:
             return Response(serializer.errors, status=400)
 
         try:
-            # name_filter = body.get("filter").lower()
-
-            # A full search of all objects, paginated
+            # A full search of all objects with paginatation
             if full_search:
-                return_objects, pages = LibraryService.get_explore_objects(
+                return_objects, meta = LibraryService.get_explore_objects(
                     request.user, name_filter, nresults, published, {}
                 )
             # Small search for library
@@ -253,15 +253,12 @@ class LibraryEndpoint:
                 return_objects = LibraryService.get_library_objects(
                     request.user, name_filter, nresults
                 )
-                pages = {}
 
             data_package = {
-                "results": InfoBoxSerializer(
+                "items": InfoBoxSerializer(
                     return_objects, context={"user": request.user}, many=True
                 ).data,
-                "meta": {
-                    "pages": pages,
-                },
+                "meta": meta,
             }
 
             return Response(

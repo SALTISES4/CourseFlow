@@ -1,62 +1,27 @@
 import json
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.humanize.templatetags import humanize
 from django.http import HttpRequest, JsonResponse
-from django.urls import reverse
 from rest_framework.decorators import api_view
 
-from course_flow.serializers import UserSerializer
+from course_flow.services.notifications import get_user_notifications
 
 
 class NotificationEndPoint:
+    #########################################################
+    # USER NOTIFICATION
+    #########################################################
     @staticmethod
     @login_required
     @api_view(["GET"])
     def list(request: HttpRequest):
         user = request.user
 
-        # get total count of unread notifications
-        unread = user.notifications.filter(is_unread=True).count()
-
-        # prepare notification data to be consumed by the frontend
-        prepared_notifications = []
-        for notification in user.notifications.all():
-            if notification.content_object.type == "project":
-                url = reverse(
-                    "course_flow:project-detail",
-                    kwargs={"pk": notification.content_object.pk},
-                )
-            else:
-                url = reverse(
-                    "course_flow:workflow-detail",
-                    kwargs={"pk": notification.content_object.pk},
-                )
-
-            source_user = UserSerializer(notification.source_user).data
-            source_user_name = source_user["username"]
-            if source_user["first_name"]:
-                source_user_name = source_user["first_name"]
-
-            if source_user["first_name"] and source_user["last_name"]:
-                source_user_name = (
-                    f"{source_user['first_name']} {source_user['last_name']}"
-                )
-
-            prepared_notifications.append(
-                {
-                    "id": notification.id,
-                    "unread": notification.is_unread,
-                    "url": url,
-                    "date": humanize.naturaltime(notification.created_on),
-                    "text": notification.text,
-                    "from": source_user_name,
-                }
-            )
+        unread_count, prepared_notifications = get_user_notifications(user)
 
         data = {
-            "notifications": prepared_notifications,
-            "unreadCount": unread,
+            "items": prepared_notifications,
+            "meta": {"unread_count": unread_count},
         }
         return JsonResponse({"action": "get", "data_package": data})
 
@@ -92,3 +57,7 @@ class NotificationEndPoint:
             )
 
         return JsonResponse({"message": "success"})
+
+    #########################################################
+    # APP NOTIFICATION
+    #########################################################

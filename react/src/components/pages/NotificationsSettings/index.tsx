@@ -48,20 +48,6 @@ const NotificationsSettingsPage = () => {
     isError: isQueryError
   } = useGetNotificationSettingsQuery()
 
-  // const { mutate } = useMutation<NotificationSettingsUpdateQueryResp>({
-  //   mutationFn: updateNotificationSettings,
-  //   onSuccess: (newNotificationsValue) => {
-  //     // Dispatch the action to update local state after the API call is successful
-  //     dispatch({
-  //       type: 'SET_UPDATES',
-  //       value: newNotificationsValue
-  //     })
-  //   },
-  //   onError: (error) => {
-  //     console.error('Error updating notifications:', error)
-  //   }
-  // })
-
   const [mutate, { isSuccess, isError, data: updateData }] =
     useUpdateNotificationSettingsMutation()
 
@@ -96,6 +82,7 @@ const NotificationsSettingsPage = () => {
 
   /*******************************************************
    * HANDLERS
+   *
    *******************************************************/
   function onUpdatesSwitchChange(e) {
     const newState = {

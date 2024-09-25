@@ -1,7 +1,6 @@
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { TopBarProps } from '@cf/types/common'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
@@ -25,6 +24,7 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
+import { useGetNotificationsQuery } from '@XMLHTTP/API/notifications.rtk'
 import * as React from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
@@ -45,8 +45,7 @@ const formFields = [
   }
 ]
 
-
-const TopBar = ({ notifications }: TopBarProps) => {
+const TopBar = () => {
   const navigate = useNavigate()
   const { dispatch } = useDialog()
 
@@ -154,13 +153,18 @@ const TopBar = ({ notifications }: TopBarProps) => {
   }
 
   const NotificationsMenu = () => {
+    const { data, error, isLoading, isError } = useGetNotificationsQuery()
+
+    if (isLoading) return <></>
+    if (!data) return <></>
+
     const content = (
       <>
         <SC.NotificationsHeader>
           <Typography variant="h5">{strings.notifications}</Typography>
           <Link
             component={RouterLink}
-            to={notifications.url}
+            to={CFRoutes.NOTIFICATIONS}
             underline="always"
           >
             {strings.see_all}
@@ -168,21 +172,21 @@ const TopBar = ({ notifications }: TopBarProps) => {
         </SC.NotificationsHeader>
 
         <SC.NotificationsList>
-          {notifications.items.map((n, idx) => (
+          {data.dataPackage.items.map((item, idx) => (
             <ListItem
               key={idx}
               alignItems="flex-start"
               sx={{
-                backgroundColor: n.unread ? 'courseflow.lightest' : null
+                backgroundColor: item.unread ? 'courseflow.lightest' : null
               }}
             >
-              <ListItemButton component={RouterLink} to={n.url}>
-                {n.unread && <Badge color="primary" variant="dot" />}
+              <ListItemButton component={RouterLink} to={item.url}>
+                {item.unread && <Badge color="primary" variant="dot" />}
                 <ListItemAvatar>
-                  <Avatar alt={n.from}>{getNameInitials(n.from)}</Avatar>
+                  <Avatar alt={item.from}>{getNameInitials(item.from)}</Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                  primary={n.date}
+                  primary={item.date}
                   secondary={
                     <Typography
                       sx={{ display: 'inline' }}
@@ -190,7 +194,7 @@ const TopBar = ({ notifications }: TopBarProps) => {
                       variant="body2"
                       color="text.primary"
                     >
-                      {n.text}
+                      {item.text}
                     </Typography>
                   }
                 />
@@ -201,19 +205,20 @@ const TopBar = ({ notifications }: TopBarProps) => {
       </>
     )
 
+    const unreadCount = data.dataPackage.meta.unreadCount
     const header: MenuItemType = {
       content: (
         <IconButton
           size="large"
           aria-label={
-            notifications.unread >= 1
-              ? `show ${notifications.unread} new notifications`
+            unreadCount >= 1
+              ? `show ${unreadCount} new notifications`
               : 'no new notifications'
           }
           aria-controls="notifications-menu"
           aria-haspopup="true"
         >
-          <Badge badgeContent={notifications.unread} color="primary">
+          <Badge badgeContent={unreadCount} color="primary">
             <NotificationsIcon />
           </Badge>
         </IconButton>

@@ -93,7 +93,8 @@ class TitleSerializerMixin:
 class DescriptionSerializerTextMixin(serializers.Serializer):
     description = serializers.SerializerMethodField()
 
-    def get_description(self, instance):
+    @staticmethod
+    def get_description(instance):
         if instance.description is None:
             return None
         returnval = html2text(

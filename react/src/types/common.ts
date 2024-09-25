@@ -45,33 +45,7 @@ export type Lock = {
   userId: string
 }
 
-export type SidebarProps = {
-  isAnonymous: boolean
-  favourites: {
-    title: string
-    url: string
-  }[]
-}
 
-export type TopBarProps = {
-  notifications: {
-    url: string
-    unread: number
-    items: {
-      unread: boolean
-      url: string
-      from: string
-      text: string
-      date: string
-    }[]
-  }
-  forms: {
-    createProject: {
-      showNoProjectsAlert: boolean
-      formFields: FormFieldSerialized[]
-    }
-  }
-}
 
 export type FormFieldSerialized = {
   name: string

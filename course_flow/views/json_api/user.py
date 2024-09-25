@@ -7,21 +7,26 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import HttpRequest, JsonResponse
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from course_flow.apps import logger
-from course_flow.forms import NotificationsSettings, ProfileSettings
+from course_flow.forms import ProfileSettings
 from course_flow.models import User
 from course_flow.models.courseFlowUser import CourseFlowUser
-from course_flow.serializers import FormFieldsSerializer, UserSerializer
+from course_flow.serializers import (
+    FormFieldsSerializer,
+    ProfileSettingsSerializer,
+    UserSerializer,
+)
 
 
-#########################################################
-# PROFILE SETTINGS
-#########################################################
 class UserEndpoint:
+    #########################################################
+    # USER OBJECTS
+    #########################################################
     @staticmethod
     @login_required
     @api_view(["GET"])
@@ -38,78 +43,6 @@ class UserEndpoint:
             "language": user.language,
         }
         return Response({"data_package": data_package})
-
-    @staticmethod
-    @login_required
-    @api_view(["GET"])
-    def fetch_profile_settings(request):
-        user = CourseFlowUser.objects.filter(user=request.user).first()
-        form = ProfileSettings(
-            {
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "language": user.language,
-            }
-        )
-        return JsonResponse(
-            {
-                "data_package": {
-                    "formData": FormFieldsSerializer(form).prepare_fields()
-                }
-            }
-        )
-
-    @staticmethod
-    @login_required
-    @api_view(["POST"])
-    def update_profile_settings(
-        request: HttpRequest,
-    ) -> JsonResponse:
-        user = CourseFlowUser.objects.filter(user=request.user).first()
-        # instantiate the form with the JSON params and the model instance
-        form = ProfileSettings(json.loads(request.body), instance=user)
-
-        # if the form is valid, save it and return a success response
-        if form.is_valid():
-            form.save()
-            return JsonResponse({"message": "success"})
-
-        # otherwise, return the errors so UI can display errors accordingly
-        return JsonResponse({"error": form.errors}, status=400)
-
-    #########################################################
-    # NOTIFICATION SETTINGS
-    #########################################################
-    @staticmethod
-    @login_required
-    @api_view(["GET"])
-    def fetch_notification_settings(request):
-        user = CourseFlowUser.objects.filter(user=request.user).first()
-        return JsonResponse(
-            {
-                "data_package": {
-                    "formData": {"receiveNotifications": user.notifications}
-                }
-            }
-        )
-
-    @staticmethod
-    @login_required
-    @api_view(["POST"])
-    def update_notification_settings(
-        request: HttpRequest,
-    ) -> JsonResponse:
-        user = CourseFlowUser.objects.filter(user=request.user).first()
-        # on POST, instantiate the form with the JSON params and the model instance
-        form = NotificationsSettings(json.loads(request.body), instance=user)
-
-        # if the form is valid, save it and return a success response
-        if form.is_valid():
-            form.save()
-            return JsonResponse({"message": "success"})
-
-        # otherwise, return the errors so UI can display errors accordingly
-        return JsonResponse({"action": "error", "errors": form.errors})
 
     @staticmethod
     @api_view(["POST"])
@@ -167,5 +100,81 @@ class UserEndpoint:
                 "data_package": {
                     "user_list": UserSerializer(user_list, many=True).data,
                 },
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    #########################################################
+    # PROFILE SETTINGS
+    #########################################################
+    @staticmethod
+    @login_required
+    @api_view(["GET"])
+    def fetch_profile_settings(request: Request) -> Response:
+        user = CourseFlowUser.objects.filter(user=request.user).first()
+        form = ProfileSettings(
+            {
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "language": user.language,
             }
         )
+        return Response(
+            {
+                "data_package": {
+                    "formData": FormFieldsSerializer(form).prepare_fields()
+                }
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @staticmethod
+    @login_required
+    @api_view(["POST"])
+    def update_profile_settings(
+        request: Request,
+    ) -> Response:
+        user = CourseFlowUser.objects.filter(user=request.user).first()
+        serializer = ProfileSettingsSerializer(user, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "success"}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    #########################################################
+    # NOTIFICATION SETTINGS
+    #########################################################
+    @staticmethod
+    @login_required
+    @api_view(["GET"])
+    def fetch_notification_settings(request):
+        user = CourseFlowUser.objects.filter(user=request.user).first()
+        return JsonResponse(
+            {
+                "data_package": {
+                    "formData": {"receiveNotifications": user.notifications}
+                }
+            }
+        )
+
+    @staticmethod
+    @login_required
+    @api_view(["POST"])
+    def update_notification_settings(
+        request: Request,
+    ) -> Response:
+        """
+
+        :param request:
+        :return:
+        """
+        user = CourseFlowUser.objects.filter(user=request.user).first()
+        serializer = NotificationsSettingsSerializer(user, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "success"}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

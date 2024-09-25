@@ -1,9 +1,5 @@
-import {
-  DialogContext,
-  DialogDispatchContext,
-  StateType
-} from '@cf/context/dialogContext'
-import { Dispatch, ReactNode, useContext } from 'react'
+import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
+import { useContext } from 'react'
 import * as React from 'react'
 
 export enum DIALOG_TYPE {

@@ -1,6 +1,6 @@
 import { LibraryObjectType } from '@cf/types/enum'
-import { ObjectSetType } from '@cfComponents/dialog/common/ProjectCreateDialog/type'
 import { SearchOption } from '@cfComponents/filters/types'
+import {ObjectSetType} from "@cf/types/common";
 
 // types of filter
 

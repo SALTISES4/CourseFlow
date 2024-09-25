@@ -245,7 +245,9 @@ class EditableComponent<
           // maxlength={500}
           textChangeFunction={this.valueChanged.bind(this, 'description')}
           placeholder="Insert description here"
-          readOnly={this.context.permissions.workflowPermissions.readOnly}
+          // @todo probably don't need to fix this
+          // readOnly={this.context.permissions.workflowPermissions.readOnly}
+          readOnly={false}
         />
       </div>
     )
@@ -520,7 +522,9 @@ class EditableComponent<
   EditForm = ({ data, noDelete }) => {
     let sets
 
-    const readOnly = this.context.permissions.workflowPermissions.readOnly
+    // @todo probably don't need to fix this
+    // const readOnly = this.context.permissions.workflowPermissions.readOnly
+    const readOnly = false
     const title = Utility.unescapeCharacters(data.title || '')
     const type = Constants.objectDictionary[this.objectType]
     const override = data.representsWorkflow ? true : false

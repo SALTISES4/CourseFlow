@@ -1,5 +1,5 @@
 import { ObjectPermission, ObjectSet } from '@cf/types/common'
-import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
+import {LibraryObjectType, WorkflowType, WorkSpaceType} from '@cf/types/enum'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
 /*******************************************************
@@ -316,6 +316,14 @@ export type ESection = {
   objectType: string
   isStrategy: boolean
   objects: ELibraryObject[]
+}
+export type ENotification = {
+  id: number
+  type: WorkSpaceType
+  unread: boolean
+  from: string
+  text: string
+  date: EDate
 }
 
 export type EStrategy = any

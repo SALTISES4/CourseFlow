@@ -19,22 +19,6 @@ const userData = {
   role: projectPermission_ROLE.OWNER
 }
 
-const formFields = [
-  {
-    name: 'title',
-    label: 'Title',
-    type: 'text',
-    value: '',
-    required: true
-  },
-  {
-    name: 'description',
-    label: 'Description',
-    type: 'text',
-    value: ''
-  }
-]
-
 const ProjectDialogs = () => {
   const { id } = useParams()
   const projectId = Number(id)
@@ -45,9 +29,25 @@ const ProjectDialogs = () => {
 
   if (isLoading) return <></>
 
+  const formFields = [
+    {
+      name: 'title',
+      label: 'Title',
+      type: 'text',
+      value: '',
+      required: true
+    },
+    {
+      name: 'description',
+      label: 'Description',
+      type: 'text',
+      value: ''
+    }
+  ]
+
   return (
     <>
-      <ProjectEditDialog formFields={formFields} showNoProjectsAlert={true}/>
+      <ProjectEditDialog formFields={formFields} showNoProjectsAlert={true} />
       <RestoreDialog objectType={WorkSpaceType.PROJECT} id={projectId} />
       <ArchiveDialog objectType={WorkSpaceType.PROJECT} id={projectId} />
       <ImportDialog />

@@ -18,7 +18,7 @@ import { Verb, cfApi } from './api'
 export type LibraryObjectsSearchQueryResp = {
   message: string
   dataPackage: {
-    results: ELibraryObject[]
+    items: ELibraryObject[]
     meta: {
       count: number
       pageCount: number

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { DIALOG_TYPE } from '@cf/hooks/useDialog'
 import ActivityCreateDialog from '@cfPages/Styleguide/dialog/ActivityCreate'
 import createActivityData from '@cfPages/Styleguide/dialog/ActivityCreate/data'

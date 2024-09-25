@@ -196,14 +196,6 @@ class DAO:
         return nodes
 
     @staticmethod
-    def get_nondeleted_favourites(user):
-        return list(
-            course_flow.models.project.Project.objects.filter(
-                favourited_by__user=user
-            )
-        ) + list(models.Workflow.objects.filter(favourited_by__user=user))
-
-    @staticmethod
     def check_possible_parent(workflow, parent_workflow, same_project):
         order = ["activity", "course", "program"]
         try:
@@ -322,3 +314,15 @@ class DAO:
             target_user.notifications.filter(
                 created_on__lt=timezone.now() - timezone.timedelta(days=60)
             ).delete()
+
+    #########################################################
+    # FAVOURITES
+    #########################################################
+
+    @staticmethod
+    def get_nondeleted_favourites(user):
+        return list(
+            course_flow.models.project.Project.objects.filter(
+                favourited_by__user=user
+            )
+        ) + list(models.Workflow.objects.filter(favourited_by__user=user))

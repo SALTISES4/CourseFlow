@@ -3,6 +3,7 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
+import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import * as Constants from '@cfConstants'
 import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
 import {
@@ -21,7 +22,6 @@ import { connect } from 'react-redux'
 
 import AutoLink from './AutoLink'
 import NodeLink from './NodeLink'
-import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 
 // import $ from 'jquery'
 
@@ -410,9 +410,9 @@ class NodeUnconnected extends EditableComponentWithActions<
       <>
         {this.addEditable(data_override)}
         <div
+          id={String(data.id)}
           style={style}
           className={cssClass}
-          id={data.id}
           ref={this.mainDiv}
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}

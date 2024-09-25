@@ -1,5 +1,4 @@
 import { CFRoutes } from '@cf/router/appRoutes'
-import { SidebarProps } from '@cf/types/common'
 import strings from '@cf/utility/strings'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import ParentWorkflowIndicator from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator'
@@ -21,8 +20,9 @@ import { Link, useLocation } from 'react-router-dom'
 
 import * as SC from './styles'
 
-const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
+const Sidebar = () => {
   const location = useLocation()
+  const favourites  = COURSEFLOW_APP.globalContextData.favourites
 
   const [collapsed, setCollapsed] = useState(
     !!sessionStorage.getItem('collapsed_sidebar')
@@ -39,7 +39,7 @@ const Sidebar = ({ isAnonymous, favourites }: SidebarProps) => {
   }
 
   const Favourites = () => {
-    if (!favourites?.length) return <></>
+    if (!COURSEFLOW_APP.globalContextData.favourites?.length) return <></>
 
     const SeeAll = () => {
       if (favourites.length < 5) {

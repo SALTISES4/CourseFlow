@@ -51,7 +51,7 @@ const extendedApi = cfApi.injectEndpoints({
     /*******************************************************
      * QUERIES
      *******************************************************/
-    getWorkflowById: builder.query<WorkflowDataQueryResp, { id: number }>({
+    getWorkflowById: builder.query<WorkflowDataQueryTransform, { id: number }>({
       query: (id) => {
         const base = apiPaths.json_api.workflow.detail
         return {
@@ -60,17 +60,18 @@ const extendedApi = cfApi.injectEndpoints({
         }
       },
       transformResponse: (
-        response: WorkflowDataQueryResp & {
-          workflowPermissions: WorkflowPermission
-        }
-      ) => {
+        response: WorkflowDataQueryResp
+      ): WorkflowDataQueryTransform => {
         return {
           ...response,
           dataPackage: {
             ...response.dataPackage,
-            workflowPermissions: calcWorkflowPermissions(
-              response.dataPackage.workflow.userPermissions
-            )
+            workflow: {
+              ...response.dataPackage.workflow,
+              workflowPermissions: calcWorkflowPermissions(
+                response.dataPackage.workflow.userPermissions
+              )
+            }
           }
         }
       }

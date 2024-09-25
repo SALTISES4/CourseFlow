@@ -1,7 +1,6 @@
 """
 @todo what is this file doing
 """
-import logging
 import math
 from functools import reduce
 from itertools import chain
@@ -10,8 +9,9 @@ from operator import attrgetter
 from django.db.models import Count, Q
 
 from course_flow.apps import logger
-from course_flow.models import Project
+from course_flow.models import Project, User
 from course_flow.models.objectPermission import ObjectPermission
+from course_flow.serializers import FavouriteSerializer
 from course_flow.services import DAO, Utility
 
 
@@ -49,6 +49,15 @@ class LibraryService:
 
     @staticmethod
     def get_explore_objects(user, name_filter, nresults, published, data):
+        """
+        leave user here, as we will probably need a filter of objects user has access to
+        :param user:
+        :param name_filter:
+        :param nresults:
+        :param published:
+        :param data:
+        :return:
+        """
         keywords = name_filter.split(" ")
 
         types = data.get("types", [])
@@ -126,7 +135,7 @@ class LibraryService:
                     )
                 ]
                 page_number = math.ceil(float(total_results) / nresults)
-                pages = {
+                meta = {
                     "total_results": total_results,
                     "page_count": page_number,
                     "current_page": page,
@@ -136,12 +145,41 @@ class LibraryService:
             except TypeError as e:
                 logger.exception("An error occurred")
                 return_objects = Project.objects.none()
-                pages = {}
+                meta = {}
 
         else:
             return_objects = Project.objects.none()
-            pages = {}
-        return return_objects, pages
+            meta = {}
+        return return_objects, meta
+
+    @staticmethod
+    def get_top_favourites(user: User):
+        """
+        Prepare 5 most recent favourites, using a serializer that will give just the url and name
+        :param user:
+        :return:
+        """
+
+        favourites_query = [
+            x.content_object
+            for x in user.favourite_set.filter(
+                Q(
+                    workflow__deleted=False,
+                    workflow__project__deleted=False,
+                )
+                | Q(project__deleted=False)
+            )[:5]
+        ]
+
+        favourites = FavouriteSerializer(
+            favourites_query,
+            many=True,
+            context={"user": user},
+        ).data
+
+        return {
+            "favourites": favourites,
+        }
 
 
 # def get_explore_objects(user, name_filter, nresults, published, data):

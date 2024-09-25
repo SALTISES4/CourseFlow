@@ -54,18 +54,22 @@ export const calcProjectPermissions = (
 
 export const calcWorkflowPermissions = (
   permission: number
-): BasePermissions => {
+): WorkflowPermission => {
   switch (permission) {
     case PERMISSION_KEYS.VIEW:
       return {
         ...defaultBasePermissions,
-        read: true
+        read: true,
+        viewComments: true,
+        addComments: false
       }
     case PERMISSION_KEYS.EDIT:
       return {
         read: true,
         write: true,
-        manage: true
+        manage: true,
+        viewComments: true,
+        addComments: true
       }
   }
   return defaultWorkflowPermissions
