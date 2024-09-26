@@ -28,7 +28,7 @@ type PropsType = ConnectedProps & OwnProps
 /**
  * Represents the node in the comparison view
  */
-const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 /**
  * renderer.selectionManager
@@ -138,7 +138,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
       righticon = (
         <img
           title={
-            choices.task_choices.find(
+            choices.taskChoices.find(
               (obj) => obj.type == data.taskClassification
             ).name
           }

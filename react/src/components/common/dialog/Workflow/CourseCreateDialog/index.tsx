@@ -9,7 +9,7 @@ import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/comp
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
 import { CREATE_RESOURCE_TYPE } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-import { StyledDialog, StyledForm } from '@cfComponents/dialog/styles'
+import { StyledDialog, StyledBox } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -183,7 +183,7 @@ const CourseCreateDialog = ({ steps, units }: PropsType) => {
           ))}
         </Stepper>
 
-        <StyledForm component="form" sx={{ mt: 5 }}>
+        <StyledBox component="form" sx={{ mt: 5 }}>
           {state.step === 0 && (
             <ProjectSearch
               selected={state.project}
@@ -218,7 +218,7 @@ const CourseCreateDialog = ({ steps, units }: PropsType) => {
               templateType={'course'}
             />
           )}
-        </StyledForm>
+        </StyledBox>
       </DialogContent>
 
       <DialogActions>

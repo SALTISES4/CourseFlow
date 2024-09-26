@@ -1,6 +1,7 @@
 import * as Constants from '@cf/constants'
 // import $ from 'jquery'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
 import Slider from '@cfComponents/UIPrimitives/Slider'
@@ -8,7 +9,6 @@ import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
-import {apiPaths} from "@cf/router/apiRoutes";
 
 type StateType = {
   show_slider: boolean
@@ -22,7 +22,7 @@ type ConnectedProps = {
 
 type PropsType = ConnectedProps
 
-const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 export class WorkflowLegendUnconnected<
   P extends PropsType
@@ -97,7 +97,7 @@ export class WorkflowLegendUnconnected<
     const tasks = this.props.tasks.map((value) => (
       <LegendLine
         icon={Constants.taskKeys[value]}
-        text={choices.task_choices.find((obj) => obj.type == value).name}
+        text={choices.taskChoices.find((obj) => obj.type == value).name}
       />
     ))
 
@@ -141,12 +141,7 @@ export class WorkflowLegendUnconnected<
         )}
 
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
-          <img
-            src={
-               apiPaths.external.static_assets.icon +
-              'close.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'close.svg'} />
         </div>
       </div>
     )

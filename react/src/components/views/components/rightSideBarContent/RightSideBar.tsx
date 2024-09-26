@@ -40,7 +40,7 @@ type PropsType = {
   toggleObjectSet?: any
 }
 
-const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 class RightSideBar extends React.Component<PropsType> {
   static contextType = WorkFlowConfigContext

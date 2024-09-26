@@ -1,4 +1,4 @@
-import { StyledForm } from '@cfComponents/dialog/styles'
+import { StyledBox } from '@cfComponents/dialog/styles'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -30,7 +30,7 @@ const FormCourse = ({
   onPonderationChange
 }: PropsType) => {
   return (
-    <StyledForm component={wrapAs}>
+    <StyledBox component={wrapAs}>
       <TextField
         required
         name="title"
@@ -127,7 +127,7 @@ const FormCourse = ({
           onChange={onPonderationChange}
         />
       </Stack>
-    </StyledForm>
+    </StyledBox>
   )
 }
 

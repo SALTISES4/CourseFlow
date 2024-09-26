@@ -1,4 +1,4 @@
-import { StyledForm } from '@cfComponents/dialog/styles'
+import { StyledBox } from '@cfComponents/dialog/styles'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -38,7 +38,7 @@ const FormActivity = ({
   onUnitChange
 }: PropsType) => {
   return (
-    <StyledForm component={wrapAs}>
+    <StyledBox component={wrapAs}>
       <TextField
         required
         name="title"
@@ -80,7 +80,7 @@ const FormActivity = ({
           </Select>
         </FormControl>
       </Stack>
-    </StyledForm>
+    </StyledBox>
   )
 }
 

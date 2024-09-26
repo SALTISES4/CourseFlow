@@ -1,9 +1,9 @@
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { TopBarProps } from '@cf/types/common'
+import { GlobalContextData } from '@cf/types/global'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
-import { StyledDialog, StyledForm } from '@cfComponents/dialog/styles'
+import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import CancelIcon from '@mui/icons-material/Cancel'
 import { SelectChangeEvent } from '@mui/material'
@@ -50,7 +50,7 @@ export type StateType = {
 const ProjectEditDialog = ({
   showNoProjectsAlert,
   formFields
-}: TopBarProps['forms']['createProject']) => {
+}: GlobalContextData['forms']['createProject']) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -60,10 +60,7 @@ const ProjectEditDialog = ({
     objectSetsExpanded: false
   })
   const [errors, setErrors] = useState({})
-  const { show, onClose } = useDialog([
-    DIALOG_TYPE.PROJECT_CREATE,
-    DIALOG_TYPE.PROJECT_EDIT
-  ])
+  const { show, onClose } = useDialog([DIALOG_TYPE.PROJECT_CREATE])
   const [selectOpenStates, setSelectOpenStates] = useState({})
   const navigate = useNavigate()
 
@@ -218,7 +215,7 @@ const ProjectEditDialog = ({
             )}
           />
         )}
-        <StyledForm component="form">
+        <StyledBox component="form">
           {formFields.map((field, index) => {
             const hasError = !!errors[field.name]
             const errorText = hasError && errors[field.name][0]
@@ -307,7 +304,7 @@ const ProjectEditDialog = ({
             onUpdate={onObjectSetUpdate}
             onAddNew={onObjectSetAddNew}
           />
-        </StyledForm>
+        </StyledBox>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onDialogClose}>

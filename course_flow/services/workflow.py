@@ -222,35 +222,35 @@ class WorkflowService:
     @staticmethod
     def get_workflow_choices():
         return {
-            "column_choices": [
+            "columnChoices": [
                 {"type": choice[0], "name": choice[1]}
                 for choice in Column._meta.get_field("column_type").choices
             ],
-            "context_choices": [
+            "contextChoices": [
                 {"type": choice[0], "name": choice[1]}
                 for choice in Node._meta.get_field(
                     "context_classification"
                 ).choices
             ],
-            "task_choices": [
+            "taskChoices": [
                 {"type": choice[0], "name": choice[1]}
                 for choice in Node._meta.get_field(
                     "task_classification"
                 ).choices
             ],
-            "time_choices": [
+            "timeChoices": [
                 {"type": choice[0], "name": choice[1]}
                 for choice in Node._meta.get_field("time_units").choices
             ],
-            "outcome_type_choices": [
+            "outcomeTypeChoices": [
                 {"type": choice[0], "name": choice[1]}
                 for choice in Workflow._meta.get_field("outcomes_type").choices
             ],
-            "outcome_sort_choices": [
+            "outcomeSortChoices": [
                 {"type": choice[0], "name": choice[1]}
                 for choice in Workflow._meta.get_field("outcomes_sort").choices
             ],
-            "strategy_classification_choices": [
+            "strategyClassificationChoices": [
                 {"type": choice[0], "name": choice[1]}
                 for choice in Week._meta.get_field(
                     "strategy_classification"

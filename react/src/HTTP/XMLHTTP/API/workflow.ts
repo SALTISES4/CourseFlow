@@ -70,14 +70,12 @@ export function getWorkflowByIdQuery(
         }
       }
 
-      console.log('res')
-      console.log(res)
 
       // @ts-ignore
       callBackFunction(res)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
@@ -95,7 +93,7 @@ export function getPublicWorkflowDataQuery(
       callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
@@ -124,7 +122,7 @@ export function getWorkflowParentDataQueryLegacy(
       callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
@@ -142,7 +140,7 @@ export function getPublicWorkflowParentDataQuery(
       callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
@@ -159,7 +157,7 @@ export function getWorkflowChildDataQuery(
       callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
@@ -178,7 +176,7 @@ export function getPublicWorkflowChildDataQuery(
       callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
@@ -207,7 +205,7 @@ export function getPublicWorkflowChildDataQuery(
 //       callBackFunction(response)
 //     })
 //   } catch (err) {
-//     window.fail_function()
+//     console.log(err)
 //   }
 // }
 
@@ -276,7 +274,7 @@ export function getPublicParentWorkflowInfo(
       callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 

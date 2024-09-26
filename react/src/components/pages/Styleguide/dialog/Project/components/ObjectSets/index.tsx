@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { ObjectSet } from '@cf/types/common'
-import { StyledForm } from '@cfPages/Styleguide/dialog/styles'
+import { StyledBox } from '@cfPages/Styleguide/dialog/styles'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
@@ -58,7 +58,7 @@ function ObjectSets({
           Define categories for types outcomes or streams of nodes for your
           project.
         </Typography>
-        <StyledForm>
+        <StyledBox>
           {objectSets.map((set, index) => (
             <Stack key={index} direction="row" spacing={2}>
               <FormControl variant="standard" fullWidth>
@@ -116,7 +116,7 @@ function ObjectSets({
               </Box>
             </Stack>
           ))}
-        </StyledForm>
+        </StyledBox>
       </AccordionDetails>
     </StyledAccordion>
   )

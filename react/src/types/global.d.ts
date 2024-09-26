@@ -16,7 +16,6 @@ declare global {
   interface Window {
     ngettext: (str: string, str2: string, count: number) => string
     gettext: (str: string) => string
-    fail_function: (action?: string) => void
     getCsrfToken: () => string
     cf_nonce: string
   }
@@ -162,13 +161,13 @@ interface UpdatePath {
   liveassignment: string
 }
 
-interface GlobalContextData {
+export interface GlobalContextData {
   disciplines: Discipline[]
   favourites: {
     title: string
     url: string
   }[]
-  workflow_choices: {
+  workflowChoices: {
     taskChoices: FieldChoice[]
     timeChoices: FieldChoice[]
     contextChoices: FieldChoice[]
@@ -176,12 +175,6 @@ interface GlobalContextData {
     outcomeTypeChoices: FieldChoice[]
     outcomeSortChoices: FieldChoice[]
     columnChoices: FieldChoice[]
-  }
-  forms: {
-    createProject: {
-      showNoProjectsAlert: boolean
-      formFields: FormFieldSerialized[]
-    }
   }
   path: Path
   appNotifications: {
@@ -195,7 +188,9 @@ interface GlobalContextData {
   }
 }
 
-interface ContextData {}
+interface ContextData {
+  changeFieldID: number
+}
 
 interface TinyLoader {
   identifier: Identifier

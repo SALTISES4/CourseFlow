@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { GridWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/utilityFunctions'
-import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
-import MenuTab from '@cfComponents/__LEGACY/menuLegacy/components/MenuTab'
+// import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
+// import MenuTab from '@cfComponents/__LEGACY/menuLegacy/components/MenuTab'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import { setLinkedWorkflow } from '@XMLHTTP/API/update'
 import * as React from 'react'

@@ -1,4 +1,3 @@
-import { StyledForm } from '@cf/components/common/dialog/styles'
 import { _t } from '@cf/utility/utilityFunctions'
 import { objectSetsTypes } from '@cfConstants'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
@@ -20,6 +19,7 @@ import { ChangeEvent } from 'react'
 import { AdvancedLabel, StyledAccordion } from './styles'
 import { OnUpdateType } from '../..'
 import { OBJECT_SET_TYPE, ObjectSetType } from '../../type'
+import {StyledBox} from "@cfComponents/dialog/styles";
 
 type PropsType = {
   expanded: boolean
@@ -63,7 +63,7 @@ function ObjectSets({
             'Define categories for types outcomes or streams of nodes for your project.'
           )}
         </Typography>
-        <StyledForm>
+        <StyledBox>
           {objectSetsFormatted.map((objectSet, index) => (
             <Stack key={index} direction="row" spacing={2}>
               <FormControl variant="standard" fullWidth>
@@ -122,7 +122,7 @@ function ObjectSets({
               </Box>
             </Stack>
           ))}
-        </StyledForm>
+        </StyledBox>
       </AccordionDetails>
     </StyledAccordion>
   )

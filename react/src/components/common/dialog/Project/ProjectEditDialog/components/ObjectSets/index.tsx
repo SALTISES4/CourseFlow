@@ -1,5 +1,5 @@
-import { StyledForm } from '@cf/components/common/dialog/styles'
 import { _t } from '@cf/utility/utilityFunctions'
+import * as SCDialog from '@cfComponents/dialog/styles'
 import { objectSetsTypes } from '@cfConstants'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -17,7 +17,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { ChangeEvent } from 'react'
 
-import { AdvancedLabel, StyledAccordion } from './styles'
+import * as SC from './styles'
 import { OnUpdateType } from '../..'
 import { OBJECT_SET_TYPE, ObjectSetType } from '../../type'
 
@@ -47,14 +47,14 @@ function ObjectSets({
   }))
 
   return (
-    <StyledAccordion expanded={expanded}>
+    <SC.StyledAccordion expanded={expanded}>
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}
         onClick={toggleExpanded}
       >
         <Stack direction="row" spacing={2}>
           <Typography>{_t('Object sets')}</Typography>
-          <AdvancedLabel label={_t('Advanced feature')} variant="filled" />
+          <SC.AdvancedLabel label={_t('Advanced feature')} variant="filled" />
         </Stack>
       </AccordionSummary>
       <AccordionDetails>
@@ -63,7 +63,7 @@ function ObjectSets({
             'Define categories for types outcomes or streams of nodes for your project.'
           )}
         </Typography>
-        <StyledForm>
+        <SCDialog.StyledBox>
           {objectSetsFormatted.map((objectSet, index) => (
             <Stack key={index} direction="row" spacing={2}>
               <FormControl variant="standard" fullWidth>
@@ -122,9 +122,9 @@ function ObjectSets({
               </Box>
             </Stack>
           ))}
-        </StyledForm>
+        </SCDialog.StyledBox>
       </AccordionDetails>
-    </StyledAccordion>
+    </SC.StyledAccordion>
   )
 }
 

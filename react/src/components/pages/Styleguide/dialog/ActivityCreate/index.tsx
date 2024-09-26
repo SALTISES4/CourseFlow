@@ -5,7 +5,7 @@ import ProjectSearch from '@cfPages/Styleguide/dialog/CreateWizard/components/Pr
 import TemplateSearch from '@cfPages/Styleguide/dialog/CreateWizard/components/TemplateSearch'
 import TypeSelect from '@cfPages/Styleguide/dialog/CreateWizard/components/TypeSelect'
 import { CREATE_RESOURCE_TYPE } from '@cfPages/Styleguide/dialog/CreateWizard/types'
-import { StyledDialog, StyledForm } from '@cfPages/Styleguide/dialog/styles'
+import { StyledDialog, StyledBox } from '@cfPages/Styleguide/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -162,7 +162,7 @@ const CreateActivityDialog = ({
           ))}
         </Stepper>
 
-        <StyledForm component="form" sx={{ mt: 5 }}>
+        <StyledBox component="form" sx={{ mt: 5 }}>
           {state.step === 0 && (
             <ProjectSearch
               selected={state.project}
@@ -193,7 +193,7 @@ const CreateActivityDialog = ({
               onTemplateSelect={onTemplateSelect}
             />
           )}
-        </StyledForm>
+        </StyledBox>
       </DialogContent>
 
       <DialogActions>

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useEffect } from 'react'
+import { ReactElement } from 'react'
 
 /**
  * Creates a menu bar at the top of the page which can be passed
@@ -10,34 +10,14 @@ import { useEffect } from 'react'
  */
 
 type PropsType = {
-  leftSection: React.ReactElement
-  viewbar?: React.ReactElement
-  userbar?: React.ReactElement
-  overflowButtons?: React.ReactElement | React.ReactElement[]
+  leftSection: ReactElement
+  viewbar?: ReactElement
+  userbar?: ReactElement
 }
 /**
  *
  */
-const MenuBar = (props: PropsType) => {
-  const { leftSection, viewbar, userbar, overflowButtons } = props
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-  useEffect(() => {
-    dropdownOverflow()
-  }, [])
-
-  useEffect(() => {
-    dropdownOverflow()
-  }, [props])
-
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-  const dropdownOverflow = () => {
-    COURSEFLOW_APP.makeDropdown('#overflow-options', '#overflow-links')
-  }
-
+const MenuBar = ({ leftSection, viewbar, userbar }: PropsType) => {
   /*******************************************************
    * RENDER
    *******************************************************/

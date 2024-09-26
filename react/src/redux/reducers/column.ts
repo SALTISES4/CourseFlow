@@ -66,7 +66,6 @@ export default function columnReducer(
     case ColumnActions.changeField:
       if (
         action.payload.changeFieldID ===
-        // @ts-ignore
         COURSEFLOW_APP.contextData.changeFieldID
       )
         return state

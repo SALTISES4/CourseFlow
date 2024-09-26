@@ -2,7 +2,7 @@ import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
-import { StyledDialog, StyledForm } from '@cfComponents/dialog/styles'
+import { StyledDialog, StyledBox } from '@cfComponents/dialog/styles'
 import { ProgramFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram/types'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
@@ -163,7 +163,7 @@ const ProgramCreateDialog = ({ steps, units }: PropsType) => {
           ))}
         </Stepper>
 
-        <StyledForm component="form" sx={{ mt: 5 }}>
+        <StyledBox component="form" sx={{ mt: 5 }}>
           {state.step === 0 && (
             <ProjectSearch
               selected={state.project}
@@ -197,7 +197,7 @@ const ProgramCreateDialog = ({ steps, units }: PropsType) => {
               templateType={'course'}
             />
           )}
-        </StyledForm>
+        </StyledBox>
       </DialogContent>
 
       <DialogActions>

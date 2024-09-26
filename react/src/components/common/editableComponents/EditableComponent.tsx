@@ -16,7 +16,7 @@ import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
 import ReactDOM from 'react-dom'
 
-const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()
@@ -151,7 +151,7 @@ class EditableComponent<
           value={data.taskClassification}
           onChange={this.inputChanged.bind(this, 'taskClassification')}
         >
-          {choices.task_choices
+          {choices.taskChoices
             .filter(
               (choice) =>
                 // @todo clearly not properly typed
@@ -189,7 +189,7 @@ class EditableComponent<
             value={data.timeUnits}
             onChange={this.inputChanged.bind(this, 'timeUnits')}
           >
-            {choices.time_choices.map((choice) => (
+            {choices.timeChoices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>

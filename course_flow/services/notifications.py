@@ -1,10 +1,9 @@
-from courseFlowUser import CourseFlowUser
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.humanize.templatetags import humanize
-from rest_framework.request import Request
 
 from course_flow.models import UpdateNotification, User
+from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.serializers import (
     UpdateNotificationSerializer,
     UserSerializer,

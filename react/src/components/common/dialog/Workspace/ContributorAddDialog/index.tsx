@@ -1,4 +1,4 @@
-import { StyledDialog, StyledForm } from '@cf/components/common/dialog/styles'
+import { StyledDialog, StyledBox } from '@cf/components/common/dialog/styles'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
@@ -73,7 +73,7 @@ const ContributorAddDialog = ({ contributors, roles }: PropsType) => {
     >
       <DialogTitle id="add-contributor-modal">Add Contributor</DialogTitle>
       <DialogContent dividers>
-        <StyledForm component="form">
+        <StyledBox component="form">
           <FormControl variant="standard" fullWidth>
             <InputLabel>Courseflow Users</InputLabel>
             <Controller
@@ -117,7 +117,7 @@ const ContributorAddDialog = ({ contributors, roles }: PropsType) => {
               )}
             />
           </FormControl>
-        </StyledForm>
+        </StyledBox>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>

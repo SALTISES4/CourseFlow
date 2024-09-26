@@ -1,6 +1,6 @@
 import Alert from '@cfPages/Styleguide/components/Alert'
 import ObjectSets from '@cfPages/Styleguide/dialog/Project/components/ObjectSets'
-import { StyledDialog, StyledForm } from '@cfPages/Styleguide/dialog/styles'
+import { StyledDialog, StyledBox } from '@cfPages/Styleguide/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -47,7 +47,7 @@ function CreateProjectDialog({
             }
           />
         )}
-        <StyledForm component="form">
+        <StyledBox component="form">
           {formFields.map((field, index) => {
             if (field.type === 'text') {
               const hasError = !!errors[field.name]
@@ -74,7 +74,7 @@ function CreateProjectDialog({
             onUpdate={onObjectSetUpdate}
             onAddNew={onObjectSetAddNew}
           />
-        </StyledForm>
+        </StyledBox>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>

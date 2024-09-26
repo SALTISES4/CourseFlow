@@ -1,11 +1,11 @@
 //  TEMP FILE FOR AJAX FUNCTIONS UNTIL WE SOLVE CIRC DEPS
-import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents.jsx'
+// import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents.jsx'
 import { dragAction } from '@XMLHTTP/API/update'
 
 // import $ from 'jquery'
 
 export function openWorkflowSelectMenu(response, updateFunction) {
-  renderMessageBox(response, 'workflow_select_menu', updateFunction)
+   // renderMessageBox(response, 'workflow_select_menu', updateFunction)
 }
 
 //Called when a node should have its column changed

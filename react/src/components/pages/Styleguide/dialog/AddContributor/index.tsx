@@ -14,7 +14,7 @@ import RadioGroup from '@mui/material/RadioGroup'
 import TextField from '@mui/material/TextField'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 
-import { StyledDialog, StyledForm } from '../styles'
+import { StyledDialog, StyledBox } from '../styles'
 
 interface IFormInputs {
   contributor: Contributor | null
@@ -67,7 +67,7 @@ const AddContributorDialog = ({ contributors, roles }: PropsType) => {
     >
       <DialogTitle id="add-contributor-modal">Add Contributor</DialogTitle>
       <DialogContent dividers>
-        <StyledForm component="form">
+        <StyledBox component="form">
           <Controller
             name="contributor"
             control={control}
@@ -121,7 +121,7 @@ const AddContributorDialog = ({ contributors, roles }: PropsType) => {
               )}
             />
           </FormControl>
-        </StyledForm>
+        </StyledBox>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>

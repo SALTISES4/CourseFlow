@@ -1,8 +1,9 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { ObjectSet } from '@cf/types/common'
 import { CfObjectType, WFContext, WorkflowViewType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
-import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
-import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents'
+// import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
+// import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents'
 import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar'
@@ -18,7 +19,6 @@ import {
 } from '@XMLHTTP/types/query'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import {apiPaths} from "@cf/router/apiRoutes";
 // import $ from 'jquery'
 
 /**
@@ -269,19 +269,16 @@ class ComparisonView extends React.Component<PropsType, StateType> {
           className="hover-shade"
           title={_t('Sharing')}
           // @todo move to dialog
-          onClick={renderMessageBox.bind(
-            this,
-            this.props.projectData,
-            'share_menu',
-            closeMessageBox
-          )}
+          // onClick={
+          //   renderMessageBox.bind(
+          //   this,
+          //   this.props.projectData,
+          //   'share_menu',
+          //   closeMessageBox
+          // )
+          // }
         >
-          <img
-            src={
-               apiPaths.external.static_assets.icon +
-              'add_person.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'add_person.svg'} />
         </div>
       )
   }

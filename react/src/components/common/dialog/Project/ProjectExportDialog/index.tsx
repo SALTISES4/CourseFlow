@@ -1,4 +1,4 @@
-import { StyledDialog, StyledForm } from '@cf/components/common/dialog/styles'
+import { StyledDialog, StyledBox } from '@cf/components/common/dialog/styles'
 import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import Alert from '@cfComponents/UIPrimitives/Alert'
@@ -146,7 +146,7 @@ function ProjectExportDialog(data: EProject) {
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
       <DialogTitle>{_t(`Export ${projectType}`)}</DialogTitle>
       <DialogContent dividers>
-        <StyledForm component="form">
+        <StyledBox component="form">
           <Alert severity="warning" title="TODO" />
           <FormControl>
             <FormLabel id="export-type-group-label">
@@ -214,7 +214,7 @@ function ProjectExportDialog(data: EProject) {
               </FormGroup>
             </FormControl>
           )}
-        </StyledForm>
+        </StyledBox>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onDialogClose}>

@@ -1,6 +1,5 @@
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
-import $ from 'jquery'
 import * as React from 'react'
 
 type StateProps = {

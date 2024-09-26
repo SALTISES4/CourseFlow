@@ -1,7 +1,7 @@
 <script nonce="{{ request.csp_nonce }}">
 
   COURSEFLOW_APP.globalContextData = {{ globalContextData | safe }};
-  const DTOContextData = {{ contextData |default:"{}" | safe }};
+  const DTOContextData = {{ contextData | default:"{}" | safe }};
   COURSEFLOW_APP.contextData = {
     ...DTOContextData,
     changeFieldID: Math.floor(Math.random() * 10000)

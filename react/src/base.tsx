@@ -10,10 +10,10 @@ type PropsType = {
   children: ReactNode
 }
 
-const { notifications, sidebar, topbar } = COURSEFLOW_APP.globalContextData
+const { appNotifications } = COURSEFLOW_APP.globalContextData
 
 const NotificationsAlert = ({ show }: { show: boolean }) => {
-  if (!notifications.updateNotifications.id || !show) {
+  if (!appNotifications.updateNotifications.id || !show) {
     return <></>
   }
   return (
@@ -21,8 +21,8 @@ const NotificationsAlert = ({ show }: { show: boolean }) => {
       <Alert
         sx={{ mt: 3 }}
         severity="update"
-        title={HtmlReactParser(notifications.updateNotifications.title)}
-        hideIfCookie={`cf-update-${notifications.updateNotifications.id}`}
+        title={HtmlReactParser(appNotifications.updateNotifications.title)}
+        hideIfCookie={`cf-update-${appNotifications.updateNotifications.id}`}
       />
     </OuterContentWrap>
   )
@@ -33,12 +33,12 @@ const Base = ({ showNotifications, children }: PropsType) => {
     <>
       <div className="main-wrapper">
         <div data-component="sidebar">
-          <Sidebar {...sidebar} />
+          <Sidebar />
         </div>
 
         <div className="main-block">
           <div data-component="topbar">
-            <TopBar {...topbar} />
+            <TopBar />
           </div>
 
           <NotificationsAlert show={showNotifications} />

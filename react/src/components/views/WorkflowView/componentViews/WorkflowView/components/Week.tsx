@@ -3,6 +3,7 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
 import {
   EditableComponentWithSortingProps,
@@ -17,9 +18,8 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 
 import NodeWeek from './NodeWeek'
-import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 
-const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 // import $ from 'jquery'
 

@@ -35,13 +35,10 @@ def add_global_context(request: HttpRequest):
                     "favourites": LibraryService.get_top_favourites(
                         request.user
                     ),
-                    "forms": {
-                        "create_project": ConfigService.get_create_project_form()
-                    },
-                    "app_notifications": get_app_update_notifications(
+                    "appNotifications": get_app_update_notifications(
                         request.user
                     ),
-                    "workflow_choices": WorkflowService.get_workflow_choices(),
+                    "workflowChoices": WorkflowService.get_workflow_choices(),
                     "path": ConfigService.get_app_paths(),
                     "disciplines": ConfigService.get_app_disciplines(),
                 }

@@ -1,4 +1,4 @@
-import { StyledForm } from '@cfComponents/dialog/styles'
+import { StyledBox } from '@cfComponents/dialog/styles'
 import {
   WorkflowFormType,
   timeUnits
@@ -41,7 +41,7 @@ const WorkflowFormFields = ({
   onPonderationChange
 }: PropsType) => {
   return (
-    <StyledForm component={wrapAs}>
+    <StyledBox component={wrapAs}>
       {config.includes(FormField.TITLE) && (
         <TextField
           required
@@ -160,7 +160,7 @@ const WorkflowFormFields = ({
           </Stack>
         </>
       )}
-    </StyledForm>
+    </StyledBox>
   )
 }
 

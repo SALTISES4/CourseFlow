@@ -43,7 +43,7 @@ type StateProps = {
 
 type PropsType = ConnectedProps & OwnProps
 
-const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 /**
  * Represents the node in the workflow view
@@ -315,7 +315,7 @@ class NodeUnconnected extends EditableComponentWithActions<
         <div className="node-icon">
           <img
             title={
-              choices.task_choices.find(
+              choices.taskChoices.find(
                 (obj) => obj.type == data.taskClassification
               ).name
             }
@@ -447,7 +447,7 @@ class NodeUnconnected extends EditableComponentWithActions<
                 {data_override.timeRequired &&
                   data_override.timeRequired +
                     ' ' +
-                    choices.time_choices[data_override.timeUnits].name}
+                    choices.timeChoices[data_override.timeUnits].name}
               </div>
             </div>
           </div>

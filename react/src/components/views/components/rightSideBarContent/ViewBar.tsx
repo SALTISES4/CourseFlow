@@ -14,7 +14,7 @@ type OwnProps = {
 }
 type PropsType = DispatchProp & ConnectedProps & OwnProps
 
-const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 /**
  * The view tab of the right side bar for workflows. Allows object sets
@@ -61,7 +61,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
       const table_type_value = data.table_type || 0
       const sort_type = (
         <div className="node-bar-sort-block">
-          {choices.outcome_sort_choices.map((choice) => (
+          {choices.outcomeSortChoices.map((choice) => (
             <div>
               <input
                 disabled={

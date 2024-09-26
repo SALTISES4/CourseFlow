@@ -16,7 +16,7 @@ import { EProject } from '@XMLHTTP/types/entity'
 import { produce } from 'immer'
 import { useState } from 'react'
 
-import { StyledDialog, StyledForm } from '../styles'
+import { StyledDialog, StyledBox } from '../styles'
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -134,7 +134,7 @@ function ExportProjectDialog({ project }: { project: EProject }) {
     >
       <DialogTitle>{`Export ${projectType}`}</DialogTitle>
       <DialogContent dividers>
-        <StyledForm component="form">
+        <StyledBox component="form">
           <Alert severity="warning" title="TODO" />
           <FormControl>
             <FormLabel id="export-type-group-label">Export type</FormLabel>
@@ -200,7 +200,7 @@ function ExportProjectDialog({ project }: { project: EProject }) {
               </FormGroup>
             </FormControl>
           )}
-        </StyledForm>
+        </StyledBox>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="secondary" onClick={onClose}>
