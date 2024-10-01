@@ -1,3 +1,4 @@
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { OuterContentWrap } from '@cf/mui/helper'
 import strings from '@cf/utility/strings'
 import Box from '@mui/material/Box'
@@ -10,7 +11,8 @@ import {
   useGetNotificationSettingsQuery,
   useUpdateNotificationSettingsMutation
 } from '@XMLHTTP/API/user.rtk'
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 const PageTitle = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -21,21 +23,6 @@ const PageTitle = styled(Box)(({ theme }) => ({
     fontSize: '34px'
   }
 }))
-
-// @todo types
-// NOTE: Using reducer here in anticipation of more complex settings page
-// with various different controls
-function reducer(state, action) {
-  switch (action.type) {
-    case 'SET_UPDATES':
-      return {
-        ...state,
-        notifications: action.value
-      }
-  }
-
-  return state
-}
 
 const NotificationsSettingsPage = () => {
   /*******************************************************
@@ -51,46 +38,42 @@ const NotificationsSettingsPage = () => {
   const [mutate, { isSuccess, isError, data: updateData }] =
     useUpdateNotificationSettingsMutation()
 
+  const { onError, onSuccess } = useGenericMsgHandler()
+
   /*******************************************************
-   *
+   * FORM HOOK
    *******************************************************/
-  const [state, dispatch] = useReducer(reducer, {
-    notifications: false
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      notifications: false
+    }
   })
 
   useEffect(() => {
-    if (isSuccess) {
-      dispatch({
-        type: 'SET_UPDATES',
-        value: updateData
-      })
-    }
-
-    if (isError) {
-      console.error('Error updating notifications:', error)
-    }
-  }, [isSuccess, isError, updateData])
-
-  useEffect(() => {
     if (data) {
-      dispatch({
-        type: 'SET_UPDATES',
-        value: data.dataPackage.formData.receiveNotifications
-      })
+      reset({ notifications: data.dataPackage.receiveNotifications })
     }
-  }, [data])
+  }, [data, reset])
 
   /*******************************************************
    * HANDLERS
-   *
    *******************************************************/
-  function onUpdatesSwitchChange(e) {
-    const newState = {
-      ...state,
-      notifications: !state.notifications
-    }
-
-    mutate(newState)
+  const onSwitchChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue('notifications', event.target.checked)
+    await handleSubmit(async (data) => {
+      try {
+        const resp = await mutate(data).unwrap()
+        onSuccess(resp)
+      } catch (err) {
+        onError(err)
+      }
+    })()
   }
 
   /*******************************************************
@@ -102,17 +85,26 @@ const NotificationsSettingsPage = () => {
         <Typography variant="h1">{strings.notification_settings}</Typography>
       </PageTitle>
 
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={state.notifications}
-              onChange={onUpdatesSwitchChange}
-            />
-          }
-          label={strings.product_updates_agree}
-        />
-      </FormGroup>
+      <form>
+        <FormGroup>
+          <Controller
+            name="notifications"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...field}
+                    onChange={onSwitchChange}
+                    checked={field.value}
+                  />
+                }
+                label={strings.product_updates_agree}
+              />
+            )}
+          />
+        </FormGroup>
+      </form>
     </OuterContentWrap>
   )
 }

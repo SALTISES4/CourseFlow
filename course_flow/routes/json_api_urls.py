@@ -329,22 +329,22 @@ def json_api_patterns():
         path(
             "user/profile-settings",
             views.json_api.UserEndpoint.fetch_profile_settings,
-            name="user--profile-settings--get",
+            name="user--profile-settings",
         ),
         path(
             "user/profile-settings/update",
             views.json_api.UserEndpoint.update_profile_settings,
-            name="user--profile-settings--update--post",
+            name="user--profile-settings--update",
         ),
         path(
             "user/notifications-settings",
             views.json_api.UserEndpoint.fetch_notification_settings,
-            name="user--notification-settings--get",
+            name="user--notification-settings",
         ),
         path(
             "user/notifications-settings/update",
             views.json_api.UserEndpoint.update_notification_settings,
-            name="user--notification-settings--update--post",
+            name="user--notification-settings--update",
         ),
         #########################################################
         # notifications

@@ -59,7 +59,7 @@ const ProjectCreateDialog = () => {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  const onSubmit = (data: ProjectFormValues) => {
+  const onSubmit = async (data: ProjectFormValues) => {
     // remove null values
     const filteredObjectSets = data.objectSets
       .filter((set) => set.term && set.title)
@@ -73,14 +73,12 @@ const ProjectCreateDialog = () => {
       objectSets: filteredObjectSets
     }
 
-    mutate(payload)
-      .unwrap()
-      .then((response) => {
-        onSuccess(String(response.dataPackage.id))
-      })
-      .catch((err) => {
-        onError(error)
-      })
+    try {
+      const response = await mutate(payload).unwrap()
+      onSuccess(String(response.dataPackage.id))
+    } catch (err) {
+      onError(err)
+    }
   }
 
   function onDialogClose() {

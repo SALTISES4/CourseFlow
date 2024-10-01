@@ -89,7 +89,7 @@ class NotificationsSettingsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseFlowUser
-        fields = "notifications"
+        fields = ("notifications",)
 
 
 class ProfileSettingsSerializer(serializers.ModelSerializer):
@@ -104,8 +104,8 @@ class ProfileSettingsSerializer(serializers.ModelSerializer):
         model = CourseFlowUser
         fields = ("first_name", "last_name", "language")
         extra_kwargs = {
-            "language": {"write_only": True}
             # If language should be write-only or has other specific serializer settings
+            "language": {"write_only": True}
         }
 
     def update(self, instance, validated_data):

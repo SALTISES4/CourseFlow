@@ -6,6 +6,7 @@ import {
 } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { StyledBox } from '@cfPages/Styleguide/dialog/styles'
+import { zodResolver } from '@hookform/resolvers/zod'
 import CancelIcon from '@mui/icons-material/Cancel'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -22,6 +23,7 @@ import TextField from '@mui/material/TextField'
 import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 export type OnUpdateType = {
   index: number
@@ -44,6 +46,21 @@ const initialState = {
   objectSets: [],
   objectSetsExpanded: false
 }
+const projectSchema = z.object({
+  title: z.string().min(1, { message: 'Title is required' }).max(200),
+  description: z.string().optional(),
+  disciplines: z
+    .array(z.string())
+    .min(1, { message: 'At least one discipline is required' }),
+  objectSets: z.array(
+    z.object({
+      id: z.string().optional(),
+      term: z.string(),
+      title: z.string()
+    })
+  )
+})
+
 /**
  *
  * @param showNoProjectsAlert
@@ -82,6 +99,7 @@ const ProjectForm = ({
     getValues,
     reset
   } = useForm<ProjectFormValues>({
+    resolver: zodResolver(projectSchema),
     defaultValues
   })
 

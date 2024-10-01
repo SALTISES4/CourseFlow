@@ -18,6 +18,7 @@ from course_flow.models import User
 from course_flow.models.courseFlowUser import CourseFlowUser
 from course_flow.serializers import (
     FormFieldsSerializer,
+    NotificationsSettingsSerializer,
     ProfileSettingsSerializer,
     UserSerializer,
 )
@@ -139,7 +140,10 @@ class UserEndpoint:
 
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "success"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Success updating profile settings"},
+                status=status.HTTP_200_OK,
+            )
         else:
             logger.exception(
                 f"Bad error encountered with errors: {serializer.errors}"
@@ -153,14 +157,14 @@ class UserEndpoint:
     @staticmethod
     @login_required
     @api_view(["GET"])
-    def fetch_notification_settings(request):
+    def fetch_notification_settings(request: Request) -> Response:
         user = CourseFlowUser.objects.filter(user=request.user).first()
-        return JsonResponse(
+        return Response(
             {
-                "data_package": {
-                    "formData": {"receiveNotifications": user.notifications}
-                }
-            }
+                "message": "Success getting profile settings",
+                "data_package": {"receiveNotifications": user.notifications},
+            },
+            status=status.HTTP_200_OK,
         )
 
     @staticmethod
@@ -179,7 +183,10 @@ class UserEndpoint:
 
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "success"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "Success updating notification settings"},
+                status=status.HTTP_200_OK,
+            )
         else:
             logger.exception(
                 f"Bad error encountered with errors: {serializer.errors}"

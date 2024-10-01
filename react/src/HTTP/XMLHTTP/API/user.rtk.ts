@@ -19,18 +19,14 @@ export type CurrentUserQueryResp = {
 export type NotificationSettingsQueryResp = {
   message: string
   dataPackage: {
-    formData: {
-      receiveNotifications: boolean
-    }
+    receiveNotifications: boolean
   }
 }
 
 export type NotificationSettingsUpdateQueryResp = {
   message: string
   dataPackage: {
-    formData: {
-      receiveNotifications: boolean
-    }
+    receiveNotifications: boolean
   }
 }
 
@@ -85,7 +81,9 @@ const extendedApi = cfApi.injectEndpoints({
      *******************************************************/
     updateNotificationSettings: builder.mutation<
       NotificationSettingsUpdateQueryResp,
-      void
+      {
+        notifications: boolean
+      }
     >({
       query: (args) => {
         return {
