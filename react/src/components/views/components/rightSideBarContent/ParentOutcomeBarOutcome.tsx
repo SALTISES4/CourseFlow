@@ -1,5 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
+import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 import {
   TGetOutcomeByID,
   TOutcomeOutcomeByID,
@@ -14,7 +15,6 @@ import {
   OutcomeBarOutcomePropsType,
   OutcomeBarOutcomeUnconnected
 } from './OutcomeBarOutcome'
-import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 
 /**
  * Used for the parent outcome bar.

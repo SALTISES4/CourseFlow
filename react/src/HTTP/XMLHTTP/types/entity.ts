@@ -1,5 +1,5 @@
-import { ObjectPermission, ObjectSet } from '@cf/types/common'
-import {LibraryObjectType, WorkflowType, WorkSpaceType} from '@cf/types/enum'
+import { EObjectSet, ObjectPermission } from '@cf/types/common'
+import {LibraryObjectType, WorkSpaceType, WorkflowType} from '@cf/types/enum'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
 /*******************************************************
@@ -58,7 +58,7 @@ export type EProject = {
   lastModified: string
   objectPermission: ObjectPermission
   userPermissions: number
-  objectSets: ObjectSet[]
+  objectSets: EObjectSet[]
   published: boolean
   title: string
   // TODO: identify these really are the types / convert to enum?

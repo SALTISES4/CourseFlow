@@ -45,6 +45,9 @@ class Utility:
             if serializer.is_valid():
                 serializer.save()
                 return JsonResponse({"action": "posted"})
+                logger.exception(
+                    f"Bad error encountered with errors: {serializer.errors}"
+                )
             else:
                 return JsonResponse({"action": "error"})
         else:

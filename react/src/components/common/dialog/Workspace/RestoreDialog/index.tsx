@@ -1,5 +1,5 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkSpaceType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -24,7 +24,7 @@ const RestoreDialog = ({
    *******************************************************/
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-  const { type, show, onClose } = useDialog([DIALOG_TYPE.RESTORE])
+  const { type, show, onClose } = useDialog([DialogMode.RESTORE])
 
   const [mutate, { isLoading, data, isError, isSuccess, error }] =
     useUnarchiveMutation()

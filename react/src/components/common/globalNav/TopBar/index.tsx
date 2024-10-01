@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
 import strings from '@cf/utility/strings'
@@ -56,7 +56,7 @@ const TopBar = () => {
     })
   }
 
-  const handleCreateClick = (resourceType: DIALOG_TYPE) => {
+  const handleCreateClick = (resourceType: DialogMode) => {
     dispatch(resourceType)
   }
 
@@ -82,22 +82,22 @@ const TopBar = () => {
     const menuItems: MenuItemType[] = [
       {
         content: strings.project,
-        action: () => handleCreateClick(DIALOG_TYPE.PROJECT_CREATE),
+        action: () => handleCreateClick(DialogMode.PROJECT_CREATE),
         show: true
       },
       {
         content: strings.program,
-        action: () => handleCreateClick(DIALOG_TYPE.PROGRAM_CREATE),
+        action: () => handleCreateClick(DialogMode.PROGRAM_CREATE),
         show: true
       },
       {
         content: strings.course,
-        action: () => handleCreateClick(DIALOG_TYPE.COURSE_CREATE),
+        action: () => handleCreateClick(DialogMode.COURSE_CREATE),
         show: true
       },
       {
         content: strings.activity,
-        action: () => handleCreateClick(DIALOG_TYPE.ACTIVITY_CREATE),
+        action: () => handleCreateClick(DialogMode.ACTIVITY_CREATE),
         show: true
       }
     ]
@@ -125,7 +125,7 @@ const TopBar = () => {
       },
       {
         content: strings.password_reset,
-        action: () => dispatch(DIALOG_TYPE.PASSWORD_RESET),
+        action: () => dispatch(DialogMode.PASSWORD_RESET),
         show: true
       },
       {

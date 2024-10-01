@@ -1,4 +1,4 @@
-export enum projectPermission_ROLE {
+export enum ProjectPermissionRole {
   'OWNER' = 'owner',
   'EDITOR' = 'editor',
   'COMMENTER' = 'commenter',
@@ -9,7 +9,7 @@ export type PermissionUserType = {
   id: number
   name: string
   email: string
-  role: projectPermission_ROLE
+  role: ProjectPermissionRole
 }
 
 export type ObjectSetType = {

@@ -16,7 +16,7 @@ export type UnitType = {
   selected?: boolean
 }
 
-export enum CREATE_RESOURCE_TYPE {
+export enum CreateResourceOptions {
   BLANK = 'blank',
   TEMPLATE = 'template'
 }

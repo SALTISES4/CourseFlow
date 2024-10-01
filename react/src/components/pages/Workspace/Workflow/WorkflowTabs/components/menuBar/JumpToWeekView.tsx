@@ -1,10 +1,10 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 // import $ from 'jquery'
 
 type ConnectedProps = {

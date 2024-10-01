@@ -1,5 +1,5 @@
 import ObjectSets from '@cfPages/Styleguide/dialog/Project/components/ObjectSets'
-import { StyledDialog, StyledBox } from '@cfPages/Styleguide/dialog/styles'
+import { StyledBox, StyledDialog } from '@cfPages/Styleguide/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'

@@ -25,29 +25,37 @@ def json_api_patterns():
         # PROJECT
         #########################################################
         path(
-            "project/create",
-            views.json_api.ProjectEndpoint.create,
-            name="project--create--post",
-        ),
-        path(
             "project/<int:pk>/detail",
             views.json_api.ProjectEndpoint.fetch_detail,
-            name="project--detail--get",
-        ),
-        path(
-            "project/<int:pk>/duplicate",
-            views.json_api.ProjectEndpoint.duplicate,
-            name="json-api-post-duplicate-project",
-        ),
-        path(
-            "project/<int:pk>/object-set/create",
-            views.json_api.ProjectEndpoint.object_set__create,
-            name="json-api-post-add-object-set",
+            name="project--detail",
         ),
         path(
             "project/my-projects",
             views.json_api.ProjectEndpoint.list_my_projects,
             name="project--my-projects",
+        ),
+        path(
+            "project/create",
+            views.json_api.ProjectEndpoint.create,
+            name="project--create",
+        ),
+        path(
+            "project/<int:pk>/update",
+            views.json_api.ProjectEndpoint.update,
+            name="project--update",
+        ),
+        path(
+            "project/<int:pk>/duplicate",
+            views.json_api.ProjectEndpoint.duplicate,
+            name="project--duplicate",
+        ),
+        #########################################################
+        # PROJECT: RELATION
+        #########################################################
+        path(
+            "project/<int:pk>/object-set/create",
+            views.json_api.ProjectEndpoint.object_set__create,
+            name="json-api-post-add-object-set",
         ),
         path(
             "project/<int:pk>/workflow",

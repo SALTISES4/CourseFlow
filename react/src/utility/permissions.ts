@@ -1,4 +1,4 @@
-import { PERMISSION_KEYS } from '@cf/constants'
+import { PermissionKeys } from '@cf/constants'
 
 export interface BasePermissions {
   read: boolean
@@ -27,12 +27,12 @@ export const calcProjectPermissions = (
   permission: number
 ): WorkflowPermission => {
   switch (permission) {
-    case PERMISSION_KEYS.VIEW:
+    case PermissionKeys.VIEW:
       return {
         ...defaultWorkflowPermissions,
         read: true
       }
-    case PERMISSION_KEYS.COMMENT:
+    case PermissionKeys.COMMENT:
       return {
         ...defaultWorkflowPermissions,
         viewComments: true,
@@ -40,7 +40,7 @@ export const calcProjectPermissions = (
         read: true
       }
 
-    case PERMISSION_KEYS.EDIT:
+    case PermissionKeys.EDIT:
       return {
         read: true,
         write: true,
@@ -56,14 +56,14 @@ export const calcWorkflowPermissions = (
   permission: number
 ): WorkflowPermission => {
   switch (permission) {
-    case PERMISSION_KEYS.VIEW:
+    case PermissionKeys.VIEW:
       return {
         ...defaultBasePermissions,
         read: true,
         viewComments: true,
         addComments: false
       }
-    case PERMISSION_KEYS.EDIT:
+    case PermissionKeys.EDIT:
       return {
         read: true,
         write: true,

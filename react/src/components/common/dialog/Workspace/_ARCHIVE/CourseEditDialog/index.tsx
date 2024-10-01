@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
+import { StyledDialog } from '@cfComponents/dialog/styles'
 import CourseForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse'
 import { CourseFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse/types'
-import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -27,7 +27,7 @@ const CourseEditDialog = (data: CourseFormDataType) => {
   }
 
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.COURSE_EDIT)
+  const { show, onClose } = useDialog(DialogMode.COURSE_EDIT)
 
   function onInfoChange(e: ChangeEvent<HTMLInputElement>) {
     const property = e.target.name as keyof Omit<

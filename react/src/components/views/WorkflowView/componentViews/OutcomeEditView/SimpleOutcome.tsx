@@ -2,6 +2,7 @@ import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import {
   EditableComponentWithCommentsStateType,
@@ -14,7 +15,6 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 
 import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
-import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 
 /**
  *  Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything

@@ -240,6 +240,9 @@ class LibraryEndpoint:
             name_filter = data.get("filter", "").lower()
 
         else:
+            logger.exception(
+                f"Bad error encountered with errors: {serializer.errors}"
+            )
             return Response(serializer.errors, status=400)
 
         try:

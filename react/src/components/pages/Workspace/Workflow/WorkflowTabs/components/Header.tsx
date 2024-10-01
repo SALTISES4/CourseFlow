@@ -2,7 +2,7 @@ import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t, convertEnum } from '@cf/utility/utilityFunctions'
-import { CHIP_TYPE } from '@cfComponents/cards/WorkflowCardDumb'
+import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import { workflowTitle } from '@cfComponents/UIPrimitives/Titles.ts'
@@ -47,7 +47,7 @@ const Header = () => {
           })}
           <CardChip
             sx={{ display: 'flex', alignItems: 'center' }}
-            className={CHIP_TYPE.ACTIVITY as string}
+            className={ChipOptions.ACTIVITY as string}
             label={typeText}
           />
         </Typography>

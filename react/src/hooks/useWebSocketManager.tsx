@@ -3,8 +3,8 @@ import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import ActionCreator from '@cfRedux/ActionCreator'
 import {
-  getWorkflowChildDataQuery,
-  getWorkflowByIdQuery
+  getWorkflowByIdQuery,
+  getWorkflowChildDataQuery
 } from '@XMLHTTP/API/workflow'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'

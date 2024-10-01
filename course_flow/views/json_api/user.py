@@ -140,6 +140,10 @@ class UserEndpoint:
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "success"}, status=status.HTTP_200_OK)
+        else:
+            logger.exception(
+                f"Bad error encountered with errors: {serializer.errors}"
+            )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -176,5 +180,9 @@ class UserEndpoint:
         if serializer.is_valid():
             serializer.save()
             return Response({"message": "success"}, status=status.HTTP_200_OK)
+        else:
+            logger.exception(
+                f"Bad error encountered with errors: {serializer.errors}"
+            )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

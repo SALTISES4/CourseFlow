@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import WorkflowsMenu from '@cfComponents/dialog/_LEGACY/WorkflowsMenu'
 import Dialog from '@mui/material/Dialog'
@@ -28,7 +28,7 @@ import { useState } from 'react'
  //  }
 
 function WorkflowCopyToProjectDialog({ id, actionFunction }: any) {
-  const { show, onClose } = useDialog(DIALOG_TYPE.WORKFLOW_COPY_TO_PROJECT)
+  const { show, onClose } = useDialog(DialogMode.WORKFLOW_COPY_TO_PROJECT)
   const [projectData, setProjectData] = useState<TargetProjectQueryResp>(null)
 
   const onDialogClose = (response: any) => {

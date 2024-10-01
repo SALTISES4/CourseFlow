@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import CloseIcon from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -37,21 +37,21 @@ const Welcome = ({ hide }: PropsType) => {
       <SC.Actions>
         <Button
           variant="contained"
-          onClick={() => dispatch(DIALOG_TYPE.PROGRAM_CREATE)}
+          onClick={() => dispatch(DialogMode.PROGRAM_CREATE)}
         >
           I want to create a program
         </Button>
 
         <Button
           variant="contained"
-          onClick={() => dispatch(DIALOG_TYPE.COURSE_CREATE)}
+          onClick={() => dispatch(DialogMode.COURSE_CREATE)}
         >
           I want to create a course
         </Button>
 
         <Button
           variant="contained"
-          onClick={() => dispatch(DIALOG_TYPE.ACTIVITY_CREATE)}
+          onClick={() => dispatch(DialogMode.ACTIVITY_CREATE)}
         >
           I want to create an activity
         </Button>

@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
@@ -11,27 +11,27 @@ export const useMenuActions = () => {
    * MENU HANDLERS
    *******************************************************/
   function openEditDialog() {
-    dispatchDialog(DIALOG_TYPE.PROJECT_EDIT)
+    dispatchDialog(DialogMode.PROJECT_EDIT)
   }
 
   function openShareDialog() {
-    dispatchDialog(DIALOG_TYPE.ADD_CONTRIBUTOR)
+    dispatchDialog(DialogMode.ADD_CONTRIBUTOR)
   }
 
   function openExportDialog() {
-    dispatchDialog(DIALOG_TYPE.PROJECT_EXPORT)
+    dispatchDialog(DialogMode.PROJECT_EXPORT)
   }
 
   function archiveProject() {
-    dispatchDialog(DIALOG_TYPE.PROJECT_ARCHIVE)
+    dispatchDialog(DialogMode.PROJECT_ARCHIVE)
   }
 
   function unarchiveProject() {
-    dispatchDialog(DIALOG_TYPE.PROJECT_RESTORE)
+    dispatchDialog(DialogMode.PROJECT_RESTORE)
   }
 
   function deleteProject() {
-    dispatchDialog(DIALOG_TYPE.PROJECT_DELETE)
+    dispatchDialog(DialogMode.PROJECT_DELETE)
   }
   /*******************************************************
    * TO PROCESS

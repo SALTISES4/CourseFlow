@@ -1,8 +1,8 @@
 import {apiPathRoutes, apiPaths} from '@cf/router/apiRoutes'
+import {UsersForObjectQueryResp} from "@XMLHTTP/API/workspace.rtk";
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
-import {UsersForObjectQueryResp} from "@XMLHTTP/API/workspace.rtk";
 
 export function setUserPermission(
   userId,

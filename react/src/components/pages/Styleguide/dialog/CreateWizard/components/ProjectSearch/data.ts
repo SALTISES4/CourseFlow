@@ -1,4 +1,4 @@
-import { CHIP_TYPE } from '@cfPages/Styleguide/components/WorkflowCard/types'
+import { ChipMode } from '@cfPages/Styleguide/components/WorkflowCard/types'
 
 const projects = [
   {
@@ -10,11 +10,11 @@ const projects = [
     isFavourite: true,
     chips: [
       {
-        type: CHIP_TYPE.PROJECT,
+        type: ChipMode.PROJECT,
         label: 'Project'
       },
       {
-        type: CHIP_TYPE.PROGRAM,
+        type: ChipMode.PROGRAM,
         label: 'Program'
       }
     ]
@@ -28,11 +28,11 @@ const projects = [
     isFavourite: false,
     chips: [
       {
-        type: CHIP_TYPE.COURSE,
+        type: ChipMode.COURSE,
         label: 'Course'
       },
       {
-        type: CHIP_TYPE.ACTIVITY,
+        type: ChipMode.ACTIVITY,
         label: 'Activity'
       }
     ]
@@ -46,11 +46,11 @@ const projects = [
     isFavourite: false,
     chips: [
       {
-        type: CHIP_TYPE.TEMPLATE,
+        type: ChipMode.TEMPLATE,
         label: 'Template'
       },
       {
-        type: CHIP_TYPE.DEFAULT,
+        type: ChipMode.DEFAULT,
         label: 'Default'
       }
     ]
@@ -64,7 +64,7 @@ const projects = [
     isFavourite: false,
     chips: [
       {
-        type: CHIP_TYPE.DEFAULT,
+        type: ChipMode.DEFAULT,
         label: 'Default'
       }
     ]
@@ -78,7 +78,7 @@ const projects = [
     isFavourite: false,
     chips: [
       {
-        type: CHIP_TYPE.DEFAULT,
+        type: ChipMode.DEFAULT,
         label: 'Default'
       }
     ]

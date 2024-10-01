@@ -1,3 +1,4 @@
+import {ObjectSetOptions} from "@cfComponents/dialog/Project/ProjectEditDialog/type";
 import { MouseEvent } from 'react'
 
 export type ToDefine = any
@@ -21,10 +22,10 @@ export type Discipline = {
 }
 
 // TODO: Consolidate with the types in CreateProject/type
-export type ObjectSet = {
+export type EObjectSet = {
   id: number
   title: string
-  term: string
+  term: ObjectSetOptions
   translationPlural: null | string
 }
 
@@ -47,6 +48,7 @@ export type Lock = {
 
 
 
+
 export type FormFieldSerialized = {
   name: string
   label?: string
@@ -66,7 +68,7 @@ export type EventUnion =
 /*******************************************************
  *
  *******************************************************/
-export enum projectPermission_ROLE {
+export enum ProjectPermissionRole {
   'OWNER' = 'owner',
   'EDITOR' = 'editor',
   'COMMENTER' = 'commenter',
@@ -77,12 +79,12 @@ export type PermissionUserType = {
   id: number
   name: string
   email: string
-  role: projectPermission_ROLE
+  role: ProjectPermissionRole
 }
 
 export type ObjectSetType = {
   title: string
-  type: string
+  term: string
 }
 
 /*******************************************************

@@ -1,8 +1,8 @@
-import { DIALOG_TYPE } from '@cf/hooks/useDialog'
+import { DialogMode } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import { Dispatch, ReactNode, createContext, useState } from 'react'
 
-type ActionType = DIALOG_TYPE | null
+type ActionType = DialogMode | null
 
 const initialState: StateType = {
   type: null,

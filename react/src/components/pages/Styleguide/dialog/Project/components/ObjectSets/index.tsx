@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { ObjectSet } from '@cf/types/common'
+import { EObjectSet } from '@cf/types/common'
 import { StyledBox } from '@cfPages/Styleguide/dialog/styles'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -21,13 +21,13 @@ import { AdvancedLabel, StyledAccordion } from './styles'
 
 type OnUpdateType = {
   index: number
-  newVal?: ObjectSet
+  newVal?: EObjectSet
 }
 
 type PropsType = {
   expanded: boolean
   toggleExpanded: () => void
-  sets: ObjectSet[]
+  sets: EObjectSet[]
   onUpdate: (props: OnUpdateType) => void
   onAddNew: () => void
 }
@@ -40,7 +40,7 @@ function ObjectSets({
   onUpdate
 }: PropsType) {
   // make sure there's at least one empty object set
-  const objectSets: ObjectSet[] = sets.length ? sets : [{ id: '', title: '' }]
+  const objectSets: EObjectSet[] = sets.length ? sets : [{ id: '', title: '' }]
 
   return (
     <StyledAccordion expanded={expanded}>

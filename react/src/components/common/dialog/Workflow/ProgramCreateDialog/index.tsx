@@ -1,13 +1,14 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
-import { StyledDialog, StyledBox } from '@cfComponents/dialog/styles'
+import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
+import ProgramForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram'
 import { ProgramFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram/types'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
-import { CREATE_RESOURCE_TYPE } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+import { CreateResourceOptions } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -18,7 +19,6 @@ import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import { produce } from 'immer'
 import { ChangeEvent, useState } from 'react'
-import ProgramForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram'
 
 
 import { CreateProgramDataType } from './data'
@@ -27,7 +27,7 @@ type PropsType = CreateProgramDataType & Pick<ProgramFormDataType, 'units'>
 
 type StateType = {
   step: number
-  type: CREATE_RESOURCE_TYPE
+  type: CreateResourceOptions
   project?: number
   template?: number
   fields: Omit<ProgramFormDataType, 'units'> & {
@@ -37,7 +37,7 @@ type StateType = {
 
 const initialState: StateType = {
   step: 0,
-  type: CREATE_RESOURCE_TYPE.BLANK,
+  type: CreateResourceOptions.BLANK,
   fields: {
     title: '',
     description: '',
@@ -48,7 +48,7 @@ const initialState: StateType = {
 
 const ProgramCreateDialog = ({ steps, units }: PropsType) => {
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.PROGRAM_CREATE)
+  const { show, onClose } = useDialog(DialogMode.PROGRAM_CREATE)
   const [projects, setProjectData] = useState<ProjectType[]>(null)
   const [templates, setTemplateData] = useState<TemplateType[]>(null)
 
@@ -56,7 +56,7 @@ const ProgramCreateDialog = ({ steps, units }: PropsType) => {
   const dialogTitle = [
     'Select a project',
     'Select program type',
-    state.type === CREATE_RESOURCE_TYPE.TEMPLATE
+    state.type === CreateResourceOptions.TEMPLATE
       ? 'Create a program from a template'
       : 'Create a blank program'
   ][state.step]
@@ -71,7 +71,7 @@ const ProgramCreateDialog = ({ steps, units }: PropsType) => {
 
     // step 3: check if the template is selected for when creating from template
     // or if creating manually, check that the title field is added
-    state.type === CREATE_RESOURCE_TYPE.TEMPLATE
+    state.type === CreateResourceOptions.TEMPLATE
       ? !state.template
       : state.fields
       ? !state.fields.title
@@ -102,7 +102,7 @@ const ProgramCreateDialog = ({ steps, units }: PropsType) => {
     )
   }
 
-  function onTypeSelect(type: CREATE_RESOURCE_TYPE) {
+  function onTypeSelect(type: CreateResourceOptions) {
     setState(
       produce((draft) => {
         draft.type = type
@@ -179,7 +179,7 @@ const ProgramCreateDialog = ({ steps, units }: PropsType) => {
               onTypeSelect={onTypeSelect}
             />
           )}
-          {state.step === 2 && state.type === CREATE_RESOURCE_TYPE.BLANK && (
+          {state.step === 2 && state.type === CreateResourceOptions.BLANK && (
             <ProgramForm
               wrapAs="div"
               values={state.fields}
@@ -188,7 +188,7 @@ const ProgramCreateDialog = ({ steps, units }: PropsType) => {
               onUnitChange={onUnitChange}
             />
           )}
-          {state.step === 2 && state.type === CREATE_RESOURCE_TYPE.TEMPLATE && (
+          {state.step === 2 && state.type === CreateResourceOptions.TEMPLATE && (
             <TemplateSearch
               selected={state.template}
               setTemplateData={setTemplateData}

@@ -1,11 +1,11 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import ProgramForm from '@cfPages/Styleguide/dialog/CreateWizard/components/FormProgram'
 import { ProgramFormDataType } from '@cfPages/Styleguide/dialog/CreateWizard/components/FormProgram/types'
 import ProjectSearch from '@cfPages/Styleguide/dialog/CreateWizard/components/ProjectSearch'
 import TemplateSearch from '@cfPages/Styleguide/dialog/CreateWizard/components/TemplateSearch'
 import TypeSelect from '@cfPages/Styleguide/dialog/CreateWizard/components/TypeSelect'
-import { CREATE_RESOURCE_TYPE } from '@cfPages/Styleguide/dialog/CreateWizard/types'
-import { StyledDialog, StyledBox } from '@cfPages/Styleguide/dialog/styles'
+import { CreateResourceOptions } from '@cfPages/Styleguide/dialog/CreateWizard/types'
+import { StyledBox, StyledDialog } from '@cfPages/Styleguide/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -23,7 +23,7 @@ type PropsType = CreateProgramDataType & Pick<ProgramFormDataType, 'units'>
 
 type StateType = {
   step: number
-  type: CREATE_RESOURCE_TYPE
+  type: CreateResourceOptions
   project?: number
   template?: number
   fields: Omit<ProgramFormDataType, 'units'> & {
@@ -33,7 +33,7 @@ type StateType = {
 
 const initialState: StateType = {
   step: 0,
-  type: CREATE_RESOURCE_TYPE.BLANK,
+  type: CreateResourceOptions.BLANK,
   fields: {
     title: '',
     description: '',
@@ -49,13 +49,13 @@ const CreateProgramDialog = ({
   units
 }: PropsType) => {
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.PROGRAM_CREATE)
+  const { show, onClose } = useDialog(DialogMode.PROGRAM_CREATE)
 
   // dynamic dialog title for each step
   const dialogTitle = [
     'Select a project',
     'Select program type',
-    state.type === CREATE_RESOURCE_TYPE.TEMPLATE
+    state.type === CreateResourceOptions.TEMPLATE
       ? 'Create a program from a template'
       : 'Create a blank program'
   ][state.step]
@@ -70,7 +70,7 @@ const CreateProgramDialog = ({
 
     // step 3: check if the template is selected for when creating from template
     // or if creating manually, check that the title field is added
-    state.type === CREATE_RESOURCE_TYPE.TEMPLATE
+    state.type === CreateResourceOptions.TEMPLATE
       ? !state.template
       : state.fields
       ? !state.fields.title
@@ -101,7 +101,7 @@ const CreateProgramDialog = ({
     )
   }
 
-  function onTypeSelect(type: CREATE_RESOURCE_TYPE) {
+  function onTypeSelect(type: CreateResourceOptions) {
     setState(
       produce((draft) => {
         draft.type = type
@@ -177,7 +177,7 @@ const CreateProgramDialog = ({
               onTypeSelect={onTypeSelect}
             />
           )}
-          {state.step === 2 && state.type === CREATE_RESOURCE_TYPE.BLANK && (
+          {state.step === 2 && state.type === CreateResourceOptions.BLANK && (
             <ProgramForm
               wrapAs="div"
               values={state.fields}
@@ -186,7 +186,7 @@ const CreateProgramDialog = ({
               onUnitChange={onUnitChange}
             />
           )}
-          {state.step === 2 && state.type === CREATE_RESOURCE_TYPE.TEMPLATE && (
+          {state.step === 2 && state.type === CreateResourceOptions.TEMPLATE && (
             <TemplateSearch
               selected={state.template}
               templates={templates}

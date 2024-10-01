@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
+import { StyledDialog } from '@cfComponents/dialog/styles'
 import ActivityForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormActivity'
 import { ActivityFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormActivity/types'
-import { StyledDialog } from '@cfComponents/dialog/styles'
 import { AppState } from '@cfRedux/types/type'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -36,7 +36,7 @@ const ActivityEditDialog = () => {
   }
 
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.ACTIVITY_EDIT)
+  const { show, onClose } = useDialog(DialogMode.ACTIVITY_EDIT)
 
   /*******************************************************
    * QUERIES

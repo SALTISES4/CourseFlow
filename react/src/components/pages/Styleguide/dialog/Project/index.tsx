@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
-import { Discipline, FormFieldSerialized, ObjectSet } from '@cf/types/common'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { Discipline, EObjectSet, FormFieldSerialized } from '@cf/types/common'
 import { produce } from 'immer'
 import { ChangeEvent, useState } from 'react'
 
@@ -9,20 +9,20 @@ import EditProjectDialog from './EditProject'
 
 type ObjectSetUpdateType = {
   index: number
-  newVal?: ObjectSet
+  newVal?: EObjectSet
 }
 
 type StateType = {
   fields: {
     [index: string]: string
   }
-  objectSets?: ObjectSet[]
+  objectSets?: EObjectSet[]
   objectSetsExpanded: boolean
 }
 
 export type DataType = {
   showNoProjectsAlert?: boolean
-  objectSets?: ObjectSet[]
+  objectSets?: EObjectSet[]
   disciplines?: Discipline[]
   formFields: FormFieldSerialized[]
 }
@@ -52,7 +52,7 @@ export type TInnerDialog = DataType & {
 
 export type PropsType = {
   showNoProjectsAlert?: boolean
-  objectSets?: ObjectSet[]
+  objectSets?: EObjectSet[]
   disciplines?: Discipline[]
   formFields: FormFieldSerialized[]
 }
@@ -68,7 +68,7 @@ const ProjectDialog = ({
   formFields,
   type
 }: PropsType & {
-  type: DIALOG_TYPE.PROJECT_CREATE | DIALOG_TYPE.PROJECT_EDIT
+  type: DialogMode.PROJECT_CREATE | DialogMode.PROJECT_EDIT
 }) => {
   // set the inital state based on inputs
   const initialState: StateType = {
@@ -102,11 +102,11 @@ const ProjectDialog = ({
 
     // TODO: Handle submit based on the type of the dialog
     switch (type) {
-      case DIALOG_TYPE.PROJECT_CREATE:
+      case DialogMode.PROJECT_CREATE:
         console.log('submitted CREATE PROJECT with', postData)
         break
 
-      case DIALOG_TYPE.PROJECT_EDIT:
+      case DialogMode.PROJECT_EDIT:
         console.log('submitted EDIT PROJECT with', postData)
         break
     }
@@ -200,7 +200,7 @@ const ProjectDialog = ({
     onSubmit
   }
 
-  return type === DIALOG_TYPE.PROJECT_CREATE ? (
+  return type === DialogMode.PROJECT_CREATE ? (
     <CreateProjectDialog {...dialogProps} />
   ) : (
     <EditProjectDialog {...dialogProps} />

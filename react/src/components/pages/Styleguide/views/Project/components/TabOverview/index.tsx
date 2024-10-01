@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { _t, getInitials } from '@cf/utility/utilityFunctions'
 import MenuButton, {
@@ -25,22 +25,22 @@ import {
   PermissionThumbnail
 } from './styles'
 import {
-  projectPermission_ROLE,
   PermissionUserType,
-  ProjectDetailsType
+  ProjectDetailsType,
+  ProjectPermissionRole
 } from '../../types'
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
-    name: projectPermission_ROLE.EDITOR,
+    name: ProjectPermissionRole.EDITOR,
     label: 'Editor'
   },
   {
-    name: projectPermission_ROLE.COMMENTER,
+    name: ProjectPermissionRole.COMMENTER,
     label: 'Commenter'
   },
   {
-    name: projectPermission_ROLE.VIEWER,
+    name: ProjectPermissionRole.VIEWER,
     label: 'Viewer'
   }
 ]
@@ -89,7 +89,7 @@ const OverviewTab = ({
                   <ListItemText primary={perm.name} secondary={perm.email} />
                   <MenuButton
                     selected={perm.role}
-                    disabled={perm.role === projectPermission_ROLE.OWNER}
+                    disabled={perm.role === ProjectPermissionRole.OWNER}
                     options={[
                       ...roleMenuOptions,
                       {
@@ -100,13 +100,13 @@ const OverviewTab = ({
                         label: 'Remove user',
                         onClick: () => {
                           setRemoveUser(perm)
-                          dispatch(DIALOG_TYPE.PROJECT_REMOVE_USER)
+                          dispatch(DialogMode.PROJECT_REMOVE_USER)
                         }
                       }
                     ]}
                     onChange={(role) => console.log('changed to', role)}
                     placeholder={
-                      perm.role === projectPermission_ROLE.OWNER
+                      perm.role === ProjectPermissionRole.OWNER
                         ? 'Owner'
                         : roleMenuOptions.find((p) => p.name === perm.role)
                             ?.label
@@ -134,7 +134,7 @@ const OverviewTab = ({
             <Button
               size="medium"
               variant="contained"
-              onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
+              onClick={() => dispatch(DialogMode.ADD_CONTRIBUTOR)}
             >
               {_t('Add contributor')}
             </Button>

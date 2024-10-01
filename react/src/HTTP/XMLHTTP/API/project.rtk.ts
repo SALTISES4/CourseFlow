@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { CreateProjectArgs } from '@XMLHTTP/types/args'
+import { ObjectSetType } from '@cf/types/common'
 import { EProject } from '@XMLHTTP/types/entity'
 import { generatePath } from 'react-router-dom'
 
@@ -18,6 +18,16 @@ export type CreateProjectResp = {
   dataPackage: {
     id: number
   }
+}
+
+export interface CreateProjectArgs {
+  description: string
+  title: string
+  disciplines: number[]
+  objectSets: ObjectSetType[]
+}
+export interface UpdateProjectArgs extends CreateProjectArgs {
+  id: number
 }
 
 /*******************************************************
@@ -47,10 +57,21 @@ const extendedApi = cfApi.injectEndpoints({
      *******************************************************/
     createProject: builder.mutation<CreateProjectResp, CreateProjectArgs>({
       query: (args) => {
-        const base = apiPaths.json_api.workflow.update
+        const url = apiPaths.json_api.project.create
         return {
           method: Verb.POST,
-          url: apiPaths.json_api.project.create,
+          url,
+          body: args
+        }
+      }
+    }),
+    updateProject: builder.mutation<CreateProjectResp, UpdateProjectArgs>({
+      query: (args) => {
+        const base = apiPaths.json_api.project.update
+        const url = generatePath(base, { id: args.id })
+        return {
+          method: Verb.POST,
+          url,
           body: args
         }
       }
@@ -59,4 +80,8 @@ const extendedApi = cfApi.injectEndpoints({
   overrideExisting: false
 })
 
-export const { useGetProjectByIdQuery, useCreateProjectMutation } = extendedApi
+export const {
+  useGetProjectByIdQuery,
+  useCreateProjectMutation,
+  useUpdateProjectMutation
+} = extendedApi

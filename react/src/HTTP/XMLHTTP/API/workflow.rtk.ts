@@ -1,16 +1,12 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { LibraryObjectType, WorkSpaceType } from '@cf/types/enum'
-import {
-  WorkflowPermission,
-  calcWorkflowPermissions
-} from '@cf/utility/permissions'
+import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { TWorkflow } from '@cfRedux/types/type'
 import {
   WorkflowChildDataPackage,
   WorkflowDataPackage,
   WorkflowParentDataPackage
 } from '@XMLHTTP/types'
-import { UpdateWorkflowArgs } from '@XMLHTTP/types/args'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
@@ -41,6 +37,13 @@ export type WorkflowParentDataQueryResp = {
 export type WorkflowChildDataQueryResp = {
   message: string
   dataPackage: WorkflowChildDataPackage
+}
+
+export type UpdateWorkflowArgs = {
+  description: string
+  duration: string
+  title: string
+  units: number
 }
 
 /*******************************************************

@@ -1,5 +1,5 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
@@ -13,7 +13,7 @@ type PropsType = {
 }
 
 const PasswordResetDialog = ({ onSubmit }: PropsType) => {
-  const { show, onClose } = useDialog(DIALOG_TYPE.PASSWORD_RESET)
+  const { show, onClose } = useDialog(DialogMode.PASSWORD_RESET)
 
   return (
     <StyledDialog

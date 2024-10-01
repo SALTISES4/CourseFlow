@@ -1,15 +1,15 @@
 // @ts-nocheck
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
 import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
+import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import CourseForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse'
 import { CourseFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse/types'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
-import { CREATE_RESOURCE_TYPE } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
-import { StyledDialog, StyledBox } from '@cfComponents/dialog/styles'
+import { CreateResourceOptions } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -27,7 +27,7 @@ type PropsType = CreateCourseDataType & Pick<CourseFormDataType, 'units'>
 
 type StateType = {
   step: number
-  type: CREATE_RESOURCE_TYPE
+  type: CreateResourceOptions
   project?: number
   template?: number
   fields: Omit<CourseFormDataType, 'units'> & {
@@ -37,7 +37,7 @@ type StateType = {
 
 const initialState: StateType = {
   step: 0,
-  type: CREATE_RESOURCE_TYPE.BLANK,
+  type: CreateResourceOptions.BLANK,
   fields: {
     title: '',
     description: '',
@@ -56,7 +56,7 @@ const initialState: StateType = {
 
 const CourseCreateDialog = ({ steps, units }: PropsType) => {
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.COURSE_CREATE)
+  const { show, onClose } = useDialog(DialogMode.COURSE_CREATE)
   const [projects, setProjectData] = useState<ProjectType[]>(null)
   const [templates, setTemplateData] = useState<TemplateType[]>(null)
 
@@ -64,7 +64,7 @@ const CourseCreateDialog = ({ steps, units }: PropsType) => {
   const dialogTitle = [
     'Select a project',
     'Select a course type',
-    state.type === CREATE_RESOURCE_TYPE.TEMPLATE
+    state.type === CreateResourceOptions.TEMPLATE
       ? 'Create a course from a template'
       : 'Create a blank course'
   ][state.step]
@@ -79,7 +79,7 @@ const CourseCreateDialog = ({ steps, units }: PropsType) => {
 
     // step 3: check if the template is selected for when creating from template
     // or if creating manually, check that the title field is added
-    state.type === CREATE_RESOURCE_TYPE.TEMPLATE
+    state.type === CreateResourceOptions.TEMPLATE
       ? !state.template
       : state.fields
       ? !state.fields.title
@@ -110,7 +110,7 @@ const CourseCreateDialog = ({ steps, units }: PropsType) => {
     )
   }
 
-  function onTypeSelect(type: CREATE_RESOURCE_TYPE) {
+  function onTypeSelect(type: CreateResourceOptions) {
     setState(
       produce((draft) => {
         draft.type = type
@@ -199,7 +199,7 @@ const CourseCreateDialog = ({ steps, units }: PropsType) => {
               onTypeSelect={onTypeSelect}
             />
           )}
-          {state.step === 2 && state.type === CREATE_RESOURCE_TYPE.BLANK && (
+          {state.step === 2 && state.type === CreateResourceOptions.BLANK && (
             <CourseForm
               wrapAs="div"
               values={state.fields}
@@ -209,7 +209,7 @@ const CourseCreateDialog = ({ steps, units }: PropsType) => {
               onUnitChange={onUnitChange}
             />
           )}
-          {state.step === 2 && state.type === CREATE_RESOURCE_TYPE.TEMPLATE && (
+          {state.step === 2 && state.type === CreateResourceOptions.TEMPLATE && (
             <TemplateSearch
               selected={state.template}
               setTemplateData={setTemplateData}

@@ -12,7 +12,7 @@ import {
   CardWrap
 } from './styles'
 
-export enum CHIP_TYPE {
+export enum ChipOptions {
   PROJECT = 'project',
   PROGRAM = 'program',
   COURSE = 'course',
@@ -22,7 +22,7 @@ export enum CHIP_TYPE {
 }
 
 export type WorkflowCardChipType = {
-  type: CHIP_TYPE
+  type: ChipOptions
   label: string
 }
 

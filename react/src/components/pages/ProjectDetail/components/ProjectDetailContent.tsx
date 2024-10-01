@@ -1,7 +1,7 @@
 // @ts-nocheck
 // import WorkflowFilter from '@cfComponents/filters/WorkflowFilter'
 import ProjectExportDialog from '@cf/components/common/dialog/Workspace/ProjectExportDialog'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import ProjectEditDialog from '@cfComponents/dialog/_LEGACY/ProjectEditDialog'
@@ -178,7 +178,7 @@ function ProjectDetailContent({
       return (
         <div
           className="hover-shade"
-          onClick={() => dispatch(DIALOG_TYPE.PROJECT_ARCHIVE)}
+          onClick={() => dispatch(DialogMode.PROJECT_ARCHIVE)}
         >
           <div>{_t('Archive project')}</div>
         </div>
@@ -202,7 +202,7 @@ function ProjectDetailContent({
         <div
           id="export-button"
           className="hover-shade"
-          onClick={() => dispatch(DIALOG_TYPE.PROJECT_EXPORT)}
+          onClick={() => dispatch(DialogMode.PROJECT_EXPORT)}
           // onClick={openExportDialog}
         >
           <div>{_t('Export')}</div>

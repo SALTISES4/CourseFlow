@@ -28,6 +28,7 @@ export const apiPathRoutes = {
     project: {
       create: '/project/create',
       detail: '/project/:id/detail',
+      update: '/project/:id/update',
       duplicate: '/project/:id/duplicate',
       object_set__create: 'project/:id/object-set/create',
       list__by_current_user: 'project/my-projects',

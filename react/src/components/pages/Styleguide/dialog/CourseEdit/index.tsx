@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import CourseForm from '@cfPages/Styleguide/dialog/CreateWizard/components/FormCourse'
 import { CourseFormDataType } from '@cfPages/Styleguide/dialog/CreateWizard/components/FormCourse/types'
 import { StyledDialog } from '@cfPages/Styleguide/dialog/styles'
@@ -26,7 +26,7 @@ const EditCourseDialog = (data: CourseFormDataType) => {
   }
 
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.COURSE_EDIT)
+  const { show, onClose } = useDialog(DialogMode.COURSE_EDIT)
 
   function onInfoChange(e: ChangeEvent<HTMLInputElement>) {
     const property = e.target.name as keyof Omit<

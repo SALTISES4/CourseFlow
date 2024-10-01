@@ -2,7 +2,7 @@ import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 import { _t, convertEnum } from '@cf/utility/utilityFunctions'
 import {
-  CHIP_TYPE,
+  ChipOptions,
   WorkflowCardChipType
 } from '@cfComponents/cards/WorkflowCardDumb'
 import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
@@ -12,8 +12,8 @@ import { ELibraryObject } from '@XMLHTTP/types/entity'
  * this thin wrapper is for when we move CHIP_TYPE away from the domain
  * @param type
  */
-function mapChipType(type: LibraryObjectType): CHIP_TYPE {
-  return convertEnum<CHIP_TYPE>(type, CHIP_TYPE, CHIP_TYPE.DEFAULT)
+function mapChipType(type: LibraryObjectType): ChipOptions {
+  return convertEnum<ChipOptions>(type, ChipOptions, ChipOptions.DEFAULT)
 }
 
 function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
@@ -41,7 +41,7 @@ function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
   const isTemplate = workflow.isTemplate
   if (isTemplate)
     return {
-      type: CHIP_TYPE.TEMPLATE,
+      type: ChipOptions.TEMPLATE,
       label: _t('Template')
     }
   return null
@@ -54,7 +54,7 @@ function getWorkflowCountChip(workflow: ELibraryObject): WorkflowCardChipType {
     workflow.workflowCount > 0
   ) {
     return {
-      type: CHIP_TYPE.DEFAULT,
+      type: ChipOptions.DEFAULT,
       label: `${workflow.workflowCount} ${_t(
         `workflow` + (workflow.workflowCount > 1 ? 's' : '')
       )}`

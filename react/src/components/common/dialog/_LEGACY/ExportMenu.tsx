@@ -2,9 +2,9 @@
 // TODO: Deprecate/remove this component in favor of "ExportProject" dialog
 // which could be renamed since the same dialog appears when exporting workflows
 
+import {apiPaths} from "@cf/router/apiRoutes";
 import { _t } from '@cf/utility/utilityFunctions'
 import * as React from 'react'
-import {apiPaths} from "@cf/router/apiRoutes";
 // import $ from 'jquery'
 
 type StateProps = {

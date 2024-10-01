@@ -1,3 +1,4 @@
+import { OutcomeTitle } from '@cf/components/common/UIPrimitives/Titles.ts'
 import { _t } from '@cf/utility/utilityFunctions'
 import { WeekTitle } from '@cfComponents/UIPrimitives/Titles'
 import {
@@ -12,7 +13,6 @@ import { connect } from 'react-redux'
 
 import AlignmentHorizontalReverseBlock from './AlignmentHorizontalReverseBlock'
 import AlignmentOutcomesBlock from './AlignmentOutcomesBlock'
-import { OutcomeTitle } from '@cf/components/common/UIPrimitives/Titles.ts'
 
 type ConnectedProps = {
   data: any

@@ -1,7 +1,7 @@
 import { FilterOption } from '@cfPages/Styleguide/components/FilterButton'
 import { ResultType } from '@cfPages/Styleguide/components/FilterWorkflows'
 import { PropsType as WorkflowCardDumbPropsType } from '@cfPages/Styleguide/components/WorkflowCard'
-import { CHIP_TYPE } from '@cfPages/Styleguide/components/WorkflowCard/types'
+import { ChipMode } from '@cfPages/Styleguide/components/WorkflowCard/types'
 import homepageData from '@cfPages/Styleguide/views/Homepage/data'
 
 type DataType = {
@@ -55,7 +55,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Active Activity',
       chip: {
-        type: CHIP_TYPE.ACTIVITY,
+        type: ChipMode.ACTIVITY,
         label: 'Activity'
       }
     },
@@ -64,7 +64,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Act as a project',
       chip: {
-        type: CHIP_TYPE.PROJECT,
+        type: ChipMode.PROJECT,
         label: 'Project'
       }
     },
@@ -73,7 +73,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Le programming course',
       chip: {
-        type: CHIP_TYPE.COURSE,
+        type: ChipMode.COURSE,
         label: 'Course'
       }
     },
@@ -82,7 +82,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Pro gramming',
       chip: {
-        type: CHIP_TYPE.PROGRAM,
+        type: ChipMode.PROGRAM,
         label: 'Program'
       }
     },
@@ -91,7 +91,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Stay on course',
       chip: {
-        type: CHIP_TYPE.COURSE,
+        type: ChipMode.COURSE,
         label: 'Course'
       }
     },
@@ -100,7 +100,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Projecting failure',
       chip: {
-        type: CHIP_TYPE.PROJECT,
+        type: ChipMode.PROJECT,
         label: 'Project'
       }
     },
@@ -109,7 +109,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Programmable and flammable',
       chip: {
-        type: CHIP_TYPE.PROGRAM,
+        type: ChipMode.PROGRAM,
         label: 'Program'
       }
     },
@@ -118,7 +118,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Why is this course so hard',
       chip: {
-        type: CHIP_TYPE.COURSE,
+        type: ChipMode.COURSE,
         label: 'Course'
       }
     },
@@ -127,7 +127,7 @@ const data: DataType = {
       group: 'Biology 101 is super super long here',
       name: 'The activities are killing me with all these long titles',
       chip: {
-        type: CHIP_TYPE.ACTIVITY,
+        type: ChipMode.ACTIVITY,
         label: 'Activity'
       }
     },
@@ -136,7 +136,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Programming is da best',
       chip: {
-        type: CHIP_TYPE.PROGRAM,
+        type: ChipMode.PROGRAM,
         label: 'Program'
       }
     },
@@ -145,7 +145,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'This is a super nice project',
       chip: {
-        type: CHIP_TYPE.PROJECT,
+        type: ChipMode.PROJECT,
         label: 'Project'
       }
     },
@@ -154,7 +154,7 @@ const data: DataType = {
       group: 'Biology 101',
       name: 'Courseflow course',
       chip: {
-        type: CHIP_TYPE.COURSE,
+        type: ChipMode.COURSE,
         label: 'Course'
       }
     }

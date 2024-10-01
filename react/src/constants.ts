@@ -155,7 +155,7 @@ export const permissionKeys = {
   student: 4
 }
 
-export enum PERMISSION_KEYS {
+export enum PermissionKeys {
   NONE,
   VIEW,
   EDIT,

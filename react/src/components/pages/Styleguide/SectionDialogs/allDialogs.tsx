@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { DIALOG_TYPE } from '@cf/hooks/useDialog'
+import { DialogMode } from '@cf/hooks/useDialog'
 import ActivityCreateDialog from '@cfPages/Styleguide/dialog/ActivityCreate'
 import createActivityData from '@cfPages/Styleguide/dialog/ActivityCreate/data'
 import ActivityEditDialog from '@cfPages/Styleguide/dialog/ActivityEdit'
@@ -27,12 +27,12 @@ const AllDialogs = () => (
   <>
     <ProjectCreateEditDialog
       {...createProjectData}
-      type={DIALOG_TYPE.PROJECT_CREATE}
+      type={DialogMode.PROJECT_CREATE}
     />
 
     <ProjectCreateEditDialog
       {...editProjectData}
-      type={DIALOG_TYPE.PROJECT_EDIT}
+      type={DialogMode.PROJECT_EDIT}
     />
 
     <ProjectExportDialog project={exportProjectData} />

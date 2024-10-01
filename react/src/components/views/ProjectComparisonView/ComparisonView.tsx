@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { ObjectSet } from '@cf/types/common'
+import { EObjectSet } from '@cf/types/common'
 import { CfObjectType, WFContext, WorkflowViewType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
 // import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
@@ -28,7 +28,7 @@ import * as reactDom from 'react-dom'
  * When a workflow is added a WorkflowComparisonRenderer component is created.
  */
 
-type ObjectSetsType = ObjectSet & {
+type ObjectSetsType = EObjectSet & {
   hidden?: boolean
 }
 

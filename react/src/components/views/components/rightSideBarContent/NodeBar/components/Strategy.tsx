@@ -1,4 +1,5 @@
 // @ts-ignore
+import {apiPaths} from "@cf/router/apiRoutes";
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
@@ -7,7 +8,6 @@ import { TStrategyByID, getStrategyByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {apiPaths} from "@cf/router/apiRoutes";
 // import $ from 'jquery'
 
 /**

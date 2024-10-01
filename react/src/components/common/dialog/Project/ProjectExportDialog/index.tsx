@@ -1,5 +1,5 @@
-import { StyledDialog, StyledBox } from '@cf/components/common/dialog/styles'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Button from '@mui/material/Button'
@@ -84,7 +84,7 @@ function ProjectExportDialog(data: EProject) {
     format: EXPORT_FORMAT.EXCEL,
     sets: data.objectSets.map((set) => set.id)
   })
-  const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_EXPORT)
+  const { show, onClose } = useDialog(DialogMode.PROJECT_EXPORT)
 
   function onRadioChange(
     field: 'type' | 'format',

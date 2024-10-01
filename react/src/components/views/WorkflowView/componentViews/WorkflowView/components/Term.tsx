@@ -1,4 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 import { TTermByID, getTermByID } from '@cfFindState'
 // import $ from 'jquery'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
@@ -9,7 +10,6 @@ import {
 } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 
 type OwnProps = {
   objectId: number

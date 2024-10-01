@@ -1,6 +1,7 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
@@ -9,7 +10,6 @@ import { AppState } from '@cfRedux/types/type'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 // import $ from 'jquery'
 
 type TableCellPropsType = {

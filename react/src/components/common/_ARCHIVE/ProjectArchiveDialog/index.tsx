@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
@@ -12,7 +12,7 @@ type PropsType = {
 }
 
 const ProjectArchiveDialog = ({ onSubmit }: PropsType) => {
-  const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_ARCHIVE)
+  const { show, onClose } = useDialog(DialogMode.PROJECT_ARCHIVE)
 
   return (
     <StyledDialog

@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { PermissionUserType } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
@@ -10,7 +10,7 @@ import MenuButton, {
 import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
 import {
   ProjectDetailsType,
-  projectPermission_ROLE
+  ProjectPermissionRole
 } from '@cfPages/Styleguide/views/Project/types'
 import LinkIcon from '@mui/icons-material/Link'
 import Avatar from '@mui/material/Avatar'
@@ -38,15 +38,15 @@ import {
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
-    name: projectPermission_ROLE.EDITOR,
+    name: ProjectPermissionRole.EDITOR,
     label: _t('Editor')
   },
   {
-    name: projectPermission_ROLE.COMMENTER,
+    name: ProjectPermissionRole.COMMENTER,
     label: _t('Commenter')
   },
   {
-    name: projectPermission_ROLE.VIEWER,
+    name: ProjectPermissionRole.VIEWER,
     label: _t('Viewer')
   }
 ]
@@ -94,7 +94,7 @@ const OverviewTab = ({
               <ListItemText primary={user.name} secondary={user.email} />
               <MenuButton
                 selected={user.role}
-                disabled={user.role === projectPermission_ROLE.OWNER}
+                disabled={user.role === ProjectPermissionRole.OWNER}
                 options={[
                   ...roleMenuOptions,
                   {
@@ -105,13 +105,13 @@ const OverviewTab = ({
                     label: 'Remove user',
                     onClick: () => {
                       setRemoveUser(user)
-                      dispatch(DIALOG_TYPE.PROJECT_REMOVE_USER)
+                      dispatch(DialogMode.PROJECT_REMOVE_USER)
                     }
                   }
                 ]}
                 onChange={(role) => console.log('changed to', role)}
                 placeholder={
-                  user.role === projectPermission_ROLE.OWNER
+                  user.role === ProjectPermissionRole.OWNER
                     ? 'Owner'
                     : roleMenuOptions.find((p) => p.name === user.role)?.label
                 }
@@ -196,7 +196,7 @@ const OverviewTab = ({
           <Button
             size="medium"
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
+            onClick={() => dispatch(DialogMode.ADD_CONTRIBUTOR)}
           >
             {_t('Add contributor')}
           </Button>

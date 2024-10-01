@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { StyledDialog } from '@cfComponents/dialog/styles'
@@ -78,7 +78,7 @@ const WorkflowEditDialog = () => {
   }
 
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.WORKFLOW_EDIT)
+  const { show, onClose } = useDialog(DialogMode.WORKFLOW_EDIT)
 
   /*******************************************************
    * QUERIES

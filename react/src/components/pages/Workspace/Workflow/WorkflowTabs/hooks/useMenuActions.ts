@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { EventUnion } from '@cf/types/common'
 import { CfObjectType, WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -16,7 +16,7 @@ export const useMenuActions = () => {
    *******************************************************/
   function openEditMenu(evt: EventUnion) {
     // this.selectionManager.changeSelection(evt, this)
-    dispatchDialog(DIALOG_TYPE.WORKFLOW_EDIT)
+    dispatchDialog(DialogMode.WORKFLOW_EDIT)
   }
 
   // REFERENCE ORIGINAL DATA
@@ -34,31 +34,31 @@ export const useMenuActions = () => {
   //             importType: 'nodes'
   //           }}
   function importOutcomes() {
-    dispatchDialog(DIALOG_TYPE.IMPORT_OUTCOMES)
+    dispatchDialog(DialogMode.IMPORT_OUTCOMES)
   }
 
   function importNodes() {
-    dispatchDialog(DIALOG_TYPE.IMPORT_NODES)
+    dispatchDialog(DialogMode.IMPORT_NODES)
   }
 
   function openShareDialog() {
-    dispatchDialog(DIALOG_TYPE.ADD_CONTRIBUTOR)
+    dispatchDialog(DialogMode.ADD_CONTRIBUTOR)
   }
 
   function openExportDialog() {
-    dispatchDialog(DIALOG_TYPE.PROJECT_EXPORT)
+    dispatchDialog(DialogMode.PROJECT_EXPORT)
   }
 
   function archiveWorkflow() {
-    dispatchDialog(DIALOG_TYPE.WORKFLOW_ARCHIVE)
+    dispatchDialog(DialogMode.WORKFLOW_ARCHIVE)
   }
 
   function restoreWorkflow() {
-    dispatchDialog(DIALOG_TYPE.RESTORE)
+    dispatchDialog(DialogMode.RESTORE)
   }
 
   function copyToProject() {
-    dispatchDialog(DIALOG_TYPE.WORKFLOW_COPY_TO_PROJECT)
+    dispatchDialog(DialogMode.WORKFLOW_COPY_TO_PROJECT)
   }
 
   /*******************************************************

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import ActivityForm from '@cfPages/Styleguide/dialog/CreateWizard/components/FormActivity'
 import { ActivityFormDataType } from '@cfPages/Styleguide/dialog/CreateWizard/components/FormActivity/types'
 import { StyledDialog } from '@cfPages/Styleguide/dialog/styles'
@@ -24,7 +24,7 @@ const EditActivityDialog = (data: ActivityFormDataType) => {
   }
 
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.ACTIVITY_EDIT)
+  const { show, onClose } = useDialog(DialogMode.ACTIVITY_EDIT)
 
   function onInfoChange(e: ChangeEvent<HTMLInputElement>) {
     const property = e.target.name as keyof StateType

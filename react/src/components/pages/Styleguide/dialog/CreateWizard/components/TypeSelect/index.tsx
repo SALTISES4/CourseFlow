@@ -4,12 +4,12 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
 import { TypeBlock } from './styles'
-import { CREATE_RESOURCE_TYPE } from '../../types'
+import { CreateResourceOptions } from '../../types'
 
 type PropsType = {
   resourceLabel: 'course' | 'activity' | 'program'
-  type: CREATE_RESOURCE_TYPE
-  onTypeSelect: (type: CREATE_RESOURCE_TYPE) => void
+  type: CreateResourceOptions
+  onTypeSelect: (type: CreateResourceOptions) => void
 }
 
 const TypeSelect = ({ resourceLabel, type, onTypeSelect }: PropsType) => {
@@ -17,8 +17,8 @@ const TypeSelect = ({ resourceLabel, type, onTypeSelect }: PropsType) => {
     <Stack direction="row" spacing={2}>
       <TypeBlock
         tabIndex={0}
-        selected={type === CREATE_RESOURCE_TYPE.BLANK}
-        onClick={() => onTypeSelect(CREATE_RESOURCE_TYPE.BLANK)}
+        selected={type === CreateResourceOptions.BLANK}
+        onClick={() => onTypeSelect(CreateResourceOptions.BLANK)}
       >
         <Stack direction="row" spacing={2}>
           <DashboardCustomizeIcon />
@@ -35,8 +35,8 @@ const TypeSelect = ({ resourceLabel, type, onTypeSelect }: PropsType) => {
       </TypeBlock>
       <TypeBlock
         tabIndex={0}
-        selected={type === CREATE_RESOURCE_TYPE.TEMPLATE}
-        onClick={() => onTypeSelect(CREATE_RESOURCE_TYPE.TEMPLATE)}
+        selected={type === CreateResourceOptions.TEMPLATE}
+        onClick={() => onTypeSelect(CreateResourceOptions.TEMPLATE)}
       >
         <Stack direction="row" spacing={2}>
           <RocketLaunchIcon />

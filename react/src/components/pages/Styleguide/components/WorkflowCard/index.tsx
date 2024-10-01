@@ -13,10 +13,10 @@ import {
   CardTitle,
   CardWrap
 } from './styles'
-import { CHIP_TYPE } from './types'
+import { ChipMode } from './types'
 
 export type WorklowCardChipType = {
-  type: CHIP_TYPE
+  type: ChipMode
   label: string
 }
 

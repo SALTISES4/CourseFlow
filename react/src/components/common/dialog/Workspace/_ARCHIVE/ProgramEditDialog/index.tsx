@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
+import { StyledDialog } from '@cfComponents/dialog/styles'
 import ProgramForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram'
 import { ProgramFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram/types'
-import { StyledDialog } from '@cfComponents/dialog/styles'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -25,7 +25,7 @@ const ProgramEditDialog = (data: ProgramFormDataType) => {
   }
 
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.PROGRAM_EDIT)
+  const { show, onClose } = useDialog(DialogMode.PROGRAM_EDIT)
 
   function onInfoChange(e: ChangeEvent<HTMLInputElement>) {
     const property = e.target.name as keyof StateType

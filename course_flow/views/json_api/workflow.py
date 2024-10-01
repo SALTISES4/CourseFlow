@@ -232,7 +232,9 @@ class WorkflowEndpoint:
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            logger.exception("")
+            logger.exception(
+                f"Bad error encountered with errors: {serializer.errors}"
+            )
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,

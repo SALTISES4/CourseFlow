@@ -605,7 +605,7 @@ class WorkspaceEndpoint:
                     raise ValidationError("Uknown component type")
         except ValidationError as e:
             logger.exception("An error occurred")
-            return JsonResponse({"error": "ObjectDoesNotExist"}, status=400)
+            return Response({"error": "ObjectDoesNotExist"}, status=400)
 
         response_data = {
             "new_model": new_model_serialized,

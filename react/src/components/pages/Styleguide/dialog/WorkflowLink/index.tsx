@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import ProjectSearch from '@cfPages/Styleguide/dialog/CreateWizard/components/ProjectSearch'
 import { ProjectType } from '@cfPages/Styleguide/dialog/CreateWizard/components/ProjectSearch/types'
 import Button from '@mui/material/Button'
@@ -16,7 +16,7 @@ type PropsType = {
 
 const WorkflowLinkDialog = ({ projects, onSubmit }: PropsType) => {
   const [project, setProject] = useState<number>()
-  const { show, onClose } = useDialog(DIALOG_TYPE.WORKFLOW_LINK)
+  const { show, onClose } = useDialog(DialogMode.WORKFLOW_LINK)
 
   function handleSubmit() {
     if (project) {

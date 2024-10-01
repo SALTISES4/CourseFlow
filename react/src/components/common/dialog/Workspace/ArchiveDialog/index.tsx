@@ -1,5 +1,5 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { WorkSpaceType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -23,8 +23,8 @@ const ArchiveDialog = () => {
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const { type, show, onClose } = useDialog([
-    DIALOG_TYPE.PROJECT_ARCHIVE,
-    DIALOG_TYPE.WORKFLOW_ARCHIVE
+    DialogMode.PROJECT_ARCHIVE,
+    DialogMode.WORKFLOW_ARCHIVE
   ])
 
   const [mutate, { isError, isSuccess, error }] = useArchiveMutation()
@@ -50,10 +50,10 @@ const ArchiveDialog = () => {
 
   let resourceType: WorkSpaceType = null
   switch (type) {
-    case DIALOG_TYPE.PROJECT_ARCHIVE:
+    case DialogMode.PROJECT_ARCHIVE:
       resourceType = WorkSpaceType.PROJECT
       break
-    case DIALOG_TYPE.WORKFLOW_ARCHIVE:
+    case DialogMode.WORKFLOW_ARCHIVE:
       resourceType = WorkSpaceType.WORKFLOW
       break
   }

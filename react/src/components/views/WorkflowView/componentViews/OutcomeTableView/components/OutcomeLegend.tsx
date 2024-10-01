@@ -1,9 +1,9 @@
 import LegendLine from '@cf/components/common/UIPrimitives/LegendLine'
+import {apiPaths} from "@cf/router/apiRoutes";
 import { AppState } from '@cfRedux/types/type.js'
 import { WorkflowLegendUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WorkflowLegend'
 import * as React from 'react'
 import { connect } from 'react-redux'
-import {apiPaths} from "@cf/router/apiRoutes";
 
 type ConnectedProps = {
   outcomesType: any

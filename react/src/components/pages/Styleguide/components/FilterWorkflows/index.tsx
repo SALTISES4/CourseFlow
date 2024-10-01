@@ -1,5 +1,5 @@
 import { CardChip } from '@cfPages/Styleguide/components/WorkflowCard/styles'
-import { CHIP_TYPE } from '@cfPages/Styleguide/components/WorkflowCard/types'
+import { ChipMode } from '@cfPages/Styleguide/components/WorkflowCard/types'
 import CancelIcon from '@mui/icons-material/Cancel'
 import SearchIcon from '@mui/icons-material/Search'
 import { debounce } from '@mui/material'
@@ -32,7 +32,7 @@ export type ResultType = {
   group: string
   name: string
   chip: {
-    type: CHIP_TYPE
+    type: ChipMode
     label: string
   }
 }

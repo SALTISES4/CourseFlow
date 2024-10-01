@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import SearchIcon from '@mui/icons-material/Search'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
@@ -14,7 +14,7 @@ import RadioGroup from '@mui/material/RadioGroup'
 import TextField from '@mui/material/TextField'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 
-import { StyledDialog, StyledBox } from '../styles'
+import { StyledBox, StyledDialog } from '../styles'
 
 interface IFormInputs {
   contributor: Contributor | null
@@ -37,7 +37,7 @@ export type PropsType = {
 }
 
 const AddContributorDialog = ({ contributors, roles }: PropsType) => {
-  const { show, onClose } = useDialog(DIALOG_TYPE.ADD_CONTRIBUTOR)
+  const { show, onClose } = useDialog(DialogMode.ADD_CONTRIBUTOR)
 
   const { control, handleSubmit, reset, watch } = useForm<IFormInputs>({
     defaultValues: {

@@ -1,4 +1,4 @@
-import { CHIP_TYPE } from '@cfPages/Styleguide/components/WorkflowCard/types'
+import { ChipMode } from '@cfPages/Styleguide/components/WorkflowCard/types'
 
 export type ProjectType = {
   id: number
@@ -7,7 +7,7 @@ export type ProjectType = {
   isSelected: boolean
   isFavourite: boolean
   chips: {
-    type: CHIP_TYPE
+    type: ChipMode
     label: string
   }[]
 }

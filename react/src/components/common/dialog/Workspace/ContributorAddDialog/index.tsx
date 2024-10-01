@@ -1,5 +1,5 @@
-import { StyledDialog, StyledBox } from '@cf/components/common/dialog/styles'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -36,7 +36,7 @@ export type PropsType = {
 }
 
 const ContributorAddDialog = ({ contributors, roles }: PropsType) => {
-  const { show, onClose } = useDialog(DIALOG_TYPE.ADD_CONTRIBUTOR)
+  const { show, onClose } = useDialog(DialogMode.ADD_CONTRIBUTOR)
 
   const { control, handleSubmit, reset, watch } = useForm<IFormInputs>({
     defaultValues: {

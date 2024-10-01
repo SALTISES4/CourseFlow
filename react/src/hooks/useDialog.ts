@@ -2,7 +2,7 @@ import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
 import { useContext } from 'react'
 import * as React from 'react'
 
-export enum DIALOG_TYPE {
+export enum DialogMode {
   // General
   LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
@@ -51,7 +51,7 @@ export enum DIALOG_TYPE {
  * in order to trigger an event that shows a modal.
  */
 
-type PossibleDialogTypes = DIALOG_TYPE | DIALOG_TYPE[] | null
+type PossibleDialogTypes = DialogMode | DialogMode[] | null
 
 export function useDialog(dialogType: PossibleDialogTypes = null) {
   const dialogContext = useContext(DialogContext)

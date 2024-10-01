@@ -1,5 +1,6 @@
 import json
 import logging
+from pprint import pprint
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
@@ -20,6 +21,7 @@ from course_flow.models.objectPermission import Permission
 from course_flow.serializers.project import (
     CreateProjectSerializer,
     ProjectSerializerShallow,
+    UpdateProjectSerializer,
 )
 from course_flow.serializers.workflow import InfoBoxSerializer
 from course_flow.services import DAO
@@ -45,6 +47,39 @@ class ProjectEndpoint:
                 status=status.HTTP_201_CREATED,
             )
         else:
+            logger.exception(
+                f"Bad error encountered with errors: {serializer.errors}"
+            )
+            return Response(
+                {"error": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    #########################################################
+    # UPDATE
+    #########################################################
+    @staticmethod
+    @api_view(["POST"])
+    def update(request: Request, pk: int) -> Response:
+        try:
+            project = Project.objects.get(id=pk)
+        except Project.DoesNotExist:
+            return Response(
+                {"error": "Project not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = UpdateProjectSerializer(project, data=request.data)
+        if serializer.is_valid():
+            project = serializer.save()
+            return Response(
+                {"message": "success", "data_package": {"id": project.id}},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            logger.exception(
+                f"Bad error encountered with errors: {serializer.errors}"
+            )
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -155,12 +190,12 @@ class ProjectEndpoint:
 
         except AttributeError as e:
             logger.exception("An error occurred")
-        return Response(
-            {
-                "error": "you have error",
-            },
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         return Response(
             {
@@ -193,12 +228,12 @@ class ProjectEndpoint:
             )
         except ValidationError as e:
             logger.exception("An error occurred")
-        return Response(
-            {
-                "error": "you have error",
-            },
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+            return Response(
+                {
+                    "error": "you have error",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
         return Response(
             {
                 "message": "success",

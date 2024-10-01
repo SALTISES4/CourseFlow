@@ -1,4 +1,4 @@
-import { CHIP_TYPE } from '@cf/components/common/cards/WorkflowCardDumb'
+import { ChipOptions } from '@cf/components/common/cards/WorkflowCardDumb'
 
 const data = {
   projects: [],
@@ -10,11 +10,11 @@ const data = {
       isFavourite: true,
       chips: [
         {
-          type: CHIP_TYPE.PROJECT,
+          type: ChipOptions.PROJECT,
           label: 'Project'
         },
         {
-          type: CHIP_TYPE.PROGRAM,
+          type: ChipOptions.PROGRAM,
           label: 'Program'
         }
       ]
@@ -26,11 +26,11 @@ const data = {
       isFavourite: true,
       chips: [
         {
-          type: CHIP_TYPE.COURSE,
+          type: ChipOptions.COURSE,
           label: 'Course'
         },
         {
-          type: CHIP_TYPE.ACTIVITY,
+          type: ChipOptions.ACTIVITY,
           label: 'Activity'
         }
       ]
@@ -42,11 +42,11 @@ const data = {
       isFavourite: true,
       chips: [
         {
-          type: CHIP_TYPE.TEMPLATE,
+          type: ChipOptions.TEMPLATE,
           label: 'Template'
         },
         {
-          type: CHIP_TYPE.DEFAULT,
+          type: ChipOptions.DEFAULT,
           label: 'Default'
         }
       ]
@@ -58,7 +58,7 @@ const data = {
       isFavourite: true,
       chips: [
         {
-          type: CHIP_TYPE.DEFAULT,
+          type: ChipOptions.DEFAULT,
           label: 'Leave me alone'
         }
       ]

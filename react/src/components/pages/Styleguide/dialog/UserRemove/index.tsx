@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { PermissionUserType } from '@cf/types/common'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -13,7 +13,7 @@ type PropsType = {
 }
 
 const UserRemoveFromProject = ({ user }: PropsType) => {
-  const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_REMOVE_USER)
+  const { show, onClose } = useDialog(DialogMode.PROJECT_REMOVE_USER)
 
   function onSubmit() {
     console.log('confirmed removing user:', user)

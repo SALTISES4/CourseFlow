@@ -1,6 +1,6 @@
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType, WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
@@ -22,7 +22,7 @@ const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()
 
   return (
-    <Button onClick={() => dispatch(DIALOG_TYPE.LINK_WORKFLOW)}>
+    <Button onClick={() => dispatch(DialogMode.LINK_WORKFLOW)}>
       {_t('Change')}
     </Button>
   )

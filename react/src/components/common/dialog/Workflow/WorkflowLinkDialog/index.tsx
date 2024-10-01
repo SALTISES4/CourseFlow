@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import WorkflowsMenu from '@cfComponents/dialog/_LEGACY/WorkflowsMenu'
 import Dialog from '@mui/material/Dialog'
@@ -9,7 +9,7 @@ import { LinkedWorkflowMenuQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 
 function WorkflowLinkDialog({ id }: any) {
-  const { show, onClose } = useDialog(DIALOG_TYPE.LINK_WORKFLOW)
+  const { show, onClose } = useDialog(DialogMode.LINK_WORKFLOW)
   const [workflowData, setWorkflowData] =
     useState<LinkedWorkflowMenuQueryResp>(null)
 

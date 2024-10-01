@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import Section from '@cfPages/Home/components/Section'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -16,19 +16,19 @@ const SectionDialogs = () => {
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.PROJECT_CREATE)}
+            onClick={() => dispatch(DialogMode.PROJECT_CREATE)}
           >
             Create Project
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.PROJECT_EDIT)}
+            onClick={() => dispatch(DialogMode.PROJECT_EDIT)}
           >
             Edit Project
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.PROJECT_EXPORT)}
+            onClick={() => dispatch(DialogMode.PROJECT_EXPORT)}
           >
             Export Project
           </Button>
@@ -39,7 +39,7 @@ const SectionDialogs = () => {
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_LINK)}
+            onClick={() => dispatch(DialogMode.WORKFLOW_LINK)}
           >
             Link worfklow
           </Button>
@@ -50,13 +50,13 @@ const SectionDialogs = () => {
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.PROJECT_ARCHIVE)}
+            onClick={() => dispatch(DialogMode.PROJECT_ARCHIVE)}
           >
             Archive Project
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_ARCHIVE)}
+            onClick={() => dispatch(DialogMode.WORKFLOW_ARCHIVE)}
           >
             Archive Course
           </Button>
@@ -67,13 +67,13 @@ const SectionDialogs = () => {
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.ACTIVITY_CREATE)}
+            onClick={() => dispatch(DialogMode.ACTIVITY_CREATE)}
           >
             Create Activity
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_EDIT)}
+            onClick={() => dispatch(DialogMode.WORKFLOW_EDIT)}
           >
             Edit Activity
           </Button>
@@ -84,13 +84,13 @@ const SectionDialogs = () => {
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.PROGRAM_CREATE)}
+            onClick={() => dispatch(DialogMode.PROGRAM_CREATE)}
           >
             Create Program
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_EDIT)}
+            onClick={() => dispatch(DialogMode.WORKFLOW_EDIT)}
           >
             Edit Program
           </Button>
@@ -101,13 +101,13 @@ const SectionDialogs = () => {
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.COURSE_CREATE)}
+            onClick={() => dispatch(DialogMode.COURSE_CREATE)}
           >
             Create Course
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.WORKFLOW_EDIT)}
+            onClick={() => dispatch(DialogMode.WORKFLOW_EDIT)}
           >
             Edit Course
           </Button>
@@ -118,13 +118,13 @@ const SectionDialogs = () => {
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.IMPORT_OUTCOMES)}
+            onClick={() => dispatch(DialogMode.IMPORT_OUTCOMES)}
           >
             Import outcomes
           </Button>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.IMPORT_NODES)}
+            onClick={() => dispatch(DialogMode.IMPORT_NODES)}
           >
             Import nodes
           </Button>
@@ -135,7 +135,7 @@ const SectionDialogs = () => {
         <Stack direction="row" gap={1}>
           <Button
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
+            onClick={() => dispatch(DialogMode.ADD_CONTRIBUTOR)}
           >
             Add Contributor
           </Button>

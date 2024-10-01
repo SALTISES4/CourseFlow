@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import Alert from '@cfPages/Styleguide/components/Alert'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -16,7 +16,7 @@ import { EProject } from '@XMLHTTP/types/entity'
 import { produce } from 'immer'
 import { useState } from 'react'
 
-import { StyledDialog, StyledBox } from '../styles'
+import { StyledBox, StyledDialog } from '../styles'
 
 enum EXPORT_TYPE {
   OUTCOME = 'outcome',
@@ -71,7 +71,7 @@ const initialState = {
 
 function ExportProjectDialog({ project }: { project: EProject }) {
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DIALOG_TYPE.PROJECT_EXPORT)
+  const { show, onClose } = useDialog(DialogMode.PROJECT_EXPORT)
 
   function onRadioChange(
     field: keyof StateType,

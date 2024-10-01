@@ -1,4 +1,5 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import {apiPaths} from "@cf/router/apiRoutes";
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
@@ -16,7 +17,6 @@ import { connect } from 'react-redux'
 // @components
 
 import Outcome from './Outcome'
-import {apiPaths} from "@cf/router/apiRoutes";
 
 // import $ from 'jquery'
 type ConnectedProps = {

@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import FileUploader from '@cfPages/Styleguide/components/FileUploader'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -23,14 +23,14 @@ const initialState: StateType = {
 
 function ImportDialog() {
   const { type, show, onClose } = useDialog([
-    DIALOG_TYPE.IMPORT_OUTCOMES,
-    DIALOG_TYPE.IMPORT_NODES
+    DialogMode.IMPORT_OUTCOMES,
+    DialogMode.IMPORT_NODES
   ])
   const [state, setState] = useState<StateType>(initialState)
   const { whitelisted, queued } = state
 
   const resourceType =
-    type === DIALOG_TYPE.IMPORT_OUTCOMES ? 'outcomes' : 'nodes'
+    type === DialogMode.IMPORT_OUTCOMES ? 'outcomes' : 'nodes'
 
   // The submit button is disabled unless all whitelisted File
   // are "ready" to be uploaded

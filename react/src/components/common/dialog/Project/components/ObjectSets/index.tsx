@@ -1,4 +1,9 @@
 import { _t } from '@cf/utility/utilityFunctions'
+import {
+  ObjectSetOptions,
+  ObjectSetType
+} from '@cfComponents/dialog/Project/components/ObjectSets/type'
+import { OnUpdateType } from '@cfComponents/dialog/Project/components/ProjectForm'
 import * as SCDialog from '@cfComponents/dialog/styles'
 import { objectSetsTypes } from '@cfConstants'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
@@ -18,8 +23,6 @@ import Typography from '@mui/material/Typography'
 import { ChangeEvent } from 'react'
 
 import * as SC from './styles'
-import { OnUpdateType } from '../..'
-import { OBJECT_SET_TYPE, ObjectSetType } from '../../type'
 
 type PropsType = {
   expanded: boolean
@@ -39,7 +42,7 @@ function ObjectSets({
   // make sure there's at least one empty object set
   const objectSetsFormatted: ObjectSetType[] = objectSets.length
     ? objectSets
-    : [{ term: '' as OBJECT_SET_TYPE, title: '' }]
+    : [{ term: '' as ObjectSetOptions, title: '' }]
 
   const objectSetOptions = Object.keys(objectSetsTypes).map((key) => ({
     value: key,
@@ -74,7 +77,8 @@ function ObjectSets({
                     onUpdate({
                       index,
                       newVal: {
-                        term: event.target.value as OBJECT_SET_TYPE,
+                        id: objectSet.id,
+                        term: event.target.value as ObjectSetOptions,
                         title: objectSet.title
                       }
                     })
@@ -96,6 +100,7 @@ function ObjectSets({
                   onUpdate({
                     index,
                     newVal: {
+                      id: objectSet.id,
                       term: objectSet.term,
                       title: event.target.value
                     }

@@ -10,7 +10,7 @@ import contributorAddData from '@cfPages/Styleguide/dialog/AddContributor/data'
 import ArchiveDialog from '@cfPages/Styleguide/dialog/Archive'
 import ImportDialog from '@cfPages/Styleguide/dialog/Import'
 import dummyProjectExportData from '@cfPages/Styleguide/dialog/ProjectExport/data'
-import { projectPermission_ROLE } from '@cfPages/Styleguide/views/Project/types'
+import { ProjectPermissionRole } from '@cfPages/Styleguide/views/Project/types'
 import { AppState } from '@cfRedux/types/type'
 import { useSelector } from 'react-redux'
 
@@ -18,7 +18,7 @@ const userData = {
   id: 12313,
   name: 'Xin Yue',
   email: 'xin@xueeee.com',
-  role: projectPermission_ROLE.OWNER
+  role: ProjectPermissionRole.OWNER
 }
 
 const WorkflowDialogs = () => {

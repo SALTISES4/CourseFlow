@@ -1,4 +1,4 @@
-import { projectPermission_ROLE, ProjectDetailsType } from '@cf/types/common'
+import { ProjectDetailsType, ProjectPermissionRole } from '@cf/types/common'
 
 const data: ProjectDetailsType = {
   id: 10,
@@ -13,19 +13,19 @@ const data: ProjectDetailsType = {
       id: 12313,
       name: 'Xin Yue',
       email: 'xin@xueeee.com',
-      role: projectPermission_ROLE.OWNER
+      role: ProjectPermissionRole.OWNER
     },
     {
       id: 1,
       name: 'Joe Shmoe',
       email: 'joey@shmoey.com',
-      role: projectPermission_ROLE.EDITOR
+      role: ProjectPermissionRole.EDITOR
     },
     {
       id: 2,
       name: 'Gustavo Johansson',
       email: 'gus@joh.com',
-      role: projectPermission_ROLE.VIEWER
+      role: ProjectPermissionRole.VIEWER
     }
   ],
   objectSets: [
