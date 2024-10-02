@@ -38,7 +38,7 @@ const NotificationsSettingsPage = () => {
   const [mutate, { isSuccess, isError, data: updateData }] =
     useUpdateNotificationSettingsMutation()
 
-  const { onError, onSuccess } = useGenericMsgHandler()
+    const { onError, onSuccess } = useGenericMsgHandler()
 
   /*******************************************************
    * FORM HOOK
@@ -82,7 +82,7 @@ const NotificationsSettingsPage = () => {
   return (
     <OuterContentWrap>
       <PageTitle>
-        <Typography variant="h1">{strings.notification_settings}</Typography>
+        <Typography variant="h1">{strings.notificationSettings}</Typography>
       </PageTitle>
 
       <form>
@@ -99,7 +99,7 @@ const NotificationsSettingsPage = () => {
                     checked={field.value}
                   />
                 }
-                label={strings.product_updates_agree}
+                label={strings.productUpdatesAgree}
               />
             )}
           />

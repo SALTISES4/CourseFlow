@@ -384,7 +384,11 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
 
 class WorkflowUpdateSerializer(serializers.ModelSerializer):
     duration = serializers.CharField(
-        write_only=True, required=False, source="time_required"
+        write_only=True,
+        required=False,
+        allow_null=True,
+        allow_blank=True,
+        source="time_required",
     )
     units = serializers.IntegerField(
         write_only=True, required=False, source="time_units"

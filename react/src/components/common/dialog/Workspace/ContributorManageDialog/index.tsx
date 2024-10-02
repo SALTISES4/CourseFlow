@@ -1,6 +1,6 @@
+import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import SearchIcon from '@mui/icons-material/Search'
-import Autocomplete from '@mui/material/Autocomplete'
+import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -8,13 +8,12 @@ import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormLabel from '@mui/material/FormLabel'
-import InputAdornment from '@mui/material/InputAdornment'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
-import TextField from '@mui/material/TextField'
+import Select from '@mui/material/Select'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-
-import { StyledBox, StyledDialog } from '../styles'
 
 interface IFormInputs {
   contributor: Contributor | null
@@ -22,8 +21,8 @@ interface IFormInputs {
 }
 
 type Contributor = {
-  value: number
   label: string
+  value: number
 }
 
 type Role = {
@@ -36,7 +35,7 @@ export type PropsType = {
   roles: Role[]
 }
 
-const AddContributorDialog = ({ contributors, roles }: PropsType) => {
+const ContributorManageDialog = ({ contributors, roles }: PropsType) => {
   const { show, onClose } = useDialog(DialogMode.ADD_CONTRIBUTOR)
 
   const { control, handleSubmit, reset, watch } = useForm<IFormInputs>({
@@ -54,6 +53,13 @@ const AddContributorDialog = ({ contributors, roles }: PropsType) => {
     console.log('submitting ADD CONTRIBUTOR with', data)
   }
 
+  // https://github.com/mui/material-ui/issues/38489
+  // TODO: Try to replace Select with an MUI Autocomplete
+  // which currently breaks when Popover goes into too much recursion
+  // (apparently when spreading props on top of the input)
+  // but the real issue is `ref` (InputProps.ref) drilling and
+  // causing a bunch of circular references which eventually kabooms
+
   return (
     <StyledDialog
       open={!!show}
@@ -68,36 +74,26 @@ const AddContributorDialog = ({ contributors, roles }: PropsType) => {
       <DialogTitle id="add-contributor-modal">Add Contributor</DialogTitle>
       <DialogContent dividers>
         <StyledBox component="form">
-          <Controller
-            name="contributor"
-            control={control}
-            render={({ field }) => (
-              <Autocomplete
-                {...field}
-                id="add-contributor-autocomplete"
-                fullWidth
-                options={contributors}
-                onChange={(_, v) => field.onChange(v)}
-                isOptionEqualToValue={(option, value) =>
-                  option.value === value.value
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="CourseFlow Users"
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <SearchIcon />
-                        </InputAdornment>
-                      )
-                    }}
-                  />
-                )}
-              />
-            )}
-          />
+          <FormControl variant="standard" fullWidth>
+            <InputLabel>Courseflow Users</InputLabel>
+            <Controller
+              name="contributor"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  value={field.value || ''}
+                  label="Courseflow Users"
+                >
+                  {contributors.map((c, idx) => (
+                    <MenuItem key={idx} value={c.value}>
+                      {c.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            />
+          </FormControl>
 
           <FormControl>
             <FormLabel id="add-contributor-role-label">Roles</FormLabel>
@@ -140,4 +136,4 @@ const AddContributorDialog = ({ contributors, roles }: PropsType) => {
   )
 }
 
-export default AddContributorDialog
+export default ContributorManageDialog

@@ -124,12 +124,12 @@ const TopBar = () => {
         show: true
       },
       {
-        content: strings.password_reset,
+        content: strings.passwordReset,
         action: () => dispatch(DialogMode.PASSWORD_RESET),
         show: true
       },
       {
-        content: strings.notification_settings,
+        content: strings.notificationSettings,
         action: () => navigate(CFRoutes.NOTIFICATIONS_SETTINGS),
         show: true,
         seperator: true
@@ -140,7 +140,7 @@ const TopBar = () => {
         show: true
       },
       {
-        content: strings.sign_out,
+        content: strings.signOut,
         action: handleLogout,
         icon: <LogoutIcon />,
         showIconInList: true,
@@ -167,7 +167,7 @@ const TopBar = () => {
             to={CFRoutes.NOTIFICATIONS}
             underline="always"
           >
-            {strings.see_all}
+            {strings.seeAll}
           </Link>
         </SC.NotificationsHeader>
 
@@ -268,18 +268,8 @@ const TopBar = () => {
         // cuts down on a bit of boilerplate
         */}
 
-      <PasswordResetDialog
-        onSubmit={() =>
-          (window.location.href = apiPaths.external.resetPasswordUrl)
-        }
-      />
-
-      <ProjectCreateDialog
-        // showNoProjectsAlert={forms.createProject.showNoProjectsAlert}
-        //formFields={forms.createProject.formFields}
-        showNoProjectsAlert={true}
-        formFields={formFields}
-      />
+      <PasswordResetDialog />
+      <ProjectCreateDialog />
 
       {/*<ProgramCreateDialog*/}
       {/*  {...createProgramData}*/}

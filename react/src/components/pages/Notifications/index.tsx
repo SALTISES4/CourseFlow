@@ -198,7 +198,7 @@ const NotificationsPage = (): JSX.Element => {
                   underline="always"
                   onClick={onMarkAllAsReadClick}
                 >
-                  {strings.mark_all_as_read}
+                  {strings.markAllAsRead}
                 </Link>
               </Styled.MarkAsRead>
             )}
@@ -220,7 +220,7 @@ const NotificationsPage = (): JSX.Element => {
                   secondaryAction={
                     <IconButton
                       onClick={(e) => handleMenuOpen(e, n)}
-                      aria-label={strings.show_notifications_menu}
+                      aria-label={strings.showNotificationsMenu}
                       aria-haspopup="true"
                     >
                       <DotsIcon />
@@ -266,12 +266,12 @@ const NotificationsPage = (): JSX.Element => {
             open={!!pageState.menuAnchor}
             onClose={handleMenuClose}
             MenuListProps={{
-              'aria-label': strings.notification_options
+              'aria-label': strings.notificationOptions
             }}
           >
             {pageState.notification?.unread && !pageState.allRead && (
               <MenuItem onClick={onMarkAsReadClick}>
-                {strings.mark_as_read}
+                {strings.markAsRead}
               </MenuItem>
             )}
             <MenuItem onClick={onDeleteClick}>{strings.delete}</MenuItem>
@@ -297,7 +297,7 @@ const NotificationsPage = (): JSX.Element => {
         <Styled.NotificationsHeader>
           <Typography variant="h1">{strings.notifications}</Typography>
           <Typography sx={{ marginTop: 3 }}>
-            {strings.no_notifications_yet}
+            {strings.noNotificationsYet}
           </Typography>
         </Styled.NotificationsHeader>
       </Styled.NotificationsWrap>

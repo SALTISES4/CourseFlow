@@ -11,7 +11,7 @@ import {
 import { CfObjectType } from '@cf/types/enum'
 import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
 import { _t, formatDate, getInitials } from '@cf/utility/utilityFunctions'
-import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
+import ContributorManageDialog from "@cfComponents/dialog/Workspace/ContributorManageDialog";
 import { AppState } from '@cfRedux/types/type'
 import LinkIcon from '@mui/icons-material/Link'
 import Avatar from '@mui/material/Avatar'
@@ -147,7 +147,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
               <Grid item key={idx} xs={6}>
                 <ObjectSetThumbnail>
                   <Typography variant="body1">{set.title}</Typography>
-                  <Typography variant="body2">{set.type}</Typography>
+                  <Typography variant="body2">{set.term}</Typography>
                 </ObjectSetThumbnail>
               </Grid>
             ))}
@@ -211,7 +211,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
 
       <ObjectSets />
 
-      <UserRemoveFromProject user={removeUser} />
+      <ContributorManageDialog user={removeUser} />
     </OuterContentWrap>
   )
 }

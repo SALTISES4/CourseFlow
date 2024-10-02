@@ -1,18 +1,20 @@
 import WorkflowEditDialog from '@cf/components/common/dialog/Workflow/WorkflowEditDialog'
+import { ProjectPermissionRole } from '@cf/types/common'
 import { WorkSpaceType } from '@cf/types/enum'
 import ProjectExportDialog from '@cfComponents/dialog/Project/ProjectExportDialog'
-import UserRemoveFromProjectDialog from '@cfComponents/dialog/Project/UserRemoveFromProjectDialog'
 import WorkflowCopyToProjectDialog from '@cfComponents/dialog/Workflow/WorkflowCopyToProjectDialog'
 import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
-import ContributorAddDialog from '@cfComponents/dialog/Workspace/ContributorAddDialog'
+import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
+import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
-import contributorAddData from '@cfPages/Styleguide/dialog/AddContributor/data'
-import ArchiveDialog from '@cfPages/Styleguide/dialog/Archive'
-import ImportDialog from '@cfPages/Styleguide/dialog/Import'
-import dummyProjectExportData from '@cfPages/Styleguide/dialog/ProjectExport/data'
-import { ProjectPermissionRole } from '@cfPages/Styleguide/views/Project/types'
-import { AppState } from '@cfRedux/types/type'
-import { useSelector } from 'react-redux'
+// import contributorAddData from '@cfPages/Styleguide/dialog/AddContributor/data'
+// import ImportDialog from '@cfPages/Styleguide/dialog/Import'
+// import dummyProjectExportData from '@cfPages/Styleguide/dialog/ProjectExport/data'
+// import { ProjectPermissionRole } from '@cfPages/Styleguide/views/Project/types'
+import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
+import { useParams } from 'react-router-dom'
+
+import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorManageDialog'
 
 const userData = {
   id: 12313,
@@ -22,19 +24,31 @@ const userData = {
 }
 
 const WorkflowDialogs = () => {
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const { id } = useParams()
+  const { refetch } = useGetWorkflowByIdQuery({ id: Number(id) })
 
   return (
     <>
+      {/* Shared */}
+      <RestoreDialog
+        id={Number(id)}
+        objectType={WorkSpaceType.WORKFLOW}
+        callback={refetch}
+      />
+      <ArchiveDialog
+        id={Number(id)}
+        objectType={WorkSpaceType.WORKFLOW}
+        callback={refetch}
+      />
+      {/* Workflow specific  */}
       <WorkflowEditDialog />
-      <RestoreDialog id={workflow.id} objectType={WorkSpaceType.WORKFLOW} />
-      <ArchiveDialog id={workflow.id} objectType={WorkSpaceType.WORKFLOW} />
+
       <WorkflowCopyToProjectDialog />
       <WorkflowLinkDialog />
-      <ImportDialog />
-      <ContributorAddDialog {...contributorAddData} />
-      <ProjectExportDialog {...dummyProjectExportData} />
-      <UserRemoveFromProjectDialog user={userData} />
+      {/*<ImportDialog />*/}
+      {/*<ContributorAddDialog {...contributorAddData} />*/}
+      {/*<ProjectExportDialog {...dummyProjectExportData} />*/}
+      <ContributorRemoveDialog user={userData} />
     </>
   )
 }

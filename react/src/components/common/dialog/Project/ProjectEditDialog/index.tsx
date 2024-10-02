@@ -1,5 +1,6 @@
 import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { _t } from '@cf/utility/utilityFunctions'
 import { ObjectSetType } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
@@ -39,23 +40,7 @@ const ProjectEditDialog = () => {
 
   const [mutate, { isSuccess, isError, error, data: updateData }] =
     useUpdateProjectMutation()
-
-  function onSuccess(id: string) {
-    onDialogClose()
-    enqueueSnackbar('created project success', {
-      variant: 'success'
-    })
-  }
-
-  function onError(error) {
-    enqueueSnackbar('created project error', {
-      variant: 'error'
-    })
-    // this won't work because we're getting back errors from the serializer
-    // but it's a start
-    console.error('Error creating project:', error)
-    // setErrors(error.name)
-  }
+  const { onError, onSuccess } = useGenericMsgHandler()
 
   /*******************************************************
    * RHF
@@ -78,7 +63,7 @@ const ProjectEditDialog = () => {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  const onSubmit = (data: ProjectFormValues) => {
+  function onSubmit(data: ProjectFormValues) {
     // remove null values
     const filteredObjectSets = data.objectSets
       .filter((set) => set.term && set.title)
@@ -97,15 +82,15 @@ const ProjectEditDialog = () => {
     mutate(payload)
       .unwrap()
       .then((response) => {
-        onSuccess(String(response.dataPackage.id))
-        refetch()
+        onSuccess(response, onSuccessHandler)
       })
       .catch((err) => {
-        onError(error)
+        onError(err)
       })
   }
 
-  function onDialogClose() {
+  function onSuccessHandler() {
+    refetch()
     onClose()
   }
 
@@ -113,16 +98,11 @@ const ProjectEditDialog = () => {
    * RENDER
    *******************************************************/
   return (
-    <SC.StyledDialog
-      open={show}
-      onClose={onDialogClose}
-      fullWidth
-      maxWidth="sm"
-    >
+    <SC.StyledDialog open={show} onClose={onClose} fullWidth maxWidth="sm">
       <ProjectForm
         defaultValues={defaultValues}
         submitHandler={onSubmit}
-        closeCallback={onDialogClose}
+        closeCallback={onClose}
         showNoProjectsAlert={true}
         label={'Edit Project'}
       />

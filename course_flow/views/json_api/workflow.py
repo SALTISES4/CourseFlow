@@ -228,6 +228,8 @@ class WorkflowEndpoint:
 
         serializer = WorkflowUpdateSerializer(workflow, data=request.data)
 
+        pprint(serializer.initial_data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

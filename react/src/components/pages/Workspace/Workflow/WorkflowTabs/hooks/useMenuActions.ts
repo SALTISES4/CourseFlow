@@ -50,7 +50,7 @@ export const useMenuActions = () => {
   }
 
   function archiveWorkflow() {
-    dispatchDialog(DialogMode.WORKFLOW_ARCHIVE)
+    dispatchDialog(DialogMode.ARCHIVE)
   }
 
   function restoreWorkflow() {

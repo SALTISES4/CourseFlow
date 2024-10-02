@@ -1,17 +1,11 @@
+import ContributorManageDialog from '@cf/components/common/dialog/Workspace/ContributorManageDialog'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
-import { PermissionUserType } from '@cf/types/common'
+import {PermissionUserType, ProjectDetailsType, ProjectPermissionRole} from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
 import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
 import { _t, getInitials } from '@cf/utility/utilityFunctions'
-import MenuButton, {
-  MenuButtonOption
-} from '@cfPages/Styleguide/components/MenuButton'
-import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
-import {
-  ProjectDetailsType,
-  ProjectPermissionRole
-} from '@cfPages/Styleguide/views/Project/types'
+import MenuButton, { MenuButtonOption } from '@cfComponents/menu/MenuButton'
 import LinkIcon from '@mui/icons-material/Link'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
@@ -135,7 +129,7 @@ const OverviewTab = ({
               <Grid item key={idx} xs={6}>
                 <ObjectSetThumbnail>
                   <Typography variant="body1">{set.title}</Typography>
-                  <Typography variant="body2">{set.type}</Typography>
+                  <Typography variant="body2">{set.term}</Typography>
                 </ObjectSetThumbnail>
               </Grid>
             ))}
@@ -205,7 +199,7 @@ const OverviewTab = ({
 
       <ObjectSets />
 
-      <UserRemoveFromProject user={removeUser} />
+      <ContributorManageDialog user={removeUser} />
     </OuterContentWrap>
   )
 }

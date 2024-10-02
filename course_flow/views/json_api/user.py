@@ -113,17 +113,12 @@ class UserEndpoint:
     @api_view(["GET"])
     def fetch_profile_settings(request: Request) -> Response:
         user = CourseFlowUser.objects.filter(user=request.user).first()
-        form = ProfileSettings(
-            {
-                "first_name": user.first_name,
-                "last_name": user.last_name,
-                "language": user.language,
-            }
-        )
         return Response(
             {
                 "data_package": {
-                    "formData": FormFieldsSerializer(form).prepare_fields()
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "language": user.language,
                 }
             },
             status=status.HTTP_200_OK,

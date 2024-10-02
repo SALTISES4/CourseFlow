@@ -26,12 +26,12 @@ export type WorkflowFormType = {
   description: string
   duration: string
   courseNumber: string
-  units: string
+  units: number
   ponderation?: {
-    theory: string
-    practice: string
-    individual: string
-    generalEdu: string
-    specificEdu: string
+    theory: number
+    practice: number
+    individual: number
+    generalEdu: number
+    specificEdu: number
   }
 }

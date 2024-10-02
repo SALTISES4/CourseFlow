@@ -1,72 +1,55 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkSpaceType } from '@cf/types/enum'
-import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
-import { AppState } from '@cfRedux/types/type'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
-import { useArchiveMutation } from '@XMLHTTP/API/workflow.rtk'
-import { useSnackbar } from 'notistack'
-import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useArchiveMutation } from '@XMLHTTP/API/workspace.rtk'
 
-const ArchiveDialog = () => {
+const ArchiveDialog = ({
+  objectType,
+  id,
+  callback
+}: {
+  id: number
+  objectType: WorkSpaceType
+  callback?: () => void
+}) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
+  const { type, show, onClose } = useDialog(DialogMode.ARCHIVE)
 
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const [mutate] = useArchiveMutation()
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-  const { type, show, onClose } = useDialog([
-    DialogMode.PROJECT_ARCHIVE,
-    DialogMode.WORKFLOW_ARCHIVE
-  ])
+  const { onError, onSuccess } = useGenericMsgHandler()
 
-  const [mutate, { isError, isSuccess, error }] = useArchiveMutation()
-
-  function onSuccess() {
-    enqueueSnackbar(strings.workflow_archive_success, {
-      variant: 'success'
-    })
+  async function onSuccessHandler() {
+    callback && callback
     onClose()
   }
-
-  function onError(error) {
-    console.log(error)
-    enqueueSnackbar(strings.workflow_archive_failure, {
-      variant: 'error'
-    })
+  async function onSubmit() {
+    try {
+      const resp = await mutate({
+        id: Number(id),
+        payload: {
+          objectType: objectType
+        }
+      }).unwrap()
+      onSuccess(resp)
+      callback && callback
+    } catch (err) {
+      onError(err)
+    }
   }
 
-  useEffect(() => {
-    isError && onError(error)
-    isSuccess && onSuccess()
-  }, [isError, isSuccess, error])
-
-  let resourceType: WorkSpaceType = null
-  switch (type) {
-    case DialogMode.PROJECT_ARCHIVE:
-      resourceType = WorkSpaceType.PROJECT
-      break
-    case DialogMode.WORKFLOW_ARCHIVE:
-      resourceType = WorkSpaceType.WORKFLOW
-      break
-  }
-
-  function onSubmit() {
-    mutate({
-      id: workflow.id,
-      payload: {
-        objectType: resourceType
-      }
-    })
-  }
-
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   if (!type) return <></>
 
   return (
@@ -75,14 +58,14 @@ const ArchiveDialog = () => {
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      aria-labelledby={`archive-${resourceType}-modal`}
+      aria-labelledby={`archive-${objectType}-modal`}
     >
-      <DialogTitle id={`archive-${resourceType}-modal`}>
-        Archive {resourceType}
+      <DialogTitle id={`archive-${objectType}-modal`}>
+        Archive {objectType}
       </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          Once your {resourceType} is archived, it won’t be visible from your
+          Once your {objectType} is archived, it won’t be visible from your
           library. You will have to navigate to your archived project to access
           it. From there, you will be able to restore your project if needed.
         </Typography>
@@ -92,7 +75,7 @@ const ArchiveDialog = () => {
           Cancel
         </Button>
         <Button variant="contained" onClick={onSubmit}>
-          Archive {resourceType}
+          Archive {objectType}
         </Button>
       </DialogActions>
     </StyledDialog>

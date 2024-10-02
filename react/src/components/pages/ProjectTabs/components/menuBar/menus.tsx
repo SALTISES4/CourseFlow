@@ -61,7 +61,7 @@ const ActionMenu = () => {
     // hidden
     {
       id: 'duplicate-project',
-      content: _t('Copy into current project'),
+      content: _t('Copy to my library'),
       // @ts-ignore @todo what is workflowType
       action: () => duplicateProject(workflowId, projectId, workflowType),
       show: projectPermission.read
@@ -69,13 +69,13 @@ const ActionMenu = () => {
     {
       id: 'archive-project',
       action: archiveProject,
-      content: _t('Archive workflow'),
+      content: _t('Archive Project'),
       show: projectPermission.manage && !project.deleted
     },
     {
       id: 'unarchive-project',
       action: unarchiveProject,
-      content: _t('Restore workflow'),
+      content: _t('Restore project'),
       show: projectPermission.manage && project.deleted
     },
     {

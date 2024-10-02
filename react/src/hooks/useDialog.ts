@@ -7,6 +7,7 @@ export enum DialogMode {
   LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
   RESTORE = 'restore',
+  ARCHIVE = 'archive',
 
   // USER
   PASSWORD_RESET = 'password_reset',
@@ -17,15 +18,12 @@ export enum DialogMode {
   PROJECT_CREATE = 'project_create',
   PROJECT_EDIT = 'project_edit',
   PROJECT_EXPORT = 'project_export',
-  PROJECT_ARCHIVE = 'project_archive',
-  PROJECT_RESTORE = 'project_restore',
   PROJECT_DELETE = 'project_delete',
 
   // WORKFLOW
   IMPORT_OUTCOMES = 'import_outcomes',
   IMPORT_NODES = 'import_nodes',
   WORKFLOW_LINK = 'workflow_link',
-  WORKFLOW_ARCHIVE = 'workflow_archive',
 
   WORKFLOW_DELETE = 'workflow_DELETE',
   WORKFLOW_EDIT = 'workflow_edit',

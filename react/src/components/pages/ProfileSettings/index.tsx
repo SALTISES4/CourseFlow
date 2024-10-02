@@ -1,26 +1,29 @@
+import {languageOptions} from "@cf/constants";
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { OuterContentWrap } from '@cf/mui/helper'
-import { apiPaths } from '@cf/router/apiRoutes'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import Alert from '@mui/material/Alert'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
-import FormHelperText from '@mui/material/FormHelperText'
 import FormLabel from '@mui/material/FormLabel'
 import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
-import Snackbar from '@mui/material/Snackbar'
 import { styled } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useGetProfileSettingsQuery } from '@XMLHTTP/API/user.rtk'
-import { API_POST } from '@XMLHTTP/CallWrapper'
-import { ProfileField } from '@XMLHTTP/types/query'
-import React, { useEffect, useState } from 'react'
+import {
+  ProfileSettingsArgs,
+  useGetProfileSettingsQuery,
+  useUpdateProfileSettingsMutation
+} from '@XMLHTTP/API/user.rtk'
+import { useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-const PageTitle = styled(Box)(({ theme }) => ({
+const StyledTitleBox = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),
   paddingBottom: theme.spacing(6),
   '& .MuiTypography-h1': {
@@ -30,10 +33,18 @@ const PageTitle = styled(Box)(({ theme }) => ({
   }
 }))
 
-const FormWrap = styled(Box)({
+const StyledFormBox = styled(Box)({
   '& .MuiFormControl-root': {
     width: '100%'
   }
+})
+
+type FormValues = ProfileSettingsArgs
+
+const projectSchema = z.object({
+  firstName: z.string().min(1, { message: 'First Name is required' }).max(200),
+  lastName: z.string().min(1, { message: 'Last Name is required' }).max(200),
+  language: z.string().min(1, { message: 'Language is required' }).max(200)
 })
 
 const ProfileSettingsPage = () => {
@@ -41,152 +52,134 @@ const ProfileSettingsPage = () => {
    * QUERY HOOKS
    *******************************************************/
   const { data, error, isLoading, isError } = useGetProfileSettingsQuery()
+  const [mutate] = useUpdateProfileSettingsMutation()
+
+  const { onError, onSuccess } = useGenericMsgHandler()
 
   /*******************************************************
-   * HOOKS
+   * FORM HOOK
    *******************************************************/
-  const [state, setState] = useState<ProfileField[]>([])
-  const [errors, setErrors] = useState({})
-  const [showSnackbar, setShowSnackbar] = useState(false)
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { errors, isDirty }
+  } = useForm<FormValues>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: {}
+  })
+
+  /*******************************************************
+   * LIFE CYCLE HOOKS
+   *******************************************************/
 
   useEffect(() => {
     if (data) {
-      setState(data.dataPackage.formData)
+      reset({
+        firstName: data.dataPackage.firstName,
+        lastName: data.dataPackage.lastName,
+        language: data.dataPackage.language
+      })
     }
-  }, [data])
+  }, [data, reset])
 
   /*******************************************************
-   * FUNCTIONS / HANDLERS
+   * HANDLERS
    *******************************************************/
-  function onFormSubmit() {
-    const formData = {}
-    state.map((field) => (formData[field.name] = field.value))
-
-    const url = apiPaths.json_api.user.profile_settings__update
-    API_POST(url, formData)
-      .then(() => setShowSnackbar(true))
-      .catch((error) => setErrors(error.data.errors))
-  }
-
-  function onSnackbarClose() {
-    setShowSnackbar(false)
-  }
-
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  // loop through all the fields and generate appropriate MUI input element
-  const inputFields = (fields: ProfileField[]) =>
-    fields.map((field, idx) => {
-      const hasError = errors[field.name]
-      const errorText = hasError && errors[field.name][0]
-
-      switch (field.type) {
-        case 'text':
-          return (
-            <Box key={idx} sx={{ mb: 4 }}>
-              <FormControl>
-                <TextField
-                  variant="standard"
-                  required={field.required}
-                  name={field.name}
-                  label={field.label}
-                  value={field.value}
-                  error={hasError}
-                  helperText={errorText}
-                  onChange={(e) => {
-                    const newFieldsState = [...state]
-                    newFieldsState[idx].value = e.target.value
-                    const newErrors = { ...errors }
-                    delete newErrors[field.name]
-                    setErrors(newErrors)
-                    setState(newFieldsState)
-                  }}
-                />
-              </FormControl>
-            </Box>
-          )
-        case 'radio':
-          return (
-            <Box key={idx} sx={{ mb: 8 }}>
-              <FormControl error={hasError}>
-                <FormLabel id={`radio-label-{idx}`}>{field.label}</FormLabel>
-                <RadioGroup
-                  aria-labelledby={`radio-label-{idx}`}
-                  value={field.value}
-                  name={field.name}
-                  onChange={(e) => {
-                    const newFieldsState = [...state]
-                    newFieldsState[idx].value = e.target.value
-                    const newErrors = { ...errors }
-                    delete newErrors[field.name]
-                    setErrors(newErrors)
-                    setState(newFieldsState)
-                  }}
-                >
-                  {field.options.map((option, idy) => (
-                    <FormControlLabel
-                      key={idy}
-                      value={option.value}
-                      label={option.label}
-                      control={<Radio />}
-                    />
-                  ))}
-                </RadioGroup>
-                {errorText && <FormHelperText>{errorText}</FormHelperText>}
-              </FormControl>
-            </Box>
-          )
-      }
-
-      // for any unsupported input types, we just return nothing
-      return
-    })
-
-  if (isLoading) {
-    return <Loader />
+  const onFormSubmit = async (formData: FormValues) => {
+    try {
+      const resp = await mutate(formData).unwrap()
+      onSuccess(resp)
+    } catch (err) {
+      onError(err)
+    }
   }
 
   /*******************************************************
    * RENDER
    *******************************************************/
+  if (isLoading) {
+    return <Loader />
+  }
+
+  console.log(getValues())
+
   return (
     <OuterContentWrap narrow>
-      <PageTitle>
-        <Typography variant="h1">{strings.profile_settings}</Typography>
-      </PageTitle>
+      <StyledTitleBox>
+        <Typography variant="h1">{strings.profileSettings}</Typography>
+      </StyledTitleBox>
 
-      <FormWrap
-        component="form"
-        // @ts-ignore
-        noValidate
-        autoComplete="off"
-      >
-        {inputFields(state)}
-        <Box>
-          <Button
-            variant="contained"
-            onClick={onFormSubmit}
-            disabled={showSnackbar || Object.keys(errors).length > 0}
-          >
-            {strings.update_profile}
-          </Button>
-        </Box>
-      </FormWrap>
+      <StyledFormBox>
+        <form onSubmit={handleSubmit(onFormSubmit)}>
+          <Box sx={{ mb: 4 }}>
+            <FormControl>
+              <TextField
+                label={strings.firstName}
+                {...register('firstName')}
+                error={!!errors.firstName}
+                helperText={errors && errors.firstName?.message}
+                variant="standard"
+              />
+            </FormControl>
+          </Box>
 
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={5000}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'right'
-        }}
-        onClose={onSnackbarClose}
-      >
-        <Alert onClose={onSnackbarClose} variant="filled" severity="success">
-          {strings.update_profile_success}
-        </Alert>
-      </Snackbar>
+          <Box sx={{ mb: 4 }}>
+            <FormControl>
+              <TextField
+                {...register('lastName')}
+                label={strings.lastName}
+                error={!!errors.lastName}
+                helperText={errors && errors.lastName?.message}
+                variant="standard"
+              />
+            </FormControl>
+          </Box>
+
+          <Box sx={{ mb: 8 }}>
+            <FormControl component="fieldset" error={!!errors.language}>
+              <FormLabel component="legend">
+                {strings.languagePreferences}
+              </FormLabel>
+              <Controller
+                name="language"
+                control={control}
+                render={({ field }) => {
+                  console.log('field')
+                  console.log(field)
+                  return (
+                    <RadioGroup
+                      {...field}
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      // Update the value on change
+                    >
+                      {languageOptions.map((item) => {
+                        return (
+                          <FormControlLabel
+                            key={item.value}
+                            value={item.value}
+                            control={<Radio />}
+                            label={item.label}
+                          />
+                        )
+                      })}
+                    </RadioGroup>
+                  )
+                }}
+              />
+            </FormControl>
+          </Box>
+
+          <Box>
+            <Button variant="contained" type="submit" disabled={!isDirty}>
+              {strings.updateProfile}
+            </Button>
+          </Box>
+        </form>
+      </StyledFormBox>
     </OuterContentWrap>
   )
 }

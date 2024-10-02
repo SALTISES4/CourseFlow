@@ -11,7 +11,6 @@ import ProjectDetail from '@cfPages/ProjectDetail'
 import ProjectTabs from '@cfPages/ProjectTabs'
 // Styleguide views
 import Styleguide from '@cfPages/Styleguide'
-import StyleguideProject from '@cfPages/Styleguide/views/Project'
 import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import { createBrowserRouter } from 'react-router-dom'
@@ -80,19 +79,11 @@ export const CFRouter = createBrowserRouter([
     children: [
       {
         path: CFRoutes.STYLEGUIDE,
-        element: (
-          <Base>
-            <Styleguide />
-          </Base>
-        )
+        element: <></>
       },
       {
         path: `${CFRoutes.STYLEGUIDE_PROJECT}/*`,
-        element: (
-          <Base>
-            <StyleguideProject />
-          </Base>
-        )
+        element: <></>
       }
     ]
   },

@@ -1,5 +1,6 @@
-import { EObjectSet, ObjectPermission } from '@cf/types/common'
-import {LibraryObjectType, WorkSpaceType, WorkflowType} from '@cf/types/enum'
+import { ObjectPermission } from '@cf/types/common'
+import { LibraryObjectType, WorkSpaceType, WorkflowType } from '@cf/types/enum'
+import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
 /*******************************************************
@@ -17,7 +18,7 @@ export type EUser = {
   userColour?: string
 }
 
-/*******************************************************
+/*******************************************************E
  * LIBRARY
  *******************************************************/
 export type ELibraryObject = {
@@ -180,10 +181,10 @@ export type ENode = {
 }
 
 export type EObjectSet = {
-  title: string
   id: number
-  translationPlural: string
-  term: string
+  title: string
+  term: ObjectSetOptions
+  translationPlural: null | string
 }
 
 export type EDiscipline = {

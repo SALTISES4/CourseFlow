@@ -4,8 +4,8 @@ import {
   ObjectSetOptions,
   ObjectSetType
 } from '@cfComponents/dialog/Project/components/ObjectSets/type'
+import {StyledBox} from "@cfComponents/dialog/styles";
 import Alert from '@cfComponents/UIPrimitives/Alert'
-import { StyledBox } from '@cfPages/Styleguide/dialog/styles'
 import { zodResolver } from '@hookform/resolvers/zod'
 import CancelIcon from '@mui/icons-material/Cancel'
 import Box from '@mui/material/Box'
@@ -94,7 +94,7 @@ const ProjectForm = ({
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
     setValue,
     getValues,
     reset
@@ -200,10 +200,7 @@ const ProjectForm = ({
               label="Title"
               placeholder="New Project Title"
               variant="standard"
-              {...register('title', {
-                required: 'Title is required',
-                maxLength: 200
-              })}
+              {...register('title')}
               error={!!errors.title}
               helperText={errors.title?.message}
             />
@@ -289,7 +286,12 @@ const ProjectForm = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onDialogClose}>Cancel</Button>
-        <Button type="submit" variant="contained" color="primary">
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={!isDirty}
+        >
           Edit Project
         </Button>
       </DialogActions>

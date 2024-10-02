@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { ProfileField } from '@XMLHTTP/types/query'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
 
 import { Verb, cfApi } from './api'
 /*******************************************************
@@ -16,14 +16,12 @@ export type CurrentUserQueryResp = {
   }
 }
 
-export type NotificationSettingsQueryResp = {
-  message: string
-  dataPackage: {
-    receiveNotifications: boolean
-  }
+export enum LanguageOptions {
+  EN = 'en',
+  FR = 'fr'
 }
 
-export type NotificationSettingsUpdateQueryResp = {
+export type NotificationSettingsQueryResp = {
   message: string
   dataPackage: {
     receiveNotifications: boolean
@@ -33,10 +31,17 @@ export type NotificationSettingsUpdateQueryResp = {
 export type ProfileSettingsQueryResp = {
   message: string
   dataPackage: {
-    formData: ProfileField[]
+    firstName: string
+    lastName: string
+    language: LanguageOptions
   }
 }
 
+export type ProfileSettingsArgs = {
+  firstName: string
+  lastName: string
+  language: LanguageOptions
+}
 const extendedApi = cfApi.injectEndpoints({
   endpoints: (builder) => ({
     /*******************************************************
@@ -80,7 +85,7 @@ const extendedApi = cfApi.injectEndpoints({
      * MUTATIONS
      *******************************************************/
     updateNotificationSettings: builder.mutation<
-      NotificationSettingsUpdateQueryResp,
+      EmptyPostResp,
       {
         notifications: boolean
       }
@@ -92,7 +97,18 @@ const extendedApi = cfApi.injectEndpoints({
           body: args
         }
       }
-    })
+    }),
+    updateProfileSettings: builder.mutation<EmptyPostResp, ProfileSettingsArgs>(
+      {
+        query: (args) => {
+          return {
+            method: Verb.POST,
+            url: apiPaths.json_api.user.profile_settings__update,
+            body: args
+          }
+        }
+      }
+    )
   }),
   overrideExisting: false
 })
@@ -102,6 +118,6 @@ export const {
   useGetUserListQuery,
   useGetNotificationSettingsQuery,
   useGetProfileSettingsQuery,
-  useLazyGetProfileSettingsQuery,
-  useUpdateNotificationSettingsMutation
+  useUpdateNotificationSettingsMutation,
+  useUpdateProfileSettingsMutation
 } = extendedApi

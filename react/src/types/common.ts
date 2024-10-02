@@ -1,4 +1,4 @@
-import {ObjectSetOptions} from "@cfComponents/dialog/Project/ProjectEditDialog/type";
+import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { MouseEvent } from 'react'
 
 export type ToDefine = any
@@ -21,14 +21,6 @@ export type Discipline = {
   title: string
 }
 
-// TODO: Consolidate with the types in CreateProject/type
-export type EObjectSet = {
-  id: number
-  title: string
-  term: ObjectSetOptions
-  translationPlural: null | string
-}
-
 export type ObjectLock = {
   userId: number
   userColour: string
@@ -45,9 +37,6 @@ export type Lock = {
   userColour: string
   userId: string
 }
-
-
-
 
 export type FormFieldSerialized = {
   name: string
@@ -94,9 +83,10 @@ export type ProjectDetailsType = {
   id: number
   title: string
   description: string
-  isFavorite?: boolean
-  disciplines?: string[]
+  isFavorite: boolean
+  isDeleted: boolean
   created: Date | string
+  disciplines?: string[]
   permissions?: PermissionUserType[]
   objectSets?: ObjectSetType[]
 }

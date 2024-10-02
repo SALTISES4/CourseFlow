@@ -23,11 +23,11 @@ export const useMenuActions = () => {
   }
 
   function archiveProject() {
-    dispatchDialog(DialogMode.PROJECT_ARCHIVE)
+    dispatchDialog(DialogMode.ARCHIVE)
   }
 
   function unarchiveProject() {
-    dispatchDialog(DialogMode.PROJECT_RESTORE)
+    dispatchDialog(DialogMode.RESTORE)
   }
 
   function deleteProject() {

@@ -12,7 +12,7 @@ type PropsType = {
   user: PermissionUserType | null
 }
 
-const UserRemoveFromProjectDialog = ({ user }: PropsType) => {
+const ContributorRemoveDialog = ({ user }: PropsType) => {
   const { show, onClose } = useDialog(DialogMode.PROJECT_REMOVE_USER)
 
   function onSubmit() {
@@ -46,4 +46,4 @@ const UserRemoveFromProjectDialog = ({ user }: PropsType) => {
   )
 }
 
-export default UserRemoveFromProjectDialog
+export default ContributorRemoveDialog

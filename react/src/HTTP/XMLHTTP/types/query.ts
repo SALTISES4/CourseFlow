@@ -15,7 +15,7 @@ type FieldOption = {
   value: string
 }
 
-export type ProfileField = {
+export type FormField = {
   name: string
   label: string
   type: string

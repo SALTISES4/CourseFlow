@@ -1,6 +1,7 @@
-import {apiPathRoutes, apiPaths} from '@cf/router/apiRoutes'
-import { CfObjectType } from '@cf/types/enum'
+import { apiPaths } from '@cf/router/apiRoutes'
+import { CfObjectType, LibraryObjectType, WorkSpaceType } from '@cf/types/enum'
 import { EUser } from '@XMLHTTP/types/entity'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
 import { Verb, cfApi } from './api'
@@ -57,9 +58,69 @@ const extendedApi = cfApi.injectEndpoints({
           body: args.payload
         }
       }
+    }),
+
+    archive: builder.mutation<
+      EmptyPostResp,
+      {
+        id: number
+        payload: {
+          objectType: WorkSpaceType
+        }
+      }
+    >({
+      query: (args) => {
+        const base = apiPaths.json_api.workspace.delete_soft
+        return {
+          method: Verb.POST,
+          url: generatePath(base, { id: args.id }),
+          body: args.payload
+        }
+      }
+    }),
+    unarchive: builder.mutation<
+      EmptyPostResp,
+      {
+        id: number
+        payload: {
+          objectType: WorkSpaceType
+        }
+      }
+    >({
+      query: (args) => {
+        const base = apiPaths.json_api.workspace.restore
+        return {
+          method: Verb.POST,
+          url: generatePath(base, { id: args.id }),
+          body: args.payload
+        }
+      }
+    }),
+    deleteSelfHard: builder.mutation<
+      EmptyPostResp,
+      {
+        id: number
+        payload: {
+          objectType: LibraryObjectType
+        }
+      }
+    >({
+      query: (args) => {
+        const base = apiPaths.json_api.workspace.delete
+        return {
+          method: Verb.POST,
+          url: generatePath(base, { id: args.id }),
+          body: args.payload
+        }
+      }
     })
   }),
   overrideExisting: false
 })
 
-export const { useGetUsersForObjectQuery } = extendedApi
+export const {
+  useGetUsersForObjectQuery,
+  useArchiveMutation,
+  useUnarchiveMutation,
+  useDeleteSelfHardMutation
+} = extendedApi

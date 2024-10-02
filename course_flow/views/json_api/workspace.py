@@ -217,6 +217,7 @@ class WorkspaceEndpoint:
 
             elif object_type == "outcome":
                 parent_id = OutcomeOutcome.objects.get(child=model).id
+
             # Delete the object
             with transaction.atomic():
                 model.delete()
@@ -265,21 +266,27 @@ class WorkspaceEndpoint:
                 )
         return JsonResponse({"message": "success"})
 
-    # Soft delete the object. This just sets the deleted property
-    # to true. Most of this method is just ensuring
-    # that workflows that use the object are kept up to date
-    # about it being deleted.
     @staticmethod
-    @user_can_delete(False)
+    # @user_can_delete(False)
     @api_view(["POST"])
     def delete_soft(request: Request, pk: int) -> Response:
+        """
+        @todo clarify this statement below
+        # Soft delete the object. This just sets the deleted property
+        # to true. Most of this method is just ensuring
+        # that workflows that use the object are kept up to date
+        # about it being deleted.
+        :param request:
+        :param pk:
+        :return:
+        """
         serializer = DeleteRequestSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=400)
 
-        # assing payload data to local objects
+        # passing payload data to local objects
         object_id = pk
-        object_type = serializer.validated_data["objectType"]
+        object_type = serializer.validated_data["object_type"]
 
         try:
             model = DAO.get_model_from_str(object_type).objects.get(
@@ -382,6 +389,7 @@ class WorkspaceEndpoint:
         except AttributeError as e:
             logger.exception("An error occurred")
         pass
+
         if workflow is not None:
             action = actions.deleteSelfSoftAction(
                 object_id, object_type, parent_id, extra_data
@@ -418,6 +426,198 @@ class WorkspaceEndpoint:
                 )
         return Response({"message": "success"}, status=status.HTTP_200_OK)
 
+    @staticmethod
+    # @user_can_delete(False)
+    @api_view(["POST"])
+    def restore(request: Request, pk: int) -> Response:
+        """
+        -- Restore an object that was soft-deleted
+        -- issue a socket update for all referenced workflow (what defines a reference ?)
+        :param pk:
+        :param request:
+        :return:
+        """
+        serializer = DeleteRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+
+        # assing payload data to local objects
+        object_id = pk
+        object_type = serializer.validated_data["object_type"]
+
+        try:
+            model = DAO.get_model_from_str(object_type).objects.get(
+                id=object_id
+            )
+            workflow = None
+            extra_data = None
+            parent_id = None
+            throughparent_id = None
+            throughparent_index = None
+            # object_suffix = ""
+
+            # Restore the object
+            with transaction.atomic():
+                model.deleted = False
+                model.save()
+
+            try:
+                workflow = model.get_workflow()
+            except AttributeError as e:
+                logger.exception("An error occurred")
+            pass
+            # Check to see if we have any linked workflows that need to be updated
+            linked_workflows = False
+            if object_type == ObjectType.NODE:
+                linked_workflows = list(
+                    Workflow.objects.filter(linked_nodes=model)
+                )
+            elif object_type == ObjectType.WEEK:
+                linked_workflows = list(
+                    Workflow.objects.filter(linked_nodes__week=model)
+                )
+            elif object_type in ["workflow", "activity", "course", "program"]:
+                linked_workflows = list(
+                    Workflow.objects.filter(
+                        linked_nodes__week__workflow__id=model.id
+                    )
+                )
+                parent_workflows = [
+                    node.get_workflow()
+                    for node in Node.objects.filter(linked_workflow=model)
+                ]
+            elif object_type == ObjectType.OUTCOME:
+                linked_workflows = list(
+                    Workflow.objects.filter(
+                        Q(
+                            linked_nodes__outcomes__in=[model.id]
+                            + list(
+                                DAO.get_descendant_outcomes(model).values_list(
+                                    "pk", flat=True
+                                )
+                            )
+                        )
+                    )
+                )
+            if object_type == ObjectType.OUTCOME:
+                outcomes_list = [object_id] + list(
+                    DAO.get_descendant_outcomes(model).values_list(
+                        "pk", flat=True
+                    )
+                )
+                extra_data = RefreshSerializerNode(
+                    Node.objects.filter(outcomes__in=outcomes_list),
+                    many=True,
+                ).data
+                outcomes_to_update = RefreshSerializerOutcome(
+                    Outcome.objects.filter(
+                        horizontal_outcomes__in=outcomes_list
+                    ),
+                    many=True,
+                ).data
+            if object_type == ObjectType.WEEK:
+                throughparent = WeekWorkflow.objects.get(week=model)
+                throughparent_id = throughparent.id
+                parent_id = workflow.id
+                throughparent_index = (
+                    workflow.weekworkflow_set.exclude(week__deleted=True)
+                    .filter(rank__lt=throughparent.rank)
+                    .count()
+                )
+            elif object_type == ObjectType.COLUMN:
+                throughparent = ColumnWorkflow.objects.get(column=model)
+                throughparent_id = throughparent.id
+                throughparent_index = (
+                    workflow.columnworkflow_set.exclude(column__deleted=True)
+                    .filter(rank__lt=throughparent.rank)
+                    .count()
+                )
+                extra_data = [x.id for x in Node.objects.filter(column=model)]
+                parent_id = workflow.id
+
+            elif object_type == ObjectType.NODE:
+                throughparent = NodeWeek.objects.get(node=model)
+                throughparent_id = throughparent.id
+                throughparent_index = (
+                    throughparent.week.nodeweek_set.exclude(node__deleted=True)
+                    .filter(rank__lt=throughparent.rank)
+                    .count()
+                )
+                parent_id = throughparent.week.id
+
+            elif object_type == ObjectType.NODELINK:
+                throughparent_id = None
+                parent_id = Node.objects.get(outgoing_links=model).id
+
+            elif object_type == ObjectType.OUTCOME and model.depth == 0:
+                throughparent = OutcomeWorkflow.objects.get(outcome=model)
+                throughparent_id = throughparent.id
+                throughparent_index = (
+                    workflow.outcomeworkflow_set.exclude(outcome__deleted=True)
+                    .filter(rank__lt=throughparent.rank)
+                    .count()
+                )
+                parent_id = workflow.id
+                object_type = "outcome_base"
+
+            elif object_type == ObjectType.OUTCOME:
+                throughparent = OutcomeOutcome.objects.get(child=model)
+                throughparent_id = throughparent.id
+                throughparent_index = (
+                    throughparent.parent.child_outcome_links.exclude(
+                        child__deleted=True
+                    )
+                    .filter(rank__lt=throughparent.rank)
+                    .count()
+                )
+                parent_id = throughparent.parent.id
+
+        except (ProtectedError, ObjectDoesNotExist):
+            return Response({"error": "ObjectDoesNotExist"}, status=400)
+
+        if workflow is not None:
+            action = actions.restoreSelfAction(
+                object_id,
+                object_type,
+                parent_id,
+                throughparent_id,
+                throughparent_index,
+                extra_data,
+            )
+            actions.dispatch_wf(
+                workflow,
+                action,
+            )
+            if object_type == "outcome" or object_type == "outcome_base":
+                actions.dispatch_to_parent_wf(
+                    workflow,
+                    action,
+                )
+                if linked_workflows:
+                    for wf in linked_workflows:
+                        actions.dispatch_wf(wf, action)
+                        actions.dispatch_wf(
+                            wf,
+                            actions.updateHorizontalLinks(
+                                {"data": outcomes_to_update}
+                            ),
+                        )
+        if (
+            object_type != "outcome"
+            and object_type != "outcome_base"
+            and linked_workflows
+        ):
+            for wf in linked_workflows:
+                actions.dispatch_parent_updated(wf)
+        if object_type in ["workflow", "activity", "course", "program"]:
+            for parent_workflow in parent_workflows:
+                actions.dispatch_child_updated(
+                    parent_workflow, model.get_workflow()
+                )
+
+        return Response({"message": "success"}, status=status.HTTP_200_OK)
+
+    @staticmethod
     @user_can_view(False)
     @user_can_edit(False, get_parent=True)
     def duplicate(request: Request) -> Response:
@@ -640,193 +840,6 @@ class WorkspaceEndpoint:
             for wf in linked_workflows:
                 actions.dispatch_parent_updated(wf)
 
-        return Response({"message": "success"}, status=status.HTTP_200_OK)
-
-    @staticmethod
-    @user_can_delete(False)
-    @api_view(["POST"])
-    def restore(request: Request, pk: int) -> Response:
-        """
-        -- Restore an object that was soft-deleted
-        -- issue a socket update for all referenced workflow (what defines a reference ?)
-        :param pk:
-        :param request:
-        :return:
-        """
-        serializer = DeleteRequestSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=400)
-
-        # assing payload data to local objects
-        object_id = pk
-        object_type = serializer.validated_data["objectType"]
-
-        try:
-            model = DAO.get_model_from_str(object_type).objects.get(
-                id=object_id
-            )
-            workflow = None
-            extra_data = None
-            parent_id = None
-            throughparent_id = None
-            throughparent_index = None
-            # object_suffix = ""
-
-            # Restore the object
-            with transaction.atomic():
-                model.deleted = False
-                model.save()
-
-            try:
-                workflow = model.get_workflow()
-            except AttributeError as e:
-                logger.exception("An error occurred")
-            pass
-            # Check to see if we have any linked workflows that need to be updated
-            linked_workflows = False
-            if object_type == ObjectType.NODE:
-                linked_workflows = list(
-                    Workflow.objects.filter(linked_nodes=model)
-                )
-            elif object_type == ObjectType.WEEK:
-                linked_workflows = list(
-                    Workflow.objects.filter(linked_nodes__week=model)
-                )
-            elif object_type in ["workflow", "activity", "course", "program"]:
-                linked_workflows = list(
-                    Workflow.objects.filter(
-                        linked_nodes__week__workflow__id=model.id
-                    )
-                )
-                parent_workflows = [
-                    node.get_workflow()
-                    for node in Node.objects.filter(linked_workflow=model)
-                ]
-            elif object_type == ObjectType.OUTCOME:
-                linked_workflows = list(
-                    Workflow.objects.filter(
-                        Q(
-                            linked_nodes__outcomes__in=[model.id]
-                            + list(
-                                DAO.get_descendant_outcomes(model).values_list(
-                                    "pk", flat=True
-                                )
-                            )
-                        )
-                    )
-                )
-            if object_type == ObjectType.OUTCOME:
-                outcomes_list = [object_id] + list(
-                    DAO.get_descendant_outcomes(model).values_list(
-                        "pk", flat=True
-                    )
-                )
-                extra_data = RefreshSerializerNode(
-                    Node.objects.filter(outcomes__in=outcomes_list),
-                    many=True,
-                ).data
-                outcomes_to_update = RefreshSerializerOutcome(
-                    Outcome.objects.filter(
-                        horizontal_outcomes__in=outcomes_list
-                    ),
-                    many=True,
-                ).data
-            if object_type == ObjectType.WEEK:
-                throughparent = WeekWorkflow.objects.get(week=model)
-                throughparent_id = throughparent.id
-                parent_id = workflow.id
-                throughparent_index = (
-                    workflow.weekworkflow_set.exclude(week__deleted=True)
-                    .filter(rank__lt=throughparent.rank)
-                    .count()
-                )
-            elif object_type == ObjectType.COLUMN:
-                throughparent = ColumnWorkflow.objects.get(column=model)
-                throughparent_id = throughparent.id
-                throughparent_index = (
-                    workflow.columnworkflow_set.exclude(column__deleted=True)
-                    .filter(rank__lt=throughparent.rank)
-                    .count()
-                )
-                extra_data = [x.id for x in Node.objects.filter(column=model)]
-                parent_id = workflow.id
-            elif object_type == ObjectType.NODE:
-                throughparent = NodeWeek.objects.get(node=model)
-                throughparent_id = throughparent.id
-                throughparent_index = (
-                    throughparent.week.nodeweek_set.exclude(node__deleted=True)
-                    .filter(rank__lt=throughparent.rank)
-                    .count()
-                )
-                parent_id = throughparent.week.id
-            elif object_type == ObjectType.NODELINK:
-                throughparent_id = None
-                parent_id = Node.objects.get(outgoing_links=model).id
-            elif object_type == ObjectType.OUTCOME and model.depth == 0:
-                throughparent = OutcomeWorkflow.objects.get(outcome=model)
-                throughparent_id = throughparent.id
-                throughparent_index = (
-                    workflow.outcomeworkflow_set.exclude(outcome__deleted=True)
-                    .filter(rank__lt=throughparent.rank)
-                    .count()
-                )
-                parent_id = workflow.id
-                object_type = "outcome_base"
-
-            elif object_type == ObjectType.OUTCOME:
-                throughparent = OutcomeOutcome.objects.get(child=model)
-                throughparent_id = throughparent.id
-                throughparent_index = (
-                    throughparent.parent.child_outcome_links.exclude(
-                        child__deleted=True
-                    )
-                    .filter(rank__lt=throughparent.rank)
-                    .count()
-                )
-                parent_id = throughparent.parent.id
-
-        except (ProtectedError, ObjectDoesNotExist):
-            return Response({"error": "ObjectDoesNotExist"}, status=400)
-
-        if workflow is not None:
-            action = actions.restoreSelfAction(
-                object_id,
-                object_type,
-                parent_id,
-                throughparent_id,
-                throughparent_index,
-                extra_data,
-            )
-            actions.dispatch_wf(
-                workflow,
-                action,
-            )
-            if object_type == "outcome" or object_type == "outcome_base":
-                actions.dispatch_to_parent_wf(
-                    workflow,
-                    action,
-                )
-                if linked_workflows:
-                    for wf in linked_workflows:
-                        actions.dispatch_wf(wf, action)
-                        actions.dispatch_wf(
-                            wf,
-                            actions.updateHorizontalLinks(
-                                {"data": outcomes_to_update}
-                            ),
-                        )
-        if (
-            object_type != "outcome"
-            and object_type != "outcome_base"
-            and linked_workflows
-        ):
-            for wf in linked_workflows:
-                actions.dispatch_parent_updated(wf)
-        if object_type in ["workflow", "activity", "course", "program"]:
-            for parent_workflow in parent_workflows:
-                actions.dispatch_child_updated(
-                    parent_workflow, model.get_workflow()
-                )
         return Response({"message": "success"}, status=status.HTTP_200_OK)
 
     #########################################################

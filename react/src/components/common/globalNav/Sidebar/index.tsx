@@ -67,7 +67,7 @@ const Sidebar = () => {
                   // @todo convert this to a Link element
                   href={CFRoutes.FAVOURITES}
                 >
-                  {strings.view_all}
+                  {strings.viewAll}
                 </SC.SeeAllLink>
               }
             />
@@ -149,7 +149,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <FolderCopyIcon />
               </ListItemIcon>
-              <ListItemText primary={strings.my_library} />
+              <ListItemText primary={strings.myLibrary} />
             </ListItemButton>
           </ListItem>
 
@@ -188,7 +188,7 @@ const Sidebar = () => {
               <ListItemIcon>
                 <HelpRoundedIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary={strings.help_support} />
+              <ListItemText primary={strings.helpSupport} />
             </ListItemButton>
           </ListItem>
         </SC.HelpLink>

@@ -1,6 +1,7 @@
 import { NumTuple } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Utility from '@cfUtility'
+import { LanguageOptions } from '@XMLHTTP/API/user.rtk'
 
 /*
 Determines how long an action locks an object
@@ -238,4 +239,20 @@ function missing_translations() {
   _t('course')
   _t('program')
   _t('project')
+}
+
+export const languageOptions = [
+  {
+    label: 'English',
+    value: LanguageOptions.EN
+  },
+  {
+    label: 'French',
+    value: LanguageOptions.FR
+  }
+]
+
+export enum SnackbarOptions {
+  ERROR = 'error',
+  SUCCESS = 'success'
 }

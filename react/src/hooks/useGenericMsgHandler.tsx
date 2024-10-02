@@ -1,4 +1,6 @@
+import { SnackbarOptions } from '@cf/constants'
 import { enqueueSnackbar } from 'notistack'
+import * as React from 'react'
 
 interface ResponseWithMessage {
   message?: string
@@ -8,21 +10,27 @@ interface ErrorWithMessage {
   message?: string
 }
 
+const PrettyPrintJSON = ({ error }: { error: string | object }) => {
+  return (
+    <>
+      ERROR!
+      <pre>
+        <code>{JSON.stringify(error, null, 2)}</code>
+      </pre>
+    </>
+  )
+}
+
 const useGenericQueryMsgHandler = () => {
   function onSuccess<TResp extends ResponseWithMessage, TCallback>(
     resp: TResp,
     callback?: TCallback
   ) {
-    if (resp.message) {
-      enqueueSnackbar(resp.message, {
-        variant: 'success'
-      })
-    } else {
-      enqueueSnackbar('Success', {
-        variant: 'success'
-      })
-    }
+    const msg = resp.message ?? 'Success!'
 
+    enqueueSnackbar(msg, {
+      variant: SnackbarOptions.SUCCESS
+    })
     callback && callback
   }
 
@@ -30,19 +38,14 @@ const useGenericQueryMsgHandler = () => {
     error: TError,
     callback?: TCallback
   ) {
-    if (error.message) {
-      enqueueSnackbar(error.message, {
-        variant: 'error'
-      })
-    } else {
-      enqueueSnackbar(' An error ocurred', {
-        variant: 'error'
-      })
-    }
+    const msg = error ?? 'An error occurred!'
+    enqueueSnackbar(<PrettyPrintJSON error={msg} />, {
+      variant: SnackbarOptions.ERROR
+    })
 
     // this won't work because we're getting back errors from the serializer
     // but it's a start
-    console.error('Error creating project:', error)
+    console.error('error from useGenericQueryMsgHandler:onError ', error)
     // setErrors(error.name)
     callback && callback
   }

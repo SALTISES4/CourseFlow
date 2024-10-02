@@ -7,6 +7,8 @@ const data: ProjectDetailsType = {
     'gone treated beauty future science bread variety gravity fruit wood buffalo addition sit half fog on them railroad facing various grabbed driving mail written',
   created: 'June 20th, 2024',
   disciplines: ['Biology', 'Chemistry', 'Physics'],
+  isFavorite: true,
+  isDeleted: false,
   permissions: [
     {
       id: 12313,
@@ -30,15 +32,15 @@ const data: ProjectDetailsType = {
   objectSets: [
     {
       title: 'Object set name here',
-      type: 'Program node'
+      term: 'Program node'
     },
     {
       title: 'Something else',
-      type: 'Course outcome'
+      term: 'Course outcome'
     },
     {
       title: 'And now another',
-      type: 'Activity node'
+      term: 'Activity node'
     }
   ]
 }

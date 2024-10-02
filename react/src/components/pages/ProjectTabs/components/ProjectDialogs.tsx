@@ -1,16 +1,13 @@
+import { ProjectPermissionRole } from '@cf/types/common'
 import { WorkSpaceType } from '@cf/types/enum'
 import ProjectEditDialog from '@cfComponents/dialog/Project/ProjectEditDialog'
-import ProjectExportDialog from '@cfComponents/dialog/Project/ProjectExportDialog'
-import UserRemoveFromProjectDialog from '@cfComponents/dialog/Project/UserRemoveFromProjectDialog'
-import ContributorAddDialog from '@cfComponents/dialog/Workspace/ContributorAddDialog'
+import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
+import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
-import contributorAddData from '@cfPages/Styleguide/dialog/AddContributor/data'
-import ArchiveDialog from '@cfPages/Styleguide/dialog/Archive'
-import ImportDialog from '@cfPages/Styleguide/dialog/Import'
-import dummyProjectExportData from '@cfPages/Styleguide/dialog/ProjectExport/data'
-import { ProjectPermissionRole } from '@cfPages/Styleguide/views/Project/types'
 import { useGetProjectByIdQuery } from '@XMLHTTP/API/project.rtk'
 import { useParams } from 'react-router-dom'
+
+import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorManageDialog'
 
 const userData = {
   id: 12313,
@@ -22,38 +19,25 @@ const userData = {
 const ProjectDialogs = () => {
   const { id } = useParams()
   const projectId = Number(id)
-  /*******************************************************
-   * QUERIES
-   *******************************************************/
-  const { data, isLoading } = useGetProjectByIdQuery({ id: Number(id) })
-
-  if (isLoading) return <></>
-
-  const formFields = [
-    {
-      name: 'title',
-      label: 'Title',
-      type: 'text',
-      value: '',
-      required: true
-    },
-    {
-      name: 'description',
-      label: 'Description',
-      type: 'text',
-      value: ''
-    }
-  ]
+  const { refetch } = useGetProjectByIdQuery({ id: Number(id) })
 
   return (
     <>
-      <ProjectEditDialog formFields={formFields} showNoProjectsAlert={true} />
-      <RestoreDialog objectType={WorkSpaceType.PROJECT} id={projectId} />
-      <ArchiveDialog objectType={WorkSpaceType.PROJECT} id={projectId} />
-      <ImportDialog />
-      <ContributorAddDialog {...contributorAddData} />
-      <ProjectExportDialog {...dummyProjectExportData} />
-      <UserRemoveFromProjectDialog user={userData} />
+      <ProjectEditDialog />
+      <RestoreDialog
+        id={projectId}
+        objectType={WorkSpaceType.PROJECT}
+        callback={refetch}
+      />
+      <ArchiveDialog
+        id={projectId}
+        objectType={WorkSpaceType.PROJECT}
+        callback={refetch}
+      />
+      {/*<ImportDialog />*/}
+      {/*<ContributorAddDialog {...contributorAddData} />*/}
+      {/*<ProjectExportDialog {...dummyProjectExportData} />*/}
+      <ContributorRemoveDialog user={userData} />
     </>
   )
 }
