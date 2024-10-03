@@ -35,7 +35,7 @@ from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.models.workflow import SUBCLASSES, Workflow
 from course_flow.serializers import (
-    InfoBoxSerializer,
+    LibraryObjectSerializer,
     LinkedWorkflowSerializerShallow,
     NodeSerializerShallow,
     OutcomeHorizontalLinkSerializerShallow,
@@ -192,7 +192,7 @@ class WorkflowEndpoint:
                 )
             ]
 
-            data_package = InfoBoxSerializer(
+            data_package = LibraryObjectSerializer(
                 parent_workflows, many=True, context={"user": request.user}
             ).data
 
@@ -288,7 +288,7 @@ class WorkflowEndpoint:
         return Response(
             {
                 "message": "success",
-                "new_item": InfoBoxSerializer(
+                "new_item": LibraryObjectSerializer(
                     clone, context={"user": request.user}
                 ).data,
                 "type": clone.type,
@@ -567,7 +567,7 @@ def json_api_get_public_parent_workflow_info(
             node.get_workflow()
             for node in Node.objects.filter(linked_workflow__id=pk)
         ]
-        data_package = InfoBoxSerializer(
+        data_package = LibraryObjectSerializer(
             parent_workflows, many=True, context={"user": request.user}
         ).data
 

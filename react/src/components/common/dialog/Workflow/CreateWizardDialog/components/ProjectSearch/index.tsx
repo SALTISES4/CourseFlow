@@ -1,5 +1,5 @@
 import { GridWrap } from '@cf/mui/helper'
-import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
+import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
 import WorkflowCardDumb from '@cfComponents/cards/WorkflowCardDumb'
 import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -8,9 +8,9 @@ import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
-import { getProjectsForCreate } from '@XMLHTTP/API/workflow'
+import { useListProjectsByCurrentUserQuery } from '@XMLHTTP/API/project.rtk'
 import Fuse from 'fuse.js'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent } from 'react'
 
 type PropsType = {
   selected?: number
@@ -21,16 +21,11 @@ type PropsType = {
 
 type StateType = ProjectType[]
 
-const ProjectSearch = ({
-  selected,
-  projects,
-  onProjectSelect,
-  setProjectData
-}: PropsType) => {
+const ProjectSearch = ({ selected, projects, onProjectSelect }: PropsType) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const [results, setResults] = useState<StateType>([])
+  const { data, isLoading } = useListProjectsByCurrentUserQuery({})
 
   /*******************************************************
    * FUNCTIONS
@@ -41,24 +36,31 @@ const ProjectSearch = ({
     })
     const value = e.target.value
     if (value === '') {
-      setResults(projects)
+      // setResults(projects)
       return
     }
 
+    // this needs changing to an update in the args (to send back via rest query)
     const filtered: StateType = fuse.search(value).map((result) => result.item)
-    setResults(filtered)
+    // setResults(filtered)
   }
 
-  if (projects === null) {
-    getProjectsForCreate((responseData) => {
-      const projectData = responseData.dataPackage.map((project) => {
-        return formatLibraryObject(project)
-      })
-      setProjectData(projectData)
-      setResults(projectData)
-    })
-    return <Loader />
-  }
+  // if (projects === null) {
+  //   getProjectsForCreate((responseData) => {
+  //     setProjectData(projectData)
+  //     setResults(projectData)
+  //   })
+  //   return <Loader />
+  // }
+
+  if (!data || isLoading) return <Loader />
+
+  // @todo do to shape of legacy query, the objects are grouped by permission
+  // (look at the query response shape)
+  // this needs work
+  const projectData = data.dataPackage.ownedProjects.map((project) => {
+    return formatProjectEntity(project)
+  })
 
   /*******************************************************
    * RENDER
@@ -79,11 +81,11 @@ const ProjectSearch = ({
         }}
       />
       <GridWrap sx={{ mt: 4 }}>
-        {results.slice(0, 8).map((project, index) => (
+        {projectData.map((project, index) => (
           <WorkflowCardDumb
             key={index}
             {...project}
-            isSelected={project.isSelected || project.id === selected}
+            isSelected={project.id === selected}
             onClick={() => onProjectSelect(project.id)}
           />
         ))}

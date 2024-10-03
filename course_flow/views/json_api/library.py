@@ -20,7 +20,10 @@ from course_flow.models.discipline import Discipline
 from course_flow.models.favourite import Favourite
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.workflow import Workflow
-from course_flow.serializers import DisciplineSerializer, InfoBoxSerializer
+from course_flow.serializers import (
+    DisciplineSerializer,
+    LibraryObjectSerializer,
+)
 from course_flow.services import DAO
 from course_flow.services.library import LibraryService
 from course_flow.templatetags.course_flow_templatetags import has_group
@@ -34,7 +37,7 @@ class LibraryEndpoint:
     def fetch__favourite_library_objects(
         request: Request,
     ) -> Response:
-        library_objects_serialized = InfoBoxSerializer(
+        library_objects_serialized = LibraryObjectSerializer(
             DAO.get_nondeleted_favourites(request.user),
             many=True,
             context={"user": request.user},
@@ -130,10 +133,12 @@ class LibraryEndpoint:
                     deleted=False, published=True, is_template=True
                 )
             )
-            projects_serialized = InfoBoxSerializer(
+
+            projects_serialized = LibraryObjectSerializer(
                 projects, many=True, context={"user": user}
             ).data
-            templates_serialized = InfoBoxSerializer(
+
+            templates_serialized = LibraryObjectSerializer(
                 templates, many=True, context={"user": user}
             ).data
 
@@ -168,7 +173,7 @@ class LibraryEndpoint:
 
         data = {
             # "initial_workflows": (
-            #     InfoBoxSerializer(
+            #     LibraryObjectSerializer(
             #         initial_workflows,
             #         context={"user": user},
             #         many=True,
@@ -200,6 +205,14 @@ class LibraryEndpoint:
     def fetch__projects(
         request: Request,
     ) -> Response:
+        """
+        @todo reconcile this with get_my_projects
+        look at the function below, it's getting a bunch of workflows too and calling them projects
+        this method is flawed
+
+        :param request:
+        :return:
+        """
         user = request.user
 
         all_projects = list(
@@ -211,7 +224,7 @@ class LibraryEndpoint:
             )
         )
 
-        projects_serialized = InfoBoxSerializer(
+        projects_serialized = LibraryObjectSerializer(
             all_projects, many=True, context={"user": user}
         ).data
 
@@ -258,7 +271,7 @@ class LibraryEndpoint:
                 )
 
             data_package = {
-                "items": InfoBoxSerializer(
+                "items": LibraryObjectSerializer(
                     return_objects, context={"user": request.user}, many=True
                 ).data,
                 "meta": meta,

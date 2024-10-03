@@ -63,10 +63,7 @@ const ProjectDetails = () => {
   useEffect(() => {
     if (!data?.dataPackage) return
 
-    const project = formatProjectEntity(
-      data.dataPackage,
-      COURSEFLOW_APP.globalContextData.disciplines
-    )
+    const project = formatProjectEntity(data.dataPackage)
     setProject(project)
   }, [data])
 

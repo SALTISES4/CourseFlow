@@ -21,7 +21,7 @@ from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
     CourseSerializerShallow,
-    InfoBoxSerializer,
+    LibraryObjectSerializer,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -38,7 +38,7 @@ def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
     try:
         workflow_type = body.get("workflowType")
         model = DAO.get_model_from_str(workflow_type)
-        templates_serialized = InfoBoxSerializer(
+        templates_serialized = LibraryObjectSerializer(
             model.objects.filter(
                 deleted=False,
                 is_template=True,
@@ -78,7 +78,7 @@ def duplicate__strategy(request: HttpRequest) -> JsonResponse:
     return JsonResponse(
         {
             "message": "success",
-            "new_item": InfoBoxSerializer(
+            "new_item": LibraryObjectSerializer(
                 clone, context={"user": request.user}
             ).data,
             "type": clone.type,

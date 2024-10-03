@@ -1,5 +1,3 @@
-from pprint import pprint
-
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -9,12 +7,10 @@ from course_flow.models import (
     Activity,
     Course,
     Favourite,
-    Node,
     Program,
     User,
     Workflow,
 )
-from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.serializers.mixin import (
     AuthorSerializerMixin,
     DescriptionSerializerMixin,
@@ -441,106 +437,3 @@ class WorkflowUpdateSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
-
-
-# @todo, change to a relevant title
-class InfoBoxSerializer(
-    serializers.Serializer,
-    TitleSerializerMixin,
-    DescriptionSerializerMixin,
-    AuthorSerializerMixin,
-):
-    deleted = serializers.ReadOnlyField()
-    id = serializers.ReadOnlyField()
-    created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
-    last_modified = serializers.DateTimeField(format=Utility.dateTimeFormat())
-    title = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
-    type = serializers.ReadOnlyField()
-    favourite = serializers.SerializerMethodField()
-    is_owned = serializers.SerializerMethodField()
-    is_strategy = serializers.ReadOnlyField()
-    published = serializers.ReadOnlyField()
-    author = serializers.SerializerMethodField()
-    project_title = serializers.SerializerMethodField()
-    object_permission = serializers.SerializerMethodField()
-    workflow_count = serializers.SerializerMethodField()
-    is_linked = serializers.SerializerMethodField()
-    is_template = serializers.ReadOnlyField()
-
-    @staticmethod
-    def get_workflow_count(instance):
-        if instance.type == "project":
-            return instance.workflows.all().count()
-        return None
-
-    def get_url(self, instance):
-        if instance.type == "project":
-            return None
-        user = self.context.get("user", None)
-        if user is None:
-            # Handle the scenario where user is not available
-            return None  # Or raise an exception, based on your application's needs
-
-        return DAO.user_workflow_url(instance, user)
-
-    @staticmethod
-    def get_project_title(instance):
-        if instance.type == "project":
-            return None
-        if instance.get_project() is None:
-            return None
-        return instance.get_project().title
-
-    def get_is_owned(self, instance):
-        user = self.context.get("user")
-        if user == instance.author:
-            return True
-        else:
-            return False
-
-    def get_favourite(self, instance):
-        user = self.context.get("user")
-        pprint("user")
-        pprint(user)
-
-        if user is None or not user.is_authenticated:
-            return False
-
-        if Favourite.objects.filter(
-            user=user,
-            content_type=ContentType.objects.get_for_model(
-                instance.get_permission_objects()[0]
-            ),
-            object_id=instance.id,
-        ):
-            return True
-
-        return False
-
-    def get_object_permission(self, instance):
-        user = self.context.get("user")
-        if user is None or not user.is_authenticated:
-            return 0
-        object_permission = ObjectPermission.objects.filter(
-            user=user,
-            content_type=ContentType.objects.get_for_model(
-                instance.get_permission_objects()[0]
-            ),
-            object_id=instance.id,
-        ).first()
-        if object_permission is None:
-            return {
-                "permission_type": Permission.PERMISSION_VIEW.value,
-                "last_viewed": None,
-            }
-        return {
-            "permission_type": object_permission.permission_type,
-            "last_viewed": object_permission.last_viewed,
-        }
-
-    @staticmethod
-    def get_is_linked(instance):
-        if instance.type != "project":
-            return len(Node.objects.filter(linked_workflow=instance)) > 0
-        return False

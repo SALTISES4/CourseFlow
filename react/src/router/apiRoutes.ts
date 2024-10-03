@@ -30,9 +30,9 @@ export const apiPathRoutes = {
       detail: '/project/:id/detail',
       update: '/project/:id/update',
       duplicate: '/project/:id/duplicate',
-      object_set__create: 'project/:id/object-set/create',
-      list__by_current_user: 'project/my-projects',
-      workflows__list: 'project/:id/workflow'
+      object_set__create: '/project/:id/object-set/create',
+      list__by_current_user: '/project/my-projects',
+      workflows__list: '/project/:id/workflow'
     },
     workflow: {
       detail: '/workflow/:id/detail',

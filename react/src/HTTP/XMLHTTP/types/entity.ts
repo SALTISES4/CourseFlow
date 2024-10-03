@@ -31,13 +31,11 @@ export type ELibraryObject = {
   favourite: boolean
   published: boolean
   description: string
-
   type: LibraryObjectType
   isOwned: boolean
   isStrategy: boolean
   projectTitle: string
   objectPermission: ObjectPermission
-  hasLiveproject: boolean
   workflowCount: number
   isLinked: boolean
   isVisible: boolean

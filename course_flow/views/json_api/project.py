@@ -18,12 +18,12 @@ from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.duplication_functions import fast_duplicate_project
 from course_flow.models import ObjectPermission, Project, Workflow
 from course_flow.models.objectPermission import Permission
+from course_flow.serializers import LibraryObjectSerializer
 from course_flow.serializers.project import (
     CreateProjectSerializer,
     ProjectSerializerShallow,
     UpdateProjectSerializer,
 )
-from course_flow.serializers.workflow import InfoBoxSerializer
 from course_flow.services import DAO
 from course_flow.services.project import ProjectService
 from course_flow.views.mixins import UserCanViewMixin
@@ -112,26 +112,24 @@ class ProjectEndpoint:
             }
         )
 
-    def list_my_projects(request: HttpRequest) -> JsonResponse:
-        body = json.loads(request.body)
-        try:
-            workflow_id = Workflow.objects.get(pk=body.get("workflowPk")).id
-        except ObjectDoesNotExist:
-            workflow_id = 0
+    @api_view(["POST"])
+    def list_my_projects(request: Request) -> Response:
+        # body = json.loads(request.body)
+        # try:
+        #     workflow_id = Workflow.objects.get(pk=body.get("workflowPk")).id
+        # except ObjectDoesNotExist:
+        #     workflow_id = 0
 
         try:
-            data_package = ProjectService.get_my_projects(
-                request.user, False, for_add=True
-            )
+            data_package = ProjectService.get_my_projects(request.user)
         except AttributeError as e:
             logger.exception("An error occurred")
-            return JsonResponse({"action": "error"})
+            return Response({"action": "error"})
 
-        return JsonResponse(
+        return Response(
             {
                 "message": "success",
                 "data_package": data_package,
-                "workflow_id": workflow_id,
             }
         )
 
@@ -164,7 +162,7 @@ class ProjectEndpoint:
         return Response(
             {
                 "message": "success",
-                "new_item": InfoBoxSerializer(
+                "new_item": LibraryObjectSerializer(
                     clone, context={"user": request.user}
                 ).data,
                 "type": "project",
@@ -184,7 +182,7 @@ class ProjectEndpoint:
         try:
             user = request.user
             project = Project.objects.get(pk=body.get("projectPk"))
-            workflows_serialized = InfoBoxSerializer(
+            workflows_serialized = LibraryObjectSerializer(
                 project.workflows.all(), many=True, context={"user": user}
             ).data
 
@@ -258,7 +256,7 @@ def json_api_post_get_projects_for_create(
                 permission_type=Permission.PERMISSION_EDIT.value,
             )
         ]
-        projects_serialized = InfoBoxSerializer(
+        projects_serialized = LibraryObjectSerializer(
             projects,
             many=True,
             context={"user": user},

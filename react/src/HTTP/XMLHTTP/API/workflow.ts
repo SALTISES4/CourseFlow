@@ -230,17 +230,17 @@ export function getTargetProjectMenuQuery<T>(
  * Get possible projects to add a workflow to
  * @param callBackFunction
  */
-export function getProjectsForCreate<T>(
-  callBackFunction = (_data: ProjectsForCreateQueryResp) =>
-    console.log('success')
-) {
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.get_projects_for_create,
-    {}
-  ).then((response: ProjectsForCreateQueryResp) => {
-    callBackFunction(response)
-  })
-}
+// export function getProjectsForCreate<T>(
+//   callBackFunction = (_data: ProjectsForCreateQueryResp) =>
+//     console.log('success')
+// ) {
+//   API_POST(
+//     COURSEFLOW_APP.globalContextData.path.post_paths.get_projects_for_create,
+//     {}
+//   ).then((response: ProjectsForCreateQueryResp) => {
+//     callBackFunction(response)
+//   })
+// }
 
 /**
  * Get all templates of a given type

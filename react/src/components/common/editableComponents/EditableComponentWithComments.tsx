@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as Constants from '@cf/constants'
 // @components
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
@@ -29,9 +28,6 @@ class EditableComponentWithComments<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponent<P, S> {
-  static contextType = WorkFlowConfigContext
-
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   //Adds a button that opens/closes the comments dialogue
   // @todo sometimes dota is not used
@@ -84,6 +80,9 @@ class EditableComponentWithComments<
           titleText={_t('Comments')}
           handleClick={this.commentClick.bind(this)}
         />
+        {/*
+
+        */}
         <CommentBox
           show={this.state.show_comments}
           comments={this.props.data.comments}

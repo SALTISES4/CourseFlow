@@ -6,6 +6,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
 import ProjectCreateDialog from '@cfComponents/dialog/Project/ProjectCreateDialog'
 import PasswordResetDialog from '@cfComponents/dialog/User/PasswordResetDialog'
+import CreateWizardDialog from '@cfComponents/dialog/Workflow/CreateWizardDialog'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
 import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -29,21 +30,6 @@ import * as React from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
-const formFields = [
-  {
-    name: 'title',
-    label: 'Title',
-    type: 'text',
-    value: '',
-    required: true
-  },
-  {
-    name: 'description',
-    label: 'Description',
-    type: 'text',
-    value: ''
-  }
-]
 
 const TopBar = () => {
   const navigate = useNavigate()
@@ -276,7 +262,7 @@ const TopBar = () => {
       {/*  units={editProgramData.units}*/}
       {/*/>*/}
 
-      {/*<CourseCreateDialog {...createCourseData} units={editCourseData.units} />*/}
+      <CreateWizardDialog />
 
       {/*<ActivityCreateDialog*/}
       {/*  {...createActivityData}*/}

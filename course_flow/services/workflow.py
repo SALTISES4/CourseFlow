@@ -5,6 +5,7 @@ from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
+    LibraryObjectSerializer,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -34,7 +35,7 @@ from course_flow.models.objectPermission import Permission
 from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.models.week import Week
 from course_flow.models.workflow import Workflow
-from course_flow.serializers import InfoBoxSerializer, ProjectSerializerShallow
+from course_flow.serializers import ProjectSerializerShallow
 from course_flow.services import DAO
 
 
@@ -217,7 +218,9 @@ class WorkflowService:
                 )
             )
 
-        return InfoBoxSerializer(items, many=True, context={"user": user}).data
+        return LibraryObjectSerializer(
+            items, many=True, context={"user": user}
+        ).data
 
     @staticmethod
     def get_workflow_choices():

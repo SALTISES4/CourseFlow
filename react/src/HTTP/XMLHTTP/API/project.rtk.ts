@@ -13,6 +13,15 @@ export type GetProjectByIdQueryResp = {
   dataPackage: EProject
 }
 
+export type ListProjectsQueryResp = {
+  message: string
+  dataPackage: {
+    ownedProjects: EProject[]
+    editProjects: EProject[]
+    deletedProjects: EProject[]
+  }
+}
+
 export type CreateProjectResp = {
   message: string
   dataPackage: {
@@ -52,6 +61,17 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
+    // @todo this query is probably better as a variation on common library search + arguments
+    listProjectsByCurrentUser: builder.query<ListProjectsQueryResp, any>({
+      query: (args) => {
+        const base = apiPaths.json_api.project.list__by_current_user
+        return {
+          method: Verb.POST,
+          url: base,
+          body: args // not implemented
+        }
+      }
+    }),
     /*******************************************************
      * MUTATIONS
      *******************************************************/
@@ -82,6 +102,7 @@ const extendedApi = cfApi.injectEndpoints({
 
 export const {
   useGetProjectByIdQuery,
+  useListProjectsByCurrentUserQuery,
   useCreateProjectMutation,
   useUpdateProjectMutation
 } = extendedApi

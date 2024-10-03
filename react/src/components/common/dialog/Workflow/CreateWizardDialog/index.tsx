@@ -1,11 +1,10 @@
-// @ts-nocheck
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
-import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
+import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import FormActivity from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormActivity'
-import { ActivityFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormActivity/types'
+import CourseForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse'
+import { CourseFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse/types'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
@@ -18,20 +17,20 @@ import { SelectChangeEvent } from '@mui/material/Select'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
-import { API_POST } from '@XMLHTTP/CallWrapper'
+import { useListProjectsByCurrentUserQuery } from '@XMLHTTP/API/project.rtk'
 import { produce } from 'immer'
 import { ChangeEvent, useState } from 'react'
 
-import { CreateActivityDataType } from './data'
+import { CreateCourseDataType } from './data'
 
-type PropsType = CreateActivityDataType & Pick<ActivityFormDataType, 'units'>
+type PropsType = CreateCourseDataType & Pick<CourseFormDataType, 'units'>
 
 type StateType = {
   step: number
   type: CreateResourceOptions
   project?: number
   template?: number
-  fields: Omit<ActivityFormDataType, 'units'> & {
+  fields: Omit<CourseFormDataType, 'units'> & {
     unit: string
   }
 }
@@ -43,23 +42,34 @@ const initialState: StateType = {
     title: '',
     description: '',
     duration: '',
+    courseNumber: '',
+    ponderation: {
+      theory: '',
+      practice: '',
+      individual: '',
+      generalEdu: '',
+      specificEdu: ''
+    },
     unit: ''
   }
 }
 
-const ActivityCreateDialog = ({ steps, units }: PropsType) => {
+const CreateWizardDialog = ({ units }: PropsType) => {
+  const steps = ['Select project', 'Select activity type', 'Create activity']
+
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DialogMode.ACTIVITY_CREATE)
+  const { show, onClose } = useDialog(DialogMode.COURSE_CREATE)
   const [projects, setProjectData] = useState<ProjectType[]>(null)
   const [templates, setTemplateData] = useState<TemplateType[]>(null)
+
 
   // dynamic dialog title for each step
   const dialogTitle = [
     'Select a project',
-    'Select activity type',
+    'Select a course type',
     state.type === CreateResourceOptions.TEMPLATE
-      ? 'Create an activity from a template'
-      : 'Create a blank activity'
+      ? 'Create a course from a template'
+      : 'Create a blank course'
   ][state.step]
 
   // each element is a validation condition for that particular step
@@ -120,7 +130,10 @@ const ActivityCreateDialog = ({ steps, units }: PropsType) => {
   }
 
   function onInfoChange(e: ChangeEvent<HTMLInputElement>) {
-    const property = e.target.name as keyof Omit<StateType['fields'], 'unit'>
+    const property = e.target.name as keyof Omit<
+      StateType['fields'],
+      'ponderation'
+    >
     setState(
       produce((draft) => {
         draft.fields[property] = e.target.value
@@ -136,22 +149,21 @@ const ActivityCreateDialog = ({ steps, units }: PropsType) => {
     )
   }
 
+  function onPonderationChange(e: ChangeEvent<HTMLInputElement>) {
+    const property = e.target.name as keyof StateType['fields']['ponderation']
+    setState(
+      produce((draft) => {
+        draft.fields.ponderation[property] = e.target.value
+      })
+    )
+  }
+
   function resetState() {
     setState(initialState)
   }
 
   function onSubmit() {
-    console.log('submitted CREATE ACTIVITY with', state)
-    API_POST<{ redirect: string }>(
-      COURSEFLOW_APP.globalContextData.path.json_api.create_workflow,
-      {
-        ...state,
-        workflow_type: 'activity',
-        projectPk: state.project
-      }
-    ).then((resp) => {
-      window.location.href = resp.redirect
-    })
+    console.log('submitted CREATE COURSE with', state)
   }
 
   return (
@@ -178,36 +190,38 @@ const ActivityCreateDialog = ({ steps, units }: PropsType) => {
           {state.step === 0 && (
             <ProjectSearch
               selected={state.project}
-              projects={projects}
               setProjectData={setProjectData}
+              projects={projects}
               onProjectSelect={onProjectSelect}
             />
           )}
           {state.step === 1 && (
             <TypeSelect
-              resourceLabel="activity"
+              resourceLabel="course"
               type={state.type}
               onTypeSelect={onTypeSelect}
             />
           )}
           {state.step === 2 && state.type === CreateResourceOptions.BLANK && (
-            <FormActivity
+            <CourseForm
               wrapAs="div"
               values={state.fields}
               units={units}
               onInfoChange={onInfoChange}
+              onPonderationChange={onPonderationChange}
               onUnitChange={onUnitChange}
             />
           )}
-          {state.step === 2 && state.type === CreateResourceOptions.TEMPLATE && (
-            <TemplateSearch
-              selected={state.template}
-              setTemplateData={setTemplateData}
-              templates={templates}
-              onTemplateSelect={onTemplateSelect}
-              templateType={'course'}
-            />
-          )}
+          {state.step === 2 &&
+            state.type === CreateResourceOptions.TEMPLATE && (
+              <TemplateSearch
+                selected={state.template}
+                setTemplateData={setTemplateData}
+                templates={templates}
+                onTemplateSelect={onTemplateSelect}
+                templateType={'course'}
+              />
+            )}
         </StyledBox>
       </DialogContent>
 
@@ -229,11 +243,11 @@ const ActivityCreateDialog = ({ steps, units }: PropsType) => {
           onClick={state.step !== steps.length - 1 ? goToNextStep : onSubmit}
           disabled={disableSubmit}
         >
-          {state.step !== steps.length - 1 ? 'Next step' : 'Create activity'}
+          {state.step !== steps.length - 1 ? 'Next step' : 'Create course'}
         </Button>
       </DialogActions>
     </StyledDialog>
   )
 }
 
-export default ActivityCreateDialog
+export default CreateWizardDialog
