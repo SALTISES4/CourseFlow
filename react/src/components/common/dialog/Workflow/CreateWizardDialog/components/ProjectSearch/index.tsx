@@ -1,5 +1,5 @@
 import { GridWrap } from '@cf/mui/helper'
-import { formatProjectEntity } from '@cf/utility/marshalling/projectDetail'
+import { formatLibraryObject } from '@cf/utility/marshalling/libraryCards'
 import WorkflowCardDumb from '@cfComponents/cards/WorkflowCardDumb'
 import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import Loader from '@cfComponents/UIPrimitives/Loader'
@@ -14,14 +14,12 @@ import { ChangeEvent } from 'react'
 
 type PropsType = {
   selected?: number
-  projects: ProjectType[] | null
   onProjectSelect: (id: number) => void
-  setProjectData: (projectData: ProjectType[]) => void
 }
 
 type StateType = ProjectType[]
 
-const ProjectSearch = ({ selected, projects, onProjectSelect }: PropsType) => {
+const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -31,9 +29,9 @@ const ProjectSearch = ({ selected, projects, onProjectSelect }: PropsType) => {
    * FUNCTIONS
    *******************************************************/
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {
-    const fuse = new Fuse(projects, {
-      keys: ['title', 'caption']
-    })
+    // const fuse = new Fuse(projects, {
+    //   keys: ['title', 'caption']
+    // })
     const value = e.target.value
     if (value === '') {
       // setResults(projects)
@@ -41,8 +39,8 @@ const ProjectSearch = ({ selected, projects, onProjectSelect }: PropsType) => {
     }
 
     // this needs changing to an update in the args (to send back via rest query)
-    const filtered: StateType = fuse.search(value).map((result) => result.item)
-    // setResults(filtered)
+    // const filtered: StateType = fuse.search(value).map((result) => result.item)
+    // // setResults(filtered)
   }
 
   // if (projects === null) {
@@ -59,7 +57,7 @@ const ProjectSearch = ({ selected, projects, onProjectSelect }: PropsType) => {
   // (look at the query response shape)
   // this needs work
   const projectData = data.dataPackage.ownedProjects.map((project) => {
-    return formatProjectEntity(project)
+    return formatLibraryObject(project)
   })
 
   /*******************************************************

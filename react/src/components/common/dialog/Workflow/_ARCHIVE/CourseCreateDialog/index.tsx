@@ -4,8 +4,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
 import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import CourseForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse'
-import { CourseFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse/types'
+import { CourseFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormCourse/types'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
@@ -20,6 +19,8 @@ import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import { produce } from 'immer'
 import { ChangeEvent, useState } from 'react'
+
+import CourseForm from 'components/common/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormCourse'
 
 import { CreateCourseDataType } from './data'
 

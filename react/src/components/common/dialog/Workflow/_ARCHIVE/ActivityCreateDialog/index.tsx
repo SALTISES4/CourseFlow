@@ -4,8 +4,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import FormActivity from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormActivity'
-import { ActivityFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormActivity/types'
+import { ActivityFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormActivity/types'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
@@ -21,6 +20,8 @@ import Stepper from '@mui/material/Stepper'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { produce } from 'immer'
 import { ChangeEvent, useState } from 'react'
+
+import FormActivity from 'components/common/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormActivity'
 
 import { CreateActivityDataType } from './data'
 

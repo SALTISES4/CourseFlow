@@ -3,8 +3,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import ProgramForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram'
-import { ProgramFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormProgram/types'
+import { ProgramFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormProgram/types'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
@@ -19,6 +18,8 @@ import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
 import { produce } from 'immer'
 import { ChangeEvent, useState } from 'react'
+
+import ProgramForm from 'components/common/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormProgram'
 
 
 import { CreateProgramDataType } from './data'

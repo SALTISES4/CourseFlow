@@ -1,3 +1,4 @@
+import './wdyr'
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'

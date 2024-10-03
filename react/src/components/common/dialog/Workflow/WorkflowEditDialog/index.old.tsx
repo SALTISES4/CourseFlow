@@ -4,7 +4,6 @@ import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import { FormField } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormWorkflow'
 import {
   WorkflowFormType,
   timeUnits
@@ -26,6 +25,8 @@ import { produce } from 'immer'
 import { ChangeEvent, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+
+import { FormField } from 'components/common/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormWorkflow'
 
 type StateType = WorkflowFormType
 

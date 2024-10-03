@@ -3,7 +3,6 @@ import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkflowType } from '@cf/types/enum'
 import { Utility } from '@cf/utility/utilityFunctions'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import { FormField } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormWorkflow'
 import {
   WorkflowFormType,
   timeUnits
@@ -27,6 +26,8 @@ import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
+
+import { FormField } from 'components/common/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormWorkflow'
 
 function configFields(workflow: AppState['workflow']): FormField[] {
   const allFields = [
@@ -81,8 +82,6 @@ const WorkflowEditDialog = () => {
   const { id } = useParams()
 
   const workflow = useSelector((state: AppState) => state.workflow)
-  console.log('workflow')
-  console.log(workflow)
 
   const config = configFields(workflow)
 

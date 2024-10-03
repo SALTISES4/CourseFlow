@@ -1,6 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { ObjectSetType } from '@cf/types/common'
-import { EProject } from '@XMLHTTP/types/entity'
+import {ELibraryObject, EProject} from '@XMLHTTP/types/entity'
 import { generatePath } from 'react-router-dom'
 
 import { Verb, cfApi } from './api'
@@ -16,9 +16,9 @@ export type GetProjectByIdQueryResp = {
 export type ListProjectsQueryResp = {
   message: string
   dataPackage: {
-    ownedProjects: EProject[]
-    editProjects: EProject[]
-    deletedProjects: EProject[]
+    ownedProjects: ELibraryObject[]
+    editProjects: ELibraryObject[]
+    deletedProjects: ELibraryObject[]
   }
 }
 

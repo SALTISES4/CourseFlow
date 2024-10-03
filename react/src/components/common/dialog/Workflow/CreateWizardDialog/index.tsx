@@ -1,10 +1,9 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
-import { PropsType as ProjectType } from '@cfComponents/cards/WorkflowCardDumb'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
-import CourseForm from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse'
-import { CourseFormDataType } from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/FormCourse/types'
+import WorkflowForm from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
 import ProjectSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/ProjectSearch'
 import TemplateSearch from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TemplateSearch'
 import TypeSelect from '@cfComponents/dialog/Workflow/CreateWizardDialog/components/TypeSelect'
@@ -13,82 +12,90 @@ import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
-import { SelectChangeEvent } from '@mui/material/Select'
 import Step from '@mui/material/Step'
 import StepLabel from '@mui/material/StepLabel'
 import Stepper from '@mui/material/Stepper'
-import { useListProjectsByCurrentUserQuery } from '@XMLHTTP/API/project.rtk'
 import { produce } from 'immer'
-import { ChangeEvent, useState } from 'react'
-
-import { CreateCourseDataType } from './data'
-
-type PropsType = CreateCourseDataType & Pick<CourseFormDataType, 'units'>
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type StateType = {
   step: number
-  type: CreateResourceOptions
-  project?: number
+  resourceType: CreateResourceOptions
+  workflowType?: WorkflowType
+  title?: string
   template?: number
-  fields: Omit<CourseFormDataType, 'units'> & {
-    unit: string
-  }
 }
 
 const initialState: StateType = {
   step: 0,
-  type: CreateResourceOptions.BLANK,
-  fields: {
-    title: '',
-    description: '',
-    duration: '',
-    courseNumber: '',
-    ponderation: {
-      theory: '',
-      practice: '',
-      individual: '',
-      generalEdu: '',
-      specificEdu: ''
-    },
-    unit: ''
-  }
+  resourceType: CreateResourceOptions.BLANK
 }
 
-const CreateWizardDialog = ({ units }: PropsType) => {
-  const steps = ['Select project', 'Select activity type', 'Create activity']
-
+const CreateWizardDialog = () => {
   const [state, setState] = useState<StateType>(initialState)
-  const { show, onClose } = useDialog(DialogMode.COURSE_CREATE)
-  const [projects, setProjectData] = useState<ProjectType[]>(null)
+  const [projectId, setProjectId] = useState<number>()
   const [templates, setTemplateData] = useState<TemplateType[]>(null)
+  const [isFormReady, setIsFormReady] = useState<boolean>()
 
+  const {
+    show,
+    onClose,
+    type: dialogMode
+  } = useDialog([
+    DialogMode.COURSE_CREATE,
+    DialogMode.ACTIVITY_CREATE,
+    DialogMode.ACTIVITY_CREATE
+  ])
+  const steps = [
+    {
+      title: 'Select project',
+      canSubmit: projectId
+    },
+    {
+      title: `Select a ${state.workflowType} type`,
+      canSubmit: state.resourceType
+    },
+    {
+      title:
+        state.resourceType === CreateResourceOptions.TEMPLATE
+          ? `Create a ${state.workflowType} from a template`
+          : `Create a blank ${state.workflowType}`,
+      canSubmit: ((): boolean => {
+        if (state.resourceType === CreateResourceOptions.TEMPLATE) {
+          return !!state.template
+        }
+        return isFormReady
+      })()
+    }
+  ]
+  const ctaTitle = `Create ${state.workflowType}`
 
-  // dynamic dialog title for each step
-  const dialogTitle = [
-    'Select a project',
-    'Select a course type',
-    state.type === CreateResourceOptions.TEMPLATE
-      ? 'Create a course from a template'
-      : 'Create a blank course'
-  ][state.step]
-
-  // each element is a validation condition for that particular step
-  const disableSubmit = [
-    // step 1: check if project is selected
-    !state.project,
-
-    // step 2: and that a type has been selected
-    !state.type,
-
-    // step 3: check if the template is selected for when creating from template
-    // or if creating manually, check that the title field is added
-    state.type === CreateResourceOptions.TEMPLATE
-      ? !state.template
-      : state.fields
-      ? !state.fields.title
-      : true
-  ][state.step]
-
+  // @todo still don't think this pattern is ideal
+  // i don't think the dialog should 'self configure' based on the dispatch id OR props
+  // instead there should be payload on dispatch
+  useEffect(() => {
+    function getWorkflowTypeFromDialogType(dialogMode: DialogMode) {
+      switch (dialogMode) {
+        case DialogMode.COURSE_CREATE:
+          return WorkflowType.COURSE
+        case DialogMode.ACTIVITY_CREATE:
+          return WorkflowType.ACTIVITY
+        case DialogMode.PROGRAM_CREATE:
+          return WorkflowType.PROGRAM
+        default:
+          return null
+      }
+    }
+    setState(
+      produce((draft) => {
+        draft.workflowType = getWorkflowTypeFromDialogType(dialogMode)
+        draft.title = ctaTitle
+      })
+    )
+  }, [dialogMode, ctaTitle])
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
   function goToNextStep() {
     setState(
       produce((draft) => {
@@ -106,17 +113,13 @@ const CreateWizardDialog = ({ units }: PropsType) => {
   }
 
   function onProjectSelect(id: number) {
-    setState(
-      produce((draft) => {
-        draft.project = draft.project === id ? undefined : id
-      })
-    )
+    setProjectId(id)
   }
 
-  function onTypeSelect(type: CreateResourceOptions) {
+  function onTypeSelect(resourceType: CreateResourceOptions) {
     setState(
       produce((draft) => {
-        draft.type = type
+        draft.resourceType = resourceType
       })
     )
   }
@@ -129,35 +132,6 @@ const CreateWizardDialog = ({ units }: PropsType) => {
     )
   }
 
-  function onInfoChange(e: ChangeEvent<HTMLInputElement>) {
-    const property = e.target.name as keyof Omit<
-      StateType['fields'],
-      'ponderation'
-    >
-    setState(
-      produce((draft) => {
-        draft.fields[property] = e.target.value
-      })
-    )
-  }
-
-  function onUnitChange(e: SelectChangeEvent) {
-    setState(
-      produce((draft) => {
-        draft.fields.unit = e.target.value
-      })
-    )
-  }
-
-  function onPonderationChange(e: ChangeEvent<HTMLInputElement>) {
-    const property = e.target.name as keyof StateType['fields']['ponderation']
-    setState(
-      produce((draft) => {
-        draft.fields.ponderation[property] = e.target.value
-      })
-    )
-  }
-
   function resetState() {
     setState(initialState)
   }
@@ -166,6 +140,119 @@ const CreateWizardDialog = ({ units }: PropsType) => {
     console.log('submitted CREATE COURSE with', state)
   }
 
+  function onCloseHandler() {
+    onClose()
+  }
+
+  // Inside your parent component
+  const memoizedSteps = useMemo(() => {
+    {
+      switch (state.step) {
+        case 0: {
+          return (
+            <ProjectSearch
+              selected={projectId}
+              onProjectSelect={onProjectSelect}
+            />
+          )
+        }
+        case 1: {
+          return (
+            <TypeSelect
+              resourceLabel={state.workflowType}
+              type={state.resourceType}
+              onTypeSelect={onTypeSelect}
+            />
+          )
+        }
+        case 2: {
+          if (state.resourceType === CreateResourceOptions.BLANK) {
+            return (
+              <WorkflowForm
+                submitHandler={onSubmit}
+                closeCallback={onCloseHandler}
+                label={state.title}
+                workflowType={state.workflowType}
+                setIsFormReady={setIsFormReady}
+              />
+            )
+          }
+
+          if (state.resourceType === CreateResourceOptions.TEMPLATE) {
+            return (
+              <TemplateSearch
+                selected={state.template}
+                setTemplateData={setTemplateData}
+                templates={templates}
+                onTemplateSelect={onTemplateSelect}
+                templateType={'course'}
+              />
+            )
+          }
+          return null
+        }
+        default:
+          return null
+      }
+    }
+  }, [onSubmit, onCloseHandler, setIsFormReady])
+
+  /*******************************************************
+   * RENDER COMPONENTS
+   *******************************************************/
+  const mysteps = () => {
+    switch (state.step) {
+      case 0: {
+        return (
+          <ProjectSearch
+            selected={projectId}
+            onProjectSelect={onProjectSelect}
+          />
+        )
+      }
+      case 1: {
+        return (
+          <TypeSelect
+            resourceLabel={state.workflowType}
+            type={state.resourceType}
+            onTypeSelect={onTypeSelect}
+          />
+        )
+      }
+      case 2: {
+        if (state.resourceType === CreateResourceOptions.BLANK) {
+          return (
+            <WorkflowForm
+              submitHandler={onSubmit}
+              closeCallback={onCloseHandler}
+              label={state.title}
+              workflowType={state.workflowType}
+              setIsFormReady={setIsFormReady}
+            />
+          )
+        }
+
+        if (state.resourceType === CreateResourceOptions.TEMPLATE) {
+          return (
+            <TemplateSearch
+              selected={state.template}
+              setTemplateData={setTemplateData}
+              templates={templates}
+              onTemplateSelect={onTemplateSelect}
+              templateType={'course'}
+            />
+          )
+        }
+        return null
+      }
+      default:
+        return null
+    }
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
     <StyledDialog
       open={show}
@@ -176,52 +263,18 @@ const CreateWizardDialog = ({ units }: PropsType) => {
         onExited: resetState
       }}
     >
-      <DialogTitle>{dialogTitle}</DialogTitle>
+      <DialogTitle>{steps[state.step].title}</DialogTitle>
       <DialogContent dividers>
         <Stepper activeStep={state.step}>
-          {steps.map((label, idx) => (
-            <Step key={label} completed={state.step > idx}>
-              <StepLabel>{label}</StepLabel>
+          {steps.map((step, idx) => (
+            <Step key={step.title} completed={state.step > idx}>
+              <StepLabel>{step.title}</StepLabel>
             </Step>
           ))}
         </Stepper>
 
         <StyledBox component="form" sx={{ mt: 5 }}>
-          {state.step === 0 && (
-            <ProjectSearch
-              selected={state.project}
-              setProjectData={setProjectData}
-              projects={projects}
-              onProjectSelect={onProjectSelect}
-            />
-          )}
-          {state.step === 1 && (
-            <TypeSelect
-              resourceLabel="course"
-              type={state.type}
-              onTypeSelect={onTypeSelect}
-            />
-          )}
-          {state.step === 2 && state.type === CreateResourceOptions.BLANK && (
-            <CourseForm
-              wrapAs="div"
-              values={state.fields}
-              units={units}
-              onInfoChange={onInfoChange}
-              onPonderationChange={onPonderationChange}
-              onUnitChange={onUnitChange}
-            />
-          )}
-          {state.step === 2 &&
-            state.type === CreateResourceOptions.TEMPLATE && (
-              <TemplateSearch
-                selected={state.template}
-                setTemplateData={setTemplateData}
-                templates={templates}
-                onTemplateSelect={onTemplateSelect}
-                templateType={'course'}
-              />
-            )}
+          {memoizedSteps}
         </StyledBox>
       </DialogContent>
 
@@ -241,9 +294,9 @@ const CreateWizardDialog = ({ units }: PropsType) => {
         <Button
           variant="contained"
           onClick={state.step !== steps.length - 1 ? goToNextStep : onSubmit}
-          disabled={disableSubmit}
+          disabled={!steps[state.step].canSubmit}
         >
-          {state.step !== steps.length - 1 ? 'Next step' : 'Create course'}
+          {state.step !== steps.length - 1 ? 'Next step' : ctaTitle}
         </Button>
       </DialogActions>
     </StyledDialog>

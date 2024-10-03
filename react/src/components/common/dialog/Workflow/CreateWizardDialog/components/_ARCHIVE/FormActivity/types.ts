@@ -1,4 +1,4 @@
-import { UnitType } from '../../types'
+import { UnitType } from '../../../types'
 
 export type ActivityFormDataType = {
   title: string
