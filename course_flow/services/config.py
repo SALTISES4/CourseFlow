@@ -21,40 +21,14 @@ from course_flow.serializers import DisciplineSerializer, FormFieldsSerializer
 
 class ConfigService:
     @staticmethod
-    def get_create_project_form():
-        create_project_form = CreateProject(
-            {
-                "title": "New project name",
-                "description": "",
-                "disciplines": [],
-            }
-        )
-
-        return {
-            "forms": {
-                "createProject": {
-                    # TODO: count the number of current user's projects
-                    "showNoProjectsAlert": True,
-                    "formFields": FormFieldsSerializer(
-                        create_project_form
-                    ).prepare_fields(),
-                }
-            }
-        }
-
-    @staticmethod
     def get_app_disciplines():
-        return DisciplineSerializer(
-            Discipline.objects.order_by("title"), many=True
-        ).data
+        return DisciplineSerializer(Discipline.objects.order_by("title"), many=True).data
 
     @staticmethod
     def get_app_paths():
         return {
             "post_paths": {
-                "new_outcome": reverse(
-                    "json_api:json-api-post-new-outcome-for-workflow"
-                ),
+                "new_outcome": reverse("json_api:json-api-post-new-outcome-for-workflow"),
                 "insert_child": reverse("json_api:json-api-post-insert-child"),
                 "inserted_at": reverse("json_api:json-api-post-inserted-at"),
                 "update_outcomehorizontallink_degree": reverse(
@@ -63,16 +37,10 @@ class ConfigService:
                 "update_outcomenode_degree": reverse(
                     "json_api:json-api-post-update-outcomenode-degree"
                 ),
-                "update_object_set": reverse(
-                    "json_api:json-api-post-update-object-set"
-                ),
+                "update_object_set": reverse("json_api:json-api-post-update-object-set"),
                 # generic
-                "insert_sibling": reverse(
-                    "json_api:json-api-post-insert-sibling"
-                ),
-                "set_permission": reverse(
-                    "json_api:json-api-post-set-permission"
-                ),
+                "insert_sibling": reverse("json_api:json-api-post-insert-sibling"),
+                "set_permission": reverse("json_api:json-api-post-set-permission"),
             },
             "get_paths": {
                 "get_public_workflow_child_data": reverse(

@@ -77,9 +77,7 @@ class LibraryEndpoint:
             object_type = "workflow"
 
         try:
-            item = DAO.get_model_from_str(object_type).objects.get(
-                pk=object_id
-            )
+            item = DAO.get_model_from_str(object_type).objects.get(pk=object_id)
 
             # @todo fix this unecessary operation
             Favourite.objects.filter(
@@ -89,9 +87,7 @@ class LibraryEndpoint:
             ).delete()
 
             if favourite:
-                Favourite.objects.create(
-                    user=request.user, content_object=item
-                )
+                Favourite.objects.create(user=request.user, content_object=item)
 
         except ValidationError as e:
             logger.exception("An error occurred")
@@ -112,10 +108,7 @@ class LibraryEndpoint:
         user = request.user
         templates_serialized = []
 
-        if (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            not in user.groups.all()
-        ):
+        if Group.objects.get(name=settings.TEACHER_GROUP) not in user.groups.all():
             projects_serialized = []
         else:
             projects = [
@@ -124,15 +117,13 @@ class LibraryEndpoint:
                     project__deleted=False, user=user
                 ).order_by("-last_viewed")[:2]
             ]
+
+            # @todo
+            # no...
+            # either one query for templates or keep them separate
             templates = list(
-                Project.objects.filter(
-                    deleted=False, published=True, is_template=True
-                )
-            ) + list(
-                Workflow.objects.filter(
-                    deleted=False, published=True, is_template=True
-                )
-            )
+                Project.objects.filter(deleted=False, published=True, is_template=True)
+            ) + list(Workflow.objects.filter(deleted=False, published=True, is_template=True))
 
             projects_serialized = LibraryObjectSerializer(
                 projects, many=True, context={"user": user}
@@ -156,92 +147,20 @@ class LibraryEndpoint:
         )
 
     #########################################################
-    # EXPLORE
-    #########################################################
-    @staticmethod
-    @login_required
-    @api_view(["GET"])
-    def fetch__explore(request: Request) -> Response:
-        user = request.user
-        # initial_workflows, pages = get_explore_objects(
-        #     user,
-        #     "",
-        #     20,
-        #     True,
-        #     {"sort": "created_on", "sort_reversed": True},
-        # )
-
-        data = {
-            # "initial_workflows": (
-            #     LibraryObjectSerializer(
-            #         initial_workflows,
-            #         context={"user": user},
-            #         many=True,
-            #     ).data
-            # ),
-            # "initial_pages": pages,
-            "disciplines": DisciplineSerializer(
-                Discipline.objects.all(), many=True
-            ).data,
-            "user_id": user.id
-            if user
-            else 0,  # @todo this should handle null not 0, or perhaps -1
-        }
-
-        return Response(
-            {
-                "action": "get",
-                "data_package": data,
-            },
-            status=status.HTTP_200_OK,
-        )
-
-    #########################################################
     # LIBRARY
     #########################################################
-    @staticmethod
-    @login_required
-    @api_view(["GET"])
-    def fetch__projects(
-        request: Request,
-    ) -> Response:
-        """
-        @todo reconcile this with get_my_projects
-        look at the function below, it's getting a bunch of workflows too and calling them projects
-        this method is flawed
 
-        :param request:
-        :return:
-        """
-        user = request.user
-
-        all_projects = list(
-            Project.objects.filter(user_permissions__user=user)
-        )
-        all_projects += list(
-            Workflow.objects.filter(
-                user_permissions__user=user, is_strategy=True
-            )
-        )
-
-        projects_serialized = LibraryObjectSerializer(
-            all_projects, many=True, context={"user": user}
-        ).data
-
-        return Response(
-            {"action": "get", "data_package": projects_serialized},
-            status=status.HTTP_200_OK,
-        )
-
-    #########################################################
-    # LIBRARY
-    #########################################################
     @staticmethod
     @login_required
     @api_view(["POST"])
     def search(
         request: Request,
     ) -> Response:
+        """
+        we also ned
+        :param request:
+        :return:
+        """
         meta = {}
         serializer = SearchSerializer(data=request.data)
 
@@ -253,9 +172,7 @@ class LibraryEndpoint:
             name_filter = data.get("filter", "").lower()
 
         else:
-            logger.exception(
-                f"Bad error encountered with errors: {serializer.errors}"
-            )
+            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
             return Response(serializer.errors, status=400)
 
         try:
@@ -287,6 +204,4 @@ class LibraryEndpoint:
 
         except Exception as e:
             logger.exception("An error occurred")
-            return Response(
-                {"error": str(e)}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

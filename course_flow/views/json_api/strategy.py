@@ -78,9 +78,7 @@ def duplicate__strategy(request: HttpRequest) -> JsonResponse:
     return JsonResponse(
         {
             "message": "success",
-            "new_item": LibraryObjectSerializer(
-                clone, context={"user": request.user}
-            ).data,
+            "new_item": LibraryObjectSerializer(clone, context={"user": request.user}).data,
             "type": clone.type,
         }
     )
@@ -100,9 +98,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
     strategy_type = body.get("objectType")
     position = body.get("position")
     workflow = Workflow.objects.get(pk=workflow_id)
-    strategy = DAO.get_model_from_str(strategy_type).objects.get(
-        pk=strategy_id
-    )
+    strategy = DAO.get_model_from_str(strategy_type).objects.get(pk=strategy_id)
     try:
         if strategy.author == request.user or strategy.published:
             # first, check compatibility between types (activity/course)
@@ -119,9 +115,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
             week.is_strategy = True
             week.original_strategy = strategy
             week.save()
-            new_through = WeekWorkflow.objects.create(
-                week=week, workflow=workflow, rank=position
-            )
+            new_through = WeekWorkflow.objects.create(week=week, workflow=workflow, rank=position)
             # now, check for missing columns. We try to create a one to one
             # relationship between the columns, and then add in any that are
             # still missing
@@ -134,9 +128,9 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
             columns_added = []
             for column in old_columns:
                 # check for a new column with same type
-                columns_type = workflow.columns.filter(
-                    column_type=column.column_type
-                ).exclude(id__in=map(lambda x: x.id, new_columns))
+                columns_type = workflow.columns.filter(column_type=column.column_type).exclude(
+                    id__in=map(lambda x: x.id, new_columns)
+                )
                 if columns_type.count() == 1:
                     new_columns.append(columns_type.first())
                     continue
@@ -179,18 +173,12 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
                 "strategy": WeekSerializerShallow(week).data,
                 "new_through": WeekWorkflowSerializerShallow(new_through).data,
                 "index": position,
-                "columns_added": ColumnSerializerShallow(
-                    columns_added, many=True
-                ).data,
+                "columns_added": ColumnSerializerShallow(columns_added, many=True).data,
                 "columnworkflows_added": ColumnWorkflowSerializerShallow(
                     columnworkflows_added, many=True
                 ).data,
-                "nodeweeks_added": NodeWeekSerializerShallow(
-                    week.nodeweek_set, many=True
-                ).data,
-                "nodes_added": NodeSerializerShallow(
-                    week.nodes.all(), many=True
-                ).data,
+                "nodeweeks_added": NodeWeekSerializerShallow(week.nodeweek_set, many=True).data,
+                "nodes_added": NodeSerializerShallow(week.nodes.all(), many=True).data,
                 "nodelinks_added": NodeLinkSerializerShallow(
                     NodeLink.objects.filter(
                         source_node__in=week.nodes.all(),
@@ -199,9 +187,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
                     many=True,
                 ).data,
             }
-            actions.dispatch_wf(
-                workflow, actions.newStrategyAction(response_data)
-            )
+            actions.dispatch_wf(workflow, actions.newStrategyAction(response_data))
             return JsonResponse({"message": "success"})
 
         else:
@@ -217,6 +203,13 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
 # @todo don't understand this purpose
 @user_can_edit("weekPk")
 def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
+    """
+    @todo
+
+    ....what is this?
+    :param request:
+    :return:
+    """
     body = json.loads(request.body)
     try:
         object_id = body.get("weekPk")

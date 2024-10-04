@@ -4,7 +4,7 @@ from pprint import pprint
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
@@ -20,9 +20,8 @@ from course_flow.models import ObjectPermission, Project, Workflow
 from course_flow.models.objectPermission import Permission
 from course_flow.serializers import LibraryObjectSerializer
 from course_flow.serializers.project import (
-    CreateProjectSerializer,
     ProjectSerializerShallow,
-    UpdateProjectSerializer,
+    ProjectUpsertSerializer,
 )
 from course_flow.services import DAO
 from course_flow.services.project import ProjectService
@@ -36,10 +35,8 @@ class ProjectEndpoint:
     @staticmethod
     @api_view(["POST"])
     def create(request: Request) -> Response:
-        # instantiate the form with the JSON params
-        serializer = CreateProjectSerializer(data=request.data)
+        serializer = ProjectUpsertSerializer(data=request.data)
         if serializer.is_valid():
-            # Save the Project instance and set the author
             project = serializer.save(author=request.user)
 
             return Response(
@@ -47,9 +44,7 @@ class ProjectEndpoint:
                 status=status.HTTP_201_CREATED,
             )
         else:
-            logger.exception(
-                f"Bad error encountered with errors: {serializer.errors}"
-            )
+            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -69,7 +64,7 @@ class ProjectEndpoint:
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        serializer = UpdateProjectSerializer(project, data=request.data)
+        serializer = ProjectUpsertSerializer(project, data=request.data)
         if serializer.is_valid():
             project = serializer.save()
             return Response(
@@ -77,9 +72,7 @@ class ProjectEndpoint:
                 status=status.HTTP_200_OK,
             )
         else:
-            logger.exception(
-                f"Bad error encountered with errors: {serializer.errors}"
-            )
+            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -162,9 +155,7 @@ class ProjectEndpoint:
         return Response(
             {
                 "message": "success",
-                "new_item": LibraryObjectSerializer(
-                    clone, context={"user": request.user}
-                ).data,
+                "new_item": LibraryObjectSerializer(clone, context={"user": request.user}).data,
                 "type": "project",
             }
         )
@@ -235,9 +226,7 @@ class ProjectEndpoint:
         return Response(
             {
                 "message": "success",
-                "new_dict": ProjectSerializerShallow(project).data[
-                    "object_sets"
-                ],
+                "new_dict": ProjectSerializerShallow(project).data["object_sets"],
             }
         )
 
@@ -292,9 +281,7 @@ def json_api__project__detail__comparison__get(request):
     user_permission = DAO.get_user_permission(project, current_user)
 
     response_data = {
-        "project_data": ProjectSerializerShallow(
-            project, context={"user": current_user}
-        ).data,
+        "project_data": ProjectSerializerShallow(project, context={"user": current_user}).data,
         "user_id": current_user.id if current_user else 0,
         "is_strategy": is_strategy,
         "user_permission": user_permission,

@@ -74,7 +74,7 @@ def json_api_patterns():
         path(
             "workflow/<int:pk>/detail",
             views.json_api.WorkflowEndpoint.fetch_detail,
-            name="workflow__detail",
+            name="workflow--detail",
         ),
         # path(
         #     "workflow/<int:pk>/detail-full",
@@ -84,13 +84,13 @@ def json_api_patterns():
         path(
             "workflow/<int:pk>/parent/detail",
             views.json_api.WorkflowEndpoint.fetch_parent_detail,
-            name="workflow__parent__detail",
+            name="workflow--parent--detail",
         ),
         # @todo this is really, get workflows by node
         path(
             "workflow/<int:pk>/parent/detail-full",
             views.json_api.WorkflowEndpoint.fetch_parent_detail_full,
-            name="workflow__parent__detail__full",
+            name="workflow--parent--detail--full",
         ),
         # @todo this is really, get workflows by node
         path(
@@ -140,14 +140,19 @@ def json_api_patterns():
         # WORKFLOW: EDITING
         #########################################################
         path(
+            "workflow/create",
+            views.json_api.WorkflowEndpoint.create,
+            name="workflow--create",
+        ),
+        path(
             "workflow/<int:pk>/update",
             views.json_api.WorkflowEndpoint.update,
-            name="json-api-post-duplicate-workflow",
+            name="workflow--update",
         ),
         path(
             "workflow/<int:pk>/duplicate-to-project",
             views.json_api.WorkflowEndpoint.duplicate_to_project,
-            name="json-api-post-duplicate-workflow",
+            name="workflow--duplicate-to-project",
         ),
         #########################################################
         # WORKFLOW: RELATIONS
@@ -284,16 +289,6 @@ def json_api_patterns():
             "library/home",
             views.json_api.LibraryEndpoint.fetch__home,
             name="library--home",
-        ),
-        path(
-            "library/explore",
-            views.json_api.LibraryEndpoint.fetch__explore,
-            name="library--explore",
-        ),
-        path(
-            "library/library/projects",
-            views.json_api.LibraryEndpoint.fetch__projects,
-            name="library--library--projects--get",
         ),
         path(
             "library/favourites",

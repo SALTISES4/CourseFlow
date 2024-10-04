@@ -22,7 +22,7 @@ from course_flow.services import DAO, Utility
 
 
 #########################################################
-# PROJECT CREATE
+# RELATION SERIALIZERS
 #########################################################
 class DisciplineSerializer(serializers.ModelSerializer):
     class Meta:
@@ -39,36 +39,10 @@ class ObjectSetSerializer(serializers.ModelSerializer):
         fields = ("term", "title", "id")
 
 
-class CreateProjectSerializer(serializers.ModelSerializer):
-    object_sets = ObjectSetSerializer(many=True, required=False)
-    disciplines = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Discipline.objects.all(), required=False
-    )
-
-    class Meta:
-        model = Project
-        fields = ("id", "title", "description", "disciplines", "object_sets")
-
-    def create(self, validated_data):
-        with transaction.atomic():
-            disciplines_data = validated_data.pop("disciplines", [])
-            object_sets_data = validated_data.pop("object_sets", [])
-
-            pprint("object_sets_data")
-            pprint(object_sets_data)
-            project = Project.objects.create(**validated_data)
-
-            # Set disciplines
-            project.disciplines.set(disciplines_data)
-
-            # Create and associate object sets
-            for os_data in object_sets_data:
-                project.object_sets.create(**os_data)
-
-        return project
-
-
-class UpdateProjectSerializer(serializers.ModelSerializer):
+#########################################################
+# PROJECT UPSERT
+#########################################################
+class ProjectUpsertSerializer(serializers.ModelSerializer):
     object_sets = ObjectSetSerializer(many=True, required=False)
     disciplines = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Discipline.objects.all(), required=False
@@ -82,39 +56,41 @@ class UpdateProjectSerializer(serializers.ModelSerializer):
             "description": {"required": True},
         }
 
+    def create(self, validated_data):
+        with transaction.atomic():
+            disciplines_data = validated_data.pop("disciplines", [])
+            object_sets_data = validated_data.pop("object_sets", [])
+
+            project = Project.objects.create(**validated_data)
+            project.disciplines.set(disciplines_data)
+
+            for os_data in object_sets_data:
+                project.object_sets.create(**os_data)
+
+            return project
+
     def update(self, instance, validated_data):
         with transaction.atomic():
-            # Retrieve and optionally update disciplines data
             disciplines_data = validated_data.pop("disciplines", None)
             if disciplines_data is not None:
                 instance.disciplines.set(disciplines_data)
 
-            # Prepare to handle object sets
             object_sets_data = validated_data.pop("object_sets", [])
-            existing_ids = set(
-                instance.object_sets.values_list("id", flat=True)
-            )
-            incoming_ids = set(
-                os_data.get("id")
-                for os_data in object_sets_data
-                if os_data.get("id")
-            )
+            existing_ids = set(instance.object_sets.values_list("id", flat=True))
+            incoming_ids = set()
 
-            # Update or create new object sets
             for os_data in object_sets_data:
                 object_set_id = os_data.get("id", None)
-                if object_set_id:
+                if object_set_id and object_set_id in existing_ids:
                     obj_set = instance.object_sets.get(id=object_set_id)
                     for key, value in os_data.items():
                         setattr(obj_set, key, value)
                     obj_set.save()
                 else:
                     new_obj_set = instance.object_sets.create(**os_data)
-                    incoming_ids.add(
-                        new_obj_set.id
-                    )  # Add new object set id to incoming ids
+                    incoming_ids.add(new_obj_set.id)
 
-            # Delete object sets that were not included in the incoming data
+            # Delete old object sets
             object_sets_to_delete = existing_ids - incoming_ids
             instance.object_sets.filter(id__in=object_sets_to_delete).delete()
 
@@ -123,11 +99,96 @@ class UpdateProjectSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
             instance.save()
 
-        return instance
+            return instance
+
+
+# class CreateProjectSerializer(serializers.ModelSerializer):
+#     object_sets = ObjectSetSerializer(many=True, required=False)
+#     disciplines = serializers.PrimaryKeyRelatedField(
+#         many=True, queryset=Discipline.objects.all(), required=False
+#     )
+#
+#     class Meta:
+#         model = Project
+#         fields = ("id", "title", "description", "disciplines", "object_sets")
+#
+#     def create(self, validated_data):
+#         with transaction.atomic():
+#             disciplines_data = validated_data.pop("disciplines", [])
+#             object_sets_data = validated_data.pop("object_sets", [])
+#
+#             project = Project.objects.create(**validated_data)
+#
+#             # Set disciplines
+#             project.disciplines.set(disciplines_data)
+#
+#             # Create and associate object sets
+#             for os_data in object_sets_data:
+#                 project.object_sets.create(**os_data)
+#
+#         return project
+#
+#
+# class UpdateProjectSerializer(serializers.ModelSerializer):
+#     object_sets = ObjectSetSerializer(many=True, required=False)
+#     disciplines = serializers.PrimaryKeyRelatedField(
+#         many=True, queryset=Discipline.objects.all(), required=False
+#     )
+#
+#     class Meta:
+#         model = Project
+#         fields = ("id", "title", "description", "disciplines", "object_sets")
+#         extra_kwargs = {
+#             "title": {"required": True},
+#             "description": {"required": True},
+#         }
+#
+#     def update(self, instance, validated_data):
+#         with transaction.atomic():
+#             # Retrieve and optionally update disciplines data
+#             disciplines_data = validated_data.pop("disciplines", None)
+#             if disciplines_data is not None:
+#                 instance.disciplines.set(disciplines_data)
+#
+#             # Prepare to handle object sets
+#             object_sets_data = validated_data.pop("object_sets", [])
+#             existing_ids = set(
+#                 instance.object_sets.values_list("id", flat=True)
+#             )
+#             incoming_ids = set(
+#                 os_data.get("id")
+#                 for os_data in object_sets_data
+#                 if os_data.get("id")
+#             )
+#
+#             # Update or create new object sets
+#             for os_data in object_sets_data:
+#                 object_set_id = os_data.get("id", None)
+#                 if object_set_id:
+#                     obj_set = instance.object_sets.get(id=object_set_id)
+#                     for key, value in os_data.items():
+#                         setattr(obj_set, key, value)
+#                     obj_set.save()
+#                 else:
+#                     new_obj_set = instance.object_sets.create(**os_data)
+#                     incoming_ids.add(
+#                         new_obj_set.id
+#                     )  # Add new object set id to incoming ids
+#
+#             # Delete object sets that were not included in the incoming data
+#             object_sets_to_delete = existing_ids - incoming_ids
+#             instance.object_sets.filter(id__in=object_sets_to_delete).delete()
+#
+#             # Update the simple fields
+#             for attr, value in validated_data.items():
+#                 setattr(instance, attr, value)
+#             instance.save()
+#
+#         return instance
 
 
 #########################################################
-# PROJECT CREATE
+# PROJECT GET
 #########################################################
 class ProjectSerializerShallow(
     serializers.ModelSerializer,
@@ -193,9 +254,7 @@ class ProjectSerializerShallow(
         ]
 
     def get_workflowproject_set(self, instance):
-        links = instance.workflowproject_set.filter(
-            workflow__deleted=False
-        ).order_by("rank")
+        links = instance.workflowproject_set.filter(workflow__deleted=False).order_by("rank")
         return list(map(Utility.linkIDMap, links))
 
     def get_object_permission(self, instance):
@@ -233,17 +292,9 @@ class ProjectSerializerShallow(
     # what does update do?
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
-        instance.published = validated_data.get(
-            "published", instance.published
-        )
-        instance.disciplines.set(
-            validated_data.get("disciplines", instance.disciplines.all())
-        )
-        instance.is_template = validated_data.get(
-            "is_template", instance.is_template
-        )
+        instance.description = validated_data.get("description", instance.description)
+        instance.published = validated_data.get("published", instance.published)
+        instance.disciplines.set(validated_data.get("disciplines", instance.disciplines.all()))
+        instance.is_template = validated_data.get("is_template", instance.is_template)
         instance.save()
         return instance

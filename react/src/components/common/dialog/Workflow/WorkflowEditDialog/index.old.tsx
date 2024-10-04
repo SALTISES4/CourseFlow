@@ -21,12 +21,12 @@ import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { FormField } from 'components/common/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormWorkflow'
 import { produce } from 'immer'
 import { ChangeEvent, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-import { FormField } from 'components/common/dialog/Workflow/CreateWizardDialog/components/_ARCHIVE/FormWorkflow'
 
 type StateType = WorkflowFormType
 
@@ -110,6 +110,7 @@ const WorkflowEditDialog = () => {
       onError(e)
     }
   }
+
   function resetState() {
     setState(initialState)
   }

@@ -4,7 +4,7 @@ import {
   ObjectSetOptions,
   ObjectSetType
 } from '@cfComponents/dialog/Project/components/ObjectSets/type'
-import {StyledBox} from "@cfComponents/dialog/styles";
+import { StyledBox } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { zodResolver } from '@hookform/resolvers/zod'
 import CancelIcon from '@mui/icons-material/Cancel'
@@ -48,10 +48,8 @@ const initialState = {
 }
 const projectSchema = z.object({
   title: z.string().min(1, { message: 'Title is required' }).max(200),
-  description: z.string().optional(),
-  disciplines: z
-    .array(z.string())
-    .min(1, { message: 'At least one discipline is required' }),
+  description: z.string().nullish(),
+  disciplines: z.array(z.string()).optional(),
   objectSets: z.array(
     z.object({
       id: z.string().optional(),
@@ -99,7 +97,7 @@ const ProjectForm = ({
     getValues,
     reset
   } = useForm<ProjectFormValues>({
-    resolver: zodResolver(projectSchema),
+    // resolver: zodResolver(projectSchema),
     defaultValues
   })
 

@@ -19,10 +19,8 @@ export const apiPathRoutes = {
     },
     library: {
       home: '/library/home',
-      explore: '/library/explore',
       library__objects_search: '/library/objects-search',
       library__favourites__projects: '/library/favourites',
-      library__library__projects: '/library/library/projects',
       library__toggle_favourite__post: '/library/toggle-favourite'
     },
     project: {
@@ -41,11 +39,13 @@ export const apiPathRoutes = {
       child__detail: '/workflow/:id/child/detail',
       list__possible_linked: '/workflow/linked',
       list__possible_added: '/workflow/added',
+      list_templates: '/workflow/template/list',
       public__detail: '/workflow/:id/public/detail',
       public__parent__detail: '/workflow/:id/public/parent/detail',
       public__parent__detail_full: '/workflow/:id/public/parent/detail-full',
       public__child__detail: '/workflow/:id/public/child/detail',
       // editing
+      create: '/workflow/create',
       duplicate: '/workflow/:id/duplicate-to-project',
       update: '/workflow/:id/update',
       link: '/workflow/:id/link-to-node',

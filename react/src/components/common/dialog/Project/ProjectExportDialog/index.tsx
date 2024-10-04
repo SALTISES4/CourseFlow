@@ -146,7 +146,9 @@ function ProjectExportDialog(data: EProject) {
     <StyledDialog open={show} onClose={onDialogClose} fullWidth maxWidth="sm">
       <DialogTitle>{_t(`Export ${projectType}`)}</DialogTitle>
       <DialogContent dividers>
-        <StyledBox component="form">
+        <StyledBox
+
+          component="form">
           <Alert severity="warning" title="TODO" />
           <FormControl>
             <FormLabel id="export-type-group-label">

@@ -9,15 +9,12 @@ import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import { debounce } from '@mui/material/utils'
 import { useListProjectsByCurrentUserQuery } from '@XMLHTTP/API/project.rtk'
-import Fuse from 'fuse.js'
 import { ChangeEvent } from 'react'
 
 type PropsType = {
   selected?: number
   onProjectSelect: (id: number) => void
 }
-
-type StateType = ProjectType[]
 
 const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
   /*******************************************************
@@ -37,19 +34,7 @@ const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
       // setResults(projects)
       return
     }
-
-    // this needs changing to an update in the args (to send back via rest query)
-    // const filtered: StateType = fuse.search(value).map((result) => result.item)
-    // // setResults(filtered)
   }
-
-  // if (projects === null) {
-  //   getProjectsForCreate((responseData) => {
-  //     setProjectData(projectData)
-  //     setResults(projectData)
-  //   })
-  //   return <Loader />
-  // }
 
   if (!data || isLoading) return <Loader />
 

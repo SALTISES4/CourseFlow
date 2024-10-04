@@ -1,6 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { ObjectSetType } from '@cf/types/common'
-import {ELibraryObject, EProject} from '@XMLHTTP/types/entity'
+import { ELibraryObject, EProject } from '@XMLHTTP/types/entity'
 import { generatePath } from 'react-router-dom'
 
 import { Verb, cfApi } from './api'

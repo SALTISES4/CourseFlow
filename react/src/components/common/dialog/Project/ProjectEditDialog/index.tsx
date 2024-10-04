@@ -8,7 +8,6 @@ import {
   useGetProjectByIdQuery,
   useUpdateProjectMutation
 } from '@XMLHTTP/API/project.rtk'
-import { enqueueSnackbar } from 'notistack'
 import { useParams } from 'react-router-dom'
 
 type ProjectFormValues = {
@@ -64,8 +63,11 @@ const ProjectEditDialog = () => {
    * FUNCTIONS
    *******************************************************/
   function onSubmit(data: ProjectFormValues) {
+
+    console.log('treying top submiut')
+
     // remove null values
-    const filteredObjectSets = data.objectSets
+    const filteredObjectSeyts = data.objectSets
       .filter((set) => set.term && set.title)
       .map((item) => ({
         id: item.id,

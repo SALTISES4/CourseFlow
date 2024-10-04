@@ -3,9 +3,9 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import {
+  GetWorkflowByIdQueryResp,
+  GetWorkflowByIdQueryTransform,
   WorkflowChildDataQueryResp,
-  WorkflowDataQueryResp,
-  WorkflowDataQueryTransform,
   WorkflowParentDataQueryResp
 } from '@XMLHTTP/API/workflow.rtk'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
@@ -48,14 +48,14 @@ import { generatePath } from 'react-router-dom'
  */
 export function getWorkflowByIdQuery(
   id,
-  callBackFunction = (_data: WorkflowDataQueryTransform) =>
+  callBackFunction = (_data: GetWorkflowByIdQueryTransform) =>
     console.log('success')
 ) {
   const base = apiPaths.json_api.workflow.detail
   const url = generatePath(base, { id })
 
   try {
-    API_GET(url).then((response: WorkflowDataQueryResp) => {
+    API_GET(url).then((response: GetWorkflowByIdQueryResp) => {
       const res = {
         ...response,
         dataPackage: {
@@ -83,13 +83,13 @@ export function getWorkflowByIdQuery(
 //Get the public data from the workflow
 export function getPublicWorkflowDataQuery(
   id,
-  callBackFunction = (_data: WorkflowDataQueryResp) => console.log('success')
+  callBackFunction = (_data: GetWorkflowByIdQueryResp) => console.log('success')
 ) {
   const base = apiPaths.json_api.workflow.public__detail
   const url = generatePath(base, { id })
 
   try {
-    $.get(url).done(function (response: WorkflowDataQueryResp) {
+    $.get(url).done(function (response: GetWorkflowByIdQueryResp) {
       callBackFunction(response)
     })
   } catch (err) {
@@ -180,34 +180,7 @@ export function getPublicWorkflowChildDataQuery(
   }
 }
 
-/*******************************************************
- * @getWorkflowContextQuery
- *
- * Methods for getting groups of workflows or context
- * for workflows.
- *
- * workflow/get-workflow-context/
- *
- *******************************************************/
 
-//get the workflow's context data
-// export function getWorkflowContextQuery(
-//   workflowPk,
-//   callBackFunction = (_data: WorkflowContextQueryResp) => console.log('success')
-// ) {
-//   try {
-//     API_POST(
-//       COURSEFLOW_APP.globalContextData.path.post_paths.get_workflow_context,
-//       {
-//         workflowPk: workflowPk
-//       }
-//     ).then((response: WorkflowContextQueryResp) => {
-//       callBackFunction(response)
-//     })
-//   } catch (err) {
-//     console.log(err)
-//   }
-// }
 
 /**
  * Get possible projects that can be a target for the workflow to be duplicated into
@@ -226,21 +199,7 @@ export function getTargetProjectMenuQuery<T>(
   })
 }
 
-/**
- * Get possible projects to add a workflow to
- * @param callBackFunction
- */
-// export function getProjectsForCreate<T>(
-//   callBackFunction = (_data: ProjectsForCreateQueryResp) =>
-//     console.log('success')
-// ) {
-//   API_POST(
-//     COURSEFLOW_APP.globalContextData.path.post_paths.get_projects_for_create,
-//     {}
-//   ).then((response: ProjectsForCreateQueryResp) => {
-//     callBackFunction(response)
-//   })
-// }
+
 
 /**
  * Get all templates of a given type
@@ -373,59 +332,4 @@ export function getWorkflowSelectMenuQuery(
     callBackFunction(response)
   })
 }
-/*******************************************************
- * UPDATE
- *******************************************************/
-// export function updateMutation(
-//   id: number,
-//   args: UpdateWorkflowArgs
-// ): Promise<EmptyPostResp> {
-//   console.log('args')
-//   console.log(args)
-//   const base = apiPaths.json_api.workflow.update
-//   const url = generatePath(base, { id })
-//
-//   return API_POST<EmptyPostResp>(url, args)
-// }
 
-/*******************************************************
- * DELETE AND ARCHIVE (restorable 'SOFT' DELETE with flag)
- *******************************************************/
-// export function archiveMutation(
-//   objectId: number,
-//   objectType: WorkSpaceType
-// ): Promise<EmptyPostResp> {
-//   const base = apiPaths.json_api.workspace.delete_soft
-//   const url = generatePath(base, { id: objectId })
-//
-//   return API_POST<EmptyPostResp>(url, {
-//     objectId: objectId,
-//     objectType: objectType
-//   })
-// }
-
-//Causes the specified object to undelete itself
-// export function unarchiveSelfMutation(
-//   objectId: number,
-//   objectType: any
-// ): Promise<EmptyPostResp> {
-//   const base = apiPaths.json_api.workspace.restore
-//   const url = generatePath(base, { id: objectId })
-//   return API_POST(url, {
-//     objectId: objectId,
-//     objectType: objectType
-//   })
-// }
-
-// export function deleteSelfHard(
-//   objectId: number,
-//   objectType: LibraryObjectType
-// ): Promise<EmptyPostResp> {
-//   const base = apiPaths.json_api.workspace.delete
-//   const url = generatePath(base, { id: objectId })
-//
-//   return API_POST<EmptyPostResp>(url, {
-//     objectId: objectId,
-//     objectType: objectType
-//   })
-// }

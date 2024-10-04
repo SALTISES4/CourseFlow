@@ -1,5 +1,4 @@
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import gettext as _
 
 from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.models.project import Project
@@ -16,9 +15,7 @@ class ProjectService:
         :param user:
         :return:
         """
-        permission_filter = {
-            "permission_type": Permission.PERMISSION_EDIT.value
-        }
+        permission_filter = {"permission_type": Permission.PERMISSION_EDIT.value}
 
         owned_projects = LibraryObjectSerializer(
             Project.objects.filter(author=user, deleted=False),

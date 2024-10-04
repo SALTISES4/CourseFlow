@@ -44,7 +44,7 @@ from course_flow.serializers import (
     OutcomeSerializerShallow,
     OutcomeWorkflowSerializerShallow,
     WorkflowSerializerShallow,
-    WorkflowUpdateSerializer,
+    WorkflowUpsertSerializer,
 )
 from course_flow.services import DAO
 from course_flow.services.workflow import WorkflowService
@@ -101,15 +101,11 @@ class WorkflowEndpoint:
             return Response({"detail": "Workflow not found"}, status=404)
 
         try:
-            data_package = WorkflowService.get_workflow_full(
-                workflow.get_subclass(), current_user
-            )
+            data_package = WorkflowService.get_workflow_full(workflow.get_subclass(), current_user)
         except AttributeError as e:
             detailed_traceback = traceback.format_exc()
             logger.exception("log of the errors ")
-            return Response(
-                {"error": "hello error"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "hello error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
@@ -129,15 +125,11 @@ class WorkflowEndpoint:
         workflow = Workflow.objects.get(pk=body.get("workflowPk"))
 
         try:
-            data_package = get_parent_outcome_data(
-                workflow.get_subclass(), request.user
-            )
+            data_package = get_parent_outcome_data(workflow.get_subclass(), request.user)
 
         except AttributeError as e:
             logger.exception("An error occurred")
-            return Response(
-                {"action": "error"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
@@ -186,10 +178,7 @@ class WorkflowEndpoint:
         try:
             # @todo still unclear
             parent_workflows = [
-                node.get_workflow()
-                for node in Node.objects.filter(
-                    linked_workflow__id=workflow_id
-                )
+                node.get_workflow() for node in Node.objects.filter(linked_workflow__id=workflow_id)
             ]
 
             data_package = LibraryObjectSerializer(
@@ -198,9 +187,7 @@ class WorkflowEndpoint:
 
         except AttributeError as e:
             logger.exception("An error occurred")
-            return Response(
-                {"action": "error"}, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
@@ -209,6 +196,34 @@ class WorkflowEndpoint:
             },
             status=status.HTTP_200_OK,
         )
+
+    #########################################################
+    # CREATE
+    #########################################################
+    @staticmethod
+    @api_view(["POST"])
+    # @user_can_edit("projectPk")
+    def create(request: Request) -> Response:
+        """
+        Create a new workflow in a project
+        :param request:
+        :return:
+        """
+        serializer = WorkflowUpsertSerializer(data=request.data)
+        pprint(request.data)
+        if serializer.is_valid():
+            workflow = serializer.save(author=request.user)
+
+            return Response(
+                {"message": "success", "data_package": {"id": workflow.id}},
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+            return Response(
+                {"error": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     #########################################################
     # UPDATE
@@ -226,7 +241,7 @@ class WorkflowEndpoint:
                 status=status.HTTP_404_NOT_FOUND,
             )
 
-        serializer = WorkflowUpdateSerializer(workflow, data=request.data)
+        serializer = WorkflowUpsertSerializer(workflow, data=request.data)
 
         pprint(serializer.initial_data)
 
@@ -234,9 +249,7 @@ class WorkflowEndpoint:
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            logger.exception(
-                f"Bad error encountered with errors: {serializer.errors}"
-            )
+            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -256,9 +269,7 @@ class WorkflowEndpoint:
 
         try:
             with transaction.atomic():
-                clone = fast_duplicate_workflow(
-                    workflow, request.user, project
-                )
+                clone = fast_duplicate_workflow(workflow, request.user, project)
                 try:
                     clone.title = clone.title + _("(copy)")
                     clone.save()
@@ -279,18 +290,14 @@ class WorkflowEndpoint:
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-        linked_workflows = Workflow.objects.filter(
-            linked_nodes__week__workflow=clone
-        )
+        linked_workflows = Workflow.objects.filter(linked_nodes__week__workflow=clone)
         for wf in linked_workflows:
             actions.dispatch_parent_updated(wf)
 
         return Response(
             {
                 "message": "success",
-                "new_item": LibraryObjectSerializer(
-                    clone, context={"user": request.user}
-                ).data,
+                "new_item": LibraryObjectSerializer(clone, context={"user": request.user}).data,
                 "type": clone.type,
             },
             status=status.HTTP_200_OK,
@@ -402,9 +409,7 @@ class WorkflowEndpoint:
                 linked_workflow_data = None
             else:
                 workflow = Workflow.objects.get_subclass(pk=workflow_id)
-                if not DAO.check_possible_parent(
-                    workflow, parent_workflow, False
-                ):
+                if not DAO.check_possible_parent(workflow, parent_workflow, False):
                     raise ValidationError
                 set_linked_workflow(node, workflow)
                 if node.linked_workflow is None:
@@ -428,9 +433,7 @@ class WorkflowEndpoint:
             actions.dispatch_parent_updated(original_workflow)
         if workflow is not None:
             actions.dispatch_parent_updated(workflow)
-        actions.dispatch_wf(
-            parent_workflow, actions.setLinkedWorkflowAction(response_data)
-        )
+        actions.dispatch_wf(parent_workflow, actions.setLinkedWorkflowAction(response_data))
         return Response({"message": "success"})
 
 
@@ -450,12 +453,8 @@ def set_linked_workflow(node: Node, workflow):
         node.save()
     else:
         try:
-            new_workflow = fast_duplicate_workflow(
-                workflow, node.author, project
-            )
-            WorkflowProject.objects.create(
-                workflow=new_workflow, project=project
-            )
+            new_workflow = fast_duplicate_workflow(workflow, node.author, project)
+            WorkflowProject.objects.create(workflow=new_workflow, project=project)
             node.linked_workflow = new_workflow
             node.save()
         except ValidationError as e:
@@ -473,9 +472,7 @@ def json_api_get_public_workflow_data(request: Request, pk) -> Response:
     """
     workflow = Workflow.objects.get(pk=pk)
     try:
-        data_package = WorkflowService.get_workflow_full(
-            workflow.get_subclass(), request.user
-        )
+        data_package = WorkflowService.get_workflow_full(workflow.get_subclass(), request.user)
     except AttributeError as e:
         logger.exception("An error occurred")
         return Response({"action": "error"})
@@ -511,9 +508,7 @@ def json_api_get_public_workflow_child_data(request: Request, pk) -> Response:
 def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
     workflow = Workflow.objects.get(pk=pk)
     try:
-        data_package = get_parent_outcome_data(
-            workflow.get_subclass(), request.user
-        )
+        data_package = get_parent_outcome_data(workflow.get_subclass(), request.user)
     except AttributeError as e:
         logger.exception("An error occurred")
         return Response({"action": "error"})
@@ -559,13 +554,10 @@ def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
 
 @public_model_access("workflow")
 @api_view(["GET"])
-def json_api_get_public_parent_workflow_info(
-    request: Request, pk: int
-) -> Response:
+def json_api_get_public_parent_workflow_info(request: Request, pk: int) -> Response:
     try:
         parent_workflows = [
-            node.get_workflow()
-            for node in Node.objects.filter(linked_workflow__id=pk)
+            node.get_workflow() for node in Node.objects.filter(linked_workflow__id=pk)
         ]
         data_package = LibraryObjectSerializer(
             parent_workflows, many=True, context={"user": request.user}
@@ -584,30 +576,6 @@ def json_api_get_public_parent_workflow_info(
 #########################################################
 
 
-@user_can_edit("projectPk")
-def json_api_post_create_workflow(request: Request) -> Response:
-    """
-    Create a new workflow in a project
-    :param request:
-    :return:
-    """
-    body = json.loads(request.body)
-    project = Project.objects.get(pk=body.get("projectPk"))
-    workflow_type = body.get("workflow_type")
-
-    try:
-        print(body)
-        print(workflow_type)
-
-    except AttributeError as e:
-        logger.exception("An error occurred")
-    return Response(
-        {
-            "action": "error",
-        }
-    )
-
-
 #########################################################
 # HELPERS
 #########################################################
@@ -622,17 +590,13 @@ def get_parent_outcome_data(workflow, user):
     outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_workflow(workflow)
     parent_nodes = DAO.get_parent_nodes_for_workflow(workflow)
     parent_workflows = list(map(lambda x: x.get_workflow(), parent_nodes))
-    parent_outcomeworkflows = OutcomeWorkflow.objects.filter(
-        workflow__in=parent_workflows
-    )
+    parent_outcomeworkflows = OutcomeWorkflow.objects.filter(workflow__in=parent_workflows)
     parent_outcomenodes = OutcomeNode.objects.filter(node__in=parent_nodes)
 
     parent_outcomes = []
     parent_outcomeoutcomes = []
     for parent_workflow in parent_workflows:
-        new_outcomes, new_outcomeoutcomes = DAO.get_all_outcomes_for_workflow(
-            parent_workflow
-        )
+        new_outcomes, new_outcomeoutcomes = DAO.get_all_outcomes_for_workflow(parent_workflow)
         parent_outcomes += new_outcomes
         parent_outcomeoutcomes += new_outcomeoutcomes
 
@@ -650,18 +614,12 @@ def get_parent_outcome_data(workflow, user):
         "outcomeworkflow": OutcomeWorkflowSerializerShallow(
             parent_outcomeworkflows, many=True
         ).data,
-        "parent_node": NodeSerializerShallow(
-            parent_nodes, many=True, context={"user": user}
-        ).data,
-        "outcomenode": OutcomeNodeSerializerShallow(
-            parent_outcomenodes, many=True
-        ).data,
+        "parent_node": NodeSerializerShallow(parent_nodes, many=True, context={"user": user}).data,
+        "outcomenode": OutcomeNodeSerializerShallow(parent_outcomenodes, many=True).data,
         "outcome": OutcomeSerializerShallow(
             parent_outcomes, many=True, context={"type": outcome_type}
         ).data,
-        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
-            parent_outcomeoutcomes, many=True
-        ).data,
+        "outcomeoutcome": OutcomeOutcomeSerializerShallow(parent_outcomeoutcomes, many=True).data,
         "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
             outcomehorizontallinks, many=True
         ).data,
@@ -671,17 +629,13 @@ def get_parent_outcome_data(workflow, user):
 # For a workflow, get all the child outcome data. Only used for
 # views that rely on this data such as the outcome analytics view.
 def get_child_outcome_data(workflow, user, parent_workflow):
-    nodes = Node.objects.filter(
-        week__workflow=parent_workflow, linked_workflow=workflow
-    )
+    nodes = Node.objects.filter(week__workflow=parent_workflow, linked_workflow=workflow)
     linked_workflows = [workflow]
     child_workflow_outcomeworkflows = []
     child_workflow_outcomes = []
     child_workflow_outcomeoutcomes = []
     for linked_workflow in linked_workflows:
-        child_workflow_outcomeworkflows += (
-            linked_workflow.outcomeworkflow_set.all()
-        )
+        child_workflow_outcomeworkflows += linked_workflow.outcomeworkflow_set.all()
         (
             new_child_workflow_outcomes,
             new_child_workflow_outcomeoutcomes,
@@ -699,9 +653,7 @@ def get_child_outcome_data(workflow, user, parent_workflow):
         outcome_type = workflow.type + " outcome"
 
     response_data = {
-        "node": NodeSerializerShallow(
-            nodes, many=True, context={"user": user}
-        ).data,
+        "node": NodeSerializerShallow(nodes, many=True, context={"user": user}).data,
         "child_workflow": WorkflowSerializerShallow(
             linked_workflows, many=True, context={"user": user}
         ).data,

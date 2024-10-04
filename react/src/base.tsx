@@ -1,9 +1,11 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import GlobalDialogs from '@cfComponents/globalNav/GlobalDialogs'
 import Sidebar from '@cfComponents/globalNav/Sidebar'
 import TopBar from '@cfComponents/globalNav/TopBar'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import HtmlReactParser from 'html-react-parser'
 import { ReactNode } from 'react'
+import * as React from 'react'
 
 type PropsType = {
   showNotifications?: boolean
@@ -39,6 +41,7 @@ const Base = ({ showNotifications, children }: PropsType) => {
         <div className="main-block">
           <div data-component="topbar">
             <TopBar />
+            <GlobalDialogs />
           </div>
 
           <NotificationsAlert show={showNotifications} />

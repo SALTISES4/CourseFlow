@@ -42,11 +42,6 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
-    getLibraryContext: builder.query<PageLibraryQueryResp, void>({
-      query: () => {
-        return apiPaths.json_api.library.library__library__projects
-      }
-    }),
     libraryObjectsSearch: builder.query<
       LibraryObjectsSearchQueryResp,
       LibraryObjectsSearchQueryArgs
@@ -87,7 +82,6 @@ const extendedApi = cfApi.injectEndpoints({
 
 export const {
   useGetHomeContextQuery,
-  useGetLibraryContextQuery,
   useLibraryObjectsSearchQuery,
   useLibraryFavouriteObjectsQuery,
   useToggleFavouriteMutation

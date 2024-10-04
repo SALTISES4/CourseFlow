@@ -25,6 +25,7 @@ from course_flow.serializers.workflow_objects import (
 )
 from course_flow.serializers.workspace import ObjectSetSerializerShallow
 
+# no...
 serializer_lookups_shallow = {
     "nodelink": NodeLinkSerializerShallow,
     "node": NodeSerializerShallow,

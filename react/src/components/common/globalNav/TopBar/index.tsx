@@ -247,27 +247,7 @@ const TopBar = () => {
         <ToolbarWrap />
       </AppBar>
 
-      {/*
-        @todo put these menus into the unified menu helper in
-        react/src/components/common/menu
-        they are already in MUI, so it's fine for now
-        // cuts down on a bit of boilerplate
-        */}
 
-      <PasswordResetDialog />
-      <ProjectCreateDialog />
-
-      {/*<ProgramCreateDialog*/}
-      {/*  {...createProgramData}*/}
-      {/*  units={editProgramData.units}*/}
-      {/*/>*/}
-
-      <CreateWizardDialog />
-
-      {/*<ActivityCreateDialog*/}
-      {/*  {...createActivityData}*/}
-      {/*  units={editActivityData.units}*/}
-      {/*/>*/}
     </SC.TopBarWrap>
   )
 }

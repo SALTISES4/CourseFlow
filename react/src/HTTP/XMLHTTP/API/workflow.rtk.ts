@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { LibraryObjectType, WorkSpaceType } from '@cf/types/enum'
+import { LibraryObjectType, WorkSpaceType, WorkflowType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { TWorkflow } from '@cfRedux/types/type'
 import {
@@ -7,20 +7,21 @@ import {
   WorkflowDataPackage,
   WorkflowParentDataPackage
 } from '@XMLHTTP/types'
+import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
 import { Verb, cfApi } from './api'
 
-/*******************************************************iew/componentViews/WorkflowView/components/Term.tsx
+/*******************************************************
  * TYPES
  *******************************************************/
-export interface WorkflowDataQueryResp {
+export interface GetWorkflowByIdQueryResp {
   message: string
   dataPackage: WorkflowDataPackage
 }
 
-export interface WorkflowDataQueryTransform {
+export interface GetWorkflowByIdQueryTransform {
   message: string
   dataPackage: Omit<WorkflowDataPackage, 'workflow'> & {
     workflow: TWorkflow
@@ -39,11 +40,43 @@ export type WorkflowChildDataQueryResp = {
   dataPackage: WorkflowChildDataPackage
 }
 
-export type UpdateWorkflowArgs = {
-  description: string
-  duration: string
+export type CreateWorkflowResp = {
+  message: string
+  dataPackage: {
+    id: number
+  }
+}
+
+export type GetWorkflowTemplatesQueryResp = {
+  message: string
+  dataPackage: ELibraryObject[]
+}
+/*******************************************************
+ * MUTATION ARGS
+ *******************************************************/
+interface BaseUpsertWorkflowArgs {
+  title?: string
+  description?: string
+  courseNumber?: string
+  duration?: string
+  units?: number
+  ponderation?: {
+    theory: number
+    practice: number
+    individual: number
+    generalEdu: number
+    specificEdu: number
+  }
+}
+
+export interface UpdateWorkflowArgs extends BaseUpsertWorkflowArgs {
+  id: number
+}
+
+export interface CreateWorkflowArgs extends BaseUpsertWorkflowArgs {
   title: string
-  units: number
+  projectId: number
+  type: WorkflowType
 }
 
 /*******************************************************
@@ -54,7 +87,10 @@ const extendedApi = cfApi.injectEndpoints({
     /*******************************************************
      * QUERIES
      *******************************************************/
-    getWorkflowById: builder.query<WorkflowDataQueryTransform, { id: number }>({
+    getWorkflowById: builder.query<
+      GetWorkflowByIdQueryTransform,
+      { id: number }
+    >({
       query: (id) => {
         const base = apiPaths.json_api.workflow.detail
         return {
@@ -63,8 +99,8 @@ const extendedApi = cfApi.injectEndpoints({
         }
       },
       transformResponse: (
-        response: WorkflowDataQueryResp
-      ): WorkflowDataQueryTransform => {
+        response: GetWorkflowByIdQueryResp
+      ): GetWorkflowByIdQueryTransform => {
         return {
           ...response,
           dataPackage: {
@@ -89,8 +125,31 @@ const extendedApi = cfApi.injectEndpoints({
       }
     }),
     /*******************************************************
+     * LIST
+     *******************************************************/
+    listWorkflowTemplates: builder.query<GetWorkflowTemplatesQueryResp, any>({
+      query: (args) => {
+        const url = apiPaths.json_api.workflow.list_templates
+        return {
+          method: Verb.GET,
+          url,
+          body: args // not implemented, this should probably be another library query
+        }
+      }
+    }),
+    /*******************************************************
      * MUTATIONS
      *******************************************************/
+    createWorkflow: builder.mutation<CreateWorkflowResp, CreateWorkflowArgs>({
+      query: (args) => {
+        const url = apiPaths.json_api.workflow.create
+        return {
+          method: Verb.POST,
+          url,
+          body: args
+        }
+      }
+    }),
     /*******************************************************
      * MUTATIONS: DELETE AND ARCHIVE (restorable 'SOFT' DELETE with flag)
      *******************************************************/
@@ -117,5 +176,7 @@ const extendedApi = cfApi.injectEndpoints({
 export const {
   useGetParentWorkflowInfoQuery,
   useGetWorkflowByIdQuery,
-  useUpdateWorkflowMutation
+  useUpdateWorkflowMutation,
+  useCreateWorkflowMutation,
+  useListWorkflowTemplatesQuery
 } = extendedApi
