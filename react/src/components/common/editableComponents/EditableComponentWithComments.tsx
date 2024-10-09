@@ -83,16 +83,19 @@ class EditableComponentWithComments<
         {/*
 
         */}
-        <CommentBox
-          show={this.state.show_comments}
-          comments={this.props.data.comments}
-          parent={this}
-          // renderer={this.props.renderer} // not used
-          workflowId={this.context.workflow.workflowId}
-          unreadComments={this.context.workflow.unreadComments}
-          readOnly={this.context.permissions.workflowPermissions.readOnly}
-          add_comments={this.context.workflow.add_comments}
-        />
+        {/*
+        comments broken because moved workflow out of context
+        */}
+        {/*<CommentBox*/}
+        {/*  show={this.state.show_comments}*/}
+        {/*  comments={this.props.data.comments}*/}
+        {/*  parent={this}*/}
+        {/*  // renderer={this.props.renderer} // not used*/}
+        {/*  workflowId={this.context.workflow.workflowId}*/}
+        {/*  unreadComments={this.context.workflow.unreadComments}*/}
+        {/*  readOnly={this.context.permissions.workflowPermissions.readOnly}*/}
+        {/*  add_comments={this.context.workflow.add_comments}*/}
+        {/*/>*/}
       </>
     )
   }
