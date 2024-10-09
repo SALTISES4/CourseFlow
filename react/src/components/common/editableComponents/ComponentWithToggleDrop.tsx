@@ -16,9 +16,9 @@ export type ComponentWithToggleProps = {
   dispatch?: Dispatch<Action>
   data?: {
     id?: number
-    is_dropped?: boolean
+    isDropped?: boolean
     depth?: number
-    column_type_display?: string
+    columnTypeDisplay?: string
     title?: any
   }
 }
@@ -46,8 +46,16 @@ class ComponentWithToggleDrop<
     toggleDropReduxAction(
       this.props.objectId,
       // @ts-ignore
-      Constants.object_dictionary[this.objectType],
-      !this.props.data.is_dropped,
+      Constants.objectDictionary[this.objectType],
+      // so previously every single movable component in the workflow 'extends' as class
+      // one of these 'editable' components
+      // the previous developer was taking the entity related info and just dumping it in 'data'
+      // specifically in order to share this property
+      // local state and DB state are mixed together without structure
+      // current: individual compoents like 'node' 'week' have had entitiy data moved to a key in the connected props
+      // i.e. week: TWeek
+      // not sure where this leaves the legacy data property
+      !this.props.data.isDropped,
       this.props.dispatch,
       this.props.data.depth
     )

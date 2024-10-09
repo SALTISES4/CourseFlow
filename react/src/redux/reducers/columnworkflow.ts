@@ -42,14 +42,14 @@ function columnWorkflowReducer(
     case ColumnWorkflowActions.CHANGE_ID: {
       return state.map((item) =>
         item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, no_drag: false }
+          ? { ...item, id: action.payload.new_id, noDrag: false }
           : item
       )
     }
 
     case ColumnWorkflowActions.MOVED_TO: {
       return state.map((item) =>
-        item.id === action.payload.id ? { ...item, no_drag: true } : item
+        item.id === action.payload.id ? { ...item, noDrag: true } : item
       )
     }
 
@@ -58,9 +58,9 @@ function columnWorkflowReducer(
     }
 
     case ColumnActions.INSERT_BELOW: {
-      const new_state = state.slice()
-      new_state.push(action.payload.new_through)
-      return new_state
+      const newState = state.slice()
+      newState.push(action.payload.new_through)
+      return newState
     }
 
     case NodeActions.NEW_NODE: {
@@ -74,9 +74,9 @@ function columnWorkflowReducer(
       if (action.payload.columnworkflows_added.length == 0) {
         return state
       }
-      const new_state = state.slice()
-      new_state.push(...action.payload.columnworkflows_added)
-      return new_state
+      const newState = state.slice()
+      newState.push(...action.payload.columnworkflows_added)
+      return newState
     }
 
     default:

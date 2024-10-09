@@ -94,7 +94,7 @@ export default function nodeReducer(
           ? {
               ...item,
               deleted: true,
-              deleted_on: _t('This session')
+              deletedOn: _t('This session')
             }
           : item
       )
@@ -111,7 +111,7 @@ export default function nodeReducer(
       return [...state, action.payload.new_model]
     }
 
-    case NodeActions.CHANGE_FIELD:
+    case NodeActions.changeField:
       if (
         action.payload.changeFieldID ===
         // @ts-ignore
@@ -132,13 +132,13 @@ export default function nodeReducer(
           : item
       )
 
-    case NodeActions.SET_LINKED_WORKFLOW:
+    case NodeActions.SET_linkedWorkflow:
       return state.map((item) =>
         item.id === action.payload.id
           ? {
               ...item,
-              linked_workflow: action.payload.linked_workflow,
-              linked_workflow_data: action.payload.linked_workflow_data
+              linkedWorkflow: action.payload.linkedWorkflow,
+              linkedWorkflowData: action.payload.linkedWorkflowData
             }
           : item
       )
@@ -146,7 +146,7 @@ export default function nodeReducer(
     case NodeActions.RELOAD_ASSIGNMENTS:
       return state.map((item) =>
         item.id === action.payload.id
-          ? { ...item, has_assignment: action.payload.has_assignment }
+          ? { ...item, hasAssignment: action.payload.hasAssignment }
           : item
       )
 
@@ -156,11 +156,11 @@ export default function nodeReducer(
     case NodeLinkActions.DELETE_SELF:
     case NodeLinkActions.DELETE_SELF_SOFT:
       return state.map((item) => {
-        if (item.outgoing_links.includes(action.payload.id)) {
-          const updatedOutgoingLinks = item.outgoing_links.filter(
+        if (item.outgoingLinks.includes(action.payload.id)) {
+          const updatedOutgoingLinks = item.outgoingLinks.filter(
             (linkId) => linkId !== action.payload.id
           )
-          return { ...item, outgoing_links: updatedOutgoingLinks }
+          return { ...item, outgoingLinks: updatedOutgoingLinks }
         }
         return item
       })
@@ -170,7 +170,7 @@ export default function nodeReducer(
         if (item.id === action.payload.parent_id) {
           return {
             ...item,
-            outgoing_links: [...item.outgoing_links, action.payload.id]
+            outgoingLinks: [...item.outgoingLinks, action.payload.id]
           }
         }
         return item
@@ -178,11 +178,11 @@ export default function nodeReducer(
 
     case NodeLinkActions.NEW_NODE_LINK:
       return state.map((item) => {
-        if (item.id === action.payload.new_model.source_node) {
+        if (item.id === action.payload.new_model.sourceNode) {
           return {
             ...item,
-            outgoing_links: [
-              ...item.outgoing_links,
+            outgoingLinks: [
+              ...item.outgoingLinks,
               action.payload.new_model.id
             ]
           }
@@ -222,8 +222,8 @@ export default function nodeReducer(
         return update
           ? {
               ...item,
-              outcomenode_set: update.outcomenode_set,
-              outcomenode_unique_set: update.outcomenode_unique_set
+              outcomenodeSet: update.outcomenodeSet,
+              outcomenodeUniqueSet: update.outcomenodeUniqueSet
             }
           : item
       })
@@ -231,11 +231,11 @@ export default function nodeReducer(
     case OutcomeNodeActions.UPDATE_DEGREE:
       if (action.payload.outcomenode === -1) return state
       return state.map((item) => {
-        return item.id === action.payload.data_package[0].node
+        return item.id === action.payload.dataPackage[0].node
           ? {
               ...item,
-              outcomenode_set: action.payload.new_outcomenode_set,
-              outcomenode_unique_set: action.payload.new_outcomenode_unique_set
+              outcomenodeSet: action.payload.new_outcomenodeSet,
+              outcomenodeUniqueSet: action.payload.new_outcomenodeUniqueSet
             }
           : item
       })

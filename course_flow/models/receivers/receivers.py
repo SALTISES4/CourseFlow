@@ -1,18 +1,19 @@
+import logging
+
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
-from django.utils import timezone
 
+from course_flow.apps import logger
 from course_flow.models.activity import Activity
 from course_flow.models.column import Column
 from course_flow.models.comment import Comment
 from course_flow.models.course import Course
 from course_flow.models.favourite import Favourite
-from course_flow.models.liveprojectmodels import UserAssignment
 from course_flow.models.node import Node
-from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.models.outcome import Outcome
 from course_flow.models.program import Program
 from course_flow.models.project import Project
@@ -29,7 +30,7 @@ from course_flow.models.relations.weekWorkflow import WeekWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
 from course_flow.models.week import Week
 from course_flow.models.workflow import Workflow
-from course_flow.utils import get_all_outcomes_for_outcome
+from course_flow.services import DAO
 
 
 @receiver(pre_delete, sender=Project)
@@ -339,7 +340,7 @@ def delete_existing_node_week(sender, instance, **kwargs):
         try:
             NodeWeek.objects.filter(node=instance.node).delete()
         except Exception as e:
-            print(e)
+            logger.exception("An error occurred")
         if instance.rank < 0:
             instance.rank = 0
         new_parent_count = NodeWeek.objects.filter(week=instance.week).count()
@@ -488,7 +489,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                 # If user already has edit or comment permissions and we are adding view, do not override
                 if (
                     instance.permission_type
-                    == ObjectPermission.PERMISSION_VIEW
+                    == Permission.PERMISSION_VIEW.value
                     and ObjectPermission.objects.filter(
                         user=instance.user,
                         content_type=ContentType.objects.get_for_model(
@@ -496,8 +497,8 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                         ),
                         object_id=workflow.id,
                         permission_type__in=[
-                            ObjectPermission.PERMISSION_EDIT,
-                            ObjectPermission.PERMISSION_COMMENT,
+                            Permission.PERMISSION_EDIT.value,
+                            Permission.PERMISSION_COMMENT.value,
                         ],
                     ).count()
                     > 0
@@ -505,14 +506,14 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     pass
                 elif (
                     instance.permission_type
-                    == ObjectPermission.PERMISSION_COMMENT
+                    == Permission.PERMISSION_COMMENT.value
                     and ObjectPermission.objects.filter(
                         user=instance.user,
                         content_type=ContentType.objects.get_for_model(
                             workflow
                         ),
                         object_id=workflow.id,
-                        permission_type__in=[ObjectPermission.PERMISSION_EDIT],
+                        permission_type__in=[Permission.PERMISSION_EDIT.value],
                     ).count()
                     > 0
                 ):
@@ -524,7 +525,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                             ObjectPermission.objects.filter(
                                 workflow=workflow,
                                 user=instance.user,
-                                permission_type=ObjectPermission.PERMISSION_EDIT,
+                                permission_type=Permission.PERMISSION_EDIT.value,
                             ).count()
                             == 0
                         ):
@@ -532,7 +533,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                             ObjectPermission.objects.create(
                                 user=instance.user,
                                 content_object=workflow,
-                                permission_type=ObjectPermission.PERMISSION_EDIT,
+                                permission_type=Permission.PERMISSION_EDIT.value,
                             )
                     else:
                         ObjectPermission.objects.create(
@@ -546,7 +547,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
         ):
             workflow = instance.content_object
             project = workflow.get_project()
-            if not project is None:
+            if project is not None:
                 if (
                     ObjectPermission.objects.filter(
                         user=instance.user,
@@ -560,7 +561,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     ObjectPermission.objects.create(
                         content_object=project,
                         user=instance.user,
-                        permission_type=ObjectPermission.PERMISSION_VIEW,
+                        permission_type=Permission.PERMISSION_VIEW.value,
                     )
 
 
@@ -583,9 +584,15 @@ def delete_existing_permission(sender, instance, **kwargs):
 def remove_permissions_to_project_objects(sender, instance, **kwargs):
     if instance.content_type == ContentType.objects.get_for_model(Project):
         for workflow in instance.content_object.workflows.all():
+            # @todo try this pattern when you are ready to fix the superclass/subclass coupling error
+            # Using ContentType to dynamically get the actual model class and id
+            # workflow_type = ContentType.objects.get_for_model(workflow, for_concrete_model=False)
+            # real_workflow = workflow_type.get_object_for_this_type(pk=workflow.pk)
+
             ObjectPermission.objects.filter(
                 user=instance.user,
                 content_type=ContentType.objects.get_for_model(workflow),
+                # @todo fix this
                 object_id=workflow.get_subclass().id,
             ).delete()
 
@@ -604,7 +611,8 @@ def set_node_type_default(sender, instance, created, **kwargs):
     try:
         node.node_type = instance.week.week_type
         node.save()
-    except ValidationError:
+    except ValidationError as e:
+        logger.exception("An error occurred")
         print("couldn't set default node type")
 
 
@@ -612,9 +620,11 @@ def set_node_type_default(sender, instance, created, **kwargs):
 def set_week_type_default(sender, instance, created, **kwargs):
     week = instance.week
     try:
+        # @todo fix this
         week.week_type = instance.workflow.get_subclass().WORKFLOW_TYPE
         week.save()
-    except ValidationError:
+    except ValidationError as e:
+        logger.exception("An error occurred")
         print("couldn't set default week type")
 
 
@@ -623,7 +633,7 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
     if created:
         try:
             set_list = list(instance.parent.sets.all())
-            outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
+            outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(
                 instance.child
             )
             outcomenodes_to_add = OutcomeNode.objects.filter(
@@ -651,7 +661,8 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
                         parent_outcome=outcomeoutcome.child,
                         degree=horizontallink.degree,
                     )
-        except ValidationError:
+        except ValidationError as e:
+            logger.exception("An error occurred")
             print("couldn't set default outcome depth or copy sets")
 
 
@@ -736,7 +747,7 @@ def add_default_editor_workflow(sender, instance, created, **kwargs):
         ObjectPermission.objects.create(
             content_object=instance,
             user=instance.author,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
 
 
@@ -749,7 +760,7 @@ def add_default_editor_other_workflow(sender, instance, created, **kwargs):
         ObjectPermission.objects.create(
             content_object=instance,
             user=instance.author,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
+            permission_type=Permission.PERMISSION_EDIT.value,
         )
 
 
@@ -760,11 +771,12 @@ def set_publication_workflow(sender, instance, created, **kwargs):
         workflow = instance.workflow
         workflow.published = instance.project.published
         workflow.disciplines.set(instance.project.disciplines.all())
+        # @todo fix this
         if instance.project.author != workflow.get_subclass().author:
             ObjectPermission.objects.create(
                 content_object=workflow.get_subclass(),
                 user=instance.project.author,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
         for op in ObjectPermission.objects.filter(
             content_type=ContentType.objects.get_for_model(instance.project),

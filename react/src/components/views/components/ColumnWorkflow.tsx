@@ -33,7 +33,7 @@ class ColumnWorkflow extends React.Component<PropsType> {
 
     const cssClasses = [
       'column-workflow column-' + data.id,
-      data.no_drag ? 'no-drag' : ''
+      data.noDrag ? 'no-drag' : ''
     ].join(' ')
 
     return (

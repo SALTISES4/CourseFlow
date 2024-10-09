@@ -1,5 +1,4 @@
-import { FieldChoice } from '@cf/types/common'
-import { TObjectSet, TOutcomeOutcome, TStrategy } from '@cfRedux/types/type'
+import { TOutcomeOutcome } from '@cfRedux/types/type'
 import {
   EColumn,
   EColumnworkflow,
@@ -23,30 +22,10 @@ import {
  *
  *******************************************************/
 
-export type WorkflowDataPackage = {
-  workflow: EWorkflow
-  columnworkflow: EColumnworkflow[]
-  column: EColumn[]
-  weekworkflow: EWeekworkflow[]
-  week: EWeek[]
-  node: ENode[]
-  nodelink: ENodelink[]
-  nodeweek: ENodeweek[]
-  outcome: EOutcome[]
-  outcomenode: EOutcomenode[]
-  outcomeworkflow: EOutcomeWorkflow[]
-  outcomeoutcome: EOutcomeOutcome[]
-  objectset: EObjectSet[]
-  strategy: EStrategy[]
-  //
-  unread_comments: any[]
-  saltise_strategy: EWorkflow[]
-}
-
 export type WorkflowParentDataPackage = {
-  parent_workflow: EWorkflow[]
+  parentWorkflow: EWorkflow[]
   outcomeworkflow: EOutcomeWorkflow[]
-  parent_node: ENode[]
+  parentNode: ENode[]
   outcomenode: EOutcomenode[]
   outcome: EOutcome[]
   outcomeoutcome: TOutcomeOutcome[]
@@ -62,21 +41,23 @@ export type WorkflowChildDataPackage = {
   outcomehorizontallink: EOutcomeHorizontalLink[]
 }
 
-export type WorkflowContextData = {
-  data_package: EWorkflowDataPackage
-  is_strategy: boolean
-  user_permission: number
-}
-
-// @todo differentiate from above WorkflowDataPackage
-export type EWorkflowDataPackage = {
-  is_strategy: boolean
-  column_choices: FieldChoice[]
-  context_choices: FieldChoice[]
-  task_choices: FieldChoice[]
-  time_choices: FieldChoice[]
-  outcome_type_choices: FieldChoice[]
-  outcome_sort_choices: FieldChoice[]
-  strategy_classification_choices: FieldChoice[]
-  project: EProject
+export type WorkflowDataPackage = {
+  workflow: EWorkflow
+  parentProject: EProject
+  columnworkflow: EColumnworkflow[]
+  column: EColumn[]
+  weekworkflow: EWeekworkflow[]
+  week: EWeek[]
+  node: ENode[]
+  nodelink: ENodelink[]
+  nodeweek: ENodeweek[]
+  outcome: EOutcome[]
+  outcomenode: EOutcomenode[]
+  outcomeworkflow: EOutcomeWorkflow[]
+  outcomeoutcome: EOutcomeOutcome[]
+  objectset: EObjectSet[]
+  strategy: EStrategy[]
+  //
+  unreadComments: any[]
+  saltise_strategy: EWorkflow[]
 }

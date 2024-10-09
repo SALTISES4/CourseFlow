@@ -1,5 +1,8 @@
+import logging
+
 from django.core.management.base import BaseCommand
 
+from course_flow.apps import logger
 from course_flow.models.discipline import Discipline
 
 
@@ -44,5 +47,6 @@ class Command(BaseCommand):
         ]:
             try:
                 Discipline.objects.get(title=title)
-            except Exception:
+            except Exception as e:
+                logger.exception("An error occurred")
                 Discipline.objects.create(title=title)

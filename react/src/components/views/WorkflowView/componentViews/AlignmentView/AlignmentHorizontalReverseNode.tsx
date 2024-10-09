@@ -1,11 +1,13 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
 import { getChildWorkflowByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
 import { newOutcomeQuery } from '@XMLHTTP/API/create'
@@ -17,9 +19,9 @@ import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverse
 import OutcomeAdder from './OutcomeAdder'
 
 type ConnectedProps = {
-  workflow: any
+  workflow: TWorkflow
   data: any
-  column: any
+  column: TColumn
   child_outcomes: any
   outcomenodes: any
   all_node_outcomes: any
@@ -56,7 +58,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
    * Adds a new outcome to the linked workflow
    */
   addNewChildOutcome() {
-    newOutcomeQuery(this.props.data.linked_workflow, null)
+    newOutcomeQuery(this.props.data.linkedWorkflow, null)
   }
 
   /*******************************************************
@@ -68,7 +70,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
       return (
         <div className="child-outcome child-outcome-header">
           <div className="half-width alignment-column">
-            {Utility.capWords(_t(`${data.linked_workflow_data.type} outcomes`))}{' '}
+            {Utility.capWords(_t(`${data.linkedWorkflowData.type} outcomes`))}{' '}
             {_t('From Linked Workflow')}
           </div>
           <div className="half-width alignment-column">
@@ -79,7 +81,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
       )
     }
 
-    if (data.linked_workflow) {
+    if (data.linkedWorkflow) {
       if (this.props.child_outcomes === -1) {
         // TS2339: Property childWorkflowDataNeeded does not exist on type ChildRenderer
         // @ts-ignore
@@ -91,7 +93,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
         )
       }
 
-      if (data.linked_workflow_data.deleted) {
+      if (data.linkedWorkflowData.deleted) {
         return (
           <div className="child-outcome child-outcome-header">
             {_t('The linked workflow has been deleted.')}
@@ -124,13 +126,13 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     const data = this.props.data
     let data_override
 
-    if (data.represents_workflow) {
-      data_override = { ...data, ...data.linked_workflow_data, id: data.id }
+    if (data.representsWorkflow) {
+      data_override = { ...data, ...data.linkedWorkflowData, id: data.id }
     } else {
       data_override = { ...data }
     }
 
-    const selection_manager = this.context.selectionManager
+    const selectionManager = this.context.selectionManager
     // let child_outcomes_header
     const child_outcomes_header = <this.ChildOutcomesHeader />
 
@@ -139,7 +141,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     //     <div className="child-outcome child-outcome-header">
     //       <div className="half-width alignment-column">
     //         {Utility.capWords(
-    //           window.gettext(data.linked_workflow_data.type + ' outcomes')
+    //           window.gettext(data.linkedWorkflowData.type + ' outcomes')
     //         ) + _t(' From Linked Workflow')}
     //       </div>
     //       <div className="half-width alignment-column">
@@ -151,7 +153,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     //     </div>
     //   )
     // } else {
-    //   if (data.linked_workflow) {
+    //   if (data.linkedWorkflow) {
     //     if (this.props.child_outcomes == -1) {
     //       child_outcomes_header = (
     //         <div className="child-outcome child-outcome-header">
@@ -160,7 +162,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     //       )
     //       this.context.childWorkflowDataNeeded(this.props.data.id)
     //     } else {
-    //       if (data.linked_workflow_data.deleted) {
+    //       if (data.linkedWorkflowData.deleted) {
     //         child_outcomes_header = (
     //           <div className="child-outcome child-outcome-header">
     //             {_t('The linked workflow has been deleted.')}
@@ -216,13 +218,13 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
     ))
 
     const outcome_restriction =
-      this.props.restriction_set.parent_outcomes.filter(
+      this.props.restriction_set.parentOutcomes.filter(
         (oc) => this.props.all_node_outcomes.indexOf(oc) === -1
       )
 
     let outcomeadder
 
-    if (!this.context.permissions.workflowPermission.readOnly)
+    if (this.props.workflow.workflowPermissions.write)
       outcomeadder = (
         <OutcomeAdder
           outcome_set={outcome_restriction}
@@ -243,10 +245,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
 
     let add_new_outcome
 
-    if (
-      !this.context.permissions.workflowPermission.readOnly &&
-      data.linked_workflow
-    )
+    if (this.props.workflow.workflowPermissions.write && data.linkedWorkflow)
       add_new_outcome = (
         <div
           id="add-new-outcome"
@@ -255,16 +254,13 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
         >
           <img
             className="create-button"
-            src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              'add_new_white.svg'
-            }
+            src={apiPaths.external.static_assets.icon + 'add_new_white.svg'}
           />
           <div>{_t('Add new')}</div>
         </div>
       )
 
-    if (data.linked_workflow && this.props.restriction_set?.child_outcomes) {
+    if (data.linkedWorkflow && this.props.restriction_set?.child_outcomes) {
       if (this.state.show_all) {
         show_all = (
           <div className="alignment-added-outcomes">
@@ -303,21 +299,20 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
       backgroundColor: Constants.getColumnColour(this.props.column)
     }
     if (data.lock) {
-      style.outline = '2px solid ' + data.lock.user_colour
+      style.outline = '2px solid ' + data.lock.userColour
     }
 
-    const comments = this.context.workflow.view_comments ? (
-      <this.AddCommenting />
-    ) : (
-      ''
+    const permissions = calcWorkflowPermissions(
+      this.props.workflow.userPermissions
     )
+    const comments = permissions.read ? <this.AddCommenting /> : ''
 
     return (
       <div className="node-week">
         <div
           style={style}
           className={'node column-' + data.column}
-          onClick={(evt) => selection_manager.changeSelection(evt, this)}
+          onClick={(evt) => selectionManager.changeSelection(evt, this)}
           ref={this.mainDiv}
         >
           <div className="node-top-row">
@@ -349,23 +344,20 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
       const column = state.column.find((column) => column.id == node.column)
       let outcomenodes = Utility.filterThenSortByID(
         state.outcomenode,
-        node.outcomenode_unique_set
+        node.outcomenodeUniqueSet
       )
-      if (
-        ownProps.restriction_set &&
-        ownProps.restriction_set.parent_outcomes
-      ) {
+      if (ownProps.restriction_set && ownProps.restriction_set.parentOutcomes) {
         outcomenodes = outcomenodes.filter(
           (ocn) =>
-            ownProps.restriction_set.parent_outcomes.indexOf(ocn.outcome) >= 0
+            ownProps.restriction_set.parentOutcomes.indexOf(ocn.outcome) >= 0
         )
       }
       const node_outcomes = Utility.filterThenSortByID(
         state.outcomenode,
-        node.outcomenode_set
+        node.outcomenodeSet
       ).map((ocn) => ocn.outcome)
 
-      if (!node.linked_workflow || node.linked_workflow_data.deleted) {
+      if (!node.linkedWorkflow || node.linkedWorkflowData.deleted) {
         return {
           workflow: state.workflow,
           data: node,
@@ -376,14 +368,14 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
         }
       }
 
-      const child_workflow = getChildWorkflowByID(state, node.linked_workflow)
+      const child_workflow = getChildWorkflowByID(state, node.linkedWorkflow)
 
       let child_outcomes
 
       if (child_workflow != -1)
         child_outcomes = Utility.filterThenSortByID(
           state.outcomeworkflow,
-          child_workflow.data.outcomeworkflow_set
+          child_workflow.data.outcomeworkflowSet
         ).map((outcomeworkflow) => outcomeworkflow.outcome)
       else child_outcomes = -1
 

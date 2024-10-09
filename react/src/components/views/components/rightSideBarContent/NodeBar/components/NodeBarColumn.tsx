@@ -35,7 +35,7 @@ export class NodeBarColumnUnconnected<
     // @ts-ignore
     $(this.mainDiv.current)[0].dataDraggable = {
       column: this.props.data.id,
-      column_type: null
+      columnType: null
     }
   }
 
@@ -72,7 +72,7 @@ export class NodeBarColumnUnconnected<
    *******************************************************/
   render() {
     const data = this.props.data
-    const title = data ? data.title || data.column_type_display : undefined
+    const title = data ? data.title || data.columnTypeDisplay : undefined
 
     return (
       <div

@@ -39,8 +39,8 @@ class EditableComponentWithActions<
     COURSEFLOW_APP.tinyLoader.startLoad()
     restoreSelfQueryLegacy(
       data.id,
-      Constants.object_dictionary[this.objectType],
-      (response_data) => {
+      Constants.objectDictionary[this.objectType],
+      (responseData) => {
         COURSEFLOW_APP.tinyLoader.endLoad
       }
     )
@@ -63,7 +63,7 @@ class EditableComponentWithActions<
     if (
       window.confirm(
         _t('Are you sure you want to delete this ') +
-          Constants.get_verbose(
+          Constants.getVerbose(
             this.props.data,
             this.objectType
           ).toLowerCase() +
@@ -73,9 +73,9 @@ class EditableComponentWithActions<
       COURSEFLOW_APP.tinyLoader.startLoad()
       deleteSelfQueryLegacy(
         data.id,
-        Constants.object_dictionary[this.objectType],
+        Constants.objectDictionary[this.objectType],
         true,
-        (response_data) => {
+        (responseData) => {
           COURSEFLOW_APP.tinyLoader.endLoad()
         }
       )
@@ -88,11 +88,11 @@ class EditableComponentWithActions<
     COURSEFLOW_APP.tinyLoader.startLoad()
     duplicateSelfQuery(
       data.id,
-      Constants.object_dictionary[type],
+      Constants.objectDictionary[type],
       this.props.parentID,
-      Constants.parent_dictionary[type],
-      Constants.through_parent_dictionary[type],
-      (response_data) => {
+      Constants.parentDictionary[type],
+      Constants.throughParentDictionary[type],
+      (responseData) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
@@ -103,11 +103,11 @@ class EditableComponentWithActions<
     COURSEFLOW_APP.tinyLoader.startLoad()
     insertSiblingQuery(
       data.id,
-      Constants.object_dictionary[type],
+      Constants.objectDictionary[type],
       this.props.parentID,
-      Constants.parent_dictionary[type],
-      Constants.through_parent_dictionary[type],
-      (response_data) => {
+      Constants.parentDictionary[type],
+      Constants.throughParentDictionary[type],
+      (responseData) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
@@ -118,8 +118,8 @@ class EditableComponentWithActions<
     COURSEFLOW_APP.tinyLoader.startLoad()
     insertChildQuery(
       data.id,
-      Constants.object_dictionary[type],
-      (response_data) => {
+      Constants.objectDictionary[type],
+      (responseData) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )

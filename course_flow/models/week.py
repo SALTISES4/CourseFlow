@@ -5,43 +5,15 @@
 import uuid
 
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from ._common import User, title_max_length
+from course_flow.models.common import User
+
+from ._abstract import AbstractCourseFlowModel
 from .node import Node
 
 
-class Week(models.Model):
-    deleted = models.BooleanField(default=False)
-    deleted_on = models.DateTimeField(default=timezone.now)
-    title = models.CharField(
-        max_length=title_max_length, null=True, blank=True
-    )
-    description = models.TextField(null=True, blank=True)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(default=timezone.now)
-    last_modified = models.DateTimeField(auto_now=True)
-    default = models.BooleanField(default=False)
-    parent_week = models.ForeignKey(
-        "Week", on_delete=models.SET_NULL, null=True
-    )
-    is_original = models.BooleanField(default=True)
-    is_strategy = models.BooleanField(default=False)
-    original_strategy = models.ForeignKey(
-        "Workflow", on_delete=models.SET_NULL, null=True
-    )
-
-    is_dropped = models.BooleanField(default=True)
-
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
-
-    comments = models.ManyToManyField(
-        "Comment", blank=True, related_name="week"
-    )
-
+def strategy_choices():
     NONE = 0
     JIGSAW = 1
     PEER_INSTRUCTION = 2
@@ -54,7 +26,7 @@ class Week(models.Model):
     DISTRIBUTED_PROBLEM_SOLVING = 9
     PEER_ASSESSMENT = 10
     OTHER = 11
-    STRATEGY_CHOICES = (
+    return (
         (NONE, _("None")),
         (JIGSAW, _("Jigsaw")),
         (PEER_INSTRUCTION, _("Peer Instruction")),
@@ -68,16 +40,62 @@ class Week(models.Model):
         (PEER_ASSESSMENT, _("Peer Assessment")),
         (OTHER, _("Other")),
     )
-    strategy_classification = models.PositiveIntegerField(
-        choices=STRATEGY_CHOICES, default=0
-    )
 
+
+def week_types():
     PART = 0
     WEEK = 1
     TERM = 2
-    WEEK_TYPES = ((PART, _("Part")), (WEEK, _("Week")), (TERM, _("Term")))
-    week_type = models.PositiveIntegerField(choices=WEEK_TYPES, default=0)
+    return ((PART, _("Part")), (WEEK, _("Week")), (TERM, _("Term")))
 
+
+class Week(AbstractCourseFlowModel):
+    ##########################################################
+    # FIELDS
+    #########################################################
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    default = models.BooleanField(default=False)
+
+    is_original = models.BooleanField(default=True)
+
+    is_strategy = models.BooleanField(default=False)
+
+    is_dropped = models.BooleanField(default=True)
+
+    strategy_classification = models.PositiveIntegerField(
+        choices=strategy_choices(), default=0
+    )
+    week_type = models.PositiveIntegerField(choices=week_types(), default=0)
+    #########################################################
+    # RELATIONS
+    #########################################################
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    parent_week = models.ForeignKey(
+        "Week", on_delete=models.SET_NULL, null=True
+    )
+
+    original_strategy = models.ForeignKey(
+        "Workflow", on_delete=models.SET_NULL, null=True
+    )
+
+    nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
+
+    comments = models.ManyToManyField(
+        "Comment", blank=True, related_name="week"
+    )
+
+    #########################################################
+    # META
+    #########################################################
+    class Meta:
+        verbose_name = _("Week")
+        verbose_name_plural = _("Weeks")
+
+    #########################################################
+    # MODEL METHODS / GETTERS
+    #########################################################
     def __str__(self):
         return self.get_week_type_display()
 
@@ -86,7 +104,3 @@ class Week(models.Model):
 
     def get_workflow(self):
         return self.workflow_set.first()
-
-    class Meta:
-        verbose_name = _("Week")
-        verbose_name_plural = _("Weeks")

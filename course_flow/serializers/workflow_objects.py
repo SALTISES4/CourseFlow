@@ -1,4 +1,3 @@
-from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 from course_flow.models.comment import Comment
@@ -8,11 +7,7 @@ from course_flow.models.relations.weekWorkflow import WeekWorkflow
 from course_flow.models.workflow import Workflow
 from course_flow.serializers.mixin import TitleSerializerMixin
 from course_flow.serializers.user import UserSerializer
-from course_flow.utils import (
-    dateTimeFormat,
-    user_project_url,
-    user_workflow_url,
-)
+from course_flow.services import Utility
 
 
 class DisciplineSerializer(serializers.ModelSerializer):
@@ -28,13 +23,20 @@ class WeekWorkflowSerializerShallow(serializers.ModelSerializer):
         model = WeekWorkflow
         fields = ["workflow", "week", "rank", "id", "week_type"]
 
+    #########################################################
+    # GETTERS
+    #########################################################
+    @staticmethod
+    def get_week_type(instance):
+        return instance.week.week_type
+
+    #########################################################
+    # ACTIONS
+    #########################################################
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
         return instance
-
-    def get_week_type(self, instance):
-        return instance.week.week_type
 
 
 class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
@@ -42,6 +44,9 @@ class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
         model = ColumnWorkflow
         fields = ["workflow", "column", "rank", "id"]
 
+    #########################################################
+    # ACTIONS
+    #########################################################
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
@@ -53,6 +58,9 @@ class WorkflowSerializerFinder(serializers.ModelSerializer):
         model = Workflow
         fields = ["id", "type"]
 
+    #########################################################
+    # ACTIONS
+    #########################################################
     def update(self, instance, validated_data):
         return instance
 
@@ -63,11 +71,18 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ["id", "user", "created_on", "text"]
 
     user = serializers.SerializerMethodField()
-    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
-    def get_user(self, instance):
+    #########################################################
+    # GETTERS
+    #########################################################
+    @staticmethod
+    def get_user(instance):
         return UserSerializer(instance.user).data
 
+    #########################################################
+    # ACTIONS
+    #########################################################
     def update(self, instance, validated_data):
         instance.text = validated_data.get("text", instance.text)
         instance.save()
@@ -84,23 +99,3 @@ class UpdateNotificationSerializer(
             "id",
             "title",
         ]
-
-
-class FavouriteSerializer(
-    serializers.Serializer,
-    TitleSerializerMixin,
-):
-    title = serializers.SerializerMethodField()
-    url = serializers.SerializerMethodField()
-
-    def get_url(self, instance):
-        user = self.context.get("user", None)
-        if instance.type == "project":
-            return user_project_url(instance, user)
-        return user_workflow_url(instance, user)
-
-    def get_title(self, instance):
-        title = super().get_title(instance)
-        if title is None or title == "":
-            return _("Untitled ") + instance._meta.verbose_name
-        return title

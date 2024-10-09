@@ -30,15 +30,15 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
   static contextType = WorkFlowConfigContext
 
   declare context: React.ContextType<typeof WorkFlowConfigContext>
-  private source_node: JQuery
-  private target_node: JQuery
-  private target_port_handle: d3.Selection<
+  private sourceNode: JQuery
+  private targetNode: JQuery
+  private targetPort_handle: d3.Selection<
     SVGElement,
     unknown,
     HTMLElement,
     any
   >
-  private source_port_handle: d3.Selection<
+  private sourcePort_handle: d3.Selection<
     SVGElement,
     unknown,
     HTMLElement,
@@ -56,9 +56,9 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
    * LIFECYCLE
    *******************************************************/
   componentWillUnmount() {
-    if (this.target_node && this.target_node.length > 0) {
-      this.source_node.off(this.rerenderEvents)
-      this.target_node.off(this.rerenderEvents)
+    if (this.targetNode && this.targetNode.length > 0) {
+      this.sourceNode.off(this.rerenderEvents)
+      this.targetNode.off(this.rerenderEvents)
     }
   }
 
@@ -77,72 +77,72 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
     const style: React.CSSProperties = {}
 
     if (
-      !this.source_node ||
-      !this.source_node.outerWidth() ||
-      !this.target_node ||
-      !this.target_node.outerWidth() ||
-      !this.target_port_handle ||
-      this.target_port_handle.empty()
+      !this.sourceNode ||
+      !this.sourceNode.outerWidth() ||
+      !this.targetNode ||
+      !this.targetNode.outerWidth() ||
+      !this.targetPort_handle ||
+      this.targetPort_handle.empty()
     ) {
-      this.source_node = $(this.props.node_div.current)
-      this.target_node = $('#' + data.target_node + '.node')
+      this.sourceNode = $(this.props.node_div.current)
+      this.targetNode = $('#' + data.targetNode + '.node')
 
-      this.source_node.on(this.rerenderEvents, this.rerender.bind(this))
-      this.target_node.on(this.rerenderEvents, this.rerender.bind(this))
+      this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
+      this.targetNode.on(this.rerenderEvents, this.rerender.bind(this))
 
       // this css selector defines the circle attached to each node
       // from which the line is connected
       const cssSourcePortSelector = [
-        `g.port-${data.source_node}`,
+        `g.port-${data.sourceNode}`,
         ` circle[data-port-type='source']`,
-        `[data-port='${Constants.port_keys[data.source_port]}']`
+        `[data-port='${Constants.portKeys[data.sourcePort]}']`
       ].join('')
 
       // this css selector defines the circle attached to each node
       // to which the line is connected
       const cssSourceTargetSelector = [
-        `g.port-${data.target_node} `,
+        `g.port-${data.targetNode} `,
         ` circle[data-port-type='target']`,
-        `[data-port='${Constants.port_keys[data.target_port]}']`
+        `[data-port='${Constants.portKeys[data.targetPort]}']`
       ].join('')
 
       // eslint-disable-next-line no-undef
-      this.source_port_handle = d3.select(cssSourcePortSelector)
-      this.target_port_handle = d3.select(cssSourceTargetSelector)
+      this.sourcePort_handle = d3.select(cssSourcePortSelector)
+      this.targetPort_handle = d3.select(cssSourceTargetSelector)
     }
 
     const node_selected =
-      this.source_node.attr('data-selected') === 'true' ||
-      this.target_node.attr('data-selected') === 'true'
+      this.sourceNode.attr('data-selected') === 'true' ||
+      this.targetNode.attr('data-selected') === 'true'
     const node_hovered =
-      this.source_node.attr('data-hovered') === 'true' ||
-      this.target_node.attr('data-hovered') === 'true'
+      this.sourceNode.attr('data-hovered') === 'true' ||
+      this.targetNode.attr('data-hovered') === 'true'
 
     if (data.dashed) {
       style.strokeDasharray = '5,5'
     }
     if (
-      this.source_node.css('display') == 'none' ||
-      this.target_node.css('display') == 'none'
+      this.sourceNode.css('display') == 'none' ||
+      this.targetNode.css('display') == 'none'
     ) {
       style.display = 'none'
     }
 
     const source_dims = {
-      width: this.source_node.outerWidth(),
-      height: this.source_node.outerHeight()
+      width: this.sourceNode.outerWidth(),
+      height: this.sourceNode.outerHeight()
     }
 
     const target_dims = {
-      width: this.target_node.outerWidth(),
-      height: this.target_node.outerHeight()
+      width: this.targetNode.outerWidth(),
+      height: this.targetNode.outerHeight()
     }
 
     if (!source_dims.width || !target_dims.width) {
       return null
     }
 
-    if (!this.source_node.is(':visible') || !this.target_node.is(':visible')) {
+    if (!this.sourceNode.is(':visible') || !this.targetNode.is(':visible')) {
       return null
     }
 
@@ -156,11 +156,11 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
         // @ts-ignore
         lock={data.lock} // @todo where is lock defined?
         title={data.title}
-        text_position={data.text_position}
-        source_port_handle={this.source_port_handle}
-        source_port={data.source_port}
-        target_port_handle={this.target_port_handle}
-        target_port={data.target_port}
+        textPosition={data.textPosition}
+        sourcePort_handle={this.sourcePort_handle}
+        sourcePort={data.sourcePort}
+        targetPort_handle={this.targetPort_handle}
+        targetPort={data.targetPort}
         clickFunction={(evt) =>
           this.context.selectionManager.changeSelection(evt, this)
         }

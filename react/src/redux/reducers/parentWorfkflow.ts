@@ -8,14 +8,14 @@ export default function parentWorkflowReducer(
 ): TParentWorkflow[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
-      return action.payload.parent_workflow || state
+      return action.payload.parentWorkflow || state
 
     case CommonActions.REFRESH_STOREDATA: {
-      if (!action.payload.parent_workflow) {
+      if (!action.payload.parentWorkflow) {
         return state
       }
 
-      return action.payload.parent_workflow.reduce(
+      return action.payload.parentWorkflow.reduce(
         (acc, newItem) => {
           const index = acc.findIndex((item) => item.id === newItem.id)
           if (index > -1) {
@@ -37,26 +37,26 @@ export default function parentWorkflowReducer(
 // export default function parentWorkflowReducer(state = [], action) {
 //   switch (action.type) {
 //     case 'replaceStoreData':
-//       if (action.payload.parent_workflow) return action.payload.parent_workflow
+//       if (action.payload.parentWorkflow) return action.payload.parentWorkflow
 //       return state
 //     case 'refreshStoreData':
-//       var new_state = state.slice()
-//       if (action.payload.parent_workflow) {
-//         for (let i = 0; i < action.payload.parent_workflow.length; i++) {
-//           const new_obj = action.payload.parent_workflow[i]
+//       var newState = state.slice()
+//       if (action.payload.parentWorkflow) {
+//         for (let i = 0; i < action.payload.parentWorkflow.length; i++) {
+//           const new_obj = action.payload.parentWorkflow[i]
 //           let added = false
-//           for (let j = 0; j < new_state.length; j++) {
-//             if (new_state[j].id == new_obj.id) {
-//               new_state.splice(j, 1, new_obj)
+//           for (let j = 0; j < newState.length; j++) {
+//             if (newState[j].id == new_obj.id) {
+//               newState.splice(j, 1, new_obj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           new_state.push(new_obj)
+//           newState.push(new_obj)
 //         }
 //       }
-//       return new_state
+//       return newState
 //     default:
 //       return state
 //   }

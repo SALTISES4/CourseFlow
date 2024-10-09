@@ -35,16 +35,16 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component<
    *******************************************************/
   render() {
     const data = this.props.data
-    const parent_outcomes = this.props.horizontal_links.map(
+    const parentOutcomes = this.props.horizontal_links.map(
       (horizontal_link) => {
         for (let i = 0; i < this.props.outcomenodes.length; i++) {
           if (
-            this.props.outcomenodes[i].outcome == horizontal_link.parent_outcome
+            this.props.outcomenodes[i].outcome == horizontal_link.parentOutcome
           ) {
             if (
               this.props.restriction_set &&
-              this.props.restriction_set.parent_outcomes &&
-              this.props.restriction_set.parent_outcomes.indexOf(
+              this.props.restriction_set.parentOutcomes &&
+              this.props.restriction_set.parentOutcomes.indexOf(
                 this.props.outcomenodes[i].outcome
               ) == -1
             )
@@ -70,16 +70,16 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component<
       .map((ocn) => ocn.outcome)
     if (
       this.props.restriction_set &&
-      this.props.restriction_set.parent_outcomes
+      this.props.restriction_set.parentOutcomes
     ) {
       outcome_restriction = outcome_restriction
         .filter(
-          (oc) => this.props.restriction_set.parent_outcomes.indexOf(oc) >= 0
+          (oc) => this.props.restriction_set.parentOutcomes.indexOf(oc) >= 0
         )
         .sort(
           (a, b) =>
-            this.props.restriction_set.parent_outcomes.indexOf(a) -
-            this.props.restriction_set.parent_outcomes.indexOf(b)
+            this.props.restriction_set.parentOutcomes.indexOf(a) -
+            this.props.restriction_set.parentOutcomes.indexOf(b)
         )
     }
 
@@ -94,7 +94,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component<
           />
         </div>
         <div className="half-width alignment-column">
-          {parent_outcomes}
+          {parentOutcomes}
           <div className="alignment-row">
             <OutcomeAdder
               // renderer={this.props.renderer}
@@ -124,18 +124,18 @@ const mapStateToProps = (
   if (outcome) {
     const allowedOutcomenodes = Utility.filterThenSortByID(
       state.outcomenode,
-      ownProps.node_data.outcomenode_set
+      ownProps.node_data.outcomenodeSet
     )
 
     const allowedHorizontalLinks = Utility.filterThenSortByID(
       state.outcomehorizontallink,
-      outcome.outcome_horizontal_links_unique
+      outcome.outcomeHorizontalLinksUnique
     )
 
     const horizontalLinkOutcomes = Utility.filterThenSortByID(
       state.outcomehorizontallink,
-      outcome.outcome_horizontal_links
-    ).map((hl) => hl.parent_outcome)
+      outcome.outcomeHorizontalLinks
+    ).map((hl) => hl.parentOutcome)
 
     return {
       data: outcome,

@@ -16,8 +16,8 @@ import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlin
 import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
+import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/API/library.rtk'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
-import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 import { produce } from 'immer'
 import { useEffect, useState } from 'react'
 import { Dispatch, SetStateAction } from 'react'
@@ -69,7 +69,7 @@ function reduceStateToSearchArgs(
   return {
     resultsPerPage: 10,
     page: 1,
-    fullSearch: true,
+    fullSearch: false,
     sort: activeSort,
     filters: activeFilters
   }
@@ -128,7 +128,7 @@ const LibrarySearchView = ({
 
     if (!data || isError) return <div>error</div>
 
-    const cards = formatLibraryObjects(data.data_package.results)
+    const cards = formatLibraryObjects(data.dataPackage.items)
 
     return (
       <>
@@ -153,10 +153,10 @@ const LibrarySearchView = ({
     if (!data || isError) return <div>error</div>
     return (
       <FilterWorkflows
-        workflows={formatLibraryObjects(data.data_package.results)} // @todo memoize
+        workflows={formatLibraryObjects(data.dataPackage.items)} // @todo memoize
         // @todo need to handle key down (enter) which will trigger the main search results
         onChange={(workflow) => {
-          const match = data.data_package.results.find(
+          const match = data.dataPackage.items.find(
             (el) => workflow.id === el.id
           )
           navigateToItem(match.id, match.type)

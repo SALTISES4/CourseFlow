@@ -7,11 +7,11 @@ import { connect } from 'react-redux'
 type ConnectedProps = TGetOutcomeByID
 type OwnProps = {
   objectId: number
-  outcomes_type: any
+  outcomesType: any
   outcome_tree?: any
 }
 type StateProps = {
-  is_dropped: boolean
+  isDropped: boolean
 }
 type PropsType = ConnectedProps & OwnProps
 /**
@@ -26,12 +26,12 @@ class MatrixOutcomeUnconnected extends TableOutcomeUnconnected<
    *******************************************************/
   toggleDrop = () => {
     this.setState({
-      is_dropped: !this.state.is_dropped
+      isDropped: !this.state.isDropped
     })
   }
 
   getIsDropped() {
-    return this.state.is_dropped
+    return this.state.isDropped
   }
 
   /*******************************************************
@@ -40,7 +40,7 @@ class MatrixOutcomeUnconnected extends TableOutcomeUnconnected<
   ChildOutcomeView = ({ child }) => {
     return (
       <MatrixOutcome
-        outcomes_type={this.props.outcomes_type}
+        outcomesType={this.props.outcomesType}
         objectId={child.id}
         // @this is weird
         outcome_tree={child}

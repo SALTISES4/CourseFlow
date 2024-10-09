@@ -14,14 +14,14 @@
 //     if (state.outcome[i].id === outcome_id) {
 //       let children
 //       if (
-//         state.outcome[i].child_outcome_links.length === 0 ||
+//         state.outcome[i].childOutcomeLinks.length === 0 ||
 //         state.outcome[i].depth >= 2
 //       )
 //         children = []
 //       else
 //         children = filterThenSortByID(
 //           state.outcomeoutcome,
-//           state.outcome[i].child_outcome_links
+//           state.outcome[i].childOutcomeLinks
 //         ).map((outcomeoutcome) =>
 //           createOutcomeBranch(state, outcomeoutcome.child)
 //         )
@@ -42,7 +42,7 @@
 //   const outcomes_tree = []
 //   const sorted_outcomes = getSortedOutcomesFromOutcomeWorkflowSet(
 //     state,
-//     state.workflow.outcomeworkflow_set
+//     state.workflow.outcomeworkflowSet
 //   )
 //   for (let i = 0; i < sorted_outcomes.length; i++) {
 //     const outcomes_tree_category = []

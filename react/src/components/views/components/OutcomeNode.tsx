@@ -7,18 +7,21 @@ import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TOutcomeNodeByID, getOutcomeNodeByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
 // import $ from 'jquery'
 
-type ConnectedProps = TOutcomeNodeByID
+type ConnectedProps = {
+  outcomeNode: TOutcomeNodeByID
+  workflow: TWorkflow
+}
 
 type OwnProps = {
   parentID?: number // is this required:
-  outcomes_type?: any
+  outcomesType?: any
   deleteSelfOverride?: any
 } & ComponentWithToggleProps
 type PropsType = ConnectedProps & OwnProps
@@ -27,7 +30,7 @@ type PropsType = ConnectedProps & OwnProps
  * The link between nodes and their tagged outcomes,
  * primarily used in the outcome edit view
  *
- * renderer.read_only
+ * renderer.readOnly
  *
  */
 class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
@@ -63,7 +66,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
     //Temporary confirmation; add better confirmation dialogue later
     else {
       COURSEFLOW_APP.tinyLoader.startLoad()
-      updateOutcomenodeDegree(data.node, data.outcome, 0, (response_data) => {
+      updateOutcomenodeDegree(data.node, data.outcome, 0, (responseData) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
       })
     }
@@ -79,15 +82,15 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
     const indicator = $(this.mainDiv.current).closest('.outcome-node-indicator')
 
     if (indicator.length >= 0) {
-      const num_outcomenodes = indicator
+      const numOutcomenodes = indicator
         .children('.outcome-node-container')
         .children('.outcome-node:not([style*="display: none"])').length
 
       indicator
         .children('.outcome-node-indicator-number')
-        .html(String(num_outcomenodes))
+        .html(String(numOutcomenodes))
 
-      if (num_outcomenodes === 0) {
+      if (numOutcomenodes === 0) {
         indicator.css('display', 'none')
       } else indicator.css('display', '')
     }
@@ -116,7 +119,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const data = this.props.outcomeNode.data
 
     // @todo component blows up on re-render by losing redux state
     // results in
@@ -129,7 +132,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
         id={data.id}
         ref={this.mainDiv}
       >
-        {!this.context.permissions.workflowPermission.readOnly && (
+        {this.props.workflow.workflowPermissions.write && (
           <div>
             <this.AddDeleteSelf data={data} />
           </div>
@@ -137,7 +140,7 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
 
         <CompletionImg
           completionStatus={data.degree}
-          outcomesType={this.props.outcomes_type}
+          outcomesType={this.props.outcomesType}
         />
 
         <SimpleOutcome
@@ -155,8 +158,11 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TOutcomeNodeByID => {
-  return getOutcomeNodeByID(state, ownProps.objectId)
+): ConnectedProps => {
+  return {
+    outcomeNode: getOutcomeNodeByID(state, ownProps.objectId),
+    workflow: state.workflow
+  }
 }
 
 const OutcomeNode = connect<ConnectedProps, object, OwnProps, AppState>(

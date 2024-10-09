@@ -1,4 +1,4 @@
-import { VERB } from '@cf/types/enum'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { API_POST, API_POST_FILE } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -9,13 +9,13 @@ export function getExport(
   exportType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_export, {
+  const url = apiPaths.json_api.exportImport.export
+  API_POST(url, {
     objectId: objectId,
     objectType: objectType,
     exportType: exportType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -27,8 +27,9 @@ export function importData(
   myFile,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
+  const url = apiPaths.json_api.exportImport.import
   API_POST_FILE(
-    COURSEFLOW_APP.globalContextData.path.post_paths.import_data,
+    url,
     {
       objectId: objectId,
       objectType: objectType,
@@ -36,7 +37,6 @@ export function importData(
     },
     myFile
   ).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }

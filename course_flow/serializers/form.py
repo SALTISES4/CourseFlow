@@ -43,7 +43,6 @@ class FormFieldsSerializer:
         # in order for cleaned_data to become available
         if self.form_instance.is_valid():
             for field_name, field in self.form_instance.fields.items():
-                # TODO: use camelCase
                 fields.append(
                     {
                         "name": field_name,

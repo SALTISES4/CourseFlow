@@ -91,37 +91,6 @@ def html_patterns():
             name="temp-project",
         ),
         #########################################################
-        # PROGRAM
-        #########################################################
-        path(
-            "program/<int:projectPk>/create/",
-            views.ProgramCreateView.as_view(),
-            name="program-create",
-        ),
-        path(
-            "course/<int:projectPk>/create/",
-            views.CourseCreateView.as_view(),
-            name="course-create",
-        ),
-        path(
-            "course-strategy/create/",
-            views.CourseStrategyCreateView.as_view(),
-            name="course-strategy-create",
-        ),
-        #########################################################
-        # ACTIVITY
-        #########################################################
-        path(
-            "activity/<int:projectPk>/create/",
-            views.ActivityCreateView.as_view(),
-            name="activity-create",
-        ),
-        path(
-            "activity-strategy/create/",
-            views.ActivityStrategyCreateView.as_view(),
-            name="activity-strategy-create",
-        ),
-        #########################################################
         # ADMIN / AUTH
         #########################################################
         path(

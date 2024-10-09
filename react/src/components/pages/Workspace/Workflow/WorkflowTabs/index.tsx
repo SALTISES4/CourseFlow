@@ -2,7 +2,7 @@ import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import MenuBar from '@cfComponents/layout/MenuBar'
+import MenuBar from '@cfComponents/globalNav/MenuBar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import {
@@ -21,7 +21,6 @@ import { Routes, matchPath } from 'react-router-dom'
 
 type WorkflowTabsManagerPropsType = {
   isStrategy: boolean
-  data: any
 }
 
 // & EditableComponentProps
@@ -45,6 +44,8 @@ type StateType = {
 const WorkflowTabs = () => {
   const data = useSelector((state: AppState) => state.workflow)
   const context = useContext(WorkFlowConfigContext)
+  const workflow = useSelector((state: AppState) => state.workflow)
+
   // @todo should be memoized (calling the tabs per render)
   const { tabRoutes, tabButtons, tabs } = useWorkflowTabs({
     data
@@ -54,7 +55,7 @@ const WorkflowTabs = () => {
   //    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
   //    getWorkflowParentDataQuery(this.workflowId, (response) => {
   //      this.props.dispatch(
-  //        ActionCreator.refreshStoreData(response.data_package)
+  //        ActionCreator.refreshStoreData(response.dataPackage)
   //      )
   //    })
   //  }
@@ -92,7 +93,7 @@ const WorkflowTabs = () => {
   const ViewBar = () => {
     return (
       <>
-        <JumpToMenu weekWorkflowSet={data.weekworkflow_set} />
+        <JumpToMenu weekWorkflowSet={data.weekworkflowSet} />
         <ExpandCollapseMenu />
       </>
     )
@@ -149,25 +150,15 @@ const WorkflowTabs = () => {
 
       <div className="main-block">
         <MenuBar
-          leftSection={<ActionMenu isWorkflowDeleted={data.deleted} />}
+          leftSection={<ActionMenu />}
           viewbar={<ViewBar />}
-          userbar={<ConnectionBar show={!context.public_view} />}
+          userbar={<ConnectionBar show={!workflow.publicView} />}
         />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
-              <Header
-                isStrategy={data.is_strategy}
-                workflowType={data.type}
-                title={data.title}
-                code={data.code}
-                deleted={data.deleted}
-              />
-
-              <WorkflowTabsManager
-                isStrategy={context.workflow.is_strategy}
-                data={data} // @todo clean this up
-              />
+              <Header />
+              <WorkflowTabsManager isStrategy={workflow.isStrategy} />
             </div>
           </div>
 

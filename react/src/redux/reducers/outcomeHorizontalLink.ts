@@ -44,22 +44,22 @@ function outcomeHorizontalLinkReducer(
     case OutcomeHorizontalLinkActions.UPDATE_DEGREE:
       if (action.payload.outcomehorizontallink === -1) return state
 
-      const newOutcomeHorizontalLinkOutcomes = action.payload.data_package.map(
+      const newOutcomeHorizontalLinkOutcomes = action.payload.dataPackage.map(
         (outcomeHorizontalLink) =>
           Utility.cantorPairing(
             outcomeHorizontalLink.outcome,
-            outcomeHorizontalLink.parent_outcome
+            outcomeHorizontalLink.parentOutcome
           )
       )
 
       let updatedState = state.map((item) => {
         const index = newOutcomeHorizontalLinkOutcomes.indexOf(
-          Utility.cantorPairing(item.outcome, item.parent_outcome)
+          Utility.cantorPairing(item.outcome, item.parentOutcome)
         )
-        return index !== -1 ? action.payload.data_package[index] : item
+        return index !== -1 ? action.payload.dataPackage[index] : item
       })
 
-      const unusedData = action.payload.data_package.filter(
+      const unusedData = action.payload.dataPackage.filter(
         (data) => !updatedState.includes(data)
       )
       updatedState = [...updatedState, ...unusedData].filter(

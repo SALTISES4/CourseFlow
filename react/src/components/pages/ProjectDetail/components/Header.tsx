@@ -30,7 +30,7 @@ const Header = ({
     <div className="project-header">
       {/*<WorkflowTitle*/}
       {/*  data={project}*/}
-      {/*  no_hyperlink={true}*/}
+      {/*  noHyperlink={true}*/}
       {/*  class_name="project-title"*/}
       {/*/>*/}
       placeholder title

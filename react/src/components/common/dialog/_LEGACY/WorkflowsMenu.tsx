@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { GridWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/utilityFunctions'
-import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
-import MenuTab from '@cfComponents/__LEGACY/menuLegacy/components/MenuTab'
+// import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
+// import MenuTab from '@cfComponents/__LEGACY/menuLegacy/components/MenuTab'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import { setLinkedWorkflow } from '@XMLHTTP/API/update'
 import * as React from 'react'
@@ -28,7 +29,7 @@ type PropsType = {
 }
 
 class WorkflowsMenu extends React.Component<PropsType, StateProps> {
-  private current_project: any
+  private currentProject: any
   private project_workflows: any
   constructor(props) {
     super(props)
@@ -37,23 +38,23 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
     // @todo unpack this
     if (this.props.type === 'target_project_menu') {
       try {
-        //  this.current_project = project_data // @todo this doesn't make sense
+        //  this.currentProject = projectData // @todo this doesn't make sense
       } catch (err) {}
 
       try {
-        // this.current_project = workflow_data_package.project // @todo this doesn't make sense
+        // this.currentProject = workflowDataPackage.project // @todo this doesn't make sense
       } catch (err) {}
 
-      if (this.current_project) {
-        // this.state.selected = this.current_project.id @todo this doesn't make sense
+      if (this.currentProject) {
+        // this.state.selected = this.currentProject.id @todo this doesn't make sense
       }
     }
 
     if (
-      this.props.type === 'linked_workflow_menu' ||
+      this.props.type === 'linkedWorkflow_menu' ||
       this.props.type === 'added_workflow_menu'
     )
-      this.project_workflows = props.data.data_package.current_project.sections
+      this.project_workflows = props.data.dataPackage.currentProject.sections
         .map((section) => section.objects.map((object) => object.id))
         .flat()
   }
@@ -82,7 +83,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
    *******************************************************/
   Title = () => {
     switch (this.props.type) {
-      case 'linked_workflow_menu':
+      case 'linkedWorkflow_menu':
       case 'added_workflow_menu':
       case 'workflow_select_menu':
         return <h2>{_t('Select a workflow')}</h2>
@@ -94,7 +95,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
 
   Actions = () => {
     const actions = []
-    if (this.props.type === 'linked_workflow_menu') {
+    if (this.props.type === 'linkedWorkflow_menu') {
       let text = _t('link to node')
       if (
         this.state.selected &&
@@ -116,7 +117,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
           className="secondary-button"
           onClick={() => {
             setLinkedWorkflow(
-              this.props.data.node_id,
+              this.props.data.nodeId,
               -1,
               this.props.actionFunction
             )
@@ -132,7 +133,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
           className="primary-button"
           onClick={() => {
             setLinkedWorkflow(
-              this.props.data.node_id,
+              this.props.data.nodeId,
               this.state.selected,
               this.props.actionFunction
             )
@@ -211,31 +212,31 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
    * RENDER
    *******************************************************/
   render() {
-    const data_package = this.props.data.data_package
-    let no_hyperlink = false
+    const dataPackage = this.props.data.dataPackage
+    let noHyperlink = false
     if (
-      this.props.type === 'linked_workflow_menu' ||
+      this.props.type === 'linkedWorkflow_menu' ||
       this.props.type === 'added_workflow_menu' ||
       this.props.type === 'target_project_menu' ||
       this.props.type === 'workflow_select_menu'
     )
-      no_hyperlink = true
+      noHyperlink = true
     const tabs = []
     const tab_li = []
     let i = 0
 
-    for (const prop in data_package) {
+    for (const prop in dataPackage) {
       tab_li.push(
         <li className="tab-header">
           <a className="hover-shade" href={'#tabs-' + i}>
-            {data_package[prop].title}
+            {dataPackage[prop].title}
           </a>
         </li>
       )
       tabs.push(
         <MenuTab
-          no_hyperlink={no_hyperlink}
-          data={data_package[prop]}
+          noHyperlink={noHyperlink}
+          data={dataPackage[prop]}
           type={this.props.type}
           identifier={i}
           selected_id={this.state.selected}
@@ -245,14 +246,14 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
       i++
     }
 
-    const current_project = this.current_project ? (
+    const currentProject = this.currentProject ? (
       <>
         <h4 className={'big-space'}>{_t('Current project')}</h4>,
         <GridWrap>
           {/*<WorkflowCard*/}
-          {/*  workflowData={this.current_project}*/}
-          {/*  selected={this.state.selected === this.current_project.id}*/}
-          {/*  noHyperlink={no_hyperlink}*/}
+          {/*  workflowData={this.currentProject}*/}
+          {/*  selected={this.state.selected === this.currentProject.id}*/}
+          {/*  noHyperlink={noHyperlink}*/}
           {/*  type={this.props.type} // @todo i don't think this is used*/}
           {/*  dispatch={null} // @todo i don't think this is used*/}
           {/*  selectAction={this.workflowSelected.bind(this)}*/}
@@ -275,7 +276,7 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
         }}
       >
         <this.Title />
-        {current_project}
+        {currentProject}
         <div className="home-tabs" id="workflow-tabs">
           <ul>{tab_li}</ul>
           {tabs}

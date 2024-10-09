@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import * as React from 'react'
 
 // Define the props type
@@ -21,8 +22,7 @@ class ActionButton extends React.Component<ActionButtonProps> {
 
   render() {
     const { buttonClass, titleText, buttonIcon } = this.props
-    const iconPath =
-      COURSEFLOW_APP.globalContextData.path.static_assets.icon + buttonIcon
+    const iconPath = apiPaths.external.static_assets.icon + buttonIcon
 
     return (
       <div

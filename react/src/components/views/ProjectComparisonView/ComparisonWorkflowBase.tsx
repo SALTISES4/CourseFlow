@@ -19,10 +19,10 @@ import OutcomeEdit from './OutcomeEdit'
 
 type ConnectedProps = {
   data: any
-  object_sets: any
+  objectSets: any
 }
 type OwnProps = {
-  view_type: WorkflowViewType
+  viewType: WorkflowViewType
   rank?: number
 }
 type StateProps = EditableComponentStateType
@@ -88,7 +88,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
     if (this.context.workflowView === WorkflowViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQueryLegacy(this.props.data.id, (response) => {
         this.props.dispatch(
-          ActionCreator.refreshStoreData(response.data_package)
+          ActionCreator.refreshStoreData(response.dataPackage)
         )
       })
       return <OutcomeEdit objectId={this.props.data.id} />
@@ -103,7 +103,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
     const data = this.props.data
 
     const style: React.CSSProperties = {
-      border: data.lock ? '2px solid ' + data.lock.user_colour : undefined // @todo not sure what the best default state is for this
+      border: data.lock ? '2px solid ' + data.lock.userColour : undefined // @todo not sure what the best default state is for this
     }
 
     const portal = this.addEditable(data, true)
@@ -128,7 +128,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    object_sets: state.objectset
+    objectSets: state.objectset
   }
 }
 

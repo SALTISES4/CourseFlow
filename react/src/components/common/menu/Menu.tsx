@@ -1,4 +1,4 @@
-import { StyledMenu } from '@cfComponents/layout/TopBar/styles'
+import { StyledMenu } from '@cfComponents/globalNav/TopBar/styles'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { Menu } from '@mui/material'
 import Button from '@mui/material/Button'

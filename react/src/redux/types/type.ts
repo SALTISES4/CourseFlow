@@ -1,16 +1,18 @@
 import { Lock } from '@cf/types/common'
-import { WorkflowType } from '@cf/types/enum'
+import { WorkflowPermission } from '@cf/utility/permissions'
 import {
   EColumn,
   EDate,
   ENode,
   ENodelink,
   ENodeweek,
+  ENotification,
   EObjectSet,
   EOutcome,
   EOutcomeOutcome,
   EOutcomeWorkflow,
   EOutcomenode,
+  EProject,
   EStrategy,
   EUser,
   EWeek,
@@ -34,8 +36,9 @@ export type AppState = {
   objectset: TObjectSet[]
   strategy: TStrategy[]
   //
-  parent_workflow?: TParentWorkflow[]
-  parent_node?: TParentNode[]
+  parentWorkflow?: TParentWorkflow[]
+  parentNode?: TParentNode[]
+  parentProject?: TProject
   outcomehorizontallink?: TOutcomeHorizontalLink[]
   child_workflow?: TChildWorkflow[]
 }
@@ -49,40 +52,43 @@ export type TOutcomenode = EOutcomenode
 
 export type TOutcomeOutcome = EOutcomeOutcome
 
-export type TOutcome = EOutcome
+// @todo look into where lock comes from
+export type TOutcome = EOutcome & {
+  lock?: Lock
+}
 
+// @todo look into where lock comes from
 export type TColumn = EColumn & {
   lock?: Lock
 }
 
-export type TNode = ENode
+// @todo look into where lock comes from
+export type TNode = ENode & {
+  lock?: Lock
+}
 export type TUser = EUser
 
 export type TColumnworkflow = EOutcomeWorkflow & {
   outcome?: number
-  no_drag?: boolean
+  noDrag?: boolean
   column?: number
 }
 
 export type TNodeweek = ENodeweek
 
 export type TWeek = EWeek & {
-  is_dropped?: boolean
+  isDropped?: boolean
 }
 
 export type TWeekworkflow = EWeekworkflow & {
-  no_drag?: boolean
+  noDrag?: boolean
 }
 
 export type TOutcomeWorkflow = EOutcomeWorkflow
 
 export type TWorkflow = EWorkflow & {
+  workflowPermissions: WorkflowPermission
   lock?: boolean
-  edit_count?: number
-  type?: WorkflowType
-  strategy_icon?: number
-  DEFAULT_COLUMNS?: number[]
-  DEFAULT_CUSTOM_COLUMN?: number
 }
 
 export type TNodelink = ENodelink
@@ -98,6 +104,10 @@ export type TChildWorkflow = any
 export type TOutcomeHorizontalLink = any
 export type TParentNode = any
 export type TDate = EDate
+export type TProject = EProject
+export type TNotification = ENotification & {
+  url: string
+}
 
 // ENUM
 export enum NodeTypeDisplay {

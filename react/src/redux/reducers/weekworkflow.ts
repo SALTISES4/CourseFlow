@@ -25,7 +25,7 @@ export default function weekworkflowReducer(
       }
 
       // replace exising items
-      const new_state = state.map((item) => {
+      const newState = state.map((item) => {
         const foundItem = action.payload.weekworkflow.find(
           (newItem) => newItem.id === item.id
         )
@@ -34,24 +34,24 @@ export default function weekworkflowReducer(
 
       // add missing items
       action.payload.weekworkflow.forEach((newItem) => {
-        if (!new_state.find((item) => item.id === newItem.id)) {
-          new_state.push(newItem)
+        if (!newState.find((item) => item.id === newItem.id)) {
+          newState.push(newItem)
         }
       })
 
-      return new_state
+      return newState
     }
 
     case WeekWorkflowActions.MOVED_TO: {
       return state.map((item) =>
-        item.id === action.payload.id ? { ...item, no_drag: true } : item
+        item.id === action.payload.id ? { ...item, noDrag: true } : item
       )
     }
 
     case WeekWorkflowActions.CHANGE_ID: {
       return state.map((item) =>
         item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, no_drag: false }
+          ? { ...item, id: action.payload.new_id, noDrag: false }
           : item
       )
     }

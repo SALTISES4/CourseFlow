@@ -1,12 +1,12 @@
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType, WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import WorkflowLinkDialog from '@cfComponents/dialog/Workspace/WorkflowLinkDialog'
+import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
 import QuillDiv from '@cfEditableComponents/components/QuillDiv'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import Button from '@mui/material/Button'
@@ -16,13 +16,13 @@ import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
 import ReactDOM from 'react-dom'
 
-const choices = COURSEFLOW_APP.globalContextData.workflow_choices
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 const LinkedWorkflowButton = (id: any) => {
   const { dispatch } = useDialog()
 
   return (
-    <Button onClick={() => dispatch(DIALOG_TYPE.LINK_WORKFLOW)}>
+    <Button onClick={() => dispatch(DialogMode.LINK_WORKFLOW)}>
       {_t('Change')}
     </Button>
   )
@@ -36,7 +36,7 @@ export type EditableComponentProps = {
   text?: any
   textChangeFunction?: any
   disabled?: any
-  object_sets?: any
+  objectSets?: any
 }
 
 type StateType = {
@@ -60,7 +60,7 @@ class EditableComponent<
     COURSEFLOW_APP.tinyLoader.startLoad()
     updateObjectSet(
       this.props.data.id,
-      Constants.object_dictionary[this.objectType],
+      Constants.objectDictionary[this.objectType],
       set_id,
       evt.target.checked,
       () => {
@@ -72,20 +72,20 @@ class EditableComponent<
   checkboxChanged(field, evt) {
     const do_change = true
     if (do_change)
-      this.context.editableMethods.change_field(
+      this.context.editableMethods.changeField(
         this.props.data.id,
-        Constants.object_dictionary[this.objectType],
+        Constants.objectDictionary[this.objectType],
         field,
         evt.target.checked
       )
   }
 
-  valueChanged(field, new_value) {
-    this.context.editableMethods.change_field(
+  valueChanged(field, newValue) {
+    this.context.editableMethods.changeField(
       this.props.data.id,
-      Constants.object_dictionary[this.objectType],
+      Constants.objectDictionary[this.objectType],
       field,
-      new_value
+      newValue
     )
   }
 
@@ -93,7 +93,7 @@ class EditableComponent<
     const data = this.props.data
     if (!data) return
 
-    const border = data.lock ? '2px solid ' + data.lock.user_colour : undefined
+    const border = data.lock ? '2px solid ' + data.lock.userColour : undefined
     return {
       border
     }
@@ -105,9 +105,9 @@ class EditableComponent<
     else if (!value) value = ''
     if (field == 'colour') value = parseInt(value.replace('#', ''), 16)
     if (evt.target.type == 'number' && value == '') value = 0
-    this.context.editableMethods.change_field(
+    this.context.editableMethods.changeField(
       this.props.data.id,
-      Constants.object_dictionary[this.objectType],
+      Constants.objectDictionary[this.objectType],
       field,
       value
     )
@@ -148,15 +148,15 @@ class EditableComponent<
         <select
           id="task-editor"
           disabled={readOnly}
-          value={data.task_classification}
-          onChange={this.inputChanged.bind(this, 'task_classification')}
+          value={data.taskClassification}
+          onChange={this.inputChanged.bind(this, 'taskClassification')}
         >
-          {choices.task_choices
+          {choices.taskChoices
             .filter(
               (choice) =>
                 // @todo clearly not properly typed
                 // @ts-ignore
-                Math.floor(choice.type / 100) == data.node_type ||
+                Math.floor(choice.type / 100) == data.nodeType ||
                 choice.type == 0
             )
             .map((choice) => (
@@ -178,18 +178,18 @@ class EditableComponent<
             id="time-editor"
             className="half-width"
             type="text"
-            value={data.time_required}
+            value={data.timeRequired}
             maxLength={30}
-            onChange={this.inputChanged.bind(this, 'time_required')}
+            onChange={this.inputChanged.bind(this, 'timeRequired')}
           />
           <select
             disabled={override || readOnly}
             id="time-units-editor"
             className="half-width"
-            value={data.time_units}
-            onChange={this.inputChanged.bind(this, 'time_units')}
+            value={data.timeUnits}
+            onChange={this.inputChanged.bind(this, 'timeUnits')}
           >
-            {choices.time_choices.map((choice) => (
+            {choices.timeChoices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -245,7 +245,9 @@ class EditableComponent<
           // maxlength={500}
           textChangeFunction={this.valueChanged.bind(this, 'description')}
           placeholder="Insert description here"
-          readOnly={this.context.permissions.workflowPermission.readOnly}
+          // @todo probably don't need to fix this
+          // readOnly={this.context.permissions.workflowPermissions.readOnly}
+          readOnly={false}
         />
       </div>
     )
@@ -258,14 +260,14 @@ class EditableComponent<
         <select
           id="context-editor"
           disabled={readOnly}
-          value={data.context_classification}
-          onChange={this.inputChanged.bind(this, 'context_classification')}
+          value={data.contextClassification}
+          onChange={this.inputChanged.bind(this, 'contextClassification')}
         >
-          {choices.context_choices
+          {choices.contextChoices
             .filter(
               (choice) =>
                 // @ts-ignore
-                Math.floor(choice.type / 100) == data.node_type ||
+                Math.floor(choice.type / 100) == data.nodeType ||
                 choice.type == 0
             )
             .map((choice) => (
@@ -276,57 +278,57 @@ class EditableComponent<
     )
   }
 
-  Ponderation = ({ data, override, read_only }) => (
+  Ponderation = ({ data, override, readOnly }) => (
     <div>
       <h4>{_t('Ponderation')}</h4>
       <input
-        disabled={override || read_only}
+        disabled={override || readOnly}
         autoComplete="off"
         className="half-width"
         id="ponderation-theory"
         type="number"
-        value={data.ponderation_theory}
-        onChange={this.inputChanged.bind(this, 'ponderation_theory')}
+        value={data.ponderationTheory}
+        onChange={this.inputChanged.bind(this, 'ponderationTheory')}
       />
       <div className="half-width">{_t('hrs. Theory')}</div>
       <input
-        disabled={override || read_only}
+        disabled={override || readOnly}
         autoComplete="off"
         className="half-width"
         id="ponderation-practical"
         type="number"
-        value={data.ponderation_practical}
-        onChange={this.inputChanged.bind(this, 'ponderation_practical')}
+        value={data.ponderationPractical}
+        onChange={this.inputChanged.bind(this, 'ponderationPractical')}
       />
       <div className="half-width">{_t('hrs. Practical')}</div>
       <input
-        disabled={override || read_only}
+        disabled={override || readOnly}
         className="half-width"
         autoComplete="off"
         id="ponderation-individual"
         type="number"
-        value={data.ponderation_individual}
-        onChange={this.inputChanged.bind(this, 'ponderation_individual')}
+        value={data.ponderationIndividual}
+        onChange={this.inputChanged.bind(this, 'ponderationIndividual')}
       />
       <div className="half-width">{_t('hrs. Individual')}</div>
       <input
-        disabled={override || read_only}
+        disabled={override || readOnly}
         className="half-width"
         autoComplete="off"
         id="time-general-hours"
         type="number"
-        value={data.time_general_hours}
-        onChange={this.inputChanged.bind(this, 'time_general_hours')}
+        value={data.timeGeneralHours}
+        onChange={this.inputChanged.bind(this, 'timeGeneralHours')}
       />
       <div className="half-width">{_t('hrs. General Education')}</div>
       <input
-        disabled={override || read_only}
+        disabled={override || readOnly}
         className="half-width"
         autoComplete="off"
         id="time-specific-hours"
         type="number"
-        value={data.time_specific_hours}
-        onChange={this.inputChanged.bind(this, 'time_specific_hours')}
+        value={data.timeSpecificHours}
+        onChange={this.inputChanged.bind(this, 'timeSpecificHours')}
       />
       <div className="half-width">{_t('hrs. Specific Education')}</div>
     </div>
@@ -337,14 +339,14 @@ class EditableComponent<
       <div>
         <h4>{_t('Settings')}</h4>
         <div>
-          <label htmlFor="outcomes_type">{_t('Outcomes Style')}</label>
+          <label htmlFor="outcomesType">{_t('Outcomes Style')}</label>
           <select
             disabled={readOnly}
-            name="outcomes_type"
-            value={data.outcomes_type}
-            onChange={this.inputChanged.bind(this, 'outcomes_type')}
+            name="outcomesType"
+            value={data.outcomesType}
+            onChange={this.inputChanged.bind(this, 'outcomesType')}
           >
-            {choices.context_choices.map((choice) => (
+            {choices.contextChoices.map((choice) => (
               <option value={choice.type}>{choice.name}</option>
             ))}
           </select>
@@ -359,7 +361,7 @@ class EditableComponent<
             onChange={this.checkboxChanged.bind(this, 'condensed')}
           />
         </div>
-        {data.is_strategy && (
+        {data.isStrategy && (
           <div>
             <label htmlFor="is_published">{_t('Published')}</label>
             <input
@@ -397,10 +399,10 @@ class EditableComponent<
               type="range"
               min="1"
               max="100"
-              value={data.text_position}
+              value={data.textPosition}
               className="range-slider"
               id="text-position-range"
-              onChange={this.inputChanged.bind(this, 'text_position')}
+              onChange={this.inputChanged.bind(this, 'textPosition')}
             />
           </div>
         </div>
@@ -437,11 +439,11 @@ class EditableComponent<
         <input
           disabled={readOnly}
           type="checkbox"
-          name="has_autolink"
-          checked={data.has_autolink}
-          onChange={this.checkboxChanged.bind(this, 'has_autolink')}
+          name="hasAutolink"
+          checked={data.hasAutolink}
+          onChange={this.checkboxChanged.bind(this, 'hasAutolink')}
         />
-        <label htmlFor="has_autolink">{_t('Draw arrow to next node')}</label>
+        <label htmlFor="hasAutolink">{_t('Draw arrow to next node')}</label>
       </div>
     )
   }
@@ -450,14 +452,14 @@ class EditableComponent<
     return (
       <div>
         <h4>{_t('Linked Workflow')}</h4>
-        <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
+        <div>{data.linkedWorkflow && data.linkedWorkflowData.title}</div>
         <LinkedWorkflowButton id={data.id} />
         <input
           disabled={readOnly}
           type="checkbox"
           name="respresents_workflow"
-          checked={data.represents_workflow}
-          onChange={this.checkboxChanged.bind(this, 'represents_workflow')}
+          checked={data.representsWorkflow}
+          onChange={this.checkboxChanged.bind(this, 'representsWorkflow')}
         />
         <label htmlFor="repesents_workflow">
           {_t('Display linked workflow data')}
@@ -472,10 +474,10 @@ class EditableComponent<
         <h4>{_t('Strategy')}</h4>
         <select
           disabled={readOnly}
-          value={data.strategy_classification}
-          onChange={this.inputChanged.bind(this, 'strategy_classification')}
+          value={data.strategyClassification}
+          onChange={this.inputChanged.bind(this, 'strategyClassification')}
         >
-          {choices.context_choices.map((choice) => (
+          {choices.contextChoices.map((choice) => (
             <option value={choice.type}>{choice.name}</option>
           ))}
         </select>
@@ -484,20 +486,20 @@ class EditableComponent<
           id="toggle-strategy-editor"
           onClick={() => {
             const loader = new UtilityLoader('body')
-            toggleStrategyQuery(data.id, data.is_strategy, (response_data) => {
+            toggleStrategyQuery(data.id, data.isStrategy, (responseData) => {
               loader.endLoad()
             })
           }}
         >
-          {data.is_strategy && _t('Remove Strategy Status')}
-          {!data.is_strategy && _t('Save as Template')}
+          {data.isStrategy && _t('Remove Strategy Status')}
+          {!data.isStrategy && _t('Save as Template')}
         </button>
       </div>
     )
   }
 
-  DeleteForSidebar = ({ read_only, no_delete, type, data }) => {
-    if (!read_only && !no_delete && (type != 'outcome' || data.depth > 0)) {
+  DeleteForSidebar = ({ readOnly, no_delete, type, data }) => {
+    if (!readOnly && !no_delete && (type != 'outcome' || data.depth > 0)) {
       if (type == 'workflow') {
         return <></>
       } else {
@@ -520,23 +522,25 @@ class EditableComponent<
   EditForm = ({ data, noDelete }) => {
     let sets
 
-    const read_only = this.context.permissions.workflowPermission.readOnly
+    // @todo probably don't need to fix this
+    // const readOnly = this.context.permissions.workflowPermissions.readOnly
+    const readOnly = false
     const title = Utility.unescapeCharacters(data.title || '')
-    const type = Constants.object_dictionary[this.objectType]
-    const override = data.represents_workflow ? true : false
+    const type = Constants.objectDictionary[this.objectType]
+    const override = data.representsWorkflow ? true : false
     const title_length = type === 'outcome' ? 500 : 100
     const description = data.description || ''
 
-    if (this.props.object_sets && ['node', 'outcome'].indexOf(type) >= 0) {
+    if (this.props.objectSets && ['node', 'outcome'].indexOf(type) >= 0) {
       const term_type =
-        type == 'node' ? Constants.node_type_keys[data.node_type] : data.type
+        type == 'node' ? Constants.nodeTypeKeys[data.nodeType] : data.type
 
-      const allowed_sets = this.props.object_sets.filter(
+      const allowed_sets = this.props.objectSets.filter(
         (set) => set.term == term_type
       )
 
       if (allowed_sets.length >= 0) {
-        const disable_sets = data.depth || read_only ? true : false
+        const disable_sets = data.depth || readOnly ? true : false
         const set_options = allowed_sets.map((set) => (
           <div>
             <input
@@ -558,7 +562,7 @@ class EditableComponent<
         className="right-panel-inner"
         onClick={(evt) => evt.stopPropagation()}
       >
-        <h3>{_t('Edit ') + Constants.get_verbose(data, this.objectType)}</h3>
+        <h3>{_t('Edit ') + Constants.getVerbose(data, this.objectType)}</h3>
 
         {[
           CfObjectType.NODE,
@@ -569,7 +573,7 @@ class EditableComponent<
           CfObjectType.NODELINK
         ].includes(type) && (
           <this.Title
-            readOnly={read_only}
+            readOnly={readOnly}
             override={override}
             title={title}
             titleLength={title_length}
@@ -585,7 +589,7 @@ class EditableComponent<
           CfObjectType.OUTCOME
         ].indexOf(type) >= 0 && (
           <this.Description
-            readOnly={read_only}
+            readOnly={readOnly}
             override={override}
             description={description}
           />
@@ -594,7 +598,7 @@ class EditableComponent<
         {type === CfObjectType.COLUMN && (
           <this.BrowseOptions
             data={data}
-            readOnly={read_only}
+            readOnly={readOnly}
             override={override}
           />
         )}
@@ -602,23 +606,23 @@ class EditableComponent<
         {((type === CfObjectType.OUTCOME && data.depth === 0) ||
           (type === CfObjectType.WORKFLOW &&
             data.type == WorkflowType.COURSE)) && (
-          <this.CodeOptional data={data} readOnly={read_only} />
+          <this.CodeOptional data={data} readOnly={readOnly} />
         )}
 
-        {type === CfObjectType.NODE && data.node_type < 2 && (
-          <this.Context data={data} readOnly={read_only} />
+        {type === CfObjectType.NODE && data.nodeType < 2 && (
+          <this.Context data={data} readOnly={readOnly} />
         )}
 
-        {type === CfObjectType.NODE && data.node_type < 2 && (
-          <this.Task data={data} readOnly={read_only} />
+        {type === CfObjectType.NODE && data.nodeType < 2 && (
+          <this.Task data={data} readOnly={readOnly} />
         )}
 
         {(type === CfObjectType.NODE || type == CfObjectType.WORKFLOW) && (
-          <this.Time data={data} readOnly={read_only} override={override} />
+          <this.Time data={data} readOnly={readOnly} override={override} />
         )}
 
         {type === CfObjectType.COLUMN && (
-          <this.Colour data={data} readOnly={read_only} />
+          <this.Colour data={data} readOnly={readOnly} />
         )}
 
         {
@@ -626,41 +630,41 @@ class EditableComponent<
           //  type should notbe able to be worklow OR course OR  outcome etc
           ((type === CfObjectType.WORKFLOW &&
             data.type == WorkflowType.COURSE) ||
-            (type == CfObjectType.NODE && data.node_type == 2)) && (
+            (type == CfObjectType.NODE && data.nodeType == 2)) && (
             <this.Ponderation
               data={data}
               override={override}
-              read_only={read_only}
+              readOnly={readOnly}
             />
           )
         }
 
-        {type === CfObjectType.NODE && data.node_type !== 0 && (
+        {type === CfObjectType.NODE && data.nodeType !== 0 && (
           <>
             <WorkflowLinkDialog id={data.id} />
-            <this.LinkedWorkflow data={data} readOnly={read_only} />
+            <this.LinkedWorkflow data={data} readOnly={readOnly} />
           </>
         )}
 
-        {type == CfObjectType.NODE && data.node_type != 2 && (
-          <this.Other data={data} readOnly={read_only} />
+        {type == CfObjectType.NODE && data.nodeType != 2 && (
+          <this.Other data={data} readOnly={readOnly} />
         )}
 
         {type == CfObjectType.NODELINK && (
-          <this.Style data={data} readOnly={read_only} />
+          <this.Style data={data} readOnly={readOnly} />
         )}
 
         {type === CfObjectType.WORKFLOW && (
-          <this.Workflow data={data} readOnly={read_only} />
+          <this.Workflow data={data} readOnly={readOnly} />
         )}
 
-        {type === CfObjectType.WEEK && data.week_type < 2 && (
-          <this.Strategy data={data} readOnly={read_only} />
+        {type === CfObjectType.WEEK && data.objectType < 2 && (
+          <this.Strategy data={data} readOnly={readOnly} />
         )}
 
         {sets}
         <this.DeleteForSidebar
-          read_only={read_only}
+          readOnly={readOnly}
           no_delete={noDelete}
           type={type}
           data={data}

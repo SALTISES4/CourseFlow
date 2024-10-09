@@ -17,7 +17,8 @@ graphviz
 django-extensions
 pyparsing
 pydot
-pydantic
+flake8
+djangorestframework-camel-case
 
 
 -e file:./#egg=saltise_course_flow

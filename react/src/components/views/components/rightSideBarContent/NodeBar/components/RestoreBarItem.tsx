@@ -13,7 +13,7 @@ import * as React from 'react'
 type OwnProps = {
   data: any
   objectType: any
-  linked_workflow_data?: any
+  linkedWorkflowData?: any
 } & ComponentWithToggleProps
 
 class RestoreBarItem extends ComponentWithToggleDrop<OwnProps> {
@@ -28,12 +28,12 @@ class RestoreBarItem extends ComponentWithToggleDrop<OwnProps> {
       return this.props.data.title
     if (
       this.props.objectType == 'node' &&
-      this.props.data.represents_workflow &&
-      this.props.linked_workflow_data &&
-      this.props.data.linked_workflow_data.title &&
-      this.props.data.linked_workflow_data.title !== ''
+      this.props.data.representsWorkflow &&
+      this.props.linkedWorkflowData &&
+      this.props.data.linkedWorkflowData.title &&
+      this.props.data.linkedWorkflowData.title !== ''
     )
-      return this.props.data.linked_workflow_data.title
+      return this.props.data.linkedWorkflowData.title
     return _t('Untitled')
   }
 
@@ -73,7 +73,7 @@ class RestoreBarItem extends ComponentWithToggleDrop<OwnProps> {
       <div ref={this.mainDiv} className="restore-bar-item">
         <div>{this.getTitle()}</div>
         <div className="workflow-created">
-          {_t('Deleted') + ' ' + this.props.data.deleted_on}
+          {_t('Deleted') + ' ' + this.props.data.deletedOn}
         </div>
         <button onClick={this.restore.bind(this)}>{_t('Restore')}</button>
         <button onClick={this.delete.bind(this)}>

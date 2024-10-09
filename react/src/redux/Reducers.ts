@@ -11,6 +11,7 @@ import outcomeNodeReducer from '@cfRedux/reducers/outcomeNode'
 import outcomeOutcomeReducer from '@cfRedux/reducers/outcomeOutcome'
 import outcomeworkflowReducer from '@cfRedux/reducers/outcomeWorkflow'
 import parentNodeReducer from '@cfRedux/reducers/parentNode'
+import parentProjectReducer from '@cfRedux/reducers/parentProject'
 import parentWorkflowReducer from '@cfRedux/reducers/parentWorfkflow'
 import strategyReducer from '@cfRedux/reducers/strategy'
 import weekReducer from '@cfRedux/reducers/week'
@@ -18,7 +19,7 @@ import weekworkflowReducer from '@cfRedux/reducers/weekworkflow'
 import workflowReducer from '@cfRedux/reducers/workflow'
 import * as Redux from 'redux'
 
-const rootWorkflowReducers = {
+export const rootWorkflowReducers = {
   workflow: workflowReducer,
   columnworkflow: columnworkflowReducer,
   column: columnReducer,
@@ -32,9 +33,10 @@ const rootWorkflowReducers = {
   outcomeworkflow: outcomeworkflowReducer,
   outcomeoutcome: outcomeOutcomeReducer,
   outcomehorizontallink: outcomeHorizontalLinkReducer,
-  parent_workflow: parentWorkflowReducer,
-  parent_node: parentNodeReducer,
+  parentWorkflow: parentWorkflowReducer,
+  parentNode: parentNodeReducer,
   child_workflow: childWorkflowReducer,
+  parentProject: parentProjectReducer,
   strategy: strategyReducer,
   objectset: objectSetReducer
 }

@@ -1,6 +1,19 @@
-from pydantic import BaseModel, conint
+from rest_framework import serializers
 
 
-class DeleteRequest(BaseModel):
-    objectId: conint(strict=True, gt=0)  # Ensure it's a positive integer
-    objectType: str  # Basic type check, could be more specific depending on your needs
+class DeleteRequestSerializer(serializers.Serializer):
+    object_type = serializers.CharField()
+
+
+class SearchSerializer(serializers.Serializer):
+    filter = serializers.CharField(required=False, default="")
+    args = serializers.DictField(required=False, default={})
+    results_per_page = serializers.IntegerField(
+        source="args.results_per_page", default=10
+    )
+    full_search = serializers.BooleanField(
+        source="args.full_search", default=False
+    )
+    published = serializers.BooleanField(
+        source="args.published", default=False
+    )

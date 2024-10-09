@@ -11,7 +11,6 @@ All functions for API calls.
  *  Rejects if the 'action' in JSON response hasn't 'posted'
  *  which can be caught and acted upon for error handling
  */
-import { VERB } from '@cf/types/enum'
 
 /**
  *
@@ -61,25 +60,33 @@ export function API_POST<T>(url = '', data = {}): Promise<any> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // // 'root' comes from the csrf-setup script
+        // 'root' comes from the csrf-setup script
         'X-CSRFToken': window.getCsrfToken()
       },
       body: JSON.stringify(data)
     })
-      // convert to JSON
-      .then((response) => response.json())
-      .then((data) => {
-        // and if the action successfully posted, resolve the initial promise
-        if (data.action === VERB.POSTED) {
-          res(data)
-        } else {
-          // otherwise reject with some potentially helpful info
-          rej({ error: 'API_POST failed', url, data })
+      .then((response) => {
+        // if response code is 2xx, return body
+        if (response.ok) {
+          return response.json()
         }
+        // here we have a handled server error
+        // parse out the message we're returning from API
+        // TDB whether we pass these messages on to the frontend
+        return response.json().then((err) => {
+          rej({
+            error: JSON.stringify(err.error),
+            statusCode: response.status,
+            errorDetails: err
+          })
+        })
       })
-      // and finally reject if anything fishy is going on
+      .then((data) => {
+        res(data)
+      })
+      // final catch a real network failure
       .catch((err) => {
-        rej({ error: 'API_POST failed', originalError: err })
+        rej({ error: 'unhandled network error', originalError: err })
       })
   })
 }
@@ -115,12 +122,7 @@ export function API_POST_FILE<T>(
       .then((response) => response.json())
       .then((data) => {
         // and if the action successfully posted, resolve the initial promise
-        if (data.action === VERB.POSTED) {
-          res(data)
-        } else {
-          // otherwise reject with some potentially helpful info
-          rej({ error: 'API_POST failed', url, data })
-        }
+        res(data)
       })
       // and finally reject if anything fishy is going on
       .catch((err) => {

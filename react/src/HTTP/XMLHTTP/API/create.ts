@@ -1,23 +1,24 @@
-import { VERB } from '@cf/types/enum'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { AddTerminologyQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
+import { generatePath } from 'react-router-dom'
 
 //Add a new node to a week
 export function newNodeQuery(
   weekPk,
   position = -1,
   column = -1,
-  column_type = -1,
+  columnType = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_node, {
+  const url = apiPaths.json_api.node.create
+  API_POST(url, {
     weekPk: weekPk,
     position: position,
     columnPk: column,
-    columnType: column_type
+    columnType: columnType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -41,8 +42,7 @@ export function newOutcomeQuery(
     workflowPk: workflowPk,
     objectsetPk: object_set_id
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -53,33 +53,33 @@ export function addStrategyQuery(
   strategyPk = -1,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.add_strategy, {
+  const url = apiPaths.json_api.workflow.strategy__add_to_workflow
+  API_POST(url, {
     workflowPk: workflowPk,
     position: position,
     objectId: strategyPk,
     objectType: 'workflow'
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
 export function newNodeLink(
-  source_node,
-  target_node,
-  source_port,
-  target_port,
+  sourceNode,
+  targetNode,
+  sourcePort,
+  targetPort,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_node_link, {
-    nodePk: source_node,
-    objectId: target_node,
+  const url = apiPaths.json_api.node.link__create
+  API_POST(url, {
+    nodePk: sourceNode,
+    objectId: targetNode,
     objectType: 'node',
-    sourcePort: source_port,
-    targetPort: target_port
+    sourcePort: sourcePort,
+    targetPort: targetPort
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -93,8 +93,7 @@ export function insertChildQuery(
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -114,8 +113,7 @@ export function insertSiblingQuery(
     objectType: objectType,
     throughType: throughType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -125,23 +123,25 @@ export function insertSiblingQuery(
  * @param projectPk
  * @param term
  * @param title
- * @param translation_plural
+ * @param translationPlural
  * @param callBackFunction
  */
-export function addTerminologyQuery(
-  projectPk: number,
+export function addObjectSetQuery(
+  id: number,
   term: any,
   title: any,
-  translation_plural: any,
+  translationPlural: any,
   callBackFunction = (_data: AddTerminologyQueryResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.add_terminology, {
-    projectPk: projectPk,
+  const base = apiPaths.json_api.project.object_set__create
+  const url = generatePath(base, { id })
+
+  API_POST(url, {
+    projectPk: id,
     term: term,
     title: title,
-    translation_plural: translation_plural
+    translationPlural: translationPlural
   }).then((response: AddTerminologyQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }

@@ -1,6 +1,7 @@
+import { OutcomeTitle } from '@cf/components/common/UIPrimitives/Titles.ts'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import {
   TGetOutcomeByID,
@@ -102,7 +103,7 @@ type ConnectedProps = TGetOutcomeByID & {
 type PropsType = OwnProps & ConnectedProps
 
 type StateType = {
-  is_dropped: boolean
+  isDropped: boolean
 }
 
 export class OutcomeBarOutcomeUnconnected<
@@ -115,7 +116,7 @@ export class OutcomeBarOutcomeUnconnected<
     super(props)
     this.objectType = CfObjectType.OUTCOME // @todo check addEditable
     this.children_block = React.createRef()
-    this.state = { is_dropped: props.data.depth < 1 }
+    this.state = { isDropped: props.data.depth < 1 }
   }
 
   /*******************************************************
@@ -146,7 +147,7 @@ export class OutcomeBarOutcomeUnconnected<
    *******************************************************/
   toggleDrop = (evt: React.MouseEvent) => {
     evt.stopPropagation()
-    this.setState({ is_dropped: !this.state.is_dropped })
+    this.setState({ isDropped: !this.state.isDropped })
   }
 
   makeDraggable() {
@@ -216,11 +217,11 @@ export class OutcomeBarOutcomeUnconnected<
     let dropIcon
     let droptext
 
-    if (Utility.checkSetHidden(data, this.props.object_sets)) return null
+    if (Utility.checkSetHidden(data, this.props.objectSets)) return null
 
     //Child outcomes. See comment in models/outcome.py for more info.
-    if (this.state.is_dropped)
-      children = data.child_outcome_links.map((outcomeoutcome) => (
+    if (this.state.isDropped)
+      children = data.childOutcomeLinks.map((outcomeoutcome) => (
         <OutcomeBarOutcomeOutcome
           key={outcomeoutcome}
           objectId={outcomeoutcome}
@@ -229,26 +230,26 @@ export class OutcomeBarOutcomeUnconnected<
         />
       ))
 
-    if (this.state.is_dropped) dropIcon = 'droptriangleup'
+    if (this.state.isDropped) dropIcon = 'droptriangleup'
     else dropIcon = 'droptriangledown'
 
-    if (this.state.is_dropped) droptext = _t('hide')
+    if (this.state.isDropped) droptext = _t('hide')
     else
       droptext =
         _t('show ') +
-        data.child_outcome_links.length +
+        data.childOutcomeLinks.length +
         ' ' +
         window.ngettext(
           'descendant',
           'descendants',
-          data.child_outcome_links.length
+          data.childOutcomeLinks.length
         )
 
     return (
       <div
         className={
           'outcome' +
-          ((this.state.is_dropped && ' dropped') || '') +
+          ((this.state.isDropped && ' dropped') || '') +
           ' outcome-' +
           data.id
         }
@@ -256,7 +257,7 @@ export class OutcomeBarOutcomeUnconnected<
       >
         <div className="outcome-title">
           <OutcomeTitle
-            data={this.props.data}
+            title={this.props.data.title}
             prefix={this.props.prefix}
             hovertext={this.props.hovertext}
           />
@@ -267,15 +268,11 @@ export class OutcomeBarOutcomeUnconnected<
           title="Toggle highlighting"
           onChange={this.clickFunction.bind(this)}
         />
-        {data.depth < 2 && data.child_outcome_links.length > 0 && (
+        {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
               <img
-                src={
-                  COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                  dropIcon +
-                  '.svg'
-                }
+                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
               />
             </div>
             <div className="outcome-drop-text">{droptext}</div>
@@ -307,7 +304,7 @@ const mapOutcomeBarOutcomeStateToProps = (
     .filter((outcomeNode) => outcomeNode.outcome == ownProps.objectId)
     .map((outcomeNode) => outcomeNode.node),
   horizontaloutcomes: state.outcomehorizontallink
-    .filter((ochl) => ochl.parent_outcome == ownProps.objectId)
+    .filter((ochl) => ochl.parentOutcome == ownProps.objectId)
     .map((ochl) => ochl.outcome)
 })
 

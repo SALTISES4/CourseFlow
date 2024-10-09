@@ -1,8 +1,5 @@
-import { VERB } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-
-
 
 // TO RMOEVE WHEN READY
 export function deleteSelfQueryLegacy(
@@ -20,8 +17,7 @@ export function deleteSelfQueryLegacy(
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -35,7 +31,6 @@ export function restoreSelfQueryLegacy(
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }

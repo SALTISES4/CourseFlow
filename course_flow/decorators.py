@@ -1,8 +1,8 @@
 import json
+import logging
 from functools import reduce, wraps
 
 from django.conf import settings
-from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.models import Q
@@ -11,13 +11,13 @@ from django.http import (
     HttpResponseNotFound,
     JsonResponse,
 )
-from django.views.decorators.http import require_GET, require_POST
 from ratelimit.decorators import ratelimit
 
+from course_flow.apps import logger
 from course_flow.models import User
-from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.models.workflow import Workflow
-from course_flow.utils import get_model_from_str
+from course_flow.services import DAO
 
 
 #########################################################
@@ -44,28 +44,34 @@ def check_object_permission(instance, user, permission):
         object_id=instance.pk,
         content_type=ContentType.objects.get_for_model(instance),
     )
+
     if instance.author == user:
         if object_permission.count() == 0:
             ObjectPermission.objects.create(
                 user=user,
                 content_object=instance,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
+                permission_type=Permission.PERMISSION_EDIT.value,
             )
         return True
-    if permission == ObjectPermission.PERMISSION_VIEW:
+
+    if permission == Permission.PERMISSION_VIEW.value:
         if instance.published:
             return True
+
         permission_check = (
-            Q(permission_type=ObjectPermission.PERMISSION_EDIT)
-            | Q(permission_type=ObjectPermission.PERMISSION_VIEW)
-            | Q(permission_type=ObjectPermission.PERMISSION_COMMENT)
+            Q(permission_type=Permission.PERMISSION_EDIT.value)
+            | Q(permission_type=Permission.PERMISSION_VIEW.value)
+            | Q(permission_type=Permission.PERMISSION_COMMENT.value)
         )
-    elif permission == ObjectPermission.PERMISSION_COMMENT:
+
+    elif permission == Permission.PERMISSION_COMMENT.value:
         permission_check = Q(
-            permission_type=ObjectPermission.PERMISSION_EDIT
-        ) | Q(permission_type=ObjectPermission.PERMISSION_COMMENT)
+            permission_type=Permission.PERMISSION_EDIT.value
+        ) | Q(permission_type=Permission.PERMISSION_COMMENT.value)
+
     else:
         permission_check = Q(permission_type=permission)
+
     if object_permission.filter(permission_check).count() > 0:
         return True
 
@@ -84,60 +90,15 @@ def check_objects_public(instances):
 
 def get_permission_objects(model, body, **kwargs):
     model_data = get_model_from_request(model, body, **kwargs)
-    object_type = get_model_from_str(model_data["model"])
+    object_type = DAO.get_model_from_str(model_data["model"])
     permission_objects = object_type.objects.get(
         pk=model_data["pk"]
     ).get_permission_objects()
     return permission_objects
 
 
-#########################################################
-# JSON API DECORATORS
-#########################################################
-def ajax_login_required(view_func):
-    """
-    Decorator for ajax views that checks if a user is logged in and returns
-    a 401 status code otherwise.
-    """
-
-    @wraps(view_func)
-    def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return view_func(request, *args, **kwargs)
-        else:
-            return JsonResponse(
-                {"error": {"login_url": settings.LOGIN_URL}}, status=401
-            )
-
-    return _wrapped_view
-
-
-# Ajax login required view decorator
-def ajax_login_as_teacher_required(view_func):
-    """
-    Decorator for ajax views that checks if a user is logged in and returns
-    a 401 status code otherwise.
-    """
-
-    @wraps(view_func)
-    def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_authenticated and (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in request.user.groups.all()
-        ):
-            return view_func(request, *args, **kwargs)
-        else:
-            return JsonResponse(
-                {"error": {"login_url": settings.LOGIN_URL}}, status=401
-            )
-
-    return _wrapped_view
-
-
 def is_owner(model):
     def wrapped_view(fct):
-        @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(request, model=model, *args, **kwargs):
             body = json.loads(request.body)
@@ -153,7 +114,7 @@ def is_owner(model):
                 return HttpResponseBadRequest()
 
             try:
-                object_type = get_model_from_str(model)
+                object_type = DAO.get_model_from_str(model)
                 object = object_type.objects.get(pk=pk)
             except ObjectDoesNotExist:
                 return HttpResponseNotFound()
@@ -170,7 +131,7 @@ def is_owner(model):
 
 
 def check_special_case_delete_permission(model_data, user):
-    instance = get_model_from_str(model_data["model"]).objects.get(
+    instance = DAO.get_model_from_str(model_data["model"]).objects.get(
         pk=model_data["pk"]
     )
     #    if (
@@ -179,7 +140,7 @@ def check_special_case_delete_permission(model_data, user):
     #    ):
     #        permission_objects = instance.get_permission_objects()
     #        return check_objects_permission(
-    #            permission_objects, user, ObjectPermission.PERMISSION_EDIT
+    #            permission_objects, user, Permission.PERMISSION_EDIT.value
     #        )
     if model_data["model"] == "project":
         return instance.author == user
@@ -187,7 +148,7 @@ def check_special_case_delete_permission(model_data, user):
         if instance.get_project() is None:
             return instance.author == user
         return instance.author == user or check_object_permission(
-            instance.get_project(), user, ObjectPermission.PERMISSION_EDIT
+            instance.get_project(), user, Permission.PERMISSION_EDIT.value
         )
 
 
@@ -228,8 +189,6 @@ def get_model_from_request(model, body, **kwargs):
 #########################################################
 def user_is_author(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -251,7 +210,8 @@ def user_is_author(model, **outer_kwargs):
                         {"error": {"login_url": settings.LOGIN_URL}},
                         status=403,
                     )
-            except AttributeError:
+            except AttributeError as e:
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
@@ -263,8 +223,6 @@ def user_is_author(model, **outer_kwargs):
 
 def user_can_edit(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -280,7 +238,7 @@ def user_can_edit(model, **outer_kwargs):
                 if check_objects_permission(
                     permission_objects,
                     User.objects.get(pk=request.user.pk),
-                    ObjectPermission.PERMISSION_EDIT,
+                    Permission.PERMISSION_EDIT.value,
                 ):
                     return fct(request, *args, **kwargs)
                 else:
@@ -288,7 +246,8 @@ def user_can_edit(model, **outer_kwargs):
                         {"error": {"login_url": settings.LOGIN_URL}},
                         status=403,
                     )
-            except AttributeError:
+            except AttributeError as e:
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
@@ -300,8 +259,6 @@ def user_can_edit(model, **outer_kwargs):
 
 def user_can_view(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -311,14 +268,15 @@ def user_can_view(model, **outer_kwargs):
                 permission_objects = get_permission_objects(
                     model, body, **outer_kwargs
                 )
-            except AttributeError:
+            except AttributeError as e:
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_VIEW,
+                Permission.PERMISSION_VIEW.value,
             ):
                 return fct(request, *args, **kwargs)
             else:
@@ -333,8 +291,6 @@ def user_can_view(model, **outer_kwargs):
 
 def user_can_view_or_none(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -349,14 +305,15 @@ def user_can_view_or_none(model, **outer_kwargs):
                 permission_objects = get_permission_objects(
                     model, body, **outer_kwargs
                 )
-            except AttributeError:
+            except AttributeError as e:
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_VIEW,
+                Permission.PERMISSION_VIEW.value,
             ):
                 return fct(request, *args, **kwargs)
             else:
@@ -371,8 +328,6 @@ def user_can_view_or_none(model, **outer_kwargs):
 
 def user_can_edit_or_none(model, **outer_kwargs):
     def wrapped_view(fct):
-        @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -387,14 +342,15 @@ def user_can_edit_or_none(model, **outer_kwargs):
                 permission_objects = get_permission_objects(
                     model, body, **outer_kwargs
                 )
-            except AttributeError:
+            except AttributeError as e:
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_EDIT,
+                Permission.PERMISSION_EDIT.value,
             ):
                 return fct(request, *args, **kwargs)
             else:
@@ -425,8 +381,6 @@ def user_can_comment(model, **outer_kwargs):
     """
 
     def wrapped_view(fct):
-        @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -436,7 +390,8 @@ def user_can_comment(model, **outer_kwargs):
                 permission_objects = get_permission_objects(
                     model, body, **outer_kwargs
                 )
-            except AttributeError:
+            except AttributeError as e:
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, status=403
                 )
@@ -444,7 +399,7 @@ def user_can_comment(model, **outer_kwargs):
             if check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
-                ObjectPermission.PERMISSION_COMMENT,
+                Permission.PERMISSION_COMMENT.value,
             ):
                 return fct(request, *args, **kwargs)
             else:
@@ -466,8 +421,6 @@ def user_can_delete(model, **outer_kwargs):
     """
 
     def wrapped_view(fct):
-        @require_POST
-        @ajax_login_as_teacher_required
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
@@ -483,6 +436,7 @@ def user_can_delete(model, **outer_kwargs):
                             model_data, User.objects.get(pk=request.user.pk)
                         )
                     except Exception as e:
+                        logger.exception("An error occurred")
                         return JsonResponse({"error": str(e)}, stats=400)
                     if perm:
                         return fct(request, *args, **kwargs)
@@ -493,13 +447,14 @@ def user_can_delete(model, **outer_kwargs):
                     if check_objects_permission(
                         permission_objects,
                         User.objects.get(pk=request.user.pk),
-                        ObjectPermission.PERMISSION_EDIT,
+                        Permission.PERMISSION_EDIT.value,
                     ):
                         return fct(request, *args, **kwargs)
 
                 return JsonResponse({"error": "permission error"}, status=403)
 
             except Exception as e:
+                logger.exception("An error occurred")
                 return JsonResponse({"error": str(e)}, status=400)
 
         return _wrapped_view
@@ -543,11 +498,11 @@ def from_same_workflow(model1, model2, **outer_kwargs):
                 if model_data2["pk"] is None or model_data2["pk"] == -1:
                     return fct(request, *args, **kwargs)
 
-                instance1 = get_model_from_str(
+                instance1 = DAO.get_model_from_str(
                     model_data1["model"]
                 ).objects.get(pk=model_data1["pk"])
 
-                instance2 = get_model_from_str(
+                instance2 = DAO.get_model_from_str(
                     model_data2["model"]
                 ).objects.get(pk=model_data2["pk"])
 
@@ -557,34 +512,8 @@ def from_same_workflow(model1, model2, **outer_kwargs):
                 return JsonResponse({"error": "workflow mismatch"}, status=403)
 
             except Exception as e:
+                logger.exception("An error occurred")
                 return JsonResponse({"error": str(e)}, status=403)
-
-        return _wrapped_view
-
-    return wrapped_view
-
-
-def user_is_teacher():
-    def wrapped_view(fct):
-        @require_POST
-        @ajax_login_required
-        @wraps(fct)
-        def _wrapped_view(request, *args, **kwargs):
-            try:
-                if (
-                    Group.objects.get(name=settings.TEACHER_GROUP)
-                    in request.user.groups.all()
-                ):
-                    return fct(request, *args, **kwargs)
-
-                return JsonResponse(
-                    {"error": {"login_url": settings.LOGIN_URL}}, status=403
-                )
-
-            except AttributeError:
-                return JsonResponse(
-                    {"login_url": settings.LOGIN_URL}, stats=403
-                )
 
         return _wrapped_view
 
@@ -595,7 +524,6 @@ def public_access(**outer_kwargs):
     rate_per_min = outer_kwargs.get("rate", 5)
 
     def wrapped_view(fct):
-        @require_GET
         @ratelimit(key="ip", rate=str(rate_per_min) + "/m", method=["GET"])
         @wraps(fct)
         def _wrapped_view(request, outer_kwargs=outer_kwargs, *args, **kwargs):
@@ -615,7 +543,6 @@ def public_model_access(model, **outer_kwargs):
     rate_per_min = outer_kwargs.get("rate", 5)
 
     def wrapped_view(fct):
-        @require_GET
         @ratelimit(key="ip", rate=str(rate_per_min) + "/m", method=["GET"])
         @wraps(fct)
         def _wrapped_view(
@@ -625,11 +552,12 @@ def public_model_access(model, **outer_kwargs):
             if ratelimited:
                 return JsonResponse({"error": "ratelimited"}, stats=429)
             try:
-                model_type = get_model_from_str(model)
+                model_type = DAO.get_model_from_str(model)
                 permission_objects = model_type.objects.get(
                     pk=kwargs.get("pk")
                 ).get_permission_objects()
-            except AttributeError:
+            except AttributeError as e:
+                logger.exception("An error occurred")
                 return JsonResponse(
                     {"error": {"login_url": settings.LOGIN_URL}}, stats=403
                 )

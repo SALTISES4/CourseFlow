@@ -1,23 +1,27 @@
+import './wdyr'
 import createCache from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { configureStore } from '@reduxjs/toolkit'
+import { cfApi } from '@XMLHTTP/API/api'
 import { SnackbarProvider } from 'notistack'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { Provider } from 'react-redux'
 import { RouterProvider } from 'react-router-dom'
 
 import theme from './mui/theme'
 
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
-import { SidebarRootStyles } from '@cfComponents/layout/Sidebar/styles'
+import CfRouter from '@cf/router/appRoutes'
 import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
-import CfRouter from '@cf/router'
 import { CookieProvider } from '@cf/context/cookieContext'
-import {DialogContextProvider} from "@cf/context/dialogContext";
+import { DialogContextProvider } from '@cf/context/dialogContext'
+import UserProvider from '@cf/context/userContext'
+import { rootWorkflowReducers } from '@cfRedux/Reducers'
+import { SidebarRootStyles } from '@cfComponents/globalNav/Sidebar/styles'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -61,23 +65,38 @@ const cache = createCache({
 
 const rootElement = document.getElementById('root')
 const root = ReactDOM.createRoot(rootElement)
-const reactQueryClient = new QueryClient()
+const store = configureStore({
+  reducer: {
+    // workflow: Reducers.rootWorkflowReducer,
+    // outcome: Reducers.rootOutcomeReducer,
+    ...rootWorkflowReducers,
+    [cfApi.reducerPath]: cfApi.reducer
+  },
+  devTools: process.env.NODE_ENV !== 'production', // Enable Redux DevTools only in non-production environments
+  // Adding the api middleware enables caching, invalidation, polling,
+  // and other useful features of `rtk-query`.
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(cfApi.middleware)
+})
 
 root.render(
-  <CookieProvider>
-    <QueryClientProvider client={reactQueryClient}>
+  <Provider store={store}>
+    <CookieProvider>
       <CacheProvider value={cache}>
-        <SnackbarProvider>
+        <SnackbarProvider
+          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        >
           <DialogContextProvider>
-            <ThemeProvider theme={theme}>
-              <ScopedCssBaseline sx={SidebarRootStyles}>
-                <RouterProvider router={CfRouter} />
-              </ScopedCssBaseline>
-            </ThemeProvider>
+            <UserProvider>
+              <ThemeProvider theme={theme}>
+                <ScopedCssBaseline sx={SidebarRootStyles}>
+                  <RouterProvider router={CfRouter} />
+                </ScopedCssBaseline>
+              </ThemeProvider>
+            </UserProvider>
           </DialogContextProvider>
         </SnackbarProvider>
       </CacheProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  </CookieProvider>
+    </CookieProvider>
+  </Provider>
 )

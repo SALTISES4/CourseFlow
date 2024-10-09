@@ -1,15 +1,13 @@
-import {
-  DialogContext,
-  DialogDispatchContext,
-  StateType
-} from '@cf/context/dialogContext'
-import { Dispatch, ReactNode, useContext } from 'react'
+import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
+import { useContext } from 'react'
 import * as React from 'react'
 
-export enum DIALOG_TYPE {
+export enum DialogMode {
   // General
   LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
+  RESTORE = 'restore',
+  ARCHIVE = 'archive',
 
   // USER
   PASSWORD_RESET = 'password_reset',
@@ -20,27 +18,20 @@ export enum DIALOG_TYPE {
   PROJECT_CREATE = 'project_create',
   PROJECT_EDIT = 'project_edit',
   PROJECT_EXPORT = 'project_export',
-  PROJECT_ARCHIVE = 'project_archive',
-  PROJECT_RESTORE = 'project_restore',
+  PROJECT_DELETE = 'project_delete',
 
   // WORKFLOW
   IMPORT_OUTCOMES = 'import_outcomes',
   IMPORT_NODES = 'import_nodes',
   WORKFLOW_LINK = 'workflow_link',
-  WORKFLOW_ARCHIVE = 'workflow_archive',
-  WORKFLOW_RESTORE = 'workflow_restore',
 
-  // WORKFLOW - PROGRAM
+  WORKFLOW_DELETE = 'workflow_DELETE',
+  WORKFLOW_EDIT = 'workflow_edit',
+  WORKFLOW_COPY_TO_PROJECT = 'workflow_copy_to_project',
+
   PROGRAM_CREATE = 'program_create',
-  PROGRAM_EDIT = 'program_edit',
-
-  // WORKFLOW - ACTIVITY
   ACTIVITY_CREATE = 'activity_create',
-  ACTIVITY_EDIT = 'activity_edit',
-
-  // WORKFLOW - COURSE
   COURSE_CREATE = 'course_create',
-  COURSE_EDIT = 'course_edit',
 
   GENERIC = 'generic'
 
@@ -58,9 +49,9 @@ export enum DIALOG_TYPE {
  * in order to trigger an event that shows a modal.
  */
 
-type PossibleDialogTypes = DIALOG_TYPE | DIALOG_TYPE[] | null
+type PossibleDialogTypes = DialogMode | DialogMode[] | null
 
-export function useDialog(dialogType: PossibleDialogTypes = null ) {
+export function useDialog(dialogType: PossibleDialogTypes = null) {
   const dialogContext = useContext(DialogContext)
   const dialogDispatch = useContext(DialogDispatchContext)
 

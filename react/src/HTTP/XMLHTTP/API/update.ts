@@ -1,4 +1,4 @@
-import { VERB } from '@cf/types/enum'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -57,12 +57,9 @@ export function updateValueQuery(
   }
 
   document.lastUpdateCallFunction = () => {
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.post_paths.update_value,
-      post_object
-    ).then((response: EmptyPostResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+    const url = apiPaths.json_api.workspace.field__update
+    API_POST(url, post_object).then((response: EmptyPostResp) => {
+callBackFunction(response)
     })
   }
   document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
@@ -75,13 +72,13 @@ export function updateValueInstantQuery(
   json: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.update_value, {
+  const url = apiPaths.json_api.workspace.field__update
+  API_POST(url, {
     objectId: objectId,
     objectType: objectType,
     data: json
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -97,8 +94,7 @@ export function dragAction(
     COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at,
     action_data
   ).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
     $('.ui-draggable').draggable('enable')
     COURSEFLOW_APP.tinyLoader.endLoad()
   })
@@ -127,8 +123,7 @@ export function insertedAtInstant(
     inserted: true,
     allowDifferent: true
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
     $('.ui-draggable').draggable('enable')
     COURSEFLOW_APP.tinyLoader.endLoad()
   })
@@ -149,8 +144,7 @@ export function updateOutcomenodeDegree(
       degree: value
     }
   ).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -171,26 +165,22 @@ export function updateOutcomehorizontallinkDegree(
       degree: degree
     }
   ).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
 //Set the linked workflow for the node
 export function setLinkedWorkflow(
-  node_id,
-  workflow_id,
+  nodeId,
+  workflowId,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.set_linked_workflow,
-    {
-      nodePk: node_id,
-      workflowPk: workflow_id
-    }
-  ).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+  const url = apiPaths.json_api.workflow.link
+  API_POST(url, {
+    nodePk: nodeId,
+    workflowPk: workflowId
+  }).then((response: EmptyPostResp) => {
+    callBackFunction(response)
   })
 }
 
@@ -198,20 +188,20 @@ export function setLinkedWorkflow(
  * Turn a week into a strategy or vice versa
  *
  * @param weekPk
- * @param is_strategy
+ * @param isStrategy
  * @param callBackFunction
  */
 export function toggleStrategyQuery(
   weekPk: number,
-  is_strategy: boolean,
+  isStrategy: boolean,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.toggle_strategy, {
+  const url = apiPaths.json_api.workflow.strategy__toggle
+  API_POST(url, {
     weekPk: weekPk,
-    is_strategy: is_strategy
+    isStrategy: isStrategy
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -228,7 +218,6 @@ export function updateObjectSet(
     objectsetPk: objectsetPk,
     add: add
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }

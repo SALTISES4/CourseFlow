@@ -128,11 +128,11 @@ export class SelectionManager {
   }
 
   private lockCurrentSelection(): void {
-    this.currentSelection.context.editableMethods.lock_update(
+    this.currentSelection.context.editableMethods.lockUpdate(
       {
-        object_id: this.currentSelection.props.data.id,
-        object_type:
-          Constants.object_dictionary[this.currentSelection.objectType]
+        objectId: this.currentSelection.props.data.id,
+        objectType:
+          Constants.objectDictionary[this.currentSelection.objectType]
       },
       60 * 1000,
       true
@@ -140,11 +140,11 @@ export class SelectionManager {
   }
 
   private unlockCurrentSelection(): void {
-    this.currentSelection.context.editableMethods.lock_update(
+    this.currentSelection.context.editableMethods.lockUpdate(
       {
-        object_id: this.currentSelection.props.data.id,
-        object_type:
-          Constants.object_dictionary[this.currentSelection.objectType]
+        objectId: this.currentSelection.props.data.id,
+        objectType:
+          Constants.objectDictionary[this.currentSelection.objectType]
       },
       60 * 1000,
       false

@@ -1,10 +1,11 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
+import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
-import { AppState, TColumn } from '@cfRedux/types/type'
+import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -14,6 +15,7 @@ type OwnProps = {
 }
 type ConnectedProps = {
   column: TColumn
+  workflow: TWorkflow
 }
 type PropsType = OwnProps & ConnectedProps
 type StateProps = EditableComponentWithCommentsStateType
@@ -36,39 +38,40 @@ class GridNodeUnconnected extends EditableComponentWithComments<
    * RENDER
    *******************************************************/
   render() {
-    const selection_manager = this.context.selectionManager
+    const selectionManager = this.context.selectionManager
     const data = this.props.data
 
-    const data_override = data.represents_workflow
-      ? { ...data, ...data.linked_workflow_data, id: data.id }
+    const data_override = data.representsWorkflow
+      ? { ...data, ...data.linkedWorkflowData, id: data.id }
       : data
     // this was moved from the return function
     // because this is not a returned element
 
     const ponderation = (
       <div className="grid-ponderation">
-        {data_override.ponderation_theory +
+        {data_override.ponderationTheory +
           '/' +
-          data_override.ponderation_practical +
+          data_override.ponderationPractical +
           '/' +
-          data_override.ponderation_individual}
+          data_override.ponderationIndividual}
       </div>
     )
 
     const style: React.CSSProperties = {
       backgroundColor: Constants.getColumnColour(this.props.column),
-      outline: data.lock ? '2px solid ' + data.lock.user_colour : undefined
+      outline: data.lock ? '2px solid ' + data.lock.userColour : undefined
     }
 
     const cssClass = [
-      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type],
-      data.is_dropped ? 'dropped' : '',
-      data.lock ? 'locked locked-' + data.lock.user_id : ''
+      'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],
+      data.isDropped ? 'dropped' : '',
+      data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
-    const comments = this.context.workflow.view_comments ? (
-      <this.AddCommenting />
-    ) : undefined
+    const permissions = calcWorkflowPermissions(
+      this.props.workflow.userPermissions
+    )
+    const comments = permissions.read ? <this.AddCommenting /> : ''
 
     const portal = this.addEditable(data_override, true)
     return (
@@ -78,7 +81,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
           style={style}
           id={data.id}
           ref={this.mainDiv}
-          onClick={(evt) => selection_manager.changeSelection(evt, this)}
+          onClick={(evt) => selectionManager.changeSelection(evt, this)}
           className={cssClass}
         >
           <div className="node-top-row">
@@ -99,7 +102,8 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => ({
-  column: state.column.find((column) => column.id == ownProps.data.column)
+  column: state.column.find((column) => column.id == ownProps.data.column),
+  workflow: state.workflow
 })
 const GridNode = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,

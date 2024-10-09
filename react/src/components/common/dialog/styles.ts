@@ -11,7 +11,7 @@ export const StyledDialog = styled(Dialog)(({ theme }) => ({
   }
 }))
 
-export const StyledForm = styled(Box)(({ theme }) => ({
+export const StyledBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: theme.spacing(3),

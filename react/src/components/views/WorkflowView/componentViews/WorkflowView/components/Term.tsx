@@ -1,7 +1,8 @@
-import { TitleText } from '@cfComponents/UIPrimitives/Titles'
+import { apiPaths } from '@cf/router/apiRoutes'
+import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 import { TTermByID, getTermByID } from '@cfFindState'
 // import $ from 'jquery'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
 import {
   WeekUnconnected,
@@ -14,13 +15,19 @@ type OwnProps = {
   objectId: number
   throughParentID?: any
 } & WeekUnconnectedPropsType
-type ConnectedProps = TTermByID
+
+type ConnectedProps = {
+  term: TTermByID
+  workflow: TWorkflow
+}
+
 type PropsType = OwnProps & ConnectedProps
 
 /**
  * The term variation of a week, used in the program level or in the
  * condensed view. This displays the nodes side by side.
  */
+// @ts-ignore
 class Term extends WeekUnconnected<PropsType> {
   /*******************************************************
    * FUNCTIONS
@@ -52,8 +59,8 @@ class Term extends WeekUnconnected<PropsType> {
     for (let i = 0; i < this.props.column_order.length; i++) {
       const col = this.props.column_order[i]
       const nodeweeks = []
-      for (let j = 0; j < data.nodeweek_set.length; j++) {
-        const nodeweek = data.nodeweek_set[j]
+      for (let j = 0; j < data.nodeweekSet.length; j++) {
+        const nodeweek = data.nodeweekSet[j]
         if (this.props.nodes_by_column[col].indexOf(nodeweek) >= 0) {
           nodeweeks.push(
             <NodeWeek
@@ -86,28 +93,30 @@ class Term extends WeekUnconnected<PropsType> {
 
     const cssClasses = [
       'week',
-      data.is_strategy ? 'strategy' : '',
-      data.lock ? 'locked locked-' + data.lock.user_id : '',
-      data.is_dropped ? ' dropped' : ''
+      data.isStrategy ? 'strategy' : '',
+      data.lock ? 'locked locked-' + data.lock.userId : '',
+      data.isDropped ? ' dropped' : ''
     ].join(' ')
-    // const css_class = 'week'
-    // if (data.is_strategy) css_class += ' strategy'
-    // if (data.lock) css_class += ' locked locked-' + data.lock.user_id
-    //    if (data.is_dropped) css_class += ' dropped'
+    // const cssClass = 'week'
+    // if (data.isStrategy) cssClass += ' strategy'
+    // if (data.lock) cssClass += ' locked locked-' + data.lock.userId
+    //    if (data.isDropped) cssClass += ' dropped'
 
     const style = {
-      border: data.lock ? '2px solid ' + data.lock.user_colour : undefined
+      border: data.lock ? '2px solid ' + data.lock.userColour : undefined
     }
 
-    const dropIcon = data.is_dropped ? 'droptriangleup' : 'droptriangledown'
+    const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
 
     const mouseover_actions = []
-    if (!this.context.permissions.workflowPermission.readOnly) {
+
+    if (this.props.workflow.workflowPermissions.write) {
       mouseover_actions.push(<this.AddInsertSibling data={data} />)
       mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
       mouseover_actions.push(<this.AddDeleteSelf data={data} />)
     }
-    if (this.context.workflow.view_comments) {
+
+    if (this.props.workflow.workflowPermissions.viewComments) {
       mouseover_actions.push(<this.AddCommenting />)
     }
 
@@ -128,7 +137,7 @@ class Term extends WeekUnconnected<PropsType> {
           </div>
           <TitleText
             text={data.title}
-            defaultText={data.week_type_display + ' ' + (this.props.rank + 1)}
+            defaultText={data.weekTypeDisplay + ' ' + (this.props.rank + 1)}
           />
           <div
             className="node-block"
@@ -144,11 +153,7 @@ class Term extends WeekUnconnected<PropsType> {
             <div className="node-drop-side node-drop-left"></div>
             <div className="node-drop-middle">
               <img
-                src={
-                  COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                  dropIcon +
-                  '.svg'
-                }
+                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
               />
             </div>
             <div className="node-drop-side node-drop-right"></div>
@@ -158,12 +163,17 @@ class Term extends WeekUnconnected<PropsType> {
     )
   }
 }
+
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => {
-  return getTermByID(state, ownProps.objectId)
+  return {
+    term: getTermByID(state, ownProps.objectId),
+    workflow: state.workflow
+  }
 }
+
 export default connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null

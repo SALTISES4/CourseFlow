@@ -2,7 +2,7 @@ import { LibraryObjectType, WorkflowType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 import { _t, convertEnum } from '@cf/utility/utilityFunctions'
 import {
-  CHIP_TYPE,
+  ChipOptions,
   WorkflowCardChipType
 } from '@cfComponents/cards/WorkflowCardDumb'
 import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
@@ -12,20 +12,20 @@ import { ELibraryObject } from '@XMLHTTP/types/entity'
  * this thin wrapper is for when we move CHIP_TYPE away from the domain
  * @param type
  */
-function mapChipType(type: LibraryObjectType): CHIP_TYPE {
-  return convertEnum<CHIP_TYPE>(type, CHIP_TYPE, CHIP_TYPE.DEFAULT)
+function mapChipType(type: LibraryObjectType): ChipOptions {
+  return convertEnum<ChipOptions>(type, ChipOptions, ChipOptions.DEFAULT)
 }
 
 function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
-  const { type, is_strategy } = workflow
+  const { type, isStrategy } = workflow
   let typeText = _t(type)
 
-   // no
+  // no
   // if (type === LibraryObjectType.LIVE_PROJECT) {
   //   typeText = _t('classroom')
   // }
 
-  if (is_strategy) {
+  if (isStrategy) {
     typeText += ` ${_t('strategy')}`
   }
 
@@ -38,10 +38,10 @@ function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
 }
 
 function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
-  const is_template = workflow.is_template
-  if (is_template)
+  const isTemplate = workflow.isTemplate
+  if (isTemplate)
     return {
-      type: CHIP_TYPE.TEMPLATE,
+      type: ChipOptions.TEMPLATE,
       label: _t('Template')
     }
   return null
@@ -50,13 +50,13 @@ function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
 function getWorkflowCountChip(workflow: ELibraryObject): WorkflowCardChipType {
   if (
     workflow.type === LibraryObjectType.PROJECT &&
-    workflow.workflow_count !== null &&
-    workflow.workflow_count > 0
+    workflow.workflowCount !== null &&
+    workflow.workflowCount > 0
   ) {
     return {
-      type: CHIP_TYPE.DEFAULT,
-      label: `${workflow.workflow_count} ${_t(
-        `workflow` + (workflow.workflow_count > 1 ? 's' : '')
+      type: ChipOptions.DEFAULT,
+      label: `${workflow.workflowCount} ${_t(
+        `workflow` + (workflow.workflowCount > 1 ? 's' : '')
       )}`
     }
   }
@@ -84,7 +84,7 @@ export function formatLibraryObject(
     description:
       libraryObject.author && `${_t('Owned by')} ${libraryObject.author}`,
     isFavourite: libraryObject.favourite,
-    isLinked: libraryObject.is_linked,
+    isLinked: libraryObject.isLinked,
     type: libraryObject.type,
     chips: [type_chip, template_chip, count_chip].filter(
       (entry) => entry != null

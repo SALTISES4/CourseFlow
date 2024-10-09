@@ -1,3 +1,4 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import * as React from 'react'
 
 // Define the props type
@@ -13,7 +14,7 @@ class LegendLine extends React.Component<LegendLineProps> {
     if (this.props.icon) {
       return (
         <img
-          src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}${this.props.icon}.svg`}
+          src={`${apiPaths.external.static_assets.icon}${this.props.icon}.svg`}
           alt="icon"
         />
       )

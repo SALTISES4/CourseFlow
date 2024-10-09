@@ -1,11 +1,12 @@
+import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { MouseEvent } from 'react'
 
 export type ToDefine = any
 
 export type ObjectPermission = {
-  permission_type: number
-  last_viewed: Date
+  permissionType: number
   role_type: number
+  lastViewed?: Date
 }
 
 export type QueryPages = {
@@ -20,17 +21,9 @@ export type Discipline = {
   title: string
 }
 
-// TODO: Consolidate with the types in CreateProject/type
-export type ObjectSet = {
-  id: number
-  title: string
-  term: string
-  translation_plural: null | string
-}
-
 export type ObjectLock = {
-  user_id: number
-  user_colour: string
+  userId: number
+  userColour: string
 }
 
 export type NumTuple = [number, number]
@@ -41,38 +34,8 @@ export type FieldChoice = {
 }
 
 export type Lock = {
-  user_colour: string
-  user_id: string
-}
-
-export type SidebarProps = {
-  isAnonymous: boolean
-  isTeacher: boolean
-  favourites: {
-    title: string
-    url: string
-  }[]
-}
-
-export type TopBarProps = {
-  isTeacher: boolean
-  notifications: {
-    url: string
-    unread: number
-    items: {
-      unread: boolean
-      url: string
-      from: string
-      text: string
-      date: string
-    }[]
-  }
-  forms: {
-    createProject: {
-      showNoProjectsAlert: boolean
-      formFields: FormFieldSerialized[]
-    }
-  }
+  userColour: string
+  userId: string
 }
 
 export type FormFieldSerialized = {
@@ -81,8 +44,8 @@ export type FormFieldSerialized = {
   type: string
   required?: boolean
   options?: { value: string; label: string }[]
-  max_length?: number
-  help_text?: string
+  maxLength?: number
+  helpText?: string
   value?: string
 }
 
@@ -94,7 +57,7 @@ export type EventUnion =
 /*******************************************************
  *
  *******************************************************/
-export enum PROJECT_PERMISSION_ROLE {
+export enum ProjectPermissionRole {
   'OWNER' = 'owner',
   'EDITOR' = 'editor',
   'COMMENTER' = 'commenter',
@@ -105,21 +68,25 @@ export type PermissionUserType = {
   id: number
   name: string
   email: string
-  role: PROJECT_PERMISSION_ROLE
+  role: ProjectPermissionRole
 }
 
 export type ObjectSetType = {
   title: string
-  type: string
+  term: string
 }
 
+/*******************************************************
+ * simplified project for UI
+ *******************************************************/
 export type ProjectDetailsType = {
   id: number
   title: string
   description: string
-  isFavorite?: boolean
-  disciplines?: string[]
+  isFavorite: boolean
+  isDeleted: boolean
   created: Date | string
+  disciplines?: string[]
   permissions?: PermissionUserType[]
   objectSets?: ObjectSetType[]
 }

@@ -1,7 +1,13 @@
 import * as d3 from 'd3'
 import jQuery from 'jQuery'
 
-import {Discipline, FieldChoice, SidebarProps, TopBarProps} from './common'
+import {
+  Discipline,
+  FieldChoice,
+  FormFieldSerialized,
+  SidebarProps,
+  TopBarProps
+} from './common'
 export {}
 declare global {
   /*~ Here, declare things that go in the global namespace, or augment
@@ -10,7 +16,6 @@ declare global {
   interface Window {
     ngettext: (str: string, str2: string, count: number) => string
     gettext: (str: string) => string
-    fail_function: (action?: string) => void
     getCsrfToken: () => string
     cf_nonce: string
   }
@@ -79,10 +84,8 @@ interface GetPaths {
   get_library: string
   get_favourites: string
   import: string
-  get_public_workflow_data: string
-  get_public_workflow_parent_data: string
   get_public_workflow_child_data: string
-  get_public_parent_workflow_info: string
+  get_public_parentWorkflow_info: string
 }
 
 interface HTMLPaths {
@@ -93,11 +96,6 @@ interface HTMLPaths {
     explore: string
     library: string
     favourites: string
-  }
-  account: {
-    resetPasswordUrl: string
-    daliteUrl: string
-    daliteText: string
   }
 }
 
@@ -119,6 +117,7 @@ interface JSONAPIPaths {
     library__objects_search: string
     library__favourites__projects: string
     library__library__projects: string
+    library__toggle_favourite__post: string
   }
   user: {
     list: string
@@ -131,10 +130,6 @@ interface JSONAPIPaths {
   project: {
     detail: string
     create: string
-    discipline__list: string
-  }
-  workflow: {
-    detail: string
   }
   comment: {
     list_by_object: string
@@ -166,27 +161,23 @@ interface UpdatePath {
   liveassignment: string
 }
 
-interface GlobalContextData {
+export interface GlobalContextData {
   disciplines: Discipline[]
-  workflow_choices: {
-    task_choices: FieldChoice[]
-    time_choices: FieldChoice[]
-    context_choices: FieldChoice[]
-    strategy_classification_choices: FieldChoice[]
-    outcome_type_choices: FieldChoice[]
-    outcome_sort_choices: FieldChoice[]
-    column_choices: FieldChoice[]
+  favourites: {
+    title: string
+    url: string
+  }[]
+  workflowChoices: {
+    taskChoices: FieldChoice[]
+    timeChoices: FieldChoice[]
+    contextChoices: FieldChoice[]
+    strategyClassification_choices: FieldChoice[]
+    outcomeTypeChoices: FieldChoice[]
+    outcomeSortChoices: FieldChoice[]
+    columnChoices: FieldChoice[]
   }
-  sidebar: SidebarProps
-  topbar: TopBarProps
   path: Path
-  // allow one layer of nesting
-  // @todo TBD where the final place for strings should be
-  // probably react
-  // backend should send back string 'code' only that gets matched to a real string
-  // however not sure about gettex / translation yet
-  strings: { [key: string]: string }
-  notifications: {
+  appNotifications: {
     showNotificationRequest: boolean
     updateNotifications:
       | {
@@ -197,7 +188,9 @@ interface GlobalContextData {
   }
 }
 
-interface ContextData {}
+interface ContextData {
+  changeFieldID: number
+}
 
 interface TinyLoader {
   identifier: Identifier

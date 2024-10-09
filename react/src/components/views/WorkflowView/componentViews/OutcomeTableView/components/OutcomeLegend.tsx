@@ -1,11 +1,12 @@
 import LegendLine from '@cf/components/common/UIPrimitives/LegendLine'
+import {apiPaths} from "@cf/router/apiRoutes";
 import { AppState } from '@cfRedux/types/type.js'
 import { WorkflowLegendUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WorkflowLegend'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = {
-  outcomes_type: any
+  outcomesType: any
 }
 type OwnProps = any
 type PropsType = OwnProps & ConnectedProps
@@ -28,7 +29,7 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
           <LegendLine icon="check" text="Completed (Auto-Calculated)" />
           <LegendLine icon="nocheck" text="Partially Complete" />
         </div>
-        {this.props.outcomes_type == 1 && (
+        {this.props.outcomesType == 1 && (
           <div className="legend-section">
             <hr />
             <h5>Advanced Outcomes:</h5>
@@ -67,7 +68,7 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
           <img
             src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+               apiPaths.external.static_assets.icon +
               'close.svg'
             }
           />
@@ -78,7 +79,7 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
 }
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
-    outcomes_type: state.workflow.outcomes_type
+    outcomesType: state.workflow.outcomesType
   }
 }
 

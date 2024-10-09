@@ -10,15 +10,15 @@ import {
   Close as CloseIcon,
   Delete as DeleteIcon
 } from '@mui/icons-material'
-import { addTerminologyQuery } from '@XMLHTTP/API/create'
+import { addObjectSetQuery } from '@XMLHTTP/API/create'
 import { deleteSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { updateValueInstantQuery } from '@XMLHTTP/API/update'
 import * as React from 'react'
 // import $ from 'jquery'
 type Data = any
 type StateProps = Data & {
-  selected_set: any
-  object_sets: any
+  selectedSet: any
+  objectSets: any
   termsingular: any
 }
 type PropsType = {
@@ -36,7 +36,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     super(props)
     this.state = {
       ...this.props.data,
-      selected_set: 'none'
+      selectedSet: 'none'
     }
     this.object_set_updates = {}
     // this.close = this.props.closeAction
@@ -61,13 +61,13 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
         _t('Are you sure you want to delete this ') + _t('set') + '?'
       )
     ) {
-      const new_state_dict = this.state.object_sets.slice()
-      for (let i = 0; i < new_state_dict.length; i++) {
-        if (new_state_dict[i].id === id) {
+      const newState_dict = this.state.objectSets.slice()
+      for (let i = 0; i < newState_dict.length; i++) {
+        if (newState_dict[i].id === id) {
           deleteSelfQueryLegacy(id, 'objectset')
-          new_state_dict.splice(i, 1)
+          newState_dict.splice(i, 1)
           this.setState({
-            object_sets: new_state_dict
+            objectSets: newState_dict
           })
           break
         }
@@ -81,24 +81,24 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     // @ts-ignore
     const title = $('#term-singular')[0].value
 
-    addTerminologyQuery(this.state.id, term, title, '', (response_data) => {
+    addObjectSetQuery(this.state.id, term, title, '', (responseData) => {
       this.setState({
-        object_sets: response_data.new_dict,
-        selected_set: 'none',
+        objectSets: responseData.newDict,
+        selectedSet: 'none',
         termsingular: ''
       })
     })
   }
 
   termChanged(id, evt) {
-    const new_sets = this.state.object_sets.slice()
+    const new_sets = this.state.objectSets.slice()
     for (let i = 0; i < new_sets.length; i++) {
       if (new_sets[i].id === id) {
         new_sets[i] = { ...new_sets[i], title: evt.target.value }
         this.object_set_updates[id] = { title: evt.target.value }
       }
     }
-    this.setState({ object_sets: new_sets, changed: true })
+    this.setState({ objectSets: new_sets, changed: true })
   }
 
   updateTerms() {
@@ -112,8 +112,8 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     }
   }
 
-  addTermDisabled(selected_set) {
-    if (!selected_set) return true
+  addTermDisabled(selectedSet) {
+    if (!selectedSet) return true
     if (!this.state.termsingular) return true
     return false
   }
@@ -134,10 +134,10 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
   }
 
   inputChanged(field, evt) {
-    const new_state = { changed: true }
-    new_state[field] = evt.target.value
-    if (field === 'selected_set') new_state['termsingular'] = ''
-    this.setState(new_state)
+    const newState = { changed: true }
+    newState[field] = evt.target.value
+    if (field === 'selectedSet') newState['termsingular'] = ''
+    this.setState(newState)
   }
 
   autocompleteDiscipline() {
@@ -230,19 +230,19 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
     const title = Utility.unescapeCharacters(data.title || '')
     const description = Utility.unescapeCharacters(data.description || '')
 
-    const object_sets = Constants.object_sets_types()
-    const set_options = Object.keys(object_sets).map((key) => (
-      <option value={key}>{object_sets[key]}</option>
+    const objectSets = Constants.objectSets_types()
+    const set_options = Object.keys(objectSets).map((key) => (
+      <option value={key}>{objectSets[key]}</option>
     ))
 
-    let selected_set
-    if (this.state.selected_set) {
-      selected_set = object_sets[this.state.selected_set]
+    let selectedSet
+    if (this.state.selectedSet) {
+      selectedSet = objectSets[this.state.selectedSet]
     }
 
-    const sets_added = data.object_sets.map((item) => (
+    const sets_added = data.objectSets.map((item) => (
       <div className="nomenclature-row">
-        <div>{object_sets[item.term]}</div>
+        <div>{objectSets[item.term]}</div>
         <input
           value={item.title}
           onChange={this.termChanged.bind(this, item.id)}
@@ -271,7 +271,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
 
     let add_term_css = 'filled'
     let clickEvt
-    if (this.addTermDisabled(selected_set)) {
+    if (this.addTermDisabled(selectedSet)) {
       clickEvt = () => console.log('Disabled')
       add_term_css += ' grey'
     } else {
@@ -323,8 +323,8 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
             <div className="nomenclature-row">
               <select
                 id="nomenclature-select"
-                value={this.state.selected_set}
-                onChange={this.inputChanged.bind(this, 'selected_set')}
+                value={this.state.selectedSet}
+                onChange={this.inputChanged.bind(this, 'selectedSet')}
               >
                 <option value="none">{_t('Select a type')}</option>
                 {set_options}
@@ -336,7 +336,7 @@ class ProjectEditDialog extends React.Component<PropsType, StateProps> {
                 maxLength={50}
                 value={this.state.termsingular}
                 onChange={this.inputChanged.bind(this, 'termsingular')}
-                disabled={selected_set == null}
+                disabled={selectedSet == null}
               />
               <div className="nomenclature-add-button" onClick={clickEvt}>
                 <span className={add_term_css}>

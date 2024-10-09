@@ -1,17 +1,17 @@
 import MenuButton, {
   MenuButtonOption
 } from '@cf/components/common/menu/MenuButton'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import {
-  PROJECT_PERMISSION_ROLE,
   PermissionUserType,
-  ProjectDetailsType
+  ProjectDetailsType,
+  ProjectPermissionRole
 } from '@cf/types/common'
+import { CfObjectType } from '@cf/types/enum'
 import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
 import { _t, formatDate, getInitials } from '@cf/utility/utilityFunctions'
-import UserRemoveFromProject from '@cfPages/Styleguide/dialog/UserRemove'
+import ContributorManageDialog from "@cfComponents/dialog/Workspace/ContributorManageDialog";
 import { AppState } from '@cfRedux/types/type'
 import LinkIcon from '@mui/icons-material/Link'
 import Avatar from '@mui/material/Avatar'
@@ -22,10 +22,11 @@ import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
-import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
-import { useContext, useState } from 'react'
+import {
+  UsersForObjectQueryResp,
+  useGetUsersForObjectQuery
+} from '@XMLHTTP/API/workspace.rtk'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import {
@@ -38,15 +39,15 @@ import {
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
-    name: PROJECT_PERMISSION_ROLE.EDITOR,
+    name: ProjectPermissionRole.EDITOR,
     label: 'Editor'
   },
   {
-    name: PROJECT_PERMISSION_ROLE.COMMENTER,
+    name: ProjectPermissionRole.COMMENTER,
     label: 'Commenter'
   },
   {
-    name: PROJECT_PERMISSION_ROLE.VIEWER,
+    name: ProjectPermissionRole.VIEWER,
     label: 'Viewer'
   }
 ]
@@ -55,18 +56,30 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
   const [removeUser, setRemoveUser] = useState<PermissionUserType | null>(null)
   const { dispatch } = useDialog()
   const data = useSelector((state: AppState) => state.workflow)
-  const context = useContext(WorkFlowConfigContext)
+  const workflow = useSelector((state: AppState) => state.workflow)
 
   const {
     data: usersForObjectData,
     error: usersForObjectError,
     isLoading: usersForObjectIsLoading,
     isError: usersForObjectIsError
-  } = useQuery<UsersForObjectQueryResp>({
-    queryKey: ['getUsersForObjectQuery', 5],
-    queryFn: () => getUsersForObjectQuery(5, 'workflow'),
-    enabled: !context.public_view && !context.user.isStudent
-  })
+  } = useGetUsersForObjectQuery(
+    {
+      id: workflow.id,
+      payload: {
+        objectType: CfObjectType.WORKFLOW
+      }
+    },
+    {
+      skip: !workflow.publicView
+    }
+  )
+
+  // useQuery<UsersForObjectQueryResp>({
+  //   queryKey: ['getUsersForObjectQuery', 5],
+  //   queryFn: () => getUsersForObjectQuery(5, 'workflow'),
+  //   enabled: !workflow.publicView
+  // })
 
   // @todo this is shared with project and should be merged
   const Users = (data: UsersForObjectQueryResp) => {
@@ -92,7 +105,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
               <ListItemText primary={perm.name} secondary={perm.email} />
               <MenuButton
                 selected={perm.role}
-                disabled={perm.role === PROJECT_PERMISSION_ROLE.OWNER}
+                disabled={perm.role === ProjectPermissionRole.OWNER}
                 options={[
                   ...roleMenuOptions,
                   {
@@ -103,13 +116,13 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
                     label: 'Remove user',
                     onClick: () => {
                       setRemoveUser(perm)
-                      dispatch(DIALOG_TYPE.PROJECT_REMOVE_USER)
+                      dispatch(DialogMode.PROJECT_REMOVE_USER)
                     }
                   }
                 ]}
                 onChange={(role) => console.log('changed to', role)}
                 placeholder={
-                  perm.role === PROJECT_PERMISSION_ROLE.OWNER
+                  perm.role === ProjectPermissionRole.OWNER
                     ? 'Owner'
                     : roleMenuOptions.find((p) => p.name === perm.role)?.label
                 }
@@ -134,7 +147,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
               <Grid item key={idx} xs={6}>
                 <ObjectSetThumbnail>
                   <Typography variant="body1">{set.title}</Typography>
-                  <Typography variant="body2">{set.type}</Typography>
+                  <Typography variant="body2">{set.term}</Typography>
                 </ObjectSetThumbnail>
               </Grid>
             ))}
@@ -162,7 +175,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
         <Grid item xs={6}>
           <InfoBlock>
             <InfoBlockTitle>Created on</InfoBlockTitle>
-            <InfoBlockContent>{formatDate(data.created_on)}</InfoBlockContent>
+            <InfoBlockContent>{formatDate(data.createdOn)}</InfoBlockContent>
           </InfoBlock>
         </Grid>
       </Grid>
@@ -189,7 +202,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
           <Button
             size="medium"
             variant="contained"
-            onClick={() => dispatch(DIALOG_TYPE.ADD_CONTRIBUTOR)}
+            onClick={() => dispatch(DialogMode.ADD_CONTRIBUTOR)}
           >
             {_t('Add contributor')}
           </Button>
@@ -198,7 +211,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
 
       <ObjectSets />
 
-      <UserRemoveFromProject user={removeUser} />
+      <ContributorManageDialog user={removeUser} />
     </OuterContentWrap>
   )
 }

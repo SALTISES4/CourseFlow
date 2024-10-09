@@ -1,5 +1,5 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { CFRoutes, RelativeRoutes } from '@cf/router'
+import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { WorkflowViewType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -11,8 +11,8 @@ import OutcomeTableView from '@cfViews/WorkflowView/componentViews/OutcomeTableV
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
 import dummyOverviewData from '@cfViews/WorkflowView/componentViews/OverviewView/dummyData'
 import WorkflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
-import { Tab, Tabs } from '@mui/material'
-import { ReactNode, useContext, useEffect } from 'react'
+import { Tab } from '@mui/material'
+import { ReactNode, useContext } from 'react'
 import * as React from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
 
@@ -44,7 +44,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       relRoute: RelativeRoutes.WORKFLOW,
       label: _t('Workflow View'),
       content: <WorkflowView />,
-      allowedTabs: [1, 2, 3, 4] // if context.permissions.workflowPermission.readOnly [2,3]
+      allowedTabs: [1, 2, 3, 4] // if context.permissions.workflowPermissions.readOnly [2,3]
     },
     {
       type: WorkflowViewType.OUTCOME_EDIT,

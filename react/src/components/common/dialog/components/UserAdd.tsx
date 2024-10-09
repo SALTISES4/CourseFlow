@@ -11,8 +11,8 @@ type StateProps = {
 }
 
 type PropsType = {
-  share_info: string
-  permissionChange: (permission_type: number, user: number) => any
+  shareInfo: string
+  permissionChange: (permissionType: number, user: number) => any
 }
 
 class UserAdd extends React.Component<PropsType, StateProps> {
@@ -29,17 +29,17 @@ class UserAdd extends React.Component<PropsType, StateProps> {
   componentDidMount() {
     const component = this
     $(this.input.current).autocomplete({
-      source: (request, response_function) => {
+      source: (request, responseFunction) => {
         getUserListQuery(request.term, (response) => {
-          const user_list = response.data_package.user_list.map((user) => {
+          const userList = response.dataPackage.userList.map((user) => {
             return {
               label:
-                user.first_name + ' ' + user.last_name + ' - ' + user.username,
+                user.firstName + ' ' + user.lastName + ' - ' + user.username,
               value: user.username,
               user: user
             }
           })
-          response_function(user_list)
+          responseFunction(userList)
         })
         component.setState({ selected: null })
       },
@@ -55,7 +55,7 @@ class UserAdd extends React.Component<PropsType, StateProps> {
   addClick(value) {
     if (this.state.selected) {
       this.props.permissionChange(
-        Constants.permission_keys[value],
+        Constants.permissionKeys[value],
         this.state.selected
       )
       $(this.input.current).val(null)
@@ -79,7 +79,7 @@ class UserAdd extends React.Component<PropsType, StateProps> {
 
     return (
       <div className="user-add">
-        <p>{this.props.share_info}</p>
+        <p>{this.props.shareInfo}</p>
         <div className="relative">
           <input
             className="search-input"

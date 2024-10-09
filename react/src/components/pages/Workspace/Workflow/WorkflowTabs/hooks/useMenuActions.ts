@@ -1,106 +1,69 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { EventUnion } from '@cf/types/common'
 import { CfObjectType, WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import { useMutation } from '@tanstack/react-query'
 import { deleteSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
-import { updateNotificationSettings } from '@XMLHTTP/API/user'
-import { NotificationSettingsUpdateQueryResp } from '@XMLHTTP/types/query'
 import { useDispatch } from 'react-redux'
 
 export const useMenuActions = () => {
   const dispatch = useDispatch()
   const { dispatch: dispatchDialog } = useDialog()
 
-  const { mutate } = useMutation<NotificationSettingsUpdateQueryResp>({
-    mutationFn: updateNotificationSettings,
-    onSuccess: (newNotificationsValue) => {
-      // Dispatch the action to update local state after the API call is successful
-      dispatch({
-        type: 'SET_UPDATES',
-        value: newNotificationsValue
-      })
-    },
-    onError: (error) => {
-      console.error('Error updating notifications:', error)
-    }
-  })
-
   /*******************************************************
    * MENU HANDLERS
    *******************************************************/
   function openEditMenu(evt: EventUnion) {
-    // this.selection_manager.changeSelection(evt, this)
-    dispatchDialog(DIALOG_TYPE.ACTIVITY_EDIT)
+    // this.selectionManager.changeSelection(evt, this)
+    dispatchDialog(DialogMode.WORKFLOW_EDIT)
   }
 
   // REFERENCE ORIGINAL DATA
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'outcomes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'outcomes'
   //           }}
   //           actionFunction={this.closeModals}
   //         />
   //         <ImportMenu
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'nodes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'nodes'
   //           }}
   function importOutcomes() {
-    dispatchDialog(DIALOG_TYPE.IMPORT_OUTCOMES)
+    dispatchDialog(DialogMode.IMPORT_OUTCOMES)
   }
 
   function importNodes() {
-    dispatchDialog(DIALOG_TYPE.IMPORT_NODES)
+    dispatchDialog(DialogMode.IMPORT_NODES)
   }
 
   function openShareDialog() {
-    dispatchDialog(DIALOG_TYPE.ADD_CONTRIBUTOR)
+    dispatchDialog(DialogMode.ADD_CONTRIBUTOR)
   }
 
   function openExportDialog() {
-    dispatchDialog(DIALOG_TYPE.PROJECT_EXPORT)
+    dispatchDialog(DialogMode.PROJECT_EXPORT)
   }
 
   function archiveWorkflow() {
-    dispatchDialog(DIALOG_TYPE.WORKFLOW_ARCHIVE)
+    dispatchDialog(DialogMode.ARCHIVE)
   }
 
   function restoreWorkflow() {
-    dispatchDialog(DIALOG_TYPE.WORKFLOW_RESTORE)
+    dispatchDialog(DialogMode.RESTORE)
+  }
+
+  function copyToProject() {
+    dispatchDialog(DialogMode.WORKFLOW_COPY_TO_PROJECT)
   }
 
   /*******************************************************
    * TO PROCESS
    *******************************************************/
-
-  function copyToProject(
-    workflowId: number,
-    projectId: number,
-    workflowType: WorkflowType
-  ) {
-    const loader = COURSEFLOW_APP.tinyLoader
-    loader.startLoad()
-    duplicateBaseItemQuery(
-      workflowId,
-      workflowType,
-      projectId,
-      (response_data) => {
-        loader.endLoad()
-        // @ts-ignore
-        window.location =
-          COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-            '0',
-            // @ts-ignore
-            response_data.new_item.id
-          )
-      }
-    )
-  }
 
   function deleteWorkflowHard(projectId: number, workflowId: number) {
     if (
@@ -109,13 +72,7 @@ export const useMenuActions = () => {
       )
     ) {
       deleteSelfQueryLegacy(workflowId, 'workflow', false, () => {
-        // @todo no
-        const newPath =
-          COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-            '0',
-            projectId.toString()
-          )
-        window.location.href = newPath
+        window.location.href = 'path to wherever you go after deletion'
       })
     }
   }
@@ -145,12 +102,6 @@ export const useMenuActions = () => {
     // )
   }
 
-  function pushImport(imports, import_type, text, disabled) {
-    let a_class = 'hover-shade'
-    if (disabled) a_class = ' disabled'
-    imports.push()
-  }
-
   function duplicateItem(
     parentId: number,
     workflowId: number,
@@ -163,15 +114,9 @@ export const useMenuActions = () => {
         workflowId,
         workflowType,
         parentId,
-        (response_data) => {
+        (responseData) => {
           utilLoader.endLoad()
-          // @ts-ignore
-          window.location =
-            COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
-              '0',
-              // @ts-ignore
-              response_data.new_item.id
-            )
+          window.location.href = 'new iten path '
         }
       )
     }

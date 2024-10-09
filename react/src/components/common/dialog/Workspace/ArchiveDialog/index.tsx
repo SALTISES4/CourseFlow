@@ -1,6 +1,6 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { WorkSpaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
@@ -8,61 +8,48 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
-import { useMutation } from '@tanstack/react-query'
-import { archiveMutation } from '@XMLHTTP/API/workflow'
-import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { VariantType, useSnackbar } from 'notistack'
-import { useContext } from 'react'
+import { useArchiveMutation } from '@XMLHTTP/API/workspace.rtk'
 
-const ArchiveDialog = () => {
+const ArchiveDialog = ({
+  objectType,
+  id,
+  callback
+}: {
+  id: number
+  objectType: WorkSpaceType
+  callback?: () => void
+}) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const context = useContext(WorkFlowConfigContext)
+  const { type, show, onClose } = useDialog(DialogMode.ARCHIVE)
 
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-  const { type, show, onClose } = useDialog([
-    DIALOG_TYPE.PROJECT_ARCHIVE,
-    DIALOG_TYPE.WORKFLOW_ARCHIVE
-  ])
+  const [mutate] = useArchiveMutation()
 
-  const { mutate } = useMutation<EmptyPostResp>({
-    mutationFn: () =>
-      archiveMutation(context.workflow.workflowId, resourceType),
-    onSuccess: (resp) => {
-      onClose()
-      enqueueSnackbar(
-        COURSEFLOW_APP.globalContextData.strings.workflow_archive_success,
-        {
-          variant: 'success'
+  const { onError, onSuccess } = useGenericMsgHandler()
+
+  async function onSuccessHandler() {
+    callback && callback
+    onClose()
+  }
+  async function onSubmit() {
+    try {
+      const resp = await mutate({
+        id: Number(id),
+        payload: {
+          objectType: objectType
         }
-      )
-    },
-    onError: (error) => {
-      console.log(error)
-      enqueueSnackbar(
-        COURSEFLOW_APP.globalContextData.strings.workflow_archive_failure,
-        {
-          variant: 'error'
-        }
-      )
+      }).unwrap()
+      onSuccess(resp)
+      callback && callback
+    } catch (err) {
+      onError(err)
     }
-  })
-
-  let resourceType: WorkSpaceType = null
-  switch (type) {
-    case DIALOG_TYPE.PROJECT_ARCHIVE:
-      resourceType = WorkSpaceType.PROJECT
-      break
-    case DIALOG_TYPE.WORKFLOW_ARCHIVE:
-      resourceType = WorkSpaceType.WORKFLOW
-      break
   }
 
-  function onSubmit() {
-    mutate()
-  }
-
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   if (!type) return <></>
 
   return (
@@ -71,14 +58,14 @@ const ArchiveDialog = () => {
       onClose={onClose}
       fullWidth
       maxWidth="sm"
-      aria-labelledby={`archive-${resourceType}-modal`}
+      aria-labelledby={`archive-${objectType}-modal`}
     >
-      <DialogTitle id={`archive-${resourceType}-modal`}>
-        Archive {resourceType}
+      <DialogTitle id={`archive-${objectType}-modal`}>
+        Archive {objectType}
       </DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          Once your {resourceType} is archived, it won’t be visible from your
+          Once your {objectType} is archived, it won’t be visible from your
           library. You will have to navigate to your archived project to access
           it. From there, you will be able to restore your project if needed.
         </Typography>
@@ -88,7 +75,7 @@ const ArchiveDialog = () => {
           Cancel
         </Button>
         <Button variant="contained" onClick={onSubmit}>
-          Archive {resourceType}
+          Archive {objectType}
         </Button>
       </DialogActions>
     </StyledDialog>

@@ -1,4 +1,6 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import { apiPaths } from '@cf/router/apiRoutes'
+import strings from '@cf/utility/strings'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
@@ -12,10 +14,9 @@ import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Typography from '@mui/material/Typography'
-import { useQuery } from '@tanstack/react-query'
-import { getNotifications } from '@XMLHTTP/API/notifications'
+import { getErrorMessage } from '@XMLHTTP/API/api'
+import { useGetNotificationsQuery } from '@XMLHTTP/API/notifications.rtk'
 import { API_POST } from '@XMLHTTP/CallWrapper'
-import { NotificationQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 
 import * as Styled from './style'
@@ -31,10 +32,7 @@ const NotificationsPage = (): JSX.Element => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { data, error, isLoading, isError } = useQuery<NotificationQueryResp>({
-    queryKey: ['getNotifications'],
-    queryFn: getNotifications
-  })
+  const { data, error, isLoading, isError } = useGetNotificationsQuery()
 
   const [pagination, setPagination] = useState<{
     page: number
@@ -99,14 +97,10 @@ const NotificationsPage = (): JSX.Element => {
   function onMarkAsReadClick() {
     const { notification } = pageState
 
-    // fire the post request
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.json_api.notification
-        .mark_all_as_read,
-      {
-        notification_id: notification.id
-      }
-    )
+    const url = apiPaths.json_api.notification.mark_all_as_read
+    API_POST(url, {
+      notification_id: notification.id
+    })
       .then(() => {
         const updated = [...pageState.notifications]
         const index = updated.findIndex((n) => n.id === notification.id)
@@ -130,12 +124,10 @@ const NotificationsPage = (): JSX.Element => {
   function onDeleteClick() {
     const { notification } = pageState
 
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.json_api.notification.delete,
-      {
-        notification_id: notification.id
-      }
-    )
+    const url = apiPaths.json_api.notification.delete
+    API_POST(url, {
+      notification_id: notification.id
+    })
       .then(() => {
         const updated = [...pageState.notifications]
         const index = updated.findIndex((n) => n.id === notification.id)
@@ -158,11 +150,9 @@ const NotificationsPage = (): JSX.Element => {
    */
   function onMarkAllAsReadClick(e) {
     e.preventDefault()
+    const url = apiPaths.json_api.notification.mark_all_as_read
 
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.json_api.notification
-        .mark_all_as_read
-    )
+    API_POST(url)
       .then(() => {
         setPageState({
           ...pageState,
@@ -183,9 +173,9 @@ const NotificationsPage = (): JSX.Element => {
    * CONSTANTS / VARIABLES for render
    *******************************************************/
   if (isLoading) return <Loader />
-  if (isError) return <div>An error occurred: {error.message}</div>
+  if (isError) return <div>An error occurred: {getErrorMessage(error)}</div>
 
-  const { notifications, unreadCount } = data.data_package
+  const { items, meta } = data.dataPackage
   const totalPaginationPages = Math.ceil(
     pageState.notifications.length / pagination.countPerPage
   )
@@ -200,17 +190,15 @@ const NotificationsPage = (): JSX.Element => {
       <OuterContentWrap>
         <Styled.NotificationsWrap>
           <Styled.NotificationsHeader>
-            <Typography variant="h1">
-              {COURSEFLOW_APP.globalContextData.strings.notifications}
-            </Typography>
-            {unreadCount > 0 && !pageState?.allRead && (
+            <Typography variant="h1">{strings.notifications}</Typography>
+            {meta.unreadCount > 0 && !pageState?.allRead && (
               <Styled.MarkAsRead>
                 <Link
                   href="#"
                   underline="always"
                   onClick={onMarkAllAsReadClick}
                 >
-                  {COURSEFLOW_APP.globalContextData.strings.mark_all_as_read}
+                  {strings.markAllAsRead}
                 </Link>
               </Styled.MarkAsRead>
             )}
@@ -232,10 +220,7 @@ const NotificationsPage = (): JSX.Element => {
                   secondaryAction={
                     <IconButton
                       onClick={(e) => handleMenuOpen(e, n)}
-                      aria-label={
-                        COURSEFLOW_APP.globalContextData.strings
-                          .show_notifications_menu
-                      }
+                      aria-label={strings.showNotificationsMenu}
                       aria-haspopup="true"
                     >
                       <DotsIcon />
@@ -281,18 +266,15 @@ const NotificationsPage = (): JSX.Element => {
             open={!!pageState.menuAnchor}
             onClose={handleMenuClose}
             MenuListProps={{
-              'aria-label':
-                COURSEFLOW_APP.globalContextData.strings.notification_options
+              'aria-label': strings.notificationOptions
             }}
           >
             {pageState.notification?.unread && !pageState.allRead && (
               <MenuItem onClick={onMarkAsReadClick}>
-                {COURSEFLOW_APP.globalContextData.strings.mark_as_read}
+                {strings.markAsRead}
               </MenuItem>
             )}
-            <MenuItem onClick={onDeleteClick}>
-              {COURSEFLOW_APP.globalContextData.strings.delete}
-            </MenuItem>
+            <MenuItem onClick={onDeleteClick}>{strings.delete}</MenuItem>
           </Menu>
         </Styled.NotificationsWrap>
 
@@ -313,11 +295,9 @@ const NotificationsPage = (): JSX.Element => {
     <OuterContentWrap>
       <Styled.NotificationsWrap>
         <Styled.NotificationsHeader>
-          <Typography variant="h1">
-            {COURSEFLOW_APP.globalContextData.strings.notifications}
-          </Typography>
+          <Typography variant="h1">{strings.notifications}</Typography>
           <Typography sx={{ marginTop: 3 }}>
-            {COURSEFLOW_APP.globalContextData.strings.no_notifications_yet}
+            {strings.noNotificationsYet}
           </Typography>
         </Styled.NotificationsHeader>
       </Styled.NotificationsWrap>

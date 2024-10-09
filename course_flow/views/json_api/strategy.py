@@ -1,15 +1,13 @@
 import json
+import logging
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
 
-from course_flow.decorators import (
-    user_can_edit,
-    user_can_view,
-    user_is_teacher,
-)
+from course_flow.apps import logger
+from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.duplication_functions import (
     duplicate_column,
     fast_create_strategy,
@@ -23,25 +21,24 @@ from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
     CourseSerializerShallow,
-    InfoBoxSerializer,
+    LibraryObjectSerializer,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
 )
+from course_flow.services import DAO
 from course_flow.sockets import redux_actions as actions
-from course_flow.utils import get_model_from_str
 
 
-@user_is_teacher()
 def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
     print(body)
     try:
         workflow_type = body.get("workflowType")
-        model = get_model_from_str(workflow_type)
-        templates_serialized = InfoBoxSerializer(
+        model = DAO.get_model_from_str(workflow_type)
+        templates_serialized = LibraryObjectSerializer(
             model.objects.filter(
                 deleted=False,
                 is_template=True,
@@ -51,18 +48,19 @@ def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
             many=True,
             context={"user": request.user},
         ).data
-    except AttributeError:
+    except AttributeError as e:
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
-            "action": "posted",
+            "message": "success",
             "data_package": templates_serialized,
         }
     )
 
 
 @user_can_view("workflowPk")
-def json_api_post_duplicate_strategy(request: HttpRequest) -> JsonResponse:
+def duplicate__strategy(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
     workflow = Workflow.objects.get(pk=body.get("workflowPk"))
     try:
@@ -73,15 +71,14 @@ def json_api_post_duplicate_strategy(request: HttpRequest) -> JsonResponse:
                 clone.save()
             except (ValidationError, TypeError):
                 pass
-    except ValidationError:
+    except ValidationError as e:
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     return JsonResponse(
         {
-            "action": "posted",
-            "new_item": InfoBoxSerializer(
-                clone, context={"user": request.user}
-            ).data,
+            "message": "success",
+            "new_item": LibraryObjectSerializer(clone, context={"user": request.user}).data,
             "type": clone.type,
         }
     )
@@ -101,7 +98,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
     strategy_type = body.get("objectType")
     position = body.get("position")
     workflow = Workflow.objects.get(pk=workflow_id)
-    strategy = get_model_from_str(strategy_type).objects.get(pk=strategy_id)
+    strategy = DAO.get_model_from_str(strategy_type).objects.get(pk=strategy_id)
     try:
         if strategy.author == request.user or strategy.published:
             # first, check compatibility between types (activity/course)
@@ -118,9 +115,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
             week.is_strategy = True
             week.original_strategy = strategy
             week.save()
-            new_through = WeekWorkflow.objects.create(
-                week=week, workflow=workflow, rank=position
-            )
+            new_through = WeekWorkflow.objects.create(week=week, workflow=workflow, rank=position)
             # now, check for missing columns. We try to create a one to one
             # relationship between the columns, and then add in any that are
             # still missing
@@ -133,9 +128,9 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
             columns_added = []
             for column in old_columns:
                 # check for a new column with same type
-                columns_type = workflow.columns.filter(
-                    column_type=column.column_type
-                ).exclude(id__in=map(lambda x: x.id, new_columns))
+                columns_type = workflow.columns.filter(column_type=column.column_type).exclude(
+                    id__in=map(lambda x: x.id, new_columns)
+                )
                 if columns_type.count() == 1:
                     new_columns.append(columns_type.first())
                     continue
@@ -178,18 +173,12 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
                 "strategy": WeekSerializerShallow(week).data,
                 "new_through": WeekWorkflowSerializerShallow(new_through).data,
                 "index": position,
-                "columns_added": ColumnSerializerShallow(
-                    columns_added, many=True
-                ).data,
+                "columns_added": ColumnSerializerShallow(columns_added, many=True).data,
                 "columnworkflows_added": ColumnWorkflowSerializerShallow(
                     columnworkflows_added, many=True
                 ).data,
-                "nodeweeks_added": NodeWeekSerializerShallow(
-                    week.nodeweek_set, many=True
-                ).data,
-                "nodes_added": NodeSerializerShallow(
-                    week.nodes.all(), many=True
-                ).data,
+                "nodeweeks_added": NodeWeekSerializerShallow(week.nodeweek_set, many=True).data,
+                "nodes_added": NodeSerializerShallow(week.nodes.all(), many=True).data,
                 "nodelinks_added": NodeLinkSerializerShallow(
                     NodeLink.objects.filter(
                         source_node__in=week.nodes.all(),
@@ -198,28 +187,36 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
                     many=True,
                 ).data,
             }
-            actions.dispatch_wf(
-                workflow, actions.newStrategyAction(response_data)
-            )
-            return JsonResponse({"action": "posted"})
+            actions.dispatch_wf(workflow, actions.newStrategyAction(response_data))
+            return JsonResponse({"message": "success"})
 
         else:
             raise ValidationError("User cannot access this strategy")
-    except ValidationError:
+    except ValidationError as e:
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
 
 #########################################################
 # TOGGLE
 #########################################################
+# @todo don't understand this purpose
 @user_can_edit("weekPk")
 def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
+    """
+    @todo
+
+    ....what is this?
+    :param request:
+    :return:
+    """
     body = json.loads(request.body)
     try:
         object_id = body.get("weekPk")
         is_strategy = body.get("is_strategy")
         week = Week.objects.get(id=object_id)
         workflow = WeekWorkflow.objects.get(week=week).workflow
+        # @todo no
         # This check is to prevent people from spamming the button, which would
         # potentially create a bunch of superfluous strategies
         if week.is_strategy != is_strategy:
@@ -244,7 +241,8 @@ def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
         else:
             strategy_serialized = ""
 
-    except ValidationError:
+    except ValidationError as e:
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     response_data = {
@@ -255,4 +253,4 @@ def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
 
     actions.dispatch_wf(workflow, actions.toggleStrategyAction(response_data))
 
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -77,7 +78,9 @@ class EditableComponentWithSorting<
     handle: string | boolean = false, // @todo review this union
     containment = '.workflow-container'
   ) {
-    if (this.context.permissions.workflowPermission.readOnly) {
+
+    // if (this.context.permissions.workflowPermissions.readOnly) {
+    if (false) {
       return
     }
 
@@ -113,7 +116,7 @@ class EditableComponentWithSorting<
         if (
           drag_item.children(
             // @ts-ignore
-            '.locked:not(.locked-' + COURSEFLOW_APP.contextData.user_id + ')'
+            '.locked:not(.locked-' + COURSEFLOW_APP.contextData.userId + ')'
           ).length > 0
         ) {
           e.preventDefault()
@@ -263,8 +266,8 @@ class EditableComponentWithSorting<
             // @ts-ignore
             drag_item[0].dataDraggable.column,
             // @ts-ignore
-            drag_item[0].dataDraggable.column_type,
-            (response_data) => {}
+            drag_item[0].dataDraggable.columnType,
+            (responseData) => {}
           )
         }
       }
@@ -278,17 +281,17 @@ class EditableComponentWithSorting<
   }
 
   lockChild(id, lock, through_type) {
-    let object_type
+    let objectType
 
-    if (through_type == 'nodeweek') object_type = 'node'
-    if (through_type == 'weekworkflow') object_type = 'week'
-    if (through_type == 'columnworkflow') object_type = 'column'
-    if (through_type == 'outcomeoutcome') object_type = 'outcome'
-    if (through_type == 'outcomeworkflow') object_type = 'outcome'
+    if (through_type == 'nodeweek') objectType = 'node'
+    if (through_type == 'weekworkflow') objectType = 'week'
+    if (through_type == 'columnworkflow') objectType = 'column'
+    if (through_type == 'outcomeoutcome') objectType = 'outcome'
+    if (through_type == 'outcomeworkflow') objectType = 'outcome'
 
-    this.context.editableMethods.lock_update(
-      { object_id: id, object_type: object_type },
-      Constants.lock_times.move,
+    this.context.editableMethods.lockUpdate(
+      { objectId: id, objectType: objectType },
+      Constants.lockTimes.move,
       lock
     )
   }

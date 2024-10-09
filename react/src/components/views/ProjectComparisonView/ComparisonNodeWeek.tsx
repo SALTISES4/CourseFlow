@@ -30,17 +30,17 @@ class ComparisonNodeWeekUnconnected extends NodeWeekUnconnected<PropsType> {
         // legacyRenderer={{
         //   task_choices: this.props.renderer.task_choices,
         //   time_choices: this.props.renderer.time_choices,
-        //   read_only: this.props.renderer.read_only,
-        //   context_choices: this.props.renderer.context_choices,
+        //   readOnly: this.props.renderer.readOnly,
+        //   contextChoices: this.props.renderer.contextChoices,
         //   outcome_type_choices: this.props.renderer.outcome_type_choices,
-        //   strategy_classification_choices:
-        //     this.props.renderer.strategy_classification_choices,
-        //   change_field: this.props.renderer.change_field,
+        //   strategyClassification_choices:
+        //     this.props.renderer.strategyClassification_choices,
+        //   changeField: this.props.renderer.changeField,
         //   workflowId: this.props.renderer.workflowId,
-        //   unread_comments: this.props.renderer.unread_comments,
+        //   unreadComments: this.props.renderer.unreadComments,
         //   add_comments: this.props.renderer.add_comments,
-        //   view_comments: this.props.renderer.view_comments,
-        //   selection_manager: this.props.renderer.selection_manager
+        //   viewComments: this.props.renderer.viewComments,
+        //   selectionManager: this.props.renderer.selectionManager
         // }}
       />
     )

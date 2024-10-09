@@ -1,13 +1,17 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles'
+import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
 import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
 // import $ from 'jquery'
 
-type ConnectedProps = TGetWeekByIDType
+type ConnectedProps = {
+  week: TGetWeekByIDType
+  workflow: TWorkflow
+}
+
 type OwnProps = {
   objectId: number
   rank: number
@@ -22,9 +26,6 @@ type PropsType = ConnectedProps & OwnProps
 export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
   private objectType: CfObjectType
   private objectClass: string
-  static contextType = WorkFlowConfigContext
-
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   constructor(props: PropsType) {
     super(props)
@@ -36,7 +37,7 @@ export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
    * FUNCTIONS
    *******************************************************/
   jumpTo() {
-    const week_id = this.props.data.id
+    const week_id = this.props.week.data.id
     const week = $(".week-workflow[data-child-id='" + week_id + "'] > .week")
     if (week.length > 0) {
       // @todo remove this
@@ -59,23 +60,21 @@ export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
-    let default_text
+    const data = this.props.week.data
+    let defaultText
 
-    if (!this.context.workflow.is_strategy) {
-      default_text = data.week_type_display + ' ' + (this.props.rank + 1)
+    if (!this.props.workflow.isStrategy) {
+      defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)
     }
 
-    let src =
-      COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'plus.svg'
+    let src = apiPaths.external.static_assets.icon + 'plus.svg'
 
-    if (data.is_dropped) {
-      src =
-        COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'minus.svg'
+    if (data.isDropped) {
+      src = apiPaths.external.static_assets.icon + 'minus.svg'
     }
     return (
       <div className="hover-shade" onClick={this.jumpTo.bind(this)}>
-        <TitleText text={data.title} defaultText={default_text} />
+        <TitleText text={data.title} defaultText={defaultText} />
       </div>
     )
   }
@@ -83,8 +82,11 @@ export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
 const mapWeekStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TGetWeekByIDType => {
-  return getWeekByID(state, ownProps.objectId)
+): ConnectedProps => {
+  return {
+    week: getWeekByID(state, ownProps.objectId),
+    workflow: state.workflow
+  }
 }
 
 const JumpToWeekView = connect<ConnectedProps, object, OwnProps, AppState>(

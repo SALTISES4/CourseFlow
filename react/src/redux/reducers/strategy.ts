@@ -8,7 +8,7 @@ export default function strategyReducer(
 ): TStrategy[] {
   switch (action.type) {
     case StrategyActions.TOGGLE_STRATEGY:
-      return action.payload.is_strategy
+      return action.payload.isStrategy
         ? [...state, action.payload.strategy]
         : state
     default:

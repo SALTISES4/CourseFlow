@@ -1,10 +1,12 @@
 import json
+import logging
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
+from course_flow.apps import logger
 from course_flow.decorators import check_object_permission
-from course_flow.models.objectPermission import ObjectPermission
+from course_flow.models.objectPermission import Permission
 from course_flow.models.workflow import Workflow
 
 
@@ -20,10 +22,10 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
     def get_permission(self):
         workflow = Workflow.objects.get(pk=self.workflow_pk)
         self.VIEW = check_object_permission(
-            workflow, self.user, ObjectPermission.PERMISSION_VIEW
+            workflow, self.user, Permission.PERMISSION_VIEW.value
         )
         self.EDIT = check_object_permission(
-            workflow, self.user, ObjectPermission.PERMISSION_EDIT
+            workflow, self.user, Permission.PERMISSION_EDIT.value
         )
 
     def connect(self):
@@ -33,7 +35,8 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
 
         try:
             self.get_permission()
-        except Exception:
+        except Exception as e:
+            logger.exception("An error occurred")
             return self.close()
         if self.VIEW or self.EDIT:
             async_to_sync(self.channel_layer.group_add)(
@@ -45,11 +48,12 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         try:
             async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
                 {"type": "lock_update", "action": self.last_lock},
             )
-        except AttributeError:
+        except AttributeError as e:
+            logger.exception("An error occurred")
             pass
+
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name, self.channel_name
         )

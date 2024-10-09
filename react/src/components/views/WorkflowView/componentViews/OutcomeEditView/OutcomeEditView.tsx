@@ -1,4 +1,5 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import {apiPaths} from "@cf/router/apiRoutes";
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
@@ -18,11 +19,11 @@ import { connect } from 'react-redux'
 import Outcome from './Outcome'
 
 // import $ from 'jquery'
-
 type ConnectedProps = {
   data: any
   workflow: any
 }
+
 type StateType = EditableComponentWithSortingState
 type OwnProps = EditableComponentWithSortingProps
 type PropsType = ConnectedProps & OwnProps
@@ -75,7 +76,7 @@ export class OutcomeEditViewUnconnected<
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
-    this.context.editableMethods.micro_update(
+    this.context.editableMethods.microUpdate(
       ActionCreator.moveOutcomeWorkflow(
         id,
         new_position,
@@ -103,7 +104,7 @@ export class OutcomeEditViewUnconnected<
    * COMPONENTS
    *******************************************************/
   AddNew = ({ objectset }: any) => {
-    if (!this.context.permissions.workflowPermission.readOnly) {
+    if (this.props.workflow.workflowPermissions.write) {
       return (
         <div
           id="add-new-outcome"
@@ -113,7 +114,7 @@ export class OutcomeEditViewUnconnected<
           <img
             className="create-button"
             src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
+               apiPaths.external.static_assets.icon +
               'add_new_white.svg'
             }
           />
@@ -146,7 +147,7 @@ export class OutcomeEditViewUnconnected<
             <div className="outcome-category-block">
               {category.outcomes.map((outcome) => {
                 let my_class = 'outcome-workflow'
-                if (outcome.through_no_drag) my_class += ' no-drag'
+                if (outcome.through_noDrag) my_class += ' no-drag'
                 return (
                   <div
                     className={my_class}
@@ -188,7 +189,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: getSortedOutcomesFromOutcomeWorkflowSet(
       state,
-      state.workflow.outcomeworkflow_set
+      state.workflow.outcomeworkflowSet
     ),
     workflow: state.workflow
   }

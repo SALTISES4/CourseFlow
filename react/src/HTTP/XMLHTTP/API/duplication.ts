@@ -1,4 +1,5 @@
-import { OBJECT_TYPE, VERB } from '@cf/types/enum'
+import { apiPaths } from '@cf/router/apiRoutes'
+import { CfObjectType } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { DuplicateBaseItemQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -25,36 +26,29 @@ export function duplicateBaseItemQuery(
   console.log('duplicating base item')
   const sendPostRequest = (url, data) => {
     API_POST(url, data).then((response: DuplicateBaseItemQueryResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+      callBackFunction(response)
     })
   }
 
   const itemPkString = itemPk
   const projectPkString = projectID
 
-  if (objectType === OBJECT_TYPE.PROJECT) {
-    sendPostRequest(
-      COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_project_ajax,
-      {
-        projectPk: itemPkString
-      }
-    )
-  } else if (objectType === OBJECT_TYPE.STRATEGY) {
-    sendPostRequest(
-      COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_strategy_ajax,
-      {
-        workflowPk: itemPkString
-      }
-    )
+  if (objectType === CfObjectType.PROJECT) {
+    const url = apiPaths.json_api.project.duplicate
+    sendPostRequest(url, {
+      projectPk: itemPkString
+    })
+  } else if (objectType === CfObjectType.STRATEGY) {
+    const url = apiPaths.json_api.workflow.strategy__duplicate
+    sendPostRequest(url, {
+      workflowPk: itemPkString
+    })
   } else {
-    sendPostRequest(
-      COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_workflow_ajax,
-      {
-        workflowPk: itemPkString,
-        projectPk: projectPkString
-      }
-    )
+    const url = apiPaths.json_api.workflow.duplicate
+    sendPostRequest(url, {
+      workflowPk: itemPkString,
+      projectPk: projectPkString
+    })
   }
 }
 
@@ -74,7 +68,6 @@ export function duplicateSelfQuery(
     objectType: objectType,
     throughType: throughType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }

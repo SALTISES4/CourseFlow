@@ -9,7 +9,7 @@ type ConnectedProps = TGetOutcomeWorkflowByID
 type OwnProps = {
   objectId: number
   nodecategory: any
-  outcomes_type: any
+  outcomesType: any
 }
 type PropsType = ConnectedProps & OwnProps
 /**
@@ -28,7 +28,7 @@ class TableOutcomeWorkflowUnconnected extends React.Component<PropsType> {
           // renderer={this.props.renderer}
           objectId={data.outcome}
           nodecategory={this.props.nodecategory}
-          outcomes_type={this.props.outcomes_type}
+          outcomesType={this.props.outcomesType}
         />
       </div>
     )

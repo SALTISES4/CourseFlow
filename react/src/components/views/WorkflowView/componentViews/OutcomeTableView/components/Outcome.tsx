@@ -1,6 +1,7 @@
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
+import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
@@ -38,7 +39,7 @@ class TableCell extends React.Component<TableCellPropsType> {
       this.props.nodeID,
       this.props.outcomeID,
       value,
-      (response_data) => {
+      (responseData) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
@@ -51,7 +52,7 @@ class TableCell extends React.Component<TableCellPropsType> {
       this.props.nodeID,
       this.props.outcomeID,
       value,
-      (response_data) => {
+      (responseData) => {
         COURSEFLOW_APP.tinyLoader.endLoad()
         $(':focus').blur()
       }
@@ -64,11 +65,7 @@ class TableCell extends React.Component<TableCellPropsType> {
 
   Contents = ({ completionStatus, selfCompletion }) => {
     if (completionStatus === 0) {
-      return (
-        <img
-          src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}nocheck.svg`}
-        />
-      )
+      return <img src={`${apiPaths.external.static_assets.icon}nocheck.svg`} />
     } else if (!completionStatus) {
       return ''
     }
@@ -78,7 +75,7 @@ class TableCell extends React.Component<TableCellPropsType> {
       return (
         <img
           className={selfCompletion ? 'self-completed' : ''}
-          src={`${COURSEFLOW_APP.globalContextData.path.static_assets.icon}${icon}`}
+          src={`${apiPaths.external.static_assets.icon}${icon}`}
         />
       )
     }
@@ -171,10 +168,10 @@ type OwnProps = {
   edit?: boolean
   outcome_tree?: any
   nodecategory?: any
-  outcomes_type?: any
+  outcomesType?: any
   updateParentCompletion?: any
   completion_status_from_parents?: any
-  read_only?: boolean
+  readOnly?: boolean
 } & ComponentWithToggleProps
 type PropsType = ConnectedProps & OwnProps
 
@@ -194,13 +191,13 @@ export class OutcomeUnconnected<
    * FUNCTIONS
    *******************************************************/
   getIsDropped() {
-    return this.props.data.is_dropped
+    return this.props.data.isDropped
   }
 
   ChildOutcomeView = ({ child }) => {
     return (
       <Outcome
-        outcomes_type={this.props.outcomes_type}
+        outcomesType={this.props.outcomesType}
         objectId={child.id}
         outcome_tree={child}
         // renderer={this.props.renderer}
@@ -213,19 +210,19 @@ export class OutcomeUnconnected<
    *******************************************************/
   render() {
     const data = this.props.data
-    const is_dropped = this.getIsDropped()
+    const isDropped = this.getIsDropped()
     // let dropIcon
-    const dropIcon = is_dropped ? 'droptriangleup' : 'droptriangledown'
+    const dropIcon = isDropped ? 'droptriangleup' : 'droptriangledown'
 
-    const droptext = is_dropped
+    const droptext = isDropped
       ? _t('hide')
       : _t('show ') +
-        data.child_outcome_links.length +
+        data.childOutcomeLinks.length +
         ' ' +
         window.ngettext(
           'descendant',
           'descendants',
-          data.child_outcome_links.length
+          data.childOutcomeLinks.length
         )
 
     // let comments
@@ -244,20 +241,16 @@ export class OutcomeUnconnected<
           {/*<div className="outcome-title" style={style}> @todo style is not defined */}
           <div className="outcome-title">
             <OutcomeTitle
-              data={this.props.data}
+              title={this.props.data.title}
               prefix={this.props.prefix}
               hovertext={this.props.hovertext}
             />
           </div>
-          {data.child_outcome_links.length > 0 && (
+          {data.childOutcomeLinks.length > 0 && (
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
                 <img
-                  src={
-                    COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-                    dropIcon +
-                    '.svg'
-                  }
+                  src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
                 />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
@@ -275,10 +268,10 @@ export class OutcomeUnconnected<
       (outcomenodegroup) => {
         const group_row = outcomenodegroup?.map((outcomenode) => (
           <TableCell
-            outcomesType={this.props.outcomes_type}
+            outcomesType={this.props.outcomesType}
             degree={outcomenode.degree}
-            readOnly={this.props.read_only}
-            nodeID={outcomenode.node_id}
+            readOnly={this.props.readOnly}
+            nodeID={outcomenode.nodeId}
             outcomeID={this.props.outcome_tree.id}
             // renderer={this.props.renderer}
           />
@@ -286,8 +279,8 @@ export class OutcomeUnconnected<
 
         group_row.unshift(
           <TableCell
-            outcomesType={this.props.outcomes_type}
-            readOnly={this.props.read_only}
+            outcomesType={this.props.outcomesType}
+            readOnly={this.props.readOnly}
             total={true}
             degree={outcomenodegroup.total}
             // renderer={this.props.renderer}
@@ -305,9 +298,9 @@ export class OutcomeUnconnected<
     outcome_row.push(<div className="table-cell blank-cell" />)
     outcome_row.push(
       <TableCell
-        outcomesType={this.props.outcomes_type}
+        outcomesType={this.props.outcomesType}
         degree={this.props.outcome_tree.outcomenodes.total}
-        readOnly={this.props.read_only}
+        readOnly={this.props.readOnly}
         total={true}
         grandTotal={true}
         // renderer={this.props.renderer}
@@ -321,7 +314,7 @@ export class OutcomeUnconnected<
     )
 
     let child_rows
-    if (is_dropped)
+    if (isDropped)
       child_rows = this.props.outcome_tree.children.map((child) => (
         <this.ChildOutcomeView child={child} />
       ))
@@ -350,7 +343,7 @@ export default Outcome
 //     let divclass = ''
 //
 //     if (completionStatus === 0) {
-//       return <img src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'nocheck.svg'} />
+//       return <img src={ apiPaths.external.static_assets.icon + 'nocheck.svg'} />
 //     } else if (!completionStatus) {
 //       return ''
 //     }
@@ -359,10 +352,10 @@ export default Outcome
 //         return (
 //           <img
 //             className="self-completed"
-//             src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'solid_check.svg'}
+//             src={ apiPaths.external.static_assets.icon + 'solid_check.svg'}
 //           />
 //         )
-//       else return <img src={COURSEFLOW_APP.globalContextData.path.static_assets.icon + 'check.svg'} />
+//       else return <img src={ apiPaths.external.static_assets.icon + 'check.svg'} />
 //     }
 //
 //     // @todo why is bitwise being used here? needs explanation comments

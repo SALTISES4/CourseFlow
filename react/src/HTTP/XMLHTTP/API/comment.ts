@@ -1,5 +1,5 @@
 //Removes the specified comment from the object
-import { VERB } from '@cf/types/enum'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { CommentsForObjectQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -10,15 +10,12 @@ export function getCommentsForObjectQuery(
   callBackFunction = (_data: CommentsForObjectQueryResp) =>
     console.log('success')
 ) {
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.json_api.comment.list_by_object,
-    {
-      objectId: objectId,
-      objectType: objectType
-    }
-  ).then((response: CommentsForObjectQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+  const url = apiPaths.json_api.comment.list_by_object
+  API_POST(url, {
+    objectId: objectId,
+    objectType: objectType
+  }).then((response: CommentsForObjectQueryResp) => {
+    callBackFunction(response)
   })
 }
 //add a comment to an object
@@ -28,13 +25,13 @@ export function addComment(
   text,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.create, {
+  const url = apiPaths.json_api.comment.create
+  API_POST(url, {
     objectId: objectId,
     objectType: objectType,
     text: text
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -44,13 +41,13 @@ export function removeComment(
   commentPk,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.delete, {
+  const url = apiPaths.json_api.comment.delete
+  API_POST(url, {
     objectId: objectId,
     commentPk: commentPk,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
@@ -60,11 +57,11 @@ export function removeAllComments(
   objectType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.json_api.comment.delete_all, {
+  const url = apiPaths.json_api.comment.delete_all
+  API_POST(url, {
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }

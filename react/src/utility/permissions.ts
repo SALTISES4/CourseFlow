@@ -1,46 +1,75 @@
-import * as Constants from '@cf/constants'
-import { PERMISSION_KEYS } from '@cf/constants'
-import { WorkflowPermission } from '@cfPages/Workspace/Workflow/types'
-import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
+import { PermissionKeys } from '@cf/constants'
 
-export const calcIsProjectReadOnly = (
-  data: GetProjectByIdQueryResp
-): boolean => {
-  return (
-    data.data_package.project_data.object_permission.permission_type ===
-    Constants.permission_keys['edit']
-  )
+export interface BasePermissions {
+  read: boolean
+  write: boolean
+  manage: boolean
+}
+
+export interface WorkflowPermission extends BasePermissions {
+  viewComments: boolean // change to read comments
+  addComments: boolean // change to create comments
+}
+const defaultBasePermissions: BasePermissions = {
+  read: false,
+  write: false,
+  manage: false
 }
 const defaultWorkflowPermissions: WorkflowPermission = {
-  readOnly: false,
+  read: false,
+  write: false,
+  manage: false,
   viewComments: false,
-  addComments: false,
-  canView: false
+  addComments: false
+}
+
+export const calcProjectPermissions = (
+  permission: number
+): WorkflowPermission => {
+  switch (permission) {
+    case PermissionKeys.VIEW:
+      return {
+        ...defaultWorkflowPermissions,
+        read: true
+      }
+    case PermissionKeys.COMMENT:
+      return {
+        ...defaultWorkflowPermissions,
+        viewComments: true,
+        addComments: true,
+        read: true
+      }
+
+    case PermissionKeys.EDIT:
+      return {
+        read: true,
+        write: true,
+        manage: true,
+        viewComments: true,
+        addComments: true
+      }
+  }
+  return defaultWorkflowPermissions
 }
 
 export const calcWorkflowPermissions = (
-  userPermission: number
+  permission: number
 ): WorkflowPermission => {
-  switch (userPermission) {
-    case PERMISSION_KEYS.VIEW:
+  switch (permission) {
+    case PermissionKeys.VIEW:
       return {
-        ...defaultWorkflowPermissions,
-        canView: true
-      }
-    case PERMISSION_KEYS.COMMENT:
-      return {
-        ...defaultWorkflowPermissions,
+        ...defaultBasePermissions,
+        read: true,
         viewComments: true,
-        addComments: true,
-        canView: true
+        addComments: false
       }
-
-    case PERMISSION_KEYS.EDIT:
+    case PermissionKeys.EDIT:
       return {
-        ...defaultWorkflowPermissions,
+        read: true,
+        write: true,
+        manage: true,
         viewComments: true,
-        addComments: true,
-        canView: true
+        addComments: true
       }
   }
   return defaultWorkflowPermissions

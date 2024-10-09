@@ -61,7 +61,7 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
     this.sorts = [
       { name: 'relevance', display: _t('Relevance') },
       { name: 'title', display: _t('A-Z') },
-      { name: 'created_on', display: _t('Creation date') }
+      { name: 'createdOn', display: _t('Creation date') }
     ]
     this.state = {
       workflows: this.props.workflows,
@@ -113,12 +113,12 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
         </div>
         <div className="create-dropdown">
           {this.filters.map((filter, i) => {
-            let css_class = 'filter-option flex-middle'
+            let cssClass = 'filter-option flex-middle'
             if (this.state.activeFilters.indexOf(filter.name) >= 0)
-              css_class += ' active'
+              cssClass += ' active'
             return (
               <div
-                className={css_class}
+                className={cssClass}
                 onClick={(evt) => {
                   evt.stopPropagation()
                   this.filterChange(filter)
@@ -162,15 +162,15 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
         <div className="create-dropdown">
           {this.sorts.map((sort, i) => {
             let sort_dir
-            let css_class = 'filter-option filter-checkbox'
+            let cssClass = 'filter-option filter-checkbox'
             if (this.state.activeSort == i) {
-              css_class += ' active'
+              cssClass += ' active'
               if (this.state.reversed) sort_dir = <NorthIcon />
               else sort_dir = <SouthIcon />
             }
             return (
               <div
-                className={css_class}
+                className={cssClass}
                 onClick={(evt) => {
                   evt.stopPropagation()
                   this.sortChange(i)
@@ -254,12 +254,12 @@ class ExploreFilter extends React.Component<PropsType, StateType> {
         </div>
         <div className="create-dropdown">
           {this.props.disciplines.map((discipline, i) => {
-            let css_class = 'filter-option flex-middle'
+            let cssClass = 'filter-option flex-middle'
             if (this.state.activeDisciplines.indexOf(discipline.id) >= 0)
-              css_class += ' active'
+              cssClass += ' active'
             return (
               <div
-                className={css_class}
+                className={cssClass}
                 onClick={(evt) => {
                   evt.stopPropagation()
                   this.disciplineChange(discipline)

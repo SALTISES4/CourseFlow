@@ -1,17 +1,19 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models._common import User, title_max_length
+from course_flow.models.common import User, title_max_length
+
+# EN/FR language preferences
+LANGUAGE_CHOICES = [
+    ("en", _("English")),
+    ("fr", _("French")),
+]
 
 
 class CourseFlowUser(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        related_name="courseflow_user",
-    )
-
+    #########################################################
+    # FIELDS
+    #########################################################
     first_name = models.CharField(
         max_length=title_max_length,
         null=True,
@@ -30,12 +32,6 @@ class CourseFlowUser(models.Model):
         ),
     )
 
-    # EN/FR kanguage preferences
-    LANGUAGE_CHOICES = [
-        ("en", _("English")),
-        ("fr", _("French")),
-    ]
-
     language = models.CharField(
         _("Language preferences"),
         max_length=2,
@@ -46,6 +42,19 @@ class CourseFlowUser(models.Model):
     # Whether the user has had the opportunity to choose whether they receive notifications
     notifications_active = models.BooleanField(default=False)
 
+    #########################################################
+    # RELATIONS
+    #########################################################
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="courseflow_user",
+    )
+
+    #########################################################
+    # MODEL METHODS / GETTERS
+    #########################################################
     def ensure_user(user):
         courseflow_user = CourseFlowUser.objects.filter(user=user).first()
         if courseflow_user is None:

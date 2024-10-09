@@ -13,7 +13,7 @@ import { connect } from 'react-redux'
 
 type ConnectedProps = {
   data: any
-  object_sets: any
+  objectSets: any
 }
 type OwnProps = {
   objectId: number
@@ -66,7 +66,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
     if (type === 'weekworkflow') {
-      this.context.editableMethods.micro_update(
+      this.context.editableMethods.microUpdate(
         ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
       )
       insertedAt(
@@ -86,7 +86,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
    *******************************************************/
   render() {
     const data = this.props.data
-    const weekworkflows = data.weekworkflow_set.map((weekworkflow) => (
+    const weekworkflows = data.weekworkflowSet.map((weekworkflow) => (
       <WeekWorkflowComparison
         condensed={data.condensed}
         key={weekworkflow}
@@ -109,7 +109,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
 const mapWorkflowStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    object_sets: state.objectset
+    objectSets: state.objectset
   }
 }
 

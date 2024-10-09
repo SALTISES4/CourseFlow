@@ -29,7 +29,7 @@ const updateStateForId = (state, action, updateCallback) => {
 const findParentIndices = (state, action) => {
   let oldParentIndex, newParentIndex
   const oldParent = state.find((item, index) => {
-    if (item.child_outcome_links.includes(action.payload.id)) {
+    if (item.childOutcomeLinks.includes(action.payload.id)) {
       oldParentIndex = index
       return true
     }
@@ -80,13 +80,13 @@ export default function outcomeReducer(
     case OutcomeActions.RESTORE_SELF:
       return updateStateForId(state, action, (item) => {
         if (item.id === action.payload.parent_id) {
-          const newChildLinks = [...item.child_outcome_links]
+          const newChildLinks = [...item.childOutcomeLinks]
           newChildLinks.splice(
             action.payload.throughparent_index,
             0,
             action.payload.throughparent_id
           )
-          return { ...item, child_outcome_links: newChildLinks }
+          return { ...item, childOutcomeLinks: newChildLinks }
         }
         return item.id === action.payload.id
           ? { ...item, deleted: false }
@@ -98,7 +98,7 @@ export default function outcomeReducer(
         .filter((item) => item.id !== action.payload.id)
         .map((item) => ({
           ...item,
-          child_outcome_links: item.child_outcome_links.filter(
+          childOutcomeLinks: item.childOutcomeLinks.filter(
             (linkId) => linkId !== action.payload.parent_id
           )
         }))
@@ -111,17 +111,17 @@ export default function outcomeReducer(
 
     case OutcomeActions.DELETE_SELF_SOFT:
       return updateStateForId(state, action, (item) => {
-        if (item.child_outcome_links.includes(action.payload.parent_id)) {
-          const newChildLinks = item.child_outcome_links.filter(
+        if (item.childOutcomeLinks.includes(action.payload.parent_id)) {
+          const newChildLinks = item.childOutcomeLinks.filter(
             (linkId) => linkId !== action.payload.parent_id
           )
-          return { ...item, child_outcome_links: newChildLinks }
+          return { ...item, childOutcomeLinks: newChildLinks }
         }
         return item.id === action.payload.id
           ? {
               ...item,
               deleted: true,
-              deleted_on: _t('This session')
+              deletedOn: _t('This session')
             }
           : item
       })
@@ -131,11 +131,11 @@ export default function outcomeReducer(
      *******************************************************/
     case OutcomeOutcomeActions.CHANGE_ID:
       return state.map((item) => {
-        const oldIndex = item.child_outcome_links.indexOf(action.payload.old_id)
+        const oldIndex = item.childOutcomeLinks.indexOf(action.payload.old_id)
         if (oldIndex >= 0) {
-          const newLinks = [...item.child_outcome_links]
+          const newLinks = [...item.childOutcomeLinks]
           newLinks.splice(oldIndex, 1, action.payload.new_id)
-          return { ...item, child_outcome_links: newLinks }
+          return { ...item, childOutcomeLinks: newLinks }
         }
         return item
       })
@@ -145,21 +145,21 @@ export default function outcomeReducer(
         findParentIndices(state, action)
       if (!oldParent || !newParent) return state
 
-      const newOldParentLinks = oldParent.child_outcome_links.filter(
+      const newOldParentLinks = oldParent.childOutcomeLinks.filter(
         (id) => id !== action.payload.id
       )
-      const newParentLinks = [...newParent.child_outcome_links]
+      const newParentLinks = [...newParent.childOutcomeLinks]
       newParentLinks.splice(action.payload.new_index, 0, action.payload.id)
 
       const newState = [...state]
       newState[oldParentIndex] = {
         ...oldParent,
-        child_outcome_links: newOldParentLinks
+        childOutcomeLinks: newOldParentLinks
       }
       if (oldParentIndex !== newParentIndex) {
         newState[newParentIndex] = {
           ...newParent,
-          child_outcome_links: newParentLinks
+          childOutcomeLinks: newParentLinks
         }
       }
       return newState
@@ -177,7 +177,7 @@ export default function outcomeReducer(
           ? {
               ...item,
               deleted: true,
-              deleted_on: _t('This session')
+              deletedOn: _t('This session')
             }
           : item
       )
@@ -217,14 +217,14 @@ export default function outcomeReducer(
 
       const newState = state.slice()
       const parentItem = { ...newState[parentIndex] }
-      const newChildOutcomeLinks = [...parentItem.child_outcome_links]
+      const newChildOutcomeLinks = [...parentItem.childOutcomeLinks]
 
       newChildOutcomeLinks.splice(
         action.payload.new_through.rank,
         0,
         action.payload.new_through.id
       )
-      parentItem.child_outcome_links = newChildOutcomeLinks
+      parentItem.childOutcomeLinks = newChildOutcomeLinks
       newState[parentIndex] = parentItem
 
       const childrenToAdd = action.payload.children
@@ -233,8 +233,8 @@ export default function outcomeReducer(
       return [...newState, action.payload.new_model, ...childrenToAdd]
     }
 
-    case OutcomeActions.CHANGE_FIELD:
-    case OutcomeBaseActions.CHANGE_FIELD:
+    case OutcomeActions.changeField:
+    case OutcomeBaseActions.changeField:
       if (
         action.payload.changeFieldID ===
         // @ts-ignore
@@ -247,8 +247,8 @@ export default function outcomeReducer(
           : item
       )
 
-    case OutcomeActions.CHANGE_FIELD_MANY:
-    case OutcomeBaseActions.CHANGE_FIELD_MANY:
+    case OutcomeActions.changeField_MANY:
+    case OutcomeBaseActions.changeField_MANY:
       if (
         action.payload.changeFieldID ===
         // @ts-ignore
@@ -269,13 +269,13 @@ export default function outcomeReducer(
       if (action.payload.outcomehorizontallink === -1) return state
 
       return state.map((item) => {
-        if (item.id === action.payload.data_package[0].outcome) {
+        if (item.id === action.payload.dataPackage[0].outcome) {
           return {
             ...item,
-            outcome_horizontal_links:
-              action.payload.new_outcome_horizontal_links,
-            outcome_horizontal_links_unique:
-              action.payload.new_outcome_horizontal_links_unique
+            outcomeHorizontalLinks:
+              action.payload.new_outcomeHorizontalLinks,
+            outcomeHorizontalLinksUnique:
+              action.payload.new_outcomeHorizontalLinksUnique
           }
         }
         return item

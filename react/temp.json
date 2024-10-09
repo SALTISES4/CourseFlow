@@ -1,0 +1,658 @@
+{
+  "favourites": {
+    "favourites": [
+      {
+        "title": "hello 1 asdf asdf",
+        "url": "/course-flow/project/5/"
+      },
+      {
+        "title": "asdf",
+        "url": "/course-flow/workflow/17/"
+      },
+      {
+        "title": "test project",
+        "url": "/course-flow/project/1/"
+      },
+      {
+        "title": "asdf",
+        "url": "/course-flow/project/30/"
+      },
+      {
+        "title": "asdf",
+        "url": "/course-flow/project/31/"
+      }
+    ]
+  },
+  "forms": {
+    "createProject": {
+      "forms": {
+        "createProject": {
+          "showNoProjectsAlert": true,
+          "formFields": [
+            {
+              "name": "title",
+              "label": "Title",
+              "type": "text",
+              "required": true,
+              "options": null,
+              "max_length": 200,
+              "help_text": "",
+              "value": "New project name"
+            },
+            {
+              "name": "description",
+              "label": "Description",
+              "type": "text",
+              "required": false,
+              "options": null,
+              "max_length": null,
+              "help_text": "",
+              "value": ""
+            },
+            {
+              "name": "disciplines",
+              "label": "Discipline",
+              "type": "multiselect",
+              "required": false,
+              "options": [
+                {
+                  "label": "Physics",
+                  "value": "1"
+                },
+                {
+                  "label": "Chemistry",
+                  "value": "2"
+                },
+                {
+                  "label": "Biology",
+                  "value": "3"
+                },
+                {
+                  "label": "Environmental Science",
+                  "value": "4"
+                },
+                {
+                  "label": "Science (General)",
+                  "value": "5"
+                },
+                {
+                  "label": "Mathematics",
+                  "value": "6"
+                },
+                {
+                  "label": "Philosophy",
+                  "value": "7"
+                },
+                {
+                  "label": "Computer Science",
+                  "value": "8"
+                },
+                {
+                  "label": "Engineering",
+                  "value": "9"
+                },
+                {
+                  "label": "Anthropology",
+                  "value": "10"
+                },
+                {
+                  "label": "Economics",
+                  "value": "11"
+                },
+                {
+                  "label": "Geography",
+                  "value": "12"
+                },
+                {
+                  "label": "Political Science",
+                  "value": "13"
+                },
+                {
+                  "label": "Psychology",
+                  "value": "14"
+                },
+                {
+                  "label": "Sociology",
+                  "value": "15"
+                },
+                {
+                  "label": "Social Work",
+                  "value": "16"
+                },
+                {
+                  "label": "Social Sciences (General)",
+                  "value": "17"
+                },
+                {
+                  "label": "Performing Arts",
+                  "value": "18"
+                },
+                {
+                  "label": "Visual Arts",
+                  "value": "19"
+                },
+                {
+                  "label": "History",
+                  "value": "20"
+                },
+                {
+                  "label": "Literature",
+                  "value": "21"
+                },
+                {
+                  "label": "Law",
+                  "value": "22"
+                },
+                {
+                  "label": "Theology",
+                  "value": "23"
+                },
+                {
+                  "label": "Humanities (General)",
+                  "value": "24"
+                },
+                {
+                  "label": "Medicine",
+                  "value": "25"
+                },
+                {
+                  "label": "Nursing",
+                  "value": "26"
+                },
+                {
+                  "label": "Business",
+                  "value": "27"
+                },
+                {
+                  "label": "English",
+                  "value": "28"
+                },
+                {
+                  "label": "French",
+                  "value": "29"
+                },
+                {
+                  "label": "Languages",
+                  "value": "30"
+                },
+                {
+                  "label": "Design",
+                  "value": "31"
+                },
+                {
+                  "label": "Other",
+                  "value": "32"
+                }
+              ],
+              "max_length": null,
+              "help_text": "",
+              "value": []
+            }
+          ]
+        }
+      }
+    }
+  },
+  "appNotifications": {
+    "updateNotifications": [],
+    "showNotificationRequest": false
+  },
+  "workflowChoices": {
+    "columnChoices": [
+      {
+        "type": 0,
+        "name": "Custom Activity Column"
+      },
+      {
+        "type": 1,
+        "name": "Out of Class (Instructor)"
+      },
+      {
+        "type": 2,
+        "name": "Out of Class (Students)"
+      },
+      {
+        "type": 3,
+        "name": "In Class (Instructor)"
+      },
+      {
+        "type": 4,
+        "name": "In Class (Students)"
+      },
+      {
+        "type": 10,
+        "name": "Custom Course Column"
+      },
+      {
+        "type": 11,
+        "name": "Preparation"
+      },
+      {
+        "type": 12,
+        "name": "Lesson"
+      },
+      {
+        "type": 13,
+        "name": "Artifact"
+      },
+      {
+        "type": 14,
+        "name": "Assessment"
+      },
+      {
+        "type": 20,
+        "name": "Custom Program Category"
+      }
+    ],
+    "contextChoices": [
+      {
+        "type": 0,
+        "name": "None"
+      },
+      {
+        "type": 1,
+        "name": "Individual Work"
+      },
+      {
+        "type": 2,
+        "name": "Work in Groups"
+      },
+      {
+        "type": 3,
+        "name": "Whole Class"
+      },
+      {
+        "type": 101,
+        "name": "Formative"
+      },
+      {
+        "type": 102,
+        "name": "Summative"
+      },
+      {
+        "type": 103,
+        "name": "Comprehensive"
+      }
+    ],
+    "taskChoices": [
+      {
+        "type": 0,
+        "name": "None"
+      },
+      {
+        "type": 1,
+        "name": "Gather Information"
+      },
+      {
+        "type": 2,
+        "name": "Discuss"
+      },
+      {
+        "type": 3,
+        "name": "Problem Solve"
+      },
+      {
+        "type": 4,
+        "name": "Analyze"
+      },
+      {
+        "type": 5,
+        "name": "Assess/Review Peers"
+      },
+      {
+        "type": 6,
+        "name": "Debate"
+      },
+      {
+        "type": 7,
+        "name": "Game/Roleplay"
+      },
+      {
+        "type": 8,
+        "name": "Create/Design"
+      },
+      {
+        "type": 9,
+        "name": "Revise/Improve"
+      },
+      {
+        "type": 10,
+        "name": "Read"
+      },
+      {
+        "type": 11,
+        "name": "Write"
+      },
+      {
+        "type": 12,
+        "name": "Present"
+      },
+      {
+        "type": 13,
+        "name": "Experiment/Inquiry"
+      },
+      {
+        "type": 14,
+        "name": "Quiz/Test"
+      },
+      {
+        "type": 15,
+        "name": "Instructor Resource Curation"
+      },
+      {
+        "type": 16,
+        "name": "Instructor Orchestration"
+      },
+      {
+        "type": 17,
+        "name": "Instructor Evaluation"
+      },
+      {
+        "type": 18,
+        "name": "Other"
+      },
+      {
+        "type": 101,
+        "name": "Jigsaw"
+      },
+      {
+        "type": 102,
+        "name": "Peer Instruction"
+      },
+      {
+        "type": 103,
+        "name": "Case Studies"
+      },
+      {
+        "type": 104,
+        "name": "Gallery Walk"
+      },
+      {
+        "type": 105,
+        "name": "Reflective Writing"
+      },
+      {
+        "type": 106,
+        "name": "Two-Stage Exam"
+      },
+      {
+        "type": 107,
+        "name": "Toolkit"
+      },
+      {
+        "type": 108,
+        "name": "One Minute Paper"
+      },
+      {
+        "type": 109,
+        "name": "Distributed Problem Solving"
+      },
+      {
+        "type": 110,
+        "name": "Peer Assessment"
+      }
+    ],
+    "timeChoices": [
+      {
+        "type": 0,
+        "name": ""
+      },
+      {
+        "type": 1,
+        "name": "seconds"
+      },
+      {
+        "type": 2,
+        "name": "minutes"
+      },
+      {
+        "type": 3,
+        "name": "hours"
+      },
+      {
+        "type": 4,
+        "name": "days"
+      },
+      {
+        "type": 5,
+        "name": "weeks"
+      },
+      {
+        "type": 6,
+        "name": "months"
+      },
+      {
+        "type": 7,
+        "name": "yrs"
+      },
+      {
+        "type": 8,
+        "name": "credits"
+      }
+    ],
+    "outcomeTypeChoices": [
+      {
+        "type": 0,
+        "name": "Normal"
+      },
+      {
+        "type": 1,
+        "name": "Advanced"
+      }
+    ],
+    "outcomeSortChoices": [
+      {
+        "type": 0,
+        "name": "Time"
+      },
+      {
+        "type": 1,
+        "name": "Category"
+      },
+      {
+        "type": 2,
+        "name": "Task"
+      },
+      {
+        "type": 3,
+        "name": "Context"
+      }
+    ],
+    "strategyClassificationChoices": [
+      {
+        "type": 0,
+        "name": "None"
+      },
+      {
+        "type": 1,
+        "name": "Jigsaw"
+      },
+      {
+        "type": 2,
+        "name": "Peer Instruction"
+      },
+      {
+        "type": 3,
+        "name": "Case Studies"
+      },
+      {
+        "type": 4,
+        "name": "Gallery Walk"
+      },
+      {
+        "type": 5,
+        "name": "Reflective Writing"
+      },
+      {
+        "type": 6,
+        "name": "Two-Stage Exam"
+      },
+      {
+        "type": 7,
+        "name": "Toolkit"
+      },
+      {
+        "type": 8,
+        "name": "One Minute Paper"
+      },
+      {
+        "type": 9,
+        "name": "Distributed Problem Solving"
+      },
+      {
+        "type": 10,
+        "name": "Peer Assessment"
+      },
+      {
+        "type": 11,
+        "name": "Other"
+      }
+    ]
+  },
+  "path": {
+    "post_paths": {
+      "new_outcome": "/course-flow/json-api/v1/workflow/outcome/create",
+      "insert_child": "/course-flow/json-api/v1/workflow/outcome/insert-child",
+      "inserted_at": "/course-flow/json-api/v1/workflow/inserted-at",
+      "update_outcomehorizontallink_degree": "/course-flow/json-api/v1/outcome/update-outcomehorizontallink-degree",
+      "update_outcomenode_degree": "/course-flow/json-api/v1/workflow/update-outcomenode-degree",
+      "update_object_set": "/course-flow/json-api/v1/workflow/updateobjectset",
+      "insert_sibling": "/course-flow/json-api/v1/workflow/insert-sibling",
+      "set_permission": "/course-flow/json-api/v1/permissions/set"
+    },
+    "get_paths": {
+      "get_public_workflow_child_data": "/course-flow/json-api/v1/workflow/0/public/child/detail",
+      "get_public_parent_workflow_info": "/course-flow/json-api/v1/workflow/0/public/parent/detail-full"
+    }
+  },
+  "disciplines": [
+    {
+      "id": 10,
+      "title": "Anthropology"
+    },
+    {
+      "id": 3,
+      "title": "Biology"
+    },
+    {
+      "id": 27,
+      "title": "Business"
+    },
+    {
+      "id": 2,
+      "title": "Chemistry"
+    },
+    {
+      "id": 8,
+      "title": "Computer Science"
+    },
+    {
+      "id": 31,
+      "title": "Design"
+    },
+    {
+      "id": 11,
+      "title": "Economics"
+    },
+    {
+      "id": 9,
+      "title": "Engineering"
+    },
+    {
+      "id": 28,
+      "title": "English"
+    },
+    {
+      "id": 4,
+      "title": "Environmental Science"
+    },
+    {
+      "id": 29,
+      "title": "French"
+    },
+    {
+      "id": 12,
+      "title": "Geography"
+    },
+    {
+      "id": 20,
+      "title": "History"
+    },
+    {
+      "id": 24,
+      "title": "Humanities (General)"
+    },
+    {
+      "id": 30,
+      "title": "Languages"
+    },
+    {
+      "id": 22,
+      "title": "Law"
+    },
+    {
+      "id": 21,
+      "title": "Literature"
+    },
+    {
+      "id": 6,
+      "title": "Mathematics"
+    },
+    {
+      "id": 25,
+      "title": "Medicine"
+    },
+    {
+      "id": 26,
+      "title": "Nursing"
+    },
+    {
+      "id": 32,
+      "title": "Other"
+    },
+    {
+      "id": 18,
+      "title": "Performing Arts"
+    },
+    {
+      "id": 7,
+      "title": "Philosophy"
+    },
+    {
+      "id": 1,
+      "title": "Physics"
+    },
+    {
+      "id": 13,
+      "title": "Political Science"
+    },
+    {
+      "id": 14,
+      "title": "Psychology"
+    },
+    {
+      "id": 5,
+      "title": "Science (General)"
+    },
+    {
+      "id": 17,
+      "title": "Social Sciences (General)"
+    },
+    {
+      "id": 16,
+      "title": "Social Work"
+    },
+    {
+      "id": 15,
+      "title": "Sociology"
+    },
+    {
+      "id": 23,
+      "title": "Theology"
+    },
+    {
+      "id": 19,
+      "title": "Visual Arts"
+    }
+  ]
+};

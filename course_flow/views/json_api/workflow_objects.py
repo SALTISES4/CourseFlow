@@ -1,10 +1,12 @@
 import json
+import logging
 import math
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 
+from course_flow.apps import logger
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.models.column import Column
 from course_flow.models.node import Node
@@ -25,13 +27,8 @@ from course_flow.serializers import (
     RefreshSerializerOutcome,
     serializer_lookups_shallow,
 )
+from course_flow.services import DAO
 from course_flow.sockets import redux_actions as actions
-from course_flow.utils import (
-    check_possible_parent,
-    get_all_outcomes_for_outcome,
-    get_descendant_outcomes,
-    get_model_from_str,
-)
 
 
 @user_can_view(False)
@@ -49,13 +46,13 @@ def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
     parent_type = body.get("parentType")
     through_type = body.get("throughType")
     try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-        parent = get_model_from_str(parent_type).objects.get(id=parent_id)
+        model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
+        parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
         if parent_type == object_type:
             old_through_kwargs = {"child": model, "parent": parent}
         else:
             old_through_kwargs = {object_type: model, parent_type: parent}
-        through = get_model_from_str(through_type).objects.get(
+        through = DAO.get_model_from_str(through_type).objects.get(
             **old_through_kwargs
         )
 
@@ -70,16 +67,16 @@ def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
         else:
             defaults = {}
 
-        new_model = get_model_from_str(object_type).objects.create(
+        new_model = DAO.get_model_from_str(object_type).objects.create(
             author=request.user, **defaults
         )
         if parent_type == object_type:
             new_through_kwargs = {"child": new_model, "parent": parent}
         else:
             new_through_kwargs = {object_type: new_model, parent_type: parent}
-        new_through_model = get_model_from_str(through_type).objects.create(
-            **new_through_kwargs, rank=through.rank + 1
-        )
+        new_through_model = DAO.get_model_from_str(
+            through_type
+        ).objects.create(**new_through_kwargs, rank=through.rank + 1)
         new_model_serialized = serializer_lookups_shallow[object_type](
             new_model
         ).data
@@ -103,7 +100,8 @@ def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
             children = None
             node_updates = []
 
-    except ValidationError:
+    except ValidationError as e:
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     response_data = {
@@ -125,7 +123,7 @@ def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
             workflow,
             actions.insertBelowAction(response_data, object_type),
         )
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})
 
 
 # Add a parent outcome to an outcome
@@ -141,12 +139,12 @@ def json_api_post_update_outcomehorizontallink_degree(
     degree = body.get("degree")
     try:
         outcome = Outcome.objects.get(id=outcome_id)
-        parent_outcome = get_model_from_str(object_type).objects.get(
+        parent_outcome = DAO.get_model_from_str(object_type).objects.get(
             id=parent_id
         )
         workflow = outcome.get_workflow()
         parent_workflow = parent_outcome.get_workflow()
-        if not check_possible_parent(workflow, parent_workflow, True):
+        if not DAO.check_possible_parent(workflow, parent_workflow, True):
             raise ValidationError
         if (
             OutcomeHorizontalLink.objects.filter(
@@ -155,7 +153,7 @@ def json_api_post_update_outcomehorizontallink_degree(
             > 0
         ):
             return JsonResponse(
-                {"action": "posted", "outcomehorizontallink": -1}
+                {"message": "success", "outcomehorizontallink": -1}
             )
         model = OutcomeHorizontalLink.objects.create(
             outcome=outcome, parent_outcome=parent_outcome, degree=degree
@@ -176,7 +174,8 @@ def json_api_post_update_outcomehorizontallink_degree(
         new_outcome_horizontal_links_unique = new_outcome_data[
             "outcome_horizontal_links_unique"
         ]
-    except ValidationError:
+    except ValidationError as e:
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     response_data = {
@@ -192,7 +191,7 @@ def json_api_post_update_outcomehorizontallink_degree(
         workflow,
         actions.updateOutcomehorizontallinkDegreeAction(response_data),
     )
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})
 
 
 # @todo clarify this vocabulary
@@ -206,14 +205,14 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
         object_type = body.get("objectType")
         objectset_id = body.get("objectsetPk")
         add = body.get("add")
-        objects = get_model_from_str(object_type).objects
+        objects = DAO.get_model_from_str(object_type).objects
         if hasattr(objects, "get_subclass"):
             objects_to_update = [objects.get_subclass(pk=object_id)]
         else:
             objects_to_update = [objects.get(pk=object_id)]
             if object_type == "outcome":
                 objects_to_update += list(
-                    get_descendant_outcomes(objects_to_update[0])
+                    DAO.get_descendant_outcomes(objects_to_update[0])
                 )
         objectset = ObjectSet.objects.get(id=objectset_id)
         if add:
@@ -225,7 +224,8 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
                 object_to_update.sets.remove(objectset)
                 object_to_update.save()
 
-    except ValidationError:
+    except ValidationError as e:
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
     try:
         workflow = objects_to_update[0].get_workflow()
@@ -254,10 +254,11 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
         actions.dispatch_wf(workflow, action)
         if object_type == "outcome":
             actions.dispatch_to_parent_wf(workflow, action)
-    except AttributeError:
+    except AttributeError as e:
+        logger.exception("An error occurred")
         pass
 
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})
 
 
 #########################################################
@@ -288,7 +289,7 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
         with transaction.atomic():
             if column_change:
                 new_column_id = body.get("columnPk")
-                model = get_model_from_str(object_type).objects.get(
+                model = DAO.get_model_from_str(object_type).objects.get(
                     id=object_id
                 )
                 new_column = Column.objects.get(id=new_column_id)
@@ -299,10 +300,10 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                 parent_type = body.get("parentType")
                 new_position = body.get("newPosition")
                 through_type = body.get("throughType")
-                model = get_model_from_str(object_type).objects.get(
+                model = DAO.get_model_from_str(object_type).objects.get(
                     id=object_id
                 )
-                parent = get_model_from_str(parent_type).objects.get(
+                parent = DAO.get_model_from_str(parent_type).objects.get(
                     id=parent_id
                 )
                 workflow1 = model.get_workflow()
@@ -333,7 +334,7 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                         ):
                             OutcomeNode.objects.filter()
                             outcomes_list = [object_id] + list(
-                                get_descendant_outcomes(model).values_list(
+                                DAO.get_descendant_outcomes(model).values_list(
                                     "pk", flat=True
                                 )
                             )
@@ -349,7 +350,7 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                                 outcome__in=outcomes_list
                             ).delete()
                         else:
-                            return JsonResponse({"action": "posted"})
+                            return JsonResponse({"message": "success"})
                 if object_type == parent_type:
                     creation_kwargs = {"child": model, "parent": parent}
                     search_kwargs = {"child": model}
@@ -364,7 +365,7 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                 # Adjust the new position, given the # of deleted items
                 try:
                     all_throughs = (
-                        get_model_from_str(through_type)
+                        DAO.get_model_from_str(through_type)
                         .objects.filter(**index_kwargs)
                         .order_by("rank")
                     )
@@ -374,7 +375,7 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                         new_position = all_throughs.count()
                     else:
                         new_position = (
-                            get_model_from_str(through_type)
+                            DAO.get_model_from_str(through_type)
                             .objects.filter(**index_kwargs)
                             .order_by("rank")[new_position]
                             .rank
@@ -383,16 +384,17 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                     print("had an error in inserted_at")
 
                 old_through_id = (
-                    get_model_from_str(through_type)
+                    DAO.get_model_from_str(through_type)
                     .objects.filter(**search_kwargs)
                     .first()
                     .id
                 )
-                new_through = get_model_from_str(through_type).objects.create(
-                    rank=new_position, **creation_kwargs
-                )
+                new_through = DAO.get_model_from_str(
+                    through_type
+                ).objects.create(rank=new_position, **creation_kwargs)
 
-    except ValidationError:
+    except ValidationError as e:
+        logger.exception("An error occurred")
         return JsonResponse({"action": "error"})
 
     workflow = model.get_workflow()
@@ -415,7 +417,9 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                     ),
                     many=True,
                 ).data
-                outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(model)
+                outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(
+                    model
+                )
                 new_children_serialized = {
                     "outcome": OutcomeSerializerShallow(
                         outcomes, many=True
@@ -474,7 +478,9 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                     actions.dispatch_parent_updated(wf)
         else:
             if object_type == "outcome":
-                outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(model)
+                outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(
+                    model
+                )
                 outcomenodes = OutcomeNode.objects.filter(
                     outcome__id__in=[model.id] + [x.id for x in outcomes]
                 )
@@ -513,4 +519,4 @@ def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
                     ),
                 )
     actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"message": "success"})

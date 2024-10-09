@@ -1,23 +1,24 @@
 import { NumTuple } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Utility from '@cfUtility'
+import { LanguageOptions } from '@XMLHTTP/API/user.rtk'
 
 /*
 Determines how long an action locks an object
 by default, in ms. Once the action ends, the lock
 is cleared (so this is a maximum time).
 */
-export const lock_times = {
+export const lockTimes = {
   move: 5000,
   update: 5000,
   select: 60000
 }
 
-export const node_keys = ['activity', 'course', 'program']
+export const nodeKeys = ['activity', 'course', 'program']
 
 export const columnwidth = 160
 
-export const node_ports = {
+export const nodePorts = {
   source: {
     e: [1, 0.6],
     w: [0, 0.6],
@@ -30,18 +31,18 @@ export const node_ports = {
   }
 }
 
-export const port_keys = ['n', 'e', 's', 'w']
+export const portKeys = ['n', 'e', 's', 'w']
 
-export const port_direction: NumTuple[] = [
+export const portDirection: NumTuple[] = [
   [0, -1],
   [1, 0],
   [0, 1],
   [-1, 0]
 ]
 
-export const port_padding = 10
+export const portPadding = 10
 
-export const task_keys = {
+export const taskKeys = {
   0: '',
   1: 'research',
   2: 'discuss',
@@ -73,7 +74,7 @@ export const task_keys = {
   110: 'peer-assessment'
 }
 
-export const context_keys = {
+export const contextKeys = {
   0: '',
   1: 'solo',
   2: 'group',
@@ -83,7 +84,7 @@ export const context_keys = {
   103: 'exam'
 }
 
-export const strategy_keys = {
+export const strategyKeys = {
   0: '',
   1: 'jigsaw',
   2: 'peer-instruction',
@@ -98,7 +99,7 @@ export const strategy_keys = {
   11: 'other'
 }
 
-export const default_column_settings = {
+export const defaultColumnSettings = {
   0: { colour: '#6738ff', icon: 'other' },
   1: { colour: '#0b118a', icon: 'ooci' },
   2: { colour: '#114cd4', icon: 'home' },
@@ -112,45 +113,76 @@ export const default_column_settings = {
   20: { colour: '#369934', icon: 'other' }
 }
 
-export const node_type_keys = {
+export const nodeTypeKeys = {
   0: 'activity node',
   1: 'course node',
   2: 'program node'
 }
 
 // @todo this is redundant now
-export const object_dictionary = {
+export const objectDictionary = {
   nodelink: 'nodelink',
   node: 'node',
   week: 'week',
   column: 'column',
   outcome: 'outcome',
-  outcome_base: 'outcome',
+  outcomeBase: 'outcome',
   workflow: 'workflow',
   outcomenode: 'outcomenode'
 }
 
-export const parent_dictionary = {
+export const parentDictionary = {
   nodelink: 'node',
   node: 'week',
   week: 'workflow',
   column: 'workflow',
   outcome: 'outcome',
-  outcome_base: 'workflow'
+  outcomeBase: 'workflow'
 }
 
-export const through_parent_dictionary = {
+export const throughParentDictionary = {
   node: 'nodeweek',
   week: 'weekworkflow',
   column: 'columnworkflow',
   outcome: 'outcomeoutcome',
-  outcome_base: 'outcomeworkflow'
+  outcomeBase: 'outcomeworkflow'
 }
 
-export const get_verbose = function (data, object_type) {
-  switch (object_type) {
+export const permissionKeys = {
+  none: 0,
+  view: 1,
+  edit: 2,
+  comment: 3,
+  student: 4
+}
+
+export enum PermissionKeys {
+  NONE,
+  VIEW,
+  EDIT,
+  COMMENT,
+  STUDENT
+}
+
+export const roleKeys = {
+  none: 0,
+  student: 1,
+  teacher: 2
+}
+
+export const defaultDropState = {
+  node: false,
+  week: true,
+  outcome: [true, false, false, false, false]
+}
+
+/*******************************************************
+ * FUNCTIONS
+ *******************************************************/
+export const getVerbose = function (data, objectType) {
+  switch (objectType) {
     case 'node':
-      return data.node_type_display
+      return data.nodeTypeDisplay
     case 'workflow':
     case 'activity':
     case 'course':
@@ -162,49 +194,21 @@ export const get_verbose = function (data, object_type) {
         workflow: _t('Workflow')
       }[data.type]
     case 'week':
-      return data.week_type_display
+      return data.weekTypeDisplay
   }
   return {
-    outcome_base: _t('Outcome'),
+    outcomeBase: _t('Outcome'),
     nodelink: _t('Node Link'),
     outcome: _t('Outcome'),
     column: _t('Column'),
     project: _t('Project'),
     outcomehorizontallink: _t('Association to the parent outcome'),
     outcomenode: _t('Association to the outcome')
-  }[object_type]
+  }[objectType]
 }
 
-export const permission_keys = {
-  none: 0,
-  view: 1,
-  edit: 2,
-  comment: 3,
-  student: 4
-}
-
-export enum PERMISSION_KEYS {
-  NONE,
-  VIEW,
-  EDIT,
-  COMMENT,
-  STUDENT
-}
-
-export const role_keys = {
-  none: 0,
-  student: 1,
-  teacher: 2
-}
-
-export const default_drop_state = {
-  node: false,
-  week: true,
-  outcome: [true, false, false, false, false]
-}
-
-export const get_default_drop_state = (objectId, objectType, depth = 1) => {
-  let default_drop = default_drop_state[objectType]
+export const getDefaultDropState = (objectId, objectType, depth = 1) => {
+  let default_drop = defaultDropState[objectType]
   if (objectType === 'outcome') {
     if (depth < default_drop.length) default_drop = default_drop[depth]
     else default_drop = false
@@ -214,8 +218,7 @@ export const get_default_drop_state = (objectId, objectType, depth = 1) => {
 
 // Get the colour from a column
 export function getColumnColour(data) {
-  if (data.colour == null)
-    return default_column_settings[data.column_type].colour
+  if (data.colour == null) return defaultColumnSettings[data.columnType].colour
   else return '#' + ('000000' + data.colour?.toString(16)).slice(-6)
 }
 
@@ -236,4 +239,20 @@ function missing_translations() {
   _t('course')
   _t('program')
   _t('project')
+}
+
+export const languageOptions = [
+  {
+    label: 'English',
+    value: LanguageOptions.EN
+  },
+  {
+    label: 'French',
+    value: LanguageOptions.FR
+  }
+]
+
+export enum SnackbarOptions {
+  ERROR = 'error',
+  SUCCESS = 'success'
 }

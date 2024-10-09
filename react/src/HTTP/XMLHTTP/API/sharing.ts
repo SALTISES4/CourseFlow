@@ -1,41 +1,43 @@
-import { VERB } from '@cf/types/enum'
+import {apiPathRoutes, apiPaths} from '@cf/router/apiRoutes'
+import {UsersForObjectQueryResp} from "@XMLHTTP/API/workspace.rtk";
 import { API_POST } from '@XMLHTTP/CallWrapper'
-import { EmptyPostResp, UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { generatePath } from 'react-router-dom'
 
 export function setUserPermission(
-  user_id,
+  userId,
   objectId,
   objectType,
-  permission_type,
+  permissionType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.set_permission, {
     objectId: objectId,
     objectType: objectType,
-    permission_user: user_id,
-    permission_type: permission_type
+    permission_user: userId,
+    permissionType: permissionType
   }).then((response: EmptyPostResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
-export function getUsersForObjectQuery(
-  objectId: number,
-  objectType: string
-): Promise<UsersForObjectQueryResp> {
-  //@todo fix this
-  if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
-    objectType = 'workflow'
-  }
-  return API_POST<UsersForObjectQueryResp>(
-    COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
-    {
-      objectId: objectId,
-      objectType: objectType
-    }
-  )
-}
+// export function getUsersForObjectQuery(
+//   objectId: number,
+//   objectType: string
+// ): Promise<UsersForObjectQueryResp> {
+//   //@todo fix this
+//   if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
+//     objectType = 'workflow'
+//   }
+//
+//   return API_POST<UsersForObjectQueryResp>(
+//     COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
+//     {
+//       objectId: objectId,
+//       objectType: objectType
+//     }
+//   )
+// }
 
 // to remove
 /**
@@ -55,14 +57,11 @@ export function getUsersForObjectQueryLegacy(
 ) {
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
     objectType = 'workflow'
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
-    {
-      objectId: objectId,
-      objectType: objectType
-    }
-  ).then((response: UsersForObjectQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+  const base = apiPaths.json_api.workspace.user__list
+  const url = generatePath(base, { id: objectId })
+  API_POST(url, {
+    objectType: objectType
+  }).then((response: UsersForObjectQueryResp) => {
+    callBackFunction(response)
   })
 }

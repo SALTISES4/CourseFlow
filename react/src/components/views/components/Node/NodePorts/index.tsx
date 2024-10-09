@@ -16,10 +16,8 @@ type StateType = {
   node_offset: any
   node_dimensions: any
 }
-export class NodePorts extends React.Component<PropsType, StateType> {
-  static contextType = WorkFlowConfigContext
 
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+export class NodePorts extends React.Component<PropsType, StateType> {
   private positioned: boolean
   constructor(props: PropsType) {
     super(props)
@@ -32,7 +30,10 @@ export class NodePorts extends React.Component<PropsType, StateType> {
 
   componentDidMount() {
     const thisComponent = this
-    if (!this.context.permissions.workflowPermission)
+
+    // @todo this needs to get workflow permissions out of store
+    // if (!this.props.workflow.workflowPermission)
+    if (true)
       d3.selectAll<SVGCircleElement, any>(
         'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
       ).call(
@@ -105,7 +106,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
     })
   }
 
-  nodeLinkAdded(target, source_port, target_port) {
+  nodeLinkAdded(target, sourcePort, targetPort) {
     const props = this.props
     if (target == this.props.nodeID) {
       return
@@ -114,8 +115,8 @@ export class NodePorts extends React.Component<PropsType, StateType> {
     newNodeLink(
       props.nodeID,
       target,
-      Constants.port_keys.indexOf(source_port),
-      Constants.port_keys.indexOf(target_port)
+      Constants.portKeys.indexOf(sourcePort),
+      Constants.portKeys.indexOf(targetPort)
     )
   }
 
@@ -133,8 +134,8 @@ export class NodePorts extends React.Component<PropsType, StateType> {
       node_dimensions = { width: 0, height: 0 }
     }
 
-    for (const port_type in Constants.node_ports) {
-      for (const port in Constants.node_ports[port_type]) {
+    for (const port_type in Constants.nodePorts) {
+      for (const port in Constants.nodePorts[port_type]) {
         ports.push(
           <circle
             data-port-type={port_type}
@@ -142,11 +143,9 @@ export class NodePorts extends React.Component<PropsType, StateType> {
             data-node-id={this.props.nodeID}
             r="6"
             key={port_type + port}
-            cx={
-              Constants.node_ports[port_type][port][0] * node_dimensions.width
-            }
+            cx={Constants.nodePorts[port_type][port][0] * node_dimensions.width}
             cy={
-              Constants.node_ports[port_type][port][1] * node_dimensions.height
+              Constants.nodePorts[port_type][port][1] * node_dimensions.height
             }
           />
         )

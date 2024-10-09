@@ -6,9 +6,9 @@ type CurrentUser = {
 }
 
 export type ConnectedUser = {
-  user_id: string
-  user_name: string
-  user_colour: string
+  userId: string
+  userName: string
+  userColour: string
   connected: boolean
   timeout: NodeJS.Timeout
 }
@@ -63,35 +63,35 @@ class WebSocketServiceConnectedUserManager {
     this.websocketService.send(
       JSON.stringify({
         type: 'connection_update',
-        user_data: {
-          user_id: this.currenUser.userId,
-          user_name: this.currenUser.userName,
-          user_colour: calcColor(Number(this.currenUser.userId)),
+        userData: {
+          userId: this.currenUser.userId,
+          userName: this.currenUser.userName,
+          userColour: calcColor(Number(this.currenUser.userId)),
           connected: connected
         }
       })
     )
   }
 
-  public connectionUpdateReceived(user_data: ConnectedUser): void {
+  public connectionUpdateReceived(userData: ConnectedUser): void {
     const index = this.connectedUsers.findIndex(
-      (u) => u.user_id === user_data.user_id
+      (u) => u.userId === userData.userId
     )
     if (index !== -1) {
       if (this.connectedUsers[index].timeout)
         clearTimeout(this.connectedUsers[index].timeout)
       this.connectedUsers[index] = {
-        ...user_data,
+        ...userData,
         timeout: setTimeout(
-          () => this.removeConnection(user_data.user_id),
+          () => this.removeConnection(userData.userId),
           60000
         )
       }
     } else {
       this.connectedUsers.push({
-        ...user_data,
+        ...userData,
         timeout: setTimeout(
-          () => this.removeConnection(user_data.user_id),
+          () => this.removeConnection(userData.userId),
           60000
         )
       })
@@ -100,7 +100,7 @@ class WebSocketServiceConnectedUserManager {
   }
 
   private removeConnection(userId: string): void {
-    const index = this.connectedUsers.findIndex((u) => u.user_id === userId)
+    const index = this.connectedUsers.findIndex((u) => u.userId === userId)
     if (index !== -1) {
       if (this.connectedUsers[index].timeout)
         clearTimeout(this.connectedUsers[index].timeout)

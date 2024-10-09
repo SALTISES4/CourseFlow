@@ -1,5 +1,5 @@
 import { _t } from '@cf/utility/utilityFunctions'
-import { getOutcomeTitle } from '@cfComponents/UIPrimitives/Titles'
+import { getOutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
@@ -21,7 +21,10 @@ class OutcomeAdderOptionUnconnected extends React.Component<PropsType> {
     return (
       <option value={this.props.objectId}>
         {'\u00A0 '.repeat(this.props.data.depth) +
-          getOutcomeTitle(this.props.data, this.props.prefix)}
+          getOutcomeTitle({
+            title: this.props.data.title,
+            prefix: this.props.prefix
+          })}
       </option>
     )
   }
@@ -58,7 +61,7 @@ class OutcomeAdder extends React.Component<OutcomeAdderProps> {
   onChange(evt) {
     if (evt.target.value == 0) return
     COURSEFLOW_APP.tinyLoader.startLoad()
-    this.props.addFunction(evt.target.value, 1, (response_data) => {
+    this.props.addFunction(evt.target.value, 1, (responseData) => {
       COURSEFLOW_APP.tinyLoader.endLoad()
     })
     $('.outcome-adder').val(0)

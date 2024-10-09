@@ -51,11 +51,11 @@ type ConnectedProps = {
   weeks: AppState['week']
   nodeweeks: AppState['nodeweek']
   nodes: AppState['node']
-  object_sets: AppState['objectset']
+  objectSets: AppState['objectset']
   weekworkflow_order: any // @todo why isn't this set, does it exist?
-  // weekworkflow_order: AppState['weekworkflow_set'] // @todo why isn't this set, does it exist?
-  outcomes_sort: any // @todo why isn't this set, does it exist?
-  // outcomes_sort: AppState['outcomes_sort'] // @todo why isn't this set, does it exist?
+  // weekworkflow_order: AppState['weekworkflowSet'] // @todo why isn't this set, does it exist?
+  outcomesSort: any // @todo why isn't this set, does it exist?
+  // outcomesSort: AppState['outcomesSort'] // @todo why isn't this set, does it exist?
   // outcomeworkflow_order: AppState['outcomeworkflow_order'] // @todo why isn't this set, does it exist?
   outcomeworkflow_order: any
   outcomeworkflows: AppState['outcomeworkflow']
@@ -63,9 +63,9 @@ type ConnectedProps = {
 }
 type OwnProps = {
   objectId?: number
-  outcomes_type?: any
+  outcomesType?: any
   objectset?: any // is this not from store ?
-  view_type?: WorkflowViewType // @todo can this just come from context?
+  viewType?: WorkflowViewType // @todo can this just come from context?
 }
 type PropsType = ConnectedProps & OwnProps
 
@@ -93,7 +93,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
       this.props.outcomes,
       this.props.outcomeworkflows,
       this.props.outcomeworkflow_order,
-      this.props.object_sets
+      this.props.objectSets
     )
   }
 
@@ -109,7 +109,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     )
 
     const nodeweek_order = [].concat(
-      ...weeks_ordered.map((week) => week.nodeweek_set)
+      ...weeks_ordered.map((week) => week.nodeweekSet)
     )
 
     let nodeweeks_ordered = Utility.filterThenSortByID(
@@ -121,7 +121,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     const nodes_ordered = Utility.filterThenSortByID(
       this.props.nodes,
       node_order
-    ).filter((node) => !Utility.checkSetHidden(node, this.props.object_sets))
+    ).filter((node) => !Utility.checkSetHidden(node, this.props.objectSets))
 
     const nodes_allowed = nodes_ordered.map((node) => node.id)
     nodeweeks_ordered = nodeweeks_ordered.filter(
@@ -134,7 +134,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     }
     return weeks_ordered.map((week, index) => {
       return {
-        title: week.title || week.week_type_display + ' ' + (index + 1),
+        title: week.title || week.weekTypeDisplay + ' ' + (index + 1),
         id: week.id,
         nodes: nodes_by_week[week.id] || []
       }
@@ -156,19 +156,19 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     )
 
     const linked_wf_data = nodes_data.map((node) => {
-      if (node.represents_workflow)
+      if (node.representsWorkflow)
         return {
           ...node,
           // @ts-ignore
-          ...node.linked_workflow_data
+          ...node.linkedWorkflowData
         }
       return node
     })
 
     const general_education = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.time_general_hours)
-          return previousValue + currentValue.time_general_hours
+        if (currentValue && currentValue.timeGeneralHours)
+          return previousValue + currentValue.timeGeneralHours
         return previousValue
       },
       0
@@ -176,8 +176,8 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     const specific_education = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.time_specific_hours)
-          return previousValue + currentValue.time_specific_hours
+        if (currentValue && currentValue.timeSpecificHours)
+          return previousValue + currentValue.timeSpecificHours
         return previousValue
       },
       0
@@ -185,8 +185,8 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     const total_theory = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.ponderation_theory)
-          return previousValue + currentValue.ponderation_theory
+        if (currentValue && currentValue.ponderationTheory)
+          return previousValue + currentValue.ponderationTheory
         return previousValue
       },
       0
@@ -194,8 +194,8 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     const total_practical = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.ponderation_practical)
-          return previousValue + currentValue.ponderation_practical
+        if (currentValue && currentValue.ponderationPractical)
+          return previousValue + currentValue.ponderationPractical
         return previousValue
       },
       0
@@ -203,8 +203,8 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     const total_individual = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.ponderation_individual)
-          return previousValue + currentValue.ponderation_individual
+        if (currentValue && currentValue.ponderationIndividual)
+          return previousValue + currentValue.ponderationIndividual
         return previousValue
       },
       0
@@ -213,8 +213,8 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     const total_time = total_theory + total_practical + total_individual
     const total_required = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.time_required)
-          return previousValue + parseFloat(currentValue.time_required)
+        if (currentValue && currentValue.timeRequired)
+          return previousValue + parseFloat(currentValue.timeRequired)
         return previousValue
       },
       0
@@ -246,7 +246,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     //   this.nodecategory_json = nodecategory_json
     // }
 
-    const outcomes_sorted = this.getOutcomesSorted()
+    const outcomesSorted = this.getOutcomesSorted()
 
     const TimeHeader = (
       <div className="matrix-time-row">
@@ -295,7 +295,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
       }
     }
 
-    if (outcomes_sorted.length == 0 || !has_nodes) {
+    if (outcomesSorted.length == 0 || !has_nodes) {
       const text =
         this.context.workflowView == WorkflowViewType.OUTCOMETABLE
           ? _t(
@@ -332,12 +332,12 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
         </div>
       ))
 
-      const outcomes = outcomes_sorted.map((category) => (
+      const outcomes = outcomesSorted.map((category) => (
         <div className="table-body">
           {
             // @todo should this be set?
             // @ts-ignore
-            this.props?.object_sets?.length > 0 && (
+            this.props?.objectSets?.length > 0 && (
               <div className="outcome-row outcome-category">
                 <div className="outcome-wrapper">
                   <div className="outcome-head">
@@ -356,7 +356,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
               // renderer={this.props.renderer}
               objectId={outcome}
               nodecategory={nodecategory}
-              outcome_type={this.props.outcomes_type}
+              outcome_type={this.props.outcomesType}
               type="competency_matrix"
             />
           ))}
@@ -380,7 +380,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
       return (
         <div className="workflow-details">
-          <OutcomeLegend outcomes_type={this.props.outcomes_type} />
+          <OutcomeLegend outcomesType={this.props.outcomesType} />
           <div className="competency-matrix node-rows">
             <div className="outcome-row node-row">
               <div className="outcome-wrapper">
@@ -416,10 +416,10 @@ const mapStateToProps = (
     weeks: state.week,
     nodeweeks: state.nodeweek,
     nodes: state.node,
-    object_sets: state.objectset,
-    weekworkflow_order: state.workflow.weekworkflow_set,
-    outcomes_sort: state.workflow.outcomes_sort,
-    outcomeworkflow_order: state.workflow.outcomeworkflow_set,
+    objectSets: state.objectset,
+    weekworkflow_order: state.workflow.weekworkflowSet,
+    outcomesSort: state.workflow.outcomesSort,
+    outcomeworkflow_order: state.workflow.outcomeworkflowSet,
     outcomeworkflows: state.outcomeworkflow,
     outcomes: state.outcome
   }

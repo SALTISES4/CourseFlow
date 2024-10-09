@@ -1,8 +1,8 @@
 import * as Constants from '@cf/constants'
+import { UserContext } from '@cf/context/userContext'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType, WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import ProjectTargetDialog from '@cfComponents/dialog/Workspace/ProjectTargetDialog'
 import {
   MenuItemType,
   MenuWithOverflow,
@@ -29,17 +29,17 @@ type StateType = {
   openEditDialog: boolean
 }
 
-const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
-  const context = useContext(WorkFlowConfigContext)
+const ActionMenu = () => {
+  const userContext = useContext(UserContext)
+  const workflow = useSelector((state: AppState) => state.workflow)
+  const project = useSelector((state: AppState) => state.parentProject)
 
-  const isStrategy = context.workflow.is_strategy
-  const userId = context.user.user_id
-  const workflowPermission = context.permissions.workflowPermission
-  const projectPermission = context.permissions.projectPermission
-  const workflowId = context.workflow.workflowId
-  const projectId = context.workflow.project.id
-  const workflowType = context.workflow
-  const publicView = context.public_view
+  const isStrategy = workflow.isStrategy
+  const userId = userContext.id
+  const workflowId = workflow.id
+  const projectId = project.id
+  const workflowType = workflow.type
+  const publicView = workflow.publicView
 
   const [state, setState] = useState<StateType>({
     openShareDialog: false,
@@ -55,25 +55,6 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
   /*******************************************************
    * MODALS
    *******************************************************/
-
-  const duplicateItem = () => {
-    console.log('duplicateItem')
-  }
-
-  // clickImport(import_type, evt) {
-  //   evt.preventDefault()
-  //   renderMessageBox(
-  //     {
-  //       object_id: this.props.data.id,
-  //       object_type: this.objectType,
-  //       import_type: import_type
-  //     },
-  //     'import',
-  //     () => {
-  //       closeMessageBox()
-  //     }
-  //   )
-  // }
 
   const {
     openEditMenu,
@@ -93,20 +74,20 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
       title: _t('Edit Workflow'),
       action: openEditMenu,
       content: <EditIcon />,
-      show: !workflowPermission.readOnly
+      show: workflow.workflowPermissions.write
     },
     {
       id: 'share',
       title: _t('Sharing'),
       content: <PersonAddIcon />,
       action: openShareDialog,
-      show: !workflowPermission.readOnly
+      show: workflow.workflowPermissions.write
     },
     {
       id: 'export',
       content: _t('Export'),
       action: openExportDialog,
-      show: (!publicView || userId) && workflowPermission.canView,
+      show: (!publicView || userId) && workflow.workflowPermissions.read,
       seperator: true
     },
     // hidden
@@ -115,10 +96,9 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
       content: _t('Copy into current project'),
       // @ts-ignore @todo what is workflowType
       action: () => copyToProject(workflowId, projectId, workflowType),
-      show:
-        userId &&
-        !isStrategy &&
-        projectPermission === Constants.permission_keys.edit
+      show: userId && !isStrategy
+      // @todo find the project permissions
+      // workflow.parentWorkflow\.projectPermission === Constants.permissionKeys.edit
     },
     {
       id: 'copy-to-library',
@@ -143,34 +123,23 @@ const ActionMenu = ({ isWorkflowDeleted }: { isWorkflowDeleted: boolean }) => {
       id: 'archive-workflow',
       action: archiveWorkflow,
       content: _t('Archive workflow'),
-      show: !workflowPermission.readOnly && !isWorkflowDeleted
+      show: workflow.workflowPermissions.write && !workflow.deleted
     },
     {
       id: 'restore-workflow',
       action: restoreWorkflow,
       content: _t('Restore workflow'),
-      show: !workflowPermission.readOnly && isWorkflowDeleted
+      show: workflow.workflowPermissions.write && workflow.deleted
     },
     {
       id: 'hard-delete-workflow',
       action: () => deleteWorkflowHard(projectId, workflowId),
       content: _t('Permanently delete workflow'),
-      show: !workflowPermission.readOnly && isWorkflowDeleted
+      show: workflow.workflowPermissions.write && workflow.deleted
     }
   ]
 
-  return (
-    <>
-      <MenuWithOverflow menuItems={menuItems} size={2} />
-      <ProjectTargetDialog
-        id={workflowId}
-        //@ts-ignore
-        actionFunction={duplicateItem}
-      />
-      <ImportDialog workflowId={workflowId} />
-      {/*<ShareDialog />*/}
-    </>
-  )
+  return <MenuWithOverflow menuItems={menuItems} size={2} />
 }
 
 const ExpandCollapseMenu = () => {

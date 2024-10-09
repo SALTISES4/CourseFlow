@@ -67,12 +67,12 @@ class WeekWorkflowUnconnected<
 
     const cssClasses = [
       'week-workflow',
-      data.no_drag ? 'no-drag' : '',
+      data.noDrag ? 'no-drag' : '',
       $(this.mainDiv?.current).hasClass('dragging') ? 'dragging' : ''
     ].join(' ')
 
     // let my_class = 'week-workflow'
-    // if (data.no_drag) my_class += ' no-drag'
+    // if (data.noDrag) my_class += ' no-drag'
     // if ($(this.mainDiv?.current).hasClass('dragging')) my_class += ' dragging'
 
     return (

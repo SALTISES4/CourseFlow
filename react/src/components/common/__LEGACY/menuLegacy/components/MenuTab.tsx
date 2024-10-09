@@ -6,7 +6,7 @@ type PropsType = {
   data: any
   type: any
   identifier: any
-  no_hyperlink?: any
+  noHyperlink?: any
   selected_id?: any
   selectAction?: any
   dispatch?: any
@@ -30,7 +30,7 @@ class MenuTab extends React.Component<PropsType> {
     if (is_empty) replacement_text = this.props.data.emptytext
     const sections = this.props.data.sections.map((section, i) => (
       <MenuSection
-        no_hyperlink={this.props.no_hyperlink}
+        noHyperlink={this.props.noHyperlink}
         type={this.props.type}
         replacement_text={i == 0 ? replacement_text : null}
         section_data={section}

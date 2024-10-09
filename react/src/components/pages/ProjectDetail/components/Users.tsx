@@ -1,7 +1,7 @@
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Utility from '@cfUtility'
 import PublicIcon from '@mui/icons-material/Public'
-import { UsersForObjectQueryResp } from '@XMLHTTP/types/query'
+import { UsersForObjectQueryResp } from '@XMLHTTP/API/workspace.rtk'
 import * as React from 'react'
 
 type PropsType = {

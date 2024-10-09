@@ -5,6 +5,7 @@ from django.utils.translation import gettext as _
 from html2text import html2text
 from rest_framework import serializers
 
+from course_flow.models.common import title_max_length
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
 
 bleach_allowed_attributes_description = {
@@ -92,7 +93,8 @@ class TitleSerializerMixin:
 class DescriptionSerializerTextMixin(serializers.Serializer):
     description = serializers.SerializerMethodField()
 
-    def get_description(self, instance):
+    @staticmethod
+    def get_description(instance):
         if instance.description is None:
             return None
         returnval = html2text(

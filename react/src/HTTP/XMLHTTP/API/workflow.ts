@@ -1,44 +1,41 @@
 //Get the data from all child workflows
+import { apiPaths } from '@cf/router/apiRoutes'
+import { CfObjectType } from '@cf/types/enum'
+import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import {
-  CfObjectType,
-  LibraryObjectType,
-  VERB,
-  WorkSpaceType
-} from '@cf/types/enum'
-import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents.jsx'
-import Library from '@cfPages/Styleguide/views/Library'
+  GetWorkflowByIdQueryResp,
+  GetWorkflowByIdQueryTransform,
+  WorkflowChildDataQueryResp,
+  WorkflowParentDataQueryResp
+} from '@XMLHTTP/API/workflow.rtk'
 import { API_GET, API_POST } from '@XMLHTTP/CallWrapper'
 import {
-  EmptyPostResp,
   ProjectsForCreateQueryResp,
   TargetProjectQueryResp,
-  WorkflowChildDataQueryResp,
-  WorkflowContextQueryResp,
-  WorkflowDataQueryResp,
-  WorkflowGroupsDataPackage,
-  WorkflowParentDataQueryResp,
+  // WorkflowContextQueryResp,
   WorkflowsForProjectQueryResp
 } from '@XMLHTTP/types/query'
 import {
-  GetWorkflowByIdQueryResp,
   GetWorkflowSelectQueryResp,
   LinkedWorkflowMenuQueryResp,
   ParentWorkflowInfoQueryResp
 } from '@XMLHTTP/types/query'
+import { generatePath } from 'react-router-dom'
 
 /*******************************************************
  * Bulk data API for workflows.
  * For loading all the base JSON that is placed into the
  * redux state.
  *******************************************************/
-
-export async function getWorkflowById(
-  id: number
-): Promise<GetWorkflowByIdQueryResp> {
-  const params = new URLSearchParams({ id: id.toString() }).toString()
-  const url = `${COURSEFLOW_APP.globalContextData.path.json_api.workflow.detail}?${params}`
-  return API_GET<GetWorkflowByIdQueryResp>(url)
-}
+//
+// export async function getWorkflowById(
+//   id: number
+// ): Promise<GetWorkflowByIdQueryResp> {
+//   const base = apiPaths.json_api.workflow.detail
+//   const url = generatePath(base, { id })
+//
+//   return API_GET<GetWorkflowByIdQueryResp>(url)
+// }
 
 /**
  * @getWorkflowDataQuery
@@ -49,43 +46,54 @@ export async function getWorkflowById(
  * @param workflowPk
  * @param callBackFunction
  */
-export function getWorkflowDataQuery(
-  workflowPk,
-  callBackFunction = (_data: WorkflowDataQueryResp) => console.log('success')
+export function getWorkflowByIdQuery(
+  id,
+  callBackFunction = (_data: GetWorkflowByIdQueryTransform) =>
+    console.log('success')
 ) {
+  const base = apiPaths.json_api.workflow.detail
+  const url = generatePath(base, { id })
+
   try {
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.post_paths.get_workflow_data,
-      {
-        workflowPk: workflowPk
+    API_GET(url).then((response: GetWorkflowByIdQueryResp) => {
+      const res = {
+        ...response,
+        dataPackage: {
+          ...response.dataPackage,
+          workflow: {
+            ...response.dataPackage.workflow,
+            isStrategy: false,
+            workflowPermissions: calcWorkflowPermissions(
+              response.dataPackage.workflow.userPermissions
+            )
+          }
+        }
       }
-    ).then((response: WorkflowDataQueryResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+
+
+      // @ts-ignore
+      callBackFunction(res)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
 // @todo combine these
 //Get the public data from the workflow
 export function getPublicWorkflowDataQuery(
-  workflowPk,
-  callBackFunction = (_data: WorkflowDataQueryResp) => console.log('success')
+  id,
+  callBackFunction = (_data: GetWorkflowByIdQueryResp) => console.log('success')
 ) {
+  const base = apiPaths.json_api.workflow.public__detail
+  const url = generatePath(base, { id })
+
   try {
-    $.get(
-      COURSEFLOW_APP.globalContextData.path.get_paths.get_public_workflow_data.replace(
-        '0',
-        workflowPk
-      )
-    ).done(function (response: WorkflowDataQueryResp) {
-      if (response.action === VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+    $.get(url).done(function (response: GetWorkflowByIdQueryResp) {
+      callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
@@ -93,55 +101,46 @@ export function getPublicWorkflowDataQuery(
 export function getWorkflowParentDataQuery(
   id: number
 ): Promise<WorkflowParentDataQueryResp> {
-  return API_POST<WorkflowParentDataQueryResp>(
-    COURSEFLOW_APP.globalContextData.path.post_paths.get_workflow_parent_data,
-    {
-      workflowPk: id
-    }
-  )
+  const base = apiPaths.json_api.workflow.parent__detail
+  const url = generatePath(base, { id })
+  return API_POST<WorkflowParentDataQueryResp>(url, {
+    workflowPk: id
+  })
 }
 
 // @todo combine these
 //Get the public data from all parent workflows
 export function getWorkflowParentDataQueryLegacy(
-  workflowPk,
+  id,
   callBackFunction = (_data: WorkflowParentDataQueryResp) =>
     console.log('success')
 ) {
+  const base = apiPaths.json_api.workflow.public__parent__detail
+  const url = generatePath(base, { id })
   try {
-    $.get(
-      COURSEFLOW_APP.globalContextData.path.get_paths.get_public_workflow_parent_data.replace(
-        '0',
-        workflowPk
-      )
-    ).done(function (response: WorkflowParentDataQueryResp) {
-      if (response.action === VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+    $.get(url).done(function (response: WorkflowParentDataQueryResp) {
+      callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
 // @todo combine these
 //Get the public data from all parent workflows
 export function getPublicWorkflowParentDataQuery(
-  workflowPk,
+  id,
   callBackFunction = (_data: WorkflowParentDataQueryResp) =>
     console.log('success')
 ) {
+  const base = apiPaths.json_api.workflow.public__parent__detail
+  const url = generatePath(base, { id })
   try {
-    $.get(
-      COURSEFLOW_APP.globalContextData.path.get_paths.get_public_workflow_parent_data.replace(
-        '0',
-        workflowPk
-      )
-    ).done(function (response: WorkflowParentDataQueryResp) {
-      if (response.action === VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+    $.get(url).done(function (response: WorkflowParentDataQueryResp) {
+      callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
@@ -150,72 +149,38 @@ export function getWorkflowChildDataQuery(
   callBackFunction = (_data: WorkflowChildDataQueryResp) =>
     console.log('success')
 ) {
+  const url = apiPaths.json_api.workflow.child__detail
   try {
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.post_paths.get_workflow_child_data,
-      {
-        nodePk: nodePk
-      }
-    ).then((response: WorkflowChildDataQueryResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+    API_POST(url, {
+      nodePk: nodePk
+    }).then((response: WorkflowChildDataQueryResp) => {
+      callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
 //Get the public data from all child workflows,
 // it looks like apart from permissions the differnce with this is just rate limitingh
 export function getPublicWorkflowChildDataQuery(
-  nodePk,
+  nodeId: number,
   callBackFunction = (_data: WorkflowChildDataQueryResp) =>
     console.log('success')
 ) {
   try {
-    $.get(
-      COURSEFLOW_APP.globalContextData.path.get_paths.get_public_workflow_child_data.replace(
-        '0',
-        nodePk
-      )
-    ).done(function (response: WorkflowChildDataQueryResp) {
-      if (response.action === VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+    const base = apiPaths.json_api.workflow.public__child__detail
+    const url = generatePath(base, { id: nodeId })
+
+    $.get(url).done(function (response: WorkflowChildDataQueryResp) {
+      callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
-/*******************************************************
- * @getWorkflowContextQuery
- *
- * Methods for getting groups of workflows or context
- * for workflows.
- *
- * workflow/get-workflow-context/
- *
- *******************************************************/
 
-//get the workflow's context data
-export function getWorkflowContextQuery(
-  workflowPk,
-  callBackFunction = (_data: WorkflowContextQueryResp) => console.log('success')
-) {
-  try {
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.post_paths.get_workflow_context,
-      {
-        workflowPk: workflowPk
-      }
-    ).then((response: WorkflowContextQueryResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-  } catch (err) {
-    window.fail_function()
-  }
-}
 
 /**
  * Get possible projects that can be a target for the workflow to be duplicated into
@@ -226,33 +191,15 @@ export function getTargetProjectMenuQuery<T>(
   workflowPk: number,
   callBackFunction = (_data: TargetProjectQueryResp) => console.log('success')
 ) {
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.get_target_projects,
-    {
-      workflowPk: workflowPk
-    }
-  ).then((response: TargetProjectQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+  const url = apiPaths.json_api.project.list__by_current_user
+  API_POST(url, {
+    workflowPk: workflowPk
+  }).then((response: TargetProjectQueryResp) => {
+    callBackFunction(response)
   })
 }
 
-/**
- * Get possible projects to add a workflow to
- * @param callBackFunction
- */
-export function getProjectsForCreate<T>(
-  callBackFunction = (_data: ProjectsForCreateQueryResp) =>
-    console.log('success')
-) {
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.get_projects_for_create,
-    {}
-  ).then((response: ProjectsForCreateQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
-  })
-}
+
 
 /**
  * Get all templates of a given type
@@ -266,17 +213,8 @@ export function getTemplates<T>(
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_templates, {
     workflowType: workflowType
   }).then((response: ProjectsForCreateQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
-}
-
-function openTargetProjectMenu(response, updateFunction) {
-  if (response.action === VERB.POSTED) {
-    renderMessageBox(response, 'target_project_menu', updateFunction)
-  } else {
-    alert('Failed to find potential projects.')
-  }
 }
 
 //Get the public data from the workflow
@@ -287,16 +225,15 @@ export function getPublicParentWorkflowInfo(
 ) {
   try {
     $.get(
-      COURSEFLOW_APP.globalContextData.path.get_paths.get_public_parent_workflow_info.replace(
+      COURSEFLOW_APP.globalContextData.path.get_paths.get_public_parentWorkflow_info.replace(
         '0',
         workflowPk
       )
     ).done(function (response: ParentWorkflowInfoQueryResp) {
-      if (response.action === VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
+      callBackFunction(response)
     })
   } catch (err) {
-    window.fail_function()
+    console.log(err)
   }
 }
 
@@ -310,27 +247,11 @@ export function getPublicParentWorkflowInfo(
  * @param workflowPk
  * @param callBackFunction
  */
-export function getParentWorkflowInfoQuery(
-  workflowPk: number,
-  callBackFunction = (_data: ParentWorkflowInfoQueryResp) =>
-    console.log('success')
-) {
-  try {
-    API_POST(
-      COURSEFLOW_APP.globalContextData.path.post_paths.get_parent_workflow_info,
-      {
-        workflowPk: workflowPk
-      }
-    ).then((response: ParentWorkflowInfoQueryResp) => {
-      if (response.action == VERB.POSTED) callBackFunction(response)
-      else window.fail_function(response.action)
-    })
-  } catch (err) {
-    console.log('getParentWorkflowInfoQuery error in try/catc')
-    console.log(err)
-    window.fail_function()
-  }
-}
+// export function getParentWorkflowInfoQuery(workflowPk: number): Promise<any> {
+//   const base = apiPaths.json_api.workflow.parent__detail__full
+//   const url = generatePath(base, { id: workflowPk })
+//   return API_GET<any>(url)
+// }
 
 /**
  * @getWorkflowsForProjectQuery
@@ -346,14 +267,11 @@ export function getWorkflowsForProjectQuery(
   callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
     console.log('success')
 ) {
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.get_workflows_for_project,
-    {
-      projectPk: projectPk
-    }
-  ).then((response: WorkflowsForProjectQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+  const url = apiPaths.json_api.project.workflows__list
+  API_POST(url, {
+    projectPk: projectPk
+  }).then((response: WorkflowsForProjectQueryResp) => {
+    callBackFunction(response)
   })
 }
 
@@ -372,19 +290,22 @@ export function getLinkedWorkflowMenuQuery(
   callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
     console.log('success')
 ) {
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths
-      .get_possible_linked_workflows,
-    {
-      nodePk: nodeID
-    }
-  ).then((response: LinkedWorkflowMenuQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+  const url = apiPaths.json_api.workflow.list__possible_linked
+  API_POST(url, {
+    nodePk: nodeID
+  }).then((response: LinkedWorkflowMenuQueryResp) => {
+    callBackFunction(response)
   })
 }
 
-//Get the workflows that can be selected for the project, shaped for a menu
+/**
+ * Get the workflows that can be selected for the project, shaped for a menu
+ * @param projectPk
+ * @param type_filter
+ * @param get_strategies
+ * @param self_only
+ * @param callBackFunction
+ */
 export function getWorkflowSelectMenuQuery(
   projectPk: number,
   type_filter: CfObjectType,
@@ -394,9 +315,9 @@ export function getWorkflowSelectMenuQuery(
   // updateFunction,
   //  receiptFunction
 ) {
+  const url = apiPaths.json_api.workflow.list__possible_added
   API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths
-      .get_possible_added_workflows,
+    url,
     {
       projectPk: projectPk,
       type_filter: type_filter,
@@ -408,48 +329,7 @@ export function getWorkflowSelectMenuQuery(
     //   receiptFunction(data)
     // }
   ).then((response: GetWorkflowSelectQueryResp) => {
-    if (response.action == VERB.POSTED) callBackFunction(response)
-    else window.fail_function(response.action)
+    callBackFunction(response)
   })
 }
 
-/*******************************************************
- * DELETE AND ARCHIVE (restorable 'SOFT' DELETE with flag)
- *******************************************************/
-export function archiveMutation(
-  objectId: number,
-  objectType: WorkSpaceType
-): Promise<EmptyPostResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self_soft
-
-  return API_POST<EmptyPostResp>(url, {
-    objectId: objectId,
-    objectType: objectType
-  })
-}
-
-//Causes the specified object to undelete itself
-export function unarchiveSelfMutation(
-  objectId: number,
-  objectType: any
-): Promise<EmptyPostResp> {
-  return API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.restore_self,
-    {
-      objectId: objectId,
-      objectType: objectType
-    }
-  )
-}
-
-export function deleteSelfHard(
-  objectId: number,
-  objectType: LibraryObjectType
-): Promise<EmptyPostResp> {
-  const url = COURSEFLOW_APP.globalContextData.path.post_paths.delete_self_soft
-
-  return API_POST<EmptyPostResp>(url, {
-    objectId: objectId,
-    objectType: objectType
-  })
-}

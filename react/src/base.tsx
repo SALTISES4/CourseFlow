@@ -1,23 +1,21 @@
 import { OuterContentWrap } from '@cf/mui/helper'
-import Sidebar from '@cfComponents/layout/Sidebar'
-import TopBar from '@cfComponents/layout/TopBar'
+import GlobalDialogs from '@cfComponents/globalNav/GlobalDialogs'
+import Sidebar from '@cfComponents/globalNav/Sidebar'
+import TopBar from '@cfComponents/globalNav/TopBar'
 import Alert from '@cfComponents/UIPrimitives/Alert'
-import * as Reducers from '@cfRedux/Reducers'
-import { configureStore } from '@reduxjs/toolkit'
 import HtmlReactParser from 'html-react-parser'
-import { SnackbarProvider } from 'notistack'
 import { ReactNode } from 'react'
-import { Provider } from 'react-redux'
+import * as React from 'react'
 
 type PropsType = {
   showNotifications?: boolean
   children: ReactNode
 }
 
-const { notifications, sidebar, topbar } = COURSEFLOW_APP.globalContextData
+const { appNotifications } = COURSEFLOW_APP.globalContextData
 
 const NotificationsAlert = ({ show }: { show: boolean }) => {
-  if (!notifications.updateNotifications.id || !show) {
+  if (!appNotifications.updateNotifications.id || !show) {
     return <></>
   }
   return (
@@ -25,50 +23,42 @@ const NotificationsAlert = ({ show }: { show: boolean }) => {
       <Alert
         sx={{ mt: 3 }}
         severity="update"
-        title={HtmlReactParser(notifications.updateNotifications.title)}
-        hideIfCookie={`cf-update-${notifications.updateNotifications.id}`}
+        title={HtmlReactParser(appNotifications.updateNotifications.title)}
+        hideIfCookie={`cf-update-${appNotifications.updateNotifications.id}`}
       />
     </OuterContentWrap>
   )
 }
 
 const Base = ({ showNotifications, children }: PropsType) => {
-  const store = configureStore({
-    reducer: Reducers.rootWorkflowReducer,
-    devTools: process.env.NODE_ENV !== 'production' // Enable Redux DevTools only in non-production environments
-  })
-
   return (
-    <Provider store={store}>
-      <SnackbarProvider
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
-        <div className="main-wrapper">
-          <div data-component="sidebar">
-            <Sidebar {...sidebar} />
+    <>
+      <div className="main-wrapper">
+        <div data-component="sidebar">
+          <Sidebar />
+        </div>
+
+        <div className="main-block">
+          <div data-component="topbar">
+            <TopBar />
+            <GlobalDialogs />
           </div>
 
-          <div className="main-block">
-            <div data-component="topbar">
-              <TopBar {...topbar} />
-            </div>
+          <NotificationsAlert show={showNotifications} />
 
-            <NotificationsAlert show={showNotifications} />
+          {/* still being used as a portal in comparison view  */}
+          <div className="titlebar"></div>
 
-            {/* still being used as a portal in comparison view  */}
-            <div className="titlebar"></div>
-
-            <div className="right-panel-wrapper">
-              <div id="container" className="body-wrapper">
-                {children}
-              </div>
+          <div className="right-panel-wrapper">
+            <div id="container" className="body-wrapper">
+              {children}
             </div>
           </div>
         </div>
+      </div>
 
-        <div id="popup-container"></div>
-      </SnackbarProvider>
-    </Provider>
+      <div id="popup-container"></div>
+    </>
   )
 }
 

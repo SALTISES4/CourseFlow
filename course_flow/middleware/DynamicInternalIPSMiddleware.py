@@ -1,5 +1,3 @@
-import socket
-
 from django.conf import settings
 
 

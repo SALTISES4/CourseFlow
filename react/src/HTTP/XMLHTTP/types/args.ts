@@ -1,5 +1,5 @@
+import { ObjectSetType } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
-import { ObjectSetType } from '@cfComponents/dialog/common/ProjectCreateDialog/type'
 import { SearchOption } from '@cfComponents/filters/types'
 
 // types of filter
@@ -27,18 +27,9 @@ export type LibraryObjectsSearchQueryArgs = {
   filters?: SearchOption[]
 }
 
-export type ToggleFavouriteQueryArgs = {
+// @todo rename this, it's not toggling
+export type ToggleFavouriteMutationArgs = {
   id: number
-  type: LibraryObjectType
+  objectType: LibraryObjectType
   favourite: boolean
-}
-
-/*******************************************************
- * ARGS
- *******************************************************/
-export type CreateProjectArgs = {
-  description: string
-  title: string
-  disciplines: number[]
-  objectSets: ObjectSetType[]
 }

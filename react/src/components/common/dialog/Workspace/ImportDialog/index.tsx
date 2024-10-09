@@ -1,4 +1,4 @@
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
 import { StyledDialog } from '@cfComponents/dialog/styles'
 import FileUploader from '@cfComponents/UIPrimitives/FileUploader'
@@ -34,17 +34,17 @@ R#EFERENCE TO ORIGIGNAL
   //       <>
   //         <ImportMenu
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'outcomes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'outcomes'
   //           }}
   //           actionFunction={this.closeModals}
   //         />
   //         <ImportMenu
   //           data={{
-  //             object_id: this.data.id,
-  //             object_type: this.objectType,
-  //             import_type: 'nodes'
+  //             objectId: this.data.id,
+  //             objectType: this.objectType,
+  //             importType: 'nodes'
   //           }}
   //           actionFunction={this.closeModals}
   //         />
@@ -55,14 +55,14 @@ R#EFERENCE TO ORIGIGNAL
  */
 function ImportDialog({ workflowId }: PropsType) {
   const { type, show, onClose } = useDialog([
-    DIALOG_TYPE.IMPORT_OUTCOMES,
-    DIALOG_TYPE.IMPORT_NODES
+    DialogMode.IMPORT_OUTCOMES,
+    DialogMode.IMPORT_NODES
   ])
   const [state, setState] = useState<StateType>(initialState)
   const { whitelisted, queued } = state
 
   const resourceType =
-    type === DIALOG_TYPE.IMPORT_OUTCOMES ? 'outcomes' : 'nodes'
+    type === DialogMode.IMPORT_OUTCOMES ? 'outcomes' : 'nodes'
 
   // The submit button is disabled unless all whitelisted File
   // are "ready" to be uploaded

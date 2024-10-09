@@ -1,11 +1,6 @@
 import { OuterContentWrap } from '@cf/mui/helper'
 import { Typography } from '@mui/material'
 
-import SectionDialogs from './SectionDialogs'
-import SectionLayouts from './SectionLayouts'
-
-import SectionSnackbar from './SectionSnackbar'
-
 const Styleguide = () => {
   return (
     <OuterContentWrap>
@@ -13,11 +8,7 @@ const Styleguide = () => {
         Courseflow Styleguide
       </Typography>
 
-      <SectionLayouts />
 
-      <SectionSnackbar />
-
-      <SectionDialogs />
     </OuterContentWrap>
   )
 }

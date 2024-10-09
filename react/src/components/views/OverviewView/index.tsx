@@ -12,8 +12,8 @@ import SortIcon from '@mui/icons-material/Sort'
 import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
+import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/API/library.rtk'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
-import { LibraryObjectsSearchQueryResp } from '@XMLHTTP/types/query'
 import { useEffect, useState } from 'react'
 import * as React from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
@@ -125,7 +125,7 @@ const LibrarySearchView = ({
 
     if (!data || isError) return <div>error</div>
 
-    const cards = formatLibraryObjects(data.data_package.results)
+    const cards = formatLibraryObjects(data.dataPackage.items)
 
     return (
       <>
@@ -150,10 +150,10 @@ const LibrarySearchView = ({
     if (!data || isError) return <div>error</div>
     return (
       <FilterWorkflows
-        workflows={formatLibraryObjects(data.data_package.results)} // @todo memoize
+        workflows={formatLibraryObjects(data.dataPackage.items)} // @todo memoize
         // @todo need to handle key down (enter) which will trigger the main search results
         onChange={(workflow) => {
-          const match = data.data_package.results.find(
+          const match = data.dataPackage.items.find(
             (el) => workflow.id === el.id
           )
           navigateToItem(match.id, match.type)

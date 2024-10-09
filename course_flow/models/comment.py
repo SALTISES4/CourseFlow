@@ -6,8 +6,13 @@ User = get_user_model()
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     text = models.TextField(
         blank=False,
     )
+
     created_on = models.DateTimeField(default=timezone.now)
+
+    #########################################################
+    # RELATIONS
+    #########################################################
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

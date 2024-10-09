@@ -28,9 +28,6 @@ class EditableComponentWithComments<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponent<P, S> {
-  static contextType = WorkFlowConfigContext
-
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
 
   //Adds a button that opens/closes the comments dialogue
   // @todo sometimes dota is not used
@@ -53,19 +50,19 @@ class EditableComponentWithComments<
     COURSEFLOW_APP.tinyLoader.startLoad()
     getCommentsForObjectQuery(
       data.id,
-      Constants.object_dictionary[this.objectType],
-      (response_data) => {
+      Constants.objectDictionary[this.objectType],
+      (responseData) => {
         this.props.dispatch(
           ActionCreator.reloadCommentsAction(
             this.props.data.id,
-            Constants.object_dictionary[this.objectType],
-            response_data.data_package
+            Constants.objectDictionary[this.objectType],
+            responseData.dataPackage
           )
         )
         if (show_comments) {
           this.setState({ show_comments: true })
         }
-        //this.setState({show_comments:true,comment_data:response_data.data_package});
+        //this.setState({show_comments:true,comment_data:responseData.dataPackage});
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
@@ -83,14 +80,17 @@ class EditableComponentWithComments<
           titleText={_t('Comments')}
           handleClick={this.commentClick.bind(this)}
         />
+        {/*
+
+        */}
         <CommentBox
           show={this.state.show_comments}
           comments={this.props.data.comments}
           parent={this}
           // renderer={this.props.renderer} // not used
           workflowId={this.context.workflow.workflowId}
-          unread_comments={this.context.workflow.unread_comments}
-          read_only={this.context.permissions.workflowPermission.readOnly}
+          unreadComments={this.context.workflow.unreadComments}
+          readOnly={this.context.permissions.workflowPermissions.readOnly}
           add_comments={this.context.workflow.add_comments}
         />
       </>

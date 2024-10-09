@@ -1,20 +1,18 @@
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { OuterContentWrap } from '@cf/mui/helper'
+import strings from '@cf/utility/strings'
 import Box from '@mui/material/Box'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import { styled } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { useMutation, useQuery } from '@tanstack/react-query'
 import {
-  getNotificationSettings,
-  updateNotificationSettings
-} from '@XMLHTTP/API/user'
-import {
-  NotificationSettingsQueryResp,
-  NotificationSettingsUpdateQueryResp
-} from '@XMLHTTP/types/query.js'
-import React, { useEffect, useReducer } from 'react'
+  useGetNotificationSettingsQuery,
+  useUpdateNotificationSettingsMutation
+} from '@XMLHTTP/API/user.rtk'
+import React, { useEffect } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 const PageTitle = styled(Box)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -26,71 +24,56 @@ const PageTitle = styled(Box)(({ theme }) => ({
   }
 }))
 
-// @todo types
-// NOTE: Using reducer here in anticipation of more complex settings page
-// with various different controls
-function reducer(state, action) {
-  switch (action.type) {
-    case 'SET_UPDATES':
-      return {
-        ...state,
-        notifications: action.value
-      }
-  }
-
-  return state
-}
-
 const NotificationsSettingsPage = () => {
   /*******************************************************
    * QUERY HOOKS
    *******************************************************/
-  const { data, error, isLoading, isError } =
-    useQuery<NotificationSettingsQueryResp>({
-      queryKey: ['getNotificationSettings'],
-      queryFn: getNotificationSettings
-    })
+  const {
+    data,
+    error,
+    isLoading,
+    isError: isQueryError
+  } = useGetNotificationSettingsQuery()
 
-  const { mutate } = useMutation<NotificationSettingsUpdateQueryResp>({
-    mutationFn: updateNotificationSettings,
-    onSuccess: (newNotificationsValue) => {
-      // Dispatch the action to update local state after the API call is successful
-      dispatch({
-        type: 'SET_UPDATES',
-        value: newNotificationsValue
-      })
-    },
-    onError: (error) => {
-      console.error('Error updating notifications:', error)
-    }
-  })
+  const [mutate, { isSuccess, isError, data: updateData }] =
+    useUpdateNotificationSettingsMutation()
+
+    const { onError, onSuccess } = useGenericMsgHandler()
 
   /*******************************************************
-   *
+   * FORM HOOK
    *******************************************************/
-  const [state, dispatch] = useReducer(reducer, {
-    notifications: false
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors }
+  } = useForm({
+    defaultValues: {
+      notifications: false
+    }
   })
 
   useEffect(() => {
     if (data) {
-      dispatch({
-        type: 'SET_UPDATES',
-        value: data.data_package.formData.receiveNotifications
-      })
+      reset({ notifications: data.dataPackage.receiveNotifications })
     }
-  }, [data])
+  }, [data, reset])
 
   /*******************************************************
    * HANDLERS
    *******************************************************/
-  function onUpdatesSwitchChange(e) {
-    const newState = {
-      ...state,
-      notifications: !state.notifications
-    }
-
-    mutate(newState)
+  const onSwitchChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue('notifications', event.target.checked)
+    await handleSubmit(async (data) => {
+      try {
+        const resp = await mutate(data).unwrap()
+        onSuccess(resp)
+      } catch (err) {
+        onError(err)
+      }
+    })()
   }
 
   /*******************************************************
@@ -99,22 +82,29 @@ const NotificationsSettingsPage = () => {
   return (
     <OuterContentWrap>
       <PageTitle>
-        <Typography variant="h1">
-          {COURSEFLOW_APP.globalContextData.strings.notification_settings}
-        </Typography>
+        <Typography variant="h1">{strings.notificationSettings}</Typography>
       </PageTitle>
 
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={state.notifications}
-              onChange={onUpdatesSwitchChange}
-            />
-          }
-          label={COURSEFLOW_APP.globalContextData.strings.product_updates_agree}
-        />
-      </FormGroup>
+      <form>
+        <FormGroup>
+          <Controller
+            name="notifications"
+            control={control}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...field}
+                    onChange={onSwitchChange}
+                    checked={field.value}
+                  />
+                }
+                label={strings.productUpdatesAgree}
+              />
+            )}
+          />
+        </FormGroup>
+      </form>
     </OuterContentWrap>
   )
 }

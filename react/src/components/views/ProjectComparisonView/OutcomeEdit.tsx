@@ -89,7 +89,7 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected<
 const mapStateToProps = (state: AppState): ConnectedProps => ({
   data: getSortedOutcomesFromOutcomeWorkflowSet(
     state,
-    state.workflow.outcomeworkflow_set
+    state.workflow.outcomeworkflowSet
   ),
   workflow: state.workflow
 })

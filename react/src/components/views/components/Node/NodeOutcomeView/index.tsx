@@ -42,19 +42,19 @@ class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop<PropsType> {
     const data = this.props.data
 
     // @todo these vars not used
-    // const data_override = data.represents_workflow
-    //   ? { ...data, ...data.linked_workflow_data, id: data.id }
+    // const data_override = data.representsWorkflow
+    //   ? { ...data, ...data.linkedWorkflowData, id: data.id }
     //   : data
-    // const selection_manager = this.props.renderer.selection_manager
+    // const selectionManager = this.props.renderer.selectionManager
 
     const style: React.CSSProperties = {
       backgroundColor: Constants.getColumnColour(this.props.column)
     }
     const cssClasses = [
-      'node column-' + data.column + ' ' + Constants.node_keys[data.node_type],
-      data.is_dropped ? 'dropped' : '',
+      'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],
+      data.isDropped ? 'dropped' : '',
       // @ts-ignore
-      data.lock ? 'locked locked-' + data.lock.user_id : '' // @todo it seems like data.lock will never be defined, verify this
+      data.lock ? 'locked locked-' + data.lock.userId : '' // @todo it seems like data.lock will never be defined, verify this
     ].join(' ')
 
     // let comments // @todo verify,  comments is never defined

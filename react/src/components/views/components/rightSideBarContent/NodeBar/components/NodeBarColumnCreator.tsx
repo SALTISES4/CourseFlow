@@ -21,7 +21,7 @@ class NodeBarColumnCreator extends NodeBarColumnUnconnected<NodeBarColumnUnconne
     // @ts-ignore
     $(this.mainDiv.current)[0].dataDraggable = {
       column: null,
-      column_type: this.props.columnType
+      columnType: this.props.columnType
     }
   }
 

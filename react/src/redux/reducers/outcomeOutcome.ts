@@ -36,14 +36,14 @@ function outcomeOutcomeReducer(
     case OutcomeOutcomeActions.CHANGE_ID:
       return state.map((item) =>
         item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, no_drag: false }
+          ? { ...item, id: action.payload.new_id, noDrag: false }
           : item
       )
 
     case OutcomeOutcomeActions.MOVED_TO:
       return state.map((item) =>
         item.id === action.payload.id
-          ? { ...item, parent: action.payload.new_parent, no_drag: true }
+          ? { ...item, parent: action.payload.new_parent, noDrag: true }
           : item
       )
 
@@ -70,93 +70,93 @@ function outcomeOutcomeReducer(
   //   }
   //
   //   case 'refreshStoreData': {
-  //     const new_state = state.slice()
+  //     const newState = state.slice()
   //     if (action.payload.outcomeoutcome) {
   //       for (var i = 0; i < action.payload.outcomeoutcome.length; i++) {
   //         const new_obj = action.payload.outcomeoutcome[i]
   //         let added = false
-  //         for (let j = 0; j < new_state.length; j++) {
-  //           if (new_state[j].id == new_obj.id) {
-  //             new_state.splice(j, 1, new_obj)
+  //         for (let j = 0; j < newState.length; j++) {
+  //           if (newState[j].id == new_obj.id) {
+  //             newState.splice(j, 1, new_obj)
   //             added = true
   //             break
   //           }
   //         }
   //         if (added) continue
-  //         new_state.push(new_obj)
+  //         newState.push(new_obj)
   //       }
   //     }
-  //     return new_state
+  //     return newState
   //   }
   //
   //   case 'outcomeoutcome/changeID': {
   //     for (var i = 0; i < state.length; i++) {
   //       if (state[i].id == action.payload.old_id) {
-  //         var new_state = state.slice()
-  //         new_state[i] = {
-  //           ...new_state[i],
+  //         var newState = state.slice()
+  //         newState[i] = {
+  //           ...newState[i],
   //           id: action.payload.new_id,
-  //           no_drag: false
+  //           noDrag: false
   //         }
-  //         return new_state
+  //         return newState
   //       }
   //     }
   //     return state
   //   }
   //
   //   case 'outcomeoutcome/movedTo': {
-  //     new_state = state.slice()
+  //     newState = state.slice()
   //     for (var i = 0; i < state.length; i++) {
   //       if (state[i].id == action.payload.id) {
-  //         new_state[i] = {
+  //         newState[i] = {
   //           ...state[i],
   //           parent: action.payload.new_parent,
-  //           no_drag: true
+  //           noDrag: true
   //         }
   //       }
   //     }
-  //     return new_state
+  //     return newState
   //   }
   //
   //   case 'outcome/deleteSelf': {
   //     for (var i = 0; i < state.length; i++) {
   //       if (state[i].id == action.payload.parent_id) {
-  //         var new_state = state.slice()
-  //         new_state.splice(i, 1)
-  //         return new_state
+  //         var newState = state.slice()
+  //         newState.splice(i, 1)
+  //         return newState
   //       }
   //     }
   //     return state
   //   }
   //
-  //   case 'outcome_base/insertBelow': {
-  //     const new_state = state.slice()
+  //   case 'outcomeBase/insertBelow': {
+  //     const newState = state.slice()
   //     if (action.payload.children) {
   //       for (
   //         var i = 0;
   //         i < action.payload.children.outcomeoutcome.length;
   //         i++
   //       ) {
-  //         new_state.push(action.payload.children.outcomeoutcome[i])
+  //         newState.push(action.payload.children.outcomeoutcome[i])
   //       }
   //     }
-  //     return new_state
+  //     return newState
   //   }
   //
   //   case 'outcome/insertChild':
   //   case 'outcome/insertBelow': {
-  //     const new_state = state.slice()
-  //     new_state.push(action.payload.new_through)
+  //     const newState = state.slice()
+  //     newState.push(action.payload.new_through)
   //     if (action.payload.children) {
   //       for (
   //         var i = 0;
   //         i < action.payload.children.outcomeoutcome.length;
   //         i++
   //       ) {
-  //         new_state.push(action.payload.children.outcomeoutcome[i])
+  //         newState.push(action.payload.children.outcomeoutcome[i])
   //       }
   //     }
-  //     return new_state
+  //     return newState
   //   }
   //   default:
   //     return state

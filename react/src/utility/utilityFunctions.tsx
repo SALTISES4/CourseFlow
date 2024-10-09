@@ -1,10 +1,21 @@
+import appRoutes, { CFRoutes } from '@cf/router/appRoutes'
+import { WorkSpaceType } from '@cf/types/enum'
 import { MaybeWithId, hasId } from '@cf/types/typeGuards'
 import * as React from 'react'
+import { generatePath } from 'react-router-dom'
+
+type GenericObject = {
+  [key: string]: string | GenericObject
+}
 
 /*******************************************************
  * ARRAYS / OBJECTS
  *******************************************************/
-//take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
+/**
+ * take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
+ * @param object_list
+ * @param id_list
+ */
 export function filterThenSortByID<T extends object>(
   object_list: MaybeWithId<T>[],
   id_list: any[]
@@ -16,6 +27,59 @@ export function filterThenSortByID<T extends object>(
     .sort((a, b) => id_list.indexOf(a.id) - id_list.indexOf(b.id))
 }
 
+/**
+ *
+ * @param obj
+ * @param prefix
+ */
+export function addPrefixToLeafStrings<T>(
+  obj: GenericObject,
+  prefix: string
+): T {
+  const traverse = (currentObj: GenericObject): GenericObject => {
+    Object.keys(currentObj).forEach((key) => {
+      if (typeof currentObj[key] === 'string') {
+        currentObj[key] = prefix + currentObj[key]
+      } else if (
+        typeof currentObj[key] === 'object' &&
+        currentObj[key] !== null
+      ) {
+        if (typeof currentObj === 'object') {
+          currentObj[key] = traverse(currentObj[key] as GenericObject)
+        }
+      }
+    })
+    return currentObj
+  }
+
+  const clonedObj = JSON.parse(JSON.stringify(obj))
+  return traverse(clonedObj) as T
+}
+
+/**
+ *
+ * @param obj
+ */
+export function wrapLeafStrings<T>(obj: GenericObject): T {
+  const traverse = (currentObj: GenericObject): GenericObject => {
+    Object.keys(currentObj).forEach((key) => {
+      if (typeof currentObj[key] === 'string') {
+        // Wrap the string with _t()
+        currentObj[key] = _t(currentObj[key] as string)
+      } else if (
+        typeof currentObj[key] === 'object' &&
+        currentObj[key] !== null
+      ) {
+        currentObj[key] = traverse(currentObj[key] as GenericObject)
+      }
+    })
+    return currentObj
+  }
+
+  const clonedObj = JSON.parse(JSON.stringify(obj))
+  return traverse(clonedObj) as T
+}
+
 /*******************************************************
  * STRINGS
  *******************************************************/
@@ -24,12 +88,18 @@ export function getInitials(name: string): string {
   return `${split[0][0]}${split[split.length - 1][0]}`
 }
 
-// thin wrapper around the glbal python gettext method
+/**
+ * thin wrapper around the glbal python gettext method
+ * @param str
+ */
 export const _t = (str: string) => {
   return window.gettext(str)
 }
 
-//capitalize first letter of each word in a string
+/**
+ * capitalize first letter of each word in a string
+ * @param str
+ */
 export function capWords(str: string) {
   return str
     .split(' ')
@@ -60,7 +130,10 @@ export function capFirst(str) {
   return str[0].toUpperCase() + str.substr(1)
 }
 
-// Do a bit of cleaning to unescape certain characters and display them correctly
+/**
+ * Do a bit of cleaning to unescape certain characters and display them correctly
+ * @param string
+ */
 export function unescapeCharacters(string) {
   return string
     .replace(/\&amp;/g, '&')
@@ -70,8 +143,8 @@ export function unescapeCharacters(string) {
 
 export function getUserDisplay(user) {
   let str = ''
-  if (user.first_name) str += user.first_name + ' '
-  if (user.last_name) str += user.last_name + ' '
+  if (user.firstName) str += user.firstName + ' '
+  if (user.lastName) str += user.lastName + ' '
   if (!str && user.username) str = user.username + ' '
   return str || user.email
 }
@@ -80,7 +153,10 @@ export function getUserDisplay(user) {
  * UI
  *******************************************************/
 
-//Get the offset from the canvas of a specific jquery object
+/**
+ * Get the offset from the canvas of a specific jquery object
+ * @param node_dom
+ */
 export function getCanvasOffset(node_dom) {
   const node_offset = node_dom.offset()
   const canvasElement = document.querySelector('.workflow-canvas')
@@ -92,7 +168,12 @@ export function getCanvasOffset(node_dom) {
   return node_offset
 }
 
-//Check if the mouse event is within a box with the given padding around the element
+/**
+ * Check if the mouse event is within a box with the given padding around the element
+ * @param evt
+ * @param elem
+ * @param padding
+ */
 export function mouseOutsidePadding(evt, elem, padding) {
   if (elem.length === 0) return true
   const offset = elem.offset()
@@ -106,7 +187,10 @@ export function mouseOutsidePadding(evt, elem, padding) {
   )
 }
 
-//Get translate from an svg transform
+/**
+ * Get translate from an svg transform
+ * @param transform
+ */
 export function getSVGTranslation(transform) {
   return transform
     .substring(transform.indexOf('translate(') + 10, transform.indexOf(')'))
@@ -136,7 +220,11 @@ export const debounce = (func, timeout = 300) => {
   }
 }
 
-//A utility function to trigger an event on each element. This is used to avoid .trigger, which bubbles (we will be careful to only trigger events on the elements that need them)
+/**
+ * A utility function to trigger an event on each element. This is used to avoid .trigger, which bubbles (we will be careful to only trigger events on the elements that need them)
+ * @param trigger
+ * @param eventname
+ */
 export function triggerHandlerEach(trigger, eventname) {
   // @todo this has beeen moved away from jQuery but we aren't sure yet whether the passed element
   // trigger will work outside a jquery object yet
@@ -155,7 +243,11 @@ export function triggerHandlerEach(trigger, eventname) {
 /*******************************************************
  *  Type Related
  *******************************************************/
-// use the enum proxy stopgap
+/**
+ * use the enum proxy stopgap
+ * @param baseEnum
+ * @constructor
+ */
 export function Enum(baseEnum) {
   return new Proxy(baseEnum, {
     get(target, name) {
@@ -196,12 +288,16 @@ export function formatDate(dateString: Date) {
   })
   return formatter.format(date)
 }
+
 /*******************************************************
  * SORT / MISC
  *******************************************************/
 
-// @todo move to component
-// Get the little tag that sits in front of usernames signifying the role
+/**
+ *  Get the little tag that sits in front of usernames signifying the role
+ *  @todo move to component
+ * @param user_type
+ */
 export function getUserTag(user_type) {
   function permission_translate() {
     return {
@@ -218,9 +314,13 @@ export function getUserTag(user_type) {
   )
 }
 
-//Check if a cfobject (such as a node or an outcome) should be hidden based on its sets and the currently active object sets
+/**
+ * Check if a cfobject (such as a node or an outcome) should be hidden based on its sets and the currently active object sets
+ * @param data
+ * @param objectsets
+ */
 export function checkSetHidden(data, objectsets) {
-  if (data.sets.length === 0 || !objectsets) {
+  if (!(data?.sets.length > 0) || !objectsets) {
     return false
   }
 
@@ -232,7 +332,48 @@ export function pushOrCreate(obj, index, value) {
   else obj[index] = [value]
 }
 
-// Find and return the best way to display a user's name, username, or email (if that's all we have)
+/**
+ * Find and return the best way to display a user's name, username, or email (if that's all we have)
+ * @param k1
+ * @param k2
+ */
 export function cantorPairing(k1, k2) {
   return parseInt(((k1 + k2) * (k1 + k2 + 1)) / 2 + k2)
+}
+
+export function getPathByObject(id: number, object: WorkSpaceType) {
+  switch (object) {
+    case WorkSpaceType.PROJECT:
+      return generatePath(CFRoutes.PROJECT, { id: String(id) })
+    case WorkSpaceType.WORKFLOW:
+      return generatePath(CFRoutes.WORKFLOW, { id: String(id) })
+  }
+  return CFRoutes.HOME
+}
+
+export class Utility {
+  static replaceEmptyStringsWithNull(obj: any): any {
+    // Check if the object is an array
+    if (Array.isArray(obj)) {
+      return obj.map(Utility.replaceEmptyStringsWithNull)
+    }
+
+    // Check if the object is not null and is an object
+    if (obj !== null && typeof obj === 'object') {
+      return Object.keys(obj).reduce(
+        (acc, key) => {
+          const value = obj[key]
+
+          // Recursively apply for nested objects or arrays
+          acc[key] = Utility.replaceEmptyStringsWithNull(value)
+
+          return acc
+        },
+        {} as { [key: string]: any }
+      )
+    }
+
+    // Replace empty string with null
+    return obj === '' ? null : obj
+  }
 }

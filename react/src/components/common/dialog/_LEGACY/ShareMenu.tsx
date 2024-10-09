@@ -7,7 +7,6 @@ import AddLinkIcon from '@mui/icons-material/AddLink'
 import BlockIcon from '@mui/icons-material/Block'
 import CloseIcon from '@mui/icons-material/Close'
 import CodeIcon from '@mui/icons-material/Code'
-import DoneIcon from '@mui/icons-material/Done'
 import LinkIcon from '@mui/icons-material/Link'
 import LinkOffIcon from '@mui/icons-material/LinkOff'
 import PublicIcon from '@mui/icons-material/Public'
@@ -31,11 +30,11 @@ type StateType = {
   comment: EUser[]
   student: EUser[]
   userlist: EUser[]
-  cannot_change: number[]
+  cannotChange: number[]
   published?: boolean
-  public_view?: boolean
-  saltise_user: boolean
-  is_template: boolean
+  publicView?: boolean
+  saltiseUser: boolean
+  isTemplate: boolean
 }
 
 /*******************************************************
@@ -51,9 +50,9 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       comment: [],
       student: [],
       userlist: [],
-      cannot_change: [],
-      saltise_user: false,
-      is_template: false
+      cannotChange: [],
+      saltiseUser: false,
+      isTemplate: false
     }
   }
 
@@ -72,17 +71,17 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
           edit: response.editors,
           student: response.students,
           published: response.published,
-          public_view: response.public_view,
-          cannot_change: response.cannot_change,
-          saltise_user: response.saltise_user,
-          is_template: response.is_template
+          publicView: response.publicView,
+          cannotChange: response.cannotChange,
+          saltiseUser: response.saltiseUser,
+          isTemplate: response.isTemplate
         })
       }
     )
   }
 
-  togglePublicView(public_view) {
-    if (public_view) {
+  togglePublicView(publicView) {
+    if (publicView) {
       if (
         window.confirm(
           _t(
@@ -93,9 +92,9 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         updateValueInstantQuery(
           this.props.data.id,
           'workflow',
-          { public_view: public_view },
+          { publicView: publicView },
           () => {
-            this.setState({ public_view: public_view })
+            this.setState({ publicView: publicView })
           }
         )
       }
@@ -103,9 +102,9 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       updateValueInstantQuery(
         this.props.data.id,
         'workflow',
-        { public_view: public_view },
+        { publicView: publicView },
         () => {
-          this.setState({ public_view: public_view })
+          this.setState({ publicView: publicView })
         }
       )
     }
@@ -133,22 +132,22 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
 
   toggleTemplate() {
     const component = this
-    const is_template = !this.state.is_template
+    const isTemplate = !this.state.isTemplate
     updateValueInstantQuery(
       component.props.data.id,
       component.props.data.type,
-      { is_template: is_template },
-      () => component.setState({ is_template: is_template })
+      { isTemplate: isTemplate },
+      () => component.setState({ isTemplate: isTemplate })
     )
   }
 
-  setUserPermission(permission_type, user) {
+  setUserPermission(permissionType, user) {
     COURSEFLOW_APP.tinyLoader.startLoad()
     setUserPermission(
       user.id,
       this.props.data.id,
       this.props.data.type,
-      permission_type,
+      permissionType,
       () => {
         getUsersForObjectQueryLegacy(
           this.props.data.id,
@@ -180,12 +179,12 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       )
 
     if (data.type !== 'project') {
-      const public_view = this.state.public_view
-      if (!public_view)
+      const publicView = this.state.publicView
+      if (!publicView)
         return (
           <div
             className="public-link-button  hover-shade"
-            onClick={this.togglePublicView.bind(this, !public_view)}
+            onClick={this.togglePublicView.bind(this, !publicView)}
           >
             <div className="public-link-icon">
               <AddLinkIcon />
@@ -295,7 +294,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
           </div>,
           <div
             className="public-link-button public-link-remove  hover-shade"
-            onClick={this.togglePublicView.bind(this, !public_view)}
+            onClick={this.togglePublicView.bind(this, !publicView)}
           >
             <div className="public-link-icon">
               <LinkOffIcon />
@@ -311,7 +310,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
   Publication = () => {
     const published = this.state.published
     const data = this.props.data
-    if (data.type === 'project' || data.is_strategy) {
+    if (data.type === 'project' || data.isStrategy) {
       let public_class = 'big-button make-public'
       let private_class = 'big-button hover-shade make-private'
 
@@ -407,12 +406,12 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
   }
 
   IsTemplate = () => {
-    if (this.state.published && this.state.saltise_user) {
+    if (this.state.published && this.state.saltiseUser) {
       return [
         <input
           id="toggle-is-template"
           type="checkbox"
-          checked={this.state.is_template}
+          checked={this.state.isTemplate}
           onClick={this.toggleTemplate.bind(this)}
         />,
         <label htmlFor="toggle-is-template">
@@ -435,7 +434,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         <UserLabel
           user={user}
           type={'edit'}
-          cannot_change={this.state.cannot_change}
+          cannotChange={this.state.cannotChange}
           permissionChange={this.setUserPermission.bind(this)}
         />
       ))
@@ -443,7 +442,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       <UserLabel
         user={user}
         type={'view'}
-        cannot_change={this.state.cannot_change}
+        cannotChange={this.state.cannotChange}
         permissionChange={this.setUserPermission.bind(this)}
       />
     ))
@@ -451,7 +450,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       <UserLabel
         user={user}
         type={'comment'}
-        cannot_change={this.state.cannot_change}
+        cannotChange={this.state.cannotChange}
         permissionChange={this.setUserPermission.bind(this)}
       />
     ))
@@ -459,16 +458,16 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       <UserLabel
         user={user}
         type={'student'}
-        cannot_change={this.state.cannot_change}
+        cannotChange={this.state.cannotChange}
         permissionChange={this.setUserPermission.bind(this)}
       />
     ))
 
-    let share_info
+    let shareInfo
     if (data.type === 'project') {
-      share_info = _t('Invite collaborators to project and its workflows')
+      shareInfo = _t('Invite collaborators to project and its workflows')
     } else {
-      share_info = _t(
+      shareInfo = _t(
         'Invite collaborators to workflow and grant view permissions to the project'
       )
     }
@@ -498,7 +497,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         <h2>
           {_t('Share') + ' ' + _t(data.type) + ' '}
           {/*<WorkflowTitle*/}
-          {/*  no_hyperlink={true}*/}
+          {/*  noHyperlink={true}*/}
           {/*  data={this.props.data}*/}
           {/*  class_name={'inline'}*/}
           {/*/>*/}
@@ -512,7 +511,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         <hr />
         <UserAdd
           permissionChange={this.setUserPermission.bind(this)}
-          share_info={share_info}
+          shareInfo={shareInfo}
         />
         {shared_with}
         <div

@@ -6,13 +6,13 @@ import ComponentWithToggleDrop, {
 import * as React from 'react'
 
 type PropsType = {
-  css_class?: string
+  cssClass?: string
   defaultText: string
   text?: string | null
 } & ComponentWithToggleProps
 
 type StateType = {
-  is_dropped?: boolean
+  isDropped?: boolean
   overflow?: boolean
 }
 
@@ -37,7 +37,7 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
    * FUNCTIONS
    *******************************************************/
   checkSize() {
-    if (!this.state.is_dropped) {
+    if (!this.state.isDropped) {
       const isOverflowing =
         this.mainDiv.current.scrollHeight > this.mainDiv.current.clientHeight
       if (this.state.overflow !== isOverflowing) {
@@ -55,7 +55,7 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
       return (
         <div
           onClick={(evt) => {
-            this.setState({ is_dropped: !this.state.is_dropped })
+            this.setState({ isDropped: !this.state.isDropped })
             evt.stopPropagation()
           }}
           className="collapsed-text-show-more"
@@ -72,21 +72,21 @@ class CollapsibleText extends ComponentWithToggleDrop<PropsType, StateType> {
    *******************************************************/
   render() {
     const cssClasses = [
-      this.props.css_class ?? '',
+      this.props.cssClass ?? '',
       'title-text collapsible-text',
-      this.state.is_dropped ? 'dropped' : ''
+      this.state.isDropped ? 'dropped' : ''
     ].join(' ')
 
-    // if (this.props.css_class) css_class = this.props.css_class + ' '
-    // css_class += 'title-text collapsible-text'
+    // if (this.props.cssClass) cssClass = this.props.cssClass + ' '
+    // cssClass += 'title-text collapsible-text'
 
     // let drop_text = _t('show more')
-    // if (this.state.is_dropped) {
-    //   css_class += ' dropped'
+    // if (this.state.isDropped) {
+    //   cssClass += ' dropped'
     //   drop_text = _t('show less')
     // }
 
-    const dropText = this.state.is_dropped ? _t('show less') : _t('show more')
+    const dropText = this.state.isDropped ? _t('show less') : _t('show more')
 
     const text =
       (this.props.text == null || this.props.text == '') &&

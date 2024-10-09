@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import Group, User
 
-from course_flow.utils import get_model_from_str
+from course_flow.services import DAO
 
 
 def make_object(model_key, author=None):

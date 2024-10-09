@@ -12,11 +12,7 @@ from course_flow.serializers.mixin import (
     DescriptionSerializerMixin,
     TitleSerializerMixin,
 )
-from course_flow.utils import (
-    dateTimeFormat,
-    get_unique_outcomehorizontallinks,
-    linkIDMap,
-)
+from course_flow.services import DAO, Utility
 
 
 class RefreshSerializerOutcome(serializers.ModelSerializer):
@@ -31,12 +27,13 @@ class RefreshSerializerOutcome(serializers.ModelSerializer):
     outcome_horizontal_links = serializers.SerializerMethodField()
     outcome_horizontal_links_unique = serializers.SerializerMethodField()
 
-    def get_outcome_horizontal_links(self, instance):
+    @staticmethod
+    def get_outcome_horizontal_links(instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
             return []
         return list(
             map(
-                linkIDMap,
+                Utility.linkIDMap,
                 instance.outcome_horizontal_links.exclude(
                     Q(parent_outcome__deleted=True)
                     | Q(parent_outcome__parent_outcomes__deleted=True)
@@ -47,11 +44,15 @@ class RefreshSerializerOutcome(serializers.ModelSerializer):
             )
         )
 
-    def get_outcome_horizontal_links_unique(self, instance):
+    @staticmethod
+    def get_outcome_horizontal_links_unique(instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
             return []
         return list(
-            map(linkIDMap, get_unique_outcomehorizontallinks(instance))
+            map(
+                Utility.linkIDMap,
+                DAO.get_unique_outcomehorizontallinks(instance),
+            )
         )
 
 
@@ -79,22 +80,11 @@ class OutcomeSerializerShallow(
             "sets",
         ]
 
-        # read_only_fields = [
-        #     "id",
-        #     "child_outcome_links",
-        #     "outcome_horizontal_links",
-        #     "outcome_horizontal_links_unique",
-        #     "depth",
-        #     "type",
-        #     "comments",
-        #     "sets",
-        # ]
-
     child_outcome_links = serializers.SerializerMethodField()
     outcome_horizontal_links = serializers.SerializerMethodField()
     outcome_horizontal_links_unique = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
-    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
     def get_type(self, instance):
         my_type = self.context.get("type", None)
@@ -102,12 +92,13 @@ class OutcomeSerializerShallow(
             my_type = instance.get_workflow().type + " outcome"
         return my_type
 
-    def get_outcome_horizontal_links(self, instance):
+    @staticmethod
+    def get_outcome_horizontal_links(instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
             return []
         return list(
             map(
-                linkIDMap,
+                Utility.linkIDMap,
                 instance.outcome_horizontal_links.exclude(
                     Q(parent_outcome__deleted=True)
                     | Q(parent_outcome__parent_outcomes__deleted=True)
@@ -118,19 +109,24 @@ class OutcomeSerializerShallow(
             )
         )
 
-    def get_outcome_horizontal_links_unique(self, instance):
+    @staticmethod
+    def get_outcome_horizontal_links_unique(instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
             return []
         return list(
-            map(linkIDMap, get_unique_outcomehorizontallinks(instance))
+            map(
+                Utility.linkIDMap,
+                DAO.get_unique_outcomehorizontallinks(instance),
+            )
         )
 
-    def get_child_outcome_links(self, instance):
+    @staticmethod
+    def get_child_outcome_links(instance):
         links = instance.child_outcome_links.filter(child__deleted=False)
         if len(links) == 0:
             return []
         links = links.order_by("rank")
-        return list(map(linkIDMap, links))
+        return list(map(Utility.linkIDMap, links))
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)

@@ -10,13 +10,16 @@ import {
   TOutcomeHorizontalLinkByID,
   getOutcomeHorizontalLinkByID
 } from '@cfFindState'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TWorkflow } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-type ConnectedProps = TOutcomeHorizontalLinkByID
+type ConnectedProps = {
+  workflow: TWorkflow
+  outcomeHorizontalLink: TOutcomeHorizontalLinkByID
+}
 type OwnProps = { parentID?: number } & ComponentWithToggleProps
 type PropsType = ConnectedProps & OwnProps
 
@@ -57,19 +60,16 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
     if (
       window.confirm(
         _t('Are you sure you want to delete this ') +
-          Constants.get_verbose(
-            this.props.data,
-            this.objectType
-          ).toLowerCase() +
+          Constants.getVerbose(this.props.data, this.objectType).toLowerCase() +
           '?'
       )
     ) {
       COURSEFLOW_APP.tinyLoader.startLoad()
       updateOutcomehorizontallinkDegree(
         data.outcome,
-        data.parent_outcome,
+        data.parentOutcome,
         0,
-        (response_data) => {
+        (responseData) => {
           COURSEFLOW_APP.tinyLoader.endLoad()
         }
       )
@@ -87,16 +87,16 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
     const indicator = $(this.mainDiv.current).closest('.outcome-node-indicator')
 
     if (indicator.length >= 0) {
-      const num_outcomenodes = indicator
+      const numOutcomenodes = indicator
         .children('.outcome-node-container')
         .children('.outcome-node:not([style*="display: none"])').length
 
       indicator
         .children('.outcome-node-indicator-number')
         // @ts-ignore // @todo what is this
-        .html(num_outcomenodes)
+        .html(numOutcomenodes)
 
-      if (num_outcomenodes == 0) {
+      if (numOutcomenodes == 0) {
         indicator.css('display', 'none')
       } else {
         indicator.css('display', '')
@@ -129,7 +129,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const data = this.props.outcomeHorizontalLink.data
     //It's possible we don't actually have this data, if the horizontal link is dead
     if (!data) return null
     return (
@@ -138,7 +138,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
         id={data.id}
         ref={this.mainDiv}
       >
-        {!this.context.permissions.workflowPermission.readOnly && (
+        {this.props.workflow.workflowPermissions.write && (
           <div>
             <this.DeleteSelf data={data} />{' '}
           </div>
@@ -147,7 +147,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
         <SimpleOutcome
           // renderer={this.context}
           checkHidden={this.checkHidden.bind(this)}
-          objectId={data.parent_outcome}
+          objectId={data.parentOutcome}
           parentID={this.props.parentID}
           throughParentID={data.id}
         />
@@ -159,8 +159,14 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
 const mapOutcomeHorizontalLinkStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TOutcomeHorizontalLinkByID => {
-  return getOutcomeHorizontalLinkByID(state, ownProps.objectId)
+): ConnectedProps => {
+  return {
+    outcomeHorizontalLink: getOutcomeHorizontalLinkByID(
+      state,
+      ownProps.objectId
+    ),
+    workflow: state.workflow
+  }
 }
 
 /*******************************************************

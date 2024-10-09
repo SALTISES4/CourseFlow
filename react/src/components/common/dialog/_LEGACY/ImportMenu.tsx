@@ -1,3 +1,5 @@
+// @ts-nocheck
+import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as React from 'react'
 // import $ from 'jquery'
@@ -57,19 +59,19 @@ class ImportMenu extends React.Component<PropsType> {
             type="hidden"
             id="objectId"
             name="objectId"
-            value={JSON.stringify(this.props.data.object_id)}
+            value={JSON.stringify(this.props.data.objectId)}
           />
           <input
             type="hidden"
             id="objectType"
             name="objectType"
-            value={JSON.stringify(this.props.data.object_type)}
+            value={JSON.stringify(this.props.data.objectType)}
           />
           <input
             type="hidden"
             id="importType"
             name="importType"
-            value={this.props.data.import_type}
+            value={this.props.data.importType}
           />
           <input
             type="file"
@@ -90,12 +92,7 @@ class ImportMenu extends React.Component<PropsType> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img
-            src={
-              COURSEFLOW_APP.globalContextData.path.static_assets.icon +
-              'close.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'close.svg'} />
         </div>
       </div>
     )

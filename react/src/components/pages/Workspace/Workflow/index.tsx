@@ -1,3 +1,4 @@
+import { UserContext } from '@cf/context/userContext'
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import legacyWithRouter from '@cf/HOC/legacyWithRouter'
 import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
@@ -5,26 +6,17 @@ import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import { WorkflowViewType } from '@cf/types/enum'
-import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import {
-  WorkflowDetailViewDTO,
-  WorkflowPermission
-} from '@cfPages/Workspace/Workflow/types'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { AnyAction, EmptyObject, Store } from '@reduxjs/toolkit'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
-  getWorkflowById,
+  getWorkflowByIdQuery,
   getWorkflowChildDataQuery,
-  getWorkflowDataQuery,
-  getWorkflowParentDataQuery,
   getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
-import { EProject } from '@XMLHTTP/types/entity'
 import React from 'react'
 import { DispatchProp, connect } from 'react-redux'
 import { RouterProps } from 'react-router'
@@ -45,34 +37,27 @@ type PropsType = DispatchProp & OwnProps & ConnectedProps
  * the hope is that there unpacking this will be less work when Workflow/Workflow is revised first
  * ****************************************/
 class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
-  private workflowDetailResp: WorkflowDetailViewDTO
+  static contextType = UserContext
+  declare context: React.ContextType<typeof UserContext>
 
-  public_view: boolean
-
-  // is_strategy: boolean
-  project: EProject
-  is_strategy: boolean
-  user_id: number
-  user_name: string
-  project_permission: number
+  projectPermission: number
 
   // def used
   workflowId: number
   private messageQueue: any[]
   private isMessagesQueued: boolean
   selectionManager: SelectionManager
-  store: Store<EmptyObject & AppState, AnyAction>
+  // store: Store<EmptyObject & AppState, AnyAction>
   viewType: WorkflowViewType
   protected locks: any
   private wsService: WebSocketService
-  workflowPermission: WorkflowPermission
 
   wsUserConnectedService: WebSocketServiceConnectedUserManager
 
   // to validate
-  private child_data_completed: number
-  private child_data_needed: any[]
-  private fetching_child_data: boolean
+  private childDataCompleted: number
+  private childDataNeeded: any[]
+  private fetchingChildData: boolean
 
   // to validate removal
   container: any
@@ -109,43 +94,22 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
       this.onConnectionOpened.bind(this),
       this.handleSocketClose.bind(this)
     )
-
-    // fetch the basic workflow data by id set in URL
-    // @todo i think that we have everything we need in getWorkflowDataQuery
-    // except for 'choices' config lists TBD
-    getWorkflowById(this.workflowId).then((response) => {
-      this.workflowDetailResp = response.data_package
-      this.setupData(response.data_package)
-
-      // as soon as we have a more stable place to get current user, move this to the beginning of onConnectionOpened
-      this.wsUserConnectedService.startUserUpdates({
-        userId: response.data_package.user_id,
-        userName: response.data_package.user_name
-      })
+    this.wsUserConnectedService.startUserUpdates({
+      userId: this.context.id,
+      userName: this.context.name
     })
   }
 
   componentWillUnmount() {
+    // this.props.dispatch(
+    //   ActionCreator.replaceStoreData({
+    //     parentProject: {},
+    //     parentNode: [],
+    //     parentWorkflow: [],
+    //     week: []
+    //   })
+    // )
     this.wsService.disconnect()
-  }
-
-  setupData(response: WorkflowDetailViewDTO) {
-    this.project = response.workflow_data_package.project
-    this.is_strategy = response.workflow_data_package.is_strategy
-
-    this.user_id = response.user_id
-    this.user_name = response.user_name
-
-    this.public_view = response.public_view
-
-    if (!this.is_strategy && this.project.object_permission) {
-      this.project_permission = this.project.object_permission.permission_type
-    }
-
-    this.workflowPermission = calcWorkflowPermissions(response.user_permission)
-    this.selectionManager = new SelectionManager(
-      this.workflowPermission.readOnly
-    )
   }
 
   /*******************************************************
@@ -160,12 +124,14 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
 
     // as soon as the socket connection is opened, fetch the 'additional workflow data query'
     // put it in redux store, and indicate that we're ready to render / done loading
-    // Q: do we have race condition with main parent 'get workflow data'
-    // Q: why are these separate, and how can they be better defined?
-    getWorkflowDataQuery(this.workflowId, (response) => {
-      // this.unread_comments = response.data_package?.unread_comments // @todo do not assign this explicitly here, not seeing this in data package yet
+    getWorkflowByIdQuery(this.workflowId, (response) => {
+      // this.unreadComments = response.dataPackage?.unreadComments // @todo do not assign this explicitly here, not seeing this in data package yet
 
-      this.props.dispatch(ActionCreator.refreshStoreData(response.data_package))
+      this.props.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+
+      this.selectionManager = new SelectionManager(
+        response.dataPackage.workflow.workflowPermissions.read
+      )
 
       this.setState({
         ...this.state,
@@ -175,7 +141,7 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
       // how is the local queue actually based on this???
       // this cannot be working robustly
       // leave it for re-implementation; not worth trying to sort out now
-      this.clearQueue(response.data_package?.workflow.edit_count)
+      this.clearQueue(response.dataPackage?.workflow.editCount)
     })
   }
 
@@ -202,9 +168,9 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     while (this.messageQueue.length > 0) {
       const message = this.messageQueue.shift() // Directly remove the first message from the queue
 
-      // Check if we should start processing messages based on edit_count
+      // Check if we should start processing messages based on editCount
       if (!startedEdits) {
-        if (message.edit_count && parseInt(message.edit_count) >= editCount) {
+        if (message.editCount && parseInt(message.editCount) >= editCount) {
           startedEdits = true
         }
       }
@@ -243,11 +209,11 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
         this.onUserConnectionUpdateReceived(data.action)
         break
       case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
-        // this.parent_workflow_updated(data.edit_count) // @todo function takes no args
+        // this.parentWorkflow_updated(data.editCount) // @todo function takes no args
         this.onParentWorkflowUpdateReceived()
         break
       case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
-        this.onChildWorkflowUpdateReceived(data.child_workflow_id)
+        this.onChildWorkflowUpdateReceived(data.childWorkflowId)
         break
       default:
         console.log('socket message not handled')
@@ -260,36 +226,36 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   }
 
   onLockUpdateReceived(data) {
-    const object_type = data.object_type
-    const object_id = data.object_id
+    const objectType = data.objectType
+    const objectId = data.objectId
 
-    if (!this.locks[object_type]) {
-      this.locks[object_type] = {}
+    if (!this.locks[objectType]) {
+      this.locks[objectType] = {}
     }
 
-    if (this.locks[object_type][object_id]) {
-      clearTimeout(this.locks[object_type][object_id])
+    if (this.locks[objectType][objectId]) {
+      clearTimeout(this.locks[objectType][objectId])
     }
 
     this.props.dispatch(
       ActionCreator.createLockAction(
-        object_id,
-        object_type,
+        objectId,
+        objectType,
         data.lock,
-        data.user_id,
-        data.user_colour
+        data.userId,
+        data.userColour
       )
     )
 
     // ...should not need this
     if (data.lock) {
-      this.locks[object_type][object_id] = setTimeout(() => {
-        this.store.dispatch(
-          ActionCreator.createLockAction(object_id, object_type, false)
+      this.locks[objectType][objectId] = setTimeout(() => {
+        this.props.dispatch(
+          ActionCreator.createLockAction(objectId, objectType, false)
         )
       }, data.expires - Date.now())
     } else {
-      this.locks[object_type][object_id] = null
+      this.locks[objectType][objectId] = null
     }
   }
 
@@ -302,32 +268,34 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     this.isMessagesQueued = true
     getWorkflowParentDataQueryLegacy(this.workflowId, (response) => {
       // remove all the parent node and parent workflow data
-      this.store.dispatch(
+      this.props.dispatch(
         ActionCreator.replaceStoreData({
-          parent_node: [],
-          parent_workflow: []
+          parentNode: [],
+          parentWorkflow: []
         })
       )
-      this.store.dispatch(ActionCreator.refreshStoreData(response.data_package))
+      this.props.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
       this.clearQueue(0)
     })
   }
 
-  onChildWorkflowUpdateReceived(child_workflow_id) {
-    this.isMessagesQueued = true
-    const state = this.store.getState()
-    const node = state.node.find(
-      (node) => node.linked_workflow == child_workflow_id
-    )
-
-    if (!node) {
-      return
-    }
-
-    getWorkflowChildDataQuery(node.id, (response) => {
-      this.store.dispatch(ActionCreator.refreshStoreData(response.data_package))
-      this.clearQueue()
-    })
+  // another redux anti pattern
+  onChildWorkflowUpdateReceived(childWorkflowId) {
+    // @todo sort this out later...
+    // this.isMessagesQueued = true
+    // const state = this.store.getState()
+    // const node = state.node.find(
+    //   (node) => node.linkedWorkflow == childWorkflowId
+    // )
+    //
+    // if (!node) {
+    //   return
+    // }
+    //
+    // getWorkflowChildDataQuery(node.id, (response) => {
+    //   this.props.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+    //   this.clearQueue()
+    // })
   }
 
   /*******************************************************
@@ -338,18 +306,18 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
    * Fetches the data for the given child workflow
    */
   getDataForChildWorkflow() {
-    if (this.child_data_completed === this.child_data_needed.length - 1) {
-      this.fetching_child_data = false
+    if (this.childDataCompleted === this.childDataNeeded.length - 1) {
+      this.fetchingChildData = false
       return
     }
 
-    this.fetching_child_data = true
-    this.child_data_completed++
+    this.fetchingChildData = true
+    this.childDataCompleted++
     getWorkflowChildDataQuery(
-      this.child_data_needed[this.child_data_completed],
+      this.childDataNeeded[this.childDataCompleted],
       (response) => {
-        this.store.dispatch(
-          ActionCreator.refreshStoreData(response.data_package)
+        this.props.dispatch(
+          ActionCreator.refreshStoreData(response.dataPackage)
         )
         setTimeout(() => this.getDataForChildWorkflow(), 50) // why another timeout here
       }
@@ -363,11 +331,11 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
    *  unclear what the responsibility of the selection manager is yet
    *******************************************************/
   // @todo how used?
-  micro_update(obj) {
+  microUpdate(obj) {
     if (this.wsService) {
       this.wsService.send(
         JSON.stringify({
-          type: 'micro_update',
+          type: 'microUpdate',
           action: obj
         })
       )
@@ -375,10 +343,10 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   }
 
   // @todo where used?
-  change_field(id, objectType, field, value) {
+  changeField(id, objectType, field, value) {
     const json = {}
     json[field] = value
-    this.store.dispatch(ActionCreator.changeField(id, objectType, json))
+    this.props.dispatch(ActionCreator.changeField(id, objectType, json))
     updateValueQuery(id, objectType, json, true)
   }
 
@@ -386,17 +354,16 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   // lock an object, indicating it should not be selectable
   // by any other users
   // this should not live here, it go in the draggable class
-  lock_update(obj, time, lock) {
+  lockUpdate(obj, time, lock) {
     if (this.wsService) {
       this.wsService.send(
         JSON.stringify({
-          type: 'lock_update',
+          type: 'lockUpdate',
           lock: {
             ...obj,
             expires: Date.now() + time,
-            user_id: this.user_id,
-            // @ts-ignore
-            user_colour: COURSEFLOW_APP.contextData.myColour,
+            userId: this.context.id,
+            //  userColour: COURSEFLOW_APP.contextData.myColour,
             lock: lock
           }
         })
@@ -407,9 +374,9 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
   // @todo...this is called in this.context.childWorkflowDataNeeded(
   // needs review
   childWorkflowDataNeeded(nodeId) {
-    if (this.child_data_needed.indexOf(nodeId) < 0) {
-      this.child_data_needed.push(nodeId)
-      if (!this.fetching_child_data) {
+    if (this.childDataNeeded.indexOf(nodeId) < 0) {
+      this.childDataNeeded.push(nodeId)
+      if (!this.fetchingChildData) {
         setTimeout(() => this.getDataForChildWorkflow(), 50) // why another timeout here
       }
     }
@@ -422,9 +389,9 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
     this.locks = {}
 
     // In case we need to get child workflows
-    this.child_data_needed = []
-    this.child_data_completed = -1
-    this.fetching_child_data = false
+    this.childDataNeeded = []
+    this.childDataCompleted = -1
+    this.fetchingChildData = false
 
     if (!this.state.ready) {
       return <Loader />
@@ -435,20 +402,16 @@ class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
         // some of these could have been direct props to WorkflowBaseView
         // but gor now it makes sense to keep them together and organized
         initialValue={{
-          workflowDetailResp: this.workflowDetailResp,
+          // workflowDetailResp: this.workflowDetailResp,
           selectionManager: this.selectionManager,
           editableMethods: {
-            lock_update: this.lock_update,
-            micro_update: this.micro_update,
-            change_field: this.change_field
+            lockUpdate: this.lockUpdate,
+            microUpdate: this.microUpdate,
+            changeField: this.changeField
           },
           ws: {
             wsConnected: this.state.wsConnected,
             connectedUsers: this.state.connectedUsers
-          },
-          permissions: {
-            projectPermission: this.project_permission,
-            workflowPermission: this.workflowPermission
           }
         }}
       >

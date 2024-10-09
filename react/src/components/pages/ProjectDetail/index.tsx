@@ -3,9 +3,6 @@ import { _t } from '@cf/utility/utilityFunctions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import * as Constants from '@cfConstants'
 import ProjectDetailContent from '@cfPages/ProjectDetail/components/ProjectDetailContent'
-import { useQuery } from '@tanstack/react-query'
-import { getProjectById } from '@XMLHTTP/API/project'
-import { GetProjectByIdQueryResp } from '@XMLHTTP/types/query'
 import * as React from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -26,8 +23,8 @@ const ProjectPage = () => {
    *******************************************************/
   const calcIsReadOnly = (): boolean => {
     return (
-      data.data_package.project_data.object_permission.permission_type ===
-      Constants.permission_keys['edit']
+      data.dataPackage.projectData.objectPermission.permissionType ===
+      Constants.permissionKeys['edit']
     )
   }
 
@@ -44,11 +41,11 @@ const ProjectPage = () => {
 
   return (
     <ProjectDetailContent
-      projectPaths={data.data_package.create_path_this_project}
-      allDisciplines={data.data_package.disciplines}
+      projectPaths={data.dataPackage.create_path_this_project}
+      allDisciplines={data.dataPackage.disciplines}
       readOnly={calcIsReadOnly()}
-      project={data.data_package.project_data}
-      userId={data.data_package.user_id}
+      project={data.dataPackage.projectData}
+      userId={data.dataPackage.userId}
     />
   )
 }

@@ -1,23 +1,3 @@
-from typing import List
-
-from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import Group
-from django.shortcuts import render
-from django.urls import reverse
-from django.views.generic import DetailView
-from rest_framework.renderers import JSONRenderer
-
-from course_flow.models import Project
-from course_flow.models.discipline import Discipline
-from course_flow.serializers import (
-    DisciplineSerializer,
-    ProjectSerializerShallow,
-)
-from course_flow.utils import get_user_permission
-from course_flow.views.mixins import UserCanViewMixin
-
 # class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 #     model: Project = Project
 #     # how are these fields being used?

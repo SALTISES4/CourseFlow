@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from course_flow.models.column import Column
@@ -8,7 +9,9 @@ from course_flow.serializers.mixin import (
     DescriptionSerializerMixin,
     TitleSerializerMixin,
 )
-from course_flow.utils import dateTimeFormat, linkIDMap, user_workflow_url
+from course_flow.services import DAO, Utility
+
+User = get_user_model()
 
 
 class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
@@ -33,12 +36,12 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
             "url",
         ]
 
-    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
     url = serializers.SerializerMethodField()
 
     def get_url(self, instance):
         user = self.context.get("user", None)
-        return user_workflow_url(instance, user)
+        return DAO.user_workflow_url(instance, user)
 
 
 class NodeWeekSerializerShallow(serializers.ModelSerializer):
@@ -74,7 +77,7 @@ class ColumnSerializerShallow(
             "comments",
         ]
 
-    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
     def create(self, validated_data):
         return Column.objects.create(
@@ -117,13 +120,14 @@ class WeekSerializerShallow(
             # "is_dropped",
         ]
 
-    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
-    def get_nodeweek_set(self, instance):
+    @staticmethod
+    def get_nodeweek_set(instance):
         links = instance.nodeweek_set.filter(node__deleted=False).order_by(
             "rank"
         )
-        return list(map(linkIDMap, links))
+        return list(map(Utility.linkIDMap, links))
 
     def create(self, validated_data):
         return Week.objects.create(

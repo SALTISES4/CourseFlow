@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from course_flow.models import Node, Outcome
-from course_flow.utils import get_descendant_outcomes
+from course_flow.services import DAO
 
 
 class OutcomeNode(models.Model):
@@ -67,17 +67,21 @@ class OutcomeNode(models.Model):
         outcome = self.outcome
         degree = self.degree
         # Get the descendants (all descendant outcomes that don't already have an outcomenode of this degree and node)
-        descendants = get_descendant_outcomes(outcome).exclude(
+        # this is causing a circular import, and should probably not be in services
+        descendants = DAO.get_descendant_outcomes(outcome).exclude(
             outcomenode__in=OutcomeNode.objects.filter(
                 node=node, degree=degree
             )
         )
 
-        # Delete the outcomenodes of any descendants that still have an outcomenode to this node (i.e. clear those of other degrees, we are using bulk create so they won't get automatically deleted)
+        # Delete the outcomenodes of any descendants that still
+        # have an outcomenode to this node (i.e. clear those of other
+        # degrees, we are using bulk create so they won't get automatically deleted)
         to_delete = OutcomeNode.objects.filter(
             outcome__in=descendants.values_list("pk", flat=True), node=node
         )
         to_delete.delete()
+
         # Create the new outcomenodes with bulk_create
         now = timezone.now()
         new_children = [

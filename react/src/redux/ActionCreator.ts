@@ -20,25 +20,25 @@ class ActionCreator {
    * COMMON / DYNAMIC OBJECT
    *******************************************************/
   static createLockAction = (
-    object_id,
-    object_type,
+    objectId,
+    objectType,
     lock?,
-    user_id?,
-    user_colour?
+    userId?,
+    userColour?
   ) => {
     if (lock)
       return {
-        type: object_type + '/createLock',
+        type: objectType + '/createLock',
         payload: {
-          id: object_id,
-          lock: { user_id: user_id, user_colour: user_colour }
+          id: objectId,
+          lock: { userId: userId, userColour: userColour }
         }
       }
     else
       return {
-        type: object_type + '/createLock',
+        type: objectType + '/createLock',
         payload: {
-          id: object_id,
+          id: objectId,
           lock: null
         }
       }
@@ -69,24 +69,24 @@ class ActionCreator {
   /*******************************************************
    *
    *******************************************************/
-  static replaceStoreData = (data_package) => {
+  static replaceStoreData = (dataPackage) => {
     return {
       type: CommonActions.REPLACE_STOREDATA,
-      payload: data_package
+      payload: dataPackage
     }
   }
 
-  static refreshStoreData = (data_package) => {
+  static refreshStoreData = (dataPackage) => {
     return {
       type: CommonActions.REFRESH_STOREDATA,
-      payload: data_package
+      payload: dataPackage
     }
   }
 
-  static reloadAssignmentsAction = (id, has_assignment) => {
+  static reloadAssignmentsAction = (id, hasAssignment) => {
     return {
       type: NodeActions.RELOAD_ASSIGNMENTS,
-      payload: { id: id, has_assignment: has_assignment }
+      payload: { id: id, hasAssignment: hasAssignment }
     }
   }
 
@@ -157,10 +157,10 @@ class ActionCreator {
     }
   }
 
-  static gridMenuItemAdded = (response_data) => {
+  static gridMenuItemAdded = (responseData) => {
     return {
       type: GridMenuActions.ITEM_ADDED,
-      payload: response_data
+      payload: responseData
     }
   }
 

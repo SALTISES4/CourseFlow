@@ -1,21 +1,19 @@
-import { Discipline, ProjectDetailsType } from '@cf/types/common'
+import { ObjectSetType, ProjectDetailsType } from '@cf/types/common'
 import { formatDate } from '@cf/utility/utilityFunctions'
-import { ObjectSetType } from '@cfPages/Styleguide/views/Project/types'
 import { EProject } from '@XMLHTTP/types/entity'
 
-export function formatProjectEntity(
-  project: EProject,
-  allDisciplines: Discipline[]
-): ProjectDetailsType {
+export function formatProjectEntity(project: EProject): ProjectDetailsType {
+  const allDisciplines = COURSEFLOW_APP.globalContextData.disciplines
   const formattedDisciplines: string[] = project.disciplines.map((projDisc) => {
     return allDisciplines.find((item) => item.id === projDisc).title
   })
 
-  const formattedObjectSets: ObjectSetType[] = project.object_sets.map(
+  const formattedObjectSets: ObjectSetType[] = project.objectSets.map(
     (item) => {
       return {
+        id: item.id,
         title: item.title,
-        type: item.term
+        term: item.term
       }
     }
   )
@@ -25,7 +23,8 @@ export function formatProjectEntity(
     title: project.title,
     description: project.description,
     isFavorite: project.favourite,
-    created: formatDate(project.created_on),
+    isDeleted: project.deleted,
+    created: formatDate(project.createdOn),
     disciplines: formattedDisciplines,
     objectSets: formattedObjectSets
   }

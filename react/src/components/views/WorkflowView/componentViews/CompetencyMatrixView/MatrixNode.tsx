@@ -27,27 +27,27 @@ class MatrixNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
   TimeData = ({ data }) => {
     return (
       <>
-        <div className="table-cell">{data.time_general_hours}</div>
-        <div className="table-cell">{data.time_specific_hours}</div>
+        <div className="table-cell">{data.timeGeneralHours}</div>
+        <div className="table-cell">{data.timeSpecificHours}</div>
         <div className="table-cell">
-          {(data.time_general_hours || 0) + (data.time_specific_hours || 0)}
+          {(data.timeGeneralHours || 0) + (data.timeSpecificHours || 0)}
         </div>
         <div className="table-cell blank" />
-        <div className="table-cell">{data.ponderation_theory}</div>
-        <div className="table-cell">{data.ponderation_practical}</div>
-        <div className="table-cell">{data.ponderation_individual}</div>
+        <div className="table-cell">{data.ponderationTheory}</div>
+        <div className="table-cell">{data.ponderationPractical}</div>
+        <div className="table-cell">{data.ponderationIndividual}</div>
         <div className="table-cell">
-          {data.ponderation_theory +
-            data.ponderation_practical +
-            data.ponderation_individual}
+          {data.ponderationTheory +
+            data.ponderationPractical +
+            data.ponderationIndividual}
         </div>
         <div
           className="table-cell"
           // @todo this atrribute is not allowed on a div
           // @ts-ignore
-          titletext={this.props.renderer.time_choices[data.time_units].name}
+          titletext={this.props.renderer.time_choices[data.timeUnits].name}
         >
-          {data.time_required}
+          {data.timeRequired}
         </div>
       </>
     )
@@ -58,10 +58,10 @@ class MatrixNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.data
-    const data_override = data.represents_workflow
+    const data_override = data.representsWorkflow
       ? {
           ...data,
-          ...data.linked_workflow_data,
+          ...data.linkedWorkflowData,
           id: data.id
         }
       : data

@@ -1,7 +1,8 @@
 // @ts-nocheck
 // import WorkflowFilter from '@cfComponents/filters/WorkflowFilter'
 import ProjectExportDialog from '@cf/components/common/dialog/Workspace/ProjectExportDialog'
-import { DIALOG_TYPE, useDialog } from '@cf/hooks/useDialog'
+import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import ProjectEditDialog from '@cfComponents/dialog/_LEGACY/ProjectEditDialog'
 import ShareMenu from '@cfComponents/dialog/_LEGACY/ShareMenu'
@@ -24,7 +25,6 @@ import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 
-import ProjectArchiveDialog from 'components/common/_ARCHIVE/ProjectArchiveDialog'
 
 /*******************************************************
  * The project library menu
@@ -34,9 +34,9 @@ import ProjectArchiveDialog from 'components/common/_ARCHIVE/ProjectArchiveDialo
  *******************************************************/
 interface StateType {
   project?: EProject
-  view_type?: string
+  viewType?: string
   users?: UsersForObjectQueryResp
-  workflow_data?: ELibraryObject[]
+  workflowData?: ELibraryObject[]
   openEditDialog?: boolean
   openShareDialog?: boolean
 }
@@ -50,9 +50,9 @@ function ProjectDetailContent({
 }: ProjectMenuProps) {
   const [state, setState] = useState<StateType>({
     project,
-    view_type: 'workflows',
+    viewType: 'workflows',
     users: null,
-    workflow_data: [],
+    workflowData: [],
     openEditDialog: false,
     openShareDialog: false
   })
@@ -79,7 +79,7 @@ function ProjectDetailContent({
       setState(
         produce((draft) => {
           // @ts-ignore @todo not sure
-          draft.workflow_data = data.data_package
+          draft.workflowData = data.dataPackage
         })
       )
     })
@@ -105,8 +105,7 @@ function ProjectDetailContent({
       )
     ) {
       deleteSelfQueryLegacy(project.id, 'project', false, () => {
-        window.location.href =
-          COURSEFLOW_APP.globalContextData.path.html.library.home
+        window.location.href = CFRoutes.HOME
       })
     }
   }
@@ -121,16 +120,16 @@ function ProjectDetailContent({
     })
   }
 
-  function updateWorkflow(id, new_values) {
-    for (let i = 0; i < state.workflow_data.length; i++) {
-      if (state.workflow_data[i].id === id) {
-        const new_state = { ...state }
-        new_state.workflow_data = [...state.workflow_data]
-        new_state.workflow_data[i] = {
-          ...state.workflow_data[i],
-          ...new_values
+  function updateWorkflow(id, newValues) {
+    for (let i = 0; i < state.workflowData.length; i++) {
+      if (state.workflowData[i].id === id) {
+        const newState = { ...state }
+        newState.workflowData = [...state.workflowData]
+        newState.workflowData[i] = {
+          ...state.workflowData[i],
+          ...newValues
         }
-        setState(new_state)
+        setState(newState)
         break
       }
     }
@@ -161,12 +160,12 @@ function ProjectDetailContent({
     )
   }
 
-  function updateFunction(new_data) {
+  function updateFunction(newData) {
     setState(
       produce((draft) => {
         draft.project = {
           ...draft.project,
-          ...new_data
+          ...newData
         }
         draft.openEditDialog = false
       })
@@ -178,7 +177,7 @@ function ProjectDetailContent({
       return (
         <div
           className="hover-shade"
-          onClick={() => dispatch(DIALOG_TYPE.PROJECT_ARCHIVE)}
+          onClick={() => dispatch(DialogMode.PROJECT_ARCHIVE)}
         >
           <div>{_t('Archive project')}</div>
         </div>
@@ -202,7 +201,7 @@ function ProjectDetailContent({
         <div
           id="export-button"
           className="hover-shade"
-          onClick={() => dispatch(DIALOG_TYPE.PROJECT_EXPORT)}
+          onClick={() => dispatch(DialogMode.PROJECT_EXPORT)}
           // onClick={openExportDialog}
         >
           <div>{_t('Export')}</div>
@@ -225,14 +224,14 @@ function ProjectDetailContent({
               project.id,
               project.type,
               null,
-              (response_data) => {
+              (responseData) => {
                 loader.endLoad()
                 // @ts-ignore
                 window.location =
                   COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
                     '0',
                     // @ts-ignore
-                    response_data.new_item.id
+                    responseData.newItem.id
                   )
               }
             )
@@ -248,24 +247,24 @@ function ProjectDetailContent({
   const OverflowLinks = () => {
     const { project } = state
 
-    const overflow_links = []
+    const overflowLinks = []
 
-    overflow_links.push(
+    overflowLinks.push(
       <a id="comparison-view" className="hover-shade" href="comparison">
         {_t('Workflow comparison tool')}
       </a>
     )
 
-    overflow_links.push(<hr />)
-    overflow_links.push(<ExportButton />)
-    overflow_links.push(<CopyButton />)
+    overflowLinks.push(<hr />)
+    overflowLinks.push(<ExportButton />)
+    overflowLinks.push(<CopyButton />)
 
-    if (project.author_id === userId) {
-      overflow_links.push(<hr />)
-      overflow_links.push(<DeleteProjectButton />)
+    if (project.authorId === userId) {
+      overflowLinks.push(<hr />)
+      overflowLinks.push(<DeleteProjectButton />)
     }
 
-    return overflow_links
+    return overflowLinks
   }
 
   /*******************************************************
@@ -361,9 +360,9 @@ function ProjectDetailContent({
     return (
       <></>
       // <WorkflowFilter
-      //   read_only={readOnly}
-      //   project_data={state.project}
-      //   workflows={state.workflow_data}
+      //   readOnly={readOnly}
+      //   projectData={state.project}
+      //   workflows={state.workflowData}
       //   updateWorkflow={updateWorkflow}
       //   context="project"
       // />
