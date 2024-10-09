@@ -20,6 +20,7 @@ const ProjectSearch = ({ selected, onProjectSelect }: PropsType) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
+  // candidate to move to another library search query
   const { data, isLoading } = useListProjectsByCurrentUserQuery({})
 
   /*******************************************************

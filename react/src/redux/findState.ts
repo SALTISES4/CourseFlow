@@ -313,6 +313,7 @@ export type TGetOutcomeByID = {
   objectSets: TObjectSet
   workflowId: number
 }
+
 export const getOutcomeByID = (
   state: AppState,
   id: number
@@ -449,6 +450,7 @@ export const getChildWorkflowByID = (state: AppState, id: number) => {
 export type TOutcomeOutcomeByID = {
   data?: TOutcomeOutcome
 }
+
 export const getOutcomeOutcomeByID = (
   state: AppState,
   id: number
@@ -468,6 +470,7 @@ export const getOutcomeOutcomeByID = (
 export type TOutcomeNodeByID = {
   data: TOutcomeNode
 }
+
 export const getOutcomeNodeByID = (
   state: AppState,
   id: number
@@ -484,6 +487,7 @@ export const getOutcomeNodeByID = (
 export type TOutcomeHorizontalLinkByID = {
   data: any
 }
+
 export const getOutcomeHorizontalLinkByID = (
   state: AppState,
   id: number
@@ -500,10 +504,12 @@ export const getOutcomeHorizontalLinkByID = (
 }
 
 export type TOutcomeWithDegree = TOutcome & { degree: number }
+
 export type TSortedOutcomeNodes = {
   objectset: TObjectSet
   outcomes: TOutcomeWithDegree[]
 }[]
+
 export const getSortedOutcomeNodesFromNodes = (
   state: AppState,
   nodes

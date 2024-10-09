@@ -27,9 +27,6 @@ const TemplateSearch = ({ selected, onTemplateSelect }: PropsType) => {
 
   if (!data || isLoading) return <Loader />
 
-  // @todo do to shape of legacy query, the objects are grouped by permission
-  // (look at the query response shape)
-  // this needs work
   const workflowData = data.dataPackage.items.map((project) => {
     return formatLibraryObject(project)
   })
