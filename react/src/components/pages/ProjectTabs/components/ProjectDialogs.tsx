@@ -5,9 +5,8 @@ import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
 import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
 import { useGetProjectByIdQuery } from '@XMLHTTP/API/project.rtk'
+// import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorManageDialog'
 import { useParams } from 'react-router-dom'
-
-import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorManageDialog'
 
 const userData = {
   id: 12313,

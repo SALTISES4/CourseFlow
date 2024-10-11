@@ -17,7 +17,7 @@ import {
   getWorkflowChildDataQuery,
   getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
-import React from 'react'
+import { Component, ContextType } from 'react'
 import { DispatchProp, connect } from 'react-redux'
 import { RouterProps } from 'react-router'
 
@@ -36,9 +36,9 @@ type PropsType = DispatchProp & OwnProps & ConnectedProps
  * which extends the original Workflow/Workflow....
  * the hope is that there unpacking this will be less work when Workflow/Workflow is revised first
  * ****************************************/
-class Workflow extends React.Component<PropsType & RouterProps, StateProps> {
+class Workflow extends Component<PropsType & RouterProps, StateProps> {
   static contextType = UserContext
-  declare context: React.ContextType<typeof UserContext>
+  declare context: ContextType<typeof UserContext>
 
   projectPermission: number
 

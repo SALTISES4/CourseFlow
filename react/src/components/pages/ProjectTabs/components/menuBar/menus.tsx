@@ -5,7 +5,6 @@ import { useMenuActions } from '@cfPages/ProjectTabs/hooks/useMenuActions'
 import EditIcon from '@mui/icons-material/Edit'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useGetProjectByIdQuery } from '@XMLHTTP/API/project.rtk'
-import * as React from 'react'
 import { useParams } from 'react-router-dom'
 
 const ActionMenu = () => {

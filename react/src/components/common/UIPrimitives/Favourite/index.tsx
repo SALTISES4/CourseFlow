@@ -4,7 +4,6 @@ import IconButton from '@mui/material/IconButton'
 import { useToggleFavouriteMutation } from '@XMLHTTP/API/library.rtk'
 import { enqueueSnackbar } from 'notistack'
 import { useEffect, useState } from 'react'
-import * as React from 'react'
 
 type PropsType = {
   id: number

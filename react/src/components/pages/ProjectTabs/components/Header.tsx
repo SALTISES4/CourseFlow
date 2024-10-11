@@ -5,50 +5,48 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
-import { Box } from '@mui/material'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import * as React from 'react'
 
 // @todo not sure this needs its own file
-const Header = ({ project }: { project: ProjectDetailsType }) => {
-  return (
-    <OuterContentWrap sx={{ pb: 0 }}>
-      <Box
+const Header = ({ project }: { project: ProjectDetailsType }) => (
+  <OuterContentWrap sx={{ pb: 0 }}>
+    <Stack
+      direction="row"
+      spacing={3}
+      justifyContent="space-between"
+      sx={{ mt: 6, mb: 3 }}
+      // @todo selection manager is only defined in workflow currently so we'll need to go get that
+      // onClick={(evt) => context.selectionManager.changeSelection(evt)}
+    >
+      <Typography
         sx={{
           display: 'flex',
-          justifyContent: 'space-between'
+          alignItems: 'center'
         }}
-        // @todo selection manager is only defined in workflow currently so we'll need to go get that
-        // onClick={(evt) => context.selectionManager.changeSelection(evt)}
+        component="h1"
+        variant="h4"
       >
-        <Typography
-          sx={{
-            display: 'flex',
-            alignItems: 'center'
-          }}
-          component="h1"
-          variant="h4"
-        >
-          {project.title}
-          {project.isDeleted && (
-            <CardChip
-              sx={{ display: 'flex', alignItems: 'center' }}
-              className={ChipOptions.ACTIVITY as string}
-              label={'Archived'}
-            />
-          )}
-        </Typography>
-
-        <Box>
-          <Favourite
-            id={project.id}
-            isFavorite={project.isFavorite}
-            type={LibraryObjectType.PROJECT}
+        {project.title}
+        {project.isDeleted && (
+          <CardChip
+            sx={{ display: 'flex', alignItems: 'center' }}
+            className={ChipOptions.ACTIVITY as string}
+            label={_t('Archived')}
           />
-        </Box>
+        )}
+      </Typography>
+
+      <Box>
+        <Favourite
+          id={project.id}
+          isFavorite={project.isFavorite}
+          type={LibraryObjectType.PROJECT}
+        />
       </Box>
-    </OuterContentWrap>
-  )
-}
+    </Stack>
+  </OuterContentWrap>
+)
 
 export default Header

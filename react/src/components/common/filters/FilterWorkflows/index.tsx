@@ -61,7 +61,6 @@ const FilterWorkflows = ({
 
   const debouncedFilter = useMemo(() => {
     return debounce((term) => {
-      console.log(workflows)
       const fuse = new Fuse(workflows, {
         keys: ['title', 'description']
       })
@@ -149,8 +148,6 @@ const FilterWorkflows = ({
     setSelected(undefined)
     setMenuAnchor(null)
   }
-
-  console.log(results)
 
   return (
     <Wrap ref={wrapRef}>
