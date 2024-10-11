@@ -36,21 +36,9 @@ from course_flow.services import DAO
 @receiver(pre_delete, sender=Project)
 def delete_project_objects(sender, instance, **kwargs):
     # Pick up all non-linking instances pks
-    nodes = list(
-        Node.objects.filter(week__workflow__project=instance).values_list(
-            "pk", flat=True
-        )
-    )
-    weeks = list(
-        Week.objects.filter(workflow__project=instance).values_list(
-            "pk", flat=True
-        )
-    )
-    columns = list(
-        Column.objects.filter(workflow__project=instance).values_list(
-            "pk", flat=True
-        )
-    )
+    nodes = list(Node.objects.filter(week__workflow__project=instance).values_list("pk", flat=True))
+    weeks = list(Week.objects.filter(workflow__project=instance).values_list("pk", flat=True))
+    columns = list(Column.objects.filter(workflow__project=instance).values_list("pk", flat=True))
     outcomes = list(
         Outcome.objects.filter(
             Q(workflow__project=instance)
@@ -58,9 +46,7 @@ def delete_project_objects(sender, instance, **kwargs):
             | Q(parent_outcomes__parent_outcomes__workflow__project=instance)
         ).values_list("pk", flat=True)
     )
-    workflows = list(
-        Workflow.objects.filter(project=instance).values_list("pk", flat=True)
-    )
+    workflows = list(Workflow.objects.filter(project=instance).values_list("pk", flat=True))
     comments = Comment.objects.filter(
         Q(node__week__workflow__project=instance)
         | Q(outcome__in=outcomes)
@@ -70,20 +56,14 @@ def delete_project_objects(sender, instance, **kwargs):
     comments.delete()
 
     # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
-    outcomenodes = OutcomeNode.objects.filter(
-        node__week__workflow__project=instance
-    )
+    outcomenodes = OutcomeNode.objects.filter(node__week__workflow__project=instance)
     outcomenodes._raw_delete(outcomenodes.db)
-    nodelinks = NodeLink.objects.filter(
-        source_node__week__workflow__project=instance
-    )
+    nodelinks = NodeLink.objects.filter(source_node__week__workflow__project=instance)
     nodelinks._raw_delete(nodelinks.db)
     outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
         Q(outcome__workflow__project=instance)
         | Q(outcome__parent_outcomes__workflow__project=instance)
-        | Q(
-            outcome__parent_outcomes__parent_outcomes__workflow__project=instance
-        )
+        | Q(outcome__parent_outcomes__parent_outcomes__workflow__project=instance)
     )
     outcomehorizontallinks._raw_delete(outcomehorizontallinks.db)
     nodeweeks = NodeWeek.objects.filter(week__workflow__project=instance)
@@ -97,9 +77,7 @@ def delete_project_objects(sender, instance, **kwargs):
         | Q(parent__parent_outcomes__workflow__project=instance)
     )
     outcomeoutcomes._raw_delete(outcomeoutcomes.db)
-    outcomeworkflows = OutcomeWorkflow.objects.filter(
-        workflow__project=instance
-    )
+    outcomeworkflows = OutcomeWorkflow.objects.filter(workflow__project=instance)
     outcomeworkflows._raw_delete(outcomeworkflows.db)
     workflowprojects = WorkflowProject.objects.filter(project=instance)
     workflowprojects._raw_delete(workflowprojects.db)
@@ -112,24 +90,14 @@ def delete_project_objects(sender, instance, **kwargs):
     objectpermissions = ObjectPermission.objects.filter(
         Q(workflow__in=workflows) | Q(project=instance)
     )
-    favourites = Favourite.objects.filter(
-        Q(workflow__in=workflows) | Q(project=instance)
-    )
+    favourites = Favourite.objects.filter(Q(workflow__in=workflows) | Q(project=instance))
     Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
-    Node.objects.filter(linked_workflow__in=workflows).update(
-        linked_workflow=None
-    )
+    Node.objects.filter(linked_workflow__in=workflows).update(linked_workflow=None)
     Week.objects.filter(parent_week__in=weeks).update(parent_week=None)
-    Week.objects.filter(original_strategy__in=workflows).update(
-        original_strategy=None
-    )
+    Week.objects.filter(original_strategy__in=workflows).update(original_strategy=None)
     Column.objects.filter(parent_column__in=columns).update(parent_column=None)
-    Workflow.objects.filter(parent_workflow__in=workflows).update(
-        parent_workflow=None
-    )
-    Outcome.objects.filter(parent_outcome__in=outcomes).update(
-        parent_outcome=None
-    )
+    Workflow.objects.filter(parent_workflow__in=workflows).update(parent_workflow=None)
+    Outcome.objects.filter(parent_outcome__in=outcomes).update(parent_outcome=None)
 
     # Delete nonlinking instances
     nodes = Node.objects.filter(pk__in=nodes)
@@ -158,17 +126,9 @@ def delete_project_objects(sender, instance, **kwargs):
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
     # Pick up all non-linking instances pks
-    nodes = list(
-        Node.objects.filter(week__workflow=instance).values_list(
-            "pk", flat=True
-        )
-    )
-    weeks = list(
-        Week.objects.filter(workflow=instance).values_list("pk", flat=True)
-    )
-    columns = list(
-        Column.objects.filter(workflow=instance).values_list("pk", flat=True)
-    )
+    nodes = list(Node.objects.filter(week__workflow=instance).values_list("pk", flat=True))
+    weeks = list(Week.objects.filter(workflow=instance).values_list("pk", flat=True))
+    columns = list(Column.objects.filter(workflow=instance).values_list("pk", flat=True))
     outcomes = list(
         Outcome.objects.filter(
             Q(workflow=instance)
@@ -197,9 +157,7 @@ def delete_workflow_objects(sender, instance, **kwargs):
         | Q(outcome__parent_outcomes__parent_outcomes__workflow=instance)
         | Q(parent_outcome__workflow=instance)
         | Q(parent_outcome__parent_outcomes__workflow=instance)
-        | Q(
-            parent_outcome__parent_outcomes__parent_outcomes__workflow=instance
-        )
+        | Q(parent_outcome__parent_outcomes__parent_outcomes__workflow=instance)
     )
     outcomehorizontallinks._raw_delete(outcomehorizontallinks.db)
     nodeweeks = NodeWeek.objects.filter(week__workflow=instance)
@@ -209,8 +167,7 @@ def delete_workflow_objects(sender, instance, **kwargs):
     columnworkflows = ColumnWorkflow.objects.filter(workflow=instance)
     columnworkflows._raw_delete(columnworkflows.db)
     outcomeoutcomes = OutcomeOutcome.objects.filter(
-        Q(parent__workflow=instance)
-        | Q(parent__parent_outcomes__workflow=instance)
+        Q(parent__workflow=instance) | Q(parent__parent_outcomes__workflow=instance)
     )
     outcomeoutcomes._raw_delete(outcomeoutcomes.db)
     outcomeworkflows = OutcomeWorkflow.objects.filter(workflow=instance)
@@ -220,9 +177,7 @@ def delete_workflow_objects(sender, instance, **kwargs):
     Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
     Week.objects.filter(parent_week__in=weeks).update(parent_week=None)
     Column.objects.filter(parent_column__in=columns).update(parent_column=None)
-    Outcome.objects.filter(parent_outcome__in=outcomes).update(
-        parent_outcome=None
-    )
+    Outcome.objects.filter(parent_outcome__in=outcomes).update(parent_outcome=None)
 
     # Delete nonlinking instances
     nodes = Node.objects.filter(pk__in=nodes)
@@ -262,11 +217,7 @@ def move_nodes(sender, instance, **kwargs):
         return
     workflow = columnworkflow.workflow
 
-    other_columns = (
-        workflow.columnworkflow_set.all()
-        .order_by("rank")
-        .exclude(column=instance)
-    )
+    other_columns = workflow.columnworkflow_set.all().order_by("rank").exclude(column=instance)
     if other_columns.count() > 0:
         new_column = other_columns.first().column
         for node in Node.objects.filter(column=instance):
@@ -278,9 +229,7 @@ def move_nodes(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=NodeWeek)
 def reorder_for_deleted_node_week(sender, instance, **kwargs):
-    for out_of_order_link in NodeWeek.objects.filter(
-        week=instance.week, rank__gt=instance.rank
-    ):
+    for out_of_order_link in NodeWeek.objects.filter(week=instance.week, rank__gt=instance.rank):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
 
@@ -327,9 +276,7 @@ def delete_existing_workflow_project(sender, instance, **kwargs):
         WorkflowProject.objects.filter(workflow=instance.workflow).delete()
         if instance.rank < 0:
             instance.rank = 0
-        new_parent_count = WorkflowProject.objects.filter(
-            project=instance.project
-        ).count()
+        new_parent_count = WorkflowProject.objects.filter(project=instance.project).count()
         if instance.rank > new_parent_count:
             instance.rank = new_parent_count
 
@@ -364,9 +311,7 @@ def delete_existing_week_workflow(sender, instance, **kwargs):
         WeekWorkflow.objects.filter(week=instance.week).delete()
         if instance.rank < 0:
             instance.rank = 0
-        new_parent_count = WeekWorkflow.objects.filter(
-            workflow=instance.workflow
-        ).count()
+        new_parent_count = WeekWorkflow.objects.filter(workflow=instance.workflow).count()
         if instance.rank > new_parent_count:
             instance.rank = new_parent_count
 
@@ -387,9 +332,7 @@ def delete_existing_column_workflow(sender, instance, **kwargs):
         ColumnWorkflow.objects.filter(column=instance.column).delete()
         if instance.rank < 0:
             instance.rank = 0
-        new_parent_count = ColumnWorkflow.objects.filter(
-            workflow=instance.workflow
-        ).count()
+        new_parent_count = ColumnWorkflow.objects.filter(workflow=instance.workflow).count()
         if instance.rank > new_parent_count:
             instance.rank = new_parent_count
 
@@ -410,9 +353,7 @@ def delete_existing_outcome_workflow(sender, instance, **kwargs):
         OutcomeWorkflow.objects.filter(outcome=instance.outcome).delete()
         if instance.rank < 0:
             instance.rank = 0
-        new_parent_count = OutcomeWorkflow.objects.filter(
-            workflow=instance.workflow
-        ).count()
+        new_parent_count = OutcomeWorkflow.objects.filter(workflow=instance.workflow).count()
         if instance.rank > new_parent_count:
             instance.rank = new_parent_count
 
@@ -433,9 +374,7 @@ def delete_existing_outcome_outcome(sender, instance, **kwargs):
         OutcomeOutcome.objects.filter(child=instance.child).delete()
         if instance.rank < 0:
             instance.rank = 0
-        new_parent_count = OutcomeOutcome.objects.filter(
-            parent=instance.parent
-        ).count()
+        new_parent_count = OutcomeOutcome.objects.filter(parent=instance.parent).count()
         if instance.rank > new_parent_count:
             instance.rank = new_parent_count
 
@@ -453,14 +392,10 @@ def reorder_for_created_outcome_outcome(sender, instance, created, **kwargs):
 @receiver(pre_save, sender=OutcomeNode)
 def delete_existing_outcome_node(sender, instance, **kwargs):
     if instance.pk is None:
-        OutcomeNode.objects.filter(
-            node=instance.node, outcome=instance.outcome
-        ).delete()
+        OutcomeNode.objects.filter(node=instance.node, outcome=instance.outcome).delete()
         if instance.rank < 0:
             instance.rank = 0
-        new_parent_count = OutcomeNode.objects.filter(
-            node=instance.node
-        ).count()
+        new_parent_count = OutcomeNode.objects.filter(node=instance.node).count()
         if instance.rank > new_parent_count:
             instance.rank = new_parent_count
 
@@ -473,9 +408,7 @@ def delete_existing_horizontal_link(sender, instance, **kwargs):
         ).delete()
         if instance.rank < 0:
             instance.rank = 0
-        new_parent_count = OutcomeHorizontalLink.objects.filter(
-            outcome=instance.outcome
-        ).count()
+        new_parent_count = OutcomeHorizontalLink.objects.filter(outcome=instance.outcome).count()
         if instance.rank > new_parent_count:
             instance.rank = new_parent_count
 
@@ -488,13 +421,10 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
             for workflow in workflows:
                 # If user already has edit or comment permissions and we are adding view, do not override
                 if (
-                    instance.permission_type
-                    == Permission.PERMISSION_VIEW.value
+                    instance.permission_type == Permission.PERMISSION_VIEW.value
                     and ObjectPermission.objects.filter(
                         user=instance.user,
-                        content_type=ContentType.objects.get_for_model(
-                            workflow
-                        ),
+                        content_type=ContentType.objects.get_for_model(workflow),
                         object_id=workflow.id,
                         permission_type__in=[
                             Permission.PERMISSION_EDIT.value,
@@ -505,13 +435,10 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                 ):
                     pass
                 elif (
-                    instance.permission_type
-                    == Permission.PERMISSION_COMMENT.value
+                    instance.permission_type == Permission.PERMISSION_COMMENT.value
                     and ObjectPermission.objects.filter(
                         user=instance.user,
-                        content_type=ContentType.objects.get_for_model(
-                            workflow
-                        ),
+                        content_type=ContentType.objects.get_for_model(workflow),
                         object_id=workflow.id,
                         permission_type__in=[Permission.PERMISSION_EDIT.value],
                     ).count()
@@ -542,9 +469,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                             permission_type=instance.permission_type,
                         )
 
-        elif instance.content_type == ContentType.objects.get_for_model(
-            Workflow
-        ):
+        elif instance.content_type == ContentType.objects.get_for_model(Workflow):
             workflow = instance.content_object
             project = workflow.get_project()
             if project is not None:
@@ -552,9 +477,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     ObjectPermission.objects.filter(
                         user=instance.user,
                         object_id=project.id,
-                        content_type=ContentType.objects.get_for_model(
-                            Project
-                        ),
+                        content_type=ContentType.objects.get_for_model(Project),
                     ).count()
                     == 0
                 ):
@@ -633,12 +556,8 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
     if created:
         try:
             set_list = list(instance.parent.sets.all())
-            outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(
-                instance.child
-            )
-            outcomenodes_to_add = OutcomeNode.objects.filter(
-                outcome=instance.parent
-            )
+            outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(instance.child)
+            outcomenodes_to_add = OutcomeNode.objects.filter(outcome=instance.parent)
             horizontallinks_to_add = OutcomeHorizontalLink.objects.filter(
                 parent_outcome=instance.parent
             )

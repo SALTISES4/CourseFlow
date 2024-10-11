@@ -49,7 +49,7 @@ const ActionMenu = () => {
       title: _t('Sharing'),
       content: <PersonAddIcon />,
       action: openShareDialog,
-      show: !projectPermission.manage
+      show: projectPermission.manage
     },
     {
       id: 'export',

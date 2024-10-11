@@ -83,12 +83,14 @@ class WorkspaceEndpoint:
     @user_can_edit(False)
     def update_value(request: Request) -> Response:
         body = json.loads(request.body)
+
         try:
             object_id = body.get("objectID")
             object_type = body.get("objectType")
             data = body.get("data")
             changeFieldID = body.get("changeFieldID", False)
             objects = DAO.get_model_from_str(object_type).objects
+
             if hasattr(objects, "get_subclass"):
                 object_to_update = objects.get_subclass(pk=object_id)
             else:
@@ -100,6 +102,7 @@ class WorkspaceEndpoint:
                 context={"user": request.user},
             )
             Utility.save_serializer(serializer)
+
         except ValidationError as e:
             logger.exception("An error occurred")
             return Response({"action": "error"})
@@ -107,15 +110,14 @@ class WorkspaceEndpoint:
             workflow = object_to_update.get_workflow()
             actions.dispatch_wf(
                 workflow,
-                actions.changeField(
-                    object_id, object_type, data, changeFieldID
-                ),
+                actions.changeField(object_id, object_type, data, changeFieldID),
             )
             if object_type == "outcome":
                 actions.dispatch_to_parent_wf(
                     workflow,
                     actions.changeField(object_id, object_type, data),
                 )
+
         except AttributeError as e:
             logger.exception("An error occurred")
             pass
@@ -141,9 +143,7 @@ class WorkspaceEndpoint:
         object_type = body.get("objectType")
 
         try:
-            model = DAO.get_model_from_str(object_type).objects.get(
-                id=object_id
-            )
+            model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
             workflow = None
             extra_data = None
             parent_id = None
@@ -156,23 +156,16 @@ class WorkspaceEndpoint:
             # Check to see if we have any linked workflows that need to be updated
             linked_workflows = False
             if object_type == "node":
-                linked_workflows = list(
-                    Workflow.objects.filter(linked_nodes=model)
-                )
+                linked_workflows = list(Workflow.objects.filter(linked_nodes=model))
             elif object_type == "week":
-                linked_workflows = list(
-                    Workflow.objects.filter(linked_nodes__week=model)
-                )
+                linked_workflows = list(Workflow.objects.filter(linked_nodes__week=model))
             elif object_type in ["workflow", "activity", "course", "program"]:
                 workflow = None
                 linked_workflows = list(
-                    Workflow.objects.filter(
-                        linked_nodes__week__workflow__id=model.id
-                    )
+                    Workflow.objects.filter(linked_nodes__week__workflow__id=model.id)
                 )
                 parent_workflows = [
-                    node.get_workflow()
-                    for node in Node.objects.filter(linked_workflow=model)
+                    node.get_workflow() for node in Node.objects.filter(linked_workflow=model)
                 ]
 
             elif object_type == "outcome":
@@ -180,11 +173,7 @@ class WorkspaceEndpoint:
                     Workflow.objects.filter(
                         Q(
                             linked_nodes__outcomes__in=[model.id]
-                            + list(
-                                DAO.get_descendant_outcomes(model).values_list(
-                                    "pk", flat=True
-                                )
-                            )
+                            + list(DAO.get_descendant_outcomes(model).values_list("pk", flat=True))
                         )
                     )
                 )
@@ -192,11 +181,7 @@ class WorkspaceEndpoint:
                 affected_nodes = (
                     Node.objects.filter(
                         outcomes__in=[object_id]
-                        + list(
-                            DAO.get_descendant_outcomes(model).values_list(
-                                "pk", flat=True
-                            )
-                        )
+                        + list(DAO.get_descendant_outcomes(model).values_list("pk", flat=True))
                     ).values_list("pk", flat=True),
                 )
             if object_type == "week":
@@ -237,9 +222,7 @@ class WorkspaceEndpoint:
             return JsonResponse({"action": "error"})
 
         if workflow is not None:
-            action = actions.deleteSelfAction(
-                object_id, object_type, parent_id, extra_data
-            )
+            action = actions.deleteSelfAction(object_id, object_type, parent_id, extra_data)
             actions.dispatch_wf(
                 workflow,
                 action,
@@ -252,18 +235,12 @@ class WorkspaceEndpoint:
                 if linked_workflows:
                     for wf in linked_workflows:
                         actions.dispatch_wf(wf, action)
-        if (
-            object_type != "outcome"
-            and object_type != "outcome_base"
-            and linked_workflows
-        ):
+        if object_type != "outcome" and object_type != "outcome_base" and linked_workflows:
             for wf in linked_workflows:
                 actions.dispatch_parent_updated(wf)
         if object_type in ["workflow", "activity", "course", "program"]:
             for parent_workflow in parent_workflows:
-                actions.dispatch_child_updated(
-                    parent_workflow, model.get_workflow()
-                )
+                actions.dispatch_child_updated(parent_workflow, model.get_workflow())
         return JsonResponse({"message": "success"})
 
     @staticmethod
@@ -289,9 +266,7 @@ class WorkspaceEndpoint:
         object_type = serializer.validated_data["object_type"]
 
         try:
-            model = DAO.get_model_from_str(object_type).objects.get(
-                id=object_id
-            )
+            model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
             workflow = None
             extra_data = None
             parent_id = None
@@ -300,33 +275,22 @@ class WorkspaceEndpoint:
             # Check to see if we have any linked workflows that need to be updated
             linked_workflows = False
             if object_type == "node":
-                linked_workflows = list(
-                    Workflow.objects.filter(linked_nodes=model)
-                )
+                linked_workflows = list(Workflow.objects.filter(linked_nodes=model))
             elif object_type == "week":
-                linked_workflows = list(
-                    Workflow.objects.filter(linked_nodes__week=model)
-                )
+                linked_workflows = list(Workflow.objects.filter(linked_nodes__week=model))
             elif object_type in ["workflow", "activity", "course", "program"]:
                 linked_workflows = list(
-                    Workflow.objects.filter(
-                        linked_nodes__week__workflow__id=model.id
-                    )
+                    Workflow.objects.filter(linked_nodes__week__workflow__id=model.id)
                 )
                 parent_workflows = [
-                    node.get_workflow()
-                    for node in Node.objects.filter(linked_workflow=model)
+                    node.get_workflow() for node in Node.objects.filter(linked_workflow=model)
                 ]
             elif object_type == "outcome":
                 linked_workflows = list(
                     Workflow.objects.filter(
                         Q(
                             linked_nodes__outcomes__in=[model.id]
-                            + list(
-                                DAO.get_descendant_outcomes(model).values_list(
-                                    "pk", flat=True
-                                )
-                            )
+                            + list(DAO.get_descendant_outcomes(model).values_list("pk", flat=True))
                         )
                     )
                 )
@@ -359,18 +323,14 @@ class WorkspaceEndpoint:
 
             if object_type == "outcome" or object_type == "outcome_base":
                 outcomes_list = [object_id] + list(
-                    DAO.get_descendant_outcomes(model).values_list(
-                        "pk", flat=True
-                    )
+                    DAO.get_descendant_outcomes(model).values_list("pk", flat=True)
                 )
                 extra_data = RefreshSerializerNode(
                     Node.objects.filter(outcomes__in=outcomes_list),
                     many=True,
                 ).data
                 outcomes_to_update = RefreshSerializerOutcome(
-                    Outcome.objects.filter(
-                        horizontal_outcomes__in=outcomes_list
-                    ),
+                    Outcome.objects.filter(horizontal_outcomes__in=outcomes_list),
                     many=True,
                 ).data
             elif object_type == "column":
@@ -391,9 +351,7 @@ class WorkspaceEndpoint:
         pass
 
         if workflow is not None:
-            action = actions.deleteSelfSoftAction(
-                object_id, object_type, parent_id, extra_data
-            )
+            action = actions.deleteSelfSoftAction(object_id, object_type, parent_id, extra_data)
             actions.dispatch_wf(
                 workflow,
                 action,
@@ -408,22 +366,14 @@ class WorkspaceEndpoint:
                         actions.dispatch_wf(wf, action)
                         actions.dispatch_wf(
                             wf,
-                            actions.updateHorizontalLinks(
-                                {"data": outcomes_to_update}
-                            ),
+                            actions.updateHorizontalLinks({"data": outcomes_to_update}),
                         )
-        if (
-            object_type != "outcome"
-            and object_type != "outcome_base"
-            and linked_workflows
-        ):
+        if object_type != "outcome" and object_type != "outcome_base" and linked_workflows:
             for wf in linked_workflows:
                 actions.dispatch_parent_updated(wf)
         if object_type in ["workflow", "activity", "course", "program"]:
             for parent_workflow in parent_workflows:
-                actions.dispatch_child_updated(
-                    parent_workflow, model.get_workflow()
-                )
+                actions.dispatch_child_updated(parent_workflow, model.get_workflow())
         return Response({"message": "success"}, status=status.HTTP_200_OK)
 
     @staticmethod
@@ -446,9 +396,7 @@ class WorkspaceEndpoint:
         object_type = serializer.validated_data["object_type"]
 
         try:
-            model = DAO.get_model_from_str(object_type).objects.get(
-                id=object_id
-            )
+            model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
             workflow = None
             extra_data = None
             parent_id = None
@@ -469,50 +417,35 @@ class WorkspaceEndpoint:
             # Check to see if we have any linked workflows that need to be updated
             linked_workflows = False
             if object_type == ObjectType.NODE:
-                linked_workflows = list(
-                    Workflow.objects.filter(linked_nodes=model)
-                )
+                linked_workflows = list(Workflow.objects.filter(linked_nodes=model))
             elif object_type == ObjectType.WEEK:
-                linked_workflows = list(
-                    Workflow.objects.filter(linked_nodes__week=model)
-                )
+                linked_workflows = list(Workflow.objects.filter(linked_nodes__week=model))
             elif object_type in ["workflow", "activity", "course", "program"]:
                 linked_workflows = list(
-                    Workflow.objects.filter(
-                        linked_nodes__week__workflow__id=model.id
-                    )
+                    Workflow.objects.filter(linked_nodes__week__workflow__id=model.id)
                 )
                 parent_workflows = [
-                    node.get_workflow()
-                    for node in Node.objects.filter(linked_workflow=model)
+                    node.get_workflow() for node in Node.objects.filter(linked_workflow=model)
                 ]
             elif object_type == ObjectType.OUTCOME:
                 linked_workflows = list(
                     Workflow.objects.filter(
                         Q(
                             linked_nodes__outcomes__in=[model.id]
-                            + list(
-                                DAO.get_descendant_outcomes(model).values_list(
-                                    "pk", flat=True
-                                )
-                            )
+                            + list(DAO.get_descendant_outcomes(model).values_list("pk", flat=True))
                         )
                     )
                 )
             if object_type == ObjectType.OUTCOME:
                 outcomes_list = [object_id] + list(
-                    DAO.get_descendant_outcomes(model).values_list(
-                        "pk", flat=True
-                    )
+                    DAO.get_descendant_outcomes(model).values_list("pk", flat=True)
                 )
                 extra_data = RefreshSerializerNode(
                     Node.objects.filter(outcomes__in=outcomes_list),
                     many=True,
                 ).data
                 outcomes_to_update = RefreshSerializerOutcome(
-                    Outcome.objects.filter(
-                        horizontal_outcomes__in=outcomes_list
-                    ),
+                    Outcome.objects.filter(horizontal_outcomes__in=outcomes_list),
                     many=True,
                 ).data
             if object_type == ObjectType.WEEK:
@@ -564,9 +497,7 @@ class WorkspaceEndpoint:
                 throughparent = OutcomeOutcome.objects.get(child=model)
                 throughparent_id = throughparent.id
                 throughparent_index = (
-                    throughparent.parent.child_outcome_links.exclude(
-                        child__deleted=True
-                    )
+                    throughparent.parent.child_outcome_links.exclude(child__deleted=True)
                     .filter(rank__lt=throughparent.rank)
                     .count()
                 )
@@ -598,22 +529,14 @@ class WorkspaceEndpoint:
                         actions.dispatch_wf(wf, action)
                         actions.dispatch_wf(
                             wf,
-                            actions.updateHorizontalLinks(
-                                {"data": outcomes_to_update}
-                            ),
+                            actions.updateHorizontalLinks({"data": outcomes_to_update}),
                         )
-        if (
-            object_type != "outcome"
-            and object_type != "outcome_base"
-            and linked_workflows
-        ):
+        if object_type != "outcome" and object_type != "outcome_base" and linked_workflows:
             for wf in linked_workflows:
                 actions.dispatch_parent_updated(wf)
         if object_type in ["workflow", "activity", "course", "program"]:
             for parent_workflow in parent_workflows:
-                actions.dispatch_child_updated(
-                    parent_workflow, model.get_workflow()
-                )
+                actions.dispatch_child_updated(parent_workflow, model.get_workflow())
 
         return Response({"message": "success"}, status=status.HTTP_200_OK)
 
@@ -631,15 +554,9 @@ class WorkspaceEndpoint:
         try:
             with transaction.atomic():
                 if object_type == "week":
-                    model = DAO.get_model_from_str(object_type).objects.get(
-                        id=object_id
-                    )
-                    parent = DAO.get_model_from_str(parent_type).objects.get(
-                        id=parent_id
-                    )
-                    through = WeekWorkflow.objects.get(
-                        week=model, workflow=parent
-                    )
+                    model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
+                    parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
+                    through = WeekWorkflow.objects.get(week=model, workflow=parent)
                     newmodel = fast_duplicate_week(model, request.user)
                     newthroughmodel = WeekWorkflow.objects.create(
                         workflow=parent, week=newmodel, rank=through.rank + 1
@@ -650,9 +567,7 @@ class WorkspaceEndpoint:
                     except (ValidationError, TypeError):
                         pass
                     new_model_serialized = WeekSerializerShallow(newmodel).data
-                    new_through_serialized = WeekWorkflowSerializerShallow(
-                        newthroughmodel
-                    ).data
+                    new_through_serialized = WeekWorkflowSerializerShallow(newthroughmodel).data
                     new_children_serialized = {
                         "node": NodeSerializerShallow(
                             newmodel.nodes,
@@ -667,19 +582,13 @@ class WorkspaceEndpoint:
                             many=True,
                         ).data,
                         "nodelink": NodeLinkSerializerShallow(
-                            NodeLink.objects.filter(
-                                source_node__week=newmodel
-                            ),
+                            NodeLink.objects.filter(source_node__week=newmodel),
                             many=True,
                         ).data,
                     }
                 elif object_type == "node":
-                    model = DAO.get_model_from_str(object_type).objects.get(
-                        id=object_id
-                    )
-                    parent = DAO.get_model_from_str(parent_type).objects.get(
-                        id=parent_id
-                    )
+                    model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
+                    parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
                     through = NodeWeek.objects.get(node=model, week=parent)
                     newmodel = duplicate_node(model, request.user, None, None)
                     newthroughmodel = NodeWeek.objects.create(
@@ -693,9 +602,7 @@ class WorkspaceEndpoint:
                     new_model_serialized = NodeSerializerShallow(
                         newmodel, context={"user": request.user}
                     ).data
-                    new_through_serialized = NodeWeekSerializerShallow(
-                        newthroughmodel
-                    ).data
+                    new_through_serialized = NodeWeekSerializerShallow(newthroughmodel).data
                     new_children_serialized = {
                         "outcomenode": OutcomeNodeSerializerShallow(
                             OutcomeNode.objects.filter(node=newmodel),
@@ -703,15 +610,9 @@ class WorkspaceEndpoint:
                         ).data,
                     }
                 elif object_type == "column":
-                    model = DAO.get_model_from_str(object_type).objects.get(
-                        id=object_id
-                    )
-                    parent = DAO.get_model_from_str(parent_type).objects.get(
-                        id=parent_id
-                    )
-                    through = ColumnWorkflow.objects.get(
-                        column=model, workflow=parent
-                    )
+                    model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
+                    parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
+                    through = ColumnWorkflow.objects.get(column=model, workflow=parent)
                     newmodel = duplicate_column(model, request.user)
                     newthroughmodel = ColumnWorkflow.objects.create(
                         workflow=parent, column=newmodel, rank=through.rank + 1
@@ -721,17 +622,11 @@ class WorkspaceEndpoint:
                         newmodel.save()
                     except (ValidationError, TypeError):
                         pass
-                    new_model_serialized = ColumnSerializerShallow(
-                        newmodel
-                    ).data
-                    new_through_serialized = ColumnWorkflowSerializerShallow(
-                        newthroughmodel
-                    ).data
+                    new_model_serialized = ColumnSerializerShallow(newmodel).data
+                    new_through_serialized = ColumnWorkflowSerializerShallow(newthroughmodel).data
                     new_children_serialized = None
                 elif object_type == "outcome":
-                    model = DAO.get_model_from_str(object_type).objects.get(
-                        id=object_id
-                    )
+                    model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
                     newmodel = fast_duplicate_outcome(model, request.user)
 
                     try:
@@ -741,65 +636,46 @@ class WorkspaceEndpoint:
                         pass
 
                     if parent_type == "outcome":
-                        parent = DAO.get_model_from_str(
-                            parent_type
-                        ).objects.get(id=parent_id)
-                        through = OutcomeOutcome.objects.get(
-                            child=model, parent=parent
-                        )
+                        parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
+                        through = OutcomeOutcome.objects.get(child=model, parent=parent)
                         newthroughmodel = OutcomeOutcome.objects.create(
                             parent=parent,
                             child=newmodel,
                             rank=through.rank + 1,
                         )
-                        new_through_serialized = (
-                            OutcomeOutcomeSerializerShallow(
-                                newthroughmodel
-                            ).data
-                        )
+                        new_through_serialized = OutcomeOutcomeSerializerShallow(
+                            newthroughmodel
+                        ).data
                     elif parent_type == "workflow":
-                        parent = DAO.get_model_from_str(
-                            parent_type
-                        ).objects.get(id=parent_id)
-                        through = OutcomeWorkflow.objects.get(
-                            outcome=model, workflow=parent
-                        )
+                        parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
+                        through = OutcomeWorkflow.objects.get(outcome=model, workflow=parent)
                         newthroughmodel = OutcomeWorkflow.objects.create(
                             workflow=parent,
                             outcome=newmodel,
                             rank=through.rank + 1,
                         )
-                        new_through_serialized = (
-                            OutcomeWorkflowSerializerShallow(
-                                newthroughmodel
-                            ).data
-                        )
+                        new_through_serialized = OutcomeWorkflowSerializerShallow(
+                            newthroughmodel
+                        ).data
 
-                    new_model_serialized = OutcomeSerializerShallow(
-                        newmodel
-                    ).data
+                    new_model_serialized = OutcomeSerializerShallow(newmodel).data
                     (
                         outcomes,
                         outcomeoutcomes,
                     ) = DAO.get_all_outcomes_for_outcome(newmodel)
                     outcomenodes = OutcomeNode.objects.filter(
-                        outcome__id__in=[newmodel.id]
-                        + [x.id for x in outcomes]
+                        outcome__id__in=[newmodel.id] + [x.id for x in outcomes]
                     )
                     node_updates = NodeSerializerShallow(
                         list(set([x.node for x in outcomenodes])),
                         many=True,
                     ).data
                     new_children_serialized = {
-                        "outcome": OutcomeSerializerShallow(
-                            outcomes, many=True
-                        ).data,
+                        "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
                         "outcomeoutcome": OutcomeOutcomeSerializerShallow(
                             outcomeoutcomes, many=True
                         ).data,
-                        "outcomenode": OutcomeNodeSerializerShallow(
-                            outcomenodes, many=True
-                        ).data,
+                        "outcomenode": OutcomeNodeSerializerShallow(outcomenodes, many=True).data,
                     }
                 else:
                     raise ValidationError("Uknown component type")
@@ -833,123 +709,9 @@ class WorkspaceEndpoint:
         if object_type == "node":
             linked_workflows = Workflow.objects.filter(linked_nodes=model)
         elif object_type == "week":
-            linked_workflows = Workflow.objects.filter(
-                linked_nodes__week=model
-            )
+            linked_workflows = Workflow.objects.filter(linked_nodes__week=model)
         if linked_workflows:
             for wf in linked_workflows:
                 actions.dispatch_parent_updated(wf)
 
         return Response({"message": "success"}, status=status.HTTP_200_OK)
-
-    #########################################################
-    # USERS
-    #########################################################
-    @staticmethod
-    # @user_can_view(False)
-    @api_view(["POST"])
-    def user__list(request: Request, pk: int) -> Response:
-        """
-        This is about getting users by workspace object (project or workflow only)
-        :param pk:
-        :param request:
-        :return:
-        """
-        serializer = DeleteRequestSerializer(data=request.data)
-        if not serializer.is_valid():
-            logger.log(logging.INFO, "invalid serializer")
-            return Response(serializer.errors, status=400)
-
-        # passing payload data to local objects
-        object_id = pk
-        object_type = serializer.validated_data["object_type"]
-
-        if object_type in ["activity", "course", "program"]:
-            object_type = "workflow"
-
-        content_type = ContentType.objects.get(model=object_type)
-        this_object = DAO.get_model_from_str(object_type).objects.get(
-            id=object_id
-        )
-        published = this_object.published
-        public_view = False
-
-        if object_type == "workflow":
-            public_view = this_object.public_view
-        try:
-            this_object = DAO.get_model_from_str(object_type).objects.get(
-                id=object_id
-            )
-            cannot_change = []
-            if this_object.author is not None:
-                cannot_change = [this_object.author.id]
-                author = UserSerializer(this_object.author).data
-                if object_type == "workflow" and not this_object.is_strategy:
-                    cannot_change.append(this_object.get_project().author.id)
-            else:
-                author = None
-            editors = set()
-            for object_permission in ObjectPermission.objects.filter(
-                content_type=content_type,
-                object_id=object_id,
-                permission_type=Permission.PERMISSION_EDIT.value,
-            ).select_related("user"):
-                editors.add(object_permission.user)
-            viewers = set()
-
-            for object_permission in ObjectPermission.objects.filter(
-                content_type=content_type,
-                object_id=object_id,
-                permission_type=Permission.PERMISSION_VIEW.value,
-            ).select_related("user"):
-                viewers.add(object_permission.user)
-            commentors = set()
-
-            for object_permission in ObjectPermission.objects.filter(
-                content_type=content_type,
-                object_id=object_id,
-                permission_type=Permission.PERMISSION_COMMENT.value,
-            ).select_related("user"):
-                commentors.add(object_permission.user)
-            students = set()
-
-            for object_permission in ObjectPermission.objects.filter(
-                content_type=content_type,
-                object_id=object_id,
-                permission_type=Permission.PERMISSION_STUDENT.value,
-            ).select_related("user"):
-                students.add(object_permission.user)
-
-            try:
-                if (
-                    Group.objects.get(name="SALTISE_Staff")
-                    in request.user.groups.all()
-                ):
-                    saltise_user = True
-                else:
-                    saltise_user = False
-            except ObjectDoesNotExist as e:
-                logger.exception("An error occurred")
-                saltise_user = False
-            is_template = this_object.is_template
-
-        except ValidationError as e:
-            logger.exception("An error occurred")
-            return Response({"action": "error"})
-
-        return Response(
-            {
-                "message": "success",
-                "author": author,
-                "viewers": UserSerializer(viewers, many=True).data,
-                "commentors": UserSerializer(commentors, many=True).data,
-                "editors": UserSerializer(editors, many=True).data,
-                "students": UserSerializer(students, many=True).data,
-                "published": published,
-                "public_view": public_view,
-                "cannot_change": cannot_change,
-                "saltise_user": saltise_user,
-                "is_template": is_template,
-            },
-            status=status.HTTP_200_OK,
-        )

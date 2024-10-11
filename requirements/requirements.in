@@ -19,6 +19,7 @@ pyparsing
 pydot
 flake8
 djangorestframework-camel-case
+drf_spectacular
 
 
 -e file:./#egg=saltise_course_flow

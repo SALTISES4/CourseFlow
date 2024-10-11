@@ -1,5 +1,5 @@
 import WorkflowEditDialog from '@cf/components/common/dialog/Workflow/WorkflowEditDialog'
-import { ProjectPermissionRole } from '@cf/types/common'
+import { PermissionGroup } from '@cf/types/common'
 import { WorkSpaceType } from '@cf/types/enum'
 import ProjectExportDialog from '@cfComponents/dialog/Project/ProjectExportDialog'
 import WorkflowCopyToProjectDialog from '@cfComponents/dialog/Workflow/WorkflowCopyToProjectDialog'
@@ -14,13 +14,13 @@ import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
 import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
 import { useParams } from 'react-router-dom'
 
-import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorManageDialog'
+import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorAddDialog'
 
 const userData = {
   id: 12313,
   name: 'Xin Yue',
   email: 'xin@xueeee.com',
-  role: ProjectPermissionRole.OWNER
+  role: PermissionGroup.OWNER
 }
 
 const WorkflowDialogs = () => {
@@ -28,7 +28,7 @@ const WorkflowDialogs = () => {
 
   // @todo this is causing redux to freak out currently when you go to the workflow page
   // disable for now for sidebar integration
-  // const { refetch } = useGetWorkflowByIdQuery({ id: Number(id) })
+  // const { data, refetch } = useGetWorkflowByIdQuery({ id: Number(id) })
 
   return <></>
 

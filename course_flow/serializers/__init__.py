@@ -11,3 +11,4 @@ from .user import *
 from .workflow import *
 from .workflow_objects import *
 from .workspace import *
+from .workspace_user import *

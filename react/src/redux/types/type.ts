@@ -66,7 +66,9 @@ export type TColumn = EColumn & {
 export type TNode = ENode & {
   lock?: Lock
 }
-export type TUser = EUser
+export type TUser = EUser & {
+  userColour?: string
+}
 
 export type TColumnworkflow = EOutcomeWorkflow & {
   outcome?: number

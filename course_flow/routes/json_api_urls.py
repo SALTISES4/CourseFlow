@@ -236,10 +236,28 @@ def json_api_patterns():
             views.json_api.WorkspaceEndpoint.update_value,
             name="json-api-post-update-value",
         ),
+        #########################################################
+        # WORKSPACE USER
+        #########################################################
         path(
-            "workspace/<int:pk>/user/list",
-            views.json_api.WorkspaceEndpoint.user__list,
-            name="workspace--user--list",
+            "workspace-user/<int:pk>/list",
+            views.json_api.WorkspaceUserEndpoint.list,
+            name="workspace-user--list",
+        ),
+        path(
+            "workspace-user/<int:pk>/create",
+            views.json_api.WorkspaceUserEndpoint.create,
+            name="workspace-user--create",
+        ),
+        path(
+            "workspace-user/<int:pk>/delete",
+            views.json_api.WorkspaceUserEndpoint.delete,
+            name="workspace-user--delete",
+        ),
+        path(
+            "workspace-user/<int:pk>/update",
+            views.json_api.WorkspaceUserEndpoint.update,
+            name="workspace-user--update",
         ),
         ##########################################################
         # NODE
@@ -386,11 +404,11 @@ def json_api_patterns():
         #########################################################
         # Misc / to sort
         #########################################################
-        path(
-            "permissions/set",
-            views.json_api.sharing.json_api_post_set_permission,
-            name="json-api-post-set-permission",
-        ),
+        # path(
+        #     "permissions/set",
+        #     views.json_api.sharing.json_api_post_set_permission,
+        #     name="json-api-post-set-permission",
+        # ),
     ]
 
 

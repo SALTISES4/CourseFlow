@@ -1,25 +1,58 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { PermissionUserType } from '@cf/types/common'
+import { CfObjectType, WorkSpaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
+import {
+  WorkspaceDeleteUserArgs,
+  WorkspaceUserArgs,
+  useWorkspaceUserDeleteMutation
+} from '@XMLHTTP/API/workspaceUser.rtk'
+import { useParams } from 'react-router-dom'
 
 type PropsType = {
   user: PermissionUserType | null
 }
 
 const ContributorRemoveDialog = ({ user }: PropsType) => {
-  const { show, onClose } = useDialog(DialogMode.PROJECT_REMOVE_USER)
+  const { id } = useParams()
+  const { show, onClose } = useDialog(DialogMode.CONTRIBUTOR_REMOVE)
+  const { onError, onSuccess } = useGenericMsgHandler()
 
-  function onSubmit() {
-    console.log('confirmed removing user:', user)
-    onClose()
+  /*******************************************************
+   * QUERIES
+   *******************************************************/
+  const [mutate] = useWorkspaceUserDeleteMutation()
+
+  /*******************************************************
+   * FUNCTION
+   *******************************************************/
+  async function onSubmit(data: IFormInputs) {
+    const args: WorkspaceDeleteUserArgs = {
+      id: Number(id),
+      payload: {
+        userId: data.userId,
+        type: WorkSpaceType.PROJECT
+      }
+    }
+
+    try {
+      const response = await mutate(args).unwrap()
+      onSuccess(response)
+    } catch (err) {
+      onError(err)
+    }
   }
 
+  /*******************************************************
+   *
+   *******************************************************/
   return (
     <StyledDialog
       open={!!show}

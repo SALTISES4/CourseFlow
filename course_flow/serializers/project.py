@@ -210,13 +210,13 @@ class ProjectSerializerShallow(
             "created_on",
             "is_template",
             "last_modified",
-            "workflowproject_set",
-            "disciplines",
-            "type",
-            "object_sets",
+            "workflowproject_set",  # @todo define this
+            "disciplines",  # @todo define this
+            "type",  # @todo define this
+            "object_sets",  # @todo define this
             "favourite",
-            "object_permission",
-            "user_permissions",
+            # "object_permission",  # @todo  define this
+            "user_permissions",  # @todo  define this
         ]
 
     created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
@@ -226,7 +226,7 @@ class ProjectSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
     author = serializers.SerializerMethodField()
-    object_permission = serializers.SerializerMethodField()
+    #  object_permission = serializers.SerializerMethodField()
     user_permissions = serializers.SerializerMethodField()
 
     def get_favourite(self, instance):
@@ -257,24 +257,36 @@ class ProjectSerializerShallow(
         links = instance.workflowproject_set.filter(workflow__deleted=False).order_by("rank")
         return list(map(Utility.linkIDMap, links))
 
-    def get_object_permission(self, instance):
-        user = self.context.get("user")
-        if user is None or not user.is_authenticated:
-            return 0
-        object_permission = ObjectPermission.objects.filter(
-            user=user,
-            content_type=ContentType.objects.get_for_model(instance),
-            object_id=instance.id,
-        ).first()
-
-        if object_permission is None:
-            return None
-        return {
-            "permission_type": object_permission.permission_type,
-            "last_viewed": object_permission.last_viewed,
-        }
+    # def get_object_permission(self, instance):
+    #     """
+    #     wtf
+    #
+    #
+    #     :param instance:
+    #     :return:
+    #     """
+    #     user = self.context.get("user")
+    #     if user is None or not user.is_authenticated:
+    #         return 0
+    #     object_permission = ObjectPermission.objects.filter(
+    #         user=user,
+    #         content_type=ContentType.objects.get_for_model(instance),
+    #         object_id=instance.id,
+    #     ).first()
+    #
+    #     if object_permission is None:
+    #         return None
+    #     return {
+    #         "permission_type": object_permission.permission_type,
+    #         "last_viewed": object_permission.last_viewed,
+    #     }
 
     def get_user_permissions(self, instance):
+        """
+        Standard sitewide permission 'group' strategy
+        :param instance:
+        :return:
+        """
         user = self.context.get("user", None)
         user_permission = DAO.get_user_permission(instance, user)
         return user_permission

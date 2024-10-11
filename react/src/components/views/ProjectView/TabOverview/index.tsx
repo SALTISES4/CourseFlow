@@ -1,11 +1,15 @@
-import ContributorManageDialog from '@cf/components/common/dialog/Workspace/ContributorManageDialog'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
-import {PermissionUserType, ProjectDetailsType, ProjectPermissionRole} from '@cf/types/common'
+import {
+  PermissionGroup,
+  PermissionUserType,
+  ProjectDetailsType
+} from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
-import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
+import { groupUsersFromPermissionGroups } from '@cf/utility/marshalling/users'
+import { permissionGroupMenuOptions } from '@cf/utility/permissions'
 import { _t, getInitials } from '@cf/utility/utilityFunctions'
-import MenuButton, { MenuButtonOption } from '@cfComponents/menu/MenuButton'
+import MenuButton from '@cfComponents/menu/MenuButton'
 import LinkIcon from '@mui/icons-material/Link'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
@@ -18,9 +22,11 @@ import Typography from '@mui/material/Typography'
 import {
   UsersForObjectQueryResp,
   useGetUsersForObjectQuery
-} from '@XMLHTTP/API/workspace.rtk'
+} from '@XMLHTTP/API/workspaceUser.rtk'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+
+import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorAddDialog'
 
 import {
   InfoBlock,
@@ -30,26 +36,10 @@ import {
   PermissionThumbnail
 } from './styles'
 
-const roleMenuOptions: MenuButtonOption[] = [
-  {
-    name: ProjectPermissionRole.EDITOR,
-    label: _t('Editor')
-  },
-  {
-    name: ProjectPermissionRole.COMMENTER,
-    label: _t('Commenter')
-  },
-  {
-    name: ProjectPermissionRole.VIEWER,
-    label: _t('Viewer')
-  }
-]
-
 const OverviewTab = ({
   description,
   disciplines,
   created,
-  permissions,
   objectSets
 }: ProjectDetailsType) => {
   const [removeUser, setRemoveUser] = useState<PermissionUserType | null>(null)
@@ -67,19 +57,37 @@ const OverviewTab = ({
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const Users = (data: UsersForObjectQueryResp) => {
-    if (!permissions) return <></>
+  const Users = ({ data }: { data: UsersForObjectQueryResp }) => {
+    console.log('data')
+    console.log(data)
+    if (!data) return <></>
 
-    const usersWithRoles = groupUsersFromRoleGroups({
+    const usersWithRoles = groupUsersFromPermissionGroups({
       viewers: data.viewers,
       commentors: data.commentors,
       editors: data.editors,
       students: data.students
     })
 
+    console.log('usersWithRoles')
+    console.log(usersWithRoles)
+
     return (
       <InfoBlockContent>
         <List>
+          <PermissionThumbnail>
+            <ListItemAvatar>
+              <Avatar alt={data.author.firstName}>
+                {getInitials(data.author.firstName)}
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={data.author.firstName}
+              secondary={data.author.email}
+            />
+            <Button disabled>owner</Button>
+          </PermissionThumbnail>
+
           {usersWithRoles.map((user) => (
             <PermissionThumbnail key={user.id}>
               <ListItemAvatar>
@@ -87,10 +95,12 @@ const OverviewTab = ({
               </ListItemAvatar>
               <ListItemText primary={user.name} secondary={user.email} />
               <MenuButton
-                selected={user.role}
-                disabled={user.role === ProjectPermissionRole.OWNER}
+                disabled={false} // this needs to be a check on call to see if current user can edit
                 options={[
-                  ...roleMenuOptions,
+                  ...permissionGroupMenuOptions.map((item) => ({
+                    name: String(item.value),
+                    label: item.label
+                  })),
                   {
                     name: 'mui-divider'
                   },
@@ -99,15 +109,15 @@ const OverviewTab = ({
                     label: 'Remove user',
                     onClick: () => {
                       setRemoveUser(user)
-                      dispatch(DialogMode.PROJECT_REMOVE_USER)
+                      dispatch(DialogMode.CONTRIBUTOR_REMOVE, { userId: 10 })
                     }
                   }
                 ]}
                 onChange={(role) => console.log('changed to', role)}
                 placeholder={
-                  user.role === ProjectPermissionRole.OWNER
-                    ? 'Owner'
-                    : roleMenuOptions.find((p) => p.name === user.role)?.label
+                  permissionGroupMenuOptions.find(
+                    (p) => p.value === user.permissionGroup
+                  )?.label
                 }
               />
             </PermissionThumbnail>
@@ -171,7 +181,7 @@ const OverviewTab = ({
       </Grid>
       <InfoBlock sx={{ mt: 3 }}>
         <InfoBlockTitle>{_t('Permissions')}</InfoBlockTitle>
-        <Users {...data} />
+        <Users data={data} />
 
         <Stack
           direction="row"
@@ -190,7 +200,7 @@ const OverviewTab = ({
           <Button
             size="medium"
             variant="contained"
-            onClick={() => dispatch(DialogMode.ADD_CONTRIBUTOR)}
+            onClick={() => dispatch(DialogMode.CONTRIBUTOR_ADD)}
           >
             {_t('Add contributor')}
           </Button>
@@ -198,8 +208,7 @@ const OverviewTab = ({
       </InfoBlock>
 
       <ObjectSets />
-
-      <ContributorManageDialog user={removeUser} />
+      <ContributorAddDialog />
     </OuterContentWrap>
   )
 }

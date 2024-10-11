@@ -6,15 +6,10 @@ export enum DialogMode {
   // General
   LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
-  RESTORE = 'restore',
-  ARCHIVE = 'archive',
 
   // USER
   PASSWORD_RESET = 'password_reset',
 
-  // PROJECT
-  PROJECT_REMOVE_USER = 'project_user_remove',
-  ADD_CONTRIBUTOR = 'add_contributor', // where is this?
   PROJECT_CREATE = 'project_create',
   PROJECT_EDIT = 'project_edit',
   PROJECT_EXPORT = 'project_export',
@@ -24,14 +19,18 @@ export enum DialogMode {
   IMPORT_OUTCOMES = 'import_outcomes',
   IMPORT_NODES = 'import_nodes',
   WORKFLOW_LINK = 'workflow_link',
-
   WORKFLOW_DELETE = 'workflow_DELETE',
   WORKFLOW_EDIT = 'workflow_edit',
   WORKFLOW_COPY_TO_PROJECT = 'workflow_copy_to_project',
-
   PROGRAM_CREATE = 'program_create',
   ACTIVITY_CREATE = 'activity_create',
   COURSE_CREATE = 'course_create',
+
+  // WORKSPACE
+  CONTRIBUTOR_REMOVE = 'contributor_remove',
+  CONTRIBUTOR_ADD = 'contributor_add', // where is this?
+  RESTORE = 'restore',
+  ARCHIVE = 'archive',
 
   GENERIC = 'generic'
 

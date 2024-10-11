@@ -4,6 +4,7 @@ import { EProject } from '@XMLHTTP/types/entity'
 
 export function formatProjectEntity(project: EProject): ProjectDetailsType {
   const allDisciplines = COURSEFLOW_APP.globalContextData.disciplines
+
   const formattedDisciplines: string[] = project.disciplines.map((projDisc) => {
     return allDisciplines.find((item) => item.id === projDisc).title
   })
@@ -26,6 +27,7 @@ export function formatProjectEntity(project: EProject): ProjectDetailsType {
     isDeleted: project.deleted,
     created: formatDate(project.createdOn),
     disciplines: formattedDisciplines,
-    objectSets: formattedObjectSets
+    objectSets: formattedObjectSets,
+    permissionGroup: project.userPermissions
   }
 }

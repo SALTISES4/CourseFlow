@@ -1,4 +1,4 @@
-import { ObjectPermission } from '@cf/types/common'
+import { ObjectPermission, PermissionGroup } from '@cf/types/common'
 import { LibraryObjectType, WorkSpaceType, WorkflowType } from '@cf/types/enum'
 import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
@@ -15,7 +15,8 @@ export type EUser = {
   username: string
   firstName: string
   lastName: string
-  userColour?: string
+  email?: string
+  language?: string
 }
 
 /*******************************************************E
@@ -45,8 +46,7 @@ export type ELibraryObject = {
  * PROJECT
  *******************************************************/
 export type EProject = {
-  author: string
-  authorId: number
+  author: EUser
   createdOn: Date
   deleted: boolean
   deletedOn: Date
@@ -55,7 +55,7 @@ export type EProject = {
   favourite: boolean
   id: number
   lastModified: string
-  objectPermission: ObjectPermission
+  // objectPermission: ObjectPermission
   userPermissions: number
   objectSets: EObjectSet[]
   published: boolean
@@ -328,3 +328,6 @@ export type ENotification = {
 export type EStrategy = any
 export type EParentWorkflow = any
 export type EChildWorkflow = any
+export type EWorkspaceUser = EUser & {
+  role: PermissionGroup
+}

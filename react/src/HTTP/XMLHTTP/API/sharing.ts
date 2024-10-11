@@ -1,5 +1,5 @@
-import {apiPathRoutes, apiPaths} from '@cf/router/apiRoutes'
-import {UsersForObjectQueryResp} from "@XMLHTTP/API/workspace.rtk";
+import { apiPaths } from '@cf/router/apiRoutes'
+import { UsersForObjectQueryResp } from '@XMLHTTP/API/workspaceUser.rtk'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
@@ -11,8 +11,10 @@ export function setUserPermission(
   permissionType,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.set_permission, {
-    objectId: objectId,
+  const base = apiPaths.json_api.workspaceUser.update
+  const url = generatePath(base, { id: objectId })
+
+  API_POST(url, {
     objectType: objectType,
     permission_user: userId,
     permissionType: permissionType
@@ -57,7 +59,7 @@ export function getUsersForObjectQueryLegacy(
 ) {
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
     objectType = 'workflow'
-  const base = apiPaths.json_api.workspace.user__list
+  const base = apiPaths.json_api.workspaceUser.list
   const url = generatePath(base, { id: objectId })
   API_POST(url, {
     objectType: objectType

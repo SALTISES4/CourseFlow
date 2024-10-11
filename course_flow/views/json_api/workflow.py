@@ -232,6 +232,13 @@ class WorkflowEndpoint:
     # @todo needs permission
     @api_view(["POST"])
     def update(request: Request, pk: int) -> Response:
+        """
+
+        :param request:
+        :param pk:
+        :return:
+        """
+
         try:
             workflow = Workflow.objects.get(pk=pk)
         except Workflow.DoesNotExist as e:

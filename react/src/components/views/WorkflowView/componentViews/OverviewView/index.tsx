@@ -4,14 +4,13 @@ import MenuButton, {
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import {
+  PermissionGroup,
   PermissionUserType,
-  ProjectDetailsType,
-  ProjectPermissionRole
+  ProjectDetailsType
 } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
-import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
+import { groupUsersFromPermissionGroups } from '@cf/utility/marshalling/users'
 import { _t, formatDate, getInitials } from '@cf/utility/utilityFunctions'
-import ContributorManageDialog from "@cfComponents/dialog/Workspace/ContributorManageDialog";
 import { AppState } from '@cfRedux/types/type'
 import LinkIcon from '@mui/icons-material/Link'
 import Avatar from '@mui/material/Avatar'
@@ -25,9 +24,11 @@ import Typography from '@mui/material/Typography'
 import {
   UsersForObjectQueryResp,
   useGetUsersForObjectQuery
-} from '@XMLHTTP/API/workspace.rtk'
+} from '@XMLHTTP/API/workspaceUser.rtk'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
+
+import ContributorManageDialog from 'components/common/dialog/Workspace/ContributorAddDialog'
 
 import {
   InfoBlock,
@@ -39,15 +40,15 @@ import {
 
 const roleMenuOptions: MenuButtonOption[] = [
   {
-    name: ProjectPermissionRole.EDITOR,
+    name: PermissionGroup.EDIT,
     label: 'Editor'
   },
   {
-    name: ProjectPermissionRole.COMMENTER,
+    name: PermissionGroup.COMMENT,
     label: 'Commenter'
   },
   {
-    name: ProjectPermissionRole.VIEWER,
+    name: PermissionGroup.VIEW,
     label: 'Viewer'
   }
 ]
@@ -85,7 +86,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
   const Users = (data: UsersForObjectQueryResp) => {
     if (!data || !Object.keys(data).length) return <></>
 
-    const usersWithRoles = groupUsersFromRoleGroups({
+    const usersWithRoles = groupUsersFromPermissionGroups({
       viewers: data.viewers,
       commentors: data.commentors,
       editors: data.editors,
@@ -104,8 +105,8 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
               </ListItemAvatar>
               <ListItemText primary={perm.name} secondary={perm.email} />
               <MenuButton
-                selected={perm.role}
-                disabled={perm.role === ProjectPermissionRole.OWNER}
+                selected={perm.permissionGroup}
+                disabled={perm.permissionGroup === PermissionGroup.OWNER}
                 options={[
                   ...roleMenuOptions,
                   {
@@ -122,9 +123,9 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
                 ]}
                 onChange={(role) => console.log('changed to', role)}
                 placeholder={
-                  perm.role === ProjectPermissionRole.OWNER
+                  perm.permissionGroup === PermissionGroup.OWNER
                     ? 'Owner'
-                    : roleMenuOptions.find((p) => p.name === perm.role)?.label
+                    : roleMenuOptions.find((p) => p.name === perm.permissionGroup)?.label
                 }
               />
             </PermissionThumbnail>
@@ -202,7 +203,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
           <Button
             size="medium"
             variant="contained"
-            onClick={() => dispatch(DialogMode.ADD_CONTRIBUTOR)}
+            onClick={() => dispatch(DialogMode.CONTRIBUTOR_ADD)}
           >
             {_t('Add contributor')}
           </Button>
