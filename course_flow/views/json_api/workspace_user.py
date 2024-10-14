@@ -16,18 +16,20 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from course_flow.apps import logger
-from course_flow.decorators import user_can_edit
 from course_flow.models import User
 from course_flow.models.notification import Notification
 from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.serializers import (
-    ObjectPermissionCreateSerializer,
     ObjectPermissionDeleteSerializer,
-    ObjectPermissionUpdateSerializer,
+    ObjectPermissionUpsertSerializer,
     UserSerializer,
+    UserWithPermissionsSerializer,
 )
 from course_flow.services import DAO
-from course_flow.views.json_api._validators import DeleteRequestSerializer
+from course_flow.views.json_api._validators import (
+    DeleteRequestSerializer,
+    ObjectTypeSerializer,
+)
 
 
 class ObjectType(Enum):
@@ -44,10 +46,118 @@ class ObjectType(Enum):
 
 class WorkspaceUserEndpoint:
     @staticmethod
-    # @user_can_view(False)
     @api_view(["POST"])
     def list(request: Request, pk: int) -> Response:
         """
+        Retrieves users associated with an object, categorized by permission type.
+        :param pk: Primary key of the object
+        :param request: HTTP Request
+        :return: Response with user data
+        """
+        serializer = ObjectTypeSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+
+        object_type = serializer.validated_data["object_type"]
+        # Simplify object type handling
+        if object_type in ["activity", "course", "program"]:
+            object_type = "workflow"
+
+        try:
+            content_type = ContentType.objects.get(model=object_type)
+
+            # Retrieve all users with permissions on this object
+            permissions = ObjectPermission.objects.filter(
+                content_type=content_type, object_id=pk
+            ).select_related("user")
+
+            # Serialize users along with their permissions
+            users_with_permissions = [
+                UserWithPermissionsSerializer(
+                    perm.user, context={"permission_type": perm.permission_type}
+                ).data
+                for perm in permissions
+            ]
+
+            # keep this snippet, maybe there will be a use case to send throughg a
+            # group by filter
+            if False:
+                users_with_permissions = {
+                    permission_type: UserWithPermissionsSerializer(
+                        [
+                            perm.user
+                            for perm in permissions
+                            if perm.permission_type == permission_type
+                        ],
+                        many=True,
+                    ).data
+                    for permission_type in permissions.values_list(
+                        "permission_type", flat=True
+                    ).distinct()
+                }
+
+            return Response({"message": "success", "data_package": users_with_permissions})
+
+        except ContentType.DoesNotExist:
+            return Response({"error": "Invalid object type"}, status=400)
+        except DAO.get_model_from_str(object_type).DoesNotExist:
+            return Response({"error": "Object not found"}, status=404)
+        except SystemError as e:
+            logger.exception("An unexpected error occurred")
+            return Response({"error": "An error occurred"}, status=500)
+
+    @staticmethod
+    @api_view(["POST"])
+    def list_available(request: Request, pk: int) -> Response:
+        """
+        Retrieves users available to add to an object
+        @todo maybe combine with the above at some point
+        :param pk: Primary key of the object
+        :param request: HTTP Request
+        :return: Response with user data
+        """
+        serializer = ObjectTypeSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+
+        object_type = serializer.validated_data["object_type"]
+        # Simplify object type handling
+        if object_type in ["activity", "course", "program"]:
+            object_type = "workflow"
+
+        try:
+            this_object = DAO.get_model_from_str(object_type).objects.get(id=pk)
+            content_type = ContentType.objects.get(model=object_type)
+
+            # Retrieve all users with permissions on this object
+            permissions = ObjectPermission.objects.filter(
+                content_type=content_type, object_id=pk
+            ).select_related("user")
+
+            users_with_permissions_ids = list(permissions.values_list("user_id", flat=True))
+            exclusion_ids = users_with_permissions_ids + [this_object.author.id]
+
+            available_users = User.objects.exclude(id__in=exclusion_ids)
+
+            users = UserSerializer(available_users, many=True).data
+
+            return Response({"message": "success", "data_package": users})
+
+        except ContentType.DoesNotExist:
+            return Response({"error": "Invalid object type"}, status=400)
+        except DAO.get_model_from_str(object_type).DoesNotExist:
+            return Response({"error": "Object not found"}, status=404)
+        except SystemError as e:
+            logger.exception("An unexpected error occurred")
+            return Response({"error": "An error occurred"}, status=500)
+
+    @staticmethod
+    # @user_can_view(False)
+    @api_view(["POST"])
+    def list_legacy(request: Request, pk: int) -> Response:
+        """
+        LEGACY
+        DELETE ME WHEN CONFIRMED
         This is about getting users by workspace object (project or workflow only)
         :param pk:
         :param request:
@@ -136,6 +246,7 @@ class WorkspaceUserEndpoint:
             {
                 "message": "success",
                 "author": author,
+                "data_package": {},
                 "viewers": UserSerializer(viewers, many=True).data,
                 "commentors": UserSerializer(commentors, many=True).data,
                 "editors": UserSerializer(editors, many=True).data,
@@ -161,7 +272,7 @@ class WorkspaceUserEndpoint:
         :return:
         """
 
-        serializer = ObjectPermissionCreateSerializer(data=request.data, context={"pk": pk})
+        serializer = ObjectPermissionUpsertSerializer(data=request.data, context={"pk": pk})
 
         if serializer.is_valid():
             # Save the new permission
@@ -254,34 +365,49 @@ class WorkspaceUserEndpoint:
             return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
-    # @user_can_edit(False)
     @api_view(["POST"])
     def update(request: Request, pk: int) -> Response:
         """
         Updates an existing ObjectPermission entry for a user.
         """
-        serializer = ObjectPermissionUpdateSerializer(data=request.data)
+        # Validate the input data
+        serializer = ObjectPermissionUpsertSerializer(data=request.data, context={"pk": pk})
 
         if serializer.is_valid():
-            # Update the permission
-            updated_permission = serializer.update(
-                serializer.context["object_permission"], serializer.validated_data
-            )
+            object_type = serializer.validated_data.get("type")
+            if object_type in ["activity", "course", "program"]:
+                object_type = "workflow"
 
-            pprint(updated_permission)
+            try:
+                content_type = ContentType.objects.get(model=object_type)
+                # Retrieve the existing permission based on content type, object_id, and user_id
+                permission = ObjectPermission.objects.get(
+                    content_type=content_type,
+                    object_id=pk,
+                    user_id=serializer.validated_data.get("user_id"),
+                )
 
-            # DAO.make_user_notification(
-            #     source_user=request.user,
-            #     target_user=updated_permission,
-            #     notification_type=Notification.TYPE_SHARED,
-            #     content_object=item,
-            # )
+                # Save the updated permission by passing the instance to the serializer
+                serializer.update(instance=permission, validated_data=serializer.validated_data)
 
-            return Response(
-                {"action": "updated", "message": _("Permission updated successfully.")},
-                status=status.HTTP_200_OK,
-            )
+                return Response(
+                    {"action": "updated", "message": _("Permission updated successfully.")},
+                    status=status.HTTP_200_OK,
+                )
+
+            except ObjectPermission.DoesNotExist:
+                return Response(
+                    {"action": "error", "message": _("Permission does not exist.")},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+            except ContentType.DoesNotExist:
+                return Response(
+                    {"action": "error", "message": _("Invalid object type.")},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
         else:
+            # Return validation errors if the input data is not valid
             return Response(
                 {"action": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
             )

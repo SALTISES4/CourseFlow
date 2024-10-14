@@ -8,7 +8,7 @@ import {
   PermissionUserType,
   ProjectDetailsType
 } from '@cf/types/common'
-import { CfObjectType } from '@cf/types/enum'
+import {CfObjectType, WorkspaceType} from '@cf/types/enum'
 import { groupUsersFromPermissionGroups } from '@cf/utility/marshalling/users'
 import { _t, formatDate, getInitials } from '@cf/utility/utilityFunctions'
 import { AppState } from '@cfRedux/types/type'
@@ -68,7 +68,7 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
     {
       id: workflow.id,
       payload: {
-        objectType: CfObjectType.WORKFLOW
+        objectType: WorkspaceType.WORKFLOW
       }
     },
     {
@@ -125,7 +125,9 @@ const OverviewView = ({ disciplines, objectSets }: ProjectDetailsType) => {
                 placeholder={
                   perm.permissionGroup === PermissionGroup.OWNER
                     ? 'Owner'
-                    : roleMenuOptions.find((p) => p.name === perm.permissionGroup)?.label
+                    : roleMenuOptions.find(
+                        (p) => p.name === perm.permissionGroup
+                      )?.label
                 }
               />
             </PermissionThumbnail>

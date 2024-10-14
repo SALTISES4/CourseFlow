@@ -62,8 +62,9 @@ export const apiPathRoutes = {
     },
     workspaceUser: {
       list: '/workspace-user/:id/list',
+      list_available: '/workspace-user/:id/list-available',
       create: '/workspace-user/:id/create',
-      delete: '/workspace-user/:id/remove',
+      delete: '/workspace-user/:id/delete',
       update: '/workspace-user/:id/update'
     },
     node: {

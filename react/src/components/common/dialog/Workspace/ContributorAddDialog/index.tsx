@@ -2,7 +2,7 @@ import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { PermissionGroup } from '@cf/types/common'
-import { CfObjectType, WorkSpaceType } from '@cf/types/enum'
+import { WorkspaceType } from '@cf/types/enum'
 import { permissionGroupMenuOptions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
@@ -20,12 +20,13 @@ import Select from '@mui/material/Select'
 import {
   WorkspaceUserArgs,
   useGetUserListQuery,
+  useGetUsersForObjectAvailableQuery,
   useGetUsersForObjectQuery,
   useWorkspaceUserCreateMutation
 } from '@XMLHTTP/API/workspaceUser.rtk'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
 
 /*******************************************************
  * TYPES
@@ -39,16 +40,24 @@ interface IFormInputs {
 type UserFormOption = {
   name: string
   id: number
+
 }
 
 /**
  * @constructor
  */
-const AddContributorDialog = () => {
+const AddContributorDialog = ({
+  id,
+  type,
+  refetch
+}: {
+  id: number
+  type: WorkspaceType
+  refetch: () => void
+}) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { id } = useParams()
   const { show, onClose } = useDialog(DialogMode.CONTRIBUTOR_ADD)
 
   const [userFormOptions, setUserFormOptions] = useState<UserFormOption[]>([])
@@ -57,20 +66,14 @@ const AddContributorDialog = () => {
   /*******************************************************
    * QUERIES
    *******************************************************/
-  const {
-    data: usersForObjectData,
-    error: usersForObjectError,
-    isLoading: usersForObjectIsLoading,
-    isError: usersForObjectIsError
-  } = useGetUsersForObjectQuery({
-    id: Number(id),
-    payload: {
-      objectType: CfObjectType.PROJECT
-    }
-  })
 
-  const { data, isLoading } = useGetUserListQuery({
-    filter: 'dray'
+  //@todo update this filter when we connect the search input
+  const { data, isLoading } = useGetUsersForObjectAvailableQuery({
+    id,
+    payload: {
+      filter: '',
+      objectType: type
+    }
   })
 
   const [mutate] = useWorkspaceUserCreateMutation()
@@ -91,24 +94,30 @@ const AddContributorDialog = () => {
   const contributor = watch('userId')
   const role = watch('group')
   const disableSubmit =
-    !contributor || !role || usersForObjectIsLoading || isLoading
+    !contributor || !role || isLoading || isLoading
 
   /*******************************************************
    * FUNCTION
    *******************************************************/
+  function onSuccessHandler(response: EmptyPostResp) {
+    onSuccess(response)
+    onClose()
+    refetch()
+  }
+
   async function onSubmit(data: IFormInputs) {
     const args: WorkspaceUserArgs = {
-      id: Number(id),
+      id,
       payload: {
         userId: data.userId,
-        type: WorkSpaceType.PROJECT,
+        type: WorkspaceType.PROJECT,
         group: data.group
       }
     }
 
     try {
       const response = await mutate(args).unwrap()
-      onSuccess(response)
+      onSuccessHandler(response)
     } catch (err) {
       onError(err)
     }
@@ -123,7 +132,7 @@ const AddContributorDialog = () => {
 
   useEffect(() => {
     const users = data
-      ? data.dataPackage.userList.map((item) => ({
+      ? data.dataPackage.map((item) => ({
           id: item.id,
           name: item.firstName + ' ' + item.lastName
         }))

@@ -245,6 +245,11 @@ def json_api_patterns():
             name="workspace-user--list",
         ),
         path(
+            "workspace-user/<int:pk>/list-available",
+            views.json_api.WorkspaceUserEndpoint.list_available,
+            name="workspace-user--list-available",
+        ),
+        path(
             "workspace-user/<int:pk>/create",
             views.json_api.WorkspaceUserEndpoint.create,
             name="workspace-user--create",

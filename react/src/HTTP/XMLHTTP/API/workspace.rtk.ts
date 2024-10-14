@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { LibraryObjectType, WorkSpaceType } from '@cf/types/enum'
+import { LibraryObjectType, WorkspaceType } from '@cf/types/enum'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
@@ -22,7 +22,7 @@ const extendedApi = cfApi.injectEndpoints({
       {
         id: number
         payload: {
-          objectType: WorkSpaceType
+          objectType: WorkspaceType
         }
       }
     >({
@@ -40,7 +40,7 @@ const extendedApi = cfApi.injectEndpoints({
       {
         id: number
         payload: {
-          objectType: WorkSpaceType
+          objectType: WorkspaceType
         }
       }
     >({

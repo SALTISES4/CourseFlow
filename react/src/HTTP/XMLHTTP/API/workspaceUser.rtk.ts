@@ -1,7 +1,7 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { PermissionGroup } from '@cf/types/common'
-import { CfObjectType, WorkSpaceType } from '@cf/types/enum'
-import { EUser } from '@XMLHTTP/types/entity'
+import { WorkspaceType } from '@cf/types/enum'
+import { EUser, EWorkspaceUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
@@ -12,7 +12,7 @@ import { Verb, cfApi } from './api'
  *******************************************************/
 export type WorkspaceUser = {
   userId: number
-  type: WorkSpaceType
+  type: WorkspaceType
   group: PermissionGroup
 }
 export type WorkspaceSimpleUser = Omit<WorkspaceUser, 'group'>
@@ -22,17 +22,7 @@ export type WorkspaceSimpleUser = Omit<WorkspaceUser, 'group'>
  *******************************************************/
 export type UsersForObjectQueryResp = {
   message: string
-  author: EUser
-  viewers: EUser[]
-  commentors: EUser[]
-  editors: EUser[]
-  students: EUser[]
-
-  published: boolean // why here, should move it
-  publicView: boolean // why here, should move it
-  cannotChange: number[] // what is
-  saltiseUser: boolean // what is
-  isTemplate: boolean // why here, should move it
+  dataPackage: EWorkspaceUser[]
 }
 
 export type UserListResp = {
@@ -67,12 +57,21 @@ const extendedApi = cfApi.injectEndpoints({
     /*******************************************************
      * QUERIES
      *******************************************************/
+    getUserList: builder.query<UserListResp, UserListQueryArgs>({
+      query: (args) => {
+        return {
+          method: Verb.POST,
+          url: apiPaths.json_api.user.list,
+          body: args
+        }
+      }
+    }),
     getUsersForObject: builder.query<
       UsersForObjectQueryResp,
       {
         id: number
         payload: {
-          objectType: CfObjectType
+          objectType: WorkspaceType
         }
       }
     >({
@@ -87,15 +86,28 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
-    getUserList: builder.query<UserListResp, UserListQueryArgs>({
+    getUsersForObjectAvailable: builder.query<
+      UsersForObjectQueryResp,
+      {
+        id: number
+        payload: {
+          objectType: WorkspaceType
+          filter: string
+        }
+      }
+    >({
       query: (args) => {
+        const base = apiPaths.json_api.workspaceUser.list_available
+        const url = generatePath(base, { id: args.id })
+
         return {
           method: Verb.POST,
-          url: apiPaths.json_api.user.list,
-          body: args
+          url: url,
+          body: args.payload
         }
       }
     }),
+
     /*******************************************************
      * MUTATION
      *******************************************************/
@@ -137,8 +149,9 @@ const extendedApi = cfApi.injectEndpoints({
 })
 
 export const {
-  useGetUsersForObjectQuery,
   useGetUserListQuery,
+  useGetUsersForObjectQuery,
+  useGetUsersForObjectAvailableQuery,
   useWorkspaceUserCreateMutation,
   useWorkspaceUserDeleteMutation,
   useWorkspaceUserUpdateMutation

@@ -1,7 +1,7 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { WorkSpaceType } from '@cf/types/enum'
+import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -16,13 +16,13 @@ const RestoreDialog = ({
   callback
 }: {
   id: number
-  objectType: WorkSpaceType
+  objectType: WorkspaceType
   callback?: () => void
 }) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const { type, show, onClose } = useDialog([DialogMode.RESTORE])
+  const { show, onClose } = useDialog(DialogMode.RESTORE)
   const [mutate] = useUnarchiveMutation()
   const { onError, onSuccess } = useGenericMsgHandler()
 
@@ -32,13 +32,15 @@ const RestoreDialog = ({
   }
 
   async function onSubmit() {
+    const args = {
+      id: Number(id),
+      payload: {
+        objectType: objectType
+      }
+    }
+
     try {
-      const resp = await mutate({
-        id: Number(id),
-        payload: {
-          objectType: objectType
-        }
-      }).unwrap()
+      const resp = await mutate(args).unwrap()
       onSuccess(resp, onSuccessHandler)
       onClose()
     } catch (err) {

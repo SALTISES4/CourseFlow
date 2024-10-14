@@ -1,6 +1,6 @@
 import WorkflowEditDialog from '@cf/components/common/dialog/Workflow/WorkflowEditDialog'
 import { PermissionGroup } from '@cf/types/common'
-import { WorkSpaceType } from '@cf/types/enum'
+import { WorkspaceType } from '@cf/types/enum'
 import ProjectExportDialog from '@cfComponents/dialog/Project/ProjectExportDialog'
 import WorkflowCopyToProjectDialog from '@cfComponents/dialog/Workflow/WorkflowCopyToProjectDialog'
 import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
@@ -37,12 +37,12 @@ const WorkflowDialogs = () => {
       {/* Shared */}
       <RestoreDialog
         id={Number(id)}
-        objectType={WorkSpaceType.WORKFLOW}
+        objectType={WorkspaceType.WORKFLOW}
         callback={refetch}
       />
       <ArchiveDialog
         id={Number(id)}
-        objectType={WorkSpaceType.WORKFLOW}
+        objectType={WorkspaceType.WORKFLOW}
         callback={refetch}
       />
       {/* Workflow specific  */}

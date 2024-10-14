@@ -28,6 +28,7 @@ export function formatProjectEntity(project: EProject): ProjectDetailsType {
     created: formatDate(project.createdOn),
     disciplines: formattedDisciplines,
     objectSets: formattedObjectSets,
-    permissionGroup: project.userPermissions
+    permissionGroup: project.userPermissions,
+    author: project.author
   }
 }

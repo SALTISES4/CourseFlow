@@ -1,12 +1,8 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { OuterContentWrap } from '@cf/mui/helper'
-import {
-  PermissionGroup,
-  PermissionUserType,
-  ProjectDetailsType
-} from '@cf/types/common'
-import { CfObjectType } from '@cf/types/enum'
-import { groupUsersFromPermissionGroups } from '@cf/utility/marshalling/users'
+import { PermissionGroup, ProjectDetailsType } from '@cf/types/common'
+import { WorkspaceType } from '@cf/types/enum'
 import { permissionGroupMenuOptions } from '@cf/utility/permissions'
 import { _t, getInitials } from '@cf/utility/utilityFunctions'
 import MenuButton from '@cfComponents/menu/MenuButton'
@@ -21,12 +17,12 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import {
   UsersForObjectQueryResp,
-  useGetUsersForObjectQuery
+  useGetUsersForObjectQuery,
+  useWorkspaceUserUpdateMutation
 } from '@XMLHTTP/API/workspaceUser.rtk'
-import { useState } from 'react'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
+import React from 'react'
 import { useParams } from 'react-router-dom'
-
-import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorAddDialog'
 
 import {
   InfoBlock,
@@ -40,88 +36,113 @@ const OverviewTab = ({
   description,
   disciplines,
   created,
-  objectSets
+  objectSets,
+  author
 }: ProjectDetailsType) => {
-  const [removeUser, setRemoveUser] = useState<PermissionUserType | null>(null)
   const { dispatch } = useDialog()
   const { id } = useParams()
   const projectId = Number(id)
+  const { onError, onSuccess } = useGenericMsgHandler()
 
+  /*******************************************************
+   * QUERIES
+   *******************************************************/
   const { data, error, isLoading, isError } = useGetUsersForObjectQuery({
     id: projectId,
     payload: {
-      objectType: CfObjectType.PROJECT
+      objectType: WorkspaceType.PROJECT
     }
   })
+  const [mutate, { isError: isMutateError, error: mutateError, isSuccess }] =
+    useWorkspaceUserUpdateMutation()
 
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+
+  function onSuccessHandler(resp: EmptyPostResp) {
+    onSuccess(resp)
+  }
+  async function onChangeHandler(group: PermissionGroup, userId: number) {
+    const args = {
+      id: projectId,
+      payload: {
+        userId,
+        type: WorkspaceType.PROJECT,
+        group
+      }
+    }
+    try {
+      const resp = await mutate(args).unwrap()
+      onSuccessHandler(resp)
+    } catch (err) {
+      onError(err)
+    }
+  }
   /*******************************************************
    * COMPONENTS
    *******************************************************/
   const Users = ({ data }: { data: UsersForObjectQueryResp }) => {
-    console.log('data')
-    console.log(data)
-    if (!data) return <></>
-
-    const usersWithRoles = groupUsersFromPermissionGroups({
-      viewers: data.viewers,
-      commentors: data.commentors,
-      editors: data.editors,
-      students: data.students
-    })
-
-    console.log('usersWithRoles')
-    console.log(usersWithRoles)
+    if (!data || isLoading) return <></>
 
     return (
       <InfoBlockContent>
         <List>
           <PermissionThumbnail>
             <ListItemAvatar>
-              <Avatar alt={data.author.firstName}>
-                {getInitials(data.author.firstName)}
+              <Avatar alt={author.firstName}>
+                {getInitials(author.firstName)}
               </Avatar>
             </ListItemAvatar>
-            <ListItemText
-              primary={data.author.firstName}
-              secondary={data.author.email}
-            />
+            <ListItemText primary={author.firstName} secondary={author.email} />
             <Button disabled>owner</Button>
           </PermissionThumbnail>
 
-          {usersWithRoles.map((user) => (
-            <PermissionThumbnail key={user.id}>
-              <ListItemAvatar>
-                <Avatar alt={user.name}>{getInitials(user.name)}</Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={user.name} secondary={user.email} />
-              <MenuButton
-                disabled={false} // this needs to be a check on call to see if current user can edit
-                options={[
-                  ...permissionGroupMenuOptions.map((item) => ({
-                    name: String(item.value),
-                    label: item.label
-                  })),
-                  {
-                    name: 'mui-divider'
-                  },
-                  {
-                    name: 'remove',
-                    label: 'Remove user',
-                    onClick: () => {
-                      setRemoveUser(user)
-                      dispatch(DialogMode.CONTRIBUTOR_REMOVE, { userId: 10 })
+          {data.dataPackage.map((user) => {
+            console.log(user)
+            return (
+              <PermissionThumbnail key={user.id}>
+                <ListItemAvatar>
+                  <Avatar alt={user.firstName}>{getInitials(user.name)}</Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={user.username} secondary={user.email} />
+                <MenuButton
+                  disabled={false} // this needs to be a check on call to see if current user can edit
+                  options={[
+                    ...permissionGroupMenuOptions.map((item) => ({
+                      name: String(item.value),
+                      label:
+                        item.label +
+                        (user.group === item.value ? ' ' + '(current)' : ''),
+                      disabled: user.group === item.value
+                    })),
+                    {
+                      name: 'mui-divider'
+                    },
+                    {
+                      name: 'remove',
+                      label: 'Remove user',
+                      onClick: () => {
+                        dispatch(DialogMode.CONTRIBUTOR_REMOVE, {
+                          userId: user.id,
+                          userName: user.name
+                        })
+                      }
                     }
+                  ]}
+                  onChange={(group) =>
+                    onChangeHandler(Number(group) as PermissionGroup, user.id)
                   }
-                ]}
-                onChange={(role) => console.log('changed to', role)}
-                placeholder={
-                  permissionGroupMenuOptions.find(
-                    (p) => p.value === user.permissionGroup
-                  )?.label
-                }
-              />
-            </PermissionThumbnail>
-          ))}
+                  placeholder={
+                    permissionGroupMenuOptions.find(
+                      (p) => p.value === user.group
+                    )?.label ||
+                    'Choose Permissions (user should never see this)'
+                  }
+                />
+              </PermissionThumbnail>
+            )
+          })}
         </List>
       </InfoBlockContent>
     )
@@ -208,7 +229,6 @@ const OverviewTab = ({
       </InfoBlock>
 
       <ObjectSets />
-      <ContributorAddDialog />
     </OuterContentWrap>
   )
 }

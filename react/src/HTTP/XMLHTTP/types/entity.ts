@@ -1,5 +1,5 @@
 import { ObjectPermission, PermissionGroup } from '@cf/types/common'
-import { LibraryObjectType, WorkSpaceType, WorkflowType } from '@cf/types/enum'
+import {LibraryObjectType, WorkflowType, WorkspaceType} from '@cf/types/enum'
 import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
@@ -15,6 +15,7 @@ export type EUser = {
   username: string
   firstName: string
   lastName: string
+  name: string
   email?: string
   language?: string
 }
@@ -318,7 +319,7 @@ export type ESection = {
 }
 export type ENotification = {
   id: number
-  type: WorkSpaceType
+  type: WorkspaceType
   unread: boolean
   from: string
   text: string
@@ -329,5 +330,5 @@ export type EStrategy = any
 export type EParentWorkflow = any
 export type EChildWorkflow = any
 export type EWorkspaceUser = EUser & {
-  role: PermissionGroup
+  group: PermissionGroup
 }

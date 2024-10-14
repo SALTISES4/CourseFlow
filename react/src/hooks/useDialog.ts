@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import * as React from 'react'
 
 export enum DialogMode {
-  // General
+  // Define your dialog modes here
   LINK_WORKFLOW = 'link_workflow',
   TARGET_PROJECT = 'target_project',
 
@@ -33,54 +33,63 @@ export enum DialogMode {
   ARCHIVE = 'archive',
 
   GENERIC = 'generic'
-
-  // TBD
 }
 
-/**
- * A hook/context consumer that is used to dynamically control
- * dialogs and dispatch events on demand.
- *
- * With `dialogType` property, you're getting back
- * properties and state for that specific dialog type.
- *
- * Without `dialogType` property you only get access to `dispatch`
- * in order to trigger an event that shows a modal.
- */
+export type DialogPayloadMap = {
+  [DialogMode.CONTRIBUTOR_REMOVE]: { userId: number; userName: string }
+  [DialogMode.ARCHIVE]: { peopleId: string }
 
-type PossibleDialogTypes = DialogMode | DialogMode[] | null
+  /*******************************************************
+   * we shouldn't need to  list out all the ones for undefined
+   * but i couldn't get the typing correct for now
+   *******************************************************/
 
-export function useDialog(dialogType: PossibleDialogTypes = null) {
+  [DialogMode.LINK_WORKFLOW]: undefined
+  [DialogMode.TARGET_PROJECT]: undefined
+  [DialogMode.PASSWORD_RESET]: undefined
+  [DialogMode.PROJECT_CREATE]: undefined
+  [DialogMode.PROJECT_EDIT]: undefined
+  [DialogMode.PROJECT_EXPORT]: undefined
+  [DialogMode.PROJECT_DELETE]: undefined
+  [DialogMode.IMPORT_OUTCOMES]: undefined
+  [DialogMode.IMPORT_NODES]: undefined
+  [DialogMode.WORKFLOW_LINK]: undefined
+  [DialogMode.WORKFLOW_DELETE]: undefined
+  [DialogMode.WORKFLOW_EDIT]: undefined
+  [DialogMode.WORKFLOW_COPY_TO_PROJECT]: undefined
+  [DialogMode.PROGRAM_CREATE]: undefined
+  [DialogMode.ACTIVITY_CREATE]: undefined
+  [DialogMode.COURSE_CREATE]: undefined
+  [DialogMode.CONTRIBUTOR_ADD]: undefined
+  [DialogMode.RESTORE]: undefined
+  [DialogMode.GENERIC]: undefined
+}
+
+export function useDialog<T extends keyof DialogPayloadMap>(dialogType?: T) {
   const dialogContext = useContext(DialogContext)
   const dialogDispatch = useContext(DialogDispatchContext)
 
   // if no dialog type is provided, just return the dispatch
-  // as we're looking to open a specific dialog
   if (!dialogType) {
     return {
       show: false,
       type: null,
       onClose: () => {},
-      dispatch: dialogDispatch
+      dispatch: <D extends T>(type: D, payload?: DialogPayloadMap[D]) =>
+        dialogDispatch({ type, payload })
     }
   }
 
-  // determine if we should show the dialog if we're working with
-  // an array of registered dialogs
+  // to control whether the dialog shows
   let show = dialogContext.type === dialogType
-  if (Array.isArray(dialogType) && dialogContext.type) {
-    show = dialogType.includes(dialogContext.type)
-  }
-
-  // take dialogContext's local state as the main indicator if the
-  // dialog should be shown or not
   show = dialogContext.show ? show : dialogContext.show
 
-  // otherwise, return dispatch along with visibility/onClose method
   return {
-    ...dialogContext,
     show,
+    type: dialogContext.type,
+    payload: dialogContext.payload as DialogPayloadMap[T], // Cast payload to the specific type
     onClose: () => dialogDispatch(null),
-    dispatch: dialogDispatch
+    dispatch: <D extends T>(type: D, payload?: DialogPayloadMap[D]) =>
+      dialogDispatch({ type, payload })
   }
 }

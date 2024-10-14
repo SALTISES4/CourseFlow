@@ -1,7 +1,7 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { WorkSpaceType } from '@cf/types/enum'
+import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -16,7 +16,7 @@ const ArchiveDialog = ({
   callback
 }: {
   id: number
-  objectType: WorkSpaceType
+  objectType: WorkspaceType
   callback?: () => void
 }) => {
   /*******************************************************

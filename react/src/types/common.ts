@@ -1,4 +1,5 @@
 import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
+import {EUser} from "@XMLHTTP/types/entity";
 import { MouseEvent } from 'react'
 
 export type ToDefine = any
@@ -96,6 +97,7 @@ export type ProjectDetailsType = {
   isFavorite: boolean
   isDeleted: boolean
   created: Date | string
+  author: EUser
   disciplines?: string[]
   permissionGroup: PermissionGroup
   objectSets?: ObjectSetType[]
