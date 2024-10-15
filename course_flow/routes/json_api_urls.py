@@ -208,14 +208,14 @@ def json_api_patterns():
             views.json_api.workflow_objects.json_api_post_inserted_at,
             name="json-api-post-inserted-at",
         ),
+        path(
+            "workflow/object/duplicate",
+            views.json_api.WorkflowObjectEndpoint.duplicate,
+            name="workflow--objects--duplicate",
+        ),
         ##########################################################
         # WORKSPACE
         #########################################################
-        path(
-            "workspace/<int:pk>/duplicate",
-            views.json_api.WorkspaceEndpoint.duplicate,
-            name="json-api-post-duplicate-self",
-        ),
         path(
             "workspace/<int:pk>/delete-soft",
             views.json_api.WorkspaceEndpoint.delete_soft,
@@ -238,6 +238,7 @@ def json_api_patterns():
         ),
         #########################################################
         # WORKSPACE USER
+        # i.e. the users who get added to a project or workflow
         #########################################################
         path(
             "workspace-user/<int:pk>/list",

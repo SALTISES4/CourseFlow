@@ -1,12 +1,12 @@
 import { WorkspaceType } from '@cf/types/enum'
 import ProjectEditDialog from '@cfComponents/dialog/Project/ProjectEditDialog'
 import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
+import ContributorAddDialog from '@cfComponents/dialog/Workspace/ContributorAddDialog'
 import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
 import { useGetProjectByIdQuery } from '@XMLHTTP/API/project.rtk'
 import { useParams } from 'react-router-dom'
 
-import ContributorAddDialog from 'components/common/dialog/Workspace/ContributorAddDialog'
 
 const ProjectDialogs = () => {
   const { id } = useParams()
