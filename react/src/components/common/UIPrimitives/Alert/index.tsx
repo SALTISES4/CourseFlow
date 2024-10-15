@@ -1,16 +1,16 @@
-import { CookieTypes, useCookies } from '@cf/context/cookieContext'
 import CampaignIcon from '@mui/icons-material/Campaign'
 import Alert, { AlertProps } from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import { SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Cookies from 'js-cookie'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useState } from 'react'
 
 type PropsType = {
   severity?: AlertProps['severity'] | 'update'
-  title: string | ReactNode
-  subtitle?: string | ReactNode
+  title?: ReactNode
+  subtitle?: ReactNode
+  persistent?: boolean
   hideIfCookie?: string
   onClose?: () => void
   sx?: SxProps
@@ -35,24 +35,18 @@ const CFAlert = ({
   severity = 'info',
   title,
   subtitle,
+  persistent,
   onClose,
   hideIfCookie,
   sx
 }: PropsType) => {
-  const [hide, setHide] = useState(false)
-  const { cookies, updateCookie, removeCookie } = useCookies()
-
-  useEffect(() => {
-    if (!hideIfCookie) return
-
-    const cookieValue = cookies[hideIfCookie]
-
-    setHide(!!cookieValue)
-  }, [hideIfCookie])
+  const [hide, setHide] = useState(
+    hideIfCookie ? !!Cookies.get(hideIfCookie) : false
+  )
 
   function handleClose() {
     onClose && onClose()
-    updateCookie(hideIfCookie, 'true', { expires: 7 }) // expires?
+    hideIfCookie && Cookies.set(hideIfCookie, 'true', { expires: 7 }) // expires?
     setHide(true)
   }
 
@@ -67,9 +61,15 @@ const CFAlert = ({
       severity={isUpdateAnnouncement ? 'info' : severity}
       icon={isUpdateAnnouncement ? <CampaignIcon /> : null}
       sx={sx}
-      onClose={hideIfCookie && handleClose}
+      onClose={
+        persistent
+          ? undefined
+          : () => {
+              hideIfCookie && handleClose()
+            }
+      }
     >
-      <StyledTitle>{title}</StyledTitle>
+      {title && <StyledTitle>{title}</StyledTitle>}
       {subtitle && <StyledSubtitle variant="body2">{subtitle}</StyledSubtitle>}
     </Alert>
   )
