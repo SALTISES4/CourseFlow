@@ -14,7 +14,6 @@ import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
 import { Box, Tabs } from '@mui/material'
-import * as React from 'react'
 import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
