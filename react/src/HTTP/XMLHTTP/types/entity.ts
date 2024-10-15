@@ -72,8 +72,7 @@ export type EProject = {
 export type EWorkflow = {
   id: number
   userPermissions: number
-  author: string
-  authorId: number | null
+  author: EUser
   deleted: boolean
   createdOn: Date
   lastModified: Date

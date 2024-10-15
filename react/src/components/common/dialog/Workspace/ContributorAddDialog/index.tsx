@@ -19,9 +19,7 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Select from '@mui/material/Select'
 import {
   WorkspaceUserArgs,
-  useGetUserListQuery,
   useGetUsersForObjectAvailableQuery,
-  useGetUsersForObjectQuery,
   useWorkspaceUserCreateMutation
 } from '@XMLHTTP/API/workspaceUser.rtk'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
@@ -40,7 +38,6 @@ interface IFormInputs {
 type UserFormOption = {
   name: string
   id: number
-
 }
 
 /**
@@ -93,8 +90,7 @@ const AddContributorDialog = ({
    *******************************************************/
   const contributor = watch('userId')
   const role = watch('group')
-  const disableSubmit =
-    !contributor || !role || isLoading || isLoading
+  const disableSubmit = !contributor || !role || isLoading || isLoading
 
   /*******************************************************
    * FUNCTION
@@ -110,7 +106,7 @@ const AddContributorDialog = ({
       id,
       payload: {
         userId: data.userId,
-        type: WorkspaceType.PROJECT,
+        type,
         group: data.group
       }
     }

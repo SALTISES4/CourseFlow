@@ -6,18 +6,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from rest_framework import serializers
 
-from course_flow.models import (
-    Discipline,
-    Favourite,
-    ObjectPermission,
-    ObjectSet,
-    Project,
-)
+from course_flow.models import Discipline, Favourite, ObjectSet, Project
 from course_flow.serializers.mixin import (
-    AuthorSerializerMixin,
     DescriptionSerializerMixin,
     TitleSerializerMixin,
 )
+from course_flow.serializers.user import UserSerializer
 from course_flow.services import DAO, Utility
 
 
@@ -194,7 +188,6 @@ class ProjectSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
     DescriptionSerializerMixin,
-    AuthorSerializerMixin,
 ):
     class Meta:
         model = Project
@@ -225,9 +218,10 @@ class ProjectSerializerShallow(
     object_sets = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
-    author = serializers.SerializerMethodField()
     #  object_permission = serializers.SerializerMethodField()
     user_permissions = serializers.SerializerMethodField()
+
+    author = UserSerializer(read_only=True)
 
     def get_favourite(self, instance):
         user = self.context.get("user")

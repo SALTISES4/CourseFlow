@@ -53,7 +53,7 @@ const ContributorRemoveDialog = ({
       id: Number(id),
       payload: {
         userId: payload.userId,
-        type: WorkspaceType.PROJECT
+        type
       }
     }
 

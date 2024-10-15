@@ -51,20 +51,6 @@ def bleach_sanitizer(value, **kwargs):
         return None
 
 
-class AuthorSerializerMixin:
-    author = serializers.SerializerMethodField()
-
-    def get_author(self, instance):
-        user: User = self.context.get("user", None)
-
-        if user is not None and isinstance(user, User):
-            return model_to_dict(
-                user, fields=["email", "id", "last_name", "first_name", "username"]
-            )
-
-        return {}
-
-
 class DescriptionSerializerMixin:
     description: str = serializers.SerializerMethodField()
 

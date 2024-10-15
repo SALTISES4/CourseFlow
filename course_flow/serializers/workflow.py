@@ -16,10 +16,10 @@ from course_flow.models import (
     WorkflowProject,
 )
 from course_flow.serializers.mixin import (
-    AuthorSerializerMixin,
     DescriptionSerializerMixin,
     TitleSerializerMixin,
 )
+from course_flow.serializers.user import UserSerializer
 from course_flow.services import DAO, Utility
 
 
@@ -27,13 +27,28 @@ class WorkflowSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
     DescriptionSerializerMixin,
-    AuthorSerializerMixin,
 ):
+    #########################################################
+    # FIELD DEFINITIONS
+    #########################################################
+    created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    weekworkflow_set = serializers.SerializerMethodField()
+    columnworkflow_set = serializers.SerializerMethodField()
+    outcomeworkflow_set = serializers.SerializerMethodField()
+    favourite = serializers.SerializerMethodField()
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    outcomes_sort = serializers.SerializerMethodField()
+    user_permissions = serializers.SerializerMethodField()
+    strategy_icon = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
+
+    author = UserSerializer(read_only=True)
+
     class Meta:
         model = Workflow
         fields = [
             "author",
-            "author_id",
             "code",
             "columnworkflow_set",
             "condensed",
@@ -69,20 +84,9 @@ class WorkflowSerializerShallow(
             "weekworkflow_set",
         ]
 
-    author_id = serializers.SerializerMethodField()
-    created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
-    last_modified = serializers.DateTimeField(format=Utility.dateTimeFormat())
-    weekworkflow_set = serializers.SerializerMethodField()
-    columnworkflow_set = serializers.SerializerMethodField()
-    outcomeworkflow_set = serializers.SerializerMethodField()
-    favourite = serializers.SerializerMethodField()
-    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
-    author = serializers.SerializerMethodField()
-    outcomes_sort = serializers.SerializerMethodField()
-    user_permissions = serializers.SerializerMethodField()
-    strategy_icon = serializers.SerializerMethodField()
-    url = serializers.SerializerMethodField()
-
+    #########################################################
+    # CUSTOM FIELD GETTERS
+    #########################################################
     @staticmethod
     def get_outcomes_sort(instance):
         """
@@ -151,6 +155,9 @@ class WorkflowSerializerShallow(
         except ObjectDoesNotExist:
             return False
 
+    #########################################################
+    # CRUD
+    #########################################################
     def update(self, instance, validated_data):
         ### can this be replaace with ??
         # for attr, value in validated_data.items():

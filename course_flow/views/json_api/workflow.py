@@ -103,7 +103,6 @@ class WorkflowEndpoint:
         try:
             data_package = WorkflowService.get_workflow_full(workflow.get_subclass(), current_user)
         except AttributeError as e:
-            detailed_traceback = traceback.format_exc()
             logger.exception("log of the errors ")
             return Response({"error": "hello error"}, status=status.HTTP_400_BAD_REQUEST)
 

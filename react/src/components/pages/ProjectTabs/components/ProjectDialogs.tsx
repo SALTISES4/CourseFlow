@@ -26,10 +26,15 @@ const ProjectDialogs = () => {
         objectType={WorkspaceType.PROJECT}
         callback={refetch}
       />
+
+      <ContributorAddDialog
+        id={projectId}
+        type={WorkspaceType.PROJECT}
+        refetch={refetch}
+      />
+      <ContributorRemoveDialog id={projectId} type={WorkspaceType.PROJECT} />
       {/*<ImportDialog />*/}
       {/*<ProjectExportDialog {...dummyProjectExportData} />*/}
-      <ContributorAddDialog id={projectId} type={WorkspaceType.PROJECT} />
-      <ContributorRemoveDialog id={projectId} type={WorkspaceType.PROJECT} />
     </>
   )
 }
