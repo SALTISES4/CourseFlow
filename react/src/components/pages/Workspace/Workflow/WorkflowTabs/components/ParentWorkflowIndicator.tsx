@@ -129,8 +129,6 @@ function ParentWorkflowIndicator() {
    * RENDER
    *******************************************************/
   // @todo this is causing fails when we move between tabs
-  return <></>
-
   return (
     <>
       <ChildWorkflows />

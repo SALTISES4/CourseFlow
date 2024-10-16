@@ -6,11 +6,11 @@ from course_flow.services import DAO
 
 def make_object(model_key, author=None):
     if model_key == "column":
-        return get_model_from_str(model_key).objects.create(
+        return DAO.get_model_from_str(model_key).objects.create(
             title="test" + model_key + "title", author=author
         )
     else:
-        return get_model_from_str(model_key).objects.create(
+        return DAO.get_model_from_str(model_key).objects.create(
             title="test" + model_key + "title",
             description="test" + model_key + "description",
             author=author,
@@ -25,9 +25,7 @@ def login(test_case):
 
     teacher_group, _ = Group.objects.get_or_create(name=settings.TEACHER_GROUP)
     user.groups.add(teacher_group)
-    logged_in = test_case.client.login(
-        username="testuser1", password="testpass1"
-    )
+    logged_in = test_case.client.login(username="testuser1", password="testpass1")
     test_case.assertTrue(logged_in)
     return user
 
@@ -36,9 +34,7 @@ def login_student(test_case):
     user = User.objects.create(username="testuser1")
     user.set_password("testpass1")
     user.save()
-    logged_in = test_case.client.login(
-        username="testuser1", password="testpass1"
-    )
+    logged_in = test_case.client.login(username="testuser1", password="testpass1")
     test_case.assertTrue(logged_in)
     return user
 

@@ -42,7 +42,7 @@ export const useMenuActions = () => {
   }
 
   function openShareDialog() {
-    dispatchDialog(DialogMode.ADD_CONTRIBUTOR)
+    dispatchDialog(DialogMode.CONTRIBUTOR_ADD)
   }
 
   function openExportDialog() {

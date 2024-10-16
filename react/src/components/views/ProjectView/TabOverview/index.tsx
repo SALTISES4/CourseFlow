@@ -1,129 +1,63 @@
-import ContributorManageDialog from '@cf/components/common/dialog/Workspace/ContributorManageDialog'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
-import {PermissionUserType, ProjectDetailsType, ProjectPermissionRole} from '@cf/types/common'
-import { CfObjectType } from '@cf/types/enum'
-import { groupUsersFromRoleGroups } from '@cf/utility/marshalling/users'
-import { _t, getInitials } from '@cf/utility/utilityFunctions'
-import MenuButton, { MenuButtonOption } from '@cfComponents/menu/MenuButton'
+import { ProjectDetailsType } from '@cf/types/common'
+import { WorkspaceType } from '@cf/types/enum'
+import { _t } from '@cf/utility/utilityFunctions'
+import UserList from '@cfViews/components/workspaceOverview/UserList'
 import LinkIcon from '@mui/icons-material/Link'
-import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
-import List from '@mui/material/List'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import {
-  UsersForObjectQueryResp,
-  useGetUsersForObjectQuery
-} from '@XMLHTTP/API/workspace.rtk'
-import { useState } from 'react'
+import React from 'react'
 import { useParams } from 'react-router-dom'
 
-import {
-  InfoBlock,
-  InfoBlockContent,
-  InfoBlockTitle,
-  ObjectSetThumbnail,
-  PermissionThumbnail
-} from './styles'
+import * as SC from 'components/views/components/workspaceOverview/styles'
 
-const roleMenuOptions: MenuButtonOption[] = [
-  {
-    name: ProjectPermissionRole.EDITOR,
-    label: _t('Editor')
-  },
-  {
-    name: ProjectPermissionRole.COMMENTER,
-    label: _t('Commenter')
-  },
-  {
-    name: ProjectPermissionRole.VIEWER,
-    label: _t('Viewer')
-  }
-]
+import { ObjectSetThumbnail } from './styles'
 
 const OverviewTab = ({
   description,
   disciplines,
   created,
-  permissions,
-  objectSets
+  objectSets,
+  author
 }: ProjectDetailsType) => {
-  const [removeUser, setRemoveUser] = useState<PermissionUserType | null>(null)
-  const { dispatch } = useDialog()
   const { id } = useParams()
   const projectId = Number(id)
-
-  const { data, error, isLoading, isError } = useGetUsersForObjectQuery({
-    id: projectId,
-    payload: {
-      objectType: CfObjectType.PROJECT
-    }
-  })
+  const { dispatch } = useDialog()
 
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const Users = (data: UsersForObjectQueryResp) => {
-    if (!permissions) return <></>
+  const Buttons = () => (
+    <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
+      <Button
+        size="medium"
+        variant="contained"
+        color="secondary"
+        startIcon={<LinkIcon />}
+      >
+        {_t('Generate public link')}
+      </Button>
 
-    const usersWithRoles = groupUsersFromRoleGroups({
-      viewers: data.viewers,
-      commentors: data.commentors,
-      editors: data.editors,
-      students: data.students
-    })
-
-    return (
-      <InfoBlockContent>
-        <List>
-          {usersWithRoles.map((user) => (
-            <PermissionThumbnail key={user.id}>
-              <ListItemAvatar>
-                <Avatar alt={user.name}>{getInitials(user.name)}</Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={user.name} secondary={user.email} />
-              <MenuButton
-                selected={user.role}
-                disabled={user.role === ProjectPermissionRole.OWNER}
-                options={[
-                  ...roleMenuOptions,
-                  {
-                    name: 'mui-divider'
-                  },
-                  {
-                    name: 'remove',
-                    label: 'Remove user',
-                    onClick: () => {
-                      setRemoveUser(user)
-                      dispatch(DialogMode.PROJECT_REMOVE_USER)
-                    }
-                  }
-                ]}
-                onChange={(role) => console.log('changed to', role)}
-                placeholder={
-                  user.role === ProjectPermissionRole.OWNER
-                    ? 'Owner'
-                    : roleMenuOptions.find((p) => p.name === user.role)?.label
-                }
-              />
-            </PermissionThumbnail>
-          ))}
-        </List>
-      </InfoBlockContent>
-    )
-  }
+      <Button
+        size="medium"
+        variant="contained"
+        onClick={() => dispatch(DialogMode.CONTRIBUTOR_ADD)}
+      >
+        {_t('Add contributor')}
+      </Button>
+    </Stack>
+  )
 
   const ObjectSets = () => {
     if (!objectSets) return <></>
     return (
-      <InfoBlock sx={{ mt: 3 }}>
-        <InfoBlockTitle>{_t('Object sets')}</InfoBlockTitle>
+      <SC.InfoBlock sx={{ mt: 3 }}>
+        <SC.InfoBlockTitle>{_t('Object sets')}</SC.InfoBlockTitle>
 
-        <InfoBlockContent sx={{ mt: 0 }}>
+        <SC.InfoBlockContent sx={{ mt: 0 }}>
           <Grid container columnSpacing={3}>
             {objectSets.map((set, idx) => (
               <Grid item key={idx} xs={6}>
@@ -134,8 +68,8 @@ const OverviewTab = ({
               </Grid>
             ))}
           </Grid>
-        </InfoBlockContent>
-      </InfoBlock>
+        </SC.InfoBlockContent>
+      </SC.InfoBlock>
     )
   }
 
@@ -144,62 +78,45 @@ const OverviewTab = ({
    *******************************************************/
   return (
     <OuterContentWrap sx={{ pt: 4 }}>
-      <InfoBlock>
-        <InfoBlockTitle>{_t('Description')}</InfoBlockTitle>
-        <InfoBlockContent>{description}</InfoBlockContent>
-      </InfoBlock>
+      <SC.InfoBlock>
+        <SC.InfoBlockTitle>{_t('Description')}</SC.InfoBlockTitle>
+        <SC.InfoBlockContent>{description}</SC.InfoBlockContent>
+      </SC.InfoBlock>
 
       <Grid container columnSpacing={3} sx={{ mt: 3 }}>
         <Grid item xs={6}>
-          <InfoBlock>
-            <InfoBlockTitle>{_t('Disciplines')}</InfoBlockTitle>
+          <SC.InfoBlock>
+            <SC.InfoBlockTitle>{_t('Disciplines')}</SC.InfoBlockTitle>
 
-            <InfoBlockContent>
+            <SC.InfoBlockContent>
               {disciplines.length
                 ? disciplines?.join(', ')
                 : _t('No disciplines found.')}
-            </InfoBlockContent>
-          </InfoBlock>
+            </SC.InfoBlockContent>
+          </SC.InfoBlock>
         </Grid>
 
         <Grid item xs={6}>
-          <InfoBlock>
-            <InfoBlockTitle>{_t('Created on')}</InfoBlockTitle>
-            <InfoBlockContent>{String(created)}</InfoBlockContent>
-          </InfoBlock>
+          <SC.InfoBlock>
+            <SC.InfoBlockTitle>{_t('Created on')}</SC.InfoBlockTitle>
+            <SC.InfoBlockContent>{String(created)}</SC.InfoBlockContent>
+          </SC.InfoBlock>
         </Grid>
       </Grid>
-      <InfoBlock sx={{ mt: 3 }}>
-        <InfoBlockTitle>{_t('Permissions')}</InfoBlockTitle>
-        <Users {...data} />
 
-        <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="flex-end"
-          sx={{ mt: 2 }}
-        >
-          <Button
-            size="medium"
-            variant="contained"
-            color="secondary"
-            startIcon={<LinkIcon />}
-          >
-            {_t('Generate public link')}
-          </Button>
-          <Button
-            size="medium"
-            variant="contained"
-            onClick={() => dispatch(DialogMode.ADD_CONTRIBUTOR)}
-          >
-            {_t('Add contributor')}
-          </Button>
-        </Stack>
-      </InfoBlock>
+      <SC.InfoBlock sx={{ mt: 3 }}>
+        <SC.InfoBlockTitle>{_t('Permissions')}</SC.InfoBlockTitle>
+
+        <UserList
+          workspaceId={projectId}
+          author={author}
+          workspaceType={WorkspaceType.PROJECT}
+        />
+
+        <Buttons />
+      </SC.InfoBlock>
 
       <ObjectSets />
-
-      <ContributorManageDialog user={removeUser} />
     </OuterContentWrap>
   )
 }

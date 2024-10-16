@@ -58,8 +58,14 @@ export const apiPathRoutes = {
       delete_soft: '/workspace/:id/delete-soft',
       delete: '/workspace/:id/delete',
       restore: '/workspace/:id/restore',
-      field__update: '/workspace/:id/update-field',
-      user__list: '/workspace/:id/user/list'
+      field__update: '/workspace/:id/update-field'
+    },
+    workspaceUser: {
+      list: '/workspace-user/:id/list',
+      list_available: '/workspace-user/:id/list-available',
+      create: '/workspace-user/:id/create',
+      delete: '/workspace-user/:id/delete',
+      update: '/workspace-user/:id/update'
     },
     node: {
       create: '/node/create',

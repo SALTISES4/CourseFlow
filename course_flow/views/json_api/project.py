@@ -137,6 +137,7 @@ class ProjectEndpoint:
         project = Project.objects.get(pk=body.get("projectPk"))
         try:
             with transaction.atomic():
+                # @todo this might be
                 clone = fast_duplicate_project(project, request.user)
                 try:
                     clone.title = clone.title + _("(copy)")

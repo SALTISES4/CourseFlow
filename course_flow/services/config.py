@@ -40,7 +40,6 @@ class ConfigService:
                 "update_object_set": reverse("json_api:json-api-post-update-object-set"),
                 # generic
                 "insert_sibling": reverse("json_api:json-api-post-insert-sibling"),
-                "set_permission": reverse("json_api:json-api-post-set-permission"),
             },
             "get_paths": {
                 "get_public_workflow_child_data": reverse(

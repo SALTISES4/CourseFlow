@@ -7,13 +7,12 @@ import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
 import NotificationsSettingsPage from '@cfPages/NotificationsSettings'
 import ProfileSettingsPage from '@cfPages/ProfileSettings'
-import ProjectDetail from '@cfPages/ProjectDetail'
-import ProjectTabs from '@cfPages/ProjectTabs'
 // Styleguide views
-import Styleguide from '@cfPages/Styleguide'
 import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import { createBrowserRouter } from 'react-router-dom'
+
+import Project from 'components/pages/Workspace/Project'
 
 /*******************************************************
  * NOTE:  RR6 drastically altered it's approach and no longer robustly supports absolute paths
@@ -148,15 +147,7 @@ export const CFRouter = createBrowserRouter([
     path: `${CFRoutes.PROJECT}/*`,
     element: (
       <Base>
-        <ProjectTabs />
-      </Base>
-    )
-  },
-  {
-    path: `${CFRoutes.TEMP_PROJECT}/*`,
-    element: (
-      <Base>
-        <ProjectDetail />
+        <Project />
       </Base>
     )
   },

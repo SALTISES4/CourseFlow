@@ -1,7 +1,7 @@
 import { calcProjectPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
 import { MenuItemType, MenuWithOverflow } from '@cfComponents/menu/Menu'
-import { useMenuActions } from '@cfPages/ProjectTabs/hooks/useMenuActions'
+import { useMenuActions } from '@cfPages/Workspace/Project/hooks/useMenuActions'
 import EditIcon from '@mui/icons-material/Edit'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import { useGetProjectByIdQuery } from '@XMLHTTP/API/project.rtk'
@@ -9,12 +9,17 @@ import { useParams } from 'react-router-dom'
 
 const ActionMenu = () => {
   const { id } = useParams()
+  const projectId = Number(id)
 
   /*******************************************************
    * QUERIES
    *******************************************************/
-  const { data, isLoading } = useGetProjectByIdQuery({ id: Number(id) })
+  const { data, isLoading } = useGetProjectByIdQuery({ id: projectId })
 
+  /**
+   * @todo our useMenuActions hook got really thin, so we could consider defining below functions directly here
+   * instead of pulling in these function from the hook
+   */
   const {
     openEditDialog,
     openShareDialog,
@@ -27,8 +32,6 @@ const ActionMenu = () => {
 
   if (isLoading) return <></>
   const project = data.dataPackage
-  console.log('project')
-  console.log(project)
   const projectPermission = calcProjectPermissions(project.userPermissions)
 
   /*******************************************************
@@ -48,7 +51,7 @@ const ActionMenu = () => {
       title: _t('Sharing'),
       content: <PersonAddIcon />,
       action: openShareDialog,
-      show: !projectPermission.manage
+      show: projectPermission.manage
     },
     {
       id: 'export',
@@ -57,12 +60,15 @@ const ActionMenu = () => {
       show: projectPermission.read,
       seperator: true
     },
-    // hidden
+    /**
+     * Spill over menu section
+     * this is dynamic in that we pass a 'split' cutoff number to the menu builder to construct what is show
+     * by default and what is pushed into the dropdown
+     */
     {
       id: 'duplicate-project',
-      content: _t('Copy to my library'),
-      // @ts-ignore @todo what is workflowType
-      action: () => duplicateProject(workflowId, projectId, workflowType),
+      content: _t('Copy Project'),
+      action: () => duplicateProject(projectId),
       show: projectPermission.read
     },
     {

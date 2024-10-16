@@ -6,10 +6,10 @@ from course_flow.models import Favourite, Node
 from course_flow.models.objectPermission import ObjectPermission, Permission
 from course_flow.models.objectset import ObjectSet
 from course_flow.serializers.mixin import (
-    AuthorSerializerMixin,
     DescriptionSerializerMixin,
     TitleSerializerMixin,
 )
+from course_flow.serializers.user import UserSerializer
 from course_flow.services import DAO, Utility
 
 
@@ -54,7 +54,6 @@ class LibraryObjectSerializer(
     serializers.Serializer,
     TitleSerializerMixin,
     DescriptionSerializerMixin,
-    AuthorSerializerMixin,
 ):
     """
     Library: a mix of workflow and project objects
@@ -63,7 +62,6 @@ class LibraryObjectSerializer(
     """
 
     id = serializers.ReadOnlyField()
-    author = serializers.SerializerMethodField()
     deleted = serializers.ReadOnlyField()
     created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
     last_modified = serializers.DateTimeField(format=Utility.dateTimeFormat())
@@ -79,6 +77,8 @@ class LibraryObjectSerializer(
     workflow_count = serializers.SerializerMethodField()
     is_linked = serializers.SerializerMethodField()
     is_template = serializers.ReadOnlyField()
+
+    author = UserSerializer(read_only=True)
 
     @staticmethod
     def get_workflow_count(instance):
@@ -119,9 +119,7 @@ class LibraryObjectSerializer(
 
         if Favourite.objects.filter(
             user=user,
-            content_type=ContentType.objects.get_for_model(
-                instance.get_permission_objects()[0]
-            ),
+            content_type=ContentType.objects.get_for_model(instance.get_permission_objects()[0]),
             object_id=instance.id,
         ):
             return True
@@ -134,9 +132,7 @@ class LibraryObjectSerializer(
             return 0
         object_permission = ObjectPermission.objects.filter(
             user=user,
-            content_type=ContentType.objects.get_for_model(
-                instance.get_permission_objects()[0]
-            ),
+            content_type=ContentType.objects.get_for_model(instance.get_permission_objects()[0]),
             object_id=instance.id,
         ).first()
         if object_permission is None:

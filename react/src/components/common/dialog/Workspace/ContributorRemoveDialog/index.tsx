@@ -1,25 +1,73 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { PermissionUserType } from '@cf/types/common'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
+import { CfObjectType, WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import Typography from '@mui/material/Typography'
+import {
+  WorkspaceDeleteUserArgs,
+  useGetUsersForObjectQuery,
+  useWorkspaceUserDeleteMutation
+} from '@XMLHTTP/API/workspaceUser.rtk'
+import { EmptyPostResp } from '@XMLHTTP/types/query'
 
-type PropsType = {
-  user: PermissionUserType | null
-}
+const ContributorRemoveDialog = ({
+  id,
+  type
+}: {
+  id: number
+  type: WorkspaceType
+}) => {
+  const { show, onClose, payload } = useDialog<DialogMode.CONTRIBUTOR_REMOVE>(
+    DialogMode.CONTRIBUTOR_REMOVE
+  )
+  const { onError, onSuccess } = useGenericMsgHandler()
 
-const ContributorRemoveDialog = ({ user }: PropsType) => {
-  const { show, onClose } = useDialog(DialogMode.PROJECT_REMOVE_USER)
+  /*******************************************************
+   * QUERIES
+   *******************************************************/
+  const [mutate] = useWorkspaceUserDeleteMutation()
+  const { refetch } = useGetUsersForObjectQuery({
+    id,
+    payload: {
+      objectType: type
+    }
+  })
 
-  function onSubmit() {
-    console.log('confirmed removing user:', user)
+  /*******************************************************
+   * FUNCTION
+   *******************************************************/
+
+  function successHandler(response: EmptyPostResp) {
+    onSuccess(response)
     onClose()
+    refetch()
   }
 
+  async function onSubmit() {
+    const args: WorkspaceDeleteUserArgs = {
+      id: Number(id),
+      payload: {
+        userId: payload.userId,
+        type
+      }
+    }
+
+    try {
+      const response = await mutate(args).unwrap()
+      successHandler(response)
+    } catch (err) {
+      onError(err)
+    }
+  }
+
+  /*******************************************************
+   *
+   *******************************************************/
   return (
     <StyledDialog
       open={!!show}
@@ -31,7 +79,7 @@ const ContributorRemoveDialog = ({ user }: PropsType) => {
       <DialogTitle id="remove-user-modal">Remove user?</DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          Are you sure you want to remove <strong>{user?.name}</strong>?
+          Are you sure you want to remove <strong>{payload?.userName}</strong>?
         </Typography>
       </DialogContent>
       <DialogActions>

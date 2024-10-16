@@ -119,7 +119,8 @@ class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.outcomeNode.data
+    const data = this.props.outcomeNode?.data
+    if (!data) return <></>
 
     // @todo component blows up on re-render by losing redux state
     // results in

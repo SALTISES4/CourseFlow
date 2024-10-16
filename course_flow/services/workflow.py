@@ -43,7 +43,10 @@ class WorkflowService:
     @staticmethod
     def get_workflow_data_package(user, project, **kwargs):
         """
-        Retrieves a package of workflows and projects matching the specifications.
+
+        what does this mean...?
+
+        Retrieves a package of workflows and projects matching the specifications
         :param user:
         :param project:
         :param kwargs:
@@ -91,9 +94,7 @@ class WorkflowService:
                     "title": "",
                     "object_type": type_filter,
                     "is_strategy": get_strategies,
-                    "objects": WorkflowService.get_workflow_info_boxes(
-                        user, type_filter
-                    ),
+                    "objects": WorkflowService.get_workflow_info_boxes(user, type_filter),
                 }
             )
             if not self_only:
@@ -112,9 +113,7 @@ class WorkflowService:
         empty_text = _("There are no applicable workflows in this project.")
         if project is None:
             first_header = _("Owned By You")
-            empty_text = _(
-                "You do not own any projects. Create a project first."
-            )
+            empty_text = _("You do not own any projects. Create a project first.")
         data_package = {
             "current_project": {
                 "title": first_header,
@@ -151,16 +150,14 @@ class WorkflowService:
         if project is not None:
             # Add everything from the current project
             if this_project:
-                items += model.objects.filter(
-                    project=project, is_strategy=False, deleted=False
-                )
+                items += model.objects.filter(project=project, is_strategy=False, deleted=False)
             # Add everything from other projects that the user has access to
             else:
                 items += (
                     list(
-                        model.objects.filter(
-                            author=user, is_strategy=False, deleted=False
-                        ).exclude(project=project)
+                        model.objects.filter(author=user, is_strategy=False, deleted=False).exclude(
+                            project=project
+                        )
                     )
                     + list(
                         model.objects.filter(**permissions_edit)
@@ -218,9 +215,7 @@ class WorkflowService:
                 )
             )
 
-        return LibraryObjectSerializer(
-            items, many=True, context={"user": user}
-        ).data
+        return LibraryObjectSerializer(items, many=True, context={"user": user}).data
 
     @staticmethod
     def get_workflow_choices():
@@ -231,15 +226,11 @@ class WorkflowService:
             ],
             "contextChoices": [
                 {"type": choice[0], "name": choice[1]}
-                for choice in Node._meta.get_field(
-                    "context_classification"
-                ).choices
+                for choice in Node._meta.get_field("context_classification").choices
             ],
             "taskChoices": [
                 {"type": choice[0], "name": choice[1]}
-                for choice in Node._meta.get_field(
-                    "task_classification"
-                ).choices
+                for choice in Node._meta.get_field("task_classification").choices
             ],
             "timeChoices": [
                 {"type": choice[0], "name": choice[1]}
@@ -255,9 +246,7 @@ class WorkflowService:
             ],
             "strategyClassificationChoices": [
                 {"type": choice[0], "name": choice[1]}
-                for choice in Week._meta.get_field(
-                    "strategy_classification"
-                ).choices
+                for choice in Week._meta.get_field("strategy_classification").choices
             ],
         }
 
@@ -413,19 +402,13 @@ class WorkflowService:
         # Initialize data
         data = {
             "workflow": SerializerClass(workflow, context={"user": user}).data,
-            "columnworkflow": ColumnWorkflowSerializerShallow(
-                columnworkflows, many=True
-            ).data,
+            "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflows, many=True).data,
             "column": ColumnSerializerShallow(columns, many=True).data,
-            "weekworkflow": WeekWorkflowSerializerShallow(
-                weekworkflows, many=True
-            ).data,
+            "weekworkflow": WeekWorkflowSerializerShallow(weekworkflows, many=True).data,
             "week": WeekSerializerShallow(weeks, many=True).data,
             "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
             "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
-            "node": NodeSerializerShallow(
-                nodes, many=True, context={"user": user}
-            ).data,
+            "node": NodeSerializerShallow(nodes, many=True, context={"user": user}).data,
         }
 
         # If the workflow is not a strategy, add additional data
@@ -437,18 +420,14 @@ class WorkflowService:
 
         # Add unread comments if the user is authenticated
         if user and user.pk:
-            data["unread_comments"] = WorkflowService.add_unread_comments(
-                data, workflow, user
-            )
+            data["unread_comments"] = WorkflowService.add_unread_comments(data, workflow, user)
 
         return data
 
     @staticmethod
     def add_project(data, workflow, user):
         project = WorkflowProject.objects.get(workflow=workflow).project
-        parent_project = ProjectSerializerShallow(
-            project, context={"user": user}
-        ).data
+        parent_project = ProjectSerializerShallow(project, context={"user": user}).data
 
         data["parent_project"] = parent_project
 
@@ -457,9 +436,7 @@ class WorkflowService:
         # Fetch and serialize additional objects for non-strategy workflows
         outcomeworkflows = workflow.outcomeworkflow_set.all()
         outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_workflow(workflow)
-        outcomenodes = OutcomeNode.objects.filter(
-            node__week__workflow=workflow
-        )
+        outcomenodes = OutcomeNode.objects.filter(node__week__workflow=workflow)
         objectsets = ObjectSet.objects.filter(project__workflows=workflow)
 
         data.update(
@@ -472,15 +449,9 @@ class WorkflowService:
                     many=True,
                     context={"type": workflow.type + " outcome"},
                 ).data,
-                "outcomeoutcome": OutcomeOutcomeSerializerShallow(
-                    outcomeoutcomes, many=True
-                ).data,
-                "outcomenode": OutcomeNodeSerializerShallow(
-                    outcomenodes, many=True
-                ).data,
-                "objectset": ObjectSetSerializerShallow(
-                    objectsets, many=True
-                ).data,
+                "outcomeoutcome": OutcomeOutcomeSerializerShallow(outcomeoutcomes, many=True).data,
+                "outcomenode": OutcomeNodeSerializerShallow(outcomenodes, many=True).data,
+                "objectset": ObjectSetSerializerShallow(objectsets, many=True).data,
             }
         )
 
@@ -490,9 +461,7 @@ class WorkflowService:
         if user and user.is_authenticated:
             if workflow.type == "course":
                 data["strategy"] = WorkflowSerializerShallow(
-                    Course.objects.filter(
-                        author=user, is_strategy=True, deleted=False
-                    ),
+                    Course.objects.filter(author=user, is_strategy=True, deleted=False),
                     many=True,
                     context={"user": user},
                 ).data
@@ -508,9 +477,7 @@ class WorkflowService:
                 ).data
             elif workflow.type == "activity":
                 data["strategy"] = WorkflowSerializerShallow(
-                    Activity.objects.filter(
-                        author=user, is_strategy=True, deleted=False
-                    ),
+                    Activity.objects.filter(author=user, is_strategy=True, deleted=False),
                     many=True,
                     context={"user": user},
                 ).data
