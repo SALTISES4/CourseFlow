@@ -95,6 +95,16 @@ const extendedApi = cfApi.injectEndpoints({
           body: args
         }
       }
+    }),
+    duplicateProject: builder.mutation<CreateProjectResp, { id: number }>({
+      query: (args) => {
+        const base = apiPaths.json_api.project.update
+        const url = generatePath(base, { id: args.id })
+        return {
+          method: Verb.POST,
+          url
+        }
+      }
     })
   }),
   overrideExisting: false
@@ -104,5 +114,6 @@ export const {
   useGetProjectByIdQuery,
   useListProjectsByCurrentUserQuery,
   useCreateProjectMutation,
-  useUpdateProjectMutation
+  useUpdateProjectMutation,
+  useDuplicateProjectMutation
 } = extendedApi

@@ -9,7 +9,6 @@ import GridView from '@cfViews/WorkflowView/componentViews/GridView/GridView'
 import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeEditView'
 import OutcomeTableView from '@cfViews/WorkflowView/componentViews/OutcomeTableView'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
-import dummyOverviewData from '@cfViews/WorkflowView/componentViews/OverviewView/dummyData'
 import WorkflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
 import { Tab } from '@mui/material'
 import { ReactNode, useContext } from 'react'
@@ -35,7 +34,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       route: CFRoutes.WORKFLOW,
       relRoute: RelativeRoutes.INDEX,
       label: _t('Workflow Overview'),
-      content: <OverviewView {...dummyOverviewData} />,
+      content: <OverviewView />,
       allowedTabs: [3]
     },
     {

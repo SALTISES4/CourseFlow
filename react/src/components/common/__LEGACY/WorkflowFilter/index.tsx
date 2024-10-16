@@ -2,10 +2,10 @@
 // @todo this file to be removed
 import { GridWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/utilityFunctions'
-import WorkflowCardCondensed from '@cfComponents/cards/WorkflowCardCondensed/index.jsx'
+import { debounce } from '@cf/utility/utilityFunctions'
+import WorkflowCardCondensed from '@cfComponents/cards/WorkflowCardCondensed'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import Loader from '@cfComponents/UIPrimitives/Loader/Loader.js'
-import { debounce } from '@cfUtility'
 import CloseIcon from '@mui/icons-material/Close'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import NorthIcon from '@mui/icons-material/North'

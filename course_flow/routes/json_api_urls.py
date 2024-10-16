@@ -208,14 +208,14 @@ def json_api_patterns():
             views.json_api.workflow_objects.json_api_post_inserted_at,
             name="json-api-post-inserted-at",
         ),
+        path(
+            "workflow/object/duplicate",
+            views.json_api.WorkflowObjectEndpoint.duplicate,
+            name="workflow--objects--duplicate",
+        ),
         ##########################################################
         # WORKSPACE
         #########################################################
-        path(
-            "workspace/<int:pk>/duplicate",
-            views.json_api.WorkspaceEndpoint.duplicate,
-            name="json-api-post-duplicate-self",
-        ),
         path(
             "workspace/<int:pk>/delete-soft",
             views.json_api.WorkspaceEndpoint.delete_soft,
@@ -236,10 +236,34 @@ def json_api_patterns():
             views.json_api.WorkspaceEndpoint.update_value,
             name="json-api-post-update-value",
         ),
+        #########################################################
+        # WORKSPACE USER
+        # i.e. the users who get added to a project or workflow
+        #########################################################
         path(
-            "workspace/<int:pk>/user/list",
-            views.json_api.WorkspaceEndpoint.user__list,
-            name="workspace--user--list",
+            "workspace-user/<int:pk>/list",
+            views.json_api.WorkspaceUserEndpoint.list,
+            name="workspace-user--list",
+        ),
+        path(
+            "workspace-user/<int:pk>/list-available",
+            views.json_api.WorkspaceUserEndpoint.list_available,
+            name="workspace-user--list-available",
+        ),
+        path(
+            "workspace-user/<int:pk>/create",
+            views.json_api.WorkspaceUserEndpoint.create,
+            name="workspace-user--create",
+        ),
+        path(
+            "workspace-user/<int:pk>/delete",
+            views.json_api.WorkspaceUserEndpoint.delete,
+            name="workspace-user--delete",
+        ),
+        path(
+            "workspace-user/<int:pk>/update",
+            views.json_api.WorkspaceUserEndpoint.update,
+            name="workspace-user--update",
         ),
         ##########################################################
         # NODE
@@ -386,11 +410,11 @@ def json_api_patterns():
         #########################################################
         # Misc / to sort
         #########################################################
-        path(
-            "permissions/set",
-            views.json_api.sharing.json_api_post_set_permission,
-            name="json-api-post-set-permission",
-        ),
+        # path(
+        #     "permissions/set",
+        #     views.json_api.sharing.json_api_post_set_permission,
+        #     name="json-api-post-set-permission",
+        # ),
     ]
 
 

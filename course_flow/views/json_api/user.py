@@ -45,66 +45,6 @@ class UserEndpoint:
         }
         return Response({"data_package": data_package})
 
-    @staticmethod
-    @api_view(["POST"])
-    def list(request: HttpRequest) -> JsonResponse:
-        body = json.loads(request.body)
-        name_filter = body.get("filter")
-        names = name_filter.split(" ")
-        length = len(names)
-        filters = [[name_filter, ""], ["", name_filter]]
-        for i, name in enumerate(names):
-            if i < length - 1:
-                filters += [
-                    [
-                        " ".join(names[0 : i + 1]),
-                        " ".join(names[i + 1 : length]),
-                    ]
-                ]
-        try:
-            q_objects = Q(username__istartswith=name_filter)
-            for q_filter in filters:
-                q_objects |= Q(
-                    first_name__istartswith=q_filter[0],
-                    last_name__istartswith=q_filter[1],
-                )
-
-            teacher_group = Group.objects.get(name=settings.TEACHER_GROUP)
-
-            user_list = User.objects.filter(q_objects, groups=teacher_group)[
-                :10
-            ]
-            count = len(user_list)
-            if count < 10:
-                user_list = list(user_list)
-                q_objects = Q(username__icontains=name_filter)
-                for q_filter in filters:
-                    q_objects |= Q(
-                        first_name__icontains=q_filter[0],
-                        last_name__icontains=q_filter[1],
-                    )
-                user_list += list(
-                    User.objects.filter(
-                        q_objects, groups=teacher_group
-                    ).exclude(id__in=[user.id for user in user_list])[
-                        : 10 - count
-                    ]
-                )
-
-        except ValidationError as e:
-            logger.exception("An error occurred")
-            return JsonResponse({"action": "error"})
-
-        return JsonResponse(
-            {
-                "message": "success",
-                "data_package": {
-                    "user_list": UserSerializer(user_list, many=True).data,
-                },
-            },
-            status=status.HTTP_200_OK,
-        )
-
     #########################################################
     # PROFILE SETTINGS
     #########################################################
@@ -140,9 +80,7 @@ class UserEndpoint:
                 status=status.HTTP_200_OK,
             )
         else:
-            logger.exception(
-                f"Bad error encountered with errors: {serializer.errors}"
-            )
+            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -183,8 +121,68 @@ class UserEndpoint:
                 status=status.HTTP_200_OK,
             )
         else:
-            logger.exception(
-                f"Bad error encountered with errors: {serializer.errors}"
-            )
+            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    #########################################################
+    # COURSE FLOW USERS
+    #########################################################
+    @staticmethod
+    @api_view(["POST"])
+    def list(request: Request) -> Response:
+        body = json.loads(request.body)
+        name_filter = body.get("filter")
+        names = name_filter.split(" ")
+        length = len(names)
+        filters = [[name_filter, ""], ["", name_filter]]
+
+        for i, name in enumerate(names):
+            if i < length - 1:
+                filters += [
+                    [
+                        " ".join(names[0 : i + 1]),
+                        " ".join(names[i + 1 : length]),
+                    ]
+                ]
+        try:
+            q_objects = Q(username__istartswith=name_filter)
+            for q_filter in filters:
+                q_objects |= Q(
+                    first_name__istartswith=q_filter[0],
+                    last_name__istartswith=q_filter[1],
+                )
+
+            teacher_group = Group.objects.get(name=settings.TEACHER_GROUP)
+
+            user_list = User.objects.filter(q_objects, groups=teacher_group)[:10]
+            count = len(user_list)
+
+            if count < 10:
+                user_list = list(user_list)
+                q_objects = Q(username__icontains=name_filter)
+
+                for q_filter in filters:
+                    q_objects |= Q(
+                        first_name__icontains=q_filter[0],
+                        last_name__icontains=q_filter[1],
+                    )
+                user_list += list(
+                    User.objects.filter(q_objects, groups=teacher_group).exclude(
+                        id__in=[user.id for user in user_list]
+                    )[: 10 - count]
+                )
+
+        except ValidationError as e:
+            logger.exception("An error occurred")
+            return Response({"action": "error"})
+
+        return Response(
+            {
+                "message": "success",
+                "data_package": {
+                    "user_list": UserSerializer(user_list, many=True).data,
+                },
+            },
+            status=status.HTTP_200_OK,
+        )

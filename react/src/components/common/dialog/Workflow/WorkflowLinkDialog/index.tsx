@@ -1,6 +1,6 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
-import WorkflowsMenu from '@cfComponents/dialog/_LEGACY/WorkflowsMenu'
+import WorkflowsMenu from '@cfComponents/__LEGACY/dialog/WorkflowsMenu'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'

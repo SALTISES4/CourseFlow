@@ -32,16 +32,13 @@ from course_flow.services import DAO
 #############################################
 
 
+# @todo ...??
 # post-duplication cleanup. Setting the linked workflows.
 # This must be done after the fact because the workflows have not
 # necessarily been duplicated by the time the nodes are
 def cleanup_workflow_post_duplication(workflow, project):
-    for node in Node.objects.filter(week__workflow=workflow).exclude(
-        linked_workflow=None
-    ):
-        new_linked_workflow = project.workflows.filter(
-            parent_workflow=node.linked_workflow
-        ).last()
+    for node in Node.objects.filter(week__workflow=workflow).exclude(linked_workflow=None):
+        new_linked_workflow = project.workflows.filter(parent_workflow=node.linked_workflow).last()
         node.linked_workflow = new_linked_workflow
         node.save()
 
@@ -64,15 +61,10 @@ def duplicate_nodelink(
     return new_nodelink
 
 
-def duplicate_node(
-    node: Node, author: User, new_workflow: Workflow, outcome_ids
-) -> Node:
+def duplicate_node(node: Node, author: User, new_workflow: Workflow, outcome_ids) -> Node:
     if new_workflow is not None:
         for new_column in new_workflow.columns.all():
-            if (
-                new_column == node.column
-                or new_column.parent_column == node.column
-            ):
+            if new_column == node.column or new_column.parent_column == node.column:
                 column = new_column
                 break
     else:
@@ -101,9 +93,7 @@ def duplicate_node(
 
     for outcome in node.outcomes.all():
         if new_workflow is not None:
-            new_outcome = Outcome.objects.get(
-                parent_outcome=outcome, id__in=outcome_ids
-            )
+            new_outcome = Outcome.objects.get(parent_outcome=outcome, id__in=outcome_ids)
         else:
             new_outcome = outcome
         OutcomeNode.objects.create(
@@ -115,9 +105,7 @@ def duplicate_node(
     return new_node
 
 
-def duplicate_week(
-    week: Week, author: User, new_workflow: Workflow, outcome_ids
-) -> Week:
+def duplicate_week(week: Week, author: User, new_workflow: Workflow, outcome_ids) -> Week:
     new_week = Week.objects.create(
         title=week.title,
         description=week.description,
@@ -342,13 +330,9 @@ def fast_duplicate_week(week: Week, author: User) -> Week:
         # In order to speed the creation of the throughmodels, select_related is used for any foreignkeys that need to be traversed
 
         nodeweeks = NodeWeek.objects.filter(week=week).select_related("node")
-        nodes = Node.objects.filter(week=week).select_related(
-            "column", "linked_workflow"
-        )
+        nodes = Node.objects.filter(week=week).select_related("column", "linked_workflow")
 
-        outcomenodes = OutcomeNode.objects.filter(
-            node__week=week
-        ).select_related("node", "outcome")
+        outcomenodes = OutcomeNode.objects.filter(node__week=week).select_related("node", "outcome")
         nodelinks = NodeLink.objects.filter(
             source_node__week=week, target_node__week=week
         ).select_related("source_node", "target_node")
@@ -357,13 +341,9 @@ def fast_duplicate_week(week: Week, author: User) -> Week:
         id_dict = {}
         now = timezone.now()
 
-        Node.objects.bulk_create(
-            [fast_node_copy(node, node.column, author, now) for node in nodes]
-        )
+        Node.objects.bulk_create([fast_node_copy(node, node.column, author, now) for node in nodes])
         new_nodes = Node.objects.filter(author=author, created_on=now)
-        id_dict["node"] = {
-            nodes[i].id: new_node for i, new_node in enumerate(new_nodes)
-        }
+        id_dict["node"] = {nodes[i].id: new_node for i, new_node in enumerate(new_nodes)}
 
         # Link everything up
 
@@ -445,8 +425,7 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
         )
         new_outcomes = Outcome.objects.filter(author=author, created_on=now)
         id_dict["outcome"] = {
-            outcomes[i].id: new_outcome
-            for i, new_outcome in enumerate(new_outcomes)
+            outcomes[i].id: new_outcome for i, new_outcome in enumerate(new_outcomes)
         }
 
         # We need to add in the original outcome
@@ -479,9 +458,7 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
     return new_outcome
 
 
-def fast_duplicate_workflow(
-    workflow: Workflow, author: User, project
-) -> Workflow:
+def fast_duplicate_workflow(workflow: Workflow, author: User, project) -> Workflow:
     model = DAO.get_model_from_str(workflow.type)
 
     try:
@@ -511,75 +488,53 @@ def fast_duplicate_workflow(
         # Speed is critical here. querying through __ has come out much faster (by a factor of up to 100) in testing than moving vertically through the heirarchy, even when prefetc_related is used.
         # In order to speed the creation of the throughmodels, select_related is used for any foreignkeys that need to be traversed
 
-        outcomeworkflows = OutcomeWorkflow.objects.filter(
-            workflow=workflow
-        ).select_related("outcome")
+        outcomeworkflows = OutcomeWorkflow.objects.filter(workflow=workflow).select_related(
+            "outcome"
+        )
         outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_workflow(workflow)
 
-        columnworkflows = ColumnWorkflow.objects.filter(
-            workflow=workflow
-        ).select_related("column")
+        columnworkflows = ColumnWorkflow.objects.filter(workflow=workflow).select_related("column")
         columns = Column.objects.filter(workflow=workflow)
 
-        weekworkflows = WeekWorkflow.objects.filter(
-            workflow=workflow
-        ).select_related("week")
+        weekworkflows = WeekWorkflow.objects.filter(workflow=workflow).select_related("week")
         weeks = Week.objects.filter(workflow=workflow)
 
-        nodeweeks = NodeWeek.objects.filter(
-            week__workflow=workflow
-        ).select_related("node", "week")
+        nodeweeks = NodeWeek.objects.filter(week__workflow=workflow).select_related("node", "week")
         nodes = Node.objects.filter(week__workflow=workflow).select_related(
             "column", "linked_workflow"
         )
 
-        outcomenodes = OutcomeNode.objects.filter(
-            node__week__workflow=workflow
-        ).select_related("node", "outcome")
-        nodelinks = NodeLink.objects.filter(
-            source_node__week__workflow=workflow
-        ).select_related("source_node", "target_node")
+        outcomenodes = OutcomeNode.objects.filter(node__week__workflow=workflow).select_related(
+            "node", "outcome"
+        )
+        nodelinks = NodeLink.objects.filter(source_node__week__workflow=workflow).select_related(
+            "source_node", "target_node"
+        )
 
         # Create the new content, and keep track of old_id:new_instance pairs in a dict
         id_dict = {}
         now = timezone.now()
 
-        Column.objects.bulk_create(
-            [fast_column_copy(column, author, now) for column in columns]
-        )
+        Column.objects.bulk_create([fast_column_copy(column, author, now) for column in columns])
         new_columns = Column.objects.filter(author=author, created_on=now)
-        id_dict["column"] = {
-            columns[i].id: new_col for i, new_col in enumerate(new_columns)
-        }
+        id_dict["column"] = {columns[i].id: new_col for i, new_col in enumerate(new_columns)}
 
-        Week.objects.bulk_create(
-            [fast_week_copy(week, author, now) for week in weeks]
-        )
+        Week.objects.bulk_create([fast_week_copy(week, author, now) for week in weeks])
         new_weeks = Week.objects.filter(author=author, created_on=now)
-        id_dict["week"] = {
-            weeks[i].id: new_week for i, new_week in enumerate(new_weeks)
-        }
+        id_dict["week"] = {weeks[i].id: new_week for i, new_week in enumerate(new_weeks)}
 
         Node.objects.bulk_create(
-            [
-                fast_node_copy(
-                    node, id_dict["column"][node.column.id], author, now
-                )
-                for node in nodes
-            ]
+            [fast_node_copy(node, id_dict["column"][node.column.id], author, now) for node in nodes]
         )
         new_nodes = Node.objects.filter(author=author, created_on=now)
-        id_dict["node"] = {
-            nodes[i].id: new_node for i, new_node in enumerate(new_nodes)
-        }
+        id_dict["node"] = {nodes[i].id: new_node for i, new_node in enumerate(new_nodes)}
 
         Outcome.objects.bulk_create(
             [fast_outcome_copy(outcome, author, now) for outcome in outcomes]
         )
         new_outcomes = Outcome.objects.filter(author=author, created_on=now)
         id_dict["outcome"] = {
-            outcomes[i].id: new_outcome
-            for i, new_outcome in enumerate(new_outcomes)
+            outcomes[i].id: new_outcome for i, new_outcome in enumerate(new_outcomes)
         }
 
         # Link everything up
@@ -663,11 +618,7 @@ def fast_duplicate_workflow(
 
         # Add the sets
         old_project = workflow.get_project()
-        if (
-            old_project is not None
-            and project is not None
-            and old_project.id == project.id
-        ):
+        if old_project is not None and project is not None and old_project.id == project.id:
             for node in nodes:
                 if node.sets.all().count() > 0:
                     for set in node.sets.all():
@@ -699,20 +650,23 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
             deleted=project.deleted,
         )
 
+        # 2024: note this is a legacy comment below:
+        # speed issues are likely coming mostly from issues in the data model
+
         # Retrieve all data.
         # Speed is critical here. querying through __ has come out much faster (by a factor of up to 100) in testing than moving vertically through the heirarchy, even when prefetc_related is used.
         # In order to speed the creation of the throughmodels, select_related is used for any foreignkeys that need to be traversed
 
-        workflowprojects = WorkflowProject.objects.filter(
-            project=project
-        ).select_related("workflow")
+        workflowprojects = WorkflowProject.objects.filter(project=project).select_related(
+            "workflow"
+        )
         activities = Activity.objects.filter(project=project)
         courses = Course.objects.filter(project=project)
         programs = Program.objects.filter(project=project)
 
-        outcomeworkflows = OutcomeWorkflow.objects.filter(
-            workflow__project=project
-        ).select_related("outcome", "workflow")
+        outcomeworkflows = OutcomeWorkflow.objects.filter(workflow__project=project).select_related(
+            "outcome", "workflow"
+        )
         outcomes = Outcome.objects.filter(
             Q(workflow__project=project)
             | Q(parent_outcomes__workflow__project=project)
@@ -726,27 +680,25 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
         outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
             Q(outcome__workflow__project=project)
             | Q(outcome__parent_outcomes__workflow__project=project)
-            | Q(
-                outcome__parent_outcomes__parent_outcomes__workflow__project=project
-            )
+            | Q(outcome__parent_outcomes__parent_outcomes__workflow__project=project)
         ).select_related("outcome", "parent_outcome")
 
-        columnworkflows = ColumnWorkflow.objects.filter(
-            workflow__project=project
-        ).select_related("column", "workflow")
+        columnworkflows = ColumnWorkflow.objects.filter(workflow__project=project).select_related(
+            "column", "workflow"
+        )
         columns = Column.objects.filter(workflow__project=project)
 
-        weekworkflows = WeekWorkflow.objects.filter(
-            workflow__project=project
-        ).select_related("week", "workflow")
+        weekworkflows = WeekWorkflow.objects.filter(workflow__project=project).select_related(
+            "week", "workflow"
+        )
         weeks = Week.objects.filter(workflow__project=project)
 
-        nodeweeks = NodeWeek.objects.filter(
-            week__workflow__project=project
-        ).select_related("node", "week")
-        nodes = Node.objects.filter(
-            week__workflow__project=project
-        ).select_related("column", "linked_workflow")
+        nodeweeks = NodeWeek.objects.filter(week__workflow__project=project).select_related(
+            "node", "week"
+        )
+        nodes = Node.objects.filter(week__workflow__project=project).select_related(
+            "column", "linked_workflow"
+        )
 
         outcomenodes = OutcomeNode.objects.filter(
             node__week__workflow__project=project
@@ -772,21 +724,13 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
             new_workflow = fast_program_copy(workflow, author, now)
             id_dict["workflow"][workflow.id] = new_workflow
 
-        Column.objects.bulk_create(
-            [fast_column_copy(column, author, now) for column in columns]
-        )
+        Column.objects.bulk_create([fast_column_copy(column, author, now) for column in columns])
         new_columns = Column.objects.filter(author=author, created_on=now)
-        id_dict["column"] = {
-            columns[i].id: new_col for i, new_col in enumerate(new_columns)
-        }
+        id_dict["column"] = {columns[i].id: new_col for i, new_col in enumerate(new_columns)}
 
-        Week.objects.bulk_create(
-            [fast_week_copy(week, author, now) for week in weeks]
-        )
+        Week.objects.bulk_create([fast_week_copy(week, author, now) for week in weeks])
         new_weeks = Week.objects.filter(author=author, created_on=now)
-        id_dict["week"] = {
-            weeks[i].id: new_week for i, new_week in enumerate(new_weeks)
-        }
+        id_dict["week"] = {weeks[i].id: new_week for i, new_week in enumerate(new_weeks)}
 
         Node.objects.bulk_create(
             [
@@ -801,17 +745,14 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
             ]
         )
         new_nodes = Node.objects.filter(author=author, created_on=now)
-        id_dict["node"] = {
-            nodes[i].id: new_node for i, new_node in enumerate(new_nodes)
-        }
+        id_dict["node"] = {nodes[i].id: new_node for i, new_node in enumerate(new_nodes)}
 
         Outcome.objects.bulk_create(
             [fast_outcome_copy(outcome, author, now) for outcome in outcomes]
         )
         new_outcomes = Outcome.objects.filter(author=author, created_on=now)
         id_dict["outcome"] = {
-            outcomes[i].id: new_outcome
-            for i, new_outcome in enumerate(new_outcomes)
+            outcomes[i].id: new_outcome for i, new_outcome in enumerate(new_outcomes)
         }
 
         new_object_sets = []
@@ -824,8 +765,7 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
             new_object_sets += [new_object_set]
             new_project.object_sets.add(new_object_set)
         id_dict["objectset"] = {
-            object_sets[i].id: object_set
-            for i, object_set in enumerate(new_object_sets)
+            object_sets[i].id: object_set for i, object_set in enumerate(new_object_sets)
         }
 
         # Link everything up.
@@ -923,12 +863,8 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
             [
                 OutcomeHorizontalLink(
                     rank=outcomehorizontallink.rank,
-                    outcome=id_dict["outcome"][
-                        outcomehorizontallink.outcome.id
-                    ],
-                    parent_outcome=id_dict["outcome"][
-                        outcomehorizontallink.parent_outcome.id
-                    ],
+                    outcome=id_dict["outcome"][outcomehorizontallink.outcome.id],
+                    parent_outcome=id_dict["outcome"][outcomehorizontallink.parent_outcome.id],
                 )
                 for outcomehorizontallink in outcomehorizontallinks
             ]
@@ -938,17 +874,13 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
         for node in nodes:
             if node.sets.all().count() > 0:
                 for set in node.sets.all():
-                    id_dict["node"][node.id].sets.add(
-                        id_dict["objectset"][set.id]
-                    )
+                    id_dict["node"][node.id].sets.add(id_dict["objectset"][set.id])
                 node.save()
 
         for outcome in list(outcomes):
             if outcome.sets.all().count() > 0:
                 for set in outcome.sets.all():
-                    id_dict["outcome"][outcome.id].sets.add(
-                        id_dict["objectset"][set.id]
-                    )
+                    id_dict["outcome"][outcome.id].sets.add(id_dict["objectset"][set.id])
                 outcome.save()
 
     except IndexError as e:
@@ -961,9 +893,7 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
     return new_project
 
 
-def fast_create_strategy(
-    week: Week, workflow: Workflow, author: User
-) -> Workflow:
+def fast_create_strategy(week: Week, workflow: Workflow, author: User) -> Workflow:
     model = DAO.get_model_from_str(workflow.type)
 
     try:
@@ -980,17 +910,15 @@ def fast_create_strategy(
         # Speed is critical here. querying through __ has come out much faster (by a factor of up to 100) in testing than moving vertically through the heirarchy, even when prefetc_related is used.
         # In order to speed the creation of the throughmodels, select_related is used for any foreignkeys that need to be traversed
 
-        columnworkflows = ColumnWorkflow.objects.filter(
-            workflow=workflow
-        ).select_related("column")
+        columnworkflows = ColumnWorkflow.objects.filter(workflow=workflow).select_related("column")
         columns = Column.objects.filter(workflow=workflow)
 
-        nodeweeks = NodeWeek.objects.filter(
-            week__workflow=workflow, week=week
-        ).select_related("node", "week")
-        nodes = Node.objects.filter(
-            week__workflow=workflow, week=week
-        ).select_related("column", "linked_workflow")
+        nodeweeks = NodeWeek.objects.filter(week__workflow=workflow, week=week).select_related(
+            "node", "week"
+        )
+        nodes = Node.objects.filter(week__workflow=workflow, week=week).select_related(
+            "column", "linked_workflow"
+        )
 
         nodelinks = NodeLink.objects.filter(
             source_node__week__workflow=workflow,
@@ -1002,35 +930,22 @@ def fast_create_strategy(
         id_dict = {}
         now = timezone.now()
 
-        Column.objects.bulk_create(
-            [fast_column_copy(column, author, now) for column in columns]
-        )
+        Column.objects.bulk_create([fast_column_copy(column, author, now) for column in columns])
         new_columns = Column.objects.filter(author=author, created_on=now)
-        id_dict["column"] = {
-            columns[i].id: new_col for i, new_col in enumerate(new_columns)
-        }
+        id_dict["column"] = {columns[i].id: new_col for i, new_col in enumerate(new_columns)}
 
         weeks = [week]
         Week.objects.bulk_create([fast_week_copy(week, author, now)])
         new_weeks = Week.objects.filter(author=author, created_on=now)
         new_weeks.update(is_strategy=True)
-        id_dict["week"] = {
-            weeks[i].id: new_week for i, new_week in enumerate(new_weeks)
-        }
+        id_dict["week"] = {weeks[i].id: new_week for i, new_week in enumerate(new_weeks)}
 
         Node.objects.bulk_create(
-            [
-                fast_node_copy(
-                    node, id_dict["column"][node.column.id], author, now
-                )
-                for node in nodes
-            ]
+            [fast_node_copy(node, id_dict["column"][node.column.id], author, now) for node in nodes]
         )
         new_nodes = Node.objects.filter(author=author, created_on=now)
         new_nodes.update(linked_workflow=None)
-        id_dict["node"] = {
-            nodes[i].id: new_node for i, new_node in enumerate(new_nodes)
-        }
+        id_dict["node"] = {nodes[i].id: new_node for i, new_node in enumerate(new_nodes)}
 
         # Link everything up
         ColumnWorkflow.objects.bulk_create(

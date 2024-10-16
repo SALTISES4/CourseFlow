@@ -1,24 +1,22 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import { EUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
 import { Verb, cfApi } from './api'
 /*******************************************************
  * TYPES
  *******************************************************/
-export type CurrentUserQueryResp = {
-  message: string
-  dataPackage: {
-    id: number
-    firstName: string
-    lastName: string
-    userName: string
-    language: string
-  }
-}
-
 export enum LanguageOptions {
   EN = 'en',
   FR = 'fr'
+}
+
+/*******************************************************
+ * RESP
+ *******************************************************/
+export type CurrentUserQueryResp = {
+  message: string
+  dataPackage: EUser
 }
 
 export type NotificationSettingsQueryResp = {
@@ -36,12 +34,19 @@ export type ProfileSettingsQueryResp = {
     language: LanguageOptions
   }
 }
+/*******************************************************
+ * ARGS
+ *******************************************************/
 
 export type ProfileSettingsArgs = {
   firstName: string
   lastName: string
   language: LanguageOptions
 }
+
+/*******************************************************
+ *
+ *******************************************************/
 const extendedApi = cfApi.injectEndpoints({
   endpoints: (builder) => ({
     /*******************************************************
@@ -52,14 +57,6 @@ const extendedApi = cfApi.injectEndpoints({
         return {
           method: Verb.GET,
           url: apiPaths.json_api.user.current_user
-        }
-      }
-    }),
-    getUserList: builder.query<CurrentUserQueryResp, void>({
-      query: () => {
-        return {
-          method: Verb.POST,
-          url: apiPaths.json_api.user.list
         }
       }
     }),
@@ -115,7 +112,6 @@ const extendedApi = cfApi.injectEndpoints({
 
 export const {
   useGetCurrentUserQuery,
-  useGetUserListQuery,
   useGetNotificationSettingsQuery,
   useGetProfileSettingsQuery,
   useUpdateNotificationSettingsMutation,

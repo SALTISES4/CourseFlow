@@ -1,5 +1,5 @@
 import appRoutes, { CFRoutes } from '@cf/router/appRoutes'
-import { WorkSpaceType } from '@cf/types/enum'
+import { WorkspaceType } from '@cf/types/enum'
 import { MaybeWithId, hasId } from '@cf/types/typeGuards'
 import * as React from 'react'
 import { generatePath } from 'react-router-dom'
@@ -341,11 +341,11 @@ export function cantorPairing(k1, k2) {
   return parseInt(((k1 + k2) * (k1 + k2 + 1)) / 2 + k2)
 }
 
-export function getPathByObject(id: number, object: WorkSpaceType) {
+export function getPathByObject(id: number, object: WorkspaceType) {
   switch (object) {
-    case WorkSpaceType.PROJECT:
+    case WorkspaceType.PROJECT:
       return generatePath(CFRoutes.PROJECT, { id: String(id) })
-    case WorkSpaceType.WORKFLOW:
+    case WorkspaceType.WORKFLOW:
       return generatePath(CFRoutes.WORKFLOW, { id: String(id) })
   }
   return CFRoutes.HOME

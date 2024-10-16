@@ -8,52 +8,18 @@ from course_flow.serializers.mixin import bleach_sanitizer
 class UserSerializer(serializers.ModelSerializer):
     """
     used prepare users as JSON payload responses
+    @todo really need to understand why there is an entire other user table with redundant fields....
     """
+
+    name = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = [
-            "id",
-            "username",
-            "first_name",
-            "last_name",
-        ]
-
-    first_name = serializers.SerializerMethodField()
-    last_name = serializers.SerializerMethodField()
-
-    #########################################################
-    # GETTERS
-    #########################################################
-    @staticmethod
-    def get_first_name(instance):
-        courseflow_user = CourseFlowUser.objects.filter(user=instance).first()
-        if courseflow_user is None:
-            courseflow_user = CourseFlowUser.objects.create(
-                first_name=instance.first_name,
-                last_name=instance.last_name,
-                user=instance,
-            )
-        return bleach_sanitizer(
-            courseflow_user.first_name,
-            tags=[],
-            attributes=[],
-        )
+        fields = ["id", "username", "first_name", "last_name", "name"]
 
     @staticmethod
-    def get_last_name(instance):
-        courseflow_user = CourseFlowUser.objects.filter(user=instance).first()
-        if courseflow_user is None:
-            courseflow_user = CourseFlowUser.objects.create(
-                first_name=instance.first_name,
-                last_name=instance.last_name,
-                user=instance,
-            )
-        return bleach_sanitizer(
-            courseflow_user.last_name,
-            tags=[],
-            attributes=[],
-        )
+    def get_name(instance):
+        return instance.first_name + " " + instance.last_name
 
     #########################################################
     # VALIDATORS
@@ -77,6 +43,16 @@ class UserSerializer(serializers.ModelSerializer):
             tags=[],
             attributes=[],
         )
+
+
+class UserWithPermissionsSerializer(UserSerializer):
+    group = serializers.SerializerMethodField()
+
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + ["group"]
+
+    def get_group(self, obj):
+        return self.context.get("permission_type")
 
 
 #########################################################
@@ -109,12 +85,8 @@ class ProfileSettingsSerializer(serializers.ModelSerializer):
         }
 
     def update(self, instance, validated_data):
-        instance.first_name = validated_data.get(
-            "first_name", instance.first_name
-        )
-        instance.last_name = validated_data.get(
-            "last_name", instance.last_name
-        )
+        instance.first_name = validated_data.get("first_name", instance.first_name)
+        instance.last_name = validated_data.get("last_name", instance.last_name)
         instance.language = validated_data.get("language", instance.language)
         instance.save()
         return instance

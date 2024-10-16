@@ -1,4 +1,28 @@
-import { PermissionKeys } from '@cf/constants'
+import {PermissionGroup} from "@cf/types/common";
+import { _t } from '@cf/utility/utilityFunctions'
+
+export type Role = {
+  value: PermissionGroup
+  label: string
+}
+type SelectOption = {
+  value: string | number
+  label: string
+}
+export const permissionGroupMenuOptions: SelectOption[] = [
+  {
+    value: PermissionGroup.EDIT,
+    label: _t('Editor')
+  },
+  {
+    value: PermissionGroup.COMMENT,
+    label: _t('Commenter')
+  },
+  {
+    value: PermissionGroup.VIEW,
+    label: _t('Viewer')
+  }
+]
 
 export interface BasePermissions {
   read: boolean
@@ -23,16 +47,19 @@ const defaultWorkflowPermissions: WorkflowPermission = {
   addComments: false
 }
 
+/*******************************************************
+ * FUNCTIONS
+ *******************************************************/
 export const calcProjectPermissions = (
   permission: number
 ): WorkflowPermission => {
   switch (permission) {
-    case PermissionKeys.VIEW:
+    case PermissionGroup.VIEW:
       return {
         ...defaultWorkflowPermissions,
         read: true
       }
-    case PermissionKeys.COMMENT:
+    case PermissionGroup.COMMENT:
       return {
         ...defaultWorkflowPermissions,
         viewComments: true,
@@ -40,7 +67,7 @@ export const calcProjectPermissions = (
         read: true
       }
 
-    case PermissionKeys.EDIT:
+    case PermissionGroup.EDIT:
       return {
         read: true,
         write: true,
@@ -56,14 +83,14 @@ export const calcWorkflowPermissions = (
   permission: number
 ): WorkflowPermission => {
   switch (permission) {
-    case PermissionKeys.VIEW:
+    case PermissionGroup.VIEW:
       return {
         ...defaultBasePermissions,
         read: true,
         viewComments: true,
         addComments: false
       }
-    case PermissionKeys.EDIT:
+    case PermissionGroup.EDIT:
       return {
         read: true,
         write: true,

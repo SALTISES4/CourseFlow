@@ -38,31 +38,23 @@ class DAO:
 
     @staticmethod
     def get_parent_model_str(model_str: str) -> str:
-        return DAO.owned_throughmodels[
-            DAO.owned_throughmodels.index(model_str) + 1
-        ]
+        return DAO.owned_throughmodels[DAO.owned_throughmodels.index(model_str) + 1]
 
     @staticmethod
     def get_parent_model(model_str: str):
-        return ContentType.objects.get(
-            model=DAO.get_parent_model_str(model_str)
-        ).model_class()
+        return ContentType.objects.get(model=DAO.get_parent_model_str(model_str)).model_class()
 
     @staticmethod
     def get_descendant_outcomes(outcome):
         return models.Outcome.objects.filter(
-            Q(parent_outcomes=outcome)
-            | Q(parent_outcomes__parent_outcomes=outcome)
+            Q(parent_outcomes=outcome) | Q(parent_outcomes__parent_outcomes=outcome)
         )
 
     @staticmethod
     def get_all_outcomes_for_outcome(outcome):
         outcomes = models.Outcome.objects.filter(
-            Q(parent_outcomes=outcome)
-            | Q(parent_outcomes__parent_outcomes=outcome)
-        ).prefetch_related(
-            "outcome_horizontal_links", "child_outcome_links", "sets"
-        )
+            Q(parent_outcomes=outcome) | Q(parent_outcomes__parent_outcomes=outcome)
+        ).prefetch_related("outcome_horizontal_links", "child_outcome_links", "sets")
         outcomeoutcomes = models.OutcomeOutcome.objects.filter(
             Q(parent=outcome) | Q(parent__parent_outcomes=outcome)
         )
@@ -74,35 +66,28 @@ class DAO:
             Q(workflow=workflow)
             | Q(parent_outcomes__workflow=workflow)
             | Q(parent_outcomes__parent_outcomes__workflow=workflow)
-        ).prefetch_related(
-            "outcome_horizontal_links", "child_outcome_links", "sets"
-        )
+        ).prefetch_related("outcome_horizontal_links", "child_outcome_links", "sets")
         outcomeoutcomes = models.OutcomeOutcome.objects.filter(
-            Q(parent__workflow=workflow)
-            | Q(parent__parent_outcomes__workflow=workflow)
+            Q(parent__workflow=workflow) | Q(parent__parent_outcomes__workflow=workflow)
         )
         return outcomes, outcomeoutcomes
 
     @staticmethod
     def get_all_outcomes_ordered_for_outcome(outcome):
         outcomes = [outcome]
-        for outcomeoutcome in outcome.child_outcome_links.filter(
-            child__deleted=False
-        ).order_by("rank"):
-            outcomes += DAO.get_all_outcomes_ordered_for_outcome(
-                outcomeoutcome.child
-            )
+        for outcomeoutcome in outcome.child_outcome_links.filter(child__deleted=False).order_by(
+            "rank"
+        ):
+            outcomes += DAO.get_all_outcomes_ordered_for_outcome(outcomeoutcome.child)
         return outcomes
 
     @staticmethod
     def get_all_outcomes_ordered(workflow):
         outcomes = []
-        for outcomeworkflow in workflow.outcomeworkflow_set.filter(
-            outcome__deleted=False
-        ).order_by("rank"):
-            outcomes += DAO.get_all_outcomes_ordered_for_outcome(
-                outcomeworkflow.outcome
-            )
+        for outcomeworkflow in workflow.outcomeworkflow_set.filter(outcome__deleted=False).order_by(
+            "rank"
+        ):
+            outcomes += DAO.get_all_outcomes_ordered_for_outcome(outcomeworkflow.outcome)
         return outcomes
 
     @staticmethod
@@ -163,13 +148,9 @@ class DAO:
             outcome.outcome_horizontal_links.exclude(
                 Q(parent_outcome__deleted=True)
                 | Q(parent_outcome__parent_outcomes__deleted=True)
-                | Q(
-                    parent_outcome__parent_outcomes__parent_outcomes__deleted=True
-                )
+                | Q(parent_outcome__parent_outcomes__parent_outcomes__deleted=True)
             )
-            .exclude(
-                parent_outcome__parent_outcomes__reverse_horizontal_outcomes=outcome
-            )
+            .exclude(parent_outcome__parent_outcomes__reverse_horizontal_outcomes=outcome)
             .exclude(
                 parent_outcome__parent_outcomes__parent_outcomes__reverse_horizontal_outcomes=outcome
             )
@@ -186,11 +167,7 @@ class DAO:
     def get_parent_nodes_for_workflow(workflow):
         nodes = (
             models.Node.objects.filter(linked_workflow=workflow)
-            .exclude(
-                Q(deleted=True)
-                | Q(week__deleted=True)
-                | Q(week__workflow__deleted=True)
-            )
+            .exclude(Q(deleted=True) | Q(week__deleted=True) | Q(week__workflow__deleted=True))
             .prefetch_related("outcomenode_set")
         )
         return nodes
@@ -199,10 +176,7 @@ class DAO:
     def check_possible_parent(workflow, parent_workflow, same_project):
         order = ["activity", "course", "program"]
         try:
-            if (
-                order.index(workflow.type)
-                == order.index(parent_workflow.type) - 1
-            ):
+            if order.index(workflow.type) == order.index(parent_workflow.type) - 1:
                 if same_project:
                     if workflow.get_project() == parent_workflow.get_project():
                         return True
@@ -215,6 +189,19 @@ class DAO:
 
     @staticmethod
     def get_user_permission(obj, user):
+        """
+        get Permission 'group' on Workspace object
+        i.e.
+        PERMISSION_NONE = 0
+        PERMISSION_VIEW = 1
+        PERMISSION_EDIT = 2
+        PERMISSION_COMMENT = 3
+        PERMISSION_STUDENT = 4
+
+        :param obj:
+        :param user:
+        :return:
+        """
         if obj.type in ["workflow", "course", "activity", "program"]:
             obj = models.Workflow.objects.get(pk=obj.pk)
 
@@ -242,24 +229,17 @@ class DAO:
         is_public = workflow.public_view
 
         if user is not None and user.is_authenticated and workflow.published:
-            if (
-                Group.objects.get(name=settings.TEACHER_GROUP)
-                in user.groups.all()
-            ):
+            if Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all():
                 can_view = True
 
         if user_permission != Permission.PERMISSION_NONE.value:
             can_view = True
 
         if can_view:
-            return reverse(
-                "course_flow:workflow-detail", kwargs={"pk": workflow.pk}
-            )
+            return reverse("course_flow:workflow-detail", kwargs={"pk": workflow.pk})
 
         if is_public:
-            return reverse(
-                "course_flow:workflow-public", kwargs={"pk": workflow.pk}
-            )
+            return reverse("course_flow:workflow-public", kwargs={"pk": workflow.pk})
 
         if user is None or not user.is_authenticated:
             return "nouser"
@@ -272,9 +252,7 @@ class DAO:
         if not user.is_authenticated:
             return "noaccess"
         if user_permission != Permission.PERMISSION_NONE.value:
-            return reverse(
-                "course_flow:project-detail", kwargs={"pk": project.pk}
-            )
+            return reverse("course_flow:project-detail", kwargs={"pk": project.pk})
         return ""
 
     #########################################################
@@ -322,7 +300,5 @@ class DAO:
     @staticmethod
     def get_nondeleted_favourites(user):
         return list(
-            course_flow.models.project.Project.objects.filter(
-                favourited_by__user=user
-            )
+            course_flow.models.project.Project.objects.filter(favourited_by__user=user)
         ) + list(models.Workflow.objects.filter(favourited_by__user=user))

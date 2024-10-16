@@ -1,4 +1,5 @@
 import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
+import {EUser} from "@XMLHTTP/types/entity";
 import { MouseEvent } from 'react'
 
 export type ToDefine = any
@@ -57,18 +58,28 @@ export type EventUnion =
 /*******************************************************
  *
  *******************************************************/
-export enum ProjectPermissionRole {
-  'OWNER' = 'owner',
-  'EDITOR' = 'editor',
-  'COMMENTER' = 'commenter',
-  'VIEWER' = 'viewer'
+// export enum PermissionGroup {
+//   'OWNER' = 'owner',
+//   'EDITOR' = 'editor',
+//   'COMMENTER' = 'commenter',
+//   'VIEWER' = 'viewer'
+// }
+/*
+ * i don't like this but it simplifies the backend for now
+ * */
+export enum PermissionGroup {
+  NONE,
+  VIEW,
+  EDIT,
+  COMMENT,
+  STUDENT
 }
 
 export type PermissionUserType = {
   id: number
   name: string
   email: string
-  role: ProjectPermissionRole
+  permissionGroup: PermissionGroup
 }
 
 export type ObjectSetType = {
@@ -86,7 +97,8 @@ export type ProjectDetailsType = {
   isFavorite: boolean
   isDeleted: boolean
   created: Date | string
+  author: EUser
   disciplines?: string[]
-  permissions?: PermissionUserType[]
+  permissionGroup: PermissionGroup
   objectSets?: ObjectSetType[]
 }

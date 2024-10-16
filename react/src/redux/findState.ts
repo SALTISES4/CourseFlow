@@ -58,11 +58,14 @@ export type TGetWeekByIDType = {
   nodeweeks: any
   workflowId?: any
 }
+
 export const getWeekByID = (state: AppState, id: number): TGetWeekByIDType => {
   for (const i in state.week) {
-    const week = state.week[i]
-    if (week.id == id) {
+    const week = { ...state.week[i] } // create a shallow copy to avoid mutations
+    if (week.id === id) {
       if (week.isDropped === undefined) {
+        // Optionally handle this scenario through dispatching an action instead
+        // consider moving this logic to a reducer
         week.isDropped = getDropped(id, 'week')
       }
       return {
@@ -170,10 +173,10 @@ export type TGetNodeByID = {
 }
 export const getNodeByID = (state: AppState, id: number): TGetNodeByID => {
   for (const i in state.node) {
-    var node = state.node[i]
+    const node = { ...state.node[i] } // Shallow copy to avoid mutations
     if (node.id === id) {
       if (node.isDropped === undefined) {
-        node.isDropped = getDropped(id, 'node')
+        node.isDropped = getDropped(id, 'node') // Consider moving this to a reducer
       }
       return {
         data: node,
@@ -313,32 +316,44 @@ export type TGetOutcomeByID = {
   objectSets: TObjectSet
   workflowId: number
 }
+
 export const getOutcomeByID = (
   state: AppState,
   id: number
 ): TGetOutcomeByID => {
   const stateSection = state.outcome
+
   for (const i in stateSection) {
     const outcome = stateSection[i]
 
     if (outcome.id !== id) continue
 
-    if (outcome.isDropped === undefined) {
-      outcome.isDropped = getDropped(id, 'outcome', outcome.depth)
+    // Create a shallow copy to avoid mutation
+    const updatedOutcome = { ...outcome }
+
+    // Ensure isDropped is set without mutating state
+    if (updatedOutcome.isDropped === undefined) {
+      updatedOutcome.isDropped = getDropped(id, 'outcome', updatedOutcome.depth)
     }
 
-    let rootOutcome = outcome
+    let rootOutcome = updatedOutcome
     let rank = []
     let titles = []
-    let topRank = outcome.code || null
+    let topRank = updatedOutcome.code || null
 
-    if (outcome.depth > 0) {
+    // Handle if the depth is greater than 0 (requires ranking logic)
+    if (updatedOutcome.depth > 0) {
       const stateOutcomeSection = state.outcomeoutcome
-      const rootInfo = findRootOutcome(stateOutcomeSection, outcome.id, [])
-      rank = rootInfo.rank.map(() => null)
+      const rootInfo = findRootOutcome(
+        stateOutcomeSection,
+        updatedOutcome.id,
+        []
+      )
+
+      rank = rootInfo.rank.map(() => null) // Fill rank with null values
       titles = [...rank]
 
-      stateSection.forEach((sectionItem, j) => {
+      stateSection.forEach((sectionItem) => {
         if (sectionItem.id === rootInfo.id) rootOutcome = sectionItem
 
         rootInfo.rank.forEach((rankItem, k) => {
@@ -359,82 +374,26 @@ export const getOutcomeByID = (
       topRank = topRank || findTopRank(state, rootOutcome)
     }
 
-    titles.push(outcome.title)
+    titles.push(updatedOutcome.title)
     rank.unshift(topRank)
 
+    // Create hovertext and prefix
     const hovertext = rank
       .map((rankItem, i) => `${rankItem}. ${titles[i]}`)
       .join(' -> ')
     const prefix = rank.join('.')
 
+    // Return the final result without mutating the original state
     return {
-      data: outcome,
+      data: updatedOutcome,
       hovertext: hovertext,
       prefix: prefix,
       objectSets: state.objectset,
       workflowId: state.workflow.id
     }
   }
-  // const state_section = state.outcome
-  // for (const i in state_section) {
-  //   const outcome = state_section[i]
-  //
-  //   if (outcome.id === id) {
-  //     if (outcome.isDropped === undefined) {
-  //       outcome.isDropped = getDropped(id, 'outcome', outcome.depth)
-  //     }
-  //     let root_outcome
-  //     let rank = []
-  //     let titles = []
-  //     let top_rank
-  //     if (outcome.depth > 0) {
-  //       const state_outcomeoutcome_section = state.outcomeoutcome
-  //       const root_info = findRootOutcome(
-  //         state_outcomeoutcome_section,
-  //         outcome.id,
-  //         []
-  //       )
-  //       rank = root_info.rank.map((x) => null)
-  //       titles = rank.map((x) => null)
-  //       for (let j = 0; j < state_section.length; j++) {
-  //         if (state_section[j].id === root_info.id)
-  //           root_outcome = state_section[j]
-  //         for (let k = 0; k < root_info.rank.length; k++) {
-  //           if (root_info.rank[k].parent === state_section[j].id) {
-  //             titles[k] = state_section[j].title
-  //             if (rank[k]) continue
-  //             if (state_section[j].code) {
-  //               if (k > 0) rank[k - 1] = state_section[j].code
-  //               else top_rank = state_section[j].code
-  //             }
-  //             rank[k] =
-  //               state_section[j].childOutcomeLinks.indexOf(
-  //                 root_info.rank[k].through
-  //               ) + 1
-  //           }
-  //         }
-  //       }
-  //     } else {
-  //       root_outcome = outcome
-  //       if (outcome.code) top_rank = outcome.code
-  //     }
-  //     if (!top_rank) top_rank = findTopRank(state, root_outcome)
-  //     titles.push(outcome.title)
-  //     rank.unshift(top_rank)
-  //     const hovertext = rank
-  //       .map((rank_i, i) => rank_i + '. ' + titles[i])
-  //       .join(' -> ')
-  //     const prefix = rank.join('.')
-  //     return {
-  //       data: outcome,
-  //       hovertext: hovertext,
-  //       prefix: prefix,
-  //       objectSets: state.objectset,
-  //       workflowId: state.workflow.id
-  //     }
-  //   }
-  // }
-  // console.log('failed to find outcome')
+
+  console.log('Outcome not found for ID:', id)
 }
 
 export const getChildWorkflowByID = (state: AppState, id: number) => {
@@ -449,6 +408,7 @@ export const getChildWorkflowByID = (state: AppState, id: number) => {
 export type TOutcomeOutcomeByID = {
   data?: TOutcomeOutcome
 }
+
 export const getOutcomeOutcomeByID = (
   state: AppState,
   id: number
@@ -468,6 +428,7 @@ export const getOutcomeOutcomeByID = (
 export type TOutcomeNodeByID = {
   data: TOutcomeNode
 }
+
 export const getOutcomeNodeByID = (
   state: AppState,
   id: number
@@ -484,6 +445,7 @@ export const getOutcomeNodeByID = (
 export type TOutcomeHorizontalLinkByID = {
   data: any
 }
+
 export const getOutcomeHorizontalLinkByID = (
   state: AppState,
   id: number
@@ -500,10 +462,12 @@ export const getOutcomeHorizontalLinkByID = (
 }
 
 export type TOutcomeWithDegree = TOutcome & { degree: number }
+
 export type TSortedOutcomeNodes = {
   objectset: TObjectSet
   outcomes: TOutcomeWithDegree[]
 }[]
+
 export const getSortedOutcomeNodesFromNodes = (
   state: AppState,
   nodes
@@ -562,7 +526,11 @@ export type TSortedOutcomes = {
   outcomes: TOutcome[]
 }[]
 
-// Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+/**
+ * Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+ * @param state
+ * @param outcomeworkflowSet
+ */
 export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
   outcomeworkflowSet: number[]
@@ -571,6 +539,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     state.outcomeworkflow,
     outcomeworkflowSet
   )
+
   const outcome_ids = outcomeworkflows.map(
     (outcomeworkflow) => outcomeworkflow.outcome
   )
@@ -580,53 +549,64 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     state.outcome,
     outcome_ids
   )
+
   if (outcomes.length === 0) {
     return outcomes
   }
 
-  for (let i = 0; i < outcomes.length; i++) {
-    outcomes[i].outcomeworkflow = outcomeworkflows[i].id
-    outcomes[i].through_noDrag = outcomeworkflows[i].noDrag
-  }
+  // Create a new array of outcomes to avoid mutating the state
+  const updatedOutcomes = outcomes.map((outcome, index) => ({
+    ...outcome, // Shallow copy of each outcome
+    outcomeworkflow: outcomeworkflows[index].id,
+    through_noDrag: outcomeworkflows[index].noDrag
+  }))
 
   const base_title = Utility.capWords(_t('outcomes'))
 
   const objectSets = state.objectset.filter(
-    (objectset) => objectset.term === outcomes[0].type
+    (objectset) => objectset.term === updatedOutcomes[0].type
   )
+
   if (objectSets.length === 0) {
     return [
       {
         objectset: {
           title: base_title
         },
-        outcomes: outcomes
+        outcomes: updatedOutcomes
       }
     ]
   }
 
-  const uncategorized = outcomes.filter((outcome) => outcome.sets.length === 0)
+  const uncategorized = updatedOutcomes.filter(
+    (outcome) => outcome.sets.length === 0
+  )
+
   let categories = []
-  if (uncategorized.length > 0)
+  if (uncategorized.length > 0) {
     categories = [
       {
         objectset: { title: _t('Uncategorized') },
         outcomes: uncategorized
       }
     ]
+  }
+
   categories = [
     ...categories,
     ...objectSets
       .filter((objectset) => !objectset.hidden)
       .map((objectset) => ({
         objectset: objectset,
-        outcomes: outcomes.filter(
+        outcomes: updatedOutcomes.filter(
           (outcome) => outcome.sets.indexOf(objectset.id) >= 0
         )
       }))
   ]
+
   console.log('categories')
   console.log(categories)
+
   return categories
 }
 
@@ -675,61 +655,96 @@ export const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
   return { data: null }
 }
 
-// @todo doesn't really belong here (not a state selector)
-//Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+/**
+ *  // @todo doesn't really belong here (not a state selector)
+ * //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+ * @param outcomes_unsorted
+ * @param outcomeworkflows_unsorted
+ * @param outcomeworkflowSet
+ * @param objectSets_unfiltered
+ */
 export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   outcomes_unsorted,
   outcomeworkflows_unsorted,
   outcomeworkflowSet,
   objectSets_unfiltered
 ) => {
+  // Get sorted outcome workflows based on the provided IDs
   const outcomeworkflows = Utility.filterThenSortByID(
     outcomeworkflows_unsorted,
     outcomeworkflowSet
   )
+
+  // Extract the outcome IDs from the sorted outcome workflows
   const outcome_ids = outcomeworkflows.map(
     (outcomeworkflow) => outcomeworkflow.outcome
   )
+
+  // Filter and sort the outcomes based on the outcome IDs
   const outcomes = Utility.filterThenSortByID(outcomes_unsorted, outcome_ids)
-  for (let i = 0; i < outcomes.length; i++) {
-    outcomes[i].outcomeworkflow = outcomeworkflows[i].id
-    outcomes[i].through_noDrag = outcomeworkflows[i].noDrag
+
+  // Create a new array to avoid mutating the original outcomes
+  const updatedOutcomes = outcomes.map((outcome, index) => ({
+    ...outcome, // Shallow copy of each outcome
+    outcomeworkflow: outcomeworkflows[index].id,
+    through_noDrag: outcomeworkflows[index].noDrag
+  }))
+
+  // If there are no outcomes, return their IDs
+  if (updatedOutcomes.length === 0) {
+    return updatedOutcomes.map((outcome) => outcome.id)
   }
-  if (outcomes.length === 0) return outcomes.map((outcome) => outcome.id)
+
+  // Prepare the base title for uncategorized outcomes
   const base_title = Utility.capWords(_t('outcomes'))
+
+  // Filter the objectSets to match the first outcome's type
   const objectSets = objectSets_unfiltered.filter(
-    (objectset) => objectset.term === outcomes[0].type
+    (objectset) => objectset.term === updatedOutcomes[0].type
   )
-  if (objectSets.length === 0)
+
+  // If no objectSets match, return the outcomes with the base title
+  if (objectSets.length === 0) {
     return [
       {
         objectset: { title: base_title },
-        outcomes: outcomes.map((outcome) => outcome.id)
+        outcomes: updatedOutcomes.map((outcome) => outcome.id)
       }
     ]
-  const uncategorized = outcomes
+  }
+
+  // Separate uncategorized outcomes (those without sets)
+  const uncategorized = updatedOutcomes
     .filter((outcome) => outcome.sets.length === 0)
     .map((outcome) => outcome.id)
+
+  // Initialize categories
   let categories = []
-  if (uncategorized.length > 0)
+  if (uncategorized.length > 0) {
     categories = [
       {
         objectset: { title: _t('Uncategorized') },
         outcomes: uncategorized
       }
     ]
+  }
+
+  // Add categorized outcomes
   categories = [
     ...categories,
     ...objectSets
       .filter((objectset) => !objectset.hidden)
       .map((objectset) => ({
         objectset: objectset,
-        outcomes: outcomes
+        outcomes: updatedOutcomes
           .filter((outcome) => outcome.sets.indexOf(objectset.id) >= 0)
           .map((outcome) => outcome.id)
       }))
   ]
+
   console.log('getSortedOutcomeIDFromOutcomeWorkflowSet categories')
   console.log(categories)
+
+  // Return the final categories
   return categories
 }
