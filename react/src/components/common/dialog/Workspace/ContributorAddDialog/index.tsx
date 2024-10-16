@@ -43,7 +43,7 @@ type UserFormOption = {
 /**
  * @constructor
  */
-const AddContributorDialog = ({
+const ContributorAddDialog = ({
   id,
   type,
   refetch
@@ -221,4 +221,4 @@ const AddContributorDialog = ({
   )
 }
 
-export default AddContributorDialog
+export default ContributorAddDialog
