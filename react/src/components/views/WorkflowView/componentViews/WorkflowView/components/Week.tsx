@@ -122,7 +122,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     this.context.editableMethods.microUpdate(
       ActionCreator.columnChangeNode(id, new_column)
     )
-    columnChanged(this.context, id, new_column) // @todo again dragaction needs to be designed and is not on renderer (context) any more
+    columnChanged(this.context, id, new_column) // @todo drag action needs to be designed and is not on renderer (context) anymore
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
@@ -304,7 +304,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
                 <div className="strategy-tab-circle">
                   <img
                     title={
-                      choices.strategyClassification_choices.find(
+                      choices.strategyClassification_choices?.find(
                         (obj) => obj.type === data.strategyClassification
                       ).name
                     }

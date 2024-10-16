@@ -13,11 +13,8 @@ const WorkflowDialogs = () => {
   const { id } = useParams()
   const workflowId = Number(id)
 
-  // @todo this is causing redux to freak out currently when you go to the workflow page
-  // disable for now for sidebar integration
-    // const { refetch } = useGetWorkflowByIdQuery({ id: Number(id) })
+  const { refetch } = useGetWorkflowByIdQuery({ id: Number(id) })
 
-  return <></>
   return (
     <>
       {/* Shared */}
@@ -36,15 +33,17 @@ const WorkflowDialogs = () => {
 
       <WorkflowCopyToProjectDialog />
       <WorkflowLinkDialog />
-
-      {/*<ImportDialog />*/}
-      {/*<ProjectExportDialog {...dummyProjectExportData} />*/}
       <ContributorAddDialog
         id={workflowId}
         type={WorkspaceType.WORKFLOW}
         refetch={refetch}
       />
       <ContributorRemoveDialog id={workflowId} type={WorkspaceType.WORKFLOW} />
+      {/*
+        @todo: still to implement
+      */}
+      {/*<ImportDialog />*/}
+      {/*<ProjectExportDialog {...dummyProjectExportData} />*/}
     </>
   )
 }

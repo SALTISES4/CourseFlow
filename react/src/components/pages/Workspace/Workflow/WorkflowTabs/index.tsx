@@ -147,6 +147,8 @@ const WorkflowTabs = () => {
         // this.addEditable(this.props.data)
       }
 
+      <div id='edit-menu'></div>
+
       <div className="main-block">
         <MenuBar
           leftSection={<ActionMenu />}

@@ -28,7 +28,7 @@ pytest-logs.txt
 # Django stuff:
 *.sqlite3
 *.sqlite3-journal
-db.sqlite3
+assets/db.sqlite3
 db.sqlite3-journal
 local_settings.py
 
@@ -40,3 +40,7 @@ local_settings.py
 /react/dist/
 dist
 /course_flow/static/course_flow/js/react/dist/
+
+dump.rdb
+setup-data.sh
+assets

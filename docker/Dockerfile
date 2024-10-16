@@ -64,11 +64,11 @@ FROM service_deps as selenium_deps
 #RUN wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
 #RUN tar -xvzf /tmp/geckodriver.tar.gz  -C /usr/local/bin/
 
-
-RUN apt-get update
-RUN apt-get install -y firefox-esr
-RUN wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
-RUN tar -xvzf /tmp/geckodriver.tar.gz  -C /usr/local/bin/
+# enable this when you're ready for testing again
+#RUN apt-get update
+#RUN apt-get install -y firefox-esr
+#RUN wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz
+#RUN tar -xvzf /tmp/geckodriver.tar.gz  -C /usr/local/bin/
 
 # set display port to avoid crash
 ENV DISPLAY=:99
