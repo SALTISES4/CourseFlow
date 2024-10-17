@@ -42,8 +42,6 @@ const UserList = ({
   const { onError, onSuccess } = useGenericMsgHandler()
   const { dispatch } = useDialog()
 
-  console.log('workspaceType')
-  console.log(workspaceType)
   /*******************************************************
    * QUERIES
    *******************************************************/
@@ -55,8 +53,9 @@ const UserList = ({
       }
     })
 
-  console.log('data')
-  console.log(data)
+  // console.log({ workspaceType })
+  // console.log({ data })
+
   const [mutate, { isError: isMutateError, error: mutateError, isSuccess }] =
     useWorkspaceUserUpdateMutation()
 

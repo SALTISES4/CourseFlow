@@ -85,10 +85,7 @@ const WorkflowTabs = () => {
     }
   }, [])
 
-
-  console.log('context')
-  console.log(context)
-
+  // console.log({ context })
 
   /*******************************************************
    * COMPONENTS

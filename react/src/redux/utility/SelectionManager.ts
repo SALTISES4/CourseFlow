@@ -164,9 +164,7 @@ export class SelectionManager {
     >
     payload?: any
   }): void {
-    console.log('changeSelection')
-    console.log(newSelection)
-    console.log(evt)
+    // console.log('SelectionManager.changeSelection', { newSelection }, { evt })
 
     if (evt) {
       evt.stopPropagation()
