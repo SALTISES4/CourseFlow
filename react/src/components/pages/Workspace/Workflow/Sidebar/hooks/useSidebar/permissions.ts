@@ -1,5 +1,5 @@
 import { ConfigType, ViewType, WorkflowType } from './types'
-import { SidebarDataType } from '../WorkspaceSidebar/types'
+import { SidebarDataType } from '../../types'
 
 type PermissionMatrixType = {
   [index in keyof SidebarDataType]: {
