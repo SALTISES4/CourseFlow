@@ -1,8 +1,8 @@
 // @ts-nocheck
 
+import * as Constants from '@cf/constants'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
-import * as Constants from '@cfConstants'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType
@@ -23,7 +23,7 @@ import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar.jsx'
+import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar.js'
 import Header from '@cfViews/WorkflowView/WorkflowViewLayout/components/Header'
 import ConnectionBar from '@cfViews/WorkflowView/WorkflowViewLayout/components/menuBar/ConnectionBar'
 import ParentWorkflowIndicator from '@cfViews/WorkflowView/WorkflowViewLayout/components/ParentWorkflowIndicator'
@@ -160,7 +160,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   getUserData() {
     // @todo should not be querying directly
     // needs a new permission, like canGetUserData
-    if (this.publicView ) {
+    if (this.publicView) {
       return null
     }
     getUsersForObjectQuery(this.data.id, this.data.type, (data) => {
@@ -172,7 +172,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
    * MENU HANDLERS
    *******************************************************/
   openEditMenu(evt: EventUnion) {
-    this.selectionManager.changeSelection(evt, this)
+    this.selectionManager.changeSelection({ evt, newSelection: this })
   }
 
   copyToProject = () => {
@@ -283,7 +283,10 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   // @todo this can be rewritten already
   updateTabs() {
     //If the view type has changed, enable only appropriate tabs, and change the selection to none
-    this.selectionManager.changeSelection(null, null)
+    this.selectionManager.changeSelection({
+      evt: null,
+      newSelection: null
+    })
     const disabled_tabs = []
 
     for (let i = 0; i <= 4; i++) {

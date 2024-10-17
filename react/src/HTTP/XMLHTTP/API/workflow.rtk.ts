@@ -91,7 +91,7 @@ const extendedApi = cfApi.injectEndpoints({
       GetWorkflowByIdQueryTransform,
       { id: number }
     >({
-      query: (id) => {
+      query: ({ id }) => {
         const base = apiPaths.json_api.workflow.detail
         return {
           method: Verb.GET,

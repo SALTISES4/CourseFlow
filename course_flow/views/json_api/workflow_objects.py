@@ -1,5 +1,6 @@
 import json
 import math
+from pprint import pprint
 
 # from duplication
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -269,90 +270,94 @@ class WorkflowObjectEndpoint:
 
         return Response({"message": "success"}, status=status.HTTP_200_OK)
 
+    @staticmethod
+    @user_can_view(False)
+    # @user_can_edit(False, get_parent=True)
+    def insert_sibling(request: HttpRequest) -> JsonResponse:
+        """
+        Add a new sibling to a through model
+        :param request:
+        :return:
+        """
+        body = json.loads(request.body)
+        object_id = body.get("objectId")
+        object_type = body.get("objectType")
+        parent_id = body.get("parentId")
+        parent_type = body.get("parentType")
+        through_type = body.get("throughType")
 
-@user_can_view(False)
-@user_can_edit(False, get_parent=True)
-def json_api_post_insert_sibling(request: HttpRequest) -> JsonResponse:
-    """
-    Add a new sibling to a through model
-    :param request:
-    :return:
-    """
-    body = json.loads(request.body)
-    object_id = body.get("objectID")
-    object_type = body.get("objectType")
-    parent_id = body.get("parentID")
-    parent_type = body.get("parentType")
-    through_type = body.get("throughType")
-    try:
-        model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
-        parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
-        if parent_type == object_type:
-            old_through_kwargs = {"child": model, "parent": parent}
-        else:
-            old_through_kwargs = {object_type: model, parent_type: parent}
-        through = DAO.get_model_from_str(through_type).objects.get(**old_through_kwargs)
+        try:
+            model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
+            parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
 
-        if object_type == "week":
-            defaults = {"week_type": model.week_type}
-        elif object_type == "node":
-            defaults = {"column": model.column, "node_type": model.node_type}
-        elif object_type == "column":
-            defaults = {"column_type": math.floor(model.column_type / 10) * 10}
-        elif object_type == "outcome":
-            defaults = {"depth": model.depth}
-        else:
-            defaults = {}
+            if parent_type == object_type:
+                old_through_kwargs = {"child": model, "parent": parent}
+            else:
+                old_through_kwargs = {object_type: model, parent_type: parent}
+            through = DAO.get_model_from_str(through_type).objects.get(**old_through_kwargs)
 
-        new_model = DAO.get_model_from_str(object_type).objects.create(
-            author=request.user, **defaults
-        )
-        if parent_type == object_type:
-            new_through_kwargs = {"child": new_model, "parent": parent}
-        else:
-            new_through_kwargs = {object_type: new_model, parent_type: parent}
-        new_through_model = DAO.get_model_from_str(through_type).objects.create(
-            **new_through_kwargs, rank=through.rank + 1
-        )
-        new_model_serialized = serializer_lookups_shallow[object_type](new_model).data
-        new_through_serialized = serializer_lookups_shallow[through_type](new_through_model).data
-        if object_type == "outcome":
-            outcomenodes = OutcomeNode.objects.filter(outcome=new_model)
-            outcomenodes_serialized = OutcomeNodeSerializerShallow(outcomenodes, many=True).data
-            node_updates = NodeSerializerShallow([x.node for x in outcomenodes], many=True).data
-            children = {
-                "outcomenode": outcomenodes_serialized,
-                "outcome": [],
-                "outcomeoutcome": [],
-            }
-        else:
-            children = None
-            node_updates = []
+            if object_type == "week":
+                defaults = {"week_type": model.week_type}
+            elif object_type == "node":
+                defaults = {"column": model.column, "node_type": model.node_type}
+            elif object_type == "column":
+                defaults = {"column_type": math.floor(model.column_type / 10) * 10}
+            elif object_type == "outcome":
+                defaults = {"depth": model.depth}
+            else:
+                defaults = {}
 
-    except ValidationError as e:
-        logger.exception("An error occurred")
-        return JsonResponse({"action": "error"})
+            new_model = DAO.get_model_from_str(object_type).objects.create(
+                author=request.user, **defaults
+            )
+            if parent_type == object_type:
+                new_through_kwargs = {"child": new_model, "parent": parent}
+            else:
+                new_through_kwargs = {object_type: new_model, parent_type: parent}
+            new_through_model = DAO.get_model_from_str(through_type).objects.create(
+                **new_through_kwargs, rank=through.rank + 1
+            )
+            new_model_serialized = serializer_lookups_shallow[object_type](new_model).data
+            new_through_serialized = serializer_lookups_shallow[through_type](
+                new_through_model
+            ).data
+            if object_type == "outcome":
+                outcomenodes = OutcomeNode.objects.filter(outcome=new_model)
+                outcomenodes_serialized = OutcomeNodeSerializerShallow(outcomenodes, many=True).data
+                node_updates = NodeSerializerShallow([x.node for x in outcomenodes], many=True).data
+                children = {
+                    "outcomenode": outcomenodes_serialized,
+                    "outcome": [],
+                    "outcomeoutcome": [],
+                }
+            else:
+                children = None
+                node_updates = []
 
-    response_data = {
-        "new_model": new_model_serialized,
-        "new_through": new_through_serialized,
-        "children": children,
-        "node_updates": node_updates,
-        "parentID": parent_id,
-    }
-    workflow = model.get_workflow()
-    if object_type == "outcome" and through_type == "outcomeworkflow":
-        object_type = "outcome_base"
-    actions.dispatch_wf(
-        workflow,
-        actions.insertBelowAction(response_data, object_type),
-    )
-    if object_type == "outcome" or object_type == "outcome_base":
-        actions.dispatch_to_parent_wf(
+        except ValidationError as e:
+            logger.exception("An error occurred")
+            return JsonResponse({"action": "error"})
+
+        response_data = {
+            "new_model": new_model_serialized,
+            "new_through": new_through_serialized,
+            "children": children,
+            "node_updates": node_updates,
+            "parentID": parent_id,
+        }
+        workflow = model.get_workflow()
+        if object_type == "outcome" and through_type == "outcomeworkflow":
+            object_type = "outcome_base"
+        actions.dispatch_wf(
             workflow,
             actions.insertBelowAction(response_data, object_type),
         )
-    return JsonResponse({"message": "success"})
+        if object_type == "outcome" or object_type == "outcome_base":
+            actions.dispatch_to_parent_wf(
+                workflow,
+                actions.insertBelowAction(response_data, object_type),
+            )
+        return JsonResponse({"message": "success"})
 
 
 # Add a parent outcome to an outcome

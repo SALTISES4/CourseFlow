@@ -29,7 +29,6 @@ class ConfigService:
         return {
             "post_paths": {
                 "new_outcome": reverse("json_api:json-api-post-new-outcome-for-workflow"),
-                "insert_child": reverse("json_api:json-api-post-insert-child"),
                 "inserted_at": reverse("json_api:json-api-post-inserted-at"),
                 "update_outcomehorizontallink_degree": reverse(
                     "json_api:json-api-post-update-outcomehorizontallink-degree"
@@ -39,7 +38,8 @@ class ConfigService:
                 ),
                 "update_object_set": reverse("json_api:json-api-post-update-object-set"),
                 # generic
-                "insert_sibling": reverse("json_api:json-api-post-insert-sibling"),
+                # "insert_sibling": reverse("json_api:json-api-post-insert-sibling"),
+                # "insert_child": reverse("json_api:json-api-post-insert-child"),
             },
             "get_paths": {
                 "get_public_workflow_child_data": reverse(

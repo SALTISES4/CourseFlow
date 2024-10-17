@@ -162,7 +162,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
         targetPort_handle={this.targetPort_handle}
         targetPort={data.targetPort}
         clickFunction={(evt) =>
-          this.context.selectionManager.changeSelection(evt, this)
+          this.context.selectionManager.changeSelection({ evt, newSelection: this })
         }
         selected={this.state.selected}
         source_dimensions={source_dims}

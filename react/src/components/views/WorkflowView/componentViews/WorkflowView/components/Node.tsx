@@ -417,7 +417,7 @@ class NodeUnconnected extends EditableComponentWithActions<
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
           onClick={(evt) =>
-            this.context.selectionManager.changeSelection(evt, this)
+            this.context.selectionManager.changeSelection({ evt, newSelection: this })
           }
         >
           <div className="node-top-row">

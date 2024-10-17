@@ -129,7 +129,7 @@ class Term extends WeekUnconnected<PropsType> {
           className={cssClasses}
           ref={this.mainDiv}
           onClick={(evt) =>
-            this.context.selectionManager.changeSelection(evt, this)
+            this.context.selectionManager.changeSelection({ evt, newSelection: this })
           }
         >
           <div className="mouseover-container-bypass">

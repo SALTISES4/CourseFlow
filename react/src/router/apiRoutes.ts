@@ -51,7 +51,11 @@ export const apiPathRoutes = {
       link: '/workflow/:id/link-to-node',
       strategy__toggle: '/workflow/:id/strategy/toggle',
       strategy__duplicate: '/workflow/:id/strategy/duplicate',
-      strategy__add_to_workflow: '/workflow/:id/strategy/add-to-workflow'
+      strategy__add_to_workflow: '/workflow/:id/strategy/add-to-workflow',
+      // child objects
+      object__duplicate: '/workflow/object/duplicate',
+      object__insert_sibling: '/workflow/object/insert-sibling',
+      object__insert_child: '/workflow/object/insert-sibling'
     },
     workspace: {
       duplicate: '/workspace/:id/duplicate',

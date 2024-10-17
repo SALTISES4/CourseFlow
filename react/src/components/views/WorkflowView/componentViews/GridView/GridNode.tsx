@@ -81,7 +81,7 @@ class GridNodeUnconnected extends EditableComponentWithComments<
           style={style}
           id={data.id}
           ref={this.mainDiv}
-          onClick={(evt) => selectionManager.changeSelection(evt, this)}
+          onClick={(evt) => selectionManager.changeSelection({ evt, newSelection: this })}
           className={cssClass}
         >
           <div className="node-top-row">

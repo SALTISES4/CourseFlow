@@ -136,7 +136,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
     const editPortal = this.props.edit ? this.addEditable(data, true) : null
 
     const onClick = (evt) => {
-      return this.context.selectionManager.changeSelection(evt, this)
+      return this.context.selectionManager.changeSelection({ evt, newSelection: this })
     }
 
     const cssClass = [

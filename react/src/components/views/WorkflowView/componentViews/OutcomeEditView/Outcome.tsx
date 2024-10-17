@@ -310,7 +310,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           className={cssClass}
           ref={this.mainDiv}
           onClick={(evt) =>
-            this.context.selectionManager.changeSelection(evt, this)
+            this.context.selectionManager.changeSelection({ evt, newSelection: this })
           }
         >
           <div className="outcome-title">

@@ -257,16 +257,31 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       mouseoverActions.push(<this.AddCommenting />)
     }
 
+    // @todo this will go when the new sidebar is done
     const portal = this.addEditable(data)
 
     return (
       <>
-        {portal}
+        {
+          // @todo this will go when the new sidebar is done
+          portal
+        }
         <div
           style={style}
           className={cssClasses}
           ref={this.mainDiv}
-          onClick={(evt) => selectionManager.changeSelection(evt, this)}
+          onClick={(evt) => {
+            console.log('hellpo')
+            return selectionManager.changeSelection({
+              evt,
+              newSelection: this,
+              payload: {
+                hash: '12123',
+                id: 12,
+                contentType: CfObjectType.WEEK
+              }
+            })
+          }}
         >
           <div className="mouseover-container-bypass">
             <div className="mouseover-actions">{mouseoverActions}</div>

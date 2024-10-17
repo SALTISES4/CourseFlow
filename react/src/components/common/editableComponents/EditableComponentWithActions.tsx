@@ -101,19 +101,21 @@ class EditableComponentWithActions<
   insertSibling(data) {
     const type = this.objectType
     COURSEFLOW_APP.tinyLoader.startLoad()
+    console.log('i am being triggered')
+    console.log(data)
+
     insertSiblingQuery(
       data.id,
       Constants.objectDictionary[type],
       this.props.parentID,
       Constants.parentDictionary[type],
       Constants.throughParentDictionary[type],
-      (responseData) => {
-        COURSEFLOW_APP.tinyLoader.endLoad()
-      }
     )
   }
 
   insertChild(data) {
+    console.log('inserting child')
+
     const type = this.objectType
     COURSEFLOW_APP.tinyLoader.startLoad()
     insertChildQuery(

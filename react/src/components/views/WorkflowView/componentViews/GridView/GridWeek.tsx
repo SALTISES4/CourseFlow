@@ -72,7 +72,7 @@ class GridWeekUnconnected extends EditableComponentWithComments<
         ref={this.mainDiv}
         style={this.getBorderStyle()}
         onClick={(evt) =>
-          this.context.selectionManager.changeSelection(evt, this)
+          this.context.selectionManager.changeSelection({ evt, newSelection: this })
         }
       >
         <div className="week-title">

@@ -99,7 +99,7 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
         className={cssClass}
         onClick={(evt) =>
           // @ts-ignore
-          this.context.selectionManager.changeSelection(evt, this)
+          this.context.selectionManager.changeSelection({ evt, newSelection: this })
         }
       >
         <div className="column-line">

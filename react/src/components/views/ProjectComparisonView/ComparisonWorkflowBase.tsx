@@ -58,7 +58,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    * FUNCTIONS
    *******************************************************/
   openEdit(evt) {
-    this.context.selectionManager.changeSelection(evt, this)
+    this.context.selectionManager.changeSelection({ evt, newSelection: this })
   }
 
   addObjectSetTrigger() {

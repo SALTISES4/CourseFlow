@@ -45,7 +45,6 @@ class ComponentWithToggleDrop<
     evt.stopPropagation()
     toggleDropReduxAction(
       this.props.objectId,
-      // @ts-ignore
       Constants.objectDictionary[this.objectType],
       // so previously every single movable component in the workflow 'extends' as class
       // one of these 'editable' components
@@ -55,7 +54,7 @@ class ComponentWithToggleDrop<
       // current: individual compoents like 'node' 'week' have had entitiy data moved to a key in the connected props
       // i.e. week: TWeek
       // not sure where this leaves the legacy data property
-      !this.props.data.isDropped,
+      !this.props.data?.isDropped,
       this.props.dispatch,
       this.props.data.depth
     )

@@ -102,7 +102,10 @@ class ComparisonView extends React.Component<PropsType, StateType> {
 
   updateTabs() {
     // Clear current selection
-    this.props.selectionManager.changeSelection(null, null)
+    this.props.selectionManager.changeSelection({
+      evt: null,
+      newSelection: null
+    })
 
     // Determine disabled tabs
     const disabledTabs = [0, 1, 2, 3].filter(
@@ -127,7 +130,10 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   }
 
   changeView(type) {
-    this.props.selectionManager.changeSelection(null, null)
+    this.props.selectionManager.changeSelection({
+      evt: null,
+      newSelection: null
+    })
 
     // force re-render the parent, see comment in react/src/components/views/ComparisonView/ComparisonView.tsx
     // this can be our state updater

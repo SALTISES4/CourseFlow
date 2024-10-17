@@ -5,13 +5,14 @@ import Explore from '@cfPages/Library/Explore'
 import Favourites from '@cfPages/Library/Favourites'
 import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
-import NotificationsSettingsPage from '@cfPages/NotificationsSettings'
-import ProfileSettingsPage from '@cfPages/ProfileSettings'
+
 // Styleguide views
 import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import { createBrowserRouter } from 'react-router-dom'
 
+import NotificationsSettingsPage from 'components/pages/Settings/NotificationsSettings'
+import ProfileSettingsPage from 'components/pages/Settings/ProfileSettings'
 import Project from 'components/pages/Workspace/Project'
 
 /*******************************************************

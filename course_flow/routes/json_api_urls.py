@@ -177,7 +177,27 @@ def json_api_patterns():
             views.json_api.strategy.json_api_post_add_strategy,
             name="json-api-post-add-strategy",
         ),
+        #########################################################
+        # WORKFLOW: OBJECTS
+        # children of a workflow
+        # weeks
+        # nodes
+        # column
+        # etc...
+        #########################################################
+        # @todo convert this to <int:pk> path fot the parent workflow as convention
+        path(
+            "workflow/object/insert-sibling",
+            views.json_api.WorkflowObjectEndpoint.insert_sibling,
+            name="workflow--object--insert-sibling",
+        ),
+        path(
+            "workflow/object/duplicate",
+            views.json_api.WorkflowObjectEndpoint.duplicate,
+            name="workflow--object--duplicate",
+        ),
         #### SORT #####
+        # @todo so is this just for outomces>
         path(
             "workflow/outcome/insert-child",
             views.json_api.outcome.json_api_post_insert_child_outcome,
@@ -199,19 +219,9 @@ def json_api_patterns():
             name="json-api-post-update-object-set",
         ),
         path(
-            "workflow/insert-sibling",  # ??
-            views.json_api.workflow_objects.json_api_post_insert_sibling,
-            name="json-api-post-insert-sibling",
-        ),
-        path(
             "workflow/inserted-at",
             views.json_api.workflow_objects.json_api_post_inserted_at,
             name="json-api-post-inserted-at",
-        ),
-        path(
-            "workflow/object/duplicate",
-            views.json_api.WorkflowObjectEndpoint.duplicate,
-            name="workflow--objects--duplicate",
         ),
         ##########################################################
         # WORKSPACE

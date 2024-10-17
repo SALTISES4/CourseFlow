@@ -181,7 +181,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
           id={data.id}
           ref={this.mainDiv}
           onClick={(evt) => {
-            return () => selectionManager.changeSelection(evt, this)
+            return () => selectionManager.changeSelection({ evt, newSelection: this })
           }}
         >
           <div className="node-top-row">

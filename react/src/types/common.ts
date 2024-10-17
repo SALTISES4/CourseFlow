@@ -1,6 +1,6 @@
 import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
-import {EUser} from "@XMLHTTP/types/entity";
-import { MouseEvent } from 'react'
+import { EUser } from '@XMLHTTP/types/entity'
+import { MouseEvent as ReactMouseEvent } from 'react'
 
 export type ToDefine = any
 
@@ -51,9 +51,10 @@ export type FormFieldSerialized = {
 }
 
 export type EventUnion =
-  | MouseEvent<HTMLDivElement>
+  | ReactMouseEvent<HTMLDivElement>
   | JQuery.Event
-  | MouseEvent<Element>
+  | ReactMouseEvent<Element>
+  | MouseEvent
 
 /*******************************************************
  *

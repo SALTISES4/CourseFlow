@@ -312,7 +312,7 @@ class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
         <div
           style={style}
           className={'node column-' + data.column}
-          onClick={(evt) => selectionManager.changeSelection(evt, this)}
+          onClick={(evt) => selectionManager.changeSelection({ evt, newSelection: this })}
           ref={this.mainDiv}
         >
           <div className="node-top-row">

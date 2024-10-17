@@ -89,7 +89,7 @@ export function insertChildQuery(
   objectType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.insert_child, {
+  API_POST(apiPaths.json_api.workflow.object__insert_child, {
     objectId: objectId,
     objectType: objectType
   }).then((response: EmptyPostResp) => {
@@ -97,24 +97,28 @@ export function insertChildQuery(
   })
 }
 
-//Causes the specified object to insert a sibling after itself
 export function insertSiblingQuery(
   objectId: number,
   objectType: any,
-  parentID: number,
+  parentId: number,
   parentType: any,
   throughType: any,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.insert_sibling, {
-    parentID: parentID,
-    parentType: parentType,
-    objectId: objectId,
-    objectType: objectType,
-    throughType: throughType
-  }).then((response: EmptyPostResp) => {
-    callBackFunction(response)
+  API_POST(apiPaths.json_api.workflow.object__insert_sibling, {
+    objectId,
+    objectType,
+    parentId,
+    parentType,
+    throughType
   })
+    .then((response: EmptyPostResp) => {
+      callBackFunction(response)
+    })
+    .catch((e) => {
+      console.log(e)
+      COURSEFLOW_APP.tinyLoader.endLoad()
+    })
 }
 
 /**
