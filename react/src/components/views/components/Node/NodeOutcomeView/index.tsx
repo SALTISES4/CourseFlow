@@ -5,7 +5,7 @@ import * as Constants from '@cfConstants'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
-import { TGetNodeByID, getNodeByID } from '@cfFindState'
+import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -15,7 +15,7 @@ import { connect } from 'react-redux'
  *
  */
 
-type ConnectedProps = TGetNodeByID
+type ConnectedProps = TGetNodeById
 type OwnProps = ComponentWithToggleProps
 
 type PropsType = ConnectedProps & OwnProps
@@ -80,7 +80,7 @@ class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop<PropsType> {
 const mapNodeStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TGetNodeByID => {
+): TGetNodeById => {
   return getNodeByID(state, ownProps.objectId)
 }
 const NodeOutcomeView = connect<ConnectedProps, object, OwnProps, AppState>(

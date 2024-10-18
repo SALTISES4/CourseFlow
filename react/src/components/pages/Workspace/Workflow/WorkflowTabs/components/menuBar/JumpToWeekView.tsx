@@ -1,7 +1,7 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
-import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
+import { TGetWeekByIDType, getWeekById } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -84,7 +84,7 @@ const mapWeekStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   return {
-    week: getWeekByID(state, ownProps.objectId),
+    week: getWeekById(state, ownProps.objectId),
     workflow: state.workflow
   }
 }

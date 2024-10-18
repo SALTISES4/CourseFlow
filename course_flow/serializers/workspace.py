@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext as _
 from rest_framework import serializers
@@ -56,29 +58,28 @@ class LibraryObjectSerializer(
     DescriptionSerializerMixin,
 ):
     """
-    Library: a mix of workflow and project objects
-    although poorly designed, too deeply integrated at this point to separate out
-
+    Library: a mix of workflow and project objects with shared field properties
+    see: class AbstractWorkspaceModel
+    uncommon fields will need further review...
     """
 
     id = serializers.ReadOnlyField()
     deleted = serializers.ReadOnlyField()
     created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
     last_modified = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    published = serializers.ReadOnlyField()
+    type = serializers.ReadOnlyField()
+    is_strategy = serializers.ReadOnlyField()
+    is_template = serializers.ReadOnlyField()
     title = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
-    published = serializers.ReadOnlyField()
     description = serializers.SerializerMethodField()
-    type = serializers.ReadOnlyField()
+    author = UserSerializer(read_only=True)
     is_owned = serializers.SerializerMethodField()
-    is_strategy = serializers.ReadOnlyField()
     project_title = serializers.SerializerMethodField()
     object_permission = serializers.SerializerMethodField()
     workflow_count = serializers.SerializerMethodField()
     is_linked = serializers.SerializerMethodField()
-    is_template = serializers.ReadOnlyField()
-
-    author = UserSerializer(read_only=True)
 
     @staticmethod
     def get_workflow_count(instance):
@@ -105,6 +106,9 @@ class LibraryObjectSerializer(
         return instance.get_project().title
 
     def get_is_owned(self, instance):
+        pprint("get_is_owned")
+        pprint(instance.author)
+        Utility.print_model_instance(instance.author)
         user = self.context.get("user")
         if user == instance.author:
             return True

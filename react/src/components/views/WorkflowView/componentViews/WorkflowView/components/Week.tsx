@@ -9,7 +9,7 @@ import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
-import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
+import { TGetWeekByIDType, getWeekById } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import { addStrategyQuery } from '@XMLHTTP/API/create'
@@ -271,7 +271,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           className={cssClasses}
           ref={this.mainDiv}
           onClick={(evt) => {
-            console.log('hellpo')
             return selectionManager.changeSelection({
               evt,
               newSelection: this,
@@ -343,7 +342,7 @@ const mapWeekStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   return {
-    week: getWeekByID(state, ownProps.objectId),
+    week: getWeekById(state, ownProps.objectId),
     workflow: state.workflow
   }
 }

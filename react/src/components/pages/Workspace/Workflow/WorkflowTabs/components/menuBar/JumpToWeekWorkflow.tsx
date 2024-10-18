@@ -1,10 +1,10 @@
-import { TGetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
+import { TGetWeekWorkflowById, getWeekWorkflowByID } from '@cfFindState'
 import JumpToWeekView from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeekView'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-type ConnectedProps = TGetWeekWorkflowByID
+type ConnectedProps = TGetWeekWorkflowById
 type OwnProps = {
   objectId: number
   parentID?: number
@@ -34,7 +34,7 @@ class JumpToWeekWorkflowUnconnected extends React.Component<PropsType> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TGetWeekWorkflowByID => {
+): TGetWeekWorkflowById => {
   return getWeekWorkflowByID(state, ownProps.objectId)
 }
 

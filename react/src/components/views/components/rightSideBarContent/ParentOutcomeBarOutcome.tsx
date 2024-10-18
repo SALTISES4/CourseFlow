@@ -5,7 +5,7 @@ import {
   TGetOutcomeByID,
   TOutcomeOutcomeByID,
   getOutcomeByID,
-  getOutcomeOutcomeByID
+  getOutcomeOutcomeById
 } from '@cfFindState'
 import { AppState, TOutcomeOutcome } from '@cfRedux/types/type'
 import * as React from 'react'
@@ -49,7 +49,7 @@ const mapParentOutcomeOutcomeStateToProps = (
   state: AppState,
   own_props: ParentOutcomeOutcomeOwnProps
 ): ParentOutcomeOutcomeConnectedProps => {
-  return getOutcomeOutcomeByID(state, own_props.objectId)
+  return getOutcomeOutcomeById(state, own_props.objectId)
 }
 
 const ParentOutcomeOutcome = connect<

@@ -9,6 +9,7 @@ import {
   getWorkflowChildDataQuery,
   getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
+import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
@@ -23,25 +24,36 @@ export const useWorkflowWebsocketManager = ({
   userName,
   workflowId
 }: UseWebSocketManagerProps) => {
+  const locks: Record<string, any> = {}
+  const wsUrl = `ws/update/${workflowId}/`
+
   const dispatch = useDispatch()
 
-  const [wsService, setWsService] = useState<WebSocketService | null>(null)
+  /*******************************************************
+   * STATE
+   *******************************************************/
+  // ws service
   const [isWsInit, setIsWsInit] = useState(false)
-  const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
+  const [wsService, setWsService] = useState<WebSocketService | null>(null)
 
-  const [messageQueue, setMessageQueue] = useState<any[]>([])
+  // message queue
   const [isMessagesQueued, setIsMessagesQueued] = useState<boolean>(true)
+  const [messageQueue, setMessageQueue] = useState<any[]>([])
 
+  // connected users
+  const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
   const [wsUserConnectedService, setWsUserConnectedService] =
     useState<WebSocketServiceConnectedUserManager | null>(null)
-  const locks: Record<string, any> = {}
+
+  /*******************************************************
+   * QUERIES
+   *******************************************************/
+  const { data } = useGetWorkflowByIdQuery({ id: workflowId })
 
   /*******************************************************
    * LIFE CYCLE
    *******************************************************/
   useEffect(() => {
-    const wsUrl = `ws/update/${workflowId}/`
-
     const newWsService = new WebSocketService(wsUrl)
 
     const newWsUserConnectedService = new WebSocketServiceConnectedUserManager(
@@ -51,8 +63,8 @@ export const useWorkflowWebsocketManager = ({
 
     newWsService.connect(
       onMessageReceived,
-      () => onConnectionOpened(workflowId),
-      handleSocketClose
+      () => onConnectionOpened(),
+      onSocketClose
     )
 
     newWsUserConnectedService.startUserUpdates({
@@ -60,7 +72,6 @@ export const useWorkflowWebsocketManager = ({
       userName
     })
 
-    // save into state
     setWsService(newWsService)
     setWsUserConnectedService(newWsUserConnectedService)
 
@@ -69,35 +80,28 @@ export const useWorkflowWebsocketManager = ({
     }
   }, [workflowId, userId, userName])
 
+  useEffect(() => {
+    if (data) {
+      dispatch(ActionCreator.refreshStoreData(data.dataPackage))
+      setIsMessagesQueued(false)
+    }
+  }, [data])
+
   /*******************************************************
    * HANDLERS
    *******************************************************/
-  const handleConnectedUsersUpdate = useCallback(
-    (connectedUsers: ConnectedUser[]) => {
-      setConnectedUsers(connectedUsers)
-    },
-    []
-  )
+  /**
+   *
+   */
+  const onConnectionOpened = useCallback(() => {
+    setIsWsInit(true)
+  }, [])
 
   /**
    *
    */
-  const onConnectionOpened = useCallback(
-    (workflowId: number) => {
-      setIsWsInit(true)
-      getWorkflowByIdQuery(workflowId, (response) => {
-        dispatch(ActionCreator.refreshStoreData(response.dataPackage))
-        setIsMessagesQueued(false)
-      })
-    },
-    [dispatch]
-  )
-  /**
-   *
-   */
-  const handleSocketClose = useCallback(() => {
+  const onSocketClose = useCallback(() => {
     setIsWsInit(false)
-    console.log('socket disconnected')
   }, [])
 
   /**
@@ -112,65 +116,6 @@ export const useWorkflowWebsocketManager = ({
       }
     },
     [isMessagesQueued]
-  )
-
-  /**
-   *
-   */
-  const clearQueue = useCallback(
-    (editCount: number = 0) => {
-      let startedEdits = false
-
-      while (messageQueue.length > 0) {
-        const message = messageQueue.shift()
-        if (
-          !startedEdits &&
-          message &&
-          message.editCount &&
-          parseInt(message.editCount) >= editCount
-        ) {
-          startedEdits = true
-        }
-
-        if (startedEdits) {
-          parseAndRouteMessage(message as MessageEvent)
-        }
-      }
-
-      setIsMessagesQueued(false)
-    },
-    [messageQueue]
-  )
-
-  /**
-   *
-   */
-  const parseAndRouteMessage = useCallback(
-    (e: MessageEvent) => {
-      const data = JSON.parse(e.data)
-
-      switch (data.type) {
-        case DATA_TYPE.WORKFLOW_ACTION:
-          dispatch(data.action)
-          break
-        case DATA_TYPE.LOCK_UPDATE:
-          onLockUpdateReceived(data.action)
-          break
-        case DATA_TYPE.CONNECTION_UPDATE:
-          onUserConnectionUpdateReceived(data.action)
-          break
-        case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
-          onParentWorkflowUpdateReceived()
-          break
-        case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
-          onChildWorkflowUpdateReceived(data.childWorkflowId)
-          break
-        default:
-          console.log('socket message not handled')
-          break
-      }
-    },
-    [dispatch]
   )
 
   /**
@@ -240,6 +185,75 @@ export const useWorkflowWebsocketManager = ({
       clearQueue()
     })
   }
+
+  /*******************************************************
+   *
+   *******************************************************/
+  const handleConnectedUsersUpdate = useCallback(
+    (connectedUsers: ConnectedUser[]) => {
+      setConnectedUsers(connectedUsers)
+    },
+    []
+  )
+
+  /**
+   *
+   */
+  const clearQueue = useCallback(
+    (editCount: number = 0) => {
+      let startedEdits = false
+
+      while (messageQueue.length > 0) {
+        const message = messageQueue.shift()
+        if (
+          !startedEdits &&
+          message &&
+          message.editCount &&
+          parseInt(message.editCount) >= editCount
+        ) {
+          startedEdits = true
+        }
+
+        if (startedEdits) {
+          parseAndRouteMessage(message as MessageEvent)
+        }
+      }
+
+      setIsMessagesQueued(false)
+    },
+    [messageQueue]
+  )
+
+  /**
+   *
+   */
+  const parseAndRouteMessage = useCallback(
+    (e: MessageEvent) => {
+      const data = JSON.parse(e.data)
+
+      switch (data.type) {
+        case DATA_TYPE.WORKFLOW_ACTION:
+          dispatch(data.action)
+          break
+        case DATA_TYPE.LOCK_UPDATE:
+          onLockUpdateReceived(data.action)
+          break
+        case DATA_TYPE.CONNECTION_UPDATE:
+          onUserConnectionUpdateReceived(data.action)
+          break
+        case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
+          onParentWorkflowUpdateReceived()
+          break
+        case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
+          onChildWorkflowUpdateReceived(data.childWorkflowId)
+          break
+        default:
+          console.log('socket message not handled')
+          break
+      }
+    },
+    [dispatch]
+  )
 
   return {
     isWsInit,

@@ -1,10 +1,8 @@
-import uuid
-
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from ._abstract import AbstractCourseFlowModel
+from course_flow.models._abstract import AbstractCourseFlowModel
 
 User = get_user_model()
 
@@ -38,17 +36,13 @@ def column_types():
 
 
 class Column(AbstractCourseFlowModel):
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
     icon = models.CharField(max_length=50, null=True, blank=True)
 
     visible = models.BooleanField(default=True)
 
     colour = models.PositiveIntegerField(null=True)
 
-    column_type = models.PositiveIntegerField(
-        choices=column_types(), default=0
-    )
+    column_type = models.PositiveIntegerField(choices=column_types(), default=0)
 
     is_original = models.BooleanField(default=False)
 
@@ -57,13 +51,9 @@ class Column(AbstractCourseFlowModel):
     #########################################################
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
-    parent_column = models.ForeignKey(
-        "Column", on_delete=models.SET_NULL, null=True
-    )
+    parent_column = models.ForeignKey("Column", on_delete=models.SET_NULL, null=True)
 
-    comments = models.ManyToManyField(
-        "Comment", blank=True, related_name="column"
-    )
+    comments = models.ManyToManyField("Comment", blank=True, related_name="column")
 
     #########################################################
     # META

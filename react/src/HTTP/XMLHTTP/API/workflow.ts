@@ -27,57 +27,6 @@ import { generatePath } from 'react-router-dom'
  * For loading all the base JSON that is placed into the
  * redux state.
  *******************************************************/
-//
-// export async function getWorkflowById(
-//   id: number
-// ): Promise<GetWorkflowByIdQueryResp> {
-//   const base = apiPaths.json_api.workflow.detail
-//   const url = generatePath(base, { id })
-//
-//   return API_GET<GetWorkflowByIdQueryResp>(url)
-// }
-
-/**
- * @getWorkflowDataQuery
- *
- * endpoint: /workflow/get-workflow-data/
- *
- * Get the data from the workflow
- * @param workflowPk
- * @param callBackFunction
- */
-export function getWorkflowByIdQuery(
-  id,
-  callBackFunction = (_data: GetWorkflowByIdQueryTransform) =>
-    console.log('success')
-) {
-  const base = apiPaths.json_api.workflow.detail
-  const url = generatePath(base, { id })
-
-  try {
-    API_GET(url).then((response: GetWorkflowByIdQueryResp) => {
-      const res = {
-        ...response,
-        dataPackage: {
-          ...response.dataPackage,
-          workflow: {
-            ...response.dataPackage.workflow,
-            isStrategy: false,
-            workflowPermissions: calcWorkflowPermissions(
-              response.dataPackage.workflow.userPermissions
-            )
-          }
-        }
-      }
-
-
-      // @ts-ignore
-      callBackFunction(res)
-    })
-  } catch (err) {
-    console.log(err)
-  }
-}
 
 // @todo combine these
 //Get the public data from the workflow
@@ -180,8 +129,6 @@ export function getPublicWorkflowChildDataQuery(
   }
 }
 
-
-
 /**
  * Get possible projects that can be a target for the workflow to be duplicated into
  * @param workflowPk
@@ -198,8 +145,6 @@ export function getTargetProjectMenuQuery<T>(
     callBackFunction(response)
   })
 }
-
-
 
 /**
  * Get all templates of a given type
@@ -262,18 +207,18 @@ export function getPublicParentWorkflowInfo(
  * @param projectPk
  * @param callBackFunction
  */
-export function getWorkflowsForProjectQuery(
-  projectPk,
-  callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
-    console.log('success')
-) {
-  const url = apiPaths.json_api.project.workflows__list
-  API_POST(url, {
-    projectPk: projectPk
-  }).then((response: WorkflowsForProjectQueryResp) => {
-    callBackFunction(response)
-  })
-}
+// export function getWorkflowsForProjectQuery(
+//   projectPk,
+//   callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
+//     console.log('success')
+// ) {
+//   const url = apiPaths.json_api.project.workflows__list
+//   API_POST(url, {
+//     projectPk: projectPk
+//   }).then((response: WorkflowsForProjectQueryResp) => {
+//     callBackFunction(response)
+//   })
+// }
 
 //@TODO this needs to be fixed to not rely on $.post
 /**
@@ -332,4 +277,3 @@ export function getWorkflowSelectMenuQuery(
     callBackFunction(response)
   })
 }
-

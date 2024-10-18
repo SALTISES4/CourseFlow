@@ -10,7 +10,7 @@ import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
-import { TGetNodeByID, getNodeByID } from '@cfFindState'
+import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import NodePorts from '@cfViews/components/Node/NodePorts'
@@ -26,7 +26,7 @@ import NodeLink from './NodeLink'
 // import $ from 'jquery'
 
 type ConnectedProps = {
-  node: TGetNodeByID
+  node: TGetNodeById
   workflow: TWorkflow
 }
 

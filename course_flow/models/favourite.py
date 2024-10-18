@@ -4,8 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from course_flow.models.common import workflow_choices
-
-from .workflow import Workflow
+from course_flow.models.workspace.workflow import Workflow
 
 User = get_user_model()
 

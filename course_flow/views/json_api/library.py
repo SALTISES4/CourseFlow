@@ -1,7 +1,6 @@
 """
 @todo what is this file doing
 """
-import logging
 from pprint import pprint
 
 from django.conf import settings
@@ -16,14 +15,10 @@ from rest_framework.response import Response
 
 from course_flow.apps import logger
 from course_flow.models import Project
-from course_flow.models.discipline import Discipline
 from course_flow.models.favourite import Favourite
 from course_flow.models.objectPermission import ObjectPermission
-from course_flow.models.workflow import Workflow
-from course_flow.serializers import (
-    DisciplineSerializer,
-    LibraryObjectSerializer,
-)
+from course_flow.models.workspace.workflow import Workflow
+from course_flow.serializers import LibraryObjectSerializer
 from course_flow.services import DAO
 from course_flow.services.library import LibraryService
 from course_flow.templatetags.course_flow_templatetags import has_group
@@ -157,39 +152,78 @@ class LibraryEndpoint:
         request: Request,
     ) -> Response:
         """
-        we also ned
+
+        This is a multifunctional endpoint, it generally can be used for any type of list query
+        that returns a 'workspace' object, e.g:
+        workflow (all variations)
+        project
+        then templates / strategies
+
+        these objects are simplified/normalized into a 'library' object view for displaying in a paginated list
+        with filters
+
+        filters are split into implicit and explicit
+        explicit filters are generally items that the user can control through the UI
+        implicit filters are set to control the view type and may be derived (TBD)
+
+        results_per_page: number
+        published: boolean
+
+        keyword: string -> keyword search
+        owned: boolean -> current use is author
+        favourites: boolean -> is favourited by current user
+        archived: boolean -> is in state 'archived'
+
+
+        # sorting
+        a-z
+        by date
+
+
         :param request:
         :return:
         """
-        meta = {}
         serializer = SearchSerializer(data=request.data)
 
-        if serializer.is_valid():
-            data = serializer.validated_data
-            nresults = data.get("results_per_page", 10)
-            full_search = data.get("full_search", False)
-            published = data.get("published", False)
-            name_filter = data.get("filter", "").lower()
-
-        else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
-            return Response(serializer.errors, status=400)
+        # if serializer.is_valid():
+        #     data = serializer.validated_data
+        #
+        #     # implicit filters
+        #     meta = data.get("meta", LibraryService.defaultMeta)
+        #     filters = data.get("filters", LibraryService.defaultFilters)
+        #     sort = data.get("sort", LibraryService.defaultSort)
+        #
+        #     ## exposed filters
+        #     # @todo filter by type (activity, project etc)
+        #     # @todo handle sort
+        #     # az , date
+        #     # @todo filter by  owned, shared, favorites, archived
+        #
+        # else:
+        #     logger.exception(f"Logged Exception: : {serializer.errors}")
+        #     return Response(serializer.errors, status=400)
 
         try:
-            # A full search of all objects with paginatation
-            if full_search:
-                return_objects, meta = LibraryService.get_explore_objects(
-                    request.user, name_filter, nresults, published, {}
-                )
-            # Small search for library
-            else:
-                return_objects = LibraryService.get_library_objects(
-                    request.user, name_filter, nresults
-                )
+            # return_objects, meta = LibraryService.get_objects(
+            #     user=request.user,
+            #     sort=sort,
+            #     filters=filters,
+            #     meta=meta,
+            # )
+            library_service = LibraryService()
+            items, meta = library_service.get_objects(
+                user=request.user,
+                filters={"keyword": "example", "disciplines": [1, 2]},
+                sort={"sort": "created_on", "direction": "DESC"},
+                meta={"page": 1, "results_per_page": 40},
+            )
+
+            pprint("items")
+            pprint(items)
 
             data_package = {
                 "items": LibraryObjectSerializer(
-                    return_objects, context={"user": request.user}, many=True
+                    items, context={"user": request.user}, many=True
                 ).data,
                 "meta": meta,
             }

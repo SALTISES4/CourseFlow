@@ -1,7 +1,3 @@
-import logging
-import uuid
-from pprint import pprint
-
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.cache import cache
@@ -10,12 +6,11 @@ from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
 from course_flow.apps import logger
+from course_flow.models._abstract import AbstractWorkspaceModel
 from course_flow.models.common import title_max_length
-
-from ._abstract import AbstractCourseFlowModel
-from .column import Column
-from .outcome import Outcome
-from .week import Week
+from course_flow.models.workflow_objects.column import Column
+from course_flow.models.workflow_objects.outcome import Outcome
+from course_flow.models.workflow_objects.week import Week
 
 User = get_user_model()
 
@@ -69,14 +64,12 @@ def unit_choices():
 
 # developer should have implemented polymorphism ?
 # try class Workflow(PolymorphicModel):
-class Workflow(AbstractCourseFlowModel):
+class Workflow(AbstractWorkspaceModel):
     objects = InheritanceManager()
 
     ##########################################################
     # FIELDS
     #########################################################
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
     edit_count = models.PositiveIntegerField(default=0, null=False)
 
     #########################################################
@@ -84,20 +77,8 @@ class Workflow(AbstractCourseFlowModel):
     #########################################################
     static = models.BooleanField(default=False)
 
-    # might be not relevant, see docs, see
-    published = models.BooleanField(default=False)
-
     #
     public_view = models.BooleanField(default=False)
-
-    # TBD
-    is_strategy = models.BooleanField(default=False)
-
-    # TBD
-    is_template = models.BooleanField(default=False)
-
-    # TBD, equivalent of new 'templates'
-    from_saltise = models.BooleanField(default=False)
 
     # TBD maybe for when you copy something
     is_original = models.BooleanField(default=True)
@@ -124,18 +105,11 @@ class Workflow(AbstractCourseFlowModel):
         null=True,
     )
 
-    user_permissions = GenericRelation(
-        "ObjectPermission", related_query_name="workflow"
-    )
+    user_permissions = GenericRelation("ObjectPermission", related_query_name="workflow")
 
     favourited_by = GenericRelation("Favourite", related_query_name="workflow")
 
-    parent_workflow = models.ForeignKey(
-        "Workflow", on_delete=models.SET_NULL, null=True
-    )
-
-    # this is probably a mistake, these are only at the project level
-    disciplines = models.ManyToManyField("Discipline", blank=True)
+    parent_workflow = models.ForeignKey("Workflow", on_delete=models.SET_NULL, null=True)
 
     # these are called different things depending on which workflow type
     # parts in activities
@@ -145,27 +119,19 @@ class Workflow(AbstractCourseFlowModel):
     weeks = models.ManyToManyField(Week, through="WeekWorkflow", blank=True)
 
     # what is reasoning for this being n2m
-    columns = models.ManyToManyField(
-        Column, through="ColumnWorkflow", blank=True
-    )
+    columns = models.ManyToManyField(Column, through="ColumnWorkflow", blank=True)
 
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeWorkflow", blank=True
-    )
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeWorkflow", blank=True)
 
     #########################################################
     # VISUAL CONFIGURATION
     #########################################################
     # TBD
-    outcomes_type = models.PositiveIntegerField(
-        choices=outcome_choices(), default=0
-    )
+    outcomes_type = models.PositiveIntegerField(choices=outcome_choices(), default=0)
 
     #  'view' config storage
     # see outcome table right sidebar
-    outcomes_sort = models.PositiveIntegerField(
-        choices=outcome_sorts(), default=0
-    )
+    outcomes_sort = models.PositiveIntegerField(choices=outcome_sorts(), default=0)
 
     # visual representation of the workspace
     # this is like a config option that is stored

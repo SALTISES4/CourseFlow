@@ -1,5 +1,3 @@
-import logging
-
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
@@ -8,7 +6,6 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-import course_flow.models.project
 from course_flow import models
 from course_flow.apps import logger
 from course_flow.models.objectPermission import Permission
@@ -299,6 +296,6 @@ class DAO:
 
     @staticmethod
     def get_nondeleted_favourites(user):
-        return list(
-            course_flow.models.project.Project.objects.filter(favourited_by__user=user)
-        ) + list(models.Workflow.objects.filter(favourited_by__user=user))
+        return list(workspace.project.Project.objects.filter(favourited_by__user=user)) + list(
+            models.Workflow.objects.filter(favourited_by__user=user)
+        )

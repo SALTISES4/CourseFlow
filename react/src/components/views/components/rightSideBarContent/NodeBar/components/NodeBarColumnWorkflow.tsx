@@ -1,5 +1,5 @@
 import { FieldChoice } from '@cf/types/common'
-import { TColumnWorkflowByID, getColumnWorkflowByID } from '@cfFindState'
+import { TColumnWorkflowById, getColumnWorkflowByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import NodeBarColumn from '@cfViews/components/rightSideBarContent/NodeBar/components/NodeBarColumn'
 import NodeBarColumnCreator from '@cfViews/components/rightSideBarContent/NodeBar/components/NodeBarColumnCreator'
@@ -18,7 +18,7 @@ type SelfProps = {
   columnType?: number | string
   columnChoices: FieldChoice[] // was from renderer, need to check this, look at column type as well in relation to  NodeBarColumnCreator
 }
-type ConnectedProps = TColumnWorkflowByID
+type ConnectedProps = TColumnWorkflowById
 type PropsType = SelfProps & ConnectedProps
 export type NodeBarColumnWorkflowUnconnectedPropsType = PropsType
 
@@ -65,7 +65,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
 const mapStateToProps = (
   state: AppState,
   ownProps: SelfProps
-): TColumnWorkflowByID => {
+): TColumnWorkflowById => {
   return getColumnWorkflowByID(state, ownProps.objectId)
 }
 

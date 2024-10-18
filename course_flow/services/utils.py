@@ -23,9 +23,7 @@ class Utility:
         :return:
         """
         regex = re.compile("(%s)" % "|".join(map(re.escape, dict.keys())))
-        return regex.sub(
-            lambda mo: dict[mo.string[mo.start() : mo.end()]], text
-        )
+        return regex.sub(lambda mo: dict[mo.string[mo.start() : mo.end()]], text)
 
     @staticmethod
     def dateTimeFormat():
@@ -45,9 +43,7 @@ class Utility:
             if serializer.is_valid():
                 serializer.save()
                 return JsonResponse({"action": "posted"})
-                logger.exception(
-                    f"Bad error encountered with errors: {serializer.errors}"
-                )
+                logger.exception(f"Logged Exception: : {serializer.errors}")
             else:
                 return JsonResponse({"action": "error"})
         else:
@@ -98,9 +94,7 @@ class Utility:
     @staticmethod
     def benchmark(identifier, last_time):
         current_time = time.time()
-        print(
-            "Completed " + identifier + " in " + str(current_time - last_time)
-        )
+        print("Completed " + identifier + " in " + str(current_time - last_time))
         return current_time
 
     @staticmethod
@@ -131,11 +125,31 @@ class Utility:
     def check_allowed_sets(obj, allowed_sets):
         if obj.sets.all().count() == 0:
             return True
-        if (
-            obj.sets.filter(
-                id__in=allowed_sets.values_list("id", flat=True)
-            ).count()
-            > 0
-        ):
+        if obj.sets.filter(id__in=allowed_sets.values_list("id", flat=True)).count() > 0:
             return True
         return False
+
+    def merge_dicts(self, default_dict, new_dict):
+        """
+        Recursively merge new_dict into default_dict.
+        If a key exists in both dictionaries:
+        - If the value is a dictionary in both, it merges them recursively.
+        - Otherwise, the value from new_dict overrides the one from default_dict.
+        """
+        for key, value in new_dict.items():
+            if (
+                isinstance(value, dict)
+                and key in default_dict
+                and isinstance(default_dict[key], dict)
+            ):
+                # If both values are dictionaries, merge them recursively
+                default_dict[key] = self.merge_dicts(default_dict[key], value)
+            else:
+                # Otherwise, override the value in default_dict with the one in new_dict
+                default_dict[key] = value
+        return default_dict
+
+    @staticmethod
+    def print_model_instance(instance):
+        for field, value in instance.__dict__.items():
+            print(f"{field}: {value}")

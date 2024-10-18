@@ -1,14 +1,13 @@
-import logging
 import re
 
 from course_flow.apps import logger
-from course_flow.models.node import Node
-from course_flow.models.outcome import Outcome
 from course_flow.models.relations.nodeWeek import NodeWeek
 from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
-from course_flow.models.week import Week
+from course_flow.models.workflow_objects.node import Node
+from course_flow.models.workflow_objects.outcome import Outcome
+from course_flow.models.workflow_objects.week import Week
 from course_flow.serializers import (
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -23,9 +22,7 @@ from course_flow.sockets import redux_actions as actions
 
 
 class Importer:
-    def add_to_outcome_parent_with_depth(
-        self, to_add, base_outcome, required_depth
-    ):
+    def add_to_outcome_parent_with_depth(self, to_add, base_outcome, required_depth):
         if base_outcome.depth == required_depth:
             return OutcomeOutcome.objects.create(
                 child=to_add,
@@ -41,11 +38,7 @@ class Importer:
         last_outcome = None
         for index, row in df.iterrows():
             code = str(row["code"])
-            if (
-                code is not None
-                and isinstance(code, str)
-                and code.find(".") >= 0
-            ):
+            if code is not None and isinstance(code, str) and code.find(".") >= 0:
                 code = re.search("([^.]+$)", code).group(0)
             title = row["title"]
             description = row["description"]
@@ -81,26 +74,18 @@ class Importer:
                 )
                 response_data = {
                     "new_model": OutcomeSerializerShallow(outcome).data,
-                    "new_through": OutcomeWorkflowSerializerShallow(
-                        outcomeworkflow
-                    ).data,
+                    "new_through": OutcomeWorkflowSerializerShallow(outcomeworkflow).data,
                     "parentID": workflow.id,
                 }
-                actions.dispatch_wf(
-                    workflow, actions.newOutcomeAction(response_data)
-                )
-                actions.dispatch_to_parent_wf(
-                    workflow, actions.newOutcomeAction(response_data)
-                )
+                actions.dispatch_wf(workflow, actions.newOutcomeAction(response_data))
+                actions.dispatch_to_parent_wf(workflow, actions.newOutcomeAction(response_data))
             else:
                 outcomeoutcome = self.add_to_outcome_parent_with_depth(
                     outcome, last_outcome, depth - 1
                 )
 
                 new_model_serialized = OutcomeSerializerShallow(outcome).data
-                new_through_serialized = OutcomeOutcomeSerializerShallow(
-                    outcomeoutcome
-                ).data
+                new_through_serialized = OutcomeOutcomeSerializerShallow(outcomeoutcome).data
                 response_data = {
                     "new_model": new_model_serialized,
                     "new_through": new_through_serialized,
@@ -117,9 +102,7 @@ class Importer:
             try:
                 if isinstance(code, str) and code.isnumeric():
                     if outcome.depth == 0:
-                        rank = OutcomeWorkflow.objects.get(
-                            outcome=outcome
-                        ).rank
+                        rank = OutcomeWorkflow.objects.get(outcome=outcome).rank
                     else:
                         rank = OutcomeOutcome.objects.get(child=outcome).rank
                     if int(code) == rank or int(code) == rank + 1:
@@ -141,9 +124,9 @@ class Importer:
                 week_rank += 1
                 created = False
                 try:
-                    week = workflow.weeks.filter(deleted=False).order_by(
-                        "weekworkflow__rank"
-                    )[week_rank]
+                    week = workflow.weeks.filter(deleted=False).order_by("weekworkflow__rank")[
+                        week_rank
+                    ]
                     weekworkflow = WeekWorkflow.objects.get(week=week)
                 except IndexError as e:
                     logger.exception("An error occurred")
@@ -175,9 +158,7 @@ class Importer:
                 if created:
                     response_data = {
                         "new_model": WeekSerializerShallow(week).data,
-                        "new_through": WeekWorkflowSerializerShallow(
-                            weekworkflow
-                        ).data,
+                        "new_through": WeekWorkflowSerializerShallow(weekworkflow).data,
                         "parentID": workflow.id,
                     }
                     actions.dispatch_wf(
@@ -193,9 +174,7 @@ class Importer:
             elif type == "node":
                 if week is None:
                     week = (
-                        workflow.weeks.filter(deleted=False)
-                        .order_by("weekworkflow__rank")
-                        .first()
+                        workflow.weeks.filter(deleted=False).order_by("weekworkflow__rank").first()
                     )
                 try:
                     column_rank = int(row.get("column_order", 0))
@@ -226,9 +205,7 @@ class Importer:
                 if description is not None and description != "":
                     data["description"] = description
 
-                serializer = NodeSerializerShallow(
-                    node, data=data, partial=True
-                )
+                serializer = NodeSerializerShallow(node, data=data, partial=True)
 
                 Utility.save_serializer(serializer)
 
@@ -242,6 +219,4 @@ class Importer:
                     "parentID": week.id,
                 }
 
-                actions.dispatch_wf(
-                    workflow, actions.insertBelowAction(response_data, "node")
-                )
+                actions.dispatch_wf(workflow, actions.insertBelowAction(response_data, "node"))

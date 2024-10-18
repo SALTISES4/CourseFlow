@@ -164,9 +164,6 @@ export class SelectionManager {
     >
     payload?: any
   }): void {
-    console.log('changeSelection')
-    console.log(newSelection)
-    console.log(evt)
 
     if (evt) {
       evt.stopPropagation()
@@ -180,6 +177,7 @@ export class SelectionManager {
 
     // Deselect current selection
     if (this.currentSelection) {
+      console.log('hello')
       this.deselectCurrentSelection()
     }
 

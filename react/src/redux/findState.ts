@@ -10,22 +10,20 @@ import {
   TObjectSet,
   TOutcome,
   TOutcomeOutcome,
-  TWeek
+  TWeek,
+  TWeekworkflow
 } from '@cfRedux/types/type'
 
 import * as Constants from '../constants'
-
-/*******************************************************
- * TYPES
- *******************************************************/
-export type TStrategyByID = {
-  data: any // don't have type for strategy
-}
 /*******************************************************
  *
  *  This file contains selectors to encapsulate accessing the
  *  Redux state directly
  *
+ *******************************************************/
+
+/*******************************************************
+ * COLUMN
  *******************************************************/
 export type TGetColumnByID = {
   data: TColumn
@@ -34,7 +32,7 @@ export type TGetColumnByID = {
   column_order: Pick<AppState['workflow'], 'columnworkflowSet'>
 }
 
-export const getColumnByID = (state: AppState, id: number): TGetColumnByID => {
+export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
   for (const i in state.column) {
     const column = state.column[i]
     if (column.id == id) {
@@ -49,8 +47,12 @@ export const getColumnByID = (state: AppState, id: number): TGetColumnByID => {
       }
     }
   }
+  console.log('no column found with id', id)
 }
 
+/*******************************************************
+ * WEEK
+ *******************************************************/
 export type TGetWeekByIDType = {
   data: any
   column_order: any
@@ -59,7 +61,7 @@ export type TGetWeekByIDType = {
   workflowId?: any
 }
 
-export const getWeekByID = (state: AppState, id: number): TGetWeekByIDType => {
+export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
   for (const i in state.week) {
     const week = { ...state.week[i] } // create a shallow copy to avoid mutations
     if (week.id === id) {
@@ -80,16 +82,19 @@ export const getWeekByID = (state: AppState, id: number): TGetWeekByIDType => {
       }
     }
   }
+  console.log('no week found with id', id)
 }
 
+/*******************************************************
+ * TERM
+ *******************************************************/
 export type TTermByID = {
   data: any
   column_order: any
   nodes_by_column: any
   nodeweeks: any
 }
-
-export const getTermByID = (state: AppState, id: number): TTermByID => {
+export const getTermById = (state: AppState, id: number): TTermByID => {
   for (const i in state.week) {
     const week = state.week[i]
     if (week.id == id) {
@@ -124,40 +129,6 @@ export const getTermByID = (state: AppState, id: number): TTermByID => {
   }
 }
 
-export type TGetWeekWorkflowByID = {
-  data: weekworkflow
-  order: state.workflow.weekworkflowSet
-}
-export const getWeekWorkflowByID = (
-  state: AppState,
-  id: number
-): TGetWeekWorkflowByID => {
-  for (const i in state.weekworkflow) {
-    const weekworkflow = state.weekworkflow[i]
-    if (weekworkflow.id == id)
-      return { data: weekworkflow, order: state.workflow.weekworkflowSet }
-  }
-}
-
-export type TGetOutcomeWorkflowByID = {
-  data: any
-  order: any
-}
-export const getOutcomeWorkflowByID = (
-  state: AppState,
-  id: number
-): TGetOutcomeWorkflowByID => {
-  for (const i in state.outcomeworkflow) {
-    const outcomeworkflow = state.outcomeworkflow[i]
-    if (outcomeworkflow.id == id)
-      return {
-        data: outcomeworkflow,
-        order: state.workflow.outcomeworkflowSet
-      }
-  }
-  console.log('failed to find outcomeworkflow')
-}
-
 // export const getParentWorkflowByID = (state, id) => {
 //   for (const i in state.parentWorkflow) {
 //     const workflow = state.parentWorkflow[i]
@@ -166,12 +137,15 @@ export const getOutcomeWorkflowByID = (
 //   console.log('failed to find parent workflow')
 // }
 
-export type TGetNodeByID = {
+/*******************************************************
+ * NODE
+ *******************************************************/
+export type TGetNodeById = {
   data: TNode
   column: any
   objectSets: any
 }
-export const getNodeByID = (state: AppState, id: number): TGetNodeByID => {
+export const getNodeByID = (state: AppState, id: number): TGetNodeById => {
   for (const i in state.node) {
     const node = { ...state.node[i] } // Shallow copy to avoid mutations
     if (node.id === id) {
@@ -188,127 +162,9 @@ export const getNodeByID = (state: AppState, id: number): TGetNodeByID => {
   console.log('failed to find node')
 }
 
-export type TGetNodeWeekByID = {
-  data: any
-  order: any
-  column: any
-}
-export const getNodeWeekByID = (
-  state: AppState,
-  id: number
-): TGetNodeWeekByID => {
-  for (const i in state.nodeweek) {
-    const nodeweek = state.nodeweek[i]
-    if (nodeweek.id === id) {
-      const node = getNodeByID(state, nodeweek.node).data
-      return {
-        data: nodeweek,
-        order: getWeekByID(state, nodeweek.week).nodeweekSet,
-        column: node.column
-      }
-    }
-  }
-}
-
-export type TGetNodeLinkByID = {
-  data: TNodelink
-}
-export const getNodeLinkByID = (
-  state: AppState,
-  id: number
-): TGetNodeLinkByID => {
-  for (const i in state.nodelink) {
-    const nodelink = state.nodelink[i]
-    if (nodelink.id === id) {
-      return { data: nodelink }
-    }
-  }
-}
-
-export type TColumnWorkflowByID = {
-  data?: TColumnworkflow
-  order?: number[]
-}
-
-export const getColumnWorkflowByID = (
-  state: AppState,
-  id: number
-): TColumnWorkflowByID => {
-  for (const i in state.columnworkflow) {
-    const columnWorkflow = state.columnworkflow[i]
-    if (columnWorkflow.id === id) {
-      return {
-        data: columnWorkflow,
-        order: state.workflow.columnworkflowSet
-      }
-    }
-  }
-  return {
-    data: undefined,
-    order: undefined
-  }
-}
-
-export const getStrategyByID = (state: AppState, id: number): TStrategyByID => {
-  const strategies = Object.values(state.strategy)
-  const foundStrategy = strategies.find((strategy) => strategy.id === id)
-  return foundStrategy ? { data: foundStrategy } : { data: undefined }
-}
-
-/**
- * @todo normalize the arguments order
- * Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids.
- * These can later be pieced together in an iteration over the outcomes to create a list of ranks.
- *
- * @param id
- * @param rank
- * @param state
- * @returns {*|{rank: *, id: *}}
- */
-function findRootOutcome(
-  state: string | any[],
-  id: number,
-  rank: { parent: any; through: any }[]
-): any | { rank: any; id: any } {
-  for (let i = 0; i < state.length; i++) {
-    if (state[i].child === id) {
-      rank.unshift({ parent: state[i].parent, through: state[i].id })
-      return findRootOutcome(state, state[i].parent, rank)
-    }
-  }
-  return { id: id, rank: rank }
-}
-
-function findTopRank(state: AppState, outcome) {
-  for (let j = 0; j < state.outcomeworkflow.length; j++) {
-    if (state.outcomeworkflow[j].outcome === outcome.id) {
-      if (state.outcomeworkflow[j].workflow === state.workflow.id) {
-        return (
-          state.workflow.outcomeworkflowSet.indexOf(
-            state.outcomeworkflow[j].id
-          ) + 1
-        )
-      }
-      for (let k = 0; k < state.child_workflow.length; k++) {
-        const index = state.child_workflow[k].outcomeworkflowSet.indexOf(
-          state.outcomeworkflow[j].id
-        )
-        if (index >= 0) {
-          return index + 1
-        }
-      }
-      for (let k = 0; k < state.parentWorkflow.length; k++) {
-        const index = state.parentWorkflow[k].outcomeworkflowSet.indexOf(
-          state.outcomeworkflow[j].id
-        )
-        if (index >= 0) {
-          return index + 1
-        }
-      }
-    }
-  }
-}
-
+/*******************************************************
+ * OUTCOME
+ *******************************************************/
 export type TGetOutcomeByID = {
   data: TOutcome
   hovertext: string
@@ -396,7 +252,188 @@ export const getOutcomeByID = (
   console.log('Outcome not found for ID:', id)
 }
 
-export const getChildWorkflowByID = (state: AppState, id: number) => {
+/*******************************************************
+ * STRATEGY
+ *******************************************************/
+export type TStrategyByID = {
+  data: any // don't have type for strategy
+}
+export const getStrategyById = (state: AppState, id: number): TStrategyByID => {
+  const strategies = Object.values(state.strategy)
+  const foundStrategy = strategies.find((strategy) => strategy.id === id)
+  return foundStrategy ? { data: foundStrategy } : { data: undefined }
+}
+
+/*******************************************************
+ * WORKFLOW RELATIONS: WEEK-WORKFLOW
+ *******************************************************/
+export type TGetWeekWorkflowById = {
+  data: TWeekworkflow
+  order: number[]
+}
+export const getWeekWorkflowByID = (
+  state: AppState,
+  id: number
+): TGetWeekWorkflowById => {
+  for (const i in state.weekworkflow) {
+    const weekworkflow = state.weekworkflow[i]
+    if (weekworkflow.id == id)
+      return { data: weekworkflow, order: state.workflow.weekworkflowSet }
+  }
+}
+
+/*******************************************************
+ * WORKFLOW RELATIONS: OUTCOME-WORKFLOW
+ *******************************************************/
+export type TGetOutcomeWorkflowByID = {
+  data: any
+  order: any
+}
+export const getOutcomeWorkflowByID = (
+  state: AppState,
+  id: number
+): TGetOutcomeWorkflowByID => {
+  for (const i in state.outcomeworkflow) {
+    const outcomeworkflow = state.outcomeworkflow[i]
+    if (outcomeworkflow.id == id)
+      return {
+        data: outcomeworkflow,
+        order: state.workflow.outcomeworkflowSet
+      }
+  }
+  console.log('no outcomeworkflow found with id', id)
+}
+
+/*******************************************************
+ * WORKFLOW RELATIONS: COLUMN-WORKFLOW
+ *******************************************************/
+export type TColumnWorkflowById = {
+  data?: TColumnworkflow
+  order?: number[]
+}
+
+export const getColumnWorkflowByID = (
+  state: AppState,
+  id: number
+): TColumnWorkflowById => {
+  for (const i in state.columnworkflow) {
+    const columnWorkflow = state.columnworkflow[i]
+    if (columnWorkflow.id === id) {
+      return {
+        data: columnWorkflow,
+        order: state.workflow.columnworkflowSet
+      }
+    }
+  }
+
+  console.log('no columnWorkflow found with id', id)
+
+  return {
+    data: undefined,
+    order: undefined
+  }
+}
+
+/*******************************************************
+ * NODE RELATIONS: NODE-WEEK
+ *******************************************************/
+export type TGetNodeWeekById = {
+  data: any
+  order: any
+  column: any
+}
+export const getNodeWeekByID = (
+  state: AppState,
+  id: number
+): TGetNodeWeekById => {
+  for (const i in state.nodeweek) {
+    const nodeweek = state.nodeweek[i]
+    if (nodeweek.id === id) {
+      const node = getNodeByID(state, nodeweek.node).data
+      return {
+        data: nodeweek,
+        order: getWeekById(state, nodeweek.week).nodeweekSet,
+        column: node.column
+      }
+    }
+  }
+  console.log('no nodeweek found with id', id)
+}
+
+/*******************************************************
+ * NODE RELATIONS:  NODE-LINK
+ *******************************************************/
+export type TGetNodeLinkById = {
+  data: TNodelink
+}
+export const getNodeLinkByID = (
+  state: AppState,
+  id: number
+): TGetNodeLinkById => {
+  for (const i in state.nodelink) {
+    const nodelink = state.nodelink[i]
+    if (nodelink.id === id) {
+      return { data: nodelink }
+    }
+  }
+  console.log('no nodelink found with id', id)
+}
+
+/**
+ * @todo normalize the arguments order
+ * Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids.
+ * These can later be pieced together in an iteration over the outcomes to create a list of ranks.
+ *
+ * @param id
+ * @param rank
+ * @param state
+ * @returns {*|{rank: *, id: *}}
+ */
+function findRootOutcome(
+  state: string | any[],
+  id: number,
+  rank: { parent: any; through: any }[]
+): any | { rank: any; id: any } {
+  for (let i = 0; i < state.length; i++) {
+    if (state[i].child === id) {
+      rank.unshift({ parent: state[i].parent, through: state[i].id })
+      return findRootOutcome(state, state[i].parent, rank)
+    }
+  }
+  return { id: id, rank: rank }
+}
+
+function findTopRank(state: AppState, outcome) {
+  for (let j = 0; j < state.outcomeworkflow.length; j++) {
+    if (state.outcomeworkflow[j].outcome === outcome.id) {
+      if (state.outcomeworkflow[j].workflow === state.workflow.id) {
+        return (
+          state.workflow.outcomeworkflowSet.indexOf(
+            state.outcomeworkflow[j].id
+          ) + 1
+        )
+      }
+      for (let k = 0; k < state.child_workflow.length; k++) {
+        const index = state.child_workflow[k].outcomeworkflowSet.indexOf(
+          state.outcomeworkflow[j].id
+        )
+        if (index >= 0) {
+          return index + 1
+        }
+      }
+      for (let k = 0; k < state.parentWorkflow.length; k++) {
+        const index = state.parentWorkflow[k].outcomeworkflowSet.indexOf(
+          state.outcomeworkflow[j].id
+        )
+        if (index >= 0) {
+          return index + 1
+        }
+      }
+    }
+  }
+}
+
+export const getChildWorkflowById = (state: AppState, id: number) => {
   for (const i in state.child_workflow) {
     const workflow = state.child_workflow[i]
     if (workflow.id === id) return { data: workflow }
@@ -409,7 +446,7 @@ export type TOutcomeOutcomeByID = {
   data?: TOutcomeOutcome
 }
 
-export const getOutcomeOutcomeByID = (
+export const getOutcomeOutcomeById = (
   state: AppState,
   id: number
 ): TOutcomeOutcomeByID => {

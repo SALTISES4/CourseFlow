@@ -7,7 +7,7 @@ import {
   TGetOutcomeByID,
   TOutcomeOutcomeByID,
   getOutcomeByID,
-  getOutcomeOutcomeByID
+  getOutcomeOutcomeById
 } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
@@ -69,7 +69,7 @@ const mapOutcomeOutcomeStateToProps = (
   state: AppState,
   ownProps: OutcomeBarOutcomeOutcomeOwnProps
 ): OutcomeBarOutcomeOutcomeConnectedProps => {
-  return getOutcomeOutcomeByID(state, ownProps.objectId)
+  return getOutcomeOutcomeById(state, ownProps.objectId)
 }
 
 const OutcomeBarOutcomeOutcome = connect<

@@ -1,9 +1,8 @@
 import json
 import math
-from pprint import pprint
 
 # from duplication
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
@@ -19,15 +18,11 @@ from course_flow.duplication_functions import (
     fast_duplicate_outcome,
     fast_duplicate_week,
 )
-from course_flow.models.column import Column
-from course_flow.models.node import Node
 from course_flow.models.objectset import ObjectSet
-from course_flow.models.outcome import Outcome
 from course_flow.models.relations import (
     ColumnWorkflow,
     NodeLink,
     NodeWeek,
-    OutcomeNode,
     OutcomeOutcome,
     OutcomeWorkflow,
     WeekWorkflow,
@@ -36,7 +31,10 @@ from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
 )
 from course_flow.models.relations.outcomeNode import OutcomeNode
-from course_flow.models.workflow import Workflow
+from course_flow.models.workflow_objects.column import Column
+from course_flow.models.workflow_objects.node import Node
+from course_flow.models.workflow_objects.outcome import Outcome
+from course_flow.models.workspace.workflow import Workflow
 from course_flow.serializers import (
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,

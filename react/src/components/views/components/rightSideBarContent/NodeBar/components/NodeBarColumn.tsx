@@ -3,7 +3,7 @@ import * as Constants from '@cfConstants'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
-import { TGetColumnByID, getColumnByID } from '@cfFindState'
+import { TGetColumnByID, getColumnById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -92,7 +92,7 @@ const mapColumnStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): TGetColumnByID => {
-  return getColumnByID(state, ownProps.objectId)
+  return getColumnById(state, ownProps.objectId)
 }
 const NodeBarColumn = connect<ConnectedProps, object, OwnProps, AppState>(
   mapColumnStateToProps,

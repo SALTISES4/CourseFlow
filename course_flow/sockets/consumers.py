@@ -1,5 +1,4 @@
 import json
-import logging
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
@@ -7,7 +6,7 @@ from channels.generic.websocket import WebsocketConsumer
 from course_flow.apps import logger
 from course_flow.decorators import check_object_permission
 from course_flow.models.objectPermission import Permission
-from course_flow.models.workflow import Workflow
+from course_flow.models.workspace.workflow import Workflow
 
 
 class WorkflowUpdateConsumer(WebsocketConsumer):
@@ -21,12 +20,8 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
 
     def get_permission(self):
         workflow = Workflow.objects.get(pk=self.workflow_pk)
-        self.VIEW = check_object_permission(
-            workflow, self.user, Permission.PERMISSION_VIEW.value
-        )
-        self.EDIT = check_object_permission(
-            workflow, self.user, Permission.PERMISSION_EDIT.value
-        )
+        self.VIEW = check_object_permission(workflow, self.user, Permission.PERMISSION_VIEW.value)
+        self.EDIT = check_object_permission(workflow, self.user, Permission.PERMISSION_EDIT.value)
 
     def connect(self):
         self.workflow_pk = self.scope["url_route"]["kwargs"]["workflowPk"]
@@ -39,9 +34,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             logger.exception("An error occurred")
             return self.close()
         if self.VIEW or self.EDIT:
-            async_to_sync(self.channel_layer.group_add)(
-                self.room_group_name, self.channel_name
-            )
+            async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
             return self.accept()
         return self.close()
 
@@ -54,9 +47,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             logger.exception("An error occurred")
             pass
 
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
     def receive(self, text_data=None, bytes_data=None):
         print("got a message")

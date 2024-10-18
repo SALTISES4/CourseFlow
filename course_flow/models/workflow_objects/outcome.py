@@ -4,9 +4,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from course_flow.models._abstract import AbstractCourseFlowModel
 from course_flow.models.common import title_max_length
-
-from ._abstract import AbstractCourseFlowModel
 
 User = get_user_model()
 
@@ -40,8 +39,6 @@ class Outcome(AbstractCourseFlowModel):
     ##########################################################
     # FIELDS
     #########################################################
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
     code = models.CharField(max_length=title_max_length, null=True, blank=True)
 
     is_original = models.BooleanField(default=True)
@@ -55,9 +52,7 @@ class Outcome(AbstractCourseFlowModel):
     #########################################################
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
-    parent_outcome = models.ForeignKey(
-        "Outcome", on_delete=models.SET_NULL, null=True
-    )
+    parent_outcome = models.ForeignKey("Outcome", on_delete=models.SET_NULL, null=True)
 
     sets = models.ManyToManyField("ObjectSet", blank=True)
 
@@ -75,9 +70,7 @@ class Outcome(AbstractCourseFlowModel):
         related_name="reverse_horizontal_outcomes",
     )
 
-    comments = models.ManyToManyField(
-        "Comment", blank=True, related_name="outcome"
-    )
+    comments = models.ManyToManyField("Comment", blank=True, related_name="outcome")
 
     #########################################################
     # META

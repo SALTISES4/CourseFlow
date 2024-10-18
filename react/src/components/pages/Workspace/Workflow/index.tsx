@@ -3,16 +3,18 @@ import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useWorkflowWebsocketManager } from '@cfPages/Workspace/Workflow/hooks/useWorkflowWebsocketManager'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
+import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import React, { useContext, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 const Workflow = () => {
   const userContext = useContext(UserContext)
   const { id } = useParams<{ id: string }>()
   const workflowData = useSelector((state: AppState) => state.workflow) // Replace with actual Redux state selector
+  const dispatch = useDispatch()
 
   const [selectionManager, setSelectionManager] =
     useState<SelectionManager | null>(null)
@@ -58,7 +60,7 @@ const Workflow = () => {
 
    *******************************************************/
   useEffect(() => {
-    if (workflowData && workflowData.workflowPermissions) {
+    if (workflowData?.workflowPermissions) {
       setSelectionManager(
         new SelectionManager(workflowData.workflowPermissions.read)
       )
@@ -67,6 +69,18 @@ const Workflow = () => {
     }
   }, [workflowData, clearQueue])
 
+  /**
+   * Essentially we are going to clean up the workflow based redux store on component 'unmount'
+   */
+  useEffect(() => {
+    // not sure if this is a good idea yeah
+    // but essentially, when we navigate away from workflow we're going to
+    // clear the 'workflow' bit of the store so we aren't in say,
+    // library area with a defined workflow store
+    return () => {
+      dispatch(ActionCreator.clearWorkflowData())
+    }
+  }, [])
   /*******************************************************
    *
    *******************************************************/

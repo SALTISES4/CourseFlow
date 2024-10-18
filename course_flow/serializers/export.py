@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
-from course_flow.models.node import Node
-from course_flow.models.outcome import Outcome
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow
 from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
-from course_flow.models.week import Week
-from course_flow.models.workflow import Workflow
+from course_flow.models.workflow_objects.node import Node
+from course_flow.models.workflow_objects.outcome import Outcome
+from course_flow.models.workflow_objects.week import Week
+from course_flow.models.workspace.workflow import Workflow
 from course_flow.serializers.mixin import (
     DescriptionSerializerTextMixin,
     TitleSerializerTextMixin,
@@ -32,17 +32,13 @@ class OutcomeExportSerializer(
 
     def get_code(self, instance):
         if instance.depth == 0:
-            outcomeworkflow = OutcomeWorkflow.objects.filter(
-                outcome=instance
-            ).first()
+            outcomeworkflow = OutcomeWorkflow.objects.filter(outcome=instance).first()
             if instance.code is None or instance.code == "":
                 return str(outcomeworkflow.get_display_rank() + 1)
             else:
                 return instance.code
         else:
-            outcomeoutcome = OutcomeOutcome.objects.filter(
-                child=instance
-            ).first()
+            outcomeoutcome = OutcomeOutcome.objects.filter(child=instance).first()
             if instance.code is None or instance.code == "":
                 return (
                     self.get_code(outcomeoutcome.parent)
@@ -50,9 +46,7 @@ class OutcomeExportSerializer(
                     + str(outcomeoutcome.get_display_rank() + 1)
                 )
             else:
-                return (
-                    self.get_code(outcomeoutcome.parent) + "." + instance.code
-                )
+                return self.get_code(outcomeoutcome.parent) + "." + instance.code
 
     def get_type(self, instance):
         return "outcome"
@@ -128,46 +122,31 @@ class NodeExportSerializerWithTime(NodeExportSerializer):
     time_required = serializers.SerializerMethodField()
 
     def get_code(self, instance):
-        if (
-            instance.represents_workflow
-            and instance.linked_workflow is not None
-        ):
+        if instance.represents_workflow and instance.linked_workflow is not None:
             return instance.linked_workflow.code
         else:
             return None
 
     def get_ponderation_theory(self, instance):
-        if (
-            instance.represents_workflow
-            and instance.linked_workflow is not None
-        ):
+        if instance.represents_workflow and instance.linked_workflow is not None:
             return instance.linked_workflow.ponderation_theory
         else:
             return instance.ponderation_theory
 
     def get_ponderation_individual(self, instance):
-        if (
-            instance.represents_workflow
-            and instance.linked_workflow is not None
-        ):
+        if instance.represents_workflow and instance.linked_workflow is not None:
             return instance.linked_workflow.ponderation_individual
         else:
             return instance.ponderation_individual
 
     def get_ponderation_practical(self, instance):
-        if (
-            instance.represents_workflow
-            and instance.linked_workflow is not None
-        ):
+        if instance.represents_workflow and instance.linked_workflow is not None:
             return instance.linked_workflow.ponderation_practical
         else:
             return instance.ponderation_practical
 
     def get_time_required(self, instance):
-        if (
-            instance.represents_workflow
-            and instance.linked_workflow is not None
-        ):
+        if instance.represents_workflow and instance.linked_workflow is not None:
             return instance.linked_workflow.time_required
         else:
             return instance.time_required

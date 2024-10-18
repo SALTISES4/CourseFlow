@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models import Outcome
+from course_flow.models.workflow_objects.outcome import Outcome
 
 
 class OutcomeHorizontalLink(models.Model):
@@ -32,20 +32,18 @@ class OutcomeHorizontalLink(models.Model):
             parent_outcome = self.parent_outcome.parent_outcomes.first()
             if (
                 OutcomeHorizontalLink.objects.filter(
-                    parent_outcome__in=parent_outcome.children.exclude(
-                        deleted=True
-                    ).values_list("id", flat=True),
+                    parent_outcome__in=parent_outcome.children.exclude(deleted=True).values_list(
+                        "id", flat=True
+                    ),
                     degree=self.degree,
                     outcome=self.outcome,
                 ).count()
                 == parent_outcome.children.exclude(deleted=True).count()
             ):
-                new_outcomehorizontallink = (
-                    OutcomeHorizontalLink.objects.create(
-                        outcome=self.outcome,
-                        degree=self.degree,
-                        parent_outcome=parent_outcome,
-                    )
+                new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
+                    outcome=self.outcome,
+                    degree=self.degree,
+                    parent_outcome=parent_outcome,
                 )
                 return [
                     new_outcomehorizontallink
@@ -56,12 +54,10 @@ class OutcomeHorizontalLink(models.Model):
                 ).count()
                 > 0
             ):
-                new_outcomehorizontallink = (
-                    OutcomeHorizontalLink.objects.create(
-                        outcome=self.outcome,
-                        degree=0,
-                        parent_outcome=parent_outcome,
-                    )
+                new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
+                    outcome=self.outcome,
+                    degree=0,
+                    parent_outcome=parent_outcome,
                 )
                 return [
                     new_outcomehorizontallink

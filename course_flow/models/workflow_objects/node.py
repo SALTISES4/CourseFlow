@@ -5,8 +5,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from ._abstract import AbstractCourseFlowModel
-from .outcome import Outcome
+from course_flow.models._abstract import AbstractCourseFlowModel
+from course_flow.models.workflow_objects.outcome import Outcome
 
 User = get_user_model()
 
@@ -132,21 +132,15 @@ class Node(AbstractCourseFlowModel):
     #########################################################
     # FIELDS
     #########################################################
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
     is_original = models.BooleanField(default=True)
 
     has_autolink = models.BooleanField(default=False)
 
     is_dropped = models.BooleanField(default=False)
 
-    context_classification = models.PositiveIntegerField(
-        choices=context_choices(), default=0
-    )
+    context_classification = models.PositiveIntegerField(choices=context_choices(), default=0)
 
-    task_classification = models.PositiveIntegerField(
-        choices=task_choices(), default=0
-    )
+    task_classification = models.PositiveIntegerField(choices=task_choices(), default=0)
 
     node_type = models.PositiveIntegerField(choices=node_types(), default=0)
 
@@ -172,13 +166,9 @@ class Node(AbstractCourseFlowModel):
     #########################################################
     sets = models.ManyToManyField("ObjectSet", blank=True)
 
-    comments = models.ManyToManyField(
-        "Comment", blank=True, related_name="node"
-    )
+    comments = models.ManyToManyField("Comment", blank=True, related_name="node")
 
-    parent_node = models.ForeignKey(
-        "Node", on_delete=models.SET_NULL, null=True
-    )
+    parent_node = models.ForeignKey("Node", on_delete=models.SET_NULL, null=True)
 
     author = models.ForeignKey(
         User,
@@ -194,13 +184,9 @@ class Node(AbstractCourseFlowModel):
         related_name="linked_nodes",
     )
 
-    column = models.ForeignKey(
-        "Column", on_delete=models.DO_NOTHING, null=True
-    )
+    column = models.ForeignKey("Column", on_delete=models.DO_NOTHING, null=True)
 
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeNode", blank=True
-    )
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeNode", blank=True)
 
     #########################################################
     # META

@@ -2,7 +2,7 @@ import { CfObjectType } from '@cf/types/enum'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'
-import { getWeekByID } from '@cfFindState'
+import { getWeekById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import * as React from 'react'
@@ -74,7 +74,7 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => {
-  const data = getWeekByID(state, ownProps.objectId).data
+  const data = getWeekById(state, ownProps.objectId).data
   const node_weeks = Utility.filterThenSortByID(
     state.nodeweek,
     data.nodeweekSet

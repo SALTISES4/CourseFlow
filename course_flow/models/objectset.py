@@ -1,8 +1,7 @@
 from django.db import models
 
 from course_flow.models.common import title_max_length
-
-from .project import Project
+from course_flow.models.workspace.project import Project
 
 
 class ObjectSet(models.Model):
@@ -10,9 +9,7 @@ class ObjectSet(models.Model):
 
     title = models.CharField(max_length=title_max_length)
 
-    translation_plural = models.CharField(
-        max_length=title_max_length, null=True
-    )
+    translation_plural = models.CharField(max_length=title_max_length, null=True)
 
     #########################################################
     # METHODS

@@ -1,22 +1,24 @@
 from django.contrib.auth import get_user_model
 
 # from ._common import title_max_length
-from .activity import Activity
-from .column import Column
 from .comment import Comment
-from .course import Course
 from .discipline import Discipline
 from .favourite import Favourite
-from .node import Node
 from .notification import Notification
 from .objectPermission import ObjectPermission
 from .objectset import ObjectSet
-from .outcome import Outcome
-from .program import Program
-from .project import Project
 from .updateNotification import UpdateNotification
-from .week import Week
-from .workflow import Workflow
+
+from .workflow_objects.node import Node
+from .workflow_objects.week import Week
+from .workflow_objects.outcome import Outcome
+from .workflow_objects.column import Column
+
+from .workspace.workflow import Workflow
+from .workspace.project import Project
+from .workspace.activity import Activity
+from .workspace.program import Program
+from .workspace.course import Course
 
 from .relations.columnWorkflow import ColumnWorkflow
 from .relations.nodeLink import NodeLink

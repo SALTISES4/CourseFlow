@@ -19,6 +19,15 @@ export default function parentProjectReducer(
       }
       return state
 
+    // pretty obvious what this is doing
+    // BUT really it should be cleaning up all the workflow related objects
+    // columnworfklow
+    // node
+    // week etc
+    // ideally all workflow store is grouped under one entry in redux
+    case CommonActions.CLEAR_WORKFLOW_DATA:
+      return null
+
     default:
       return state
   }

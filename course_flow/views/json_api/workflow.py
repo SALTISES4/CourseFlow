@@ -1,16 +1,13 @@
 import json
-import logging
-import traceback
 from pprint import pprint
 
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
 # from duplication
 from django.utils.translation import gettext as _
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -26,14 +23,14 @@ from course_flow.duplication_functions import (
     fast_duplicate_workflow,
 )
 from course_flow.models import Project
-from course_flow.models.node import Node
 from course_flow.models.relations import OutcomeWorkflow
 from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
 )
 from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.models.workflow import SUBCLASSES, Workflow
+from course_flow.models.workflow_objects.node import Node
+from course_flow.models.workspace.workflow import SUBCLASSES, Workflow
 from course_flow.serializers import (
     LibraryObjectSerializer,
     LinkedWorkflowSerializerShallow,
@@ -49,7 +46,6 @@ from course_flow.serializers import (
 from course_flow.services import DAO
 from course_flow.services.workflow import WorkflowService
 from course_flow.sockets import redux_actions as actions
-from course_flow.views.mixins import UserCanViewMixin
 
 #########################################################
 # Bulk data API for workflows
@@ -218,7 +214,7 @@ class WorkflowEndpoint:
                 status=status.HTTP_201_CREATED,
             )
         else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+            logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -255,7 +251,7 @@ class WorkflowEndpoint:
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+            logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,

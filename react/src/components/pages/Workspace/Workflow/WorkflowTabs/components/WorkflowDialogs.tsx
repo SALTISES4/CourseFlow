@@ -12,8 +12,7 @@ import { useParams } from 'react-router-dom'
 const WorkflowDialogs = () => {
   const { id } = useParams()
   const workflowId = Number(id)
-
-  const { refetch } = useGetWorkflowByIdQuery({ id: Number(id) })
+  const { refetch } = useGetWorkflowByIdQuery({ id: workflowId })
 
   return (
     <>

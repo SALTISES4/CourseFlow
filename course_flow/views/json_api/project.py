@@ -44,7 +44,7 @@ class ProjectEndpoint:
                 status=status.HTTP_201_CREATED,
             )
         else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+            logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -72,7 +72,7 @@ class ProjectEndpoint:
                 status=status.HTTP_200_OK,
             )
         else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+            logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,

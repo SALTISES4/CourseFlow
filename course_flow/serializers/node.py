@@ -2,9 +2,9 @@ from django.db.models import Q
 from rest_framework import serializers
 
 from course_flow.models import User
-from course_flow.models.node import Node
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow
 from course_flow.models.relations.nodeLink import NodeLink
+from course_flow.models.workflow_objects.node import Node
 from course_flow.serializers.container import LinkedWorkflowSerializerShallow
 from course_flow.serializers.mixin import (
     DescriptionSerializerMixin,
@@ -36,14 +36,10 @@ class RefreshSerializerNode(serializers.ModelSerializer):
 
     @staticmethod
     def get_outcomenode_unique_set(instance):
-        return list(
-            map(Utility.linkIDMap, DAO.get_unique_outcomenodes(instance))
-        )
+        return list(map(Utility.linkIDMap, DAO.get_unique_outcomenodes(instance)))
 
 
-class NodeLinkSerializerShallow(
-    serializers.ModelSerializer, TitleSerializerMixin
-):
+class NodeLinkSerializerShallow(serializers.ModelSerializer, TitleSerializerMixin):
     class Meta:
         model = NodeLink
         fields = [
@@ -63,16 +59,13 @@ class NodeLinkSerializerShallow(
 
     def create(self, validated_data):
         return Node.objects.create(
-            author=User.objects.get(username=self.initial_data["author"]),
-            **validated_data
+            author=User.objects.get(username=self.initial_data["author"]), **validated_data
         )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.dashed = validated_data.get("dashed", instance.dashed)
-        instance.text_position = validated_data.get(
-            "text_position", instance.text_position
-        )
+        instance.text_position = validated_data.get("text_position", instance.text_position)
         instance.save()
         return instance
 
@@ -139,17 +132,13 @@ class NodeSerializerShallow(
         if instance.column.deleted:
             workflow = instance.get_workflow()
             return (
-                ColumnWorkflow.objects.filter(
-                    workflow=workflow, column__deleted=False
-                )
+                ColumnWorkflow.objects.filter(workflow=workflow, column__deleted=False)
                 .order_by("rank")
                 .first()
                 .id
             )
         else:
-            return instance.column.columnworkflow_set.get(
-                column=instance.column
-            ).id
+            return instance.column.columnworkflow_set.get(column=instance.column).id
 
     def get_column(self, instance):
         if instance.column is None:
@@ -163,9 +152,7 @@ class NodeSerializerShallow(
         if instance.column.deleted:
             workflow = instance.get_workflow()
             return (
-                ColumnWorkflow.objects.filter(
-                    workflow=workflow, column__deleted=False
-                )
+                ColumnWorkflow.objects.filter(workflow=workflow, column__deleted=False)
                 .order_by("rank")
                 .first()
                 .column.id
@@ -183,17 +170,13 @@ class NodeSerializerShallow(
 
     def get_outgoing_links(self, instance):
         links = instance.outgoing_links.exclude(
-            Q(deleted=True)
-            | Q(target_node__deleted=True)
-            | Q(target_node__week__deleted=True)
+            Q(deleted=True) | Q(target_node__deleted=True) | Q(target_node__week__deleted=True)
         )
         return list(map(Utility.linkIDMap, links))
 
     @staticmethod
     def get_outcomenode_unique_set(instance):
-        return list(
-            map(Utility.linkIDMap, DAO.get_unique_outcomenodes(instance))
-        )
+        return list(map(Utility.linkIDMap, DAO.get_unique_outcomenodes(instance)))
 
     def get_linked_workflow_data(self, instance):
         linked_workflow = instance.linked_workflow
@@ -205,15 +188,12 @@ class NodeSerializerShallow(
 
     def create(self, validated_data):
         return Node.objects.create(
-            author=User.objects.get(username=self.initial_data["author"]),
-            **validated_data
+            author=User.objects.get(username=self.initial_data["author"]), **validated_data
         )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
+        instance.description = validated_data.get("description", instance.description)
         instance.task_classification = validated_data.get(
             "task_classification", instance.task_classification
         )
@@ -223,15 +203,9 @@ class NodeSerializerShallow(
         instance.represents_workflow = validated_data.get(
             "represents_workflow", instance.represents_workflow
         )
-        instance.has_autolink = validated_data.get(
-            "has_autolink", instance.has_autolink
-        )
-        instance.time_required = validated_data.get(
-            "time_required", instance.time_required
-        )
-        instance.time_units = validated_data.get(
-            "time_units", instance.time_units
-        )
+        instance.has_autolink = validated_data.get("has_autolink", instance.has_autolink)
+        instance.time_required = validated_data.get("time_required", instance.time_required)
+        instance.time_units = validated_data.get("time_units", instance.time_units)
         instance.ponderation_theory = validated_data.get(
             "ponderation_theory", instance.ponderation_theory
         )

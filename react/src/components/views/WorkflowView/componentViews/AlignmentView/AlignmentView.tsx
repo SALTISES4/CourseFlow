@@ -4,7 +4,7 @@ import { WeekTitle } from '@cfComponents/UIPrimitives/Titles'
 import {
   getOutcomeByID,
   getSortedOutcomesFromOutcomeWorkflowSet,
-  getWeekByID
+  getWeekById
 } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
@@ -177,7 +177,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
       state.weekworkflow,
       state.workflow.weekworkflowSet
       // @ts-ignore
-    ).map((wwf) => getWeekByID(state, wwf.week).data)
+    ).map((wwf) => getWeekById(state, wwf.week).data)
   }
 }
 /*******************************************************

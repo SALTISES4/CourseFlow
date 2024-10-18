@@ -4,7 +4,7 @@ from course_flow.models.comment import Comment
 from course_flow.models.discipline import Discipline
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
-from course_flow.models.workflow import Workflow
+from course_flow.models.workspace.workflow import Workflow
 from course_flow.serializers.mixin import TitleSerializerMixin
 from course_flow.serializers.user import UserSerializer
 from course_flow.services import Utility

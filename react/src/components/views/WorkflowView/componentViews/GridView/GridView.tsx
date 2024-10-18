@@ -1,5 +1,5 @@
 import { _t } from '@cf/utility/utilityFunctions'
-import { getWeekByID, getWeekWorkflowByID } from '@cfFindState'
+import { getWeekById, getWeekWorkflowByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import GridWeek from '@cfViews/WorkflowView/componentViews/GridView/GridWeek'
 import * as React from 'react'
@@ -64,7 +64,7 @@ const mapStateToProps = (
 ): ConnectedProps => {
   const weeks = state.workflow.weekworkflowSet
     .map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week)
-    .map((week) => getWeekByID(state, week))
+    .map((week) => getWeekById(state, week))
 
   return {
     workflow: state.workflow,

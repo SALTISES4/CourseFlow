@@ -6,17 +6,17 @@ from django.views.decorators.http import require_POST
 
 from course_flow.apps import logger
 from course_flow.models import Project
-from course_flow.models.activity import Activity
-from course_flow.models.column import Column
-from course_flow.models.course import Course
-from course_flow.models.node import Node
-from course_flow.models.program import Program
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow
 from course_flow.models.relations.nodeLink import NodeLink
 from course_flow.models.relations.nodeWeek import NodeWeek
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.models.week import Week
+from course_flow.models.workflow_objects.column import Column
+from course_flow.models.workflow_objects.node import Node
+from course_flow.models.workflow_objects.week import Week
+from course_flow.models.workspace.activity import Activity
+from course_flow.models.workspace.course import Course
+from course_flow.models.workspace.program import Program
 from course_flow.serializers import (
     bleach_allowed_tags_description,
     bleach_allowed_tags_title,
@@ -107,9 +107,7 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
         for project in json_data["project"]:
             new_project = Project.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(
-                    project["title"], tags=bleach_allowed_tags_title
-                ),
+                title=bleach_sanitizer(project["title"], tags=bleach_allowed_tags_title),
             )
             id_dict["project"][project["id"]] = new_project
         #        for outcome in json_data["outcome"]:
@@ -123,9 +121,7 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
         for activity in json_data["activity"]:
             new_activity = Activity.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(
-                    activity["title"], tags=bleach_allowed_tags_title
-                ),
+                title=bleach_sanitizer(activity["title"], tags=bleach_allowed_tags_title),
                 description=bleach_sanitizer(
                     activity["description"],
                     tags=bleach_allowed_tags_description,
@@ -139,9 +135,7 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
         for course in json_data["course"]:
             new_course = Course.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(
-                    course["title"], tags=bleach_allowed_tags_title
-                ),
+                title=bleach_sanitizer(course["title"], tags=bleach_allowed_tags_title),
                 description=bleach_sanitizer(
                     course["description"], tags=bleach_allowed_tags_description
                 ),
@@ -154,9 +148,7 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
         for program in json_data["program"]:
             new_program = Program.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(
-                    program["title"], tags=bleach_allowed_tags_title
-                ),
+                title=bleach_sanitizer(program["title"], tags=bleach_allowed_tags_title),
                 description=bleach_sanitizer(
                     program["description"],
                     tags=bleach_allowed_tags_description,
@@ -185,26 +177,18 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
         for week in json_data["week"]:
             new_week = Week.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(
-                    week["title"], tags=bleach_allowed_tags_title
-                ),
+                title=bleach_sanitizer(week["title"], tags=bleach_allowed_tags_title),
             )
             id_dict["week"][week["id"]] = new_week
         for node in json_data["node"]:
             new_node = Node.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(
-                    node["title"], tags=bleach_allowed_tags_title
-                ),
+                title=bleach_sanitizer(node["title"], tags=bleach_allowed_tags_title),
                 description=bleach_sanitizer(
                     node["description"], tags=bleach_allowed_tags_description
                 ),
-                task_classification=task_dict.get(node["task_classification"])
-                or 0,
-                context_classification=context_dict.get(
-                    node["context_classification"]
-                )
-                or 0,
+                task_classification=task_dict.get(node["task_classification"]) or 0,
+                context_classification=context_dict.get(node["context_classification"]) or 0,
                 time_units=time_unit_dict.get(node["time_units"]) or 0,
                 time_required=bleach_sanitizer(node["time_required"], tags=[]),
             )
@@ -248,15 +232,11 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
         #                    rank=i,
         #                )
 
-        for workflow in (
-            json_data["activity"] + json_data["course"] + json_data["program"]
-        ):
+        for workflow in json_data["activity"] + json_data["course"] + json_data["program"]:
             workflow_model = id_dict["workflow"][workflow["id"]]
             for i, column in enumerate(id_dict["column"][workflow["id"]]):
                 column_model = id_dict["column"][workflow["id"]][column]
-                ColumnWorkflow.objects.create(
-                    workflow=workflow_model, column=column_model, rank=i
-                )
+                ColumnWorkflow.objects.create(workflow=workflow_model, column=column_model, rank=i)
 
             for i, week_id in enumerate(workflow["weeks"]):
                 WeekWorkflow.objects.create(
@@ -268,19 +248,13 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
         for week in json_data["week"]:
             week_model = id_dict["week"][week["id"]]
             for i, node_id in enumerate(week["nodes"]):
-                NodeWeek.objects.create(
-                    week=week_model, node=id_dict["node"][node_id], rank=i
-                )
+                NodeWeek.objects.create(week=week_model, node=id_dict["node"][node_id], rank=i)
 
         for node in json_data["node"]:
             node_model = id_dict["node"][node["id"]]
-            node_model.column = id_dict["column"][node["workflow"]][
-                node["column"]
-            ]
+            node_model.column = id_dict["column"][node["workflow"]][node["column"]]
             if node["linked_workflow"] is not None:
-                node_model.linked_workflow = id_dict["workflow"][
-                    node["linked_workflow"]
-                ]
+                node_model.linked_workflow = id_dict["workflow"][node["linked_workflow"]]
             node_model.save()
 
         #        for outcomenode in json_data["outcomenode"]:
@@ -294,9 +268,7 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
             nl = NodeLink.objects.create(
                 source_node=id_dict["node"][nodelink["source"]],
                 target_node=id_dict["node"][nodelink["target"]],
-                title=bleach_sanitizer(
-                    nodelink["title"], tags=bleach_allowed_tags_title
-                ),
+                title=bleach_sanitizer(nodelink["title"], tags=bleach_allowed_tags_title),
             )
             if nodelink["style"] == "dashed":
                 nl.dashed = True

@@ -1,5 +1,3 @@
-import logging
-
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -7,16 +5,9 @@ from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 
 from course_flow.apps import logger
-from course_flow.models.activity import Activity
-from course_flow.models.column import Column
 from course_flow.models.comment import Comment
-from course_flow.models.course import Course
 from course_flow.models.favourite import Favourite
-from course_flow.models.node import Node
 from course_flow.models.objectPermission import ObjectPermission, Permission
-from course_flow.models.outcome import Outcome
-from course_flow.models.program import Program
-from course_flow.models.project import Project
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow
 from course_flow.models.relations.nodeLink import NodeLink
 from course_flow.models.relations.nodeWeek import NodeWeek
@@ -28,8 +19,15 @@ from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.models.week import Week
-from course_flow.models.workflow import Workflow
+from course_flow.models.workflow_objects.column import Column
+from course_flow.models.workflow_objects.node import Node
+from course_flow.models.workflow_objects.outcome import Outcome
+from course_flow.models.workflow_objects.week import Week
+from course_flow.models.workspace.activity import Activity
+from course_flow.models.workspace.course import Course
+from course_flow.models.workspace.program import Program
+from course_flow.models.workspace.project import Project
+from course_flow.models.workspace.workflow import Workflow
 from course_flow.services import DAO
 
 

@@ -80,7 +80,7 @@ class UserEndpoint:
                 status=status.HTTP_200_OK,
             )
         else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+            logger.exception(f"Logged Exception: : {serializer.errors}")
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -121,7 +121,7 @@ class UserEndpoint:
                 status=status.HTTP_200_OK,
             )
         else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+            logger.exception(f"Logged Exception: : {serializer.errors}")
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -1,6 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
-import { TTermByID, getTermByID } from '@cfFindState'
+import { TTermByID, getTermById } from '@cfFindState'
 // import $ from 'jquery'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
@@ -169,7 +169,7 @@ const mapStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   return {
-    term: getTermByID(state, ownProps.objectId),
+    term: getTermById(state, ownProps.objectId),
     workflow: state.workflow
   }
 }

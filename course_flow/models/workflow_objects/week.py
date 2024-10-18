@@ -7,10 +7,9 @@ import uuid
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from course_flow.models._abstract import AbstractCourseFlowModel
 from course_flow.models.common import User
-
-from ._abstract import AbstractCourseFlowModel
-from .node import Node
+from course_flow.models.workflow_objects.node import Node
 
 
 def strategy_choices():
@@ -53,8 +52,6 @@ class Week(AbstractCourseFlowModel):
     ##########################################################
     # FIELDS
     #########################################################
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
     default = models.BooleanField(default=False)
 
     is_original = models.BooleanField(default=True)
@@ -63,28 +60,20 @@ class Week(AbstractCourseFlowModel):
 
     is_dropped = models.BooleanField(default=True)
 
-    strategy_classification = models.PositiveIntegerField(
-        choices=strategy_choices(), default=0
-    )
+    strategy_classification = models.PositiveIntegerField(choices=strategy_choices(), default=0)
     week_type = models.PositiveIntegerField(choices=week_types(), default=0)
     #########################################################
     # RELATIONS
     #########################################################
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
-    parent_week = models.ForeignKey(
-        "Week", on_delete=models.SET_NULL, null=True
-    )
+    parent_week = models.ForeignKey("Week", on_delete=models.SET_NULL, null=True)
 
-    original_strategy = models.ForeignKey(
-        "Workflow", on_delete=models.SET_NULL, null=True
-    )
+    original_strategy = models.ForeignKey("Workflow", on_delete=models.SET_NULL, null=True)
 
     nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
 
-    comments = models.ManyToManyField(
-        "Comment", blank=True, related_name="week"
-    )
+    comments = models.ManyToManyField("Comment", blank=True, related_name="week")
 
     #########################################################
     # META

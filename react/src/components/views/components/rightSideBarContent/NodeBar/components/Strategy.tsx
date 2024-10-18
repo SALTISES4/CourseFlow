@@ -4,7 +4,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
-import { TStrategyByID, getStrategyByID } from '@cfFindState'
+import { TStrategyByID, getStrategyById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -103,7 +103,7 @@ const mapStrategyStateToProps = (
   state: AppState,
   ownProps: OwnPropsType
 ): TStrategyByID => {
-  return getStrategyByID(state, ownProps.objectId)
+  return getStrategyById(state, ownProps.objectId)
 }
 
 const Strategy = connect(mapStrategyStateToProps, null)(StrategyUnconnected)

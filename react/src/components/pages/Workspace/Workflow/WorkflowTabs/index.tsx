@@ -85,11 +85,6 @@ const WorkflowTabs = () => {
     }
   }, [])
 
-
-  console.log('context')
-  console.log(context)
-
-
   /*******************************************************
    * COMPONENTS
    *******************************************************/
@@ -152,7 +147,11 @@ const WorkflowTabs = () => {
         // this.addEditable(this.props.data)
       }
 
-      <div id='edit-menu'></div>
+      {/*
+      this div has been randomly dropped here so we can still see the legacy selectmanager in action
+      after that it can go
+      */}
+      <div id="edit-menu"></div>
 
       <div className="main-block">
         <MenuBar

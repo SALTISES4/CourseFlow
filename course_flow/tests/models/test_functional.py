@@ -20,7 +20,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from course_flow.models.liveprojectmodels.liveProjectUser import (
     LiveProjectUser,
 )
-from course_flow.models.project import Project
 from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
 )
@@ -28,21 +27,22 @@ from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.outcomeOutcome import OutcomeOutcome
 from course_flow.models.relations.outcomeWorkflow import OutcomeWorkflow
 from course_flow.models.relations.workflowProject import WorkflowProject
+from course_flow.models.workflow_objects.outcome import Outcome
+from course_flow.models.workspace.activity import Activity
+from course_flow.models.workspace.course import Course
+from course_flow.models.workspace.program import Program
+from course_flow.models.workspace.project import Project
+from course_flow.models.workspace.workflow import Workflow
 from course_flow.routes.routing import websocket_urlpatterns
 from course_flow.services import DAO
 
-from ...models.activity import Activity
-from ...models.course import Course
 from ...models.courseFlowUser import CourseFlowUser
 from ...models.discipline import Discipline
 from ...models.favourite import Favourite
 from ...models.liveAssignment import LiveAssignment
 from ...models.liveProject import LiveProject
 from ...models.objectPermission import ObjectPermission
-from ...models.outcome import Outcome
-from ...models.program import Program
 from ...models.userAssignment import UserAssignment
-from ...models.workflow import Workflow
 from .utils import get_author, login
 
 timeout = 10

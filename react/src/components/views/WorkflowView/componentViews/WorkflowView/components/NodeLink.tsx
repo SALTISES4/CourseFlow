@@ -6,7 +6,7 @@ import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
-import { TGetNodeLinkByID, getNodeLinkByID } from '@cfFindState'
+import { TGetNodeLinkById, getNodeLinkByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import NodeLinkSVG from '@cfViews/components/Node/NodeLinkSVG'
 import * as React from 'react'
@@ -14,7 +14,7 @@ import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 // import $ from 'jquery'
 
-type ConnectedProps = TGetNodeLinkByID
+type ConnectedProps = TGetNodeLinkById
 type OwnProps = {
   objectId: number
   node_div: React.RefObject<HTMLDivElement>
@@ -182,7 +182,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TGetNodeLinkByID => {
+): TGetNodeLinkById => {
   return getNodeLinkByID(state, ownProps.objectId) || { data: undefined }
 }
 export default connect<ConnectedProps, object, OwnProps, AppState>(
