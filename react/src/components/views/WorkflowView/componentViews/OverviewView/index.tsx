@@ -1,6 +1,5 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
-import { ProjectDetailsType } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
 import { _t, formatDate } from '@cf/utility/utilityFunctions'
 import { AppState } from '@cfRedux/types/type'

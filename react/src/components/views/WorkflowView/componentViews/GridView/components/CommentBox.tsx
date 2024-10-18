@@ -233,7 +233,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
 
     let comments
     if (this.props.comments)
-      comments = this.props.comments.map((comment) => {
+      comments = this.props.comments.map((comment, index) => {
         const is_unread = this.unreadComments.indexOf(comment.id) >= 0
         let comment_class = 'comment'
         if (is_unread) comment_class += ' unread'
@@ -241,8 +241,9 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
           /@\w[@a-zA-Z0-9_.]{1,}/g,
           (val) => '<b>' + val + '</b>'
         )
+
         return (
-          <div className={comment_class}>
+          <div className={comment_class} key={index}>
             <div className="comment-by">
               <div className="comment-user">
                 {Utility.getUserDisplay(comment.user)}
@@ -299,8 +300,9 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     if (this.state.tagging) {
       tag_box = (
         <div className="comment-tag-box">
-          {this.state.userList.map((user) => (
+          {this.state.userList.map((user, index) => (
             <div
+              key={index}
               className="user-name hover-shade"
               onClick={this.addUserTag.bind(this, user)}
             >
@@ -314,6 +316,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
     return reactDom.createPortal(
       [
         <div
+          key="comment-box"
           className="comment-box"
           onClick={(evt) => evt.stopPropagation()}
           onMouseDown={(evt) => evt.stopPropagation()}

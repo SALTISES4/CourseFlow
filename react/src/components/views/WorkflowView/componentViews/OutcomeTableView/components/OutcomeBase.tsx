@@ -2,9 +2,9 @@ import { createOutcomeNodeBranch } from '@cf/utility/createOutcomeNodeBranch'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import { AppState } from '@cfRedux/types/type'
 import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/CompetencyMatrixView/CompetencyMatrixView'
-import Outcome from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/Outcome'
-import * as React from 'react'
 import { connect } from 'react-redux'
+
+import Outcome from './Outcome'
 /**
  * The base representation of an outcome line in a table,
  * regardless of the orientation of the table

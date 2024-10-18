@@ -32,18 +32,8 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   private sourceNode: JQuery
   private targetNode: JQuery
-  private targetPort_handle: d3.Selection<
-    SVGElement,
-    unknown,
-    HTMLElement,
-    any
-  >
-  private sourcePort_handle: d3.Selection<
-    SVGElement,
-    unknown,
-    HTMLElement,
-    any
-  >
+  private targetPort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  private sourcePort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private rerenderEvents: string
   constructor(props: PropsType) {
     super(props)
@@ -108,6 +98,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
 
       // eslint-disable-next-line no-undef
       this.sourcePort_handle = d3.select(cssSourcePortSelector)
+      // eslint-disable-next-line no-undef
       this.targetPort_handle = d3.select(cssSourceTargetSelector)
     }
 
@@ -153,7 +144,6 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
         style={style}
         hovered={node_hovered}
         node_selected={node_selected}
-        // @ts-ignore
         lock={data.lock} // @todo where is lock defined?
         title={data.title}
         textPosition={data.textPosition}
@@ -162,7 +152,10 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
         targetPort_handle={this.targetPort_handle}
         targetPort={data.targetPort}
         clickFunction={(evt) =>
-          this.context.selectionManager.changeSelection({ evt, newSelection: this })
+          this.context.selectionManager.changeSelection({
+            evt,
+            newSelection: this
+          })
         }
         selected={this.state.selected}
         source_dimensions={source_dims}

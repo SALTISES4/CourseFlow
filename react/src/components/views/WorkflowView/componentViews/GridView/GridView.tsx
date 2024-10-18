@@ -1,9 +1,10 @@
 import { _t } from '@cf/utility/utilityFunctions'
 import { getWeekByID, getWeekWorkflowByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import GridWeek from '@cfViews/WorkflowView/componentViews/GridView/GridWeek'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
+import GridWeek from './GridWeek'
 // @components
 
 /**

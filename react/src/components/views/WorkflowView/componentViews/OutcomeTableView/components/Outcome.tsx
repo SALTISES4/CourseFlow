@@ -1,7 +1,7 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
+import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import ComponentWithToggleDrop, {
   ComponentWithToggleProps
 } from '@cfEditableComponents/ComponentWithToggleDrop'

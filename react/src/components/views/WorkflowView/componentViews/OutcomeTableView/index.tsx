@@ -13,10 +13,11 @@ import {
 import * as Utility from '@cfUtility'
 import { _t } from '@cfUtility'
 import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
-import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeBase'
-import OutcomeLegend from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/OutcomeLegend'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
+import OutcomeBase from './components/OutcomeBase'
+import OutcomeLegend from './components/OutcomeLegend'
 
 /**
  * The outcome table.

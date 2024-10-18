@@ -9,10 +9,8 @@ import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import React from 'react'
-import { useParams } from 'react-router-dom'
-
 import * as SC from 'components/views/components/workspaceOverview/styles'
+import { useParams } from 'react-router-dom'
 
 import { ObjectSetThumbnail } from './styles'
 

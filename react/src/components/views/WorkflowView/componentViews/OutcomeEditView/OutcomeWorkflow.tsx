@@ -1,9 +1,10 @@
 import { CfObjectType } from '@cf/types/enum'
 import { TGetOutcomeWorkflowByID, getOutcomeWorkflowByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import Outcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/Outcome'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
+import Outcome from './Outcome'
 
 type ConnectedProps = TGetOutcomeWorkflowByID
 type OwnProps = {

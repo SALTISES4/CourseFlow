@@ -16,7 +16,6 @@ import {
 } from '@XMLHTTP/API/workspaceUser.rtk'
 import { EUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import React from 'react'
 
 import * as SC from './styles'
 
@@ -107,7 +106,8 @@ const UserList = ({
               </ListItemAvatar>
               <ListItemText primary={user.username} secondary={user.email} />
               <MenuButton
-                disabled={false} // this needs to be a check on call to see if current user can edit
+                // TODO: this needs to be a check on call to see if current user can edit
+                disabled={false}
                 options={[
                   ...permissionGroupMenuOptions.map((item) => ({
                     name: String(item.value),
