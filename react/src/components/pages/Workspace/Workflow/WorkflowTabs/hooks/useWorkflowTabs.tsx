@@ -1,7 +1,7 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
-import { WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import AlignmentView from '@cfViews/WorkflowView/componentViews/AlignmentView/AlignmentView'
 import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/CompetencyMatrixView/CompetencyMatrixView'
 import GridView from '@cfViews/WorkflowView/componentViews/GridView/GridView'

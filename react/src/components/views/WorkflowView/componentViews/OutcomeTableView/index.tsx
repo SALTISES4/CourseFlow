@@ -1,6 +1,7 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { CfObjectType, WorkflowViewType } from '@cf/types/enum'
+import { CfObjectType } from '@cf/types/enum'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import {
   AppState,
   TColumn,

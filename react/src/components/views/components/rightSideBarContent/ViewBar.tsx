@@ -1,6 +1,6 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'

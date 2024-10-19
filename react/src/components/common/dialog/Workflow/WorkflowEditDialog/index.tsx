@@ -1,6 +1,5 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { WorkflowType } from '@cf/types/enum'
 import { Utility } from '@cf/utility/utilityFunctions'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import { FormField } from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
@@ -8,6 +7,7 @@ import {
   WorkflowFormType,
   timeUnits
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { AppState } from '@cfRedux/types/type'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'

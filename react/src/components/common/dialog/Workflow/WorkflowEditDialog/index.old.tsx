@@ -1,13 +1,13 @@
 // @ts-nocheck
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { WorkflowType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import {
   WorkflowFormType,
   timeUnits
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { AppState } from '@cfRedux/types/type'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
@@ -26,7 +26,6 @@ import { produce } from 'immer'
 import { ChangeEvent, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-
 
 type StateType = WorkflowFormType
 

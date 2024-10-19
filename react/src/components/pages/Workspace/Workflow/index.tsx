@@ -2,10 +2,11 @@ import { UserContext } from '@cf/context/userContext'
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useWorkflowWebsocketManager } from '@cfPages/Workspace/Workflow/hooks/useWorkflowWebsocketManager'
+import { WorkflowSidebarContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar/context'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
@@ -75,22 +76,24 @@ const Workflow = () => {
   }
 
   return (
-    <WorkFlowConfigProvider
-      initialValue={{
-        selectionManager: selectionManager!,
-        editableMethods: {
-          lockUpdate,
-          microUpdate,
-          changeField
-        },
-        ws: {
-          wsConnected: isWsInit,
-          connectedUsers
-        }
-      }}
-    >
-      <WorkflowTabs />
-    </WorkFlowConfigProvider>
+    <WorkflowSidebarContextProvider>
+      <WorkFlowConfigProvider
+        initialValue={{
+          selectionManager: selectionManager!,
+          editableMethods: {
+            lockUpdate,
+            microUpdate,
+            changeField
+          },
+          ws: {
+            wsConnected: isWsInit,
+            connectedUsers
+          }
+        }}
+      >
+        <WorkflowTabs />
+      </WorkFlowConfigProvider>
+    </WorkflowSidebarContextProvider>
   )
 }
 

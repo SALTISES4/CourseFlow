@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 import * as Constants from '@cf/constants'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
@@ -17,8 +16,12 @@ import {
   WorkFlowContextType
 } from '@cfModule/context/workFlowConfigContext'
 import { EventUnion } from '@cfModule/types/common'
-import { CfObjectType, ViewType, WFContext } from '@cfModule/types/enum'
+import { CfObjectType } from '@cfModule/types/enum'
 import { UtilityLoader } from '@cfModule/utility/UtilityLoader'
+import {
+  WorkflowContext,
+  WorkflowViewType
+} from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
@@ -66,7 +69,7 @@ type ConnectedProps = {
  */
 
 type OwnProps = {
-  updateView: (viewType: ViewType) => void
+  updateView: (viewType: WorkflowViewType) => void
 } & EditableComponentProps
 
 type PropsType = DispatchProp & ConnectedProps & OwnProps
@@ -145,7 +148,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     COURSEFLOW_APP.makeDropdown('#jump-to')
     COURSEFLOW_APP.makeDropdown('#expand-collapse-all')
 
-    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
+    if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQuery(this.workflowId, (response) => {
         this.props.dispatch(
           ActionCreator.refreshStoreData(response.dataPackage)
@@ -328,7 +331,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   /*******************************************************
    * FUNCTIONS AND MENU HANDLERS
    *******************************************************/
-  changeView(type: ViewType) {
+  changeView(type: WorkflowViewType) {
     this.props.updateView(type)
   }
 
@@ -607,7 +610,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
             </div>
 
             <RightSideBar
-              wfcontext={WFContext.WORKFLOW}
+              wfcontext={WorkflowContext.WORKFLOW}
               data={this.props.data}
               readOnly={this.readOnly}
             />

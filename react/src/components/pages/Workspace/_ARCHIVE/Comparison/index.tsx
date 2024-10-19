@@ -1,12 +1,10 @@
-// @ts-nocheck
-import { WorkflowViewType } from '@cf/types/enum.js'
-import Loader from '@cfComponents/UIPrimitives/Loader/Loader.js'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import * as Constants from '@cfConstants'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import ComparisonView from '@cfViews/ProjectComparisonView/ComparisonView'
 import createCache from '@emotion/cache'
 import { createTheme } from '@mui/material/styles'
-import React from 'react'
 import * as reactDom from 'react-dom'
 
 const cache = createCache({
@@ -24,7 +22,7 @@ export class Comparison {
   private projectData: any
   private userPermission: any
 
-  constructor(props: WorkflowComparisonViewDTO) {
+  constructor(props) {
     this.projectData = props.projectData
     this.userPermission = props.userPermission // @todo double check we're getting this from data object
 

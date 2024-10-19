@@ -1,9 +1,9 @@
 // @ts-nocheck
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import legacyWithRouter from '@cf/HOC/legacyWithRouter'
-import { WorkflowViewType } from '@cf/types/enum.js'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import Workflow from '@cfPages/Workspace/Workflow'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import * as Reducers from '@cfRedux/Reducers'
 import ComparisonWorkflowBase from '@cfViews/ProjectComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'

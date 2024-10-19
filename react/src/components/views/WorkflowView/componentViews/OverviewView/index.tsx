@@ -1,7 +1,7 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
-import { WorkspaceType } from '@cf/types/enum'
 import { _t, formatDate } from '@cf/utility/utilityFunctions'
+import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import { AppState } from '@cfRedux/types/type'
 import UserList from '@cfViews/components/workspaceOverview/UserList'
 import LinkIcon from '@mui/icons-material/Link'

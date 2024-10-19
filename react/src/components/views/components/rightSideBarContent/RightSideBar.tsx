@@ -1,7 +1,10 @@
 // @ts-nocheck
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { WFContext, WorkflowViewType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
+import {
+  WorkflowContext,
+  WorkflowViewType
+} from '@cfPages/Workspace/Workflow/types'
 import NodeBar from '@cfViews/components/rightSideBarContent/NodeBar'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
@@ -32,7 +35,7 @@ import ViewBar from './ViewBar'
 
 type PropsType = {
   // renderer: ChildRenderer
-  wfcontext: WFContext
+  wfcontext: WorkflowContext
   // parentRender: (container: any, viewType: ViewType) => void // explicitly define the parent/gp 're-render' method for clarity
   data: any
   readOnly: boolean
@@ -90,7 +93,7 @@ class RightSideBar extends React.Component<PropsType> {
    * COMPONENTS
    *******************************************************/
   NodeBarWrapper = () => {
-    if (this.props.wfcontext === WFContext.WORKFLOW)
+    if (this.props.wfcontext === WorkflowContext.WORKFLOW)
       return (
         <NodeBar
           // viewType={this.props.renderer.viewType}
@@ -103,7 +106,7 @@ class RightSideBar extends React.Component<PropsType> {
   }
 
   OutcomeBarWrapper = () => {
-    if (this.props.wfcontext === WFContext.COMPARISON) {
+    if (this.props.wfcontext === WorkflowContext.COMPARISON) {
       return null
     }
     if (this.context.workflowView === WorkflowViewType.OUTCOME_EDIT) {
@@ -119,12 +122,12 @@ class RightSideBar extends React.Component<PropsType> {
   }
 
   ViewBarWrapper = () => {
-    if (this.props.wfcontext === WFContext.WORKFLOW) {
+    if (this.props.wfcontext === WorkflowContext.WORKFLOW) {
       return (
         <ViewBar data={this.props.data} /* renderer={this.props.renderer}*/ />
       )
     }
-    if (this.props.wfcontext === WFContext.COMPARISON) {
+    if (this.props.wfcontext === WorkflowContext.COMPARISON) {
       return (
         <ComparisonViewBar
           toggleObjectSet={this.props.toggleObjectSet}
@@ -137,7 +140,7 @@ class RightSideBar extends React.Component<PropsType> {
   }
 
   RestoreBarWrapper = () => {
-    if (this.props.wfcontext === WFContext.WORKFLOW) return <RestoreBar />
+    if (this.props.wfcontext === WorkflowContext.WORKFLOW) return <RestoreBar />
     return null
   }
 

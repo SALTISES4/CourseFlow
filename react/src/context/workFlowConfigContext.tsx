@@ -1,5 +1,5 @@
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
-import { WorkflowViewType } from '@cf/types/enum'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 

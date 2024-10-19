@@ -1,6 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { PermissionGroup } from '@cf/types/common'
-import { WorkspaceType } from '@cf/types/enum'
+import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import { EUser, EWorkspaceUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'

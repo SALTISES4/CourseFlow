@@ -1,7 +1,6 @@
-import appRoutes, { CFRoutes } from '@cf/router/appRoutes'
-import { WorkspaceType } from '@cf/types/enum'
+import { CFRoutes } from '@cf/router/appRoutes'
 import { MaybeWithId, hasId } from '@cf/types/typeGuards'
-import * as React from 'react'
+import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import { generatePath } from 'react-router-dom'
 
 type GenericObject = {
@@ -136,9 +135,9 @@ export function capFirst(str) {
  */
 export function unescapeCharacters(string) {
   return string
-    .replace(/\&amp;/g, '&')
-    .replace(/\&gt;/g, '>')
-    .replace(/\&lt;/g, '<')
+    .replace(/&amp;/g, '&')
+    .replace(/&gt;/g, '>')
+    .replace(/&lt;/g, '<')
 }
 
 export function getUserDisplay(user) {

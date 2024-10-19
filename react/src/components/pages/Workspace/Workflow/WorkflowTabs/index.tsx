@@ -1,8 +1,8 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
-import { WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import {
@@ -45,13 +45,15 @@ const WorkflowTabs = () => {
   const context = useContext(WorkFlowConfigContext)
   const workflow = useSelector((state: AppState) => state.workflow)
 
+  console.log({ workflow })
+
   // @todo should be memoized (calling the tabs per render)
   const { tabRoutes, tabButtons, tabs } = useWorkflowTabs({
     data
   })
 
   // @todo this is called originally via
-  //    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
+  //    if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
   //    getWorkflowParentDataQuery(this.workflowId, (response) => {
   //      this.props.dispatch(
   //        ActionCreator.refreshStoreData(response.dataPackage)
@@ -69,7 +71,7 @@ const WorkflowTabs = () => {
   // } = useQuery<WorkflowParentDataQueryResp>({
   //   queryKey: ['getWorkflowParentDataQuery'],
   //   queryFn: () => getWorkflowParentDataQuery(data.id),
-  //   enabled: context.workflowView === ViewType.OUTCOME_EDIT
+  //   enabled: context.workflowView === WorkflowViewType.OUTCOME_EDIT
   // })
 
   /*******************************************************
@@ -149,7 +151,7 @@ const WorkflowTabs = () => {
         // this.addEditable(this.props.data)
       }
 
-      <div id='edit-menu'></div>
+      <div id="edit-menu"></div>
 
       <div className="main-block">
         <MenuBar

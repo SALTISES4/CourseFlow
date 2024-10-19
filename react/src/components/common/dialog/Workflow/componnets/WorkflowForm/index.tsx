@@ -1,9 +1,9 @@
-import { WorkflowType } from '@cf/types/enum'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import {
   WorkflowFormType,
   timeUnits
 } from '@cfComponents/dialog/Workflow/CreateWizardDialog/types'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
