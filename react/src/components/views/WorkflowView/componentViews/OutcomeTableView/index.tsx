@@ -203,7 +203,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
     if (outcomesSorted.length === 0 || !has_nodes) {
       let text
-      if (this.context.workflowView === WorkflowViewType.OUTCOMETABLE) {
+      if (this.context.workflowView === WorkflowViewType.OUTCOME_TABLE) {
         text = _t(
           'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
         )

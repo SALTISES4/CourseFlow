@@ -28,7 +28,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
     disabled?: boolean
   }[] = [
     {
-      type: WorkflowViewType.WORKFLOW_OVERVIEW,
+      type: WorkflowViewType.OVERVIEW,
       route: CFRoutes.WORKFLOW,
       relRoute: RelativeRoutes.INDEX,
       label: _t('Overview'),
@@ -52,25 +52,25 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       allowedTabs: data.type == 'program' ? [3] : [2, 3]
     },
     {
-      type: WorkflowViewType.OUTCOMETABLE,
-      route: CFRoutes.WORKFLOW_OUTCOMETABLE,
-      relRoute: RelativeRoutes.OUTCOMETABLE,
+      type: WorkflowViewType.OUTCOME_TABLE,
+      route: CFRoutes.WORKFLOW_OUTCOME_TABLE,
+      relRoute: RelativeRoutes.OUTCOME_TABLE,
       label: _t('Outcome Table'),
       content:
         data.table_type === 1 ? <CompetencyMatrixView /> : <OutcomeTableView />,
       allowedTabs: [3]
     },
     {
-      type: WorkflowViewType.ALIGNMENTANALYSIS,
-      route: CFRoutes.WORKFLOW_ALIGNMENTANALYSIS,
-      relRoute: RelativeRoutes.ALIGNMENTANALYSIS,
+      type: WorkflowViewType.ALIGNMENT_ANALYSIS,
+      route: CFRoutes.WORKFLOW_ALIGNMENT_ANALYSIS,
+      relRoute: RelativeRoutes.ALIGNMENT_ANALYSIS,
       label: _t('Outcome Analytics'),
       content: <AlignmentView />,
       allowedTabs: [3],
       disabled: ['activity'].includes(data.type)
     },
     {
-      type: WorkflowViewType.GRID,
+      type: WorkflowViewType.GRID_VIEW,
       route: CFRoutes.WORKFLOW_GRID,
       relRoute: RelativeRoutes.GRID,
       label: _t('Grid View'),

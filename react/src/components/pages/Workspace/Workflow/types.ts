@@ -14,13 +14,13 @@ export enum WorkspaceType {
  * // WorkflowViewType additionally is one dimension which informs the workspace utility sidebar
  *******************************************************/
 export enum WorkflowViewType {
+  OVERVIEW = 'workflowoverview',
   WORKFLOW = 'workflowview',
   OUTCOME_EDIT = 'outcomeedit',
-  GRID = 'grid',
-  OUTCOMETABLE = 'outcometable',
-  ALIGNMENTANALYSIS = 'alignmentanalysis',
-  HORIZONTALOUTCOMETABLE = 'horizontaloutcometable',
-  WORKFLOW_OVERVIEW = 'workflowoverview'
+  GRID_VIEW = 'grid',
+  OUTCOME_TABLE = 'outcometable',
+  ALIGNMENT_ANALYSIS = 'alignmentanalysis',
+  HORIZONTAL_OUTCOME_TABLE = 'horizontaloutcometable'
 }
 
 export enum WorkflowType {

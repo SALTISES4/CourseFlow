@@ -298,7 +298,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     if (outcomesSorted.length == 0 || !has_nodes) {
       const text =
-        this.context.workflowView == WorkflowViewType.OUTCOMETABLE
+        this.context.workflowView == WorkflowViewType.OUTCOME_TABLE
           ? _t(
               'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
             )
