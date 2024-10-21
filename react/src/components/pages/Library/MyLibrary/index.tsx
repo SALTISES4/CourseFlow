@@ -25,13 +25,11 @@ const defaultOptionsSearchOptions: SearchOptionsState = {
     }
   ],
   filterGroups: {
-    keyword: [
-      {
-        name: 'keyword',
-        label: _t('search'),
-        value: ''
-      }
-    ],
+    keyword: {
+      name: 'keyword',
+      label: _t('search'),
+      value: ''
+    },
     filterOptions: [
       {
         name: 'all',
@@ -59,7 +57,12 @@ const defaultOptionsSearchOptions: SearchOptionsState = {
         label: _t('Archived'),
         value: true
       }
-    ]
+    ],
+    filterTemplate: {
+      name: 'template',
+      label: _t('Template'),
+      value: true
+    }
   }
 }
 

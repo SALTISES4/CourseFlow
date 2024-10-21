@@ -145,21 +145,19 @@ class LibraryService:
         workflow_queryset = (
             DAO.get_model_from_str("workflow")
             .objects.select_related("author")
-            .annotate(hell_type=Value("activity", output_field=CharField()))
-            # .annotate(
-            #     type=Case(
-            #         # Check if each subclass exists and return its 'type'
-            #         *[
-            #             When(**{f"{subclass}__isnull": False}, then=Value(subclass))
-            #             for subclass in SUBCLASSES
-            #         ],
-            #         # Default value if no subclass is found
-            #         default=Value("workflow"),
-            #         output_field=CharField(),
-            #     )
-            # )
+            .annotate(
+                annotated_type=Case(
+                    # Check if each subclass exists and return its 'type'
+                    *[
+                        When(**{f"{subclass}__isnull": False}, then=Value(subclass))
+                        for subclass in SUBCLASSES
+                    ],
+                    # Default value if no subclass is found
+                    default=Value("workflow"),
+                    output_field=CharField(),
+                )
+            )
             .filter(**filter_kwargs)
-            # .filter(type="activity")
             # .filter(q_objects)
             #     .annotate(num_nodes=Count("weeks__nodes"))
             .only(*fields)

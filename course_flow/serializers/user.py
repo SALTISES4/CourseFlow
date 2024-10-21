@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from course_flow.models import User
-from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.user import CourseFlowUser
 from course_flow.serializers.mixin import bleach_sanitizer
 
 

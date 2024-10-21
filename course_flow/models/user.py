@@ -1,7 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models.common import User, title_max_length
+from course_flow.models._constants import title_max_length
 
 # EN/FR language preferences
 LANGUAGE_CHOICES = [
@@ -9,7 +10,16 @@ LANGUAGE_CHOICES = [
     ("fr", _("French")),
 ]
 
+#########################################################
+# The django 'auth' user
+#########################################################
+User = get_user_model()
 
+
+#########################################################
+# @todo clarify why we have a whole additional user model with mostly
+# repeated fields
+#########################################################
 class CourseFlowUser(models.Model):
     #########################################################
     # FIELDS
@@ -20,9 +30,7 @@ class CourseFlowUser(models.Model):
         blank=True,
     )
 
-    last_name = models.CharField(
-        max_length=title_max_length, null=True, blank=True
-    )
+    last_name = models.CharField(max_length=title_max_length, null=True, blank=True)
 
     # Whether the user wants to receive notifications
     notifications = models.BooleanField(

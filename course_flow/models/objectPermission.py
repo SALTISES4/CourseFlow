@@ -6,7 +6,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models.common import User, workflow_choices
+from course_flow.models._constants import workflow_choices
+from course_flow.models.user import User
 from course_flow.models.workspace.workflow import Workflow
 
 

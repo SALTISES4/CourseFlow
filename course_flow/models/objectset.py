@@ -1,6 +1,6 @@
 from django.db import models
 
-from course_flow.models.common import title_max_length
+from course_flow.models._constants import title_max_length
 from course_flow.models.workspace.project import Project
 
 

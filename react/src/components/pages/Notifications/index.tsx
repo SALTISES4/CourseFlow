@@ -1,4 +1,4 @@
-import { OuterContentWrap } from '@cf/mui/helper'
+import * as SCCommon from '@cf/mui/helper'
 import { apiPaths } from '@cf/router/apiRoutes'
 import strings from '@cf/utility/strings'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
@@ -19,7 +19,7 @@ import { useGetNotificationsQuery } from '@XMLHTTP/API/notifications.rtk'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { useState } from 'react'
 
-import * as Styled from './style'
+import * as SC from './style'
 
 /**
  *
@@ -187,12 +187,12 @@ const NotificationsPage = (): JSX.Element => {
    *******************************************************/
   if (pageState.notifications.length > 0) {
     return (
-      <OuterContentWrap>
-        <Styled.NotificationsWrap>
-          <Styled.NotificationsHeader>
+      <SCCommon.OuterContentWrap>
+        <SC.NotificationsWrap>
+          <SC.NotificationsHeader>
             <Typography variant="h1">{strings.notifications}</Typography>
             {meta.unreadCount > 0 && !pageState?.allRead && (
-              <Styled.MarkAsRead>
+              <SC.MarkAsRead>
                 <Link
                   href="#"
                   underline="always"
@@ -200,15 +200,15 @@ const NotificationsPage = (): JSX.Element => {
                 >
                   {strings.markAllAsRead}
                 </Link>
-              </Styled.MarkAsRead>
+              </SC.MarkAsRead>
             )}
-          </Styled.NotificationsHeader>
+          </SC.NotificationsHeader>
 
-          <Styled.NotificationsList>
+          <SC.NotificationsList>
             {pageState.notifications
               .slice(paginateFrom, paginateTo)
               .map((n, idx) => (
-                <Styled.StyledListItem
+                <SC.StyledListItem
                   key={idx}
                   alignItems="flex-start"
                   sx={{
@@ -248,9 +248,9 @@ const NotificationsPage = (): JSX.Element => {
                       }
                     />
                   </ListItemButton>
-                </Styled.StyledListItem>
+                </SC.StyledListItem>
               ))}
-          </Styled.NotificationsList>
+          </SC.NotificationsList>
 
           <Menu
             id="notification-menu"
@@ -276,10 +276,10 @@ const NotificationsPage = (): JSX.Element => {
             )}
             <MenuItem onClick={onDeleteClick}>{strings.delete}</MenuItem>
           </Menu>
-        </Styled.NotificationsWrap>
+        </SC.NotificationsWrap>
 
         {totalPaginationPages > 1 && (
-          <Styled.StyledPagination
+          <SC.StyledPagination
             count={totalPaginationPages}
             page={pagination.page + 1}
             onChange={onPaginationChange}
@@ -287,21 +287,21 @@ const NotificationsPage = (): JSX.Element => {
             showLastButton
           />
         )}
-      </OuterContentWrap>
+      </SCCommon.OuterContentWrap>
     )
   }
 
   return (
-    <OuterContentWrap>
-      <Styled.NotificationsWrap>
-        <Styled.NotificationsHeader>
+    <SCCommon.OuterContentWrap>
+      <SC.NotificationsWrap>
+        <SC.NotificationsHeader>
           <Typography variant="h1">{strings.notifications}</Typography>
           <Typography sx={{ marginTop: 3 }}>
             {strings.noNotificationsYet}
           </Typography>
-        </Styled.NotificationsHeader>
-      </Styled.NotificationsWrap>
-    </OuterContentWrap>
+        </SC.NotificationsHeader>
+      </SC.NotificationsWrap>
+    </SCCommon.OuterContentWrap>
   )
 }
 

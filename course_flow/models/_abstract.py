@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from django.utils import timezone
 
-from course_flow.models.common import title_max_length
+from course_flow.models._constants import title_max_length
 
 
 class AbstractCourseFlowModel(models.Model):

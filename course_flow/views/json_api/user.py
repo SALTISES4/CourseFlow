@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from course_flow.apps import logger
 from course_flow.forms import ProfileSettings
 from course_flow.models import User
-from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.user import CourseFlowUser
 from course_flow.serializers import (
     FormFieldsSerializer,
     NotificationsSettingsSerializer,

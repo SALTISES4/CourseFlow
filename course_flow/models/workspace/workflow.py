@@ -7,7 +7,7 @@ from model_utils.managers import InheritanceManager
 
 from course_flow.apps import logger
 from course_flow.models._abstract import AbstractWorkspaceModel
-from course_flow.models.common import title_max_length
+from course_flow.models._constants import title_max_length
 from course_flow.models.workflow_objects.column import Column
 from course_flow.models.workflow_objects.outcome import Outcome
 from course_flow.models.workflow_objects.week import Week

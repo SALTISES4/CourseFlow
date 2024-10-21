@@ -36,12 +36,12 @@ from course_flow.models.workspace.workflow import Workflow
 from course_flow.routes.routing import websocket_urlpatterns
 from course_flow.services import DAO
 
-from ...models.courseFlowUser import CourseFlowUser
 from ...models.discipline import Discipline
 from ...models.favourite import Favourite
 from ...models.liveAssignment import LiveAssignment
 from ...models.liveProject import LiveProject
 from ...models.objectPermission import ObjectPermission
+from ...models.user import CourseFlowUser
 from ...models.userAssignment import UserAssignment
 from .utils import get_author, login
 

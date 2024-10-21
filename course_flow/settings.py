@@ -44,7 +44,7 @@ ADMINS = [("John", "john@example.com"), ("Mary", "mary@example.com")]
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        "NAME": os.path.join(BASE_DIR, "assets/db.sqlite3"),
         "TEST": {"NAME": os.path.join(BASE_DIR, "db_test.sqlite3")},
         "OPTIONS": {"timeout": 20},
     }
@@ -221,17 +221,10 @@ GRAPH_MODELS = {"all_applications": True, "group_models": True}
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 #########################################################
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttribute"
-        "SimilarityValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttribute" "SimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 #########################################################
@@ -272,9 +265,7 @@ REST_FRAMEWORK = {
         "djangorestframework_camel_case.parser.CamelCaseJSONParser",
         # Any other parsers
     ),
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication"
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],
 }
 SPECTACULAR_SETTINGS = {
     "TITLE": "Courseflow API",
@@ -301,8 +292,7 @@ except ImportError as e:
     import warnings
 
     warnings.warn(
-        "File local_settings.py not found. You probably want to add it -- "
-        "see README.md."
+        "File local_settings.py not found. You probably want to add it -- " "see README.md."
     )
     pass
 
@@ -370,8 +360,4 @@ CHROMEDRIVER_PATH = None
 # HELPER FUNCTIONS
 #########################################################
 def show_toolbar(request: HttpRequest):
-    return (
-        DEBUG
-        and request.META.get("REMOTE_ADDR") in INTERNAL_IPS
-        and SHOW_TOOLBAR
-    )
+    return DEBUG and request.META.get("REMOTE_ADDR") in INTERNAL_IPS and SHOW_TOOLBAR

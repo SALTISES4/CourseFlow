@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 
 from course_flow.models import Discipline, Project
-from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.user import CourseFlowUser
 
 
 class RegistrationForm(UserCreationForm):

@@ -3,7 +3,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
-from course_flow.models.common import workflow_choices
+from course_flow.models._constants import workflow_choices
 from course_flow.models.workspace.workflow import Workflow
 
 User = get_user_model()

@@ -32,11 +32,11 @@ from course_flow.models.workspace.workflow import Workflow
 from course_flow.services import DAO
 
 from ...models.comment import Comment
-from ...models.courseFlowUser import CourseFlowUser
 from ...models.discipline import Discipline
 from ...models.favourite import Favourite
 from ...models.notification import Notification
 from ...models.objectPermission import ObjectPermission
+from ...models.user import CourseFlowUser
 from .utils import check_order, get_author, login, make_object
 
 TESTJSON_FILENAME = os.path.join(os.path.dirname(__file__), "assets/test_json.json")

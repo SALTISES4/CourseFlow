@@ -35,4 +35,6 @@ from .liveprojectmodels import LiveAssignment
 from .liveprojectmodels import LiveProjectUser
 from .liveprojectmodels import UserAssignment
 
+from ._constants import *
+
 User = get_user_model()

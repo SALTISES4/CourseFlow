@@ -22,7 +22,6 @@ import { SearchOption } from '@cfComponents/filters/types'
 export type LibraryObjectsSearchQueryArgs = {
   resultsPerPage?: number
   page?: number
-  fullSearch?: boolean
   sort?: SearchOption
   filters?: SearchOption[]
 }

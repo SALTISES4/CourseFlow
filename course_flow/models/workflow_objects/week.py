@@ -8,7 +8,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from course_flow.models._abstract import AbstractCourseFlowModel
-from course_flow.models.common import User
+from course_flow.models.user import User
 from course_flow.models.workflow_objects.node import Node
 
 

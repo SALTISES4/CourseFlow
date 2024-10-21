@@ -26,7 +26,7 @@ import { Link as LinkRouter } from 'react-router-dom'
 export type SearchOptionsState = {
   page: number
   sortOptions: SearchOption[]
-  filterGroups: { [key: string]: SearchOption[] }
+  filterGroups: { [key: string]: SearchOption[] | SearchOption }
 }
 
 function updateFilterOptions(
@@ -69,7 +69,6 @@ function reduceStateToSearchArgs(
   return {
     resultsPerPage: 10,
     page: 1,
-    fullSearch: false,
     sort: activeSort,
     filters: activeFilters
   }
@@ -103,6 +102,10 @@ const LibrarySearchView = ({
 
   useEffect(() => {
     if (!defaultOptionsSearchOptions) return
+
+    console.log('searchParameters')
+    console.log(searchParameters)
+
     const args = reduceStateToSearchArgs(searchParameters)
     // this are the formatted search args, reduced to only active filters, and formatted in a flat list for the API call
     // update to UI state, triggers an update to the search Args state, which in turn triggers useQuery
@@ -127,6 +130,7 @@ const LibrarySearchView = ({
     }
 
     if (!data || isError) return <div>error</div>
+    if (!data) return <div>error</div>
 
     const cards = formatLibraryObjects(data.dataPackage.items)
 
@@ -176,6 +180,9 @@ const LibrarySearchView = ({
             sx={{ width: '100%' }}
           >
             <Stack direction="row" spacing={2}>
+              {/*
+            Sorting
+            */}
               <FilterButton
                 sortable
                 options={searchParameters.sortOptions}
@@ -194,6 +201,12 @@ const LibrarySearchView = ({
                 placeholder="Sort"
               />
 
+              {/*
+            Filter Group 1
+            All
+            Owned
+            Shared
+            */}
               <FilterButton
                 options={searchParameters.filterGroups.filterOptions}
                 icon={<FilterIcon />}
@@ -209,6 +222,10 @@ const LibrarySearchView = ({
                   )
                 }}
               />
+
+              {/*
+            Disciplines
+            */}
               {searchParameters.filterGroups.disciplineOptions && (
                 <FilterButton
                   options={searchParameters.filterGroups.disciplineOptions}
@@ -228,6 +245,7 @@ const LibrarySearchView = ({
                   }}
                 />
               )}
+
               {/* TODO: implement */}
               {searchParameters.filterGroups.disciplineOptions && (
                 <FilterMultiselect
@@ -242,12 +260,26 @@ const LibrarySearchView = ({
                   onChange={(values) => console.log('changed to', values)}
                 />
               )}
-              {/* TODO: implement */}
-              <FilterToggle
-                label="Templates"
-                icon={<SpaceDashboardOutlinedIcon />}
-                onChange={(checked) => console.log('toggle is', checked)}
-              />
+
+              {/*
+           template
+            */}
+              {searchParameters.filterGroups.filterTemplate && (
+                <FilterToggle
+                  label="Templates"
+                  icon={<SpaceDashboardOutlinedIcon />}
+                  onChange={(checked) =>
+                    setSearchParameters(
+                      produce((draft) => {
+                        draft.filterGroups.template = {
+                          label: searchParameters.filterGroups.filterTemplate,
+                          value: checked
+                        }
+                      })
+                    )
+                  }
+                />
+              )}
             </Stack>
             <FilterWorkflowResults />
           </Stack>
@@ -258,12 +290,19 @@ const LibrarySearchView = ({
         <Results />
       </GridWrap>
 
-      {/* TODO: implement */}
-      <Pagination
-        current={1}
-        pages={7}
-        onChange={(page) => console.log('changed to page', page)}
-      />
+      {data && (
+        <Pagination
+          current={1}
+          pages={data.dataPackage.meta.pageCount}
+          onChange={(page) =>
+            setSearchParameters(
+              produce((draft) => {
+                draft.page = page
+              })
+            )
+          }
+        />
+      )}
     </OuterContentWrap>
   )
 }

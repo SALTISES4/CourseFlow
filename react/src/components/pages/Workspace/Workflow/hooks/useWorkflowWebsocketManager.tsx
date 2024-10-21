@@ -5,7 +5,6 @@ import WebSocketServiceConnectedUserManager, {
 import ActionCreator from '@cfRedux/ActionCreator'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
-  getWorkflowByIdQuery,
   getWorkflowChildDataQuery,
   getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflow'
@@ -79,6 +78,13 @@ export const useWorkflowWebsocketManager = ({
       newWsService.disconnect()
     }
   }, [workflowId, userId, userName])
+
+  useEffect(() => {
+    if (data) {
+      dispatch(ActionCreator.refreshStoreData(data.dataPackage))
+      setIsMessagesQueued(false)
+    }
+  }, [data])
 
   useEffect(() => {
     if (data) {
