@@ -1,4 +1,5 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkFlowContextType } from '@cf/context/workFlowConfigContext'
+import { EWorkflow } from '@cf/HTTP/XMLHTTP/types/entity'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
@@ -9,14 +10,13 @@ import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditVie
 import OutcomeTableView from '@cfViews/WorkflowView/componentViews/OutcomeTableView'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
 import WorkflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
-import { Tab } from '@mui/material'
-import { ReactNode, useContext } from 'react'
+import Tab from '@mui/material/Tab'
+import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
 
-const useWorkflowTabs = ({ data }: { data: any }) => {
-  const navigate = useNavigate()
+const useWorkflowTabs = (workflow: EWorkflow, context: WorkFlowContextType) => {
   const { id } = useParams()
-  const { setWorkflowView } = useContext(WorkFlowConfigContext)
+  const navigate = useNavigate()
 
   const tabs: {
     type: WorkflowViewType
@@ -25,7 +25,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
     label: string
     content: ReactNode
     allowedTabs: number[]
-    disabled?: boolean
+    hidden?: boolean
   }[] = [
     {
       type: WorkflowViewType.OVERVIEW,
@@ -41,7 +41,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       relRoute: RelativeRoutes.WORKFLOW,
       label: _t('Workflows'),
       content: <WorkflowView />,
-      allowedTabs: [1, 2, 3, 4] // if context.permissions.workflowPermissions.readOnly [2,3]
+      allowedTabs: [1, 2, 3, 4]
     },
     {
       type: WorkflowViewType.OUTCOME_EDIT,
@@ -49,7 +49,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       relRoute: RelativeRoutes.OUTCOME_EDIT,
       label: _t('Outcomes'),
       content: <OutcomeEditView />,
-      allowedTabs: data.type == 'program' ? [3] : [2, 3]
+      allowedTabs: workflow.type == 'program' ? [3] : [2, 3]
     },
     {
       type: WorkflowViewType.OUTCOME_TABLE,
@@ -57,7 +57,11 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       relRoute: RelativeRoutes.OUTCOME_TABLE,
       label: _t('Outcome Table'),
       content:
-        data.table_type === 1 ? <CompetencyMatrixView /> : <OutcomeTableView />,
+        workflow.tableType === 1 ? (
+          <CompetencyMatrixView />
+        ) : (
+          <OutcomeTableView />
+        ),
       allowedTabs: [3]
     },
     {
@@ -67,7 +71,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       label: _t('Outcome Analytics'),
       content: <AlignmentView />,
       allowedTabs: [3],
-      disabled: ['activity'].includes(data.type)
+      hidden: ['activity'].includes(workflow.type)
     },
     {
       type: WorkflowViewType.GRID_VIEW,
@@ -76,19 +80,19 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
       label: _t('Grid View'),
       content: <GridView />,
       allowedTabs: [3],
-      disabled: ['activity', 'course'].includes(data.type)
+      hidden: ['activity', 'course'].includes(workflow.type)
     }
   ]
 
   const tabButtons = tabs
-    .filter((item) => !item.disabled)
+    .filter((item) => !item.hidden)
     .map((item, index) => (
       <Tab
         key={index}
         label={item.label}
         value={item.type}
         onClick={() => {
-          setWorkflowView(item.type)
+          context.setWorkflowView(item.type)
           const path = generatePath(item.route, { id })
           navigate(path)
         }}
@@ -96,7 +100,7 @@ const useWorkflowTabs = ({ data }: { data: any }) => {
     ))
 
   const tabRoutes = tabs
-    .filter((item) => !item.disabled)
+    .filter((item) => !item.hidden)
     .map((item, index) => (
       <Route
         key={index}

@@ -43,7 +43,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
   changeTableType(evt) {
     this.props.dispatch(
       ActionCreator.changeField(this.props.data.id, 'workflow', {
-        table_type: evt.target.value
+        tableType: evt.target.value
       })
     )
   }
@@ -58,11 +58,11 @@ class ViewBarUnconnected extends React.Component<PropsType> {
       this.context.workflowView === WorkflowViewType.OUTCOME_TABLE ||
       this.context.workflowView === WorkflowViewType.HORIZONTAL_OUTCOME_TABLE
     ) {
-      const table_type_value = data.table_type || 0
+      const table_type_value = data.tableType || 0
       const sort_type = (
         <div className="node-bar-sort-block">
-          {choices.outcomeSortChoices.map((choice) => (
-            <div>
+          {choices.outcomeSortChoices.map((choice, index) => (
+            <div key={index}>
               <input
                 disabled={
                   table_type_value === 1 ||
@@ -131,8 +131,8 @@ class ViewBarUnconnected extends React.Component<PropsType> {
             if (x > y) return 1
             return 0
           })
-          .map((set) => (
-            <div>
+          .map((set, index) => (
+            <div key={index}>
               <input
                 type="checkbox"
                 id={'set' + set.id}

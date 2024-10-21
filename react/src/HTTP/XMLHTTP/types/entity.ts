@@ -109,6 +109,8 @@ export type EWorkflow = {
   columnworkflowSet: number[]
   outcomeworkflowSet: any[]
 
+  tableType: number
+
   url: string
   editCount?: number
   defaultColumns: number[]

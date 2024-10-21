@@ -35,7 +35,7 @@ type PropsType = {
 const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
   // this default serves not purpose, it's immediately overwritten by the workflow tab manager, but otherwise RR complains with verbosity...
   const [workflowViewType, setWorkflowViewType] = useState<WorkflowViewType>(
-    WorkflowViewType.WORKFLOW
+    WorkflowViewType.OVERVIEW
   )
 
   const formatInitialValue = (
