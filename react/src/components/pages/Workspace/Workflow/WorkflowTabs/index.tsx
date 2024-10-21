@@ -2,7 +2,9 @@ import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/utilityFunctions'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
-import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
+import WorkspaceSidebar from '@cfPages/Workspace/Workflow/Sidebar'
+import workspaceSidebarData from '@cfPages/Workspace/Workflow/Sidebar/data'
+import { useWorkflowSidebar } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import {
@@ -18,10 +20,6 @@ import Tabs from '@mui/material/Tabs'
 import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
-
-type WorkflowTabsManagerPropsType = {
-  isStrategy: boolean
-}
 
 // & EditableComponentProps
 
@@ -45,11 +43,15 @@ const WorkflowTabs = () => {
   const context = useContext(WorkFlowConfigContext)
   const workflow = useSelector((state: AppState) => state.workflow)
 
+  useWorkflowSidebar({
+    workflowType: workflow.type,
+    viewType: context.workflowView
+  })
+
   // @todo should be memoized (calling the tabs per render)
   const { tabRoutes, tabButtons, tabs } = useWorkflowTabs(workflow, context)
 
   // @todo this is called originally via
-  //    if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
   //    getWorkflowParentDataQuery(this.workflowId, (response) => {
   //      this.props.dispatch(
   //        ActionCreator.refreshStoreData(response.dataPackage)
@@ -67,7 +69,6 @@ const WorkflowTabs = () => {
   // } = useQuery<WorkflowParentDataQueryResp>({
   //   queryKey: ['getWorkflowParentDataQuery'],
   //   queryFn: () => getWorkflowParentDataQuery(workflow.id),
-  //   enabled: context.workflowView === WorkflowViewType.OUTCOME_EDIT
   // })
 
   /*******************************************************
@@ -133,6 +134,8 @@ const WorkflowTabs = () => {
               </div>
             </div>
           </div>
+
+          <WorkspaceSidebar {...workspaceSidebarData} />
 
           {/*<RightSideBar*/}
           {/*  wfcontext={WFContext.WORKFLOW}*/}

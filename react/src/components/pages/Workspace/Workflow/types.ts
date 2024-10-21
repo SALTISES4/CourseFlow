@@ -19,7 +19,7 @@ export enum WorkflowViewType {
   OUTCOME_EDIT = 'outcomeedit',
   GRID_VIEW = 'grid',
   OUTCOME_TABLE = 'outcometable',
-  ALIGNMENT_ANALYSIS = 'alignmentanalysis',
+  OUTCOME_ANALYTICS = 'alignmentanalysis',
   HORIZONTAL_OUTCOME_TABLE = 'horizontaloutcometable'
 }
 

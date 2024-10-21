@@ -65,7 +65,7 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkFlowContextType) => {
       allowedTabs: [3]
     },
     {
-      type: WorkflowViewType.ALIGNMENT_ANALYSIS,
+      type: WorkflowViewType.OUTCOME_ANALYTICS,
       route: CFRoutes.WORKFLOW_ALIGNMENT_ANALYSIS,
       relRoute: RelativeRoutes.ALIGNMENT_ANALYSIS,
       label: _t('Outcome Analytics'),

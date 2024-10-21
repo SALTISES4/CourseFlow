@@ -1,9 +1,14 @@
-import { ConfigType, ViewType, WorkflowType } from './types'
+import {
+  WorkflowType,
+  WorkflowViewType
+} from '@cfPages/Workspace/Workflow/types'
+
+import { ConfigType } from './types'
 import { SidebarDataType } from '../../types'
 
 type PermissionMatrixType = {
   [index in keyof SidebarDataType]: {
-    [index in WorkflowType]?: ViewType[]
+    [index in WorkflowType]?: WorkflowViewType[]
   }
 }
 
@@ -13,37 +18,49 @@ type PermissionMatrixType = {
 // --> workflow and outcomes (workflow type view / tab)
 const permissionMatrix: PermissionMatrixType = {
   edit: {
-    [WorkflowType.ACTIVITY]: [ViewType.WORKFLOW, ViewType.OUTCOMES],
+    [WorkflowType.ACTIVITY]: [
+      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.OUTCOME_EDIT
+    ],
     [WorkflowType.COURSE]: [
-      ViewType.WORKFLOW,
-      ViewType.OUTCOMES,
-      ViewType.OUTCOME_ANALYTICS
+      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.OUTCOME_EDIT,
+      WorkflowViewType.OUTCOME_ANALYTICS
     ],
     [WorkflowType.PROGRAM]: [
-      ViewType.WORKFLOW,
-      ViewType.OUTCOMES,
-      ViewType.OUTCOME_ANALYTICS,
-      ViewType.GRID_VIEW
+      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.OUTCOME_EDIT,
+      WorkflowViewType.OUTCOME_ANALYTICS,
+      WorkflowViewType.GRID_VIEW
     ]
   },
   add: {
-    [WorkflowType.ACTIVITY]: [ViewType.WORKFLOW],
-    [WorkflowType.COURSE]: [ViewType.WORKFLOW],
-    [WorkflowType.PROGRAM]: [ViewType.WORKFLOW]
+    [WorkflowType.ACTIVITY]: [WorkflowViewType.WORKFLOW],
+    [WorkflowType.COURSE]: [WorkflowViewType.WORKFLOW],
+    [WorkflowType.PROGRAM]: [WorkflowViewType.WORKFLOW]
   },
   outcomes: {
-    [WorkflowType.ACTIVITY]: [ViewType.WORKFLOW],
-    [WorkflowType.COURSE]: [ViewType.WORKFLOW],
-    [WorkflowType.PROGRAM]: [ViewType.WORKFLOW]
+    [WorkflowType.ACTIVITY]: [WorkflowViewType.WORKFLOW],
+    [WorkflowType.COURSE]: [WorkflowViewType.WORKFLOW],
+    [WorkflowType.PROGRAM]: [WorkflowViewType.WORKFLOW]
   },
   related: {
-    [WorkflowType.ACTIVITY]: [ViewType.OUTCOMES],
-    [WorkflowType.COURSE]: [ViewType.OUTCOMES]
+    [WorkflowType.ACTIVITY]: [WorkflowViewType.OUTCOME_EDIT],
+    [WorkflowType.COURSE]: [WorkflowViewType.OUTCOME_EDIT]
   },
   restore: {
-    [WorkflowType.ACTIVITY]: [ViewType.WORKFLOW, ViewType.OUTCOMES],
-    [WorkflowType.COURSE]: [ViewType.WORKFLOW, ViewType.OUTCOMES],
-    [WorkflowType.PROGRAM]: [ViewType.WORKFLOW, ViewType.OUTCOMES]
+    [WorkflowType.ACTIVITY]: [
+      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.OUTCOME_EDIT
+    ],
+    [WorkflowType.COURSE]: [
+      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.OUTCOME_EDIT
+    ],
+    [WorkflowType.PROGRAM]: [
+      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.OUTCOME_EDIT
+    ]
   }
 }
 
