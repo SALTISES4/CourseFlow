@@ -1,5 +1,5 @@
 import useWorkflowSidebar from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar'
-import { isTabVisibile } from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar/permissions'
+import { isTabVisible } from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar/permissions'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import EditIcon from '@mui/icons-material/Edit'
@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper'
 import ToggleButton from '@mui/material/ToggleButton'
 import { produce } from 'immer'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import AddTab from './components/AddTab'
 import EditTab from './components/EditTab'
@@ -31,7 +32,7 @@ const initialState: StateType = {
   collapsed: true
 }
 
-function getCurrentTab(
+function getTabContent(
   tab: keyof SidebarDataType | null,
   props: SidebarDataType,
   editable: EditablePropsType
@@ -58,8 +59,16 @@ function getCurrentTab(
 
 const WorkspaceSidebar = (props: SidebarDataType) => {
   const [state, setState] = useState<StateType>(initialState)
-  const editable = useEditable()
   const [sidebarConfig] = useWorkflowSidebar()
+  const editable = useEditable()
+  const location = useLocation()
+
+  useEffect(() => {
+    setState({
+      tab: null,
+      collapsed: true
+    })
+  }, [location.pathname])
 
   useEffect(() => {
     if (editable.type) {
@@ -109,7 +118,7 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
   }
 
   const { add, edit, outcomes, restore } = props
-  const tabContent = getCurrentTab(state.tab, props, {
+  const tabContent = getTabContent(state.tab, props, {
     type: editable.type,
     data: editable.data
   })
@@ -145,6 +154,28 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
     }
   ]
 
+  const visibleTabs: ReactNode[] = []
+  tabs.map((tab) => {
+    if (isTabVisible(tab.value, sidebarConfig)) {
+      visibleTabs.push(
+        <ToggleButton
+          key={tab.value}
+          disabled={tab.disabled}
+          size="small"
+          color="primary"
+          value={tab.value}
+          aria-label={`${tab.value} tab`}
+        >
+          {tab.icon}
+        </ToggleButton>
+      )
+    }
+  })
+
+  if (!visibleTabs.length) {
+    return null
+  }
+
   return (
     <SidebarWrap collapsed={state.collapsed}>
       <SidebarTabsWrap
@@ -153,20 +184,7 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
         value={state.tab}
         onChange={(_, tab) => onTabClick(tab)}
       >
-        {tabs.map((tab) => {
-          return isTabVisibile(tab.value, sidebarConfig) ? (
-            <ToggleButton
-              key={tab.value}
-              disabled={tab.disabled}
-              size="small"
-              color="primary"
-              value={tab.value}
-              aria-label={`${tab.value} tab`}
-            >
-              {tab.icon}
-            </ToggleButton>
-          ) : null
-        })}
+        {visibleTabs}
       </SidebarTabsWrap>
       <Paper>
         <SidebarToggle color="primary" onClick={onToggleClick}>
