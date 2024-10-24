@@ -20,6 +20,7 @@ export type LibraryObjectsSearchQueryResp = {
   dataPackage: {
     items: ELibraryObject[]
     meta: {
+      page: number
       count: number
       pageCount: number
     }

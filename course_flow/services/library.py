@@ -71,8 +71,8 @@ class LibraryService:
         workflow_model = DAO.get_model_from_str("workflow")
 
         # Dictionary to store preloaded objects by type and id for quick access
-        project_ids = [item.id for item in queryset_1 if item.hell_type == "project"]
-        workflow_ids = [item.id for item in queryset_1 if item.hell_type == "activity"]
+        project_ids = [item.id for item in queryset_1 if item.annotated_type == "project"]
+        workflow_ids = [item.id for item in queryset_1 if item.annotated_type == "activity"]
 
         # Preload all project and workflow objects based on their IDs
         project_objects = {obj.id: obj for obj in project_model.objects.filter(id__in=project_ids)}
@@ -84,12 +84,12 @@ class LibraryService:
         # Now loop through the return_objects while maintaining the original order
         formatted_items = []
         for item in return_objects:
-            if item.hell_type == "project":
+            if item.annotated_type == "project":
                 instance = project_objects.get(item.id)  # Use .get() to avoid KeyError
                 if instance:
                     formatted_items.append(instance)
 
-            elif item.hell_type == "activity":
+            elif item.annotated_type == "activity":
                 instance = workflow_objects.get(item.id)  # Use .get() to avoid KeyError
                 if instance:
                     formatted_items.append(instance)
@@ -113,7 +113,7 @@ class LibraryService:
         # Filter by published and deleted status
         # filter_kwargs["published"] = True
         filter_kwargs["deleted"] = False
-        filter_kwargs["hell_type"] = "project"
+        filter_kwargs["annotated_type"] = "project"
         fields = [
             "id",
             "title",
@@ -132,7 +132,7 @@ class LibraryService:
         project_queryset = (
             DAO.get_model_from_str("project")
             .objects.select_related("author")
-            .annotate(hell_type=Value("project", output_field=CharField()))
+            .annotate(annotated_type=Value("project", output_field=CharField()))
             .filter(**filter_kwargs)
             #  .filter(type="activity")  # Filter on the annotated 'type' field after annotation
             #  .filter(q_objects)

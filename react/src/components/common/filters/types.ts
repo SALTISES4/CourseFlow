@@ -1,24 +1,31 @@
-export enum SortDirection {
-  ASC = 'ASC',
-  DESC = 'DESC'
-}
+import { _t } from '@cf/utility/utilityFunctions'
+import {
+  SortDirection,
+  SortValueOption
+} from '@cfComponents/filters/SortableFilterButton'
 
-export type SearchOption = {
+export type SearchFilterGroup = {
   name: string
   label: string
-  value?: boolean | string | number | number[] | string[] | SortDirection
+  selectMultiple?: boolean
+  options?: SearchFilterOption[]
+  value?: string | boolean
+}
+
+export type SearchFilterOption = {
+  value: string | number | null
+  label: string
   enabled?: boolean
 }
 
 export type FilterOption = {
-  name: string
+  value: string
   label: string
-  value: boolean | string | number | number[] | string[]
   enabled?: boolean
 }
 
 export type SortOption = {
-  name: string
+  value: SortValueOption
   label: string
   enabled?: boolean
   direction?: SortDirection

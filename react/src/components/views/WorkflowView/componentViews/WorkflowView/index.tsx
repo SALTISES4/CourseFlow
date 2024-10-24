@@ -130,8 +130,6 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
    *******************************************************/
   render() {
     const data = this.props.data
-    console.log('data in workflow view ')
-    console.log(data)
 
     const columnworkflows = data.columnworkflowSet?.map(
       (columnworkflow, index) => (

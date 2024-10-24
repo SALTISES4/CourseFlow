@@ -1,14 +1,13 @@
 import { _t } from '@cf/utility/utilityFunctions'
 import Loader from '@cfComponents/UIPrimitives/Loader'
+import LibrarySearchView from '@cfViews/LibrarySearchView'
+import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { getErrorMessage } from '@XMLHTTP/API/api'
 import { useLibraryObjectsSearchQuery } from '@XMLHTTP/API/library.rtk'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
+import { produce } from 'immer'
 import * as React from 'react'
 import { useMemo, useState } from 'react'
-
-import LibrarySearchView, {
-  SearchOptionsState
-} from 'components/views/LibrarySearchView'
 
 /*
  * @todo
@@ -22,67 +21,7 @@ import LibrarySearchView, {
  *     - simple list filter (type)
  *     - sort (relevance)
  * */
-const defaultOptionsSearchOptions: SearchOptionsState = {
-  page: 0,
-  sortOptions: [
-    {
-      name: 'recent',
-      label: 'Recent'
-    },
-    {
-      name: 'a-z',
-      label: 'A - Z'
-    },
-    {
-      name: 'date',
-      label: 'Creation date'
-    }
-  ],
-  filterGroups: {
-    keyword: [
-      {
-        name: 'keyword',
-        label: _t('search'),
-        value: ''
-      }
-    ],
-    filterOptions: [
-      {
-        name: 'all',
-        label: _t('All'),
-        value: null,
-        enabled: true
-      },
-      {
-        name: 'owned',
-        label: _t('Owned'),
-        value: true
-      },
-      {
-        name: 'shared',
-        label: _t('Shared'),
-        value: true
-      },
-      {
-        name: 'favorites',
-        label: _t('Favorites'),
-        value: true
-      },
-      {
-        name: 'archived',
-        label: _t('Archived'),
-        value: true
-      }
-    ],
-    templateOptions: [
-      {
-        name: 'isTemplate',
-        label: _t('template'),
-        value: true
-      }
-    ]
-  }
-}
+
 const ExplorePage = () => {
   /*******************************************************
    * HOOKS
@@ -106,25 +45,26 @@ const ExplorePage = () => {
   // this lib filter patterm might not stay here for long
   const options = useMemo(() => {
     const { disciplines } = COURSEFLOW_APP.globalContextData
-    return {
-      ...defaultOptionsSearchOptions,
-      filterGroups: {
-        ...defaultOptionsSearchOptions.filterGroups,
-        disciplineOptions: disciplines.map((item) => {
-          return {
+    return produce(LibraryHelper.defaultOptionsSearchOptions, (draft) => {
+      draft.filterGroups = {
+        ...draft.filterGroups,
+        disciplineFilter: {
+          ...draft.filterGroups.disciplineFilter,
+          options: disciplines.map((item) => ({
             name: `discipline_option_${item.id}`,
             label: _t(item.title),
             value: item.id
-          }
-        })
+          }))
+        }
       }
-    }
+    })
   }, [])
 
   /*******************************************************
    * RENDER
    *******************************************************/
   if (libIsLoading) return <Loader />
+
   if (libIsError) {
     return <div>An error occurred: {getErrorMessage(libError)} </div>
   }

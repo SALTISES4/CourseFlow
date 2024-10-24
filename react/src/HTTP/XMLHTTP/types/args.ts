@@ -1,6 +1,9 @@
-import { ObjectSetType } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
-import { SearchOption } from '@cfComponents/filters/types'
+import {
+  SortDirection,
+  SortValueOption
+} from '@cfComponents/filters/SortableFilterButton'
+import { SearchFilterOption } from '@cfComponents/filters/types'
 
 // types of filter
 
@@ -19,11 +22,20 @@ import { SearchOption } from '@cfComponents/filters/types'
 // all query options are optional,
 // defaults set in backend for now
 
+export type FilterResult = {
+  name: string
+  value: string | boolean | number | string[] | number[]
+}[]
 export type LibraryObjectsSearchQueryArgs = {
-  resultsPerPage?: number
-  page?: number
-  sort?: SearchOption
-  filters?: SearchOption[]
+  pagination?: {
+    page: number
+    resultsPerPage?: number
+  }
+  sort?: {
+    direction: SortDirection
+    value: SortValueOption
+  } | null
+  filters?: FilterResult
 }
 
 // @todo rename this, it's not toggling
@@ -32,3 +44,5 @@ export type ToggleFavouriteMutationArgs = {
   objectType: LibraryObjectType
   favourite: boolean
 }
+
+export type SearchFilterArgs = () => {}
