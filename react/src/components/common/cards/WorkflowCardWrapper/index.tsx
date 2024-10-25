@@ -70,7 +70,7 @@ const WorkflowCardWrapper = ({
   const code = ''
   const deleted = false
 
-  const favourite = <Favourite id={id} isFavorite={isFavourite} type={type} />
+  const favourite = <Favourite id={id} isFavourite={isFavourite} type={type} />
 
   return (
     <WorkflowCardDumb

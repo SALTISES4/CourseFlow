@@ -3,6 +3,7 @@ from .admin import *
 from .container import *
 from .export import *
 from .form import *
+from .library import *
 from .mixin import *
 from .node import *
 from .outcome import *

@@ -120,8 +120,16 @@ const FilterWorkflows = ({
         setSelected(results[currentIndex - 1])
         break
       case 'Enter':
-        // @todo need to check if list is in focus
-        selected && onSuggestionClick(selected)
+        // @todo maybe we need some logic for where the user is focused
+        // this UX has not been fully thought through
+        // what about 'see all' case as wel
+        // so, for now, hijack enter for now to push input val to parent search
+        // this is not fully fleshed out
+        onPropagateChange(term)
+        onMenuClose()
+
+        // ...and comment out the previous command which was trigering a navigate click (also desirable if arrowing through results)
+        // selected && onSuggestionClick(selected)
         break
       case 'Escape':
         onMenuClose()
@@ -137,6 +145,8 @@ const FilterWorkflows = ({
 
   const onClearClick = () => {
     setTerm('')
+    // for now, if we clear the term, update the parent search state
+    onPropagateChange(term)
     inputRef.current && inputRef.current.focus()
   }
 

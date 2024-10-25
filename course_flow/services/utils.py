@@ -37,6 +37,8 @@ class Utility:
     def linkIDMap(link):
         return link.id
 
+    # only used in legacy export / import
+    # should go
     @staticmethod
     def save_serializer(serializer) -> HttpResponse:
         if serializer:
@@ -136,6 +138,12 @@ class Utility:
         - If the value is a dictionary in both, it merges them recursively.
         - Otherwise, the value from new_dict overrides the one from default_dict.
         """
+
+        # first handle none type
+        # @todo does this also handle dict with none values?
+        if new_dict is None:
+            return default_dict
+
         for key, value in new_dict.items():
             if (
                 isinstance(value, dict)
@@ -151,5 +159,6 @@ class Utility:
 
     @staticmethod
     def print_model_instance(instance):
+        print("print_model_instance called:")
         for field, value in instance.__dict__.items():
-            print(f"{field}: {value}")
+            print(f"print{field}: {value}")

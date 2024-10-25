@@ -25,7 +25,7 @@ export type EUser = {
  *******************************************************/
 export type ELibraryObject = {
   id: number
-  author: string
+  author: EUser
   deleted: boolean
   createdOn: EDate
   lastModified: EDate

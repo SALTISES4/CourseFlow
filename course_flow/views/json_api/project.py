@@ -36,19 +36,20 @@ class ProjectEndpoint:
     @api_view(["POST"])
     def create(request: Request) -> Response:
         serializer = ProjectUpsertSerializer(data=request.data)
-        if serializer.is_valid():
-            project = serializer.save(author=request.user)
 
-            return Response(
-                {"message": "success", "data_package": {"id": project.id}},
-                status=status.HTTP_201_CREATED,
-            )
-        else:
+        if not serializer.is_valid():
             logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        project = serializer.save(author=request.user)
+
+        return Response(
+            {"message": "success", "data_package": {"id": project.id}},
+            status=status.HTTP_201_CREATED,
+        )
 
     #########################################################
     # UPDATE
@@ -65,18 +66,19 @@ class ProjectEndpoint:
             )
 
         serializer = ProjectUpsertSerializer(project, data=request.data)
-        if serializer.is_valid():
-            project = serializer.save()
-            return Response(
-                {"message": "success", "data_package": {"id": project.id}},
-                status=status.HTTP_200_OK,
-            )
-        else:
+
+        if not serializer.is_valid():
             logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        project = serializer.save()
+        return Response(
+            {"message": "success", "data_package": {"id": project.id}},
+            status=status.HTTP_200_OK,
+        )
 
     #########################################################
     # GET

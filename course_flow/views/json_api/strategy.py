@@ -34,7 +34,6 @@ from course_flow.sockets import redux_actions as actions
 
 def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
     body = json.loads(request.body)
-    print(body)
     try:
         workflow_type = body.get("workflowType")
         model = DAO.get_model_from_str(workflow_type)

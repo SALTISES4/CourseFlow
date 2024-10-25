@@ -7,7 +7,7 @@ import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import ErrorView from "@cfViews/ErrorView";
+import ErrorView from "@cfViews/MsgViews/ErrorView";
 import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
 import React, { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'

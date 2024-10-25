@@ -41,7 +41,7 @@ const Header = ({ project }: { project: ProjectDetailsType }) => (
       <Box>
         <Favourite
           id={project.id}
-          isFavorite={project.isFavorite}
+          isFavourite={project.isFavourite}
           type={LibraryObjectType.PROJECT}
         />
       </Box>

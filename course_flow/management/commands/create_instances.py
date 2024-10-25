@@ -18,9 +18,7 @@ class Command(BaseCommand):
             not User.objects.filter(username=kwargs["username"]).exists()
             and kwargs["username"] is not None
         ):
-            return self.stdout.write(
-                "No user has the username '%s'" % kwargs["username"]
-            )
+            return self.stdout.write("No user has the username '%s'" % kwargs["username"])
         json_data = open(kwargs["path"])
         fixtures = json.load(json_data)
         fixtures["author"] = kwargs["username"]
@@ -28,8 +26,8 @@ class Command(BaseCommand):
         # serializer = ActivitySerializer(data=fixtures)
         serializer = WorkflowSerializerShallow(data=fixtures)
 
-        if serializer.is_valid():
-            serializer.save()
-            self.stdout.write("Default strategies have been built")
-        else:
+        if not serializer.is_valid():
             self.stdout.write("Default strategies are not valid")
+
+        serializer.save()
+        self.stdout.write("Default strategies have been built")

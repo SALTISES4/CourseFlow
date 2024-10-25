@@ -106,9 +106,7 @@ class LibraryObjectSerializer(
         return instance.get_project().title
 
     def get_is_owned(self, instance):
-        pprint("get_is_owned")
-        pprint(instance.author)
-        Utility.print_model_instance(instance.author)
+        # Utility.print_model_instance(instance.author)
         user = self.context.get("user")
         if user == instance.author:
             return True

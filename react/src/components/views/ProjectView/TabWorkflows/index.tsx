@@ -49,8 +49,8 @@ const defaultOptionsSearchOptions: SearchOptionsState = {
         value: true
       },
       {
-        name: 'favorites',
-        label: _t('Favorites'),
+        name: 'favourites',
+        label: _t('Favourites'),
         value: true
       },
       {

@@ -7,12 +7,12 @@ import { useEffect, useState } from 'react'
 
 type PropsType = {
   id: number
-  isFavorite: boolean
+  isFavourite: boolean
   type: LibraryObjectType
 }
 
-const Favourite = ({ id, isFavorite, type }: PropsType) => {
-  const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavorite)
+const Favourite = ({ id, isFavourite, type }: PropsType) => {
+  const [isFavouriteState, setFavouriteState] = useState<boolean>(isFavourite)
 
   const [toggleMutate, { isError, error, isSuccess }] =
     useToggleFavouriteMutation()

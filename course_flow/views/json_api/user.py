@@ -6,18 +6,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.http import HttpRequest, JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from course_flow.apps import logger
-from course_flow.forms import ProfileSettings
 from course_flow.models import User
 from course_flow.models.user import CourseFlowUser
 from course_flow.serializers import (
-    FormFieldsSerializer,
     NotificationsSettingsSerializer,
     ProfileSettingsSerializer,
     UserSerializer,
@@ -73,16 +70,15 @@ class UserEndpoint:
         user = CourseFlowUser.objects.filter(user=request.user).first()
         serializer = ProfileSettingsSerializer(user, data=request.data)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "Success updating profile settings"},
-                status=status.HTTP_200_OK,
-            )
-        else:
+        if not serializer.is_valid():
             logger.exception(f"Logged Exception: : {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(
+            {"message": "Success updating profile settings"},
+            status=status.HTTP_200_OK,
+        )
 
     #########################################################
     # NOTIFICATION SETTINGS
@@ -114,16 +110,15 @@ class UserEndpoint:
         user = CourseFlowUser.objects.filter(user=request.user).first()
         serializer = NotificationsSettingsSerializer(user, data=request.data)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "Success updating notification settings"},
-                status=status.HTTP_200_OK,
-            )
-        else:
+        if not serializer.is_valid():
             logger.exception(f"Logged Exception: : {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.save()
+        return Response(
+            {"message": "Success updating notification settings"},
+            status=status.HTTP_200_OK,
+        )
 
     #########################################################
     # COURSE FLOW USERS

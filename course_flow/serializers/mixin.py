@@ -71,8 +71,6 @@ class TitleSerializerMixin:
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance) -> str:
-        pprint("instance")
-        pprint(instance)
         return bleach_sanitizer(instance.title, tags=bleach_allowed_tags_title)
 
     def validate_title(self, value):

@@ -95,7 +95,7 @@ export type ProjectDetailsType = {
   id: number
   title: string
   description: string
-  isFavorite: boolean
+  isFavourite: boolean
   isDeleted: boolean
   created: Date | string
   author: EUser

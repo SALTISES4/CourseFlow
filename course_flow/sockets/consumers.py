@@ -50,8 +50,6 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
     def receive(self, text_data=None, bytes_data=None):
-        print("got a message")
-        print(text_data)
         if not self.EDIT:
             return
         text_data_json = json.loads(text_data)

@@ -18,11 +18,10 @@ from course_flow.models import Project
 from course_flow.models.favourite import Favourite
 from course_flow.models.objectPermission import ObjectPermission
 from course_flow.models.workspace.workflow import Workflow
-from course_flow.serializers import LibraryObjectSerializer
+from course_flow.serializers import LibraryObjectSerializer, SearchSerializer
 from course_flow.services import DAO
 from course_flow.services.library import LibraryService
 from course_flow.templatetags.course_flow_templatetags import has_group
-from course_flow.views.json_api._validators import SearchSerializer
 
 
 class LibraryEndpoint:
@@ -183,43 +182,30 @@ class LibraryEndpoint:
         :param request:
         :return:
         """
+        library_service = LibraryService()
         serializer = SearchSerializer(data=request.data)
+        pprint(request.data)
 
-        # if serializer.is_valid():
-        #     data = serializer.validated_data
-        #
-        #     # implicit filters
-        #     meta = data.get("meta", LibraryService.defaultMeta)
-        #     filters = data.get("filters", LibraryService.defaultFilters)
-        #     sort = data.get("sort", LibraryService.defaultSort)
-        #
-        #     ## exposed filters
-        #     # @todo filter by type (activity, project etc)
-        #     # @todo handle sort
-        #     # az , date
-        #     # @todo filter by  owned, shared, favorites, archived
-        #
-        # else:
-        #     logger.exception(f"Logged Exception: : {serializer.errors}")
-        #     return Response(serializer.errors, status=400)
+        if not serializer.is_valid():
+            logger.exception(f"Logged Exception: : {serializer.errors}")
+            return Response(serializer.errors, status=400)
 
         try:
-            # return_objects, meta = LibraryService.get_objects(
-            #     user=request.user,
-            #     sort=sort,
-            #     filters=filters,
-            #     meta=meta,
-            # )
-            library_service = LibraryService()
+            data = serializer.validated_data
+
+            # handles if values is undefined but not NULL (none)
+            # default filters are actually applied in the service layer
+            # we probably don't need them here
+            pagination = data.get("pagination", LibraryService.defaultPagination)
+            sort = data.get("sort", LibraryService.defaultSort)
+            filters = data.get("filters", LibraryService.defaultFilters)
+
             items, meta = library_service.get_objects(
                 user=request.user,
-                filters={"keyword": "example", "disciplines": [1, 2]},
-                sort={"sort": "created_on", "direction": "DESC"},
-                meta={"page": 1, "results_per_page": 40},
+                filters=filters,
+                sort=sort,
+                pagination=pagination,
             )
-
-            pprint("items")
-            pprint(items)
 
             data_package = {
                 "items": LibraryObjectSerializer(
@@ -239,3 +225,5 @@ class LibraryEndpoint:
         except Exception as e:
             logger.exception("An error occurred")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        # serializer is not valid

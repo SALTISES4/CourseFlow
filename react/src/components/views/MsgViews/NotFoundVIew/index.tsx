@@ -1,5 +1,5 @@
-const NotFound = () => {
+const NotFoundView = () => {
   return <>The content you were looking for is not found.</>
 }
 
-export default NotFound
+export default NotFoundView

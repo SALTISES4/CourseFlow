@@ -77,8 +77,8 @@ class LibraryHelper {
             label: _t('Shared')
           },
           {
-            value: 'favorites',
-            label: _t('Favorites')
+            value: 'favourited',
+            label: _t('Favourites')
           },
           {
             value: 'archived',
@@ -108,16 +108,16 @@ class LibraryHelper {
             value: WorkspaceType.PROJECT
           },
           {
-            label: 'Project',
+            label: 'Program',
             value: WorkflowType.PROGRAM
           },
 
           {
-            label: 'Project',
+            label: 'Course',
             value: WorkflowType.COURSE
           },
           {
-            label: 'Project',
+            label: 'Activity',
             value: WorkflowType.ACTIVITY
           }
         ]

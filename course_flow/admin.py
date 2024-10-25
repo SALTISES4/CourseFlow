@@ -3,6 +3,9 @@
 """
 from django.contrib import admin
 
+from course_flow.models import LiveAssignment  # to remove
+from course_flow.models import LiveProject  # to remove
+from course_flow.models import LiveProjectUser  # to remove
 from course_flow.models import (
     Activity,
     Column,
@@ -11,9 +14,6 @@ from course_flow.models import (
     Course,
     Discipline,
     Favourite,
-    LiveAssignment,
-    LiveProject,
-    LiveProjectUser,
     Node,
     NodeLink,
     NodeWeek,
@@ -57,8 +57,8 @@ admin.site.register(OutcomeHorizontalLink)
 admin.site.register(Discipline)
 admin.site.register(Favourite)
 admin.site.register(Comment)
-admin.site.register(LiveProject)
-admin.site.register(LiveProjectUser)
-admin.site.register(LiveAssignment)
-admin.site.register(UserAssignment)
+admin.site.register(LiveProject)  # to remove
+admin.site.register(LiveProjectUser)  # to remove
+admin.site.register(LiveAssignment)  # to remove
+admin.site.register(UserAssignment)  # what is this
 admin.site.register(UpdateNotification)

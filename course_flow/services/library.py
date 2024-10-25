@@ -1,13 +1,38 @@
 """
-@todo what is this file doing
+LibraryService
+
+Provides various methods to retrieve, filter, sort, and paginate objects (projects and workflows) from the database
+All items which belong now to the Libray (LibraryObjects) will be generally queried through the
+LibraryEndpoint view
+Business logic from LibraryEndpoint is here
+The bulk of this is the 'search'
+there is no true search in this application yet
+so we are just doing DB queries via Q
+
+Supports:
+ - filters
+ - sorting
+ - pagination
+
+ - Note we use mapping system from REST objects to an array of differently acting filters
+
 """
 import math
 from pprint import pprint
 
-from django.db.models import Case, CharField, Count, Q, Value, When
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import (
+    Case,
+    CharField,
+    Count,
+    Exists,
+    OuterRef,
+    Q,
+    Value,
+    When,
+)
 
-from course_flow.apps import logger
-from course_flow.models import User
+from course_flow.models import Favourite, User
 from course_flow.serializers import FavouriteSerializer
 from course_flow.services import DAO, Utility
 
@@ -15,73 +40,76 @@ SUBCLASSES = ["activity", "course", "program"]
 
 
 class LibraryService:
-    # defaultFilters = {
-    #     "keyword": None,
-    #     "object_type": ["project", "workflow"],
-    #     "owned": False,
-    #     "published": False,
-    #     "archive": False,
-    #     "is_favourite": False,
-    #     "is_template": False
-    # }
-    #
-    # defaultSort = {
-    #     "direction": "ASC",
-    #     "sort": "DATE"  # relevance, date created, alpha
-    # }
-    #
-    # defaultMeta = {
-    #     "page": 0,
-    #     "results_per_page": 10  # relevance, date created, alpha
-    # }
+    """
+    @todo
+    the major piece left here is that we do not do a base filtering on
+    - what the user has access to, the dynamic permissions and
+    - by extension, child entities
+    - since permissions are calculated
+    - if user has 'read' or whatever access to a project, how to get all the project workflow children
+    - TBD!
+    - in general looking a lot more sane though
+    """
+
+    defaultPagination = {"page": 0, "results_per_page": 10}
 
     defaultFilters = {}
 
-    defaultSort = {}
+    defaultSort = {"direction": "ASC", "value": "DATE_CREATED"}
 
-    defaultMeta = {}
-
-    def get_objects(self, user, sort=None, filters=None, meta=None):
+    def get_objects(self, user, sort=None, filters=None, pagination=None):
         """
         Retrieves objects filtered by user, keywords, and other criteria.
         Supports pagination and sorting by relevance or other fields.
         """
-        # Merge passed filters, sorting, and meta with defaults
         utility_service = Utility()
 
-        merged_filters = utility_service.merge_dicts(self.defaultFilters, filters)
+        # Merge passed filters, sorting, and meta with defaults
+        # handles partially defined objects as well as none type
+        # merged_filters = utility_service.merge_dicts(self.defaultFilters, filters)
+        merged_filters = filters
         merged_sort = utility_service.merge_dicts(self.defaultSort, sort)
-        merged_meta = utility_service.merge_dicts(self.defaultMeta, meta)
+        merged_pagination = utility_service.merge_dicts(self.defaultPagination, pagination)
 
+        pprint("merged_filters")
         pprint(merged_filters)
-        pprint(merged_sort)
-        pprint(merged_meta)
 
         # Apply filters and build querysets
-        queryset_1 = self.build_queryset(merged_filters)
+        queryset_original = self.build_queryset(merged_filters, user)
 
         # Apply sorting
-        queryset = self.apply_sorting(queryset_1, merged_sort)
+        queryset = self.apply_sorting(queryset_original, merged_sort)
 
         # Paginate the result
-        return_objects, meta = self.apply_pagination(queryset, merged_meta)
+        return_objects, pagination = self.apply_pagination(queryset, merged_pagination)
 
-        # Iterate over the combined queryset to maintain the sort order and recreate instances
+        #########################################################
+        # Becuase the DB is split into several models that we're querying as 'one'
+        # and we don't have scope tp fix the architecture issues currently
+        # i.e. we might as well take the time to push this to a proper search engine
+        #
+        # we're going to use union to reduce the double DB query
+        # but that means not we need to do a small query for the limited results at the end
+        # we'll query each model by hits ids and fetch the original Model instance
+        # i.e we will 'preload' them in a batch and then reconstruct the original
+        # model
+        #########################################################
+
+        # load models
         project_model = DAO.get_model_from_str("project")
         workflow_model = DAO.get_model_from_str("workflow")
 
-        # Dictionary to store preloaded objects by type and id for quick access
-        project_ids = [item.id for item in queryset_1 if item.annotated_type == "project"]
-        workflow_ids = [item.id for item in queryset_1 if item.annotated_type == "activity"]
+        # create a dict to store 'preloaded' objects by type and id for ref
+        project_ids = [item.id for item in queryset_original if item.annotated_type == "project"]
+        workflow_ids = [item.id for item in queryset_original if item.annotated_type in SUBCLASSES]
 
         # Preload all project and workflow objects based on their IDs
         project_objects = {obj.id: obj for obj in project_model.objects.filter(id__in=project_ids)}
-
         workflow_objects = {
             obj.id: obj for obj in workflow_model.objects.filter(id__in=workflow_ids)
         }
 
-        # Now loop through the return_objects while maintaining the original order
+        # Now loop through the return_objects while reconstruct the order
         formatted_items = []
         for item in return_objects:
             if item.annotated_type == "project":
@@ -89,31 +117,32 @@ class LibraryService:
                 if instance:
                     formatted_items.append(instance)
 
-            elif item.annotated_type == "activity":
+            elif item.annotated_type in SUBCLASSES:
                 instance = workflow_objects.get(item.id)  # Use .get() to avoid KeyError
                 if instance:
                     formatted_items.append(instance)
 
         # Return the formatted items and meta
-        return formatted_items, meta
+        return formatted_items, pagination
 
-    def build_queryset(self, filters):
+    def build_queryset(self, filters, user: User):
         """
         Build and return the queryset based on filters.
+
+        published: boolean
+
+        keyword: string -> keyword search
+        owned: boolean -> current use is author
+        favourites: boolean -> is favourited by current user
+        archived: boolean -> is in state 'archived'
+
         """
         # Start by creating keyword-based Q objects
-        q_objects = self.build_keyword_filter(filters["keyword"])
+        q_objects = Q()
+        q_objects_project = Q()
+        q_objects_workflow = Q()
+
         filter_kwargs = {}
-
-        # Filter by disciplines (if applicable)
-        # disciplines = filters.get("disciplines")
-        # if disciplines:
-        #     filter_kwargs["disciplines__in"] = disciplines
-
-        # Filter by published and deleted status
-        # filter_kwargs["published"] = True
-        filter_kwargs["deleted"] = False
-        filter_kwargs["annotated_type"] = "project"
         fields = [
             "id",
             "title",
@@ -128,15 +157,68 @@ class LibraryService:
             "deleted",
             "description",
         ]
+
+        for filter_item in filters:
+            name = filter_item.get("name")
+            value = filter_item.get("value")
+
+            # this is leaking the rest UI grouping back into the model
+            # i don't think these should be all values of 'type'
+            # we should get a flat list of a dict probably
+            # ok for now, but more work should be done on abstracting this
+            # again, wait for decision on search
+            if name == "type":
+                if value == "owned":
+                    filter_kwargs["author_id"] = user.id
+                # if name == 'shared':
+                if value == "archived":
+                    filter_kwargs["deleted"] = True
+                # if value == 'favourited':
+                #     filter_kwargs["favourited_by"] = user.id
+                # Apply the favourite filter
+                if value == "favourited":
+                    project_favourite_subquery = self.get_favourite_subquery(
+                        user, DAO.get_model_from_str("project")
+                    )
+                    workflow_favourite_subquery = self.get_favourite_subquery(
+                        user, DAO.get_model_from_str("workflow")
+                    )
+                    q_objects_project &= project_favourite_subquery
+                    q_objects_workflow &= workflow_favourite_subquery
+
+            elif name == "workspaceType":
+                filter_kwargs["annotated_type"] = value
+
+            elif name == "published":
+                filter_kwargs["published"] = value
+
+            elif name == "isTemplate":
+                filter_kwargs["is_template"] = True
+
+            elif name == "keyword" and value is not None and value is not "":
+                q_objects = self.build_keyword_filter(value)
+
+            elif name == "discipline" and isinstance(value, list):
+                # disciplines is on the Workspace abstract model
+                # but we think it only applies to projects
+                # this might be a problem
+                # i.e. disciplines are not recorded on worklow
+                # but the parent project disciplines are expected to show up there
+                # and thus be filtered by it....
+                # in which case we would do an additional dynamic query by parent project id
+                q_objects_project &= Q(disciplines__id__in=value)
+                q_objects_workflow &= Q(disciplines__id__in=value)
+
         # Query for "project" model
         project_queryset = (
             DAO.get_model_from_str("project")
             .objects.select_related("author")
             .annotate(annotated_type=Value("project", output_field=CharField()))
             .filter(**filter_kwargs)
-            #  .filter(type="activity")  # Filter on the annotated 'type' field after annotation
-            #  .filter(q_objects)
-            #            .annotate(num_nodes=Count("workflows__weeks__nodes"))
+            .filter(q_objects)
+            .filter(q_objects_project)
+            # this is for the 'relevance' query which we might leave turned off
+            # .annotate(num_nodes=Count("workflows__weeks__nodes"))
             .only(*fields)
             .distinct()
         )
@@ -144,6 +226,7 @@ class LibraryService:
         # Query for "workflow" model
         workflow_queryset = (
             DAO.get_model_from_str("workflow")
+            #            .objects.select_related("author", "favourited_by")
             .objects.select_related("author")
             .annotate(
                 annotated_type=Case(
@@ -158,18 +241,21 @@ class LibraryService:
                 )
             )
             .filter(**filter_kwargs)
-            # .filter(q_objects)
-            #     .annotate(num_nodes=Count("weeks__nodes"))
+            .filter(q_objects)
+            .filter(q_objects_workflow)
+            # this is for the 'relevance' query which we might leave turned off
+            # .annotate(num_nodes=Count("weeks__nodes"))
             .only(*fields)
             .distinct()
         )
 
-        # Combine the two querysets with `union()`
+        # Combine the two querysets back with `union()` to get rid of the duplicated query instance from before
         queryset = project_queryset.union(workflow_queryset)
 
         return queryset
 
-    def build_keyword_filter(self, keyword_string):
+    @staticmethod
+    def build_keyword_filter(keyword_string):
         """
         Build a Q object for keyword-based filtering.
         """
@@ -186,153 +272,73 @@ class LibraryService:
                 )
         return q_objects
 
-    def apply_sorting(self, queryset, sort):
+    @staticmethod
+    def apply_sorting(queryset, sort):
         """
         Apply sorting to the queryset.
         """
-        sort_field = sort.get("sort", "created_on")
+        # Define a mapping of incoming sort values to actual DB fields
+        sort_field_mapping = {
+            "DATE_CREATED": "created_on",
+            "A_Z": "title",
+            "DATE_MODIFIED": "last_modified",  # Assuming this is the DB field for modified date
+        }
+
+        # Get the actual sort field from the map
+        sort_field = sort_field_mapping.get(sort.get("value"), "created_on")
         direction = sort.get("direction", "ASC").upper()
 
         if sort_field == "relevance":
-            # Sorting by relevance using a custom method
+            # we don't have this enabled right now
             queryset = sorted(
                 queryset,
-                key=lambda x: Utility.get_relevance(x, sort["keywords"]),
+                key=lambda x: Utility.get_relevance(x, sort.get("keywords", "")),
                 reverse=(direction == "DESC"),
             )
         else:
-            # Default sorting by a field
+            # Apply default sorting
             order_prefix = "-" if direction == "DESC" else ""
             queryset = queryset.order_by(f"{order_prefix}{sort_field}")
 
         return queryset
 
-    def apply_pagination(self, queryset, meta):
+    @staticmethod
+    def apply_pagination(queryset, pagination):
+        pprint("pagination")
+        pprint(pagination)
         """
         Apply pagination to the queryset.
         """
-        page = meta.get("page", 1)
-        results_per_page = meta.get("results_per_page", 10)
+        page = pagination.get("page", 0)
+        results_per_page = pagination.get("results_per_page", 10)
         total_results = queryset.count()
 
-        start = max((page - 1) * results_per_page, 0)
-        end = min(page * results_per_page, total_results)
+        start = max(page * results_per_page, 0)
+        end = min((page + 1) * results_per_page, total_results)
 
         return_objects = list(queryset)[start:end]
 
-        # Pagination metadata
+        # Pagination meta
         page_number = math.ceil(total_results / results_per_page)
-        meta = {
+        return_pagination = {
             "total_results": total_results,
             "page_count": page_number,
             "current_page": page,
             "results_per_page": results_per_page,
         }
 
-        return return_objects, meta
+        return return_objects, return_pagination
 
-    # def get_objects(self, user, sort=None, filters=None, meta=None):
-    #     """
-    #     Retrieves objects filtered by user, keywords, and other criteria.
-    #     Supports pagination and sorting by relevance or other fields.
-    #     """
-    #
-    #     ## start by merging in the defaults
-    #     merged_filters = Utility.merge_dicts(self.defaultFilters, filters)
-    #     merged_sort = Utility.merge_dicts(self.defaultSort, sort)
-    #     merged_meta = Utility.merge_dicts(self.defaultMeta, meta)
-    #
-    #     keywords = merged_filters["keyword"].split(" ")
-    #     types = merged_filters["types"]
-    #     disciplines = merged_filters["disciplines"]
-    #     from_saltise = merged_filters["from_saltise"]
-    #     content_rich = merged_filters["content_rich"]
-    #     sort_reversed = merged_filters["sort_reversed"]
-    #
-    #     page = filters.get("page", 1)
-    #
-    #
-    #     filter_kwargs = {}
-    #
-    #     #########################################################
-    #     # KEYWORD SEARCH (Q objects for searching across fields)
-    #     #########################################################
-    #     q_objects = Q()
-    #     for keyword in keywords:
-    #         q_objects &= (
-    #             Q(author__first_name__icontains=keyword)
-    #             | Q(author__username__icontains=keyword)
-    #             | Q(author__last_name__icontains=keyword)
-    #             | Q(title__icontains=keyword)
-    #             | Q(description__icontains=keyword)
-    #         )
-    #
-    #     # Apply filters for disciplines, content-rich, and from_saltise
-    #     if disciplines:
-    #         filter_kwargs["disciplines__in"] = disciplines
-    #     if content_rich:
-    #         filter_kwargs["num_nodes__gte"] = 3
-    #     if from_saltise:
-    #         filter_kwargs["from_saltise"] = True
-    #
-    #     #########################################################
-    #     # QUERYSET BUILDING
-    #     #########################################################
-    #     try:
-    #         # Query for "project" model
-    #         project_queryset = (
-    #             DAO.get_model_from_str("project")
-    #             .objects.filter(published=True)
-    #             .annotate(num_nodes=Count("workflows__weeks__nodes"))
-    #             .filter(**filter_kwargs)
-    #             .filter(q_objects)
-    #             .exclude(deleted=True)
-    #             .distinct())
-    #
-    #         # Query for "workflow" model
-    #         workflow_queryset = (
-    #             DAO.get_model_from_str("workflow")
-    #             .objects.filter(published=True)
-    #             .annotate(num_nodes=Count("weeks__nodes"))
-    #             .filter(**filter_kwargs)
-    #             .filter(q_objects)
-    #             .exclude(Q(deleted=True) | Q(project__deleted=True))
-    #             .distinct()
-    #         )
-    #
-    #         # Use `union` to combine querysets for different types
-    #         queryset = project_queryset.union(workflow_queryset)
-    #
-    #         #########################################################
-    #         # SORTING
-    #         #########################################################
-    #         if sort is not None:
-    #             if sort == "created_on" or sort == "title":
-    #                 queryset = queryset.order_by(f'-{sort}' if sort_reversed else sort)
-    #             elif sort == "relevance":
-    #                 # Sorting by relevance using a custom method
-    #                 queryset = sorted(queryset, key=lambda x: Utility.get_relevance(x, keywords), reverse=sort_reversed)
-    #
-    #         # Pagination
-    #         total_results = queryset.count() if isinstance(queryset, QuerySet) else len(queryset)
-    #         start = max((page - 1) * nresults, 0)
-    #         end = min(page * nresults, total_results)
-    #         return_objects = list(queryset)[start:end]
-    #
-    #         page_number = math.ceil(float(total_results) / nresults)
-    #         meta = {
-    #             "total_results": total_results,
-    #             "page_count": page_number,
-    #             "current_page": page,
-    #             "results_per_page": nresults,
-    #         }
-    #
-    #     except Exception as e:
-    #         logger.exception("An error occurred during query execution.")
-    #         return_objects = []
-    #         meta = {}
-    #
-    #     return return_objects, meta
+    @staticmethod
+    def get_favourite_subquery(user, model):
+        model_type = ContentType.objects.get_for_model(model)
+        return Exists(
+            Favourite.objects.filter(
+                object_id=OuterRef("pk"),
+                content_type=model_type,
+                user=user,
+            )
+        )
 
     @staticmethod
     def get_top_favourites(user: User):
@@ -364,6 +370,9 @@ class LibraryService:
         }
 
 
+#########################################################
+# maybe resurrect this for relevance...
+#########################################################
 # for keyword in keywords:
 #       # Q objects for filtering
 #       q_objects &= (

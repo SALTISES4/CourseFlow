@@ -274,17 +274,17 @@ class WorkspaceUserEndpoint:
 
         serializer = ObjectPermissionUpsertSerializer(data=request.data, context={"pk": pk})
 
-        if serializer.is_valid():
-            # Save the new permission
-            serializer.save()
-            return Response(
-                {"action": "created", "message": _("Permission created successfully.")},
-                status=status.HTTP_201_CREATED,
-            )
-        else:
+        if not serializer.is_valid():
             return Response(
                 {"action": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Save the new permission
+        serializer.save()
+        return Response(
+            {"action": "created", "message": _("Permission created successfully.")},
+            status=status.HTTP_201_CREATED,
+        )
 
     # @staticmethod
     # @user_can_edit("objectId")
@@ -357,12 +357,12 @@ class WorkspaceUserEndpoint:
         """
         serializer = ObjectPermissionDeleteSerializer(data=request.data, context={"pk": pk})
 
-        if serializer.is_valid():
-            # Perform deletion
-            serializer.delete()
-            return Response({"message": "success"}, status=status.HTTP_200_OK)
-        else:
+        if not serializer.is_valid():
             return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Perform deletion
+        serializer.delete()
+        return Response({"message": "success"}, status=status.HTTP_200_OK)
 
     @staticmethod
     @api_view(["POST"])
@@ -373,43 +373,42 @@ class WorkspaceUserEndpoint:
         # Validate the input data
         serializer = ObjectPermissionUpsertSerializer(data=request.data, context={"pk": pk})
 
-        if serializer.is_valid():
-            object_type = serializer.validated_data.get("type")
-            if object_type in ["activity", "course", "program"]:
-                object_type = "workflow"
-
-            try:
-                content_type = ContentType.objects.get(model=object_type)
-                # Retrieve the existing permission based on content type, object_id, and user_id
-                permission = ObjectPermission.objects.get(
-                    content_type=content_type,
-                    object_id=pk,
-                    user_id=serializer.validated_data.get("user_id"),
-                )
-
-                # Save the updated permission by passing the instance to the serializer
-                serializer.update(instance=permission, validated_data=serializer.validated_data)
-
-                return Response(
-                    {"action": "updated", "message": _("Permission updated successfully.")},
-                    status=status.HTTP_200_OK,
-                )
-
-            except ObjectPermission.DoesNotExist:
-                return Response(
-                    {"action": "error", "message": _("Permission does not exist.")},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-            except ContentType.DoesNotExist:
-                return Response(
-                    {"action": "error", "message": _("Invalid object type.")},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-        else:
+        if not serializer.is_valid():
             # Return validation errors if the input data is not valid
             return Response(
                 {"action": "error", "errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        object_type = serializer.validated_data.get("type")
+        if object_type in ["activity", "course", "program"]:
+            object_type = "workflow"
+
+        try:
+            content_type = ContentType.objects.get(model=object_type)
+            # Retrieve the existing permission based on content type, object_id, and user_id
+            permission = ObjectPermission.objects.get(
+                content_type=content_type,
+                object_id=pk,
+                user_id=serializer.validated_data.get("user_id"),
+            )
+
+            # Save the updated permission by passing the instance to the serializer
+            serializer.update(instance=permission, validated_data=serializer.validated_data)
+
+            return Response(
+                {"action": "updated", "message": _("Permission updated successfully.")},
+                status=status.HTTP_200_OK,
+            )
+
+        except ObjectPermission.DoesNotExist:
+            return Response(
+                {"action": "error", "message": _("Permission does not exist.")},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        except ContentType.DoesNotExist:
+            return Response(
+                {"action": "error", "message": _("Invalid object type.")},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     @staticmethod
