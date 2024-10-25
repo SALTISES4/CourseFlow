@@ -1,15 +1,15 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts";
+import {TitleText} from "@cfComponents/UIPrimitives/Titles.ts"
 import { TTermByID, getTermById } from '@cfFindState'
 // import $ from 'jquery'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
 } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
-import * as React from 'react'
 import { connect } from 'react-redux'
+
+import NodeWeek from './NodeWeek'
 
 type OwnProps = {
   objectId: number
@@ -43,7 +43,6 @@ class Term extends WeekUnconnected<PropsType> {
       'nodeweek',
       '.node-week',
       false,
-      // @ts-ignore
       [200, 1],
       null,
       '.node'
@@ -129,7 +128,10 @@ class Term extends WeekUnconnected<PropsType> {
           className={cssClasses}
           ref={this.mainDiv}
           onClick={(evt) =>
-            this.context.selectionManager.changeSelection({ evt, newSelection: this })
+            this.context.selectionManager.changeSelection({
+              evt,
+              newSelection: this
+            })
           }
         >
           <div className="mouseover-container-bypass">

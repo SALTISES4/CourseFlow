@@ -1,8 +1,7 @@
 import LegendLine from '@cf/components/common/UIPrimitives/LegendLine'
-import {apiPaths} from "@cf/router/apiRoutes";
+import { apiPaths } from '@cf/router/apiRoutes'
 import { AppState } from '@cfRedux/types/type.js'
 import { WorkflowLegendUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WorkflowLegend'
-import * as React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = {
@@ -66,12 +65,7 @@ class OutcomeLegendUnconnected extends WorkflowLegendUnconnected<PropsType> {
           </div>
         )}
         <div className="window-close-button" onClick={this.toggle.bind(this)}>
-          <img
-            src={
-               apiPaths.external.static_assets.icon +
-              'close.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'close.svg'} />
         </div>
       </div>
     )

@@ -1,7 +1,11 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { EObjectSet } from '@cf/types/common'
-import { CfObjectType, WFContext, WorkflowViewType } from '@cf/types/enum.js'
+import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
+import {
+  WorkflowContext,
+  WorkflowViewType
+} from '@cfPages/Workspace/Workflow/types'
 // import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
 // import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents'
 import * as Utility from '@cfUtility'
@@ -353,7 +357,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
             </div>
 
             <RightSideBar
-              wfcontext={WFContext.COMPARISON}
+              wfcontext={WorkflowContext.COMPARISON}
               // parentRender={this.props.parentRender}
               readOnly={this.props.readOnly}
               data={data}

@@ -1,8 +1,4 @@
 import Alert from '@cfComponents/UIPrimitives/Alert'
-import {
-  EditablePropsType,
-  EditableType
-} from '@cfPages/Workspace/WorkspaceSidebar/Editable/types'
 
 import EditNode from './components/EditNode'
 import { NodeForm } from './components/EditNode/types'
@@ -18,6 +14,7 @@ import EditTerm from './components/EditTerm'
 import { TermForm } from './components/EditTerm/types'
 import EditWeek from './components/EditWeek'
 import { WeekForm } from './components/EditWeek/types'
+import { EditablePropsType, EditableType } from '../../hooks/useEditable/types'
 
 const EditTab = ({ type, data }: EditablePropsType) => {
   if (!type) {

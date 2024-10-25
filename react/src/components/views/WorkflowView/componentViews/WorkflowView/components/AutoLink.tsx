@@ -15,18 +15,8 @@ class AutoLink extends React.Component<PropsType> {
   private eventNameSpace: string
   private rerenderEvents: string
   private target: any
-  private sourcePort_handle: d3.Selection<
-    SVGElement,
-    unknown,
-    HTMLElement,
-    any
-  >
-  private targetPort_handle: d3.Selection<
-    SVGElement,
-    unknown,
-    HTMLElement,
-    any
-  >
+  private sourcePort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  private targetPort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private targetNode: JQuery<HTMLElement>
   private sourceNode: JQuery<HTMLElement>
   constructor(props) {

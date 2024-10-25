@@ -11,10 +11,11 @@ import {
   getOutcomeHorizontalLinkByID
 } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
+import SimpleOutcome from './SimpleOutcome'
 
 type ConnectedProps = {
   workflow: TWorkflow

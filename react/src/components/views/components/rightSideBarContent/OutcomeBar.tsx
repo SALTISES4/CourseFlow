@@ -1,9 +1,9 @@
-import { WorkflowType, WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import {
   TSortedOutcomes,
   getSortedOutcomesFromOutcomeWorkflowSet
 } from '@cfFindState'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import * as React from 'react'
@@ -26,7 +26,7 @@ type StateProps = ReturnType<typeof mapStateToProps>
 
 type SelfProps = {
   readOnly: boolean
-  // renderMethod: (container, viewType: ViewType) => void
+  // renderMethod: (container, viewType: WorkflowViewType) => void
 }
 
 type PropsType = SelfProps & StateProps
@@ -44,10 +44,10 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
     // there is a deeply nested
     // this.props.renderMethod(
     // which is the initial render method from react/src/components/pages/Workflow/Workflow
-    // this.props.renderMethod($('#container'), ViewType.OUTCOME_EDIT)
+    // this.props.renderMethod($('#container'), WorkflowViewType.OUTCOME_EDIT)
     // @todo, manage this with router or view change with state update
     // Legacy code, prop drilled from     <WorkflowBaseView, now removed
-    // this.props.renderMethod($('#container'), ViewType.OUTCOME_EDIT)
+    // this.props.renderMethod($('#container'), WorkflowViewType.OUTCOME_EDIT)
   }
 
   /*******************************************************

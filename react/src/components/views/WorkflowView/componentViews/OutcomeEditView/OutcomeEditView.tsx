@@ -1,5 +1,5 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import {apiPaths} from "@cf/router/apiRoutes";
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
@@ -113,10 +113,7 @@ export class OutcomeEditViewUnconnected<
         >
           <img
             className="create-button"
-            src={
-               apiPaths.external.static_assets.icon +
-              'add_new_white.svg'
-            }
+            src={apiPaths.external.static_assets.icon + 'add_new_white.svg'}
           />
           <div>{_t('Add new')}</div>
         </div>

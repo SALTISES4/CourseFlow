@@ -1,10 +1,11 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { CfObjectType, WorkflowViewType } from '@cf/types/enum.js'
+import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import EditableComponent, {
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import {

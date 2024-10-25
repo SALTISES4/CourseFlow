@@ -1,14 +1,13 @@
 import Base from '@cf/base'
-import { WorkflowViewType } from '@cf/types/enum'
 import Home from '@cfPages/Home'
 import Explore from '@cfPages/Library/Explore'
 import Favourites from '@cfPages/Library/Favourites'
 import MyLibrary from '@cfPages/Library/MyLibrary'
 import NotificationsPage from '@cfPages/Notifications'
-
 // Styleguide views
 import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { createBrowserRouter } from 'react-router-dom'
 
 import NotificationsSettingsPage from 'components/pages/Settings/NotificationsSettings'
@@ -27,8 +26,8 @@ export enum RelativeRoutes {
   INDEX = '/',
   WORKFLOW = `workflow`,
   // WORKFLOW
-  ALIGNMENTANALYSIS = `alignment`,
-  OUTCOMETABLE = `outcometable`,
+  ALIGNMENT_ANALYSIS = `alignment`,
+  OUTCOME_TABLE = `outcometable`,
   OUTCOME_EDIT = `outcomedit`,
   GRID = `grid`,
   // PROJECT
@@ -50,8 +49,8 @@ export enum CFRoutes {
   // WORKFLOW
   WORKFLOW = `/${DOMAIN}/workflow/:id`,
   WORKFLOW_WORKFLOW = `/${DOMAIN}/workflow/:id/${RelativeRoutes.WORKFLOW}`,
-  WORKFLOW_ALIGNMENTANALYSIS = `/${DOMAIN}/workflow/:id/${RelativeRoutes.ALIGNMENTANALYSIS}`,
-  WORKFLOW_OUTCOMETABLE = `/${DOMAIN}/workflow/:id/${RelativeRoutes.OUTCOMETABLE}`,
+  WORKFLOW_ALIGNMENT_ANALYSIS = `/${DOMAIN}/workflow/:id/${RelativeRoutes.ALIGNMENT_ANALYSIS}`,
+  WORKFLOW_OUTCOME_TABLE = `/${DOMAIN}/workflow/:id/${RelativeRoutes.OUTCOME_TABLE}`,
   WORKFLOW_OUTCOME_EDIT = `/${DOMAIN}/workflow/:id/${RelativeRoutes.OUTCOME_EDIT}`,
   WORKFLOW_GRID = `/${DOMAIN}/workflow/:id/${RelativeRoutes.GRID}`,
 
@@ -157,7 +156,7 @@ export const CFRouter = createBrowserRouter([
     element: (
       <Base>
         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-        <WorkflowPage initialView={WorkflowViewType.WORKFLOW_OVERVIEW} />
+        <WorkflowPage initialView={WorkflowViewType.OVERVIEW} />
       </Base>
     )
     // children: [
@@ -165,10 +164,10 @@ export const CFRouter = createBrowserRouter([
     //     path: CFRoutes.WORKFLOW_WORKFLOW
     //   },
     //   {
-    //     path: CFRoutes.WORKFLOW_ALIGNMENTANALYSIS
+    //     path: CFRoutes.WORKFLOW_ALIGNMENT_ANALYSIS
     //   },
     //   {
-    //     path: CFRoutes.WORKFLOW_OUTCOMETABLE
+    //     path: CFRoutes.WORKFLOW_OUTCOME_TABLE
     //   },
     //   {
     //     path: CFRoutes.WORKFLOW_OUTCOME_EDIT
@@ -183,27 +182,27 @@ export const CFRouter = createBrowserRouter([
     //     element: (
     //       <Base>
     //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         {/*      <WorkflowPage initialView={ViewType.WORKFLOW} />*/}
+    //         {/*      <WorkflowPage initialView={WorkflowViewType.WORKFLOW} />*/}
     //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={ViewType.WORKFLOW_OVERVIEW} />
+    //         <WorkflowPage initialView={WorkflowViewType.OVERVIEW} />
     //       </Base>
     //     )
     //   },
     //   {
-    //     path: Routes.WORKFLOW_ALIGNMENTANALYSIS,
+    //     path: Routes.WORKFLOW_ALIGNMENT_ANALYSIS,
     //     element: (
     //       <Base>
     //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={ViewType.WORKFLOW_ALIGNMENTANALYSIS} />
+    //         <WorkflowPage initialView={WorkflowViewType.WORKFLOW_ALIGNMENT_ANALYSIS} />
     //       </Base>
     //     )
     //   },
     //   {
-    //     path: Routes.WORKFLOW_OUTCOMETABLE,
+    //     path: Routes.WORKFLOW_OUTCOME_TABLE,
     //     element: (
     //       <Base>
     //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={ViewType.OUTCOMETABLE} />
+    //         <WorkflowPage initialView={WorkflowViewType.OUTCOME_TABLE} />
     //       </Base>
     //     )
     //   },
@@ -212,7 +211,7 @@ export const CFRouter = createBrowserRouter([
     //     element: (
     //       <Base>
     //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={ViewType.OUTCOME_EDIT} />
+    //         <WorkflowPage initialView={WorkflowViewType.OUTCOME_EDIT} />
     //       </Base>
     //     )
     //   },
@@ -221,7 +220,7 @@ export const CFRouter = createBrowserRouter([
     //     element: (
     //       <Base>
     //         {/* @ts-ignore something to do with the legacy router HOC, don't think it's worth it to fix*/}
-    //         <WorkflowPage initialView={ViewType.GRID} />
+    //         <WorkflowPage initialView={WorkflowViewType.GRID_VIEW} />
     //       </Base>
     //     )
     //   }

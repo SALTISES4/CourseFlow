@@ -2,7 +2,7 @@ import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
+import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import {
   EditableComponentWithCommentsStateType,
@@ -136,7 +136,10 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
     const editPortal = this.props.edit ? this.addEditable(data, true) : null
 
     const onClick = (evt) => {
-      return this.context.selectionManager.changeSelection({ evt, newSelection: this })
+      return this.context.selectionManager.changeSelection({
+        evt,
+        newSelection: this
+      })
     }
 
     const cssClass = [

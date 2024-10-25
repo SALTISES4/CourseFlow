@@ -1,5 +1,5 @@
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
-import { WorkflowViewType } from '@cf/types/enum'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 
@@ -35,7 +35,7 @@ type PropsType = {
 const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
   // this default serves not purpose, it's immediately overwritten by the workflow tab manager, but otherwise RR complains with verbosity...
   const [workflowViewType, setWorkflowViewType] = useState<WorkflowViewType>(
-    WorkflowViewType.WORKFLOW
+    WorkflowViewType.OVERVIEW
   )
 
   const formatInitialValue = (

@@ -1,7 +1,8 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
-import { CfObjectType, WorkflowViewType } from '@cf/types/enum.js'
+import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import NodeOutcomeView from '@cfViews/components/Node/NodeOutcomeView'
@@ -297,7 +298,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     if (outcomesSorted.length == 0 || !has_nodes) {
       const text =
-        this.context.workflowView == WorkflowViewType.OUTCOMETABLE
+        this.context.workflowView == WorkflowViewType.OUTCOME_TABLE
           ? _t(
               'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
             )

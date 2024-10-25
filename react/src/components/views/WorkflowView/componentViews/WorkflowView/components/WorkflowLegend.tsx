@@ -87,22 +87,25 @@ export class WorkflowLegendUnconnected<
       return <></>
     }
 
-    const contexts = this.props.contexts.map((value) => (
+    const contexts = this.props.contexts.map((value, index) => (
       <LegendLine
+        key={index}
         icon={Constants.contextKeys[value]}
         text={choices.contextChoices.find((obj) => obj.type == value).name}
       />
     ))
 
-    const tasks = this.props.tasks.map((value) => (
+    const tasks = this.props.tasks.map((value, index) => (
       <LegendLine
+        key={index}
         icon={Constants.taskKeys[value]}
         text={choices.taskChoices.find((obj) => obj.type == value).name}
       />
     ))
 
-    const strategies = this.props.strategies.map((value) => (
+    const strategies = this.props.strategies.map((value, index) => (
       <LegendLine
+        key={index}
         icon={Constants.strategyKeys[value]}
         text={
           choices.strategyClassification_choices.find(
@@ -116,7 +119,7 @@ export class WorkflowLegendUnconnected<
       <div className="workflow-legend">
         <h4>Legend</h4>
 
-        {contexts.length > 0 && (
+        {!!contexts.length && (
           <div className="legend-section">
             <hr />
             <h5>Contexts:</h5>
@@ -124,7 +127,7 @@ export class WorkflowLegendUnconnected<
           </div>
         )}
 
-        {contexts.length > 0 && (
+        {!!tasks.length && (
           <div className="legend-section">
             <hr />
             <h5>Tasks:</h5>
@@ -132,7 +135,7 @@ export class WorkflowLegendUnconnected<
           </div>
         )}
 
-        {contexts.length > 0 && (
+        {!!strategies.length && (
           <div className="legend-section">
             <hr />
             <h5>Strategies:</h5>
@@ -156,20 +159,17 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
     return self.indexOf(value) === index
   }
   contexts = state.node
-    // @ts-ignore
-    .map((node) => parseInt(node.contextClassification))
+    .map((node) => parseInt(node.contextClassification.toString(), 10))
     .filter(uniqueTest)
     .filter((value) => value > 0)
 
   tasks = state.node
-    // @ts-ignore
-    .map((node) => parseInt(node.taskClassification))
+    .map((node) => parseInt(node.taskClassification.toString(), 10))
     .filter(uniqueTest)
     .filter((value) => value > 0)
 
   strategies = state.week
-    // @ts-ignore
-    .map((week) => parseInt(week.strategyClassification))
+    .map((week) => parseInt(week.strategyClassification.toString(), 10))
     .filter(uniqueTest)
     .filter((value) => value > 0)
 

@@ -5,8 +5,8 @@ import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
-import { WorkflowViewType } from '@cf/types/enum'
 import Loader from '@cfComponents/UIPrimitives/Loader'
+import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'

@@ -3,6 +3,7 @@ import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useWorkflowWebsocketManager } from '@cfPages/Workspace/Workflow/hooks/useWorkflowWebsocketManager'
+import { WorkflowSidebarContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar/context'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
@@ -69,7 +70,7 @@ const Workflow = () => {
 
    *******************************************************/
   useEffect(() => {
-    if (workflowData?.workflowPermissions) {
+    if (workflowData && workflowData.workflowPermissions) {
       setSelectionManager(
         new SelectionManager(workflowData.workflowPermissions.read)
       )
@@ -102,22 +103,24 @@ const Workflow = () => {
   }
 
   return (
-    <WorkFlowConfigProvider
-      initialValue={{
-        selectionManager: selectionManager!,
-        editableMethods: {
-          lockUpdate,
-          microUpdate,
-          changeField
-        },
-        ws: {
-          wsConnected: isWsInit,
-          connectedUsers
-        }
-      }}
-    >
-      <WorkflowTabs />
-    </WorkFlowConfigProvider>
+    <WorkflowSidebarContextProvider>
+      <WorkFlowConfigProvider
+        initialValue={{
+          selectionManager: selectionManager!,
+          editableMethods: {
+            lockUpdate,
+            microUpdate,
+            changeField
+          },
+          ws: {
+            wsConnected: isWsInit,
+            connectedUsers
+          }
+        }}
+      >
+        <WorkflowTabs />
+      </WorkFlowConfigProvider>
+    </WorkflowSidebarContextProvider>
   )
 }
 

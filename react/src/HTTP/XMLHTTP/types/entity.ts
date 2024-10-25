@@ -1,6 +1,8 @@
 import { ObjectPermission, PermissionGroup } from '@cf/types/common'
-import {LibraryObjectType, WorkflowType, WorkspaceType} from '@cf/types/enum'
+import { LibraryObjectType } from '@cf/types/enum'
 import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
+import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
 /*******************************************************
@@ -106,6 +108,8 @@ export type EWorkflow = {
   weekworkflowSet: number[]
   columnworkflowSet: number[]
   outcomeworkflowSet: any[]
+
+  tableType: number
 
   url: string
   editCount?: number

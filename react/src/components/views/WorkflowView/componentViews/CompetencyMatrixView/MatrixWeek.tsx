@@ -5,7 +5,6 @@ import ComponentWithToggleDrop, {
 import { getWeekById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
-import * as React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = {

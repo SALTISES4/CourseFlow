@@ -1,6 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { WorkflowType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { TWorkflow } from '@cfRedux/types/type'
 import {
   WorkflowChildDataPackage,

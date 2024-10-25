@@ -1,8 +1,10 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
-import { WorkflowViewType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
+import WorkspaceSidebar from '@cfPages/Workspace/Workflow/Sidebar'
+import workspaceSidebarData from '@cfPages/Workspace/Workflow/Sidebar/data'
+import { useWorkflowSidebar } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import {
@@ -13,14 +15,11 @@ import {
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
-import { Box, Tabs } from '@mui/material'
+import Box from '@mui/material/Box'
+import Tabs from '@mui/material/Tabs'
 import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
-
-type WorkflowTabsManagerPropsType = {
-  isStrategy: boolean
-}
 
 // & EditableComponentProps
 
@@ -41,17 +40,18 @@ type StateType = {
 // with possible exception of addDeleteSelf (which needs addressing independently)
 // class WorkflowTabsUnconnected extends EditableComponent<PropsType, StateType> {
 const WorkflowTabs = () => {
-  const data = useSelector((state: AppState) => state.workflow)
   const context = useContext(WorkFlowConfigContext)
   const workflow = useSelector((state: AppState) => state.workflow)
 
-  // @todo should be memoized (calling the tabs per render)
-  const { tabRoutes, tabButtons, tabs } = useWorkflowTabs({
-    data
+  useWorkflowSidebar({
+    workflowType: workflow.type,
+    viewType: context.workflowView
   })
 
+  // @todo should be memoized (calling the tabs per render)
+  const { tabRoutes, tabButtons, tabs } = useWorkflowTabs(workflow, context)
+
   // @todo this is called originally via
-  //    if (this.context.viewType === ViewType.OUTCOME_EDIT) {
   //    getWorkflowParentDataQuery(this.workflowId, (response) => {
   //      this.props.dispatch(
   //        ActionCreator.refreshStoreData(response.dataPackage)
@@ -68,8 +68,7 @@ const WorkflowTabs = () => {
   //   isError: workflowParentIsError
   // } = useQuery<WorkflowParentDataQueryResp>({
   //   queryKey: ['getWorkflowParentDataQuery'],
-  //   queryFn: () => getWorkflowParentDataQuery(data.id),
-  //   enabled: context.workflowView === ViewType.OUTCOME_EDIT
+  //   queryFn: () => getWorkflowParentDataQuery(workflow.id),
   // })
 
   /*******************************************************
@@ -85,55 +84,18 @@ const WorkflowTabs = () => {
     }
   }, [])
 
+  // console.log({ context })
+
   /*******************************************************
    * COMPONENTS
    *******************************************************/
 
-  const ViewBar = () => {
-    return (
-      <>
-        <JumpToMenu weekWorkflowSet={data.weekworkflowSet} />
-        <ExpandCollapseMenu />
-      </>
-    )
-  }
-
-  const WorkflowTabsManager = ({
-    isStrategy
-  }: WorkflowTabsManagerPropsType) => {
-    const { workflowView } = useContext(WorkFlowConfigContext)
-
-    if (isStrategy) {
-      return (
-        <div className="workflow-container">
-          <Routes>{tabRoutes}</Routes>
-        </div>
-      )
-    }
-
-    return (
-      <>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <OuterContentWrap sx={{ pb: 0 }}>
-            {/* workflowView is initialized in the tabs hook controller useWorkflowTabs
-            i don't like this much, but it works for now. you can tell we're interrupting the render
-            because we're not seeing the tab slide animation
-             something to reconsider when  we get a better control on react router paradigms */}
-            <Tabs
-              value={workflowView}
-              onChange={(_, newValue: WorkflowViewType) => {}}
-            >
-              {tabButtons}
-            </Tabs>
-          </OuterContentWrap>
-        </Box>
-
-        <div className="workflow-container">
-          <Routes>{tabRoutes}</Routes>
-        </div>
-      </>
-    )
-  }
+  const ViewBar = () => (
+    <>
+      <JumpToMenu weekWorkflowSet={workflow.weekworkflowSet} />
+      <ExpandCollapseMenu />
+    </>
+  )
 
   /*******************************************************
    * RENDER
@@ -163,9 +125,21 @@ const WorkflowTabs = () => {
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
               <Header />
-              <WorkflowTabsManager isStrategy={workflow.isStrategy} />
+              {!workflow.isStrategy && (
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <OuterContentWrap sx={{ pb: 0 }}>
+                    <Tabs value={context.workflowView}>{tabButtons}</Tabs>
+                  </OuterContentWrap>
+                </Box>
+              )}
+
+              <div className="workflow-container">
+                <Routes>{tabRoutes}</Routes>
+              </div>
             </div>
           </div>
+
+          <WorkspaceSidebar {...workspaceSidebarData} />
 
           {/*<RightSideBar*/}
           {/*  wfcontext={WFContext.WORKFLOW}*/}

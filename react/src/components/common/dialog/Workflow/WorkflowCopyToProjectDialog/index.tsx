@@ -8,24 +8,23 @@ import { getTargetProjectMenuQuery } from '@XMLHTTP/API/workflow'
 import { TargetProjectQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 
-
- // function copyToProject(
- //    workflowId: number,
- //    projectId: number,
- //    workflowType: WorkflowType
- //  ) {
- //    const loader = COURSEFLOW_APP.tinyLoader
- //    loader.startLoad()
- //    duplicateBaseItemQuery(
- //      workflowId,
- //      workflowType,
- //      projectId,
- //      (responseData) => {
- //        loader.endLoad()
- //        window.location.href = 'path top newly created item'
- //      }
- //    )
- //  }
+// function copyToProject(
+//    workflowId: number,
+//    projectId: number,
+//    workflowType: WorkflowType
+//  ) {
+//    const loader = COURSEFLOW_APP.tinyLoader
+//    loader.startLoad()
+//    duplicateBaseItemQuery(
+//      workflowId,
+//      workflowType,
+//      projectId,
+//      (responseData) => {
+//        loader.endLoad()
+//        window.location.href = 'path top newly created item'
+//      }
+//    )
+//  }
 
 function WorkflowCopyToProjectDialog({ id, actionFunction }: any) {
   const { show, onClose } = useDialog(DialogMode.WORKFLOW_COPY_TO_PROJECT)

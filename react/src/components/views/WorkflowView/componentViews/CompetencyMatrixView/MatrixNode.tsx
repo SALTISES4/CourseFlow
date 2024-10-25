@@ -3,7 +3,6 @@ import { _t } from '@cf/utility/utilityFunctions'
 import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import * as React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = TGetNodeById

@@ -9,11 +9,12 @@ import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import ColumnWorkflow from '@cfViews/components/ColumnWorkflow'
-import WeekWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WeekWorkflow'
-import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WorkflowLegend'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
+import WeekWorkflow from './components/WeekWorkflow'
+import WorkflowLegend from './components/WorkflowLegend'
 // import $ from 'jquery'
 
 type ConnectedProps = {

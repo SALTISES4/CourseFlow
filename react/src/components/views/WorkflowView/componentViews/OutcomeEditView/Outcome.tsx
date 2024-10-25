@@ -11,13 +11,13 @@ import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
-import OutcomeHorizontalLink from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeHorizontalLink'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
+import OutcomeHorizontalLink from './OutcomeHorizontalLink'
 import OutcomeOutcome from './OutcomeOutcome'
 
 // import $ from 'jquery'
@@ -310,7 +310,10 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           className={cssClass}
           ref={this.mainDiv}
           onClick={(evt) =>
-            this.context.selectionManager.changeSelection({ evt, newSelection: this })
+            this.context.selectionManager.changeSelection({
+              evt,
+              newSelection: this
+            })
           }
         >
           <div className="outcome-title">

@@ -1,10 +1,10 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { PermissionGroup } from '@cf/types/common'
-import { WorkspaceType } from '@cf/types/enum'
 import { permissionGroupMenuOptions } from '@cf/utility/permissions'
 import { getInitials } from '@cf/utility/utilityFunctions'
 import MenuButton from '@cfComponents/menu/MenuButton'
+import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import List from '@mui/material/List'
@@ -16,7 +16,6 @@ import {
 } from '@XMLHTTP/API/workspaceUser.rtk'
 import { EUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import React from 'react'
 
 import * as SC from './styles'
 
@@ -52,6 +51,9 @@ const UserList = ({
         objectType: workspaceType
       }
     })
+
+  // console.log({ workspaceType })
+  // console.log({ data })
 
   const [mutate, { isError: isMutateError, error: mutateError, isSuccess }] =
     useWorkspaceUserUpdateMutation()
@@ -104,7 +106,8 @@ const UserList = ({
               </ListItemAvatar>
               <ListItemText primary={user.username} secondary={user.email} />
               <MenuButton
-                disabled={false} // this needs to be a check on call to see if current user can edit
+                // TODO: this needs to be a check on call to see if current user can edit
+                disabled={false}
                 options={[
                   ...permissionGroupMenuOptions.map((item) => ({
                     name: String(item.value),

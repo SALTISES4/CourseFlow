@@ -10,9 +10,7 @@ import { ConfigType } from './types'
 
 const initialState: ConfigType = {
   workflowType: null,
-  viewType: null,
-  permissionType: null,
-  visibilityType: null
+  viewType: null
 }
 
 export const WorkflowSidebarContext = createContext<ConfigType>(initialState)

@@ -1,7 +1,6 @@
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import { OutcomeUnconnected as TableOutcomeUnconnected } from '@cfViews/WorkflowView/componentViews/OutcomeTableView/components/Outcome'
-import * as React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = TGetOutcomeByID
