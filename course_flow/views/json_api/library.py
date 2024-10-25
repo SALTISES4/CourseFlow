@@ -27,12 +27,18 @@ from course_flow.templatetags.course_flow_templatetags import has_group
 class LibraryEndpoint:
     @staticmethod
     @login_required
-    @api_view(["POST"])
+    @api_view(["GET"])
     def fetch__favourite_library_objects(
         request: Request,
     ) -> Response:
+        """
+
+        :param request:
+        :return:
+        """
+        library_objects, count = DAO.get_nondeleted_favourites(request.user)
         library_objects_serialized = LibraryObjectSerializer(
-            DAO.get_nondeleted_favourites(request.user),
+            library_objects,
             many=True,
             context={"user": request.user},
         ).data
@@ -41,9 +47,10 @@ class LibraryEndpoint:
             {
                 "message": "success",
                 "data_package": {
-                    "results": library_objects_serialized,
+                    "items": library_objects_serialized,
                     "meta": {
-                        "pages": 1,
+                        "count": count,
+                        "pageCount": 1,
                     },
                 },
             },
@@ -51,6 +58,7 @@ class LibraryEndpoint:
         )
 
     @staticmethod
+    @login_required
     # @user_can_view(False)
     @api_view(["POST"])
     def toggle_favourite(
@@ -184,8 +192,8 @@ class LibraryEndpoint:
         """
         library_service = LibraryService()
         serializer = SearchSerializer(data=request.data)
-        pprint(request.data)
 
+        # serializer is not valid
         if not serializer.is_valid():
             logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(serializer.errors, status=400)
@@ -225,5 +233,3 @@ class LibraryEndpoint:
         except Exception as e:
             logger.exception("An error occurred")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-        # serializer is not valid

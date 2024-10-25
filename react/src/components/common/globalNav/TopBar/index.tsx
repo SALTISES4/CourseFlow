@@ -1,12 +1,10 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
+import { WorkflowType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
-import ProjectCreateDialog from '@cfComponents/dialog/Project/ProjectCreateDialog'
-import PasswordResetDialog from '@cfComponents/dialog/User/PasswordResetDialog'
-import CreateWizardDialog from '@cfComponents/dialog/Workflow/CreateWizardDialog'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
 import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -42,10 +40,6 @@ const TopBar = () => {
     })
   }
 
-  const handleCreateClick = (resourceType: DialogMode) => {
-    dispatch(resourceType)
-  }
-
   /*******************************************************
    * MENUS
    *******************************************************/
@@ -65,25 +59,35 @@ const TopBar = () => {
       ),
       show: true
     }
+
     const menuItems: MenuItemType[] = [
       {
         content: strings.project,
-        action: () => handleCreateClick(DialogMode.PROJECT_CREATE),
+        action: () => dispatch(DialogMode.PROJECT_CREATE),
         show: true
       },
       {
         content: strings.program,
-        action: () => handleCreateClick(DialogMode.PROGRAM_CREATE),
+        action: () =>
+          dispatch(DialogMode.WORKFLOW_CREATE, {
+            workflowType: WorkflowType.PROGRAM
+          }),
         show: true
       },
       {
         content: strings.course,
-        action: () => handleCreateClick(DialogMode.COURSE_CREATE),
+        action: () =>
+          dispatch(DialogMode.WORKFLOW_CREATE, {
+            workflowType: WorkflowType.COURSE
+          }),
         show: true
       },
       {
         content: strings.activity,
-        action: () => handleCreateClick(DialogMode.ACTIVITY_CREATE),
+        action: () =>
+          dispatch(DialogMode.WORKFLOW_CREATE, {
+            workflowType: WorkflowType.ACTIVITY
+          }),
         show: true
       }
     ]
@@ -246,8 +250,6 @@ const TopBar = () => {
       <AppBar position="static">
         <ToolbarWrap />
       </AppBar>
-
-
     </SC.TopBarWrap>
   )
 }

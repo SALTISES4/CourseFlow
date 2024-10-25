@@ -9,23 +9,12 @@ const GlobalDialogs = () => {
       {/*
         @todo put these menus into the unified menu helper in
         react/src/components/common/menu
-        they are already in MUI, so it's fine for now
-        // cuts down on a bit of boilerplate
+        ?
         */}
 
       <PasswordResetDialog />
       <ProjectCreateDialog />
       <CreateWizardDialog />
-
-      {/*<ProgramCreateDialog*/}
-      {/*  {...createProgramData}*/}
-      {/*  units={editProgramData.units}*/}
-      {/*/>*/}
-
-      {/*<ActivityCreateDialog*/}
-      {/*  {...createActivityData}*/}
-      {/*  units={editActivityData.units}*/}
-      {/*/>*/}
     </>
   )
 }

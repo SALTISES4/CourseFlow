@@ -1,13 +1,9 @@
 import { _t } from '@cf/utility/utilityFunctions'
-import Loader from '@cfComponents/UIPrimitives/Loader'
 import LibrarySearchView from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
-import { getErrorMessage } from '@XMLHTTP/API/api'
-import { useLibraryObjectsSearchQuery } from '@XMLHTTP/API/library.rtk'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
-import { produce } from 'immer'
 import * as React from 'react'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
 /*
  * @todo
@@ -27,31 +23,41 @@ const ExplorePage = () => {
    * HOOKS
    *******************************************************/
 
+  const config = {
+    pagination: true,
+    sortOptions: true,
+    filterGroups: {
+      relationshipFilter: false,
+      disciplineFilter: true,
+      workspaceTypeFilter: true,
+      templateFilter: true
+    },
+    keywordFilter: true
+  }
+
+  const locked = [{ name: 'isPublished', value: true }]
+
   const [searchArgs, setSearchArgs] = useState<LibraryObjectsSearchQueryArgs>(
     {}
   )
 
-  /*******************************************************
-   * QUERIES
-   *******************************************************/
-  const {
-    data: libData,
-    error: libError,
-    isLoading: libIsLoading,
-    isError: libIsError,
-    isFetching
-  } = useLibraryObjectsSearchQuery(searchArgs)
+  const updateSearchArgsHandler = (args: LibraryObjectsSearchQueryArgs) => {
+    const merged = LibraryHelper.merger(locked, args.filters)
+
+    setSearchArgs({
+      ...args,
+      filters: merged
+    })
+  }
 
   /*******************************************************
    * RENDER
    *******************************************************/
   return (
     <LibrarySearchView
-      data={libData}
-      defaultOptionsSearchOptions={LibraryHelper.defaultOptionsSearchOptions}
-      setSearchArgs={setSearchArgs}
-      isLoading={libIsLoading || isFetching}
-      isError={libIsError}
+      config={config}
+      searchArgs={searchArgs}
+      setSearchArgs={updateSearchArgsHandler}
     />
   )
 }

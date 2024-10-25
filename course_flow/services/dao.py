@@ -9,6 +9,7 @@ from django.utils.translation import gettext as _
 from course_flow import models
 from course_flow.apps import logger
 from course_flow.models.objectPermission import Permission
+from course_flow.models.user import User
 
 
 class DAO:
@@ -295,7 +296,23 @@ class DAO:
     #########################################################
 
     @staticmethod
-    def get_nondeleted_favourites(user):
-        return list(workspace.project.Project.objects.filter(favourited_by__user=user)) + list(
-            models.Workflow.objects.filter(favourited_by__user=user)
-        )
+    def get_nondeleted_favourites(user: User):
+        """
+        Prepare 5 most recent favourites, using a serializer that will give just the url and name
+        :param user:
+        :return:
+        """
+
+        favourites = [
+            x.content_object
+            for x in user.favourite_set.filter(
+                Q(
+                    workflow__deleted=False,
+                    workflow__project__deleted=False,
+                )
+                | Q(project__deleted=False)
+            )[:5]
+        ]
+        count = len(favourites)
+
+        return favourites, count

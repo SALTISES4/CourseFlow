@@ -2,7 +2,7 @@ import { OuterContentWrap } from '@cf/mui/helper'
 import * as SCCommon from '@cf/mui/helper'
 import { Box } from '@mui/material'
 
-const Error = () => {
+const ErrorView = ({ message }: { message: string }) => {
   return (
     <SCCommon.OuterContentWrap>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -14,4 +14,4 @@ const Error = () => {
   )
 }
 
-export default Error
+export default ErrorView

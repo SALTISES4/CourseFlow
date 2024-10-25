@@ -163,10 +163,6 @@ interface UpdatePath {
 
 export interface GlobalContextData {
   disciplines: Discipline[]
-  favourites: {
-    title: string
-    url: string
-  }[]
   workflowChoices: {
     taskChoices: FieldChoice[]
     timeChoices: FieldChoice[]

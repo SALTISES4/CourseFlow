@@ -1,7 +1,6 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
 import { WorkflowType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
 import { PropsType as TemplateType } from '@cfComponents/cards/WorkflowCardDumb'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import WorkflowForm, {
@@ -50,12 +49,9 @@ const CreateWizardDialog = () => {
   const {
     show,
     onClose: onDialogClose,
-    type: dialogMode
-  } = useDialog([
-    DialogMode.COURSE_CREATE,
-    DialogMode.ACTIVITY_CREATE,
-    DialogMode.ACTIVITY_CREATE
-  ])
+    type: dialogMode,
+    payload
+  } = useDialog<DialogMode.WORKFLOW_CREATE>(DialogMode.WORKFLOW_CREATE)
 
   const steps = [
     {
@@ -82,30 +78,15 @@ const CreateWizardDialog = () => {
   const ctaTitle = `Create ${state.workflowType}`
 
   /**
-   *  @todo still don't think this pattern is ideal
-   *  i don't think the dialog should 'self configure' based on the dispatch id OR props
-   *  instead there should be payload on dispatch
    */
   useEffect(() => {
-    function getWorkflowTypeFromDialogType(dialogMode: DialogMode) {
-      switch (dialogMode) {
-        case DialogMode.COURSE_CREATE:
-          return WorkflowType.COURSE
-        case DialogMode.ACTIVITY_CREATE:
-          return WorkflowType.ACTIVITY
-        case DialogMode.PROGRAM_CREATE:
-          return WorkflowType.PROGRAM
-        default:
-          return null
-      }
-    }
     setState(
       produce((draft) => {
-        draft.workflowType = getWorkflowTypeFromDialogType(dialogMode)
+        draft.workflowType = payload?.workflowType
         draft.title = ctaTitle
       })
     )
-  }, [dialogMode, ctaTitle])
+  }, [dialogMode, ctaTitle, payload])
 
   /*******************************************************
    * FUNCTIONS: Navigation

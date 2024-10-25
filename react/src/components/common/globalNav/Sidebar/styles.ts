@@ -5,6 +5,7 @@ import List from '@mui/material/List'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { Link as RouterLink } from 'react-router-dom'
 
 export const SidebarRootStyles = {
   height: '100%'
@@ -50,6 +51,8 @@ export const SidebarWrap = styled(Box, {
 })<{ collapsed: boolean }>(({ theme, collapsed }) => ({
   display: 'flex',
   flexDirection: 'column',
+  position: 'relative',
+  zIndex: 1,
   height: '100%',
   ...(collapsed && {
     [`& .MuiPaper-root`]: {
@@ -102,7 +105,7 @@ export const SectionLabel = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.disabled
 }))
 
-export const SeeAllLink = styled(Link)({
+export const SeeAllLink = styled(RouterLink)({
   display: 'block',
   width: '100%',
   fontSize: '14px'

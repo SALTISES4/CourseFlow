@@ -62,8 +62,8 @@ def unit_choices():
     )
 
 
-# developer should have implemented polymorphism ?
-# try class Workflow(PolymorphicModel):
+# developer should have implemented polymorphism maybe
+# try class Workflow(PolymorphicModel) when sorting out the inheritance model
 class Workflow(AbstractWorkspaceModel):
     objects = InheritanceManager()
 
@@ -115,7 +115,7 @@ class Workflow(AbstractWorkspaceModel):
     # parts in activities
     # terms in programs
     # this is a mistake, but maybe not worth fixing
-    # what is reasoning for this being n2m
+    # what is reasoning for this being n2m? probably a mistake
     weeks = models.ManyToManyField(Week, through="WeekWorkflow", blank=True)
 
     # what is reasoning for this being n2m

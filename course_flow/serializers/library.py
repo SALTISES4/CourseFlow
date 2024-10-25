@@ -25,7 +25,8 @@ class SortSerializer(serializers.Serializer):
 
 class FilterSerializer(serializers.Serializer):
     name = serializers.CharField(required=True)
-    value = serializers.JSONField(required=True)  # Accepts string, number, array, or boolean
+    # Accepts string, number, array, or boolean
+    value = serializers.JSONField(required=True)
 
 
 class SearchSerializer(serializers.Serializer):
@@ -36,16 +37,18 @@ class SearchSerializer(serializers.Serializer):
     filters = FilterSerializer(many=True, required=False, default=[])
     results_per_page = serializers.IntegerField(default=10)
 
-    def validate_filters(self, filters):
-        # Perform custom validation based on the type of filters allowed.
-        # Example: Ensure that certain filters are expected names
+    @staticmethod
+    def validate_filters(filters):
+        # Filters Whitelist
         allowed_filters = {
             "type",
             "discipline",
             "isTemplate",
+            "isPublished",
             "keyword",
             "workspaceType",
-        }  # Add any other expected filters
+            "parentProject",
+        }
         for filter_item in filters:
             if filter_item["name"] not in allowed_filters:
                 raise serializers.ValidationError(f"Filter {filter_item['name']} is not allowed.")

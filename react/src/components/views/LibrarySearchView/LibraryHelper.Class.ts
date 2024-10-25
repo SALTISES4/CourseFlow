@@ -13,6 +13,7 @@ import {
   FilterResult,
   LibraryObjectsSearchQueryArgs
 } from '@XMLHTTP/types/args'
+
 type FilterGroups = { [key: string]: SearchFilterGroup }
 
 type Option = any
@@ -230,22 +231,17 @@ class LibraryHelper {
          *
          **/
 
-        if (options) {
-          if (selectMultiple) {
-            const enabledValues = getEnabledValues(options)
-            if (enabledValues.length > 0)
-              acc.push({ name, value: enabledValues })
-          } else {
-            const enabledValue = getFirstEnabledValue(options)
-            if (
-              enabledValue !== undefined &&
-              enabledValue !== null &&
-              enabledValue !== ''
-            )
-              acc.push({ name, value: enabledValue })
-          }
-        } else if (value !== undefined) {
-          acc.push({ name, value })
+        if (!options) {
+          if (value !== undefined) acc.push({ name, value })
+          return acc
+        }
+
+        if (selectMultiple) {
+          const enabledValues = getEnabledValues(options)
+          if (enabledValues.length > 0) acc.push({ name, value: enabledValues })
+        } else {
+          const enabledValue = getFirstEnabledValue(options)
+          if (enabledValue) acc.push({ name, value: enabledValue })
         }
 
         return acc
@@ -285,6 +281,28 @@ class LibraryHelper {
       sort: activeSort,
       filters: filters
     }
+  }
+
+  public static merger = (a, b) => {
+    const mapA = new Map(a.map((item) => [item.name, item.value]))
+
+    // If `b` is empty, simply return a copy of `a` since there's nothing to merge from `b`
+    if (b.length === 0) {
+      return a
+    }
+    // Merge arrays with priority on values from `a`
+    const merged = b.map((item) => {
+      return mapA.has(item.name)
+        ? { name: item.name, value: mapA.get(item.name) }
+        : item
+    })
+
+    // Include items from `a` not present in `b`
+    const additionalItems = a.filter(
+      (aItem) => !b.some((bItem) => bItem.name === aItem.name)
+    )
+
+    return [...merged, ...additionalItems]
   }
 }
 

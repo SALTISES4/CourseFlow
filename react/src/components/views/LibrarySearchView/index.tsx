@@ -9,7 +9,6 @@ import FilterToggle from '@cfComponents/filters/FilterToggle'
 import FilterWorkflows from '@cfComponents/filters/FilterWorkflows'
 import SortableFilterButton from '@cfComponents/filters/SortableFilterButton'
 import { SearchFilterOption } from '@cfComponents/filters/types'
-import Loader from '@cfComponents/UIPrimitives/Loader'
 import Pagination from '@cfComponents/UIPrimitives/Pagination'
 import LibraryHelper, {
   SearchOptions
@@ -23,26 +22,32 @@ import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlin
 import { Link, Skeleton, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
-import {
-  LibraryObjectsSearchQueryResp,
-  useLibraryObjectsSearchQuery
-} from '@XMLHTTP/API/library.rtk'
+import { getErrorMessage } from '@XMLHTTP/API/api'
+import { useLibraryObjectsSearchQuery } from '@XMLHTTP/API/library.rtk'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { produce } from 'immer'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Dispatch, SetStateAction } from 'react'
 import { Link as LinkRouter } from 'react-router-dom'
+
+type FilterGroups = {
+  [key: string]: boolean
+}
+
+interface Config {
+  pagination: boolean
+  sortOptions: boolean
+  filterGroups: FilterGroups
+  keywordFilter: boolean
+}
 
 /*******************************************************
  * see:  https://docs.google.com/document/d/1LgSedmw-U6mDF8S48I3gMbaohfliZetki6AJAeIKKLw/edit?tab=t.0#heading=h.seafxrns9x1f
  *******************************************************/
-
 type PropsType = {
-  data: LibraryObjectsSearchQueryResp
-  defaultOptionsSearchOptions?: SearchOptions
-  setSearchArgs: Dispatch<SetStateAction<LibraryObjectsSearchQueryArgs>>
-  isLoading: boolean
-  isError: boolean
+  searchArgs: LibraryObjectsSearchQueryArgs
+  setSearchArgs: (args: LibraryObjectsSearchQueryArgs) => void
+  config: Config
+  override?: any
 }
 
 /*******************************************************
@@ -91,12 +96,12 @@ const FilterWorkflowResults = ({
  * @LibraryRenderer
  *******************************************************/
 const LibrarySearchView = ({
-  data,
-  defaultOptionsSearchOptions,
+  searchArgs,
   setSearchArgs,
-  isLoading,
-  isError
+  config,
+  override
 }: PropsType) => {
+  const defaultOptionsSearchOptions = LibraryHelper.defaultOptionsSearchOptions
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -106,6 +111,12 @@ const LibrarySearchView = ({
   )
   // discipline options are set in state since they may come from an asynchronous source
   const [disciplineOptions, setDisciplineOptions] = useState([])
+
+  /*******************************************************
+   * QUERY HOOKS
+   *******************************************************/
+  const { data, error, isLoading, isError, isFetching } =
+    useLibraryObjectsSearchQuery(searchArgs)
 
   useEffect(() => {
     if (!defaultOptionsSearchOptions) return
@@ -155,6 +166,8 @@ const LibrarySearchView = ({
    **/
 
   const renderSort = () => {
+    if (!config.sortOptions) return <></>
+
     return (
       <SortableFilterButton
         options={searchFilterState.sortOptions.options}
@@ -178,8 +191,9 @@ const LibrarySearchView = ({
   }
 
   const renderRelationshipFilter = () => {
-    const filterGroup = searchFilterState.filterGroups.relationshipFilter
+    if (!config.filterGroups.relationshipFilter) return <></>
 
+    const filterGroup = searchFilterState.filterGroups.relationshipFilter
     const { options, name } = filterGroup
 
     return (
@@ -212,6 +226,8 @@ const LibrarySearchView = ({
   }
 
   const renderWorkspaceTypeFilter = () => {
+    if (!config.filterGroups.workspaceTypeFilter) return <></>
+
     const filterGroup = searchFilterState.filterGroups.workspaceTypeFilter
 
     const { options, name } = filterGroup
@@ -246,10 +262,11 @@ const LibrarySearchView = ({
     )
   }
 
+  /*******************************************************
+   *  DisciplineFilter
+   *******************************************************/
   const renderDisciplineFilter = useCallback(() => {
-    const filterGroup = searchFilterState.filterGroups.disciplineFilter
-
-    const { name } = filterGroup
+    if (!config.filterGroups.disciplineFilter) return <></>
 
     return (
       <>
@@ -275,12 +292,13 @@ const LibrarySearchView = ({
     )
   }, [disciplineOptions, searchFilterState])
 
+  /*******************************************************
+   *  IS TEMPLATE
+   *******************************************************/
   const renderTemplateFilter = () => {
+    if (!config.filterGroups.templateFilter) return <></>
     return (
       <>
-        {/*******************************************************
-         *  IS TEMPLATE
-         *******************************************************/}
         <FilterToggle
           label="Templates"
           icon={<SpaceDashboardOutlinedIcon />}
@@ -298,6 +316,29 @@ const LibrarySearchView = ({
   }
 
   /*******************************************************
+   *  Pagination
+   *******************************************************/
+  const renderPagination = () => {
+    if (!config.pagination || !data || data.dataPackage.meta.pageCount <= 1) {
+      return <></>
+    }
+
+    return (
+      <Pagination
+        current={data.dataPackage.meta.currentPage + 1}
+        pages={data.dataPackage.meta.pageCount}
+        onChange={(page) =>
+          setSearchFilterState(
+            produce((draft) => {
+              draft.pagination.page = page
+            })
+          )
+        }
+      />
+    )
+  }
+
+  /*******************************************************
    *  RESULTS
    *******************************************************/
   const Results = () => {
@@ -311,8 +352,12 @@ const LibrarySearchView = ({
       ))
     }
 
-    if (isError) return <ErrorView />
     if (!data) return <NotFoundView />
+    if (isError) {
+      return (
+        <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />
+      )
+    }
 
     const cards = formatLibraryObjects(data.dataPackage.items)
 
@@ -321,7 +366,12 @@ const LibrarySearchView = ({
         {!cards.length && <Typography>{_t('No results found')}</Typography>}
 
         {cards.map((item) => (
-          <WorkflowCardWrapper key={`workflow_${item.id}`} {...item} />
+          <WorkflowCardWrapper
+            key={`workflow_${item.id}`}
+            {...item}
+            isSelected={item.id === override.selectedId}
+            onClick={() => override.onCardSelect(item.id)}
+          />
         ))}
 
         {/* ALL VIEW NOT IMPLEMENTED YET */}
@@ -364,20 +414,7 @@ const LibrarySearchView = ({
       <GridWrap>
         <Results />
       </GridWrap>
-
-      {data && (
-        <Pagination
-          current={data.dataPackage.meta.currentPage + 1}
-          pages={data.dataPackage.meta.pageCount}
-          onChange={(page) =>
-            setSearchFilterState(
-              produce((draft) => {
-                draft.pagination.page = page
-              })
-            )
-          }
-        />
-      )}
+      {renderPagination()}
     </OuterContentWrap>
   )
 }

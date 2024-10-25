@@ -18,22 +18,11 @@ Supports:
 
 """
 import math
-from pprint import pprint
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import (
-    Case,
-    CharField,
-    Count,
-    Exists,
-    OuterRef,
-    Q,
-    Value,
-    When,
-)
+from django.db.models import Case, CharField, Exists, OuterRef, Q, Value, When
 
-from course_flow.models import Favourite, User
-from course_flow.serializers import FavouriteSerializer
+from course_flow.models import Favourite, User, WorkflowProject
 from course_flow.services import DAO, Utility
 
 SUBCLASSES = ["activity", "course", "program"]
@@ -71,9 +60,6 @@ class LibraryService:
         merged_sort = utility_service.merge_dicts(self.defaultSort, sort)
         merged_pagination = utility_service.merge_dicts(self.defaultPagination, pagination)
 
-        pprint("merged_filters")
-        pprint(merged_filters)
-
         # Apply filters and build querysets
         queryset_original = self.build_queryset(merged_filters, user)
 
@@ -84,7 +70,7 @@ class LibraryService:
         return_objects, pagination = self.apply_pagination(queryset, merged_pagination)
 
         #########################################################
-        # Becuase the DB is split into several models that we're querying as 'one'
+        # Because the DB is split into several models that we're querying as 'one'
         # and we don't have scope tp fix the architecture issues currently
         # i.e. we might as well take the time to push this to a proper search engine
         #
@@ -170,12 +156,10 @@ class LibraryService:
             if name == "type":
                 if value == "owned":
                     filter_kwargs["author_id"] = user.id
-                # if name == 'shared':
+
                 if value == "archived":
                     filter_kwargs["deleted"] = True
-                # if value == 'favourited':
-                #     filter_kwargs["favourited_by"] = user.id
-                # Apply the favourite filter
+
                 if value == "favourited":
                     project_favourite_subquery = self.get_favourite_subquery(
                         user, DAO.get_model_from_str("project")
@@ -186,10 +170,24 @@ class LibraryService:
                     q_objects_project &= project_favourite_subquery
                     q_objects_workflow &= workflow_favourite_subquery
 
+            if name == "parentProject":
+                # Assuming `value` is the ID of the project
+                # Retrieve IDs of workflows associated with the given project ID
+                workflow_ids = WorkflowProject.objects.filter(project_id=value).values_list(
+                    "workflow_id", flat=True
+                )
+
+                # Apply this filter to the workflow queryset
+                q_objects_workflow |= Q(id__in=workflow_ids)
+                filter_kwargs["annotated_type__in"] = SUBCLASSES
+
+            # @todo not implemented
+            # if name == 'shared':
+
             elif name == "workspaceType":
                 filter_kwargs["annotated_type"] = value
 
-            elif name == "published":
+            elif name == "isPublished":
                 filter_kwargs["published"] = value
 
             elif name == "isTemplate":
@@ -202,7 +200,7 @@ class LibraryService:
                 # disciplines is on the Workspace abstract model
                 # but we think it only applies to projects
                 # this might be a problem
-                # i.e. disciplines are not recorded on worklow
+                # i.e. disciplines are not recorded on workflow
                 # but the parent project disciplines are expected to show up there
                 # and thus be filtered by it....
                 # in which case we would do an additional dynamic query by parent project id
@@ -304,8 +302,6 @@ class LibraryService:
 
     @staticmethod
     def apply_pagination(queryset, pagination):
-        pprint("pagination")
-        pprint(pagination)
         """
         Apply pagination to the queryset.
         """
@@ -339,35 +335,6 @@ class LibraryService:
                 user=user,
             )
         )
-
-    @staticmethod
-    def get_top_favourites(user: User):
-        """
-        Prepare 5 most recent favourites, using a serializer that will give just the url and name
-        :param user:
-        :return:
-        """
-
-        favourites_query = [
-            x.content_object
-            for x in user.favourite_set.filter(
-                Q(
-                    workflow__deleted=False,
-                    workflow__project__deleted=False,
-                )
-                | Q(project__deleted=False)
-            )[:5]
-        ]
-
-        favourites = FavouriteSerializer(
-            favourites_query,
-            many=True,
-            context={"user": user},
-        ).data
-
-        return {
-            "favourites": favourites,
-        }
 
 
 #########################################################

@@ -1,4 +1,5 @@
 import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
+import { WorkflowType } from '@cf/types/enum'
 import { useContext } from 'react'
 import * as React from 'react'
 
@@ -22,9 +23,7 @@ export enum DialogMode {
   WORKFLOW_DELETE = 'workflow_DELETE',
   WORKFLOW_EDIT = 'workflow_edit',
   WORKFLOW_COPY_TO_PROJECT = 'workflow_copy_to_project',
-  PROGRAM_CREATE = 'program_create',
-  ACTIVITY_CREATE = 'activity_create',
-  COURSE_CREATE = 'course_create',
+  WORKFLOW_CREATE = 'workflow_create',
 
   // WORKSPACE
   CONTRIBUTOR_REMOVE = 'contributor_remove',
@@ -38,6 +37,7 @@ export enum DialogMode {
 export type DialogPayloadMap = {
   [DialogMode.CONTRIBUTOR_REMOVE]: { userId: number; userName: string }
   [DialogMode.ARCHIVE]: { peopleId: string }
+  [DialogMode.WORKFLOW_CREATE]: { workflowType: WorkflowType }
 
   /*******************************************************
    * we shouldn't need to  list out all the ones for undefined
@@ -57,9 +57,6 @@ export type DialogPayloadMap = {
   [DialogMode.WORKFLOW_DELETE]: undefined
   [DialogMode.WORKFLOW_EDIT]: undefined
   [DialogMode.WORKFLOW_COPY_TO_PROJECT]: undefined
-  [DialogMode.PROGRAM_CREATE]: undefined
-  [DialogMode.ACTIVITY_CREATE]: undefined
-  [DialogMode.COURSE_CREATE]: undefined
   [DialogMode.CONTRIBUTOR_ADD]: undefined
   [DialogMode.RESTORE]: undefined
   [DialogMode.GENERIC]: undefined

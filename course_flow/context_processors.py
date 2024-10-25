@@ -32,12 +32,7 @@ def add_global_context(request: HttpRequest):
             "globalContextData": JSONRenderer()
             .render(
                 {
-                    "favourites": LibraryService.get_top_favourites(
-                        request.user
-                    ),
-                    "appNotifications": get_app_update_notifications(
-                        request.user
-                    ),
+                    "appNotifications": get_app_update_notifications(request.user),
                     "workflowChoices": WorkflowService.get_workflow_choices(),
                     "path": ConfigService.get_app_paths(),
                     "disciplines": ConfigService.get_app_disciplines(),

@@ -1,5 +1,8 @@
+import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
 import strings from '@cf/utility/strings'
+import Loader from '@cfComponents/UIPrimitives/Loader'
 import CFLogo from '@cfComponents/UIPrimitives/SVG/CFLogo'
 import ParentWorkflowIndicator from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ParentWorkflowIndicator'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -15,14 +18,92 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Typography from '@mui/material/Typography'
+import { useLibraryFavouriteObjectsQuery } from '@XMLHTTP/API/library.rtk'
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, generatePath, useLocation, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
 
+const Favourites = () => {
+  const { data, isLoading, isError } = useLibraryFavouriteObjectsQuery()
+
+  const SeeAll = () => {
+    if (!data || data.dataPackage.meta.count < 5) {
+      return <></>
+    }
+
+    return (
+      <ListItem disablePadding dense sx={{ mt: 1 }}>
+        <ListItemButton
+          component="div"
+          sx={{
+            padding: 0
+          }}
+        >
+          <ListItemText
+            sx={{
+              margin: 0
+            }}
+            primary={
+              <SC.SeeAllLink
+                sx={{
+                  px: 2,
+                  py: 1
+                }}
+                to={CFRoutes.FAVOURITES}
+              >
+                {strings.viewAll}
+              </SC.SeeAllLink>
+            }
+          />
+        </ListItemButton>
+      </ListItem>
+    )
+  }
+
+  if (isLoading) {
+    return <Loader />
+  }
+
+  if (!data || isError) {
+    return <></>
+  }
+
+  return (
+    <>
+      <Divider />
+
+      <SC.SectionWrap>
+        <SC.SectionLabel variant="body1">{strings.favourites}</SC.SectionLabel>
+
+        <List>
+          {data.dataPackage.items.map((item, id) => {
+            const url = generatePath(CFRoutes.WORKFLOW, {
+              id: String(item.id)
+            })
+
+            return (
+              <ListItem disablePadding dense key={id}>
+                <ListItemButton
+                  component={Link}
+                  to={url}
+                  data-test-id="panel-favourite"
+                  selected={location.pathname === url}
+                >
+                  <ListItemText primary={item.title} />
+                </ListItemButton>
+              </ListItem>
+            )
+          })}
+          <SeeAll />
+        </List>
+      </SC.SectionWrap>
+    </>
+  )
+}
+
 const Sidebar = () => {
   const location = useLocation()
-  const favourites  = COURSEFLOW_APP.globalContextData.favourites
 
   const [collapsed, setCollapsed] = useState(
     !!sessionStorage.getItem('collapsed_sidebar')
@@ -36,74 +117,6 @@ const Sidebar = () => {
     }
 
     setCollapsed(!collapsed)
-  }
-
-  const Favourites = () => {
-    if (!COURSEFLOW_APP.globalContextData.favourites?.length) return <></>
-
-    const SeeAll = () => {
-      if (favourites.length < 5) {
-        return <></>
-      }
-
-      return (
-        <ListItem disablePadding dense sx={{ mt: 1 }}>
-          <ListItemButton
-            component="div"
-            sx={{
-              padding: 0
-            }}
-          >
-            <ListItemText
-              sx={{
-                margin: 0
-              }}
-              primary={
-                <SC.SeeAllLink
-                  sx={{
-                    px: 2,
-                    py: 1
-                  }}
-                  // @todo convert this to a Link element
-                  href={CFRoutes.FAVOURITES}
-                >
-                  {strings.viewAll}
-                </SC.SeeAllLink>
-              }
-            />
-          </ListItemButton>
-        </ListItem>
-      )
-    }
-
-    return (
-      <>
-        <Divider />
-
-        <SC.SectionWrap>
-          <SC.SectionLabel variant="body1">
-            {strings.favourites}
-          </SC.SectionLabel>
-
-          <List>
-            {favourites.map((favourite, id) => (
-              <ListItem disablePadding dense key={id}>
-                <ListItemButton
-                  component={Link}
-                  to={favourite.url}
-                  data-test-id="panel-favourite"
-                  selected={location.pathname === favourite.url}
-                >
-                  <ListItemText primary={favourite.title} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-
-            <SeeAll />
-          </List>
-        </SC.SectionWrap>
-      </>
-    )
   }
 
   return (

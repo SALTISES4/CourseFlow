@@ -112,6 +112,7 @@ const extendedApi = cfApi.injectEndpoints({
 
 export const {
   useGetProjectByIdQuery,
+  // not sure we need this any more
   useListProjectsByCurrentUserQuery,
   useCreateProjectMutation,
   useUpdateProjectMutation,
