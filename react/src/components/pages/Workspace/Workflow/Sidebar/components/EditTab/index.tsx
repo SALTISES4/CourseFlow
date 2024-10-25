@@ -13,8 +13,8 @@ import { PartForm } from './components/EditPart/types'
 import EditTerm from './components/EditTerm'
 import { TermForm } from './components/EditTerm/types'
 import EditWeek from './components/EditWeek'
-import { EditablePropsType, EditableType } from '../../hooks/useEditable/types'
 import { WeekForm } from './components/EditWeek/types'
+import { EditablePropsType, EditableType } from '../../hooks/useEditable/types'
 
 const EditTab = ({ type, data }: EditablePropsType) => {
   if (!type) {

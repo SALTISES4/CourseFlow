@@ -80,7 +80,7 @@ export class SelectionManager {
   // }
 
   private deselectCurrentSelection(): void {
-    this.currentSelection.setState({ selected: false })
+    this.currentSelection?.setState({ selected: false })
     if (!this.readOnly) {
       this.unlockCurrentSelection()
     }
@@ -106,7 +106,7 @@ export class SelectionManager {
     // have the component listen to that state fop its own hash
 
     //
-    this.currentSelection.setState({ selected: true })
+    this.currentSelection?.setState({ selected: true })
   }
 
   private lockCurrentSelection(): void {

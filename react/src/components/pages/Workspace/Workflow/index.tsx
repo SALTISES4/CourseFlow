@@ -43,7 +43,7 @@ const Workflow = () => {
   })
 
   /*******************************************************
-   * Once the websocket id 'initialized' that measn connected
+   * Once the websocket id 'initialized' that means connected
    * AND it performs the query
    * AND stores data in store
    * then this component is listens to store and in turn sets ready state
@@ -55,8 +55,7 @@ const Workflow = () => {
    * not only that but it doesn't make sense this is all one render blocking query
    * ..
    * maybe we don't need to use the store at all here
-   * maybe we should be relyong on the RTK query cache
-
+   * maybe we should be relying on the RTK query cache
    *******************************************************/
   useEffect(() => {
     if (workflowData && workflowData.workflowPermissions) {

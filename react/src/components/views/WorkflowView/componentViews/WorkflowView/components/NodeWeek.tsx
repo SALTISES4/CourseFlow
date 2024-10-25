@@ -60,7 +60,6 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
         id={data.id}
         data-child-id={data.node}
         data-column-id={this.props.column}
-
         // ref={this.mainDiv} // @todo this is not defined
       >
         <this.NodeWrapper />

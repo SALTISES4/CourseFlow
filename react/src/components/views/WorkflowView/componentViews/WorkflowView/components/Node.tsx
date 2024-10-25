@@ -368,7 +368,7 @@ class NodeUnconnected extends EditableComponentWithActions<
     if (
       data_override.description &&
       data_override.description.replace(
-        /(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
+        /(<p>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
         ''
       ) != ''
     )
@@ -417,7 +417,10 @@ class NodeUnconnected extends EditableComponentWithActions<
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
           onClick={(evt) =>
-            this.context.selectionManager.changeSelection({ evt, newSelection: this })
+            this.context.selectionManager.changeSelection({
+              evt,
+              newSelection: this
+            })
           }
         >
           <div className="node-top-row">
