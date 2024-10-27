@@ -14,7 +14,6 @@ type OwnProps = {
   condensed: boolean
   objectId: number
   parentID: number
-  // renderer: any
 } & ComponentWithToggleProps
 
 export type WeekWorkflowUnconnectedProps = OwnProps
@@ -53,7 +52,6 @@ class WeekWorkflowUnconnected<
         objectId={data.week}
         rank={this.props.order.indexOf(data.id)}
         parentID={this.props.parentID}
-        // renderer={this.props.renderer}
         throughParentID={data.id}
       />
     )

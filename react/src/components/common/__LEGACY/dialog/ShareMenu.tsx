@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { _t } from '@cf/utility/utilityFunctions'
 
 // import $ from 'jquery'

@@ -1,11 +1,11 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { WorkflowType } from '@cf/types/enum'
 import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
+import {WorkflowType} from "@cfPages/Workspace/Workflow/types";
 import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import AddCircleIcon from '@mui/icons-material/AddCircle'

@@ -24,7 +24,7 @@ export type WorkflowCardWrapperPropsType = Pick<
   isLinked: boolean
   type: LibraryObjectType
   isSelected?: boolean
-  onClick: () => void
+  onClick?: () => void
 }
 const WorkflowCardWrapper = ({
   id,
@@ -82,7 +82,7 @@ const WorkflowCardWrapper = ({
       isDisabledLink={isDisabledLink}
       description={description}
       isSelected={isSelected}
-      // overriden onclick handler
+      // overridden onclick handler
       onClick={onClick ? () => onClick() : () => navigateToItem(id, type)}
       chips={chips}
       footer={<Extras />}

@@ -1,5 +1,5 @@
 import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
-import { WorkflowType } from '@cf/types/enum'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { useContext } from 'react'
 import * as React from 'react'
 

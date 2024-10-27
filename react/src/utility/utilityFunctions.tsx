@@ -1,6 +1,6 @@
 import { CFRoutes } from '@cf/router/appRoutes'
+import { WorkspaceType } from '@cf/types/enum'
 import { MaybeWithId, hasId } from '@cf/types/typeGuards'
-import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import { generatePath } from 'react-router-dom'
 
 type GenericObject = {
