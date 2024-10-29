@@ -1,3 +1,4 @@
+import { styled } from '@mui/material/styles'
 import * as React from 'react'
 import { ReactElement } from 'react'
 
@@ -13,26 +14,33 @@ type PropsType = {
   leftSection: ReactElement
   viewbar?: ReactElement
   userbar?: ReactElement
+  legendbar?: ReactElement
 }
+const colorWhiteGreen = '#E8F5E9' // Example color, replace with the actual color code
+
+const SCMenubar = styled('div')`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-family: 'Open Sans', sans-serif;
+  align-items: center;
+  background: ${colorWhiteGreen};
+  box-sizing: border-box;
+`
 /**
- *
+ * there is room to make this more flex, i.e. left, middle etc sections should be just layout wrappers that content gets assigned to
  */
-const MenuBar = ({ leftSection, viewbar, userbar }: PropsType) => {
+const MenuBar = ({ leftSection, viewbar, userbar, legendbar }: PropsType) => {
   /*******************************************************
    * RENDER
    *******************************************************/
   return (
-    <div className="menubar">
-      <div id="floatbar" className="floatbar">
-        {leftSection}
-      </div>
-      <div id="userbar" className="floatbar">
-        {userbar}
-      </div>
-      <div id="viewbar" className="floatbar">
-        {viewbar}
-      </div>
-    </div>
+    <SCMenubar>
+      <div data-test-id="actions-bar">{leftSection}</div>
+      <div data-test-id="user-bar">{userbar}</div>
+      <div data-test-id="viewbar">{viewbar}</div>
+      <div data-test-id="legend-bar">{legendbar}</div>
+    </SCMenubar>
   )
 }
 export default MenuBar

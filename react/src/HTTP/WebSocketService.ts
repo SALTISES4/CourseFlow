@@ -6,9 +6,14 @@
  */
 import { _t } from '@cf/utility/utilityFunctions'
 
-export enum DATA_TYPE {
+/*******************************************************
+ * keep these in snake case, as they are not being converted by the middleware
+ * note that payload keys should still be camelCase
+ *******************************************************/
+export enum WS_EVENT_TYPE {
   WORKFLOW_ACTION = 'workflow_action',
-  LOCK_UPDATE = 'lockUpdate',
+  MICRO_UPDATE = 'micro_update',
+  LOCK_UPDATE = 'lock_update',
   CONNECTION_UPDATE = 'connection_update',
   WORKFLOW_PARENT_UPDATED = 'workflow_parent_updated',
   WORKFLOW_CHILD_UPDATED = 'workflow_child_updated'

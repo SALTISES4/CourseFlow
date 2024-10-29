@@ -1,8 +1,8 @@
 import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
+import React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = TGetNodeById
@@ -14,7 +14,9 @@ type PropsType = ConnectedProps & OwnProps
 /**
  * The nodes (specifically the time data) in the matrix view
  */
-class MatrixNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
+class MatrixNodeUnconnected extends React.Component<PropsType> {
+  objectType: CfObjectType
+
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.NODE

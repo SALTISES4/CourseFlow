@@ -9,6 +9,7 @@ from course_flow.models.workflow_objects.week import Week
 class WeekWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
+
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 

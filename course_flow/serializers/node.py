@@ -113,7 +113,7 @@ class NodeSerializerShallow(
             "represents_workflow",
             "linked_workflow",
             "linked_workflow_data",
-            # "is_dropped",
+            "is_dropped",
             "comments",
             "sets",
         ]
@@ -221,8 +221,6 @@ class NodeSerializerShallow(
         instance.time_specific_hours = validated_data.get(
             "time_specific_hours", instance.time_specific_hours
         )
-        # instance.is_dropped = validated_data.get(
-        #     "is_dropped", instance.is_dropped
-        # )
+        instance.is_dropped = validated_data.get("is_dropped", instance.is_dropped)
         instance.save()
         return instance

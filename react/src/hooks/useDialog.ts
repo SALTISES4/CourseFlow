@@ -35,7 +35,7 @@ export enum DialogMode {
 }
 
 export type DialogPayloadMap = {
-  [DialogMode.CONTRIBUTOR_REMOVE]: { userId: number; userName: string }
+  [DialogMode.CONTRIBUTOR_REMOVE]: { userId: number; username: string }
   [DialogMode.ARCHIVE]: { peopleId: string }
   [DialogMode.WORKFLOW_CREATE]: { workflowType: WorkflowType }
 

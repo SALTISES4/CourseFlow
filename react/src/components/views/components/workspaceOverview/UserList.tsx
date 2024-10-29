@@ -125,7 +125,7 @@ const UserList = ({
                     onClick: () => {
                       dispatch(DialogMode.CONTRIBUTOR_REMOVE, {
                         userId: user.id,
-                        userName: user.name
+                        username: user.name
                       })
                     }
                   }

@@ -1,9 +1,7 @@
 // @ts-ignore
-import {apiPaths} from "@cf/router/apiRoutes";
-import { CfObjectType } from '@cf/types/enum'
+import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TStrategyByID, getStrategyById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
@@ -22,15 +20,14 @@ type OwnPropsType = {
 type ReduxProps = TStrategyByID
 
 type PropsType = OwnPropsType & ReduxProps
-class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
-  // @todo not used?
+class StrategyUnconnected extends React.Component<PropsType> {
+  mainDiv: React.RefObject<HTMLDivElement>
+
   constructor(props: PropsType) {
     super(props)
-    this.objectType = CfObjectType.STRATEGY // @todo check addEditable
-    this.objectClass = '.strategy' // @todo check addEditable
+    this.mainDiv = React.createRef()
 
-    // @ts-ignore
-    this.node_block = React.createRef() // @todo check addEditable
+    // this.node_block = React.createRef() // @todo check addEditable
   }
 
   /*******************************************************
@@ -81,7 +78,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
     const strategyIcon =
       data && data.strategy_icon ? (
         <img
-          src={`${ apiPaths.external.static_assets.icon}${
+          src={`${apiPaths.external.static_assets.icon}${
             Constants.strategyKeys[data.strategy_icon]
           }.svg`}
         />

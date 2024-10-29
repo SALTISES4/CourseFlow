@@ -109,6 +109,7 @@ class Workflow(AbstractWorkspaceModel):
 
     favourited_by = GenericRelation("Favourite", related_query_name="workflow")
 
+    # @todo what is the use case?
     parent_workflow = models.ForeignKey("Workflow", on_delete=models.SET_NULL, null=True)
 
     # these are called different things depending on which workflow type

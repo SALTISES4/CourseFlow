@@ -5,7 +5,7 @@ import { dragAction } from '@XMLHTTP/API/update'
 // import $ from 'jquery'
 
 export function openWorkflowSelectMenu(response, updateFunction) {
-   // renderMessageBox(response, 'workflow_select_menu', updateFunction)
+  // renderMessageBox(response, 'workflow_select_menu', updateFunction)
 }
 
 //Called when a node should have its column changed
@@ -41,6 +41,8 @@ export function insertedAt(
   newPosition,
   throughType
 ) {
+  console.log('inserted at')
+
   if (!selectionManager.dragAction) selectionManager.dragAction = {}
   if (!selectionManager.dragAction[throughType])
     selectionManager.dragAction[throughType] = {}

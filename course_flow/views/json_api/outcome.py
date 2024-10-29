@@ -36,7 +36,9 @@ def json_api_post_update_outcomenode_degree(
     """
     # Links an outcome to a node
     """
-    body = json.loads(request.body)
+    body = json.loads(
+        request.body
+    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     node_id = body.get("nodePk")
     outcome_id = body.get("outcomePk")
     degree = body.get("degree")
@@ -57,9 +59,7 @@ def json_api_post_update_outcomenode_degree(
             degree=degree,
         )
         new_outcomenodes = OutcomeNodeSerializerShallow(
-            [model]
-            + model.check_parent_outcomes()
-            + model.check_child_outcomes(),
+            [model] + model.check_parent_outcomes() + model.check_child_outcomes(),
             many=True,
         ).data
         OutcomeNode.objects.filter(node=model.node, degree=0).delete()
@@ -94,32 +94,26 @@ def json_api_post_insert_child_outcome(request: HttpRequest) -> JsonResponse:
     :param request:
     :return:
     """
-    body = json.loads(request.body)
+    body = json.loads(
+        request.body
+    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     object_id = body.get("objectID")
     object_type = body.get("objectType")
 
     try:
         if object_type == "outcome":
             model = Outcome.objects.get(id=object_id)
-            newmodel = Outcome.objects.create(
-                author=model.author, depth=model.depth + 1
-            )
+            newmodel = Outcome.objects.create(author=model.author, depth=model.depth + 1)
             newrank = model.children.count()
             newthroughmodel = OutcomeOutcome.objects.create(
                 parent=model, child=newmodel, rank=newrank
             )
             newmodel.refresh_from_db()
             new_model_serialized = OutcomeSerializerShallow(newmodel).data
-            new_through_serialized = OutcomeOutcomeSerializerShallow(
-                newthroughmodel
-            ).data
+            new_through_serialized = OutcomeOutcomeSerializerShallow(newthroughmodel).data
             outcomenodes = OutcomeNode.objects.filter(outcome=newmodel)
-            outcomenodes_serialized = OutcomeNodeSerializerShallow(
-                outcomenodes, many=True
-            ).data
-            node_updates = NodeSerializerShallow(
-                [x.node for x in outcomenodes], many=True
-            ).data
+            outcomenodes_serialized = OutcomeNodeSerializerShallow(outcomenodes, many=True).data
+            node_updates = NodeSerializerShallow([x.node for x in outcomenodes], many=True).data
         else:
             raise ValidationError("Uknown component type")
 
@@ -144,9 +138,7 @@ def json_api_post_insert_child_outcome(request: HttpRequest) -> JsonResponse:
         actions.insertChildAction(response_data, object_type),
     )
     if object_type == "outcome":
-        actions.dispatch_to_parent_wf(
-            workflow, actions.insertChildAction(response_data, "outcome")
-        )
+        actions.dispatch_to_parent_wf(workflow, actions.insertChildAction(response_data, "outcome"))
     return JsonResponse({"message": "success"})
 
 
@@ -154,7 +146,9 @@ def json_api_post_insert_child_outcome(request: HttpRequest) -> JsonResponse:
 def json_api_post_new_outcome_for_workflow(
     request: HttpRequest,
 ) -> JsonResponse:
-    body = json.loads(request.body)
+    body = json.loads(
+        request.body
+    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     workflow_id = body.get("workflowPk")
     workflow = Workflow.objects.get(pk=workflow_id)
     objectset_id = body.get("objectsetPk")
@@ -177,8 +171,6 @@ def json_api_post_new_outcome_for_workflow(
         "parentID": workflow_id,
     }
     actions.dispatch_wf(workflow, actions.newOutcomeAction(response_data))
-    actions.dispatch_to_parent_wf(
-        workflow, actions.newOutcomeAction(response_data)
-    )
+    actions.dispatch_to_parent_wf(workflow, actions.newOutcomeAction(response_data))
 
     return JsonResponse({"message": "success"})

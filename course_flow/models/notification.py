@@ -38,9 +38,7 @@ class Notification(models.Model):
 
     is_unread = models.BooleanField(default=True)
 
-    notification_type = models.PositiveIntegerField(
-        choices=type_choices(), default=0
-    )
+    notification_type = models.PositiveIntegerField(choices=type_choices(), default=0)
 
     #########################################################
     # RELATIONS
@@ -64,6 +62,7 @@ class Notification(models.Model):
 
     content_object = GenericForeignKey("content_type", "object_id")
 
+    # @todo why
     comment = models.ForeignKey(
         Comment,
         on_delete=models.CASCADE,

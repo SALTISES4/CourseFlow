@@ -21,8 +21,14 @@ const EditTab = ({ type, data }: EditablePropsType) => {
     return null
   }
 
+  console.log('type')
+  console.log(type)
+  console.log('data')
+  console.log(data)
+
   switch (type) {
     case EditableType.TERM:
+      // note this should be a generic or typeguard
       return <EditTerm {...(data as TermForm)} />
     case EditableType.WEEK:
       return <EditWeek {...(data as WeekForm)} />

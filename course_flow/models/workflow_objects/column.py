@@ -51,6 +51,7 @@ class Column(AbstractCourseFlowModel):
     #########################################################
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
+    # probably not...
     parent_column = models.ForeignKey("Column", on_delete=models.SET_NULL, null=True)
 
     comments = models.ManyToManyField("Comment", blank=True, related_name="column")

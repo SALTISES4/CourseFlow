@@ -1,23 +1,21 @@
-import * as React from 'react'
+import React from 'react'
 
 type PropsType = {
   checked: boolean
   toggleAction: () => void
 }
 
-class Slider extends React.Component<PropsType> {
-  render() {
-    return (
-      <label className="switch">
-        <input
-          type="checkbox"
-          checked={this.props.checked}
-          onChange={this.props.toggleAction.bind(this)}
-        />
-        <span className="slider round" />
-      </label>
-    )
-  }
+const Slider: React.FC<PropsType> = ({ checked, toggleAction }) => {
+  return (
+    <label className="switch">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={toggleAction} // No need to bind in functional components
+      />
+      <span className="slider round" />
+    </label>
+  )
 }
 
 export default Slider

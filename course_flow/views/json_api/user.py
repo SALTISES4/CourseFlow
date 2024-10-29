@@ -37,7 +37,7 @@ class UserEndpoint:
             "id": user.user.id,
             "first_name": user.user.first_name,
             "last_name": user.user.last_name,
-            "user_name": user.user.username,
+            "username": user.user.username,
             "language": user.language,
         }
         return Response({"data_package": data_package})
@@ -126,7 +126,9 @@ class UserEndpoint:
     @staticmethod
     @api_view(["POST"])
     def list(request: Request) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         name_filter = body.get("filter")
         names = name_filter.split(" ")
         length = len(names)

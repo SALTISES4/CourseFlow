@@ -1,7 +1,7 @@
 import { createOutcomeNodeBranch } from '@cf/utility/createOutcomeNodeBranch'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import { AppState } from '@cfRedux/types/type'
 import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/CompetencyMatrixView/CompetencyMatrixView'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import Outcome from './Outcome'
@@ -15,7 +15,6 @@ type ConnectedProps = {
   outcomenode: any
   outcomeoutcome: any
 }
-// type ConnectedProps = ReturnType<typeof mapStateToProps>
 
 type OwnProps = {
   type: string
@@ -26,7 +25,7 @@ type OwnProps = {
 }
 type PropsType = OwnProps & ConnectedProps
 
-class OutcomeBaseUnconnected extends ComponentWithToggleDrop<PropsType> {
+class OutcomeBaseUnconnected extends React.Component<PropsType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/

@@ -116,7 +116,9 @@ class WorkflowEndpoint:
     def fetch_parent_detail(
         request: Request,
     ) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         workflow = Workflow.objects.get(pk=body.get("workflowPk"))
 
         try:
@@ -141,7 +143,9 @@ class WorkflowEndpoint:
     def fetch_child_workflow_data(
         request: Request,
     ) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         node = Node.objects.get(pk=body.get("nodePk"))
 
         try:
@@ -200,7 +204,7 @@ class WorkflowEndpoint:
     # @user_can_edit("projectPk")
     def create(request: Request) -> Response:
         """
-        Create a new workflow in a project
+        Create new or update existing workflow in a project
         :param request:
         :return:
         """
@@ -262,7 +266,9 @@ class WorkflowEndpoint:
     @user_can_edit("projectPk")
     @api_view(["POST"])
     def duplicate_to_project(request: Request, pk: int) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         workflow = Workflow.objects.get(pk=pk)
         project = Project.objects.get(pk=body.get("projectPk"))
 
@@ -314,7 +320,9 @@ class WorkflowEndpoint:
         @todo what does this do?
         :return:
         """
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         node = Node.objects.get(pk=body.get("nodePk"))
 
         try:
@@ -346,7 +354,9 @@ class WorkflowEndpoint:
         @todo what does this do?
         :return:
         """
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         type_filter = body.get("type_filter")
         get_strategies = body.get("get_strategies", "false")
         projectPk = body.get("projectPk", False)
@@ -390,7 +400,9 @@ class WorkflowEndpoint:
             :return:
         """
 
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         # last_time = time.time()
         try:
             node_id = body.get("nodePk")
@@ -526,7 +538,7 @@ def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
 
     # @user_can_view("workflowPk")
     # def json_api_post_get_workflow_context(request: Request) -> Response:
-    #     body = json.loads(request.body)
+    #     body = json.loads(request.body) # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     #     workflowPk = body.get("workflowPk", False)
     #
     #     try:

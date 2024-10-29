@@ -94,7 +94,9 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
     }
 
     try:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         json_data = body.get("jsonData")
         id_dict = {
             "project": {},

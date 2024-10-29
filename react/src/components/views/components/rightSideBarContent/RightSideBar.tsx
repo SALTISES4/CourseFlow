@@ -114,8 +114,6 @@ class RightSideBar extends React.Component<PropsType> {
     }
     return (
       <OutcomeBar
-        // renderer={renderer}
-        // renderMethod={this.props.parentRender}
         readOnly={this.props.readOnly} // @todo, verify business logic
       />
     )
@@ -124,7 +122,7 @@ class RightSideBar extends React.Component<PropsType> {
   ViewBarWrapper = () => {
     if (this.props.wfcontext === WorkflowContext.WORKFLOW) {
       return (
-        <ViewBar data={this.props.data} /* renderer={this.props.renderer}*/ />
+        <ViewBar data={this.props.data} />
       )
     }
     if (this.props.wfcontext === WorkflowContext.COMPARISON) {
@@ -132,7 +130,6 @@ class RightSideBar extends React.Component<PropsType> {
         <ComparisonViewBar
           toggleObjectSet={this.props.toggleObjectSet}
           objectSets={this.props.objectSets}
-          // renderer={this.props.renderer}
         />
       )
     }

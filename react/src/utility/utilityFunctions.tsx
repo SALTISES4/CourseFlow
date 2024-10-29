@@ -351,6 +351,9 @@ export function getPathByObject(id: number, object: WorkspaceType) {
 }
 
 export class Utility {
+  /**
+   * @replaceEmptyStringsWithNull
+   **/
   static replaceEmptyStringsWithNull(obj: any): any {
     // Check if the object is an array
     if (Array.isArray(obj)) {
@@ -374,5 +377,26 @@ export class Utility {
 
     // Replace empty string with null
     return obj === '' ? null : obj
+  }
+
+  /**
+   * @stringifyMaxDepth
+   **/
+  static stringifyMaxDepth(obj, depth = 1) {
+    if (!obj || typeof obj !== 'object') return JSON.stringify(obj)
+
+    let curDepthResult = '"<?>"' // too deep
+    if (depth > 0) {
+      curDepthResult = Object.keys(obj)
+        .map((key) => {
+          let val = Utility.stringifyMaxDepth(obj[key], depth - 1)
+          if (val === undefined) val = 'null'
+          return `"${key}": ${val}`
+        })
+        .join(', ')
+      curDepthResult = `{${curDepthResult}}`
+    }
+
+    return JSON.stringify(JSON.parse(curDepthResult))
   }
 }

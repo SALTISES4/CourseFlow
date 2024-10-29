@@ -8,14 +8,16 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
 import QuillDiv from '@cfEditableComponents/components/QuillDiv'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
+import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
 import Button from '@mui/material/Button'
+import { Dispatch } from '@reduxjs/toolkit'
 import { toggleStrategyQuery } from '@XMLHTTP/API/update'
 import { updateObjectSet } from '@XMLHTTP/API/update'
 import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
 import ReactDOM from 'react-dom'
+import { Action } from 'redux'
 
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
@@ -32,6 +34,8 @@ const LinkedWorkflowButton = (id: any) => {
 //Extends the React component to add a few features that are used in a large number of components
 
 export type EditableComponentProps = {
+  dispatch?: Dispatch<Action> // @todo where is dispatch coming from?
+  objectId?: number
   data?: any
   placeholder?: any
   text?: any
@@ -48,11 +52,19 @@ export type EditableComponentStateType = StateType
 class EditableComponent<
   P extends EditableComponentProps,
   S extends StateType
-> extends ComponentWithToggleDrop<P, S> {
+> extends React.Component<P, S> {
   contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
+  mainDiv: React.RefObject<HTMLDivElement>
 
-  //Makes the item selectable
+  objectType: CfObjectType
+
+  constructor(props: P) {
+    super(props)
+
+    this.mainDiv = React.createRef()
+    this.state = {} as S
+  }
 
   /*******************************************************
    * FUNCTIONS
@@ -100,6 +112,21 @@ class EditableComponent<
     }
   }
 
+  toggleDrop = (evt: React.MouseEvent) => {
+    evt.stopPropagation()
+
+    toggleDropReduxAction(
+      this.props.objectId,
+      Constants.objectDictionary[this.objectType],
+      // isDropped --
+      //  local state, but it's also saved in the DB.
+      // isDropped more or less seems to be is the drawer expanded on the UI element
+      !this.props.data?.isDropped,
+      this.props.dispatch,
+      this.props.data?.depth
+    )
+  }
+
   inputChanged(field, evt) {
     let value = evt.target.value
     if (evt.target.type == 'number') value = parseInt(value) || 0
@@ -129,6 +156,7 @@ class EditableComponent<
           </a>
           .
         </p>
+        asdfasdf
         <input
           disabled={override || readOnly}
           autoComplete="off"
@@ -519,7 +547,7 @@ class EditableComponent<
     return <></>
   }
 
-  //
+  // i think we are ready to delete all this
   EditForm = ({ data, noDelete }) => {
     let sets
 
@@ -564,6 +592,7 @@ class EditableComponent<
         onClick={(evt) => evt.stopPropagation()}
       >
         <h3>{_t('Edit ') + Constants.getVerbose(data, this.objectType)}</h3>
+        <h3>asdfasdf</h3>
 
         {[
           CfObjectType.NODE,
@@ -676,6 +705,7 @@ class EditableComponent<
 
   /*******************************************************
    * PORTAL (RENDER)
+   * i think we are ready to delete all this
    *******************************************************/
   addEditable(data, noDelete = false): ReactPortal | ReactElement {
     if (!this.state.selected) {

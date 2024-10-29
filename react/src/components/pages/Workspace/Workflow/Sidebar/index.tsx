@@ -17,7 +17,7 @@ import OutcomesTab from './components/OutcomesTab'
 import RelatedTab from './components/RelatedTab'
 import RestoreTab from './components/RestoreTab'
 import useEditable from './hooks/useEditable'
-import { EditablePropsType } from './hooks/useEditable/types'
+import { EditablePropsType, EditableType } from './hooks/useEditable/types'
 import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
 import { SidebarDataType } from './types'
 
@@ -39,10 +39,24 @@ function getCurrentTab(
   if (!tab) {
     return
   }
+  console.log('tab')
+  console.log(tab)
+  console.log('props')
+  console.log(props)
+  console.log('editable')
+  console.log(editable)
+
+  const forcePayload: EditablePropsType = {
+    type: EditableType.WEEK,
+    data: {
+      id: 10
+    }
+  }
 
   switch (tab) {
     case 'edit':
-      return <EditTab {...editable} />
+//      return <EditTab {...editable} />
+      return <EditTab {...forcePayload} />
     case 'add':
       return <AddTab {...(props[tab] as SidebarDataType['add'])} />
     case 'restore':
@@ -120,7 +134,9 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
     icon: ReactNode
   }[] = [
     {
-      disabled: edit.readonly && !editable.type,
+      // commented out temporarily to work on form
+      // disabled: edit.readonly && !editable.type,
+      disabled: false,
       value: 'edit',
       icon: <EditIcon />
     },
@@ -168,6 +184,7 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
           ) : null
         })}
       </SidebarTabsWrap>
+
       <Paper>
         <SidebarToggle color="primary" onClick={onToggleClick}>
           <ArrowForwardIcon />

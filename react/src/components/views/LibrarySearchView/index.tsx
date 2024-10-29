@@ -47,7 +47,10 @@ type PropsType = {
   searchArgs: LibraryObjectsSearchQueryArgs
   setSearchArgs: (args: LibraryObjectsSearchQueryArgs) => void
   config: Config
-  override?: any
+  override?: {
+    selectedId: number
+    onCardSelect: (id: number) => void
+  }
 }
 
 /*******************************************************
@@ -369,8 +372,8 @@ const LibrarySearchView = ({
           <WorkflowCardWrapper
             key={`workflow_${item.id}`}
             {...item}
-            isSelected={item.id === override.selectedId}
-            onClick={() => override.onCardSelect(item.id)}
+            isSelected={item.id === override?.selectedId}
+            onClick={() => override?.onCardSelect(item.id)}
           />
         ))}
 

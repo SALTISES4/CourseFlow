@@ -1,9 +1,7 @@
 import { CfObjectType } from '@cf/types/enum'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TGetWeekWorkflowById, getWeekWorkflowByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import Term from './Term'
@@ -14,7 +12,7 @@ type OwnProps = {
   condensed: boolean
   objectId: number
   parentID: number
-} & ComponentWithToggleProps
+}
 
 export type WeekWorkflowUnconnectedProps = OwnProps
 type PropsType = OwnProps & ConnectedProps
@@ -22,13 +20,16 @@ type PropsType = OwnProps & ConnectedProps
 /**
  * The week-workflow throughmodel representation
  */
-class WeekWorkflowUnconnected<
-  P extends PropsType
-> extends ComponentWithToggleDrop<P> {
+class WeekWorkflowUnconnected<P extends PropsType> extends React.Component<P> {
+  mainDiv: React.RefObject<HTMLDivElement>
+  objectType: CfObjectType
+  protected objectClass: string
+
   constructor(props: P) {
     super(props)
     this.objectType = CfObjectType.WEEKWORKFLOW
     this.objectClass = '.week-workflow'
+    this.mainDiv = React.createRef()
   }
   /*******************************************************
    * COMPONENTS
@@ -61,7 +62,7 @@ class WeekWorkflowUnconnected<
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data.id
+    const data = this.props.data
 
     const cssClasses = [
       'week-workflow',
@@ -76,7 +77,7 @@ class WeekWorkflowUnconnected<
     return (
       <div
         className={cssClasses}
-        id={data.id}
+        id={String(data.id)}
         ref={this.mainDiv}
         data-child-id={data.week}
       >

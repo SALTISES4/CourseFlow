@@ -1,9 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TUser } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import {
@@ -32,7 +29,7 @@ type OwnProps = {
   unreadComments: any
   readOnly: boolean
   add_comments: any
-} & ComponentWithToggleProps
+}
 
 type StateType = {
   tagging?: boolean
@@ -41,7 +38,7 @@ type StateType = {
 }
 
 type PropsType = OwnProps
-class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
+class CommentBox extends React.Component<PropsType, StateType> {
   private input: React.RefObject<HTMLTextAreaElement>
   private submit: React.RefObject<HTMLImageElement>
   private tagPosition: number // @todo this was previously not defined
@@ -121,7 +118,7 @@ class CommentBox extends ComponentWithToggleDrop<PropsType, StateType> {
           loader.endLoad()
           this.setState({
             tagging: true,
-            userList: response.editors.concat(response.commentors)
+            userList: response.dataPackage
           })
         }
       )

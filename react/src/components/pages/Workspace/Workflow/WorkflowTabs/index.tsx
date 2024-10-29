@@ -15,6 +15,7 @@ import {
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
+import WorkflowLegend from "@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend";
 import Box from '@mui/material/Box'
 import Tabs from '@mui/material/Tabs'
 import { useContext, useEffect } from 'react'
@@ -120,6 +121,7 @@ const WorkflowTabs = () => {
           leftSection={<ActionMenu />}
           viewbar={<ViewBar />}
           userbar={<ConnectionBar show={!workflow.publicView} />}
+          legendbar={<WorkflowLegend />}
         />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">

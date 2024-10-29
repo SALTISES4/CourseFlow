@@ -2,11 +2,9 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
+import { toggleDropWrapper } from '@cfRedux/utility/helpers'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -160,6 +158,7 @@ type ConnectedProps = TGetOutcomeByID
 
 // @todo no idea what's required props here
 type OwnProps = {
+  objectId: number
   parentID?: number
   throughParentID?: number
   renderer?: any
@@ -172,19 +171,28 @@ type OwnProps = {
   updateParentCompletion?: any
   completion_status_from_parents?: any
   readOnly?: boolean
-} & ComponentWithToggleProps
+}
 type PropsType = ConnectedProps & OwnProps
 
 /**
  *
  */
-export class OutcomeUnconnected<
-  P extends PropsType,
+export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
+  P,
   S
-> extends ComponentWithToggleDrop<P, S> {
+> {
+  objectType: CfObjectType
+  mainDiv: React.RefObject<HTMLDivElement>
+
   constructor(props: P) {
     super(props)
+    this.mainDiv = React.createRef()
     this.objectType = CfObjectType.OUTCOME
+  }
+
+  componentDidMount() {
+    console.log('outcome is somewhere on the page ')
+    console.log(' dispatch: this.props?.dispatch, // @todo where is dispatch ')
   }
 
   /*******************************************************
@@ -225,10 +233,6 @@ export class OutcomeUnconnected<
           data.childOutcomeLinks.length
         )
 
-    // let comments
-
-    // let style
-
     const outcome_head = (
       <div className="outcome-wrapper">
         <div
@@ -247,7 +251,19 @@ export class OutcomeUnconnected<
             />
           </div>
           {data.childOutcomeLinks.length > 0 && (
-            <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+            <div
+              className="outcome-drop"
+              onClick={() =>
+                toggleDropWrapper({
+                  objectId: this.props.objectId,
+                  objectType: this.objectType,
+                  isDropped: this.props.data.isDropped,
+                  // @ts-ignore
+                  dispatch: this.props?.dispatch, // @todo where is dispatch
+                  depth: this.props.data?.depth
+                })
+              }
+            >
               <div className="outcome-drop-img">
                 <img
                   src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
@@ -273,7 +289,6 @@ export class OutcomeUnconnected<
             readOnly={this.props.readOnly}
             nodeID={outcomenode.nodeId}
             outcomeID={this.props.outcome_tree.id}
-            // renderer={this.props.renderer}
           />
         ))
 
@@ -283,7 +298,6 @@ export class OutcomeUnconnected<
             readOnly={this.props.readOnly}
             total={true}
             degree={outcomenodegroup.total}
-            // renderer={this.props.renderer}
           />
         )
         return (
@@ -303,7 +317,6 @@ export class OutcomeUnconnected<
         readOnly={this.props.readOnly}
         total={true}
         grandTotal={true}
-        // renderer={this.props.renderer}
       />
     )
     const full_row = (

@@ -109,7 +109,7 @@ class ProjectEndpoint:
 
     @api_view(["POST"])
     def list_my_projects(request: Request) -> Response:
-        # body = json.loads(request.body)
+        # body = json.loads(request.body) # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         # try:
         #     workflow_id = Workflow.objects.get(pk=body.get("workflowPk")).id
         # except ObjectDoesNotExist:
@@ -135,7 +135,9 @@ class ProjectEndpoint:
     @staticmethod
     @user_can_view("projectPk")
     def duplicate(request: Request, pk: int) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         project = Project.objects.get(pk=body.get("projectPk"))
         try:
             with transaction.atomic():
@@ -172,7 +174,9 @@ class ProjectEndpoint:
     def workflows__list(
         request: Request,
     ) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         try:
             user = request.user
             project = Project.objects.get(pk=body.get("projectPk"))
@@ -205,7 +209,9 @@ class ProjectEndpoint:
         :param request:
         :return:
         """
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         project = Project.objects.get(pk=pk)
 
         term = body.get("term")
@@ -289,7 +295,7 @@ def json_api__project__detail__comparison__get(request):
         "is_strategy": is_strategy,
         "user_permission": user_permission,
         "public_view": public_view,
-        "user_name": current_user.username,
+        "username": current_user.username,
     }
 
     return JsonResponse({"action": "GET", "data_package": response_data})

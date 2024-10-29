@@ -1,7 +1,7 @@
 import { UserContext } from '@cf/context/userContext'
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import legacyWithRouter from '@cf/HOC/legacyWithRouter'
-import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
+import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
@@ -96,7 +96,7 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
     )
     this.wsUserConnectedService.startUserUpdates({
       userId: this.context.id,
-      userName: this.context.name
+      username: this.context.name
     })
   }
 
@@ -198,20 +198,20 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
     const data = JSON.parse(e.data)
 
     switch (data.type) {
-      case DATA_TYPE.WORKFLOW_ACTION:
+      case WS_EVENT_TYPE.WORKFLOW_ACTION:
         this.onWorkflowUpdateReceived(data.action)
         break
-      case DATA_TYPE.LOCK_UPDATE:
+      case WS_EVENT_TYPE.LOCK_UPDATE:
         this.onLockUpdateReceived(data.action)
         break
-      case DATA_TYPE.CONNECTION_UPDATE:
+      case WS_EVENT_TYPE.CONNECTION_UPDATE:
         this.onUserConnectionUpdateReceived(data.action)
         break
-      case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
+      case WS_EVENT_TYPE.WORKFLOW_PARENT_UPDATED:
         // this.parentWorkflow_updated(data.editCount) // @todo function takes no args
         this.onParentWorkflowUpdateReceived()
         break
-      case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
+      case WS_EVENT_TYPE.WORKFLOW_CHILD_UPDATED:
         this.onChildWorkflowUpdateReceived(data.childWorkflowId)
         break
       default:

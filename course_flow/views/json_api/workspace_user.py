@@ -298,7 +298,7 @@ class WorkspaceUserEndpoint:
     #     body = request.data
     #     object_id = pk
     #
-    #     body = json.loads(request.body)
+    #     body = json.loads(request.body) # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     #     object_type = body.get("objectType")
     #
     #     # Validate object_type and map to correct model if needed
@@ -419,7 +419,9 @@ class WorkspaceUserEndpoint:
 
         :return:
         """
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectId")
         object_type = body.get("objectType")
 
