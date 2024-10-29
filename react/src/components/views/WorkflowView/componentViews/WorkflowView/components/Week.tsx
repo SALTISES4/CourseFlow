@@ -271,7 +271,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           className={cssClasses}
           ref={this.mainDiv}
           onClick={(evt) => {
-            console.log('hellpo')
             return selectionManager.changeSelection({
               evt,
               newSelection: this,

@@ -2,6 +2,7 @@ import { UserContext } from '@cf/context/userContext'
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useWorkflowWebsocketManager } from '@cfPages/Workspace/Workflow/hooks/useWorkflowWebsocketManager'
+import { EditableContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useEditable/context'
 import { WorkflowSidebarContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar/context'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
@@ -76,22 +77,24 @@ const Workflow = () => {
 
   return (
     <WorkflowSidebarContextProvider>
-      <WorkFlowConfigProvider
-        initialValue={{
-          selectionManager: selectionManager!,
-          editableMethods: {
-            lockUpdate,
-            microUpdate,
-            changeField
-          },
-          ws: {
-            wsConnected: isWsInit,
-            connectedUsers
-          }
-        }}
-      >
-        <WorkflowTabs />
-      </WorkFlowConfigProvider>
+      <EditableContextProvider>
+        <WorkFlowConfigProvider
+          initialValue={{
+            selectionManager: selectionManager!,
+            editableMethods: {
+              lockUpdate,
+              microUpdate,
+              changeField
+            },
+            ws: {
+              wsConnected: isWsInit,
+              connectedUsers
+            }
+          }}
+        >
+          <WorkflowTabs />
+        </WorkFlowConfigProvider>
+      </EditableContextProvider>
     </WorkflowSidebarContextProvider>
   )
 }

@@ -15,7 +15,8 @@ import { toggleStrategyQuery } from '@XMLHTTP/API/update'
 import { updateObjectSet } from '@XMLHTTP/API/update'
 import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
-import ReactDOM from 'react-dom'
+
+import SidebarEditTabProxy from './components/SidebarEditTabProxy'
 
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
@@ -692,11 +693,16 @@ class EditableComponent<
       return <></>
     }
 
-    // #edit-menu dynamic, in RightSideBar component
-    return ReactDOM.createPortal(
-      <this.EditForm data={data} noDelete={noDelete} />,
-      document.getElementById('edit-menu')
-    ) as unknown as ReactPortal
+    // TODO: remove
+    // // #edit-menu dynamic, in RightSideBar component
+    // return ReactDOM.createPortal(
+    //   <this.EditForm data={data} noDelete={noDelete} />,
+    //   document.getElementById('edit-menu')
+    // ) as unknown as ReactPortal
+
+    // TODO: figure out where the id/hash is coming from
+    // to uniquely identify a clicked element
+    return <SidebarEditTabProxy id={3} />
   }
 }
 

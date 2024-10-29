@@ -77,7 +77,10 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
         ref={this.mainDiv}
         style={this.getBorderStyle()}
         onClick={(evt) =>
-          this.context.selectionManager.changeSelection({ evt, newSelection: this })
+          this.context.selectionManager.changeSelection({
+            evt,
+            newSelection: this
+          })
         }
       >
         <TitleText text={data.title} defaultText={defaultText} />
