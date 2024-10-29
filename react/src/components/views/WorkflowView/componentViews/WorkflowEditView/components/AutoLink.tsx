@@ -1,3 +1,4 @@
+import { Utility } from '@cf/utility/utilityFunctions'
 import NodeLinkSVG from '@cfViews/components/Node/NodeLinkSVG'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
@@ -62,14 +63,13 @@ class AutoLink extends React.Component<PropsType> {
   }
 
   rerender(evt) {
-    // this.setState({}) @todo verify, there is no state in this component
+    this.setState({}) // @todo verify, there is no state in this component
   }
 
   setTarget(target) {
     if (target) {
       if (this.targetNode && target == this.targetNode.attr('id')) {
         if (!this.targetPort_handle || this.targetPort_handle.empty()) {
-          // @ts-ignore
           this.targetPort_handle = d3.select(
             'g.port-' +
               target +
@@ -84,7 +84,6 @@ class AutoLink extends React.Component<PropsType> {
 
       this.targetNode = $('.week #' + target + '.node')
 
-      // @ts-ignore
       this.targetPort_handle = d3.select(
         'g.port-' + target + " circle[data-port-type='target'][data-port='n']"
       )
@@ -106,22 +105,37 @@ class AutoLink extends React.Component<PropsType> {
    * RENDER
    *******************************************************/
   render() {
+    // console.log(this.props.nodeID)
+    // console.log(this)
+    // console.log(this.sourceNode)
+    //
+    // console.log(Object.keys(this))
+    // console.log(JSON.parse(Utility.stringifyMaxDepth(this, 2)))
+
+    // this is some race condition hack BS
+    // node is not drawn? so sourcePort doesn't exist?
+    // add to an 'rerender' event to rerender later?
+    // wat
     if (
       !this.sourceNode ||
-      this.sourceNode.length == 0 ||
+      this.sourceNode?.length == 0 ||
       !this.sourcePort_handle ||
       this.sourcePort_handle.empty()
     ) {
       this.sourceNode = $(this.props.node_div.current)
 
-      // @ts-ignore
       this.sourcePort_handle = d3.select(
         'g.port-' +
           this.props.nodeID +
           " circle[data-port-type='source'][data-port='s']"
       )
+      // console.log('this.sourcePort_handle')
+      // console.log(this.sourcePort_handle)
+
       this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
+      //      return
     }
+
     if (this.targetNode && this.targetNode.parent().parent().length == 0) {
       this.targetNode = null
     }

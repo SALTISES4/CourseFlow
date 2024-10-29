@@ -1,8 +1,5 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 // import $ from 'jquery'
 import {
   deleteSelfQueryLegacy,
@@ -14,10 +11,16 @@ type OwnProps = {
   data: any
   objectType: any
   linkedWorkflowData?: any
-} & ComponentWithToggleProps
+}
 
-class RestoreBarItem extends ComponentWithToggleDrop<OwnProps> {
+class RestoreBarItem extends React.Component<OwnProps> {
   static contextType = WorkFlowConfigContext
+  mainDiv: React.RefObject<HTMLDivElement>
+
+  constructor(props: OwnProps) {
+    super(props)
+    this.mainDiv = React.createRef()
+  }
 
   declare context: React.ContextType<typeof WorkFlowConfigContext>
   /*******************************************************

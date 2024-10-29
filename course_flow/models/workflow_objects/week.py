@@ -71,8 +71,13 @@ class Week(AbstractCourseFlowModel):
 
     original_strategy = models.ForeignKey("Workflow", on_delete=models.SET_NULL, null=True)
 
+    # why is this many to many
+    # can a node below to multiple weeks?
+    # to verify but this should be a foreign key on child
+    # we'll need to migrate....
     nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
 
+    # why is this many to many
     comments = models.ManyToManyField("Comment", blank=True, related_name="week")
 
     #########################################################

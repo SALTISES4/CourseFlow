@@ -8,7 +8,11 @@ from course_flow.models import Project
 class WorkflowProject(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
+
+    # @todo use case?
     added_on = models.DateTimeField(default=timezone.now)
+
+    # @todo use case?
     rank = models.PositiveIntegerField(default=0)
 
     def get_permission_objects(self):

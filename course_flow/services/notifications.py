@@ -25,12 +25,12 @@ def get_user_notifications(user):
     prepared_notifications = []
     for notification in user.notifications.all():
         source_user = UserSerializer(notification.source_user).data
-        source_user_name = source_user["username"]
+        source_username = source_user["username"]
         if source_user["first_name"]:
-            source_user_name = source_user["first_name"]
+            source_username = source_user["first_name"]
 
         if source_user["first_name"] and source_user["last_name"]:
-            source_user_name = f"{source_user['first_name']} {source_user['last_name']}"
+            source_username = f"{source_user['first_name']} {source_user['last_name']}"
 
         prepared_notifications.append(
             {
@@ -39,7 +39,7 @@ def get_user_notifications(user):
                 "unread": notification.is_unread,
                 "date": humanize.naturaltime(notification.created_on),
                 "text": notification.text,
-                "from": source_user_name,
+                "from": source_username,
             }
         )
 

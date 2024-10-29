@@ -1,7 +1,7 @@
 import { CfObjectType } from '@cf/types/enum'
 import { TGetNodeWeekById, getNodeWeekByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import Node from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Node'
+import Node from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/Node'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -39,7 +39,6 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
         parentID={this.props.parentID}
         // @ts-ignore
         throughParentID={data.id}
-        // renderer={this.props.renderer}
         column_order={this.props.column_order}
       />
     )

@@ -34,8 +34,7 @@ class ExportImport:
                 if file.name.endswith(".csv"):
                     file_type = "text/csv"
                 if (
-                    file_type
-                    == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    file_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     or file_type == "application/vnd.ms-excel"
                 ):
                     df = pd.read_excel(file, keep_default_na=False)
@@ -70,7 +69,9 @@ class ExportImport:
     @staticmethod
     @user_can_view(False)
     def object__export(request: Request) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
         object_type = body.get("objectType")
         export_type = body.get("exportType")

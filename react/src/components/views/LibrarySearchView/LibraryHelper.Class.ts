@@ -1,4 +1,4 @@
-import { WorkflowType, WorkspaceType } from '@cf/types/enum'
+import {WorkspaceType} from "@cf/types/enum";
 import { _t } from '@cf/utility/utilityFunctions'
 import {
   SortDirection,
@@ -9,6 +9,7 @@ import {
   SearchFilterOption,
   SortOption
 } from '@cfComponents/filters/types'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import {
   FilterResult,
   LibraryObjectsSearchQueryArgs

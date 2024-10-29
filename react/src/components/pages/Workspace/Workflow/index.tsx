@@ -44,8 +44,7 @@ const Workflow = () => {
     changeField,
     lockUpdate
   } = useWorkflowWebsocketManager({
-    userId: userContext?.id || 0,
-    userName: userContext?.name || '',
+    user: userContext.user || null,
     workflowId: Number(id)
   })
 

@@ -104,8 +104,6 @@ const ProfileSettingsPage = () => {
     return <Loader />
   }
 
-  console.log(getValues())
-
   return (
     <OuterContentWrap narrow>
       <StyledTitleBox>

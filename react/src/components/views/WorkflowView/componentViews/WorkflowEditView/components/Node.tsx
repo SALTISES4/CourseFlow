@@ -12,6 +12,7 @@ import {
 } from '@cfEditableComponents/EditableComponentWithActions'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
+import { toggleDropWrapper } from '@cfRedux/utility/helpers'
 import * as Utility from '@cfUtility'
 import NodePorts from '@cfViews/components/Node/NodePorts'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
@@ -22,8 +23,6 @@ import { connect } from 'react-redux'
 
 import AutoLink from './AutoLink'
 import NodeLink from './NodeLink'
-
-// import $ from 'jquery'
 
 type ConnectedProps = {
   node: TGetNodeById
@@ -417,7 +416,10 @@ class NodeUnconnected extends EditableComponentWithActions<
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
           onClick={(evt) =>
-            this.context.selectionManager.changeSelection({ evt, newSelection: this })
+            this.context.selectionManager.changeSelection({
+              evt,
+              newSelection: this
+            })
           }
         >
           <div className="node-top-row">
@@ -426,15 +428,25 @@ class NodeUnconnected extends EditableComponentWithActions<
             {righticon}
           </div>
           {linkIcon}
+
           <div className="node-details">
             <TitleText
               text={data_override.description}
               defaultText={_t('Click to edit')}
             />
           </div>
+
           <div
             className="node-drop-row hover-shade"
-            onClick={this.toggleDrop.bind(this)}
+            onClick={() =>
+              toggleDropWrapper({
+                objectId: this.props.objectId,
+                objectType: this.objectType,
+                isDropped: this.props.node.data.isDropped,
+                dispatch: this.props.dispatch,
+                depth: this.props.data?.depth
+              })
+            }
           >
             <div className="node-drop-side node-drop-left">{dropText}</div>
             <div className="node-drop-middle">
@@ -451,6 +463,7 @@ class NodeUnconnected extends EditableComponentWithActions<
               </div>
             </div>
           </div>
+
           <div className="mouseover-actions">{mouseover_actions}</div>
           {nodePorts}
           {node_links}

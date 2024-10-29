@@ -55,7 +55,8 @@ export const apiPathRoutes = {
       // child objects
       object__duplicate: '/workflow/object/duplicate',
       object__insert_sibling: '/workflow/object/insert-sibling',
-      object__insert_child: '/workflow/object/insert-sibling'
+      object__insert_child: '/workflow/object/insert-sibling',
+      object__order: '/workflow/object/order'
     },
     workspace: {
       duplicate: '/workspace/:id/duplicate',

@@ -80,7 +80,7 @@ export class SelectionManager {
   // }
 
   private deselectCurrentSelection(): void {
-    this.currentSelection.setState({ selected: false })
+    //     this.currentSelection.setState({ selected: false })
     if (!this.readOnly) {
       this.unlockCurrentSelection()
     }
@@ -202,11 +202,11 @@ export class SelectionManager {
   /**
    * Handles the deletion of a selection.
    * @param selection - The selection to be deleted.
-   * @todo i don't think this is ever used, it can be used to reset the selection
+   * @todo used in editable component with actions is it ever called?
    */
-  // deleted(selection: any): void {
-  //   if (selection === this.currentSelection) {
-  //     this.changeSelection(null)
-  //   }
-  // }
+  deleted(selection: any): void {
+    if (selection === this.currentSelection) {
+      this.changeSelection(null)
+    }
+  }
 }

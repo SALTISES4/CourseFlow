@@ -2,9 +2,6 @@ import { ObjectLock } from '@cf/types/common'
 import { NumTuple } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 import * as Utility from '@cfUtility'
 import * as math from 'mathjs'
 import * as React from 'react'
@@ -270,11 +267,18 @@ type Dimensions = {
 
 type Style = any
 
-type PropsType = OwnProps & ComponentWithToggleProps
+type PropsType = OwnProps // & ComponentWithToggleProps
 
 // top
-class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
-  private parentNode: string
+class NodeLinkSVG extends React.Component<PropsType> {
+  mainDiv: React.RefObject<SVGGElement>
+
+  constructor(props: PropsType) {
+    super(props)
+
+    this.mainDiv = React.createRef()
+  }
+
   getPathArray(
     source_point: NumTuple,
     sourcePort: number,
@@ -388,6 +392,9 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
 
   render() {
     try {
+
+//     console.log(this.props)
+
       const source_transform = Utility.getSVGTranslation(
         this.props.sourcePort_handle
           .select(function () {
@@ -441,13 +448,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
       const style = this.getStyle()
 
       return (
-        <g
-          // @todo does this need a separate ref?
-          //@ts-ignore
-          ref={this.mainDiv}
-          stroke="black"
-          fill="none"
-        >
+        <g ref={this.mainDiv} stroke="black" fill="none">
           <path
             opacity="0"
             strokeWidth="10px"
@@ -476,7 +477,7 @@ class NodeLinkSVG extends ComponentWithToggleDrop<PropsType> {
       )
     } catch (err) {
       console.log('could not draw a node link')
-      console.log(err)
+      // console.log(err)
       return null
     }
   }

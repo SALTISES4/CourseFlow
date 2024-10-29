@@ -9,16 +9,17 @@ import EditableComponent, {
 } from '@cfEditableComponents/EditableComponent'
 import ActionCreator from '@cfRedux/ActionCreator'
 import CommentBox from '@cfViews/WorkflowView/componentViews/GridView/components/CommentBox'
+import { Dispatch } from '@reduxjs/toolkit'
 import { getCommentsForObjectQuery } from '@XMLHTTP/API/comment'
 import * as React from 'react'
+import { Action } from 'redux'
 
 type StateType = {
   show_comments: boolean
 } & EditableComponentStateType
 
 type OwnProps = {
-  // @todo fix this
-  dispatch?: any
+  dispatch?: Dispatch<Action>
 } & EditableComponentProps
 
 export type EditableComponentWithCommentsType = OwnProps
@@ -28,7 +29,6 @@ class EditableComponentWithComments<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponent<P, S> {
-
   //Adds a button that opens/closes the comments dialogue
   // @todo sometimes dota is not used
   // addCommenting(data) {

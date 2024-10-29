@@ -58,7 +58,8 @@ type ConnectedProps = {
 }
 
 /***
- * @TODO NEED TO CLEAN UP TYPES
+ * @TODO FIGURE OUT WHAT IS THE POINT I CAN DELETE THIS
+ * / i.e we no longer need it for reference
  * MAINLY REMOVE RENDERER IN THIS FILE AND
  AMD
  EditableComponent
@@ -119,8 +120,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
     this.context = context
 
-    console.log('this.context')
-    console.log(this.context)
+    // console.log('this.context')
+    // console.log(this.context)
 
     this.data = this.props.data
     this.project = this.context.workflow.project

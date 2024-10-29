@@ -28,7 +28,9 @@ class NodeEndpoint:
     @user_can_edit("weekPk")
     @user_can_view_or_none("columnPk")
     def create(request: HttpRequest) -> JsonResponse:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         week_id = body.get("weekPk")
         column_id = body.get("columnPk")
         column_type = body.get("columnType")
@@ -40,9 +42,7 @@ class NodeEndpoint:
                 column = Column.objects.get(pk=column_id)
                 columnworkflow = ColumnWorkflow.objects.get(column=column)
             elif column_type is not None and column_type >= 0:
-                column = Column.objects.create(
-                    column_type=column_type, author=week.author
-                )
+                column = Column.objects.create(column_type=column_type, author=week.author)
                 columnworkflow = ColumnWorkflow.objects.create(
                     column=column,
                     workflow=week.get_workflow(),
@@ -55,12 +55,8 @@ class NodeEndpoint:
                 column = columnworkflow.column
             if position < 0 or position > week.nodes.count():
                 position = week.nodes.count()
-            node = Node.objects.create(
-                author=week.author, node_type=week.week_type, column=column
-            )
-            node_week = NodeWeek.objects.create(
-                week=week, node=node, rank=position
-            )
+            node = Node.objects.create(author=week.author, node_type=week.week_type, column=column)
+            node_week = NodeWeek.objects.create(week=week, node=node, rank=position)
 
         except ValidationError as e:
             logger.exception("An error occurred")
@@ -71,20 +67,18 @@ class NodeEndpoint:
             "new_through": NodeWeekSerializerShallow(node_week).data,
             "index": position,
             "parentID": week_id,
-            "columnworkflow": ColumnWorkflowSerializerShallow(
-                columnworkflow
-            ).data,
+            "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflow).data,
             "column": ColumnSerializerShallow(column).data,
         }
-        actions.dispatch_wf(
-            week.get_workflow(), actions.newNodeAction(response_data)
-        )
+        actions.dispatch_wf(week.get_workflow(), actions.newNodeAction(response_data))
         return JsonResponse({"message": "success"})
 
     @user_can_edit("nodePk")
     @user_can_edit(False)
     def node_link__create(request: HttpRequest) -> JsonResponse:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         node_id = body.get("nodePk")
         target_id = body.get("objectID")
         target_type = body.get("objectType")
@@ -108,7 +102,5 @@ class NodeEndpoint:
         response_data = {
             "new_model": NodeLinkSerializerShallow(node_link).data,
         }
-        actions.dispatch_wf(
-            node.get_workflow(), actions.newNodeLinkAction(response_data)
-        )
+        actions.dispatch_wf(node.get_workflow(), actions.newNodeLinkAction(response_data))
         return JsonResponse({"message": "success"})

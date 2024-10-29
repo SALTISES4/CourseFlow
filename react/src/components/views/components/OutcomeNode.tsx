@@ -3,9 +3,6 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TOutcomeNodeByID, getOutcomeNodeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
@@ -23,7 +20,8 @@ type OwnProps = {
   parentID?: number // is this required:
   outcomesType?: any
   deleteSelfOverride?: any
-} & ComponentWithToggleProps
+  objectId?: number
+}
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -33,12 +31,17 @@ type PropsType = ConnectedProps & OwnProps
  * renderer.readOnly
  *
  */
-class OutcomeNodeUnconnected extends ComponentWithToggleDrop<PropsType> {
+class OutcomeNodeUnconnected extends React.Component<PropsType> {
   static contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
+  objectType: CfObjectType
+  mainDiv: React.RefObject<HTMLDivElement>
+
   constructor(props: PropsType) {
     super(props)
+
+    this.mainDiv = React.createRef()
     this.objectType = CfObjectType.OUTCOMENODE
   }
 

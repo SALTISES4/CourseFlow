@@ -1,6 +1,6 @@
 import { UserContext } from '@cf/context/userContext'
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
-import { DATA_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
+import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
@@ -71,7 +71,7 @@ const Workflow: React.FC<PropsType> = () => {
 
     newWsUserConnectedService.startUserUpdates({
       userId: userContext?.id || 0,
-      userName: userContext?.name || ''
+      username: userContext?.name || ''
     })
 
     return () => {
@@ -153,19 +153,19 @@ const Workflow: React.FC<PropsType> = () => {
       const data = JSON.parse(e.data)
 
       switch (data.type) {
-        case DATA_TYPE.WORKFLOW_ACTION:
+        case WS_EVENT_TYPE.WORKFLOW_ACTION:
           dispatch(data.action)
           break
-        case DATA_TYPE.LOCK_UPDATE:
+        case WS_EVENT_TYPE.LOCK_UPDATE:
           onLockUpdateReceived(data.action)
           break
-        case DATA_TYPE.CONNECTION_UPDATE:
+        case WS_EVENT_TYPE.CONNECTION_UPDATE:
           onUserConnectionUpdateReceived(data.action)
           break
-        case DATA_TYPE.WORKFLOW_PARENT_UPDATED:
+        case WS_EVENT_TYPE.WORKFLOW_PARENT_UPDATED:
           onParentWorkflowUpdateReceived()
           break
-        case DATA_TYPE.WORKFLOW_CHILD_UPDATED:
+        case WS_EVENT_TYPE.WORKFLOW_CHILD_UPDATED:
           onChildWorkflowUpdateReceived(data.childWorkflowId)
           break
         default:

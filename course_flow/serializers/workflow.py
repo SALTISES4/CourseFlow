@@ -306,7 +306,6 @@ class WorkflowUpsertSerializer(serializers.ModelSerializer):
 
         except Exception as e:
             logger.exception("An error occurred")
-            # Handle exceptions, possibly re-raising or logging as needed
             raise serializers.ValidationError(
                 {"error": "Failed to create workflow: {}".format(str(e))}
             )

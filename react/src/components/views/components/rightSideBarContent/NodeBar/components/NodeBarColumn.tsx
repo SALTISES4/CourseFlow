@@ -1,8 +1,5 @@
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 import { TGetColumnByID, getColumnById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
@@ -11,12 +8,13 @@ import { connect } from 'react-redux'
 
 type ConnectedProps = TGetColumnByID
 type OwnProps = {
+  objectId?: number
   // parentID?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
   // throughParentID?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
   columnChoices?: any
   columnType?: any
-} & ComponentWithToggleProps
-export type NodeBarColumnUnconnectedType = OwnProps
+}
+export type NodeBarColumnUnconnectedType = OwnProps & ConnectedProps
 
 /**
  * Can be dragged and dropped into the workflow space to create
@@ -24,8 +22,16 @@ export type NodeBarColumnUnconnectedType = OwnProps
  * is handled in the Week component, not here.
  */
 export class NodeBarColumnUnconnected<
-  P extends OwnProps
-> extends ComponentWithToggleDrop<P> {
+  P extends NodeBarColumnUnconnectedType
+> extends React.Component<P> {
+  mainDiv: React.RefObject<HTMLDivElement>
+
+  constructor(props: P) {
+    super(props)
+
+    this.mainDiv = React.createRef()
+  }
+
   /*******************************************************
    * LIFECYCLE
    *******************************************************/

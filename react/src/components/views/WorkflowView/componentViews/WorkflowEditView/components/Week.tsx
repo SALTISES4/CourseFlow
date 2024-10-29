@@ -46,6 +46,8 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   EditableComponentWithSortingState
 > {
   protected node_block: React.RefObject<HTMLDivElement>
+  objectClass: string
+
   constructor(props: P) {
     super(props)
     this.objectType = CfObjectType.WEEK
@@ -96,7 +98,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     if (new_column_index < 0 || new_column_index >= columns.length) return
     const new_column = columns[new_column_index]
 
-    //A little hack to stop ourselves from sending this update a hundred times per second
+    //legacy: hack debouncer
     // @todo ...
     // @ts-ignore
     if (this.recently_sent_column_change) {
@@ -212,7 +214,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     return this.props.week.data.nodeweekSet.map((nodeweek) => (
       <NodeWeek
         key={nodeweek}
-        objectId={nodeweek}
+        objectId={nodeweek} // ???
         parentID={this.props.week.data.id}
         // renderer={this.props.renderer}
         column_order={this.props.week.column_order}
@@ -305,7 +307,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
             </div>
             <div className="node-drop-side node-drop-right" />
           </div>
-          {/* // @ts-ignore */}
           {
             // @ts-ignore
             // this.addEditable(data)
@@ -318,7 +319,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
                 <div className="strategy-tab-circle">
                   <img
                     title={
-                      choices.strategyClassification_choices?.find(
+                      choices.strategyClassificationChoices?.find(
                         (obj) => obj.type === data.strategyClassification
                       ).name
                     }

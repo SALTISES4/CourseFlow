@@ -1,6 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { LibraryObjectType } from '@cf/types/enum'
-import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
+import { LibraryObjectType, WorkspaceType } from '@cf/types/enum'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 

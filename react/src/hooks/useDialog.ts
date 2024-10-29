@@ -1,5 +1,5 @@
 import { DialogContext, DialogDispatchContext } from '@cf/context/dialogContext'
-import { WorkflowType } from '@cf/types/enum'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { useContext } from 'react'
 import * as React from 'react'
 
@@ -35,7 +35,7 @@ export enum DialogMode {
 }
 
 export type DialogPayloadMap = {
-  [DialogMode.CONTRIBUTOR_REMOVE]: { userId: number; userName: string }
+  [DialogMode.CONTRIBUTOR_REMOVE]: { userId: number; username: string }
   [DialogMode.ARCHIVE]: { peopleId: string }
   [DialogMode.WORKFLOW_CREATE]: { workflowType: WorkflowType }
 

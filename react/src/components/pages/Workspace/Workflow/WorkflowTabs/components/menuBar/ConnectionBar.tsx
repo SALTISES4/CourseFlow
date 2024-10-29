@@ -1,28 +1,24 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
+import Alert from '@mui/material/Alert'
+import Chip from '@mui/material/Chip'
 import * as React from 'react'
 import { useContext } from 'react'
 
 const ConnectedUser = ({
   userColour,
-  userName
+  username
 }: {
   userColour: string
-  userName: string
+  username: string
 }) => {
   return (
-    <div
-      className="user-indicator"
+    <Chip
       style={{
         backgroundColor: userColour
       }}
-      title={userName}
-    >
-      {/*
-      this was previously userName[0], so this is likely broken and needs review
-      */}
-      {userName}
-    </div>
+      label={username}
+    />
   )
 }
 
@@ -32,27 +28,20 @@ const ConnectionBar = ({ show }: { show: boolean }) => {
   if (!show) return null
 
   if (!context.ws.wsConnected) {
-    return (
-      <div className="users-box connection-failed">{_t('Not Connected')}</div>
-    )
+    return <Alert severity="warning">{_t('Not Connected')}</Alert>
   }
 
-  const users = context.ws.connectedUsers.map((user) => {
+  const users = context.ws.connectedUsers.map((item) => {
+    console.log(item)
     return (
-      <ConnectedUser userColour={user.userColour} userName={user.userName} />
+      <ConnectedUser
+        userColour={item.userColour}
+        username={item.user.username}
+      />
     )
   })
 
-  // @todo check this again once live for current user
-  return (
-    <div className="users-box">
-      <div className="users-small-wrapper">
-        <div className="users-small">{users.slice(0, 2)}</div>
-      </div>
-      <div className="users-more">...</div>
-      <div className="users-hidden">{users}</div>
-    </div>
-  )
+  return <div>{users}</div>
 }
 
 export default ConnectionBar

@@ -1,5 +1,6 @@
 import json
 import math
+from pprint import pprint
 
 # from duplication
 from django.core.exceptions import ValidationError
@@ -7,6 +8,7 @@ from django.db import transaction
 from django.http import HttpRequest, JsonResponse
 from django.utils.translation import gettext as _
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -56,10 +58,19 @@ from course_flow.services import DAO
 from course_flow.sockets import redux_actions as actions
 
 
+#########################################################
+# TODO
+# find out which models are being dumped into this
+#  - week
+#  - node
+#  - outcome
+#  - column
+#########################################################
 class WorkflowObjectEndpoint:
     @staticmethod
     # @user_can_view(False)
     # @user_can_edit(False, get_parent=True)
+    @api_view(["POST"])
     def duplicate(request: Request) -> Response:
         """
         This duplication function handles all the Children of workflows
@@ -78,13 +89,16 @@ class WorkflowObjectEndpoint:
         :param request:
         :return:
         """
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
         object_type = body.get("objectType")
         parent_id = body.get("parentID")
         parent_type = body.get("parentType")
         through_type = body.get("throughType")
         node_updates = []
+
         try:
             with transaction.atomic():
                 ##########################################################
@@ -273,11 +287,22 @@ class WorkflowObjectEndpoint:
     # @user_can_edit(False, get_parent=True)
     def insert_sibling(request: HttpRequest) -> JsonResponse:
         """
-        Add a new sibling to a through model
+         Creates a new item
+         why isn't this called create? not sure yet
+         - use case
+            - week
+            - node
+
+            ...
+
+
+
         :param request:
         :return:
         """
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectId")
         object_type = body.get("objectType")
         parent_id = body.get("parentId")
@@ -357,6 +382,253 @@ class WorkflowObjectEndpoint:
             )
         return JsonResponse({"message": "success"})
 
+    @staticmethod
+    @api_view(["POST"])
+    # @user_can_edit(False)
+    # @user_can_edit_or_none(False, get_parent=True)
+    # @user_can_edit_or_none("columnPk")
+    # @from_same_workflow(False, False, get_parent=True)
+    # @from_same_workflow(False, "columnPk")
+    def order(request: Request) -> Response:
+        """
+        @todo make this explanation meaningful
+        # Called when an object in a list is reordered
+
+        # legacy "Insert a model via its throughmodel to reorder it"
+            use case:
+                - re-order weeks
+                - re-order columns
+                ...
+
+        :param request:
+        :return:
+        """
+        changing_workflow = False
+
+        body = request.data
+        object_id = body.get("object_id")
+        object_type = body.get("object_type")
+        inserted = body.get("inserted", False)
+        column_change = body.get("column_change", False)
+
+        pprint(body)
+
+        try:
+            with transaction.atomic():
+                #########################################################
+                # COLUMN UPDATE
+                #########################################################
+                if column_change:
+                    new_column_id = body.get("columnPk")
+                    model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
+                    new_column = Column.objects.get(id=new_column_id)
+                    model.column = new_column
+                    model.save()
+
+                #########################################################
+                # note 'inserted' does not mean new....
+                # what does it mean?
+                #########################################################
+                if inserted:
+                    parent_id = body.get("parent_id")
+                    parent_type = body.get("parent_type")
+                    new_position = body.get("new_position")
+                    through_type = body.get("through_type")
+
+                    model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
+                    parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
+
+                    workflow1 = model.get_workflow()
+                    workflow2 = parent.get_workflow()
+
+                    if workflow1.pk != workflow2.pk:
+                        changing_workflow = True
+
+                        if workflow1.get_project().pk == workflow2.get_project().pk:
+                            if object_type == "node":
+                                model.outcomenode_set.all().delete()
+                                same_type_columns = workflow2.columns.filter(
+                                    column_type=model.column.column_type
+                                )
+                                if same_type_columns.count() > 0:
+                                    new_column = same_type_columns.first()
+                                else:
+                                    new_column = workflow2.columns.all().first()
+                                model.column = new_column
+                                model.save()
+                                linked_workflows = Workflow.objects.filter(linked_nodes=model)
+
+                            elif object_type == "outcome" or object_type == "outcome_base":
+                                OutcomeNode.objects.filter()
+                                outcomes_list = [object_id] + list(
+                                    DAO.get_descendant_outcomes(model).values_list("pk", flat=True)
+                                )
+                                affected_nodes = (
+                                    Node.objects.filter(outcomes__in=outcomes_list).values_list(
+                                        "pk", flat=True
+                                    ),
+                                )
+                                linked_workflows = Workflow.objects.filter(
+                                    linked_nodes__outcomes__in=outcomes_list
+                                )
+                                OutcomeNode.objects.filter(outcome__in=outcomes_list).delete()
+                            else:
+                                return Response({"message": "success"})
+
+                    if object_type == parent_type:
+                        creation_kwargs = {"child": model, "parent": parent}
+                        search_kwargs = {"child": model}
+                        index_kwargs = {"parent": parent, "child__deleted": False}
+                    else:
+                        creation_kwargs = {object_type: model, parent_type: parent}
+                        search_kwargs = {object_type: model}
+                        index_kwargs = {
+                            parent_type: parent,
+                            object_type + "__deleted": False,
+                        }
+
+                    # Adjust the new position, given the # of deleted items
+                    try:
+                        all_throughs = (
+                            DAO.get_model_from_str(through_type)
+                            .objects.filter(**index_kwargs)
+                            .order_by("rank")
+                        )
+                        if new_position < 0:
+                            new_position = 0
+                        elif new_position >= all_throughs.count():
+                            new_position = all_throughs.count()
+                        else:
+                            new_position = (
+                                DAO.get_model_from_str(through_type)
+                                .objects.filter(**index_kwargs)
+                                .order_by("rank")[new_position]
+                                .rank
+                            )
+                    except (IndexError, AttributeError):
+                        print("had an error in inserted_at")
+
+                    old_through_id = (
+                        DAO.get_model_from_str(through_type)
+                        .objects.filter(**search_kwargs)
+                        .first()
+                        .id
+                    )
+                    new_through = DAO.get_model_from_str(through_type).objects.create(
+                        rank=new_position, **creation_kwargs
+                    )
+
+        except ValidationError as e:
+            logger.exception("An error occurred")
+            return Response({"action": "error"})
+
+        workflow = model.get_workflow()
+
+        # why is there another 'inserted' branch here....
+        if inserted:
+            if changing_workflow:
+                object_type_sent = object_type
+                if object_type == "outcome" and through_type == "outcomeworkflow":
+                    object_type_sent = "outcome_base"
+                # Send a signal to delete the object from its original workflow
+                extra_data = {}
+                new_children_serialized = None
+                if object_type == "outcome" or object_type == "outcome_base":
+                    extra_data = RefreshSerializerNode(
+                        Node.objects.filter(pk__in=affected_nodes),
+                        many=True,
+                    ).data
+                    outcomes_to_update = RefreshSerializerOutcome(
+                        Outcome.objects.filter(horizontal_outcomes__in=outcomes_list),
+                        many=True,
+                    ).data
+                    outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(model)
+                    new_children_serialized = {
+                        "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
+                        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
+                            outcomeoutcomes, many=True
+                        ).data,
+                    }
+
+                delete_action = actions.deleteSelfAction(
+                    object_id, object_type_sent, old_through_id, extra_data
+                )
+                actions.dispatch_wf(
+                    workflow1,
+                    delete_action,
+                )
+                # Send a signal to add it to the new workflow
+                new_model_serialized = serializer_lookups_shallow[object_type](model).data
+                new_through_serialized = serializer_lookups_shallow[through_type](new_through).data
+                response_data = {
+                    "new_model": new_model_serialized,
+                    "new_through": new_through_serialized,
+                    "parentID": parent_id,
+                    "children": new_children_serialized,
+                }
+
+                actions.dispatch_wf(
+                    workflow2,
+                    actions.insertBelowAction(response_data, object_type_sent),
+                )
+
+                # Send the relevant signals to parent and child workflows
+                if object_type == "outcome" or object_type == "outcome_base":
+                    actions.dispatch_to_parent_wf(
+                        workflow1,
+                        delete_action,
+                    )
+                    if linked_workflows:
+                        for wf in linked_workflows:
+                            actions.dispatch_wf(wf, delete_action)
+                            actions.dispatch_wf(
+                                wf,
+                                actions.updateHorizontalLinks({"data": outcomes_to_update}),
+                            )
+                if object_type != "outcome" and object_type != "outcome_base" and linked_workflows:
+                    for wf in linked_workflows:
+                        actions.dispatch_parent_updated(wf)
+            else:
+                if object_type == "outcome":
+                    outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(model)
+                    outcomenodes = OutcomeNode.objects.filter(
+                        outcome__id__in=[model.id] + [x.id for x in outcomes]
+                    )
+                    node_updates = NodeSerializerShallow(
+                        list(set([x.node for x in outcomenodes])),
+                        many=True,
+                    ).data
+                    new_children_serialized = {
+                        "outcome": [],
+                        "outcomeoutcome": [],
+                        "outcomenode": OutcomeNodeSerializerShallow(outcomenodes, many=True).data,
+                    }
+                    extra_data = {
+                        "children": new_children_serialized,
+                        "node_updates": node_updates,
+                    }
+                else:
+                    extra_data = {}
+
+                actions.dispatch_wf(
+                    workflow,
+                    actions.changeThroughID(
+                        through_type, old_through_id, new_through.id, extra_data
+                    ),
+                )
+                if object_type == "outcome":
+                    actions.dispatch_to_parent_wf(
+                        workflow,
+                        actions.changeThroughID(
+                            through_type,
+                            old_through_id,
+                            new_through.id,
+                            extra_data,
+                        ),
+                    )
+        actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
+        return Response({"message": "success"})
+
 
 # Add a parent outcome to an outcome
 @user_can_edit("outcomePk")
@@ -364,7 +636,9 @@ class WorkflowObjectEndpoint:
 def json_api_post_update_outcomehorizontallink_degree(
     request: HttpRequest,
 ) -> JsonResponse:
-    body = json.loads(request.body)
+    body = json.loads(
+        request.body
+    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     outcome_id = body.get("outcomePk")
     object_type = body.get("objectType")
     parent_id = body.get("objectID")
@@ -419,7 +693,9 @@ def json_api_post_update_outcomehorizontallink_degree(
 @user_can_edit(False)
 @user_can_view("objectsetPk")
 def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
+    body = json.loads(
+        request.body
+    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     try:
         object_id = body.get("objectID")
         object_type = body.get("objectType")
@@ -466,222 +742,4 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
         logger.exception("An error occurred")
         pass
 
-    return JsonResponse({"message": "success"})
-
-
-#########################################################
-# REORDER?
-#########################################################
-
-
-# @user_can_edit(False)
-# @user_can_edit_or_none(False, get_parent=True)
-# @user_can_edit_or_none("columnPk")
-# @from_same_workflow(False, False, get_parent=True)
-# @from_same_workflow(False, "columnPk")
-def json_api_post_inserted_at(request: HttpRequest) -> JsonResponse:
-    """
-    @todo make this explanation meaningful
-    # Insert a model via its throughmodel to reorder it
-
-    :param request:
-    :return:
-    """
-    body = json.loads(request.body)
-    object_id = body.get("objectID")
-    object_type = body.get("objectType")
-    inserted = body.get("inserted", False)
-    column_change = body.get("columnChange", False)
-    changing_workflow = False
-    try:
-        with transaction.atomic():
-            if column_change:
-                new_column_id = body.get("columnPk")
-                model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
-                new_column = Column.objects.get(id=new_column_id)
-                model.column = new_column
-                model.save()
-            if inserted:
-                parent_id = body.get("parentID")
-                parent_type = body.get("parentType")
-                new_position = body.get("newPosition")
-                through_type = body.get("throughType")
-                model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
-                parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
-                workflow1 = model.get_workflow()
-                workflow2 = parent.get_workflow()
-                if workflow1.pk != workflow2.pk:
-                    changing_workflow = True
-                    if workflow1.get_project().pk == workflow2.get_project().pk:
-                        if object_type == "node":
-                            model.outcomenode_set.all().delete()
-                            same_type_columns = workflow2.columns.filter(
-                                column_type=model.column.column_type
-                            )
-                            if same_type_columns.count() > 0:
-                                new_column = same_type_columns.first()
-                            else:
-                                new_column = workflow2.columns.all().first()
-                            model.column = new_column
-                            model.save()
-                            linked_workflows = Workflow.objects.filter(linked_nodes=model)
-                        elif object_type == "outcome" or object_type == "outcome_base":
-                            OutcomeNode.objects.filter()
-                            outcomes_list = [object_id] + list(
-                                DAO.get_descendant_outcomes(model).values_list("pk", flat=True)
-                            )
-                            affected_nodes = (
-                                Node.objects.filter(outcomes__in=outcomes_list).values_list(
-                                    "pk", flat=True
-                                ),
-                            )
-                            linked_workflows = Workflow.objects.filter(
-                                linked_nodes__outcomes__in=outcomes_list
-                            )
-                            OutcomeNode.objects.filter(outcome__in=outcomes_list).delete()
-                        else:
-                            return JsonResponse({"message": "success"})
-                if object_type == parent_type:
-                    creation_kwargs = {"child": model, "parent": parent}
-                    search_kwargs = {"child": model}
-                    index_kwargs = {"parent": parent, "child__deleted": False}
-                else:
-                    creation_kwargs = {object_type: model, parent_type: parent}
-                    search_kwargs = {object_type: model}
-                    index_kwargs = {
-                        parent_type: parent,
-                        object_type + "__deleted": False,
-                    }
-                # Adjust the new position, given the # of deleted items
-                try:
-                    all_throughs = (
-                        DAO.get_model_from_str(through_type)
-                        .objects.filter(**index_kwargs)
-                        .order_by("rank")
-                    )
-                    if new_position < 0:
-                        new_position = 0
-                    elif new_position >= all_throughs.count():
-                        new_position = all_throughs.count()
-                    else:
-                        new_position = (
-                            DAO.get_model_from_str(through_type)
-                            .objects.filter(**index_kwargs)
-                            .order_by("rank")[new_position]
-                            .rank
-                        )
-                except (IndexError, AttributeError):
-                    print("had an error in inserted_at")
-
-                old_through_id = (
-                    DAO.get_model_from_str(through_type).objects.filter(**search_kwargs).first().id
-                )
-                new_through = DAO.get_model_from_str(through_type).objects.create(
-                    rank=new_position, **creation_kwargs
-                )
-
-    except ValidationError as e:
-        logger.exception("An error occurred")
-        return JsonResponse({"action": "error"})
-
-    workflow = model.get_workflow()
-    if inserted:
-        if changing_workflow:
-            object_type_sent = object_type
-            if object_type == "outcome" and through_type == "outcomeworkflow":
-                object_type_sent = "outcome_base"
-            # Send a signal to delete the object from its original workflow
-            extra_data = {}
-            new_children_serialized = None
-            if object_type == "outcome" or object_type == "outcome_base":
-                extra_data = RefreshSerializerNode(
-                    Node.objects.filter(pk__in=affected_nodes),
-                    many=True,
-                ).data
-                outcomes_to_update = RefreshSerializerOutcome(
-                    Outcome.objects.filter(horizontal_outcomes__in=outcomes_list),
-                    many=True,
-                ).data
-                outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(model)
-                new_children_serialized = {
-                    "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
-                    "outcomeoutcome": OutcomeOutcomeSerializerShallow(
-                        outcomeoutcomes, many=True
-                    ).data,
-                }
-
-            delete_action = actions.deleteSelfAction(
-                object_id, object_type_sent, old_through_id, extra_data
-            )
-            actions.dispatch_wf(
-                workflow1,
-                delete_action,
-            )
-            # Send a signal to add it to the new workflow
-            new_model_serialized = serializer_lookups_shallow[object_type](model).data
-            new_through_serialized = serializer_lookups_shallow[through_type](new_through).data
-            response_data = {
-                "new_model": new_model_serialized,
-                "new_through": new_through_serialized,
-                "parentID": parent_id,
-                "children": new_children_serialized,
-            }
-
-            actions.dispatch_wf(
-                workflow2,
-                actions.insertBelowAction(response_data, object_type_sent),
-            )
-            # Send the relevant signals to parent and child workflows
-            if object_type == "outcome" or object_type == "outcome_base":
-                actions.dispatch_to_parent_wf(
-                    workflow1,
-                    delete_action,
-                )
-                if linked_workflows:
-                    for wf in linked_workflows:
-                        actions.dispatch_wf(wf, delete_action)
-                        actions.dispatch_wf(
-                            wf,
-                            actions.updateHorizontalLinks({"data": outcomes_to_update}),
-                        )
-            if object_type != "outcome" and object_type != "outcome_base" and linked_workflows:
-                for wf in linked_workflows:
-                    actions.dispatch_parent_updated(wf)
-        else:
-            if object_type == "outcome":
-                outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(model)
-                outcomenodes = OutcomeNode.objects.filter(
-                    outcome__id__in=[model.id] + [x.id for x in outcomes]
-                )
-                node_updates = NodeSerializerShallow(
-                    list(set([x.node for x in outcomenodes])),
-                    many=True,
-                ).data
-                new_children_serialized = {
-                    "outcome": [],
-                    "outcomeoutcome": [],
-                    "outcomenode": OutcomeNodeSerializerShallow(outcomenodes, many=True).data,
-                }
-                extra_data = {
-                    "children": new_children_serialized,
-                    "node_updates": node_updates,
-                }
-            else:
-                extra_data = {}
-
-            actions.dispatch_wf(
-                workflow,
-                actions.changeThroughID(through_type, old_through_id, new_through.id, extra_data),
-            )
-            if object_type == "outcome":
-                actions.dispatch_to_parent_wf(
-                    workflow,
-                    actions.changeThroughID(
-                        through_type,
-                        old_through_id,
-                        new_through.id,
-                        extra_data,
-                    ),
-                )
-    actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
     return JsonResponse({"message": "success"})

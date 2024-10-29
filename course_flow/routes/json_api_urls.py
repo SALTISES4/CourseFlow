@@ -196,6 +196,11 @@ def json_api_patterns():
             views.json_api.WorkflowObjectEndpoint.duplicate,
             name="workflow--object--duplicate",
         ),
+        path(
+            "workflow/object/order",
+            views.json_api.WorkflowObjectEndpoint.order,
+            name="workflow--object--order",
+        ),
         #### SORT #####
         # @todo so is this just for outomces>
         path(
@@ -217,11 +222,6 @@ def json_api_patterns():
             "workflow/updateobjectset",
             views.json_api.workflow_objects.json_api_post_update_object_set,
             name="json-api-post-update-object-set",
-        ),
-        path(
-            "workflow/inserted-at",
-            views.json_api.workflow_objects.json_api_post_inserted_at,
-            name="json-api-post-inserted-at",
         ),
         ##########################################################
         # WORKSPACE

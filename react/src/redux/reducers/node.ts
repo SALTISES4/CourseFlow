@@ -112,13 +112,12 @@ export default function nodeReducer(
     }
 
     case NodeActions.changeField:
-      if (
-        action.payload.changeFieldID ===
-        // @ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldID
-      ) {
-        return state
-      }
+      // if (
+      //   action.payload.changeFieldID ===
+      //   COURSEFLOW_APP.contextData.changeFieldID
+      // ) {
+      //   return state
+      // }
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }
@@ -181,10 +180,7 @@ export default function nodeReducer(
         if (item.id === action.payload.new_model.sourceNode) {
           return {
             ...item,
-            outgoingLinks: [
-              ...item.outgoingLinks,
-              action.payload.new_model.id
-            ]
+            outgoingLinks: [...item.outgoingLinks, action.payload.new_model.id]
           }
         }
         return item
