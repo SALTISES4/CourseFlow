@@ -94,7 +94,11 @@ def deleteSelfAction(id, objectType, parentID, extra_data):
 def deleteSelfSoftAction(id, objectType, parentID, extra_data):
     return {
         "type": objectType + "/deleteSelfSoft",
-        "payload": {"id": id, "parent_id": parentID, "extra_data": extra_data},
+        "payload": {
+            "id": id,
+            "parent_id": parentID,
+            "extra_data": extra_data,
+        },
     }
 
 

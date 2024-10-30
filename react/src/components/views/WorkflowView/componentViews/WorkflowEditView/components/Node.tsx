@@ -396,9 +396,9 @@ class NodeUnconnected extends EditableComponentWithActions<
     ].join(' ')
 
     if (this.props.workflow.workflowPermissions.write) {
-      mouseover_actions.push(<this.AddInsertSibling data={data} />)
-      mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
-      mouseover_actions.push(<this.AddDeleteSelf data={data} />)
+      mouseover_actions.push(<this.InsertSiblingButton data={data} />)
+      mouseover_actions.push(<this.DuplicateSelfButton data={data} />)
+      mouseover_actions.push(<this.DeleteSelfButton data={data} />)
     }
 
     if (this.props.workflow.workflowPermissions.addComments) {

@@ -60,7 +60,6 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             )
         except AttributeError as e:
             logger.exception("An error occurred")
-            pass
 
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 

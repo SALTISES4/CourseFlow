@@ -16,7 +16,6 @@ from django.http import HttpRequest
 from rest_framework.renderers import JSONRenderer
 
 from course_flow.services.config import ConfigService
-from course_flow.services.library import LibraryService
 from course_flow.services.notifications import get_app_update_notifications
 from course_flow.services.workflow import WorkflowService
 

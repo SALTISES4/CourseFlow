@@ -110,7 +110,6 @@ class Importer:
                         outcome.save()
             except ValueError as e:
                 logger.exception("An error occurred")
-                pass
 
             last_outcome = outcome
 

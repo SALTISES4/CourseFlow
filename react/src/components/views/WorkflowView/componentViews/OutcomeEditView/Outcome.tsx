@@ -248,11 +248,11 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     }
 
     if (this.props.workflow.workflowPermissions.write) {
-      mouseover_actions.push(<this.AddInsertSibling data={data} />)
-      mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
-      mouseover_actions.push(<this.AddDeleteSelf data={data} />)
+      mouseover_actions.push(<this.InsertSiblingButton data={data} />)
+      mouseover_actions.push(<this.DuplicateSelfButton data={data} />)
+      mouseover_actions.push(<this.DeleteSelfButton data={data} />)
       if (data.depth < 2) {
-        mouseover_actions.push(<this.AddInsertChild data={data} />)
+        mouseover_actions.push(<this.InsertChildButton data={data} />)
       }
     }
     if (this.props.workflow.workflowPermissions.viewComments) {

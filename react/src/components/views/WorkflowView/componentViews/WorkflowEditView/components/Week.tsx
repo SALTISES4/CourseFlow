@@ -211,12 +211,11 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
         </div>
       )
     }
-    return this.props.week.data.nodeweekSet.map((nodeweek) => (
+    return this.props.week.data.nodeweekSet.map((nodeId) => (
       <NodeWeek
-        key={nodeweek}
-        objectId={nodeweek} // ???
+        key={nodeId}
+        objectId={nodeId}
         parentID={this.props.week.data.id}
-        // renderer={this.props.renderer}
         column_order={this.props.week.column_order}
       />
     ))
@@ -251,9 +250,9 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       this.props.workflow.workflowPermissions.write &&
       !this.props.workflow.isStrategy
     ) {
-      mouseoverActions.push(<this.AddInsertSibling data={data} />)
-      mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
-      mouseoverActions.push(<this.AddDeleteSelf data={data} />)
+      mouseoverActions.push(<this.InsertSiblingButton data={data} />)
+      mouseoverActions.push(<this.DuplicateSelfButton data={data} />)
+      mouseoverActions.push(<this.DeleteSelfButton data={data} />)
     }
     if (this.props.workflow.workflowPermissions.viewComments) {
       mouseoverActions.push(<this.AddCommenting />)

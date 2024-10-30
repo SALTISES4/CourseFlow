@@ -286,7 +286,6 @@ try:
         INSTALLED_APPS += LOCAL_APPS  # noqa F405
     except NameError as e:
         logger.exception("An error occurred")
-        pass
 except ImportError as e:
     logger.exception("An error occurred")
     import warnings
@@ -294,7 +293,6 @@ except ImportError as e:
     warnings.warn(
         "File local_settings.py not found. You probably want to add it -- " "see README.md."
     )
-    pass
 
 #########################################################
 # DEBUG TOOLBAR

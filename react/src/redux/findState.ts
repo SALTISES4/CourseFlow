@@ -54,11 +54,11 @@ export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
  * WEEK
  *******************************************************/
 export type TGetWeekByIDType = {
-  data: any
-  column_order: any
-  sibling_count?: any
+  data: TWeek
+  column_order: number[]
+  sibling_count?: number
   nodeweeks: any
-  workflowId?: any
+  workflowId?: number
 }
 
 export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
@@ -70,6 +70,8 @@ export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
         // consider moving this logic to a reducer
         week.isDropped = getDropped(id, 'week')
       }
+
+      // redux should not be marshalling like this
       return {
         data: week,
         column_order: state.workflow.columnworkflowSet.map(

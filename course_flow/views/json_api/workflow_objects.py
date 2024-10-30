@@ -116,7 +116,8 @@ class WorkflowObjectEndpoint:
                         newmodel.title = newmodel.title + _("(copy)")
                         newmodel.save()
                     except (ValidationError, TypeError):
-                        pass
+                        logger.exception("An error occurred")
+
                     new_model_serialized = WeekSerializerShallow(newmodel).data
                     new_through_serialized = WeekWorkflowSerializerShallow(newthroughmodel).data
                     new_children_serialized = {
@@ -153,7 +154,8 @@ class WorkflowObjectEndpoint:
                         newmodel.title = newmodel.title + _("(copy)")
                         newmodel.save()
                     except (ValidationError, TypeError):
-                        pass
+                        logger.exception("An error occurred")
+
                     new_model_serialized = NodeSerializerShallow(
                         newmodel, context={"user": request.user}
                     ).data

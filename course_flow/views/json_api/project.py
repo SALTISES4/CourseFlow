@@ -147,7 +147,8 @@ class ProjectEndpoint:
                     clone.title = clone.title + _("(copy)")
                     clone.save()
                 except (ValidationError, TypeError):
-                    pass
+                    logger.exception("An error occurred")
+
         except ValidationError as e:
             logger.exception("An error occurred")
             return Response(

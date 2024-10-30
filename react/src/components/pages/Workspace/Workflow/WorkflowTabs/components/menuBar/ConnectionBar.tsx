@@ -32,7 +32,6 @@ const ConnectionBar = ({ show }: { show: boolean }) => {
   }
 
   const users = context.ws.connectedUsers.map((item) => {
-    console.log(item)
     return (
       <ConnectedUser
         userColour={item.userColour}

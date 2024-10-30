@@ -195,7 +195,12 @@ const ExpandCollapseMenu = () => {
     }
   ]
   return (
-    <SimpleMenu id="ExpandCollapseMenu" header={header} menuItems={menuItems} />
+    <SimpleMenu
+      id="actions-menu"
+      data-test-id="ExpandCollapseMenu"
+      header={header}
+      menuItems={menuItems}
+    />
   )
 }
 

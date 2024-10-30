@@ -535,7 +535,7 @@ class EditableComponent<
         return (
           <>
             <h4>{_t('Delete')}</h4>
-            <this.AddDeleteSelf data={data} />
+            <this.DeleteSelfButton data={data} />
           </>
         )
       }
@@ -543,7 +543,7 @@ class EditableComponent<
   }
 
   //  @todo only implemented in children
-  AddDeleteSelf = ({ data, alt_icon }: { data: any; alt_icon?: string }) => {
+  DeleteSelfButton = ({ data, alt_icon }: { data: any; alt_icon?: string }) => {
     return <></>
   }
 
@@ -591,7 +591,10 @@ class EditableComponent<
         className="right-panel-inner"
         onClick={(evt) => evt.stopPropagation()}
       >
-        <h3>{_t('Edit ') + Constants.getVerbose(data, this.objectType)}</h3>
+        <h3>
+          {_t('Edit ') +
+            Constants.getLabelForCfObject({ objectType: this.objectType })}
+        </h3>
         <h3>asdfasdf</h3>
 
         {[
@@ -657,7 +660,7 @@ class EditableComponent<
 
         {
           // @todo this is mixed up data types
-          //  type should notbe able to be worklow OR course OR  outcome etc
+          //  type should not be able to be worklow OR course OR  outcome etc
           ((type === CfObjectType.WORKFLOW &&
             data.type == WorkflowType.COURSE) ||
             (type == CfObjectType.NODE && data.nodeType == 2)) && (

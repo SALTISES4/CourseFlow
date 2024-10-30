@@ -1,13 +1,14 @@
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import { insertChildQuery, insertSiblingQuery } from '@XMLHTTP/API/create'
+import { duplicateSelfQuery } from '@XMLHTTP/API/duplication'
 import {
   deleteSelfQueryLegacy,
   restoreSelfQueryLegacy
-} from '@XMLHTTP/API/delete'
-import { duplicateSelfQuery } from '@XMLHTTP/API/duplication'
+} from '@XMLHTTP/API/workspace.rtk'
 import * as React from 'react'
 
 import EditableComponentWithComments, {
@@ -46,7 +47,7 @@ class EditableComponentWithActions<
     )
   }
 
-  deleteSelf(data) {
+  deleteSelf({ id, objectType }: { id: number; objectType: CfObjectType }) {
     //@todo Temporary confirmation; add better confirmation dialogue later
     if (this.context) {
       this.context.selectionManager.deleted(this)
@@ -60,21 +61,21 @@ class EditableComponentWithActions<
       return
     }
 
+    console.log('this.props')
+    console.log(this.props)
+
     if (
       window.confirm(
         _t('Are you sure you want to delete this ') +
-          Constants.getVerbose(
-            this.props.data,
-            this.objectType
-          ).toLowerCase() +
+          Constants.getLabelForCfObject({ objectType: this.objectType }).toLowerCase() +
           '?'
       )
     ) {
       COURSEFLOW_APP.tinyLoader.startLoad()
       deleteSelfQueryLegacy(
-        data.id,
+        id,
         Constants.objectDictionary[this.objectType],
-        true,
+        true, //why
         (responseData) => {
           COURSEFLOW_APP.tinyLoader.endLoad()
         }
@@ -101,15 +102,13 @@ class EditableComponentWithActions<
   insertSibling(data) {
     const type = this.objectType
     COURSEFLOW_APP.tinyLoader.startLoad()
-    console.log('i am being triggered')
-    console.log(data)
 
     insertSiblingQuery(
       data.id,
       Constants.objectDictionary[type],
       this.props.parentID,
       Constants.parentDictionary[type],
-      Constants.throughParentDictionary[type],
+      Constants.throughParentDictionary[type]
     )
   }
 
@@ -144,7 +143,7 @@ class EditableComponentWithActions<
   // }
 
   //Adds a button that duplicates the item (with a confirmation).
-  AddDuplicateSelf = ({ data }) => {
+  DuplicateSelfButton = ({ data }) => {
     return (
       <ActionButton
         buttonIcon="duplicate.svg"
@@ -156,7 +155,7 @@ class EditableComponentWithActions<
   }
 
   //Adds a button that inserts a child to them item
-  AddInsertChild = ({ data }) => {
+  InsertChildButton = ({ data }) => {
     return (
       <ActionButton
         buttonIcon="create_new_child.svg"
@@ -168,7 +167,7 @@ class EditableComponentWithActions<
   }
 
   //Adds a button that inserts a sibling below the item.
-  AddInsertSibling = ({ data }) => {
+  InsertSiblingButton = ({ data }) => {
     return (
       <ActionButton
         buttonIcon="add_new.svg"
@@ -179,8 +178,10 @@ class EditableComponentWithActions<
     )
   }
 
-  //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-  AddDeleteSelf = ({ data, alt_icon }: { data: any; alt_icon?: string }) => {
+  /*******************************************************
+   * Adds a button that deletes the item (with a confirmation).
+   *******************************************************/
+  DeleteSelfButton = ({ data, alt_icon }: { data: any; alt_icon?: string }) => {
     const icon = alt_icon || 'rubbish.svg'
     return (
       <ActionButton

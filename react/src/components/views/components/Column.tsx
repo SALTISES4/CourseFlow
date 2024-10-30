@@ -83,9 +83,9 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     const mouseoverActions = []
 
     if (this.props.workflow.workflowPermissions.write) {
-      mouseoverActions.push(<this.AddInsertSibling data={data} />)
-      mouseoverActions.push(<this.AddDuplicateSelf data={data} />)
-      mouseoverActions.push(<this.AddDeleteSelf data={data} />)
+      mouseoverActions.push(<this.InsertSiblingButton data={data} />)
+      mouseoverActions.push(<this.DuplicateSelfButton data={data} />)
+      mouseoverActions.push(<this.DeleteSelfButton data={data} />)
     }
 
     if (this.props.workflow.workflowPermissions.viewComments) {

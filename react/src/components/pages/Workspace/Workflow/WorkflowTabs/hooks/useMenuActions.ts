@@ -4,8 +4,8 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
-import { deleteSelfQueryLegacy } from '@XMLHTTP/API/delete'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
+import {deleteSelfQueryLegacy} from "@XMLHTTP/API/workspace.rtk";
 import { useDispatch } from 'react-redux'
 
 export const useMenuActions = () => {
@@ -72,7 +72,7 @@ export const useMenuActions = () => {
         _t('Are you sure you want to permanently delete this workflow?')
       )
     ) {
-      deleteSelfQueryLegacy(workflowId, 'workflow', false, () => {
+      deleteSelfQueryLegacy(workflowId, CfObjectType.WORKFLOW, false, () => {
         window.location.href = 'path to wherever you go after deletion'
       })
     }

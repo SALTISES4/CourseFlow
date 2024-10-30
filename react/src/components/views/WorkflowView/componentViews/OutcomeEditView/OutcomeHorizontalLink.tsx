@@ -64,7 +64,9 @@ class OutcomeHorizontalLinkUnconnected extends React.Component<PropsType> {
     if (
       window.confirm(
         _t('Are you sure you want to delete this ') +
-          Constants.getVerbose(this.props.outcomeHorizontalLink.data, this.objectType).toLowerCase() +
+          Constants.getLabelForCfObject({
+            objectType: this.objectType
+          }).toLowerCase() +
           '?'
       )
     ) {

@@ -199,7 +199,6 @@ def json_api_post_project_from_json(request: HttpRequest) -> JsonResponse:
                 new_node.save()
             except KeyError as e:
                 logger.exception("An error occurred")
-                pass
             id_dict["node"][node["id"]] = new_node
 
         for project in json_data["project"]:

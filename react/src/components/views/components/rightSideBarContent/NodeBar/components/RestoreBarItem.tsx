@@ -1,10 +1,7 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
-import {
-  deleteSelfQueryLegacy,
-  restoreSelfQueryLegacy
-} from '@XMLHTTP/API/delete'
+import {deleteSelfQueryLegacy, restoreSelfQueryLegacy} from "@XMLHTTP/API/workspace.rtk";
 import * as React from 'react'
 
 type OwnProps = {

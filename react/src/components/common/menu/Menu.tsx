@@ -130,8 +130,6 @@ const SimpleMenu = ({
         <ListMenuItem {...header} />
       </Button>
       <StyledMenu
-        id={id}
-        data-test-id={id}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
