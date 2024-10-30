@@ -1,7 +1,9 @@
+import { AppState } from '@cfRedux/types/type'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { Fragment, useCallback, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { StyledRestorableBlock } from './styles'
 import {
@@ -36,6 +38,30 @@ function getRestoreItems(
 const RestoreTab = ({ title, groups }: SidebarDataType['restore']) => {
   const [restoreGroups, setRestoreGroups] = useState(groups ?? [])
   const [selected, setSelected] = useState<RestorableBlockType[]>([])
+
+  const weeks = useSelector((state: AppState) =>
+    state.week.filter((x) => x.deleted)
+  )
+
+  const columns = useSelector((state: AppState) =>
+    state.column.filter((x) => x.deleted)
+  )
+
+  const outcomes = useSelector((state: AppState) =>
+    state.outcome.filter((x) => x.deleted)
+  )
+
+  const nodes = useSelector((state: AppState) =>
+    state.node.filter((x) => x.deleted)
+  )
+
+  const nodeLinks = useSelector((state: AppState) =>
+    state.nodelink.filter((x) => x.deleted)
+  )
+
+  // TODO: properly handle restoring deleted items
+  console.log('RestoreTab able to restore deleted:')
+  console.log({ weeks, columns, outcomes, nodes, nodeLinks })
 
   const removeFromState = useCallback(() => {
     setRestoreGroups(

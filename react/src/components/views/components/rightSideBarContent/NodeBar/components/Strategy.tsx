@@ -1,5 +1,5 @@
 // @ts-ignore
-import {apiPaths} from "@cf/router/apiRoutes";
+import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
@@ -81,7 +81,7 @@ class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
     const strategyIcon =
       data && data.strategy_icon ? (
         <img
-          src={`${ apiPaths.external.static_assets.icon}${
+          src={`${apiPaths.external.static_assets.icon}${
             Constants.strategyKeys[data.strategy_icon]
           }.svg`}
         />
