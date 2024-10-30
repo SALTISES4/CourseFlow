@@ -280,8 +280,10 @@ class WorkspaceEndpoint:
             linked_workflows = False
             if object_type == "node":
                 linked_workflows = list(Workflow.objects.filter(linked_nodes=model))
+
             elif object_type == "week":
                 linked_workflows = list(Workflow.objects.filter(linked_nodes__week=model))
+
             elif object_type in ["workflow", "activity", "course", "program"]:
                 linked_workflows = list(
                     Workflow.objects.filter(linked_nodes__week__workflow__id=model.id)
@@ -289,6 +291,7 @@ class WorkspaceEndpoint:
                 parent_workflows = [
                     node.get_workflow() for node in Node.objects.filter(linked_workflow=model)
                 ]
+
             elif object_type == "outcome":
                 linked_workflows = list(
                     Workflow.objects.filter(
