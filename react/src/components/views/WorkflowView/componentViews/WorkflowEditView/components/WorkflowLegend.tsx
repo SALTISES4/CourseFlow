@@ -1,5 +1,5 @@
 import * as Constants from '@cf/constants'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
@@ -15,7 +15,7 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * first pass on FV conversion is done
  *******************************************************/
 const WorkflowLegend = () => {
-  const workFlowConfigContext = React.useContext(WorkFlowConfigContext)
+  const workFlowConfigContext = React.useContext(WorkflowConfigContext)
 
   const [showLegend, setShowLegend] = useState<boolean>(() => {
     return JSON.parse(localStorage.getItem('show_legend'))

@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
@@ -75,9 +75,9 @@ type PropsType = ConnectedProps & OwnProps
  * workflow.
  */
 class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
-  static contextType = WorkFlowConfigContext
+  static contextType = WorkflowConfigContext
 
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  declare context: React.ContextType<typeof WorkflowConfigContext>
   // private nodecategory_json: string
   private objectType: CfObjectType
 

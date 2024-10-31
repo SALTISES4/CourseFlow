@@ -1,5 +1,5 @@
 import * as Constants from '@cf/constants'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
@@ -8,6 +8,7 @@ import {
   getOutcomeHorizontalLinkByID
 } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
+import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -29,8 +30,8 @@ type PropsType = ConnectedProps & OwnProps
  * is tagged with other outcomes from a parent workflow
  */
 class OutcomeHorizontalLinkUnconnected extends React.Component<PropsType> {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   objectType: CfObjectType
   mainDiv: React.RefObject<HTMLDivElement>
@@ -120,10 +121,9 @@ class OutcomeHorizontalLinkUnconnected extends React.Component<PropsType> {
    * @returns {JSX.Element}
    */
   DeleteSelf = ({ data }) => {
-    const icon = 'close.svg'
     return (
       <ActionButton
-        buttonIcon={icon}
+        buttonIcon={<HighlightOffIcon />}
         buttonClass="delete-self-button"
         titleText={_t('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}

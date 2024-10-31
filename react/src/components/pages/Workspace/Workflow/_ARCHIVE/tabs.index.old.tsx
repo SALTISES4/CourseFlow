@@ -12,8 +12,8 @@ import ImportModal from '@cfModule/components/common/dialog/Import'
 import ProjectTargetModal from '@cfModule/components/common/dialog/ProjectTarget'
 import MenuBar from '@cfModule/components/common/layout/MenuBar'
 import {
-  WorkFlowConfigContext,
-  WorkFlowContextType
+  WorkflowConfigContext,
+  WorkflowContextType
 } from '@cfModule/context/workFlowConfigContext'
 import { EventUnion } from '@cfModule/types/common'
 import { CfObjectType } from '@cfModule/types/enum'
@@ -96,8 +96,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   PropsType,
   StateType
 > {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   // Constants
   objectType = CfObjectType.WORKFLOW
@@ -115,7 +115,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   private objectSets: any
   private workflowId: number
 
-  constructor(props: PropsType, context: WorkFlowContextType) {
+  constructor(props: PropsType, context: WorkflowContextType) {
     super(props)
 
     this.context = context

@@ -69,6 +69,7 @@ class MatrixWeekUnconnected extends React.Component<PropsType> {
   }
 }
 
+// @todo needs rework
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps

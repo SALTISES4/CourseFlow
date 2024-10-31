@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
@@ -34,7 +34,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
   PropsType,
   StateProps
 > {
-  static contextType = WorkFlowConfigContext
+  static contextType = WorkflowConfigContext
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW

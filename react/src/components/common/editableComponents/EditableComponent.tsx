@@ -1,5 +1,5 @@
 import * as Constants from '@cf/constants'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
@@ -8,11 +8,11 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
+import CommentBox from '@cfEditableComponents/components/CommentBox'
 import QuillDiv from '@cfEditableComponents/components/QuillDiv'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
-import CommentBox from '@cfViews/WorkflowView/componentViews/GridView/components/CommentBox'
 import AddCommentIcon from '@mui/icons-material/AddComment'
 import Button from '@mui/material/Button'
 import { Dispatch } from '@reduxjs/toolkit'
@@ -61,8 +61,8 @@ class EditableComponent<
   P extends EditableComponentProps,
   S extends StateType
 > extends React.Component<P, S> {
-  contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
   mainDiv: React.RefObject<HTMLDivElement>
 
   objectType: CfObjectType

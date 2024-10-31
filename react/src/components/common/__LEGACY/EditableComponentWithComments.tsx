@@ -1,14 +1,14 @@
 import * as Constants from '@cf/constants'
 // @components
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
+import CommentBox from '@cfEditableComponents/components/CommentBox'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
 import ActionCreator from '@cfRedux/ActionCreator'
-import CommentBox from '@cfViews/WorkflowView/componentViews/GridView/components/CommentBox'
 import { Dispatch } from '@reduxjs/toolkit'
 import { getCommentsForObjectQuery } from '@XMLHTTP/API/comment'
 import * as React from 'react'

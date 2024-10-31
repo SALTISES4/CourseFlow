@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -32,9 +32,9 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
   PropsType,
   StateProps
 > {
-  static contextType = WorkFlowConfigContext
+  static contextType = WorkflowConfigContext
 
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  declare context: React.ContextType<typeof WorkflowConfigContext>
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WEEK

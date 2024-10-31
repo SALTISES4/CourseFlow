@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
@@ -34,8 +34,8 @@ type PropsType = ConnectedProps & OwnProps
  *
  */
 class OutcomeNodeUnconnected extends React.Component<PropsType> {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   objectType: CfObjectType
   mainDiv: React.RefObject<HTMLDivElement>

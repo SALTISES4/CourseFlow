@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cfConstants'
 import EditableComponent, {
@@ -25,9 +25,9 @@ type PropsType = ConnectedProps & OwnProps
  * autolink which is automatically drawn). This can have text added.
  */
 class NodeLink extends EditableComponent<PropsType, StateProps> {
-  static contextType = WorkFlowConfigContext
+  static contextType = WorkflowConfigContext
 
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  declare context: React.ContextType<typeof WorkflowConfigContext>
   private sourceNode: JQuery
   private targetNode: JQuery
   private targetPort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
@@ -54,6 +54,7 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
+  // what
   rerender() {
     this.setState({})
   }
@@ -142,8 +143,11 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
     }
 
     // PORTAL
+    /**
+     *    this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
+     *    for where this target is attached to the page
+     **/
     const portal = reactDom.createPortal(
-      // this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
       <NodeLinkSVG
         style={style}
         hovered={node_hovered}
@@ -165,6 +169,7 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
         source_dimensions={source_dims}
         target_dimensions={target_dims}
       />,
+
       $('.workflow-canvas')[0]
     )
 

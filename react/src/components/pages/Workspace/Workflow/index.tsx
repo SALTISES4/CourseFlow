@@ -1,5 +1,5 @@
 import { UserContext } from '@cf/context/userContext'
-import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
+import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useWorkflowWebsocketManager } from '@cfPages/Workspace/Workflow/hooks/useWorkflowWebsocketManager'
@@ -103,7 +103,7 @@ const Workflow = () => {
 
   return (
     <WorkflowSidebarContextProvider>
-      <WorkFlowConfigProvider
+      <WorkflowConfigProvider
         initialValue={{
           selectionManager: selectionManager!,
           editableMethods: {
@@ -118,7 +118,7 @@ const Workflow = () => {
         }}
       >
         <WorkflowTabs />
-      </WorkFlowConfigProvider>
+      </WorkflowConfigProvider>
     </WorkflowSidebarContextProvider>
   )
 }

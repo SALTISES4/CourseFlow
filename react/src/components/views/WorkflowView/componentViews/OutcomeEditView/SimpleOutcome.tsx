@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -53,7 +53,7 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
   PropsType,
   StateProps
 > {
-  static contextType = WorkFlowConfigContext
+  static contextType = WorkflowConfigContext
   private children_block: React.RefObject<HTMLDivElement>
   constructor(props: PropsType) {
     super(props)

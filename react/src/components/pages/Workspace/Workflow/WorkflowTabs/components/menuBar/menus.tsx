@@ -1,6 +1,6 @@
 // import * as Constants from '@cf/constants'
 import { UserContext } from '@cf/context/userContext'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import {
@@ -205,7 +205,7 @@ const ExpandCollapseMenu = () => {
 }
 
 const JumpToMenu = ({ weekWorkflowSet }: { weekWorkflowSet: number[] }) => {
-  const context = useContext(WorkFlowConfigContext)
+  const context = useContext(WorkflowConfigContext)
   const viewType = context.workflowView
 
   if (viewType !== WorkflowViewType.WORKFLOW || !weekWorkflowSet.length) {

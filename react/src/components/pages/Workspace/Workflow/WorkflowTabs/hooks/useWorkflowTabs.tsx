@@ -1,4 +1,4 @@
-import { WorkFlowContextType } from '@cf/context/workFlowConfigContext'
+import { WorkflowContextType } from '@cf/context/workFlowConfigContext'
 import { EWorkflow } from '@cf/HTTP/XMLHTTP/types/entity'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -14,7 +14,7 @@ import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
 
-const useWorkflowTabs = (workflow: EWorkflow, context: WorkFlowContextType) => {
+const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
   const { id } = useParams()
   const navigate = useNavigate()
 

@@ -1,4 +1,3 @@
-// @ts-ignore
 import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
@@ -47,7 +46,6 @@ class StrategyUnconnected extends React.Component<PropsType> {
     const draggable_selector = 'week-workflow'
     const draggable_type = 'weekworkflow'
 
-    // @ts-ignore
     $(this.mainDiv?.current).draggable({
       helper: (_e, _item) => {
         const helper = $(document.createElement('div'))

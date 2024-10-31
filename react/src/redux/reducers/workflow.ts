@@ -9,7 +9,7 @@ import {
   StrategyActions,
   WeekActions,
   WeekWorkflowActions,
-  WorkFlowActions
+  WorkflowActions
 } from '@cfRedux/types/enumActions'
 import { TWorkflow } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
@@ -45,19 +45,19 @@ function workflowReducer(
     /*******************************************************
      * WORKFLOW
      *******************************************************/
-    case WorkFlowActions.DELETE_SELF_SOFT:
+    case WorkflowActions.DELETE_SELF_SOFT:
       return {
         ...state,
         deleted: true
       }
 
-    case WorkFlowActions.RESTORE_SELF:
+    case WorkflowActions.RESTORE_SELF:
       return {
         ...state,
         deleted: false
       }
 
-    case WorkFlowActions.CREATELOCK: {
+    case WorkflowActions.CREATELOCK: {
       if (state.id === action.payload.id) {
         return {
           ...state,
@@ -67,7 +67,7 @@ function workflowReducer(
       return state
     }
 
-    case WorkFlowActions.changeField: {
+    case WorkflowActions.changeField: {
       if (
         action.payload.changeFieldID ===
         // @ts-ignore

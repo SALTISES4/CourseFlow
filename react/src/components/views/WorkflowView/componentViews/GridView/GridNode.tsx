@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
@@ -23,8 +23,8 @@ type StateProps = EditableComponentWithCommentsStateType
  * A node in the grid view
  */
 class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   constructor(props: PropsType) {
     super(props)

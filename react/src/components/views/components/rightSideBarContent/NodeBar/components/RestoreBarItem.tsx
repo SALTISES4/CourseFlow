@@ -1,25 +1,33 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 // import $ from 'jquery'
 import {
   deleteSelfQueryLegacy,
   restoreSelfQueryLegacy
 } from '@XMLHTTP/API/workspace.rtk'
+import { EWorkflow } from '@XMLHTTP/types/entity'
 import * as React from 'react'
 import { useContext, useRef, useState } from 'react'
 
 type PropsType = {
-  data: any
-  objectType: any
-  linkedWorkflowData?: any
+  id: number
+  title: string
+  deletedOn: string
+  objectType: CfObjectType
+  representsWorkflow?: boolean // only on node
+  linkedWorkflowData?: EWorkflow // only on node
 }
 
 const RestoreBarItem = ({
-  data,
+  id,
+  title,
+  deletedOn,
   objectType,
+  representsWorkflow,
   linkedWorkflowData
 }: PropsType) => {
-  const context = useContext(WorkFlowConfigContext)
+  const context = useContext(WorkflowConfigContext)
   const mainDiv = useRef<HTMLDivElement>(null)
   const [disabled, setDisabled] = useState(false)
 
@@ -27,12 +35,12 @@ const RestoreBarItem = ({
    * FUNCTIONS
    *******************************************************/
   const getTitle = () => {
-    if (data.title && data.title !== '') {
-      return data.title
+    if (title && title !== '') {
+      return title
     }
     if (
       objectType === 'node' &&
-      data.representsWorkflow &&
+      representsWorkflow &&
       linkedWorkflowData &&
       linkedWorkflowData.title &&
       linkedWorkflowData.title !== ''
@@ -46,7 +54,7 @@ const RestoreBarItem = ({
   const restore = () => {
     setDisabled(true)
     COURSEFLOW_APP.tinyLoader.startLoad()
-    restoreSelfQueryLegacy(data.id, objectType, () => {
+    restoreSelfQueryLegacy(id, objectType, () => {
       COURSEFLOW_APP.tinyLoader.endLoad()
     })
   }
@@ -58,10 +66,12 @@ const RestoreBarItem = ({
       )
     ) {
       if (mainDiv.current) {
+        // @todo don't know what this is doing yet
+        // @ts-ignore
         $(mainDiv.current).children('button').attr('disabled', true)
       }
       COURSEFLOW_APP.tinyLoader.startLoad()
-      deleteSelfQueryLegacy(data.id, objectType, false, () => {
+      deleteSelfQueryLegacy(id, objectType, false, () => {
         COURSEFLOW_APP.tinyLoader.endLoad()
       })
     }
@@ -73,9 +83,7 @@ const RestoreBarItem = ({
   return (
     <div ref={mainDiv} className="restore-bar-item">
       <div>{getTitle()}</div>
-      <div className="workflow-created">
-        {_t('Deleted') + ' ' + data.deletedOn}
-      </div>
+      <div className="workflow-created">{_t('Deleted') + ' ' + deletedOn}</div>
       <button onClick={restore} disabled={disabled}>
         {_t('Restore')}
       </button>
@@ -89,7 +97,7 @@ const RestoreBarItem = ({
 export default RestoreBarItem
 
 // class RestoreBarItem extends React.Component<OwnProps> {
-//   static contextType = WorkFlowConfigContext
+//   static contextType = WorkflowConfigContext
 //   mainDiv: React.RefObject<HTMLDivElement>
 //
 //   constructor(props: OwnProps) {
@@ -97,7 +105,7 @@ export default RestoreBarItem
 //     this.mainDiv = React.createRef()
 //   }
 //
-//   declare context: React.ContextType<typeof WorkFlowConfigContext>
+//   declare context: React.ContextType<typeof WorkflowConfigContext>
 //   /*******************************************************
 //    * FUNCTIONS
 //    *******************************************************/

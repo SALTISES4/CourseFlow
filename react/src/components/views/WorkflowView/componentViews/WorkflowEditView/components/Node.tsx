@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -51,8 +51,8 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * Represents the node in the workflow view
  */
 class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   constructor(props: PropsType) {
     super(props)

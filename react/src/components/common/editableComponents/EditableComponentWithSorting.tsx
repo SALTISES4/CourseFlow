@@ -1,5 +1,5 @@
 import * as Constants from '@cf/constants'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 import EditableComponent, {
   EditableComponentProps,
@@ -25,9 +25,9 @@ class EditableComponentWithSorting<
   P extends OwnProps,
   S extends StateType
 > extends EditableComponent<P, S> {
-  static contextType = WorkFlowConfigContext
+  static contextType = WorkflowConfigContext
 
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   /*******************************************************
    * PLACHOLDERS

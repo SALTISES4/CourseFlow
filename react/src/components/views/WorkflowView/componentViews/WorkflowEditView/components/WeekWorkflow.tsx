@@ -1,97 +1,158 @@
-import { CfObjectType } from '@cf/types/enum'
-import { TGetWeekWorkflowById, getWeekWorkflowByID } from '@cfFindState'
+import { getWeekWorkflowByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import React from 'react'
-import { connect } from 'react-redux'
+import React, { useRef } from 'react'
+import { useSelector } from 'react-redux'
 
 import Term from './Term'
 import Week from './Week'
 
-type ConnectedProps = TGetWeekWorkflowById
-type OwnProps = {
+type PropsType = {
   condensed: boolean
   objectId: number
   parentId: number
 }
 
-export type WeekWorkflowUnconnectedProps = OwnProps
-type PropsType = OwnProps & ConnectedProps
+const WeekWorkflow = ({ condensed, objectId, parentId }: PropsType) => {
+  const weekWorkflow = useSelector((state: AppState) =>
+    getWeekWorkflowByID(state, objectId)
+  )
+  const mainDiv = useRef<HTMLDivElement>(null)
 
-/**
- * The week-workflow throughmodel representation
- */
-class WeekWorkflowUnconnected<P extends PropsType> extends React.Component<P> {
-  mainDiv: React.RefObject<HTMLDivElement>
-  objectType: CfObjectType
-  protected objectClass: string
-
-  constructor(props: P) {
-    super(props)
-    this.objectType = CfObjectType.WEEKWORKFLOW
-    this.objectClass = '.week-workflow'
-    this.mainDiv = React.createRef()
-  }
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  WeekWrapper = () => {
-    const data = this.props.data
-    if (this.props.condensed) {
+  const WeekWrapper = () => {
+    if (condensed) {
       return (
         <Term
-          objectId={data.week}
-          rank={this.props.order.indexOf(data.id)}
-          parentId={this.props.parentId}
-          throughParentId={data.id}
+          objectId={weekWorkflow.data.week}
+          rank={weekWorkflow.order.indexOf(weekWorkflow.data.id)}
+          parentId={parentId}
+          throughParentId={weekWorkflow.data.id}
         />
       )
     }
-
     return (
       <Week
-        objectId={data.week}
-        rank={this.props.order.indexOf(data.id)}
-        parentId={this.props.parentId}
-        throughParentId={data.id}
+        objectId={weekWorkflow.data.week}
+        rank={weekWorkflow.order.indexOf(weekWorkflow.data.id)}
+        parentId={parentId}
+        throughParentId={weekWorkflow.data.id}
       />
     )
   }
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data
+  const cssClasses = [
+    'week-workflow',
+    weekWorkflow.data.noDrag ? 'no-drag' : '',
+    $(mainDiv.current).hasClass('dragging') ? 'dragging' : ''
+  ].join(' ')
 
-    const cssClasses = [
-      'week-workflow',
-      data.noDrag ? 'no-drag' : '',
-      $(this.mainDiv?.current).hasClass('dragging') ? 'dragging' : ''
-    ].join(' ')
-
-    return (
-      <div
-        className={cssClasses}
-        id={String(data.id)}
-        ref={this.mainDiv}
-        data-child-id={data.week}
-      >
-        <this.WeekWrapper />
-      </div>
-    )
-  }
+  return (
+    <div
+      className={cssClasses}
+      id={String(weekWorkflow.data.id)}
+      ref={mainDiv}
+      data-child-id={weekWorkflow.data.week}
+    >
+      <WeekWrapper />
+    </div>
+  )
 }
-const mapWeekWorkflowStateToProps = (
-  state: AppState,
-  ownProps: OwnProps
-): TGetWeekWorkflowById => {
-  return getWeekWorkflowByID(state, ownProps.objectId)
-}
-
-const WeekWorkflow = connect<ConnectedProps, object, OwnProps, AppState>(
-  mapWeekWorkflowStateToProps,
-  null
-)(WeekWorkflowUnconnected)
 
 export default WeekWorkflow
-export { WeekWorkflowUnconnected }
+
+// import { CfObjectType } from '@cf/types/enum'
+// import { TGetWeekWorkflowById, getWeekWorkflowByID } from '@cfFindState'
+// import { AppState } from '@cfRedux/types/type'
+// import React from 'react'
+// import { connect } from 'react-redux'
+//
+// import Term from './Term'
+// import Week from './Week'
+//
+// type ConnectedProps = TGetWeekWorkflowById
+// type OwnProps = {
+//   condensed: boolean
+//   objectId: number
+//   parentId: number
+// }
+//
+// export type WeekWorkflowUnconnectedProps = OwnProps
+// type PropsType = OwnProps & ConnectedProps
+//
+// /**
+//  * The week-workflow throughmodel
+//  */
+// class WeekWorkflowUnconnected<P extends PropsType> extends React.Component<P> {
+//   mainDiv: React.RefObject<HTMLDivElement>
+//   objectType: CfObjectType
+//   protected objectClass: string
+//
+//   constructor(props: P) {
+//     super(props)
+//     this.objectType = CfObjectType.WEEKWORKFLOW
+//     this.objectClass = '.week-workflow'
+//     this.mainDiv = React.createRef()
+//   }
+//   /*******************************************************
+//    * COMPONENTS
+//    *******************************************************/
+//   WeekWrapper = () => {
+//     const data = this.props.data
+//     if (this.props.condensed) {
+//       return (
+//         <Term
+//           objectId={data.week}
+//           rank={this.props.order.indexOf(data.id)}
+//           parentId={this.props.parentId}
+//           throughParentId={data.id}
+//         />
+//       )
+//     }
+//
+//     return (
+//       <Week
+//         objectId={data.week}
+//         rank={this.props.order.indexOf(data.id)}
+//         parentId={this.props.parentId}
+//         throughParentId={data.id}
+//       />
+//     )
+//   }
+//
+//   /*******************************************************
+//    * RENDER
+//    *******************************************************/
+//   render() {
+//     const data = this.props.data
+//
+//     const cssClasses = [
+//       'week-workflow',
+//       data.noDrag ? 'no-drag' : '',
+//       $(this.mainDiv?.current).hasClass('dragging') ? 'dragging' : ''
+//     ].join(' ')
+//
+//     return (
+//       <div
+//         className={cssClasses}
+//         id={String(data.id)}
+//         ref={this.mainDiv}
+//         data-child-id={data.week}
+//       >
+//         <this.WeekWrapper />
+//       </div>
+//     )
+//   }
+// }
+// const mapWeekWorkflowStateToProps = (
+//   state: AppState,
+//   ownProps: OwnProps
+// ): TGetWeekWorkflowById => {
+//   return getWeekWorkflowByID(state, ownProps.objectId)
+// }
+//
+// const WeekWorkflow = connect<ConnectedProps, object, OwnProps, AppState>(
+//   mapWeekWorkflowStateToProps,
+//   null
+// )(WeekWorkflowUnconnected)
+//
+// export default WeekWorkflow
+// export { WeekWorkflowUnconnected }

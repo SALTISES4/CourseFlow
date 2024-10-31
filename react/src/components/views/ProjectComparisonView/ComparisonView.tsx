@@ -50,8 +50,8 @@ type PropsType = {
   container: any
 }
 class ComparisonView extends React.Component<PropsType, StateType> {
-  // static contextType = WorkFlowConfigContext
-  // declare context: React.ContextType<typeof WorkFlowConfigContext>
+  // static contextType = WorkflowConfigContext
+  // declare context: React.ContextType<typeof WorkflowConfigContext>
 
   private allowed_tabs: number[]
   private objectType: CfObjectType

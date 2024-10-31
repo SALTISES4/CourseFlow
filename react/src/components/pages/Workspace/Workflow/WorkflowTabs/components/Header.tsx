@@ -1,4 +1,4 @@
-// import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+// import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { LibraryObjectType } from '@cf/types/enum'
 import { _t, convertEnum } from '@cf/utility/utilityFunctions'
@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux'
 // @todo not sure this needs its own file
 const Header = () => {
   // TODO: add editable name functinality
-  // const context = useContext(WorkFlowConfigContext)
+  // const context = useContext(WorkflowConfigContext)
   const workflow = useSelector((state: AppState) => state.workflow)
 
   const typeText = `${_t(workflow.type)} ${

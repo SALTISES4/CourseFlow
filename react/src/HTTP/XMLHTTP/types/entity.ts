@@ -124,16 +124,15 @@ export type EWeek = {
   id: number
   deleted: boolean
   deletedOn: EDate
-  title: null
-  description: null
-
+  title: string | null
+  description: string | null
   default: boolean
   nodeweekSet: number[]
-  objectType: number
+  weekType: number // @todo try to check this
   weekTypeDisplay: string
   isStrategy: boolean
   strategyClassification: number
-  comments: any[]
+  comments: any[] // @todo
 }
 
 export type EColumn = {

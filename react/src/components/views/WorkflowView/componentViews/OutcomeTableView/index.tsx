@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
@@ -41,8 +41,8 @@ type OwnProps = any
 
 type PropsType = ConnectedProps & OwnProps
 class OutcomeTableViewUnconnected extends React.Component<PropsType> {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   private objectType: CfObjectType
   constructor(props: PropsType) {

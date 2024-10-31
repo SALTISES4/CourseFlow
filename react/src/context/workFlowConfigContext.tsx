@@ -3,11 +3,11 @@ import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 
-export const WorkFlowConfigContext = React.createContext<WorkFlowContextType>(
-  {} as WorkFlowContextType
+export const WorkflowConfigContext = React.createContext<WorkflowContextType>(
+  {} as WorkflowContextType
 )
 
-export type WorkFlowContextType = {
+export type WorkflowContextType = {
   selectionManager: SelectionManager
 
   editableMethods: {
@@ -27,12 +27,12 @@ export type WorkFlowContextType = {
 type PropsType = {
   children: ReactNode
   initialValue: Pick<
-    WorkFlowContextType,
+    WorkflowContextType,
     'editableMethods' | 'ws' | 'selectionManager'
   >
 }
 
-const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
+const WorkflowConfigProvider = ({ children, initialValue }: PropsType) => {
   // this default serves not purpose, it's immediately overwritten by the workflow tab manager, but otherwise RR complains with verbosity...
   const [workflowViewType, setWorkflowViewType] = useState<WorkflowViewType>(
     WorkflowViewType.OVERVIEW
@@ -40,7 +40,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
 
   const formatInitialValue = (
     initialValue: PropsType['initialValue']
-  ): Omit<WorkFlowContextType, 'workflowView' | 'setWorkflowView'> => {
+  ): Omit<WorkflowContextType, 'workflowView' | 'setWorkflowView'> => {
     // Process and format the workflowInstance
     // Return an object of type ChildRenderer
 
@@ -61,7 +61,7 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
   const formattedValue = formatInitialValue(initialValue)
 
   return (
-    <WorkFlowConfigContext.Provider
+    <WorkflowConfigContext.Provider
       value={{
         ...formattedValue,
         workflowView: workflowViewType,
@@ -69,8 +69,8 @@ const WorkFlowConfigProvider = ({ children, initialValue }: PropsType) => {
       }}
     >
       {children}
-    </WorkFlowConfigContext.Provider>
+    </WorkflowConfigContext.Provider>
   )
 }
 
-export default WorkFlowConfigProvider
+export default WorkflowConfigProvider

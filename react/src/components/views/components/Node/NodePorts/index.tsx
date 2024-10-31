@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'

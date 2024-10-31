@@ -1,5 +1,5 @@
 import { UserContext } from '@cf/context/userContext'
-import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
+import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
 import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
@@ -310,7 +310,7 @@ const Workflow: React.FC<PropsType> = () => {
   }
 
   return (
-    <WorkFlowConfigProvider
+    <WorkflowConfigProvider
       initialValue={{
         selectionManager: selectionManager!,
         editableMethods: {
@@ -325,7 +325,7 @@ const Workflow: React.FC<PropsType> = () => {
       }}
     >
       <WorkflowTabs />
-    </WorkFlowConfigProvider>
+    </WorkflowConfigProvider>
   )
 }
 

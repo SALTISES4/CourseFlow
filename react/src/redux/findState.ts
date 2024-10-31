@@ -388,7 +388,7 @@ export type TGetNodeLinkById = {
 export const getNodeLinkByID = (
   state: AppState,
   id: number
-): TGetNodeLinkById => {
+): TGetNodeLinkById | void => {
   for (const i in state.nodelink) {
     const nodelink = state.nodelink[i]
     if (nodelink.id === id) {

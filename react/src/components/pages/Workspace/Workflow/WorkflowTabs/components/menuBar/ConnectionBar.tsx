@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 import Alert from '@mui/material/Alert'
 import Chip from '@mui/material/Chip'
@@ -23,7 +23,7 @@ const ConnectedUser = ({
 }
 
 const ConnectionBar = ({ show }: { show: boolean }) => {
-  const context = useContext(WorkFlowConfigContext)
+  const context = useContext(WorkflowConfigContext)
 
   if (!show) {
     return null
