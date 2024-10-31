@@ -104,7 +104,7 @@ const Workflow = () => {
   return (
     <WorkflowSidebarContextProvider>
       <EditableContextProvider>
-        <WorkFlowConfigProvider
+        <WorkflowConfigProvider
           initialValue={{
             selectionManager: selectionManager!,
             editableMethods: {
@@ -119,7 +119,7 @@ const Workflow = () => {
           }}
         >
           <WorkflowTabs />
-        </WorkFlowConfigProvider>
+        </WorkflowConfigProvider>
       </EditableContextProvider>
     </WorkflowSidebarContextProvider>
   )
