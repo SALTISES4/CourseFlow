@@ -1,10 +1,11 @@
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useGetCurrentUserQuery } from '@XMLHTTP/API/user.rtk'
+import {EUser} from "@XMLHTTP/types/entity";
 import React, { ReactNode } from 'react'
 
 type UserContextType = {
   id: number
-  name: string
+  user: EUser,
   changeFieldID: number
 }
 
@@ -26,7 +27,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     <UserContext.Provider
       value={{
         id: data.dataPackage.id,
-        name: data.dataPackage.firstName,
+        user: data.dataPackage,
         changeFieldID: changeFieldId
       }}
     >

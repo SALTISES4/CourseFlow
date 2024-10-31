@@ -6,7 +6,7 @@ import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
 import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
-import { getChildWorkflowByID } from '@cfFindState'
+import { getChildWorkflowById } from '@cfFindState'
 import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
@@ -368,7 +368,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
         }
       }
 
-      const child_workflow = getChildWorkflowByID(state, node.linkedWorkflow)
+      const child_workflow = getChildWorkflowById(state, node.linkedWorkflow)
 
       let child_outcomes
 

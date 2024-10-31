@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from course_flow.models.column import Column
 from course_flow.models.relations.nodeWeek import NodeWeek
-from course_flow.models.week import Week
-from course_flow.models.workflow import Workflow
+from course_flow.models.workflow_objects.column import Column
+from course_flow.models.workflow_objects.week import Week
+from course_flow.models.workspace.workflow import Workflow
 from course_flow.serializers.mixin import (
     DescriptionSerializerMixin,
     TitleSerializerMixin,
@@ -55,12 +55,8 @@ class NodeWeekSerializerShallow(serializers.ModelSerializer):
         return instance
 
 
-class ColumnSerializerShallow(
-    serializers.ModelSerializer, TitleSerializerMixin
-):
-    column_type_display = serializers.CharField(
-        source="get_column_type_display"
-    )
+class ColumnSerializerShallow(serializers.ModelSerializer, TitleSerializerMixin):
+    column_type_display = serializers.CharField(source="get_column_type_display")
 
     class Meta:
         model = Column
@@ -81,8 +77,7 @@ class ColumnSerializerShallow(
 
     def create(self, validated_data):
         return Column.objects.create(
-            author=User.objects.get(username=self.initial_data["author"]),
-            **validated_data
+            author=User.objects.get(username=self.initial_data["author"]), **validated_data
         )
 
     def update(self, instance, validated_data):
@@ -124,22 +119,17 @@ class WeekSerializerShallow(
 
     @staticmethod
     def get_nodeweek_set(instance):
-        links = instance.nodeweek_set.filter(node__deleted=False).order_by(
-            "rank"
-        )
+        links = instance.nodeweek_set.filter(node__deleted=False).order_by("rank")
         return list(map(Utility.linkIDMap, links))
 
     def create(self, validated_data):
         return Week.objects.create(
-            author=User.objects.get(username=self.initial_data["author"]),
-            **validated_data
+            author=User.objects.get(username=self.initial_data["author"]), **validated_data
         )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
+        instance.description = validated_data.get("description", instance.description)
         instance.strategy_classification = validated_data.get(
             "strategy_classification", instance.strategy_classification
         )

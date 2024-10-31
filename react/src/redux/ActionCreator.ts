@@ -69,6 +69,11 @@ class ActionCreator {
   /*******************************************************
    *
    *******************************************************/
+  // Define a specific action to clear the workflow data
+  static clearWorkflowData = () => ({
+    type: CommonActions.CLEAR_WORKFLOW_DATA
+  })
+
   static replaceStoreData = (dataPackage) => {
     return {
       type: CommonActions.REPLACE_STOREDATA,

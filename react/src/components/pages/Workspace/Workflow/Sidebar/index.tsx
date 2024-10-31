@@ -186,6 +186,7 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
       >
         {visibleTabs}
       </SidebarTabsWrap>
+
       <Paper>
         <SidebarToggle color="primary" onClick={onToggleClick}>
           <ArrowForwardIcon />

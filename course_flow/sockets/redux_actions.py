@@ -2,7 +2,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.db.models import F
 
-from course_flow.models.node import Node
+from course_flow.models.workflow_objects.node import Node
 
 
 def dispatch_wf(workflow, action):
@@ -98,9 +98,7 @@ def deleteSelfSoftAction(id, objectType, parentID, extra_data):
     }
 
 
-def restoreSelfAction(
-    id, objectType, parentID, throughparentID, throughparent_index, extra_data
-):
+def restoreSelfAction(id, objectType, parentID, throughparentID, throughparent_index, extra_data):
     return {
         "type": objectType + "/restoreSelf",
         "payload": {

@@ -6,7 +6,7 @@ import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
-import { TGetNodeLinkByID, getNodeLinkByID } from '@cfFindState'
+import { TGetNodeLinkById, getNodeLinkByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import NodeLinkSVG from '@cfViews/components/Node/NodeLinkSVG'
 import * as React from 'react'
@@ -14,7 +14,7 @@ import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 // import $ from 'jquery'
 
-type ConnectedProps = TGetNodeLinkByID
+type ConnectedProps = TGetNodeLinkById
 type OwnProps = {
   objectId: number
   node_div: React.RefObject<HTMLDivElement>
@@ -66,6 +66,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
     const data = this.props.data
     const style: React.CSSProperties = {}
 
+    console.log('rendering nodelink')
     if (
       !this.sourceNode ||
       !this.sourceNode.outerWidth() ||
@@ -88,6 +89,11 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
         `[data-port='${Constants.portKeys[data.sourcePort]}']`
       ].join('')
 
+      // console.log('cssSourcePortSelector')
+      // console.log(cssSourcePortSelector)
+
+
+
       // this css selector defines the circle attached to each node
       // to which the line is connected
       const cssSourceTargetSelector = [
@@ -96,9 +102,10 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
         `[data-port='${Constants.portKeys[data.targetPort]}']`
       ].join('')
 
-      // eslint-disable-next-line no-undef
+      // console.log(      'cssSourceTargetSelector')
+      // console.log(      cssSourceTargetSelector)
+
       this.sourcePort_handle = d3.select(cssSourcePortSelector)
-      // eslint-disable-next-line no-undef
       this.targetPort_handle = d3.select(cssSourceTargetSelector)
     }
 
@@ -175,7 +182,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
 const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TGetNodeLinkByID => {
+): TGetNodeLinkById => {
   return getNodeLinkByID(state, ownProps.objectId) || { data: undefined }
 }
 export default connect<ConnectedProps, object, OwnProps, AppState>(

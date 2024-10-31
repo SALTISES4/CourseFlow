@@ -1,14 +1,9 @@
 import { _t } from '@cf/utility/utilityFunctions'
-import Loader from '@cfComponents/UIPrimitives/Loader'
-import { getErrorMessage } from '@XMLHTTP/API/api'
-import { useLibraryObjectsSearchQuery } from '@XMLHTTP/API/library.rtk'
+import LibrarySearchView from '@cfViews/LibrarySearchView'
+import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import * as React from 'react'
-import { useMemo, useState } from 'react'
-
-import LibrarySearchView, {
-  SearchOptionsState
-} from 'components/views/LibrarySearchView'
+import { useState } from 'react'
 
 /*
  * @todo
@@ -22,122 +17,72 @@ import LibrarySearchView, {
  *     - simple list filter (type)
  *     - sort (relevance)
  * */
-const defaultOptionsSearchOptions: SearchOptionsState = {
-  page: 0,
-  sortOptions: [
-    {
-      name: 'recent',
-      label: 'Recent'
-    },
-    {
-      name: 'a-z',
-      label: 'A - Z'
-    },
-    {
-      name: 'date',
-      label: 'Creation date'
-    }
-  ],
-  filterGroups: {
-    keyword: [
-      {
-        name: 'keyword',
-        label: _t('search'),
-        value: ''
-      }
-    ],
-    filterOptions: [
-      {
-        name: 'all',
-        label: _t('All'),
-        value: null,
-        enabled: true
-      },
-      {
-        name: 'owned',
-        label: _t('Owned'),
-        value: true
-      },
-      {
-        name: 'shared',
-        label: _t('Shared'),
-        value: true
-      },
-      {
-        name: 'favorites',
-        label: _t('Favorites'),
-        value: true
-      },
-      {
-        name: 'archived',
-        label: _t('Archived'),
-        value: true
-      }
-    ],
-    templateOptions: [
-      {
-        name: 'isTemplate',
-        label: _t('template'),
-        value: true
-      }
-    ]
-  }
-}
+
 const ExplorePage = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
 
+  const config = {
+    pagination: true,
+    sortOptions: true,
+    filterGroups: {
+      relationshipFilter: false,
+      disciplineFilter: true,
+      workspaceTypeFilter: true,
+      templateFilter: true
+    },
+    keywordFilter: true
+  }
+
+  const locked = [{ name: 'isPublished', value: true }]
+
   const [searchArgs, setSearchArgs] = useState<LibraryObjectsSearchQueryArgs>(
     {}
   )
 
-  /*******************************************************
-   * QUERIES
-   *******************************************************/
-  const {
-    data: libData,
-    error: libError,
-    isLoading: libIsLoading,
-    isError: libIsError
-  } = useLibraryObjectsSearchQuery(searchArgs)
+  const updateSearchArgsHandler = (args: LibraryObjectsSearchQueryArgs) => {
+    const merged = LibraryHelper.merger(locked, args.filters)
 
-  // there is probably a better way to do this, but i think it's fine for now until everything else has settled \
-  // this lib filter patterm might not stay here for long
-  const options = useMemo(() => {
-    const { disciplines } = COURSEFLOW_APP.globalContextData
-    return {
-      ...defaultOptionsSearchOptions,
-      filterGroups: {
-        ...defaultOptionsSearchOptions.filterGroups,
-        disciplineOptions: disciplines.map((item) => {
-          return {
-            name: `discipline_option_${item.id}`,
-            label: _t(item.title),
-            value: item.id
-          }
-        })
-      }
-    }
-  }, [])
+    setSearchArgs({
+      ...args,
+      filters: merged
+    })
+  }
 
   /*******************************************************
    * RENDER
    *******************************************************/
-  if (libIsLoading) return <Loader />
-  if (libIsError) {
-    return <div>An error occurred: {getErrorMessage(libError)} </div>
-  }
-
   return (
     <LibrarySearchView
-      data={libData}
-      defaultOptionsSearchOptions={options}
-      setSearchArgs={setSearchArgs}
-      isLoading={libIsLoading}
-      isError={libIsError}
+      config={config}
+      searchArgs={searchArgs}
+      setSearchArgs={updateSearchArgsHandler}
     />
   )
 }
 
 export default ExplorePage
+
+/*******************************************************
+ * ATCHIVE
+ * disciplines are being added inside the view now
+ *******************************************************/
+// there is probably a better way to do this, but i think it's fine for now until everything else has settled \
+// this lib filter patterm might not stay here for long
+// const options = useMemo(() => {
+//   const { disciplines } = COURSEFLOW_APP.globalContextData
+//   return produce(LibraryHelper.defaultOptionsSearchOptions, (draft) => {
+//     draft.filterGroups = {
+//       ...draft.filterGroups,
+//       disciplineFilter: {
+//         ...draft.filterGroups.disciplineFilter,
+//         options: disciplines.map((item) => ({
+//           name: `discipline_option_${item.id}`,
+//           label: _t(item.title),
+//           value: item.id
+//         }))
+//       }
+//     }
+//   })
+// }, [])

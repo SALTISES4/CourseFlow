@@ -14,7 +14,6 @@ as they execute  for every template rendered.
 """
 from django.urls import reverse
 
-from course_flow.forms import CreateProject
 from course_flow.models import Discipline
 from course_flow.serializers import DisciplineSerializer, FormFieldsSerializer
 
@@ -29,7 +28,6 @@ class ConfigService:
         return {
             "post_paths": {
                 "new_outcome": reverse("json_api:json-api-post-new-outcome-for-workflow"),
-                "inserted_at": reverse("json_api:json-api-post-inserted-at"),
                 "update_outcomehorizontallink_degree": reverse(
                     "json_api:json-api-post-update-outcomehorizontallink-degree"
                 ),

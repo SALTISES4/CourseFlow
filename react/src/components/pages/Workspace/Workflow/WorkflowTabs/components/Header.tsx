@@ -56,7 +56,7 @@ const Header = () => {
 
         <Favourite
           id={workflow.id}
-          isFavorite={workflow.favourite}
+          isFavourite={workflow.favourite}
           type={convertEnum<LibraryObjectType>(
             workflow.type,
             LibraryObjectType,

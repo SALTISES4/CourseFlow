@@ -1,19 +1,18 @@
 import WorkflowEditDialog from '@cf/components/common/dialog/Workflow/WorkflowEditDialog'
 import ContributorAddDialog from '@cf/components/common/dialog/Workspace/ContributorAddDialog'
+import { WorkspaceType } from '@cf/types/enum'
 import WorkflowCopyToProjectDialog from '@cfComponents/dialog/Workflow/WorkflowCopyToProjectDialog'
 import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
 import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
 import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
-import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
 import { useParams } from 'react-router-dom'
 
 const WorkflowDialogs = () => {
   const { id } = useParams()
   const workflowId = Number(id)
-
-  const { refetch } = useGetWorkflowByIdQuery({ id: Number(id) })
+  const { refetch } = useGetWorkflowByIdQuery({ id: workflowId })
 
   return (
     <>

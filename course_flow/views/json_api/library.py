@@ -1,7 +1,6 @@
 """
 @todo what is this file doing
 """
-import logging
 from pprint import pprint
 
 from django.conf import settings
@@ -16,29 +15,30 @@ from rest_framework.response import Response
 
 from course_flow.apps import logger
 from course_flow.models import Project
-from course_flow.models.discipline import Discipline
 from course_flow.models.favourite import Favourite
 from course_flow.models.objectPermission import ObjectPermission
-from course_flow.models.workflow import Workflow
-from course_flow.serializers import (
-    DisciplineSerializer,
-    LibraryObjectSerializer,
-)
+from course_flow.models.workspace.workflow import Workflow
+from course_flow.serializers import LibraryObjectSerializer, SearchSerializer
 from course_flow.services import DAO
 from course_flow.services.library import LibraryService
 from course_flow.templatetags.course_flow_templatetags import has_group
-from course_flow.views.json_api._validators import SearchSerializer
 
 
 class LibraryEndpoint:
     @staticmethod
     @login_required
-    @api_view(["POST"])
+    @api_view(["GET"])
     def fetch__favourite_library_objects(
         request: Request,
     ) -> Response:
+        """
+
+        :param request:
+        :return:
+        """
+        library_objects, count = DAO.get_nondeleted_favourites(request.user)
         library_objects_serialized = LibraryObjectSerializer(
-            DAO.get_nondeleted_favourites(request.user),
+            library_objects,
             many=True,
             context={"user": request.user},
         ).data
@@ -47,9 +47,10 @@ class LibraryEndpoint:
             {
                 "message": "success",
                 "data_package": {
-                    "results": library_objects_serialized,
+                    "items": library_objects_serialized,
                     "meta": {
-                        "pages": 1,
+                        "count": count,
+                        "pageCount": 1,
                     },
                 },
             },
@@ -57,6 +58,7 @@ class LibraryEndpoint:
         )
 
     @staticmethod
+    @login_required
     # @user_can_view(False)
     @api_view(["POST"])
     def toggle_favourite(
@@ -157,39 +159,65 @@ class LibraryEndpoint:
         request: Request,
     ) -> Response:
         """
-        we also ned
+
+        This is a multifunctional endpoint, it generally can be used for any type of list query
+        that returns a 'workspace' object, e.g:
+        workflow (all variations)
+        project
+        then templates / strategies
+
+        these objects are simplified/normalized into a 'library' object view for displaying in a paginated list
+        with filters
+
+        filters are split into implicit and explicit
+        explicit filters are generally items that the user can control through the UI
+        implicit filters are set to control the view type and may be derived (TBD)
+
+        results_per_page: number
+        published: boolean
+
+        keyword: string -> keyword search
+        owned: boolean -> current use is author
+        favourites: boolean -> is favourited by current user
+        archived: boolean -> is in state 'archived'
+
+
+        # sorting
+        a-z
+        by date
+
+
         :param request:
         :return:
         """
-        meta = {}
+        library_service = LibraryService()
         serializer = SearchSerializer(data=request.data)
 
-        if serializer.is_valid():
-            data = serializer.validated_data
-            nresults = data.get("results_per_page", 10)
-            full_search = data.get("full_search", False)
-            published = data.get("published", False)
-            name_filter = data.get("filter", "").lower()
-
-        else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+        # serializer is not valid
+        if not serializer.is_valid():
+            logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(serializer.errors, status=400)
 
         try:
-            # A full search of all objects with paginatation
-            if full_search:
-                return_objects, meta = LibraryService.get_explore_objects(
-                    request.user, name_filter, nresults, published, {}
-                )
-            # Small search for library
-            else:
-                return_objects = LibraryService.get_library_objects(
-                    request.user, name_filter, nresults
-                )
+            data = serializer.validated_data
+
+            # handles if values is undefined but not NULL (none)
+            # default filters are actually applied in the service layer
+            # we probably don't need them here
+            pagination = data.get("pagination", LibraryService.defaultPagination)
+            sort = data.get("sort", LibraryService.defaultSort)
+            filters = data.get("filters", LibraryService.defaultFilters)
+
+            items, meta = library_service.get_objects(
+                user=request.user,
+                filters=filters,
+                sort=sort,
+                pagination=pagination,
+            )
 
             data_package = {
                 "items": LibraryObjectSerializer(
-                    return_objects, context={"user": request.user}, many=True
+                    items, context={"user": request.user}, many=True
                 ).data,
                 "meta": meta,
             }

@@ -6,9 +6,9 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from course_flow.models.common import User, workflow_choices
-
-from .workflow import Workflow
+from course_flow.models._constants import workflow_choices
+from course_flow.models.user import User
+from course_flow.models.workspace.workflow import Workflow
 
 
 class Permission(Enum):
@@ -37,9 +37,7 @@ class ObjectPermission(models.Model):
 
     object_id = models.PositiveIntegerField()
 
-    permission_type = models.PositiveIntegerField(
-        choices=permission_choices(), default=0
-    )
+    permission_type = models.PositiveIntegerField(choices=permission_choices(), default=0)
     last_viewed = models.DateTimeField(default=timezone.now)
 
     #########################################################

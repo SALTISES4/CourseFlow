@@ -3,12 +3,13 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from course_flow.models import Workflow
-from course_flow.models.week import Week
+from course_flow.models.workflow_objects.week import Week
 
 
 class WeekWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
+
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
@@ -16,9 +17,9 @@ class WeekWorkflow(models.Model):
         if self.week.deleted:
             return -1
         return list(
-            WeekWorkflow.objects.filter(
-                workflow=self.workflow, week__deleted=False
-            ).order_by("rank")
+            WeekWorkflow.objects.filter(workflow=self.workflow, week__deleted=False).order_by(
+                "rank"
+            )
         ).index(self)
 
     def get_workflow(self):

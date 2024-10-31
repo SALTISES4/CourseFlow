@@ -1,7 +1,7 @@
 import { CfObjectType } from '@cf/types/enum'
 import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
 import { EditableComponentWithActionsState } from '@cfEditableComponents/EditableComponentWithActions'
-import { TGetColumnByID, getColumnByID } from '@cfFindState'
+import { TGetColumnByID, getColumnById } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -120,7 +120,7 @@ const mapStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   return {
-    column: getColumnByID(state, ownProps.objectId),
+    column: getColumnById(state, ownProps.objectId),
     workflow: state.workflow
   }
 }

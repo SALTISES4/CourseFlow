@@ -21,6 +21,16 @@ export enum CfObjectType {
 }
 
 /*******************************************************
+ * // this is not a real 'datatype', but is useful for some commands which group
+ * // workflows together and differentiate them from project (like archive, delete),
+ * // argument to be made that this should be handled by CfObjectType
+ *******************************************************/
+export enum WorkspaceType {
+  WORKFLOW = 'workflow',
+  PROJECT = 'project'
+}
+
+/*******************************************************
  * // simplified datatype returned to queries to the library
  * // this includes the wrapping 'project' as well as the different types of 'Workflow'
  *******************************************************/

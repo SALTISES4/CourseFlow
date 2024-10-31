@@ -23,7 +23,7 @@ export function formatProjectEntity(project: EProject): ProjectDetailsType {
     id: project.id,
     title: project.title,
     description: project.description,
-    isFavorite: project.favourite,
+    isFavourite: project.favourite,
     isDeleted: project.deleted,
     created: formatDate(project.createdOn),
     disciplines: formattedDisciplines,

@@ -3,9 +3,6 @@ import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 import {
   TOutcomeHorizontalLinkByID,
   getOutcomeHorizontalLinkByID
@@ -21,20 +18,26 @@ type ConnectedProps = {
   workflow: TWorkflow
   outcomeHorizontalLink: TOutcomeHorizontalLinkByID
 }
-type OwnProps = { parentID?: number } & ComponentWithToggleProps
+type OwnProps = {
+  parentID?: number
+  objectId?: number
+}
 type PropsType = ConnectedProps & OwnProps
 
 /**
  * The link to tagged outcomes. Used when an outcome
  * is tagged with other outcomes from a parent workflow
  */
-class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType> {
+class OutcomeHorizontalLinkUnconnected extends React.Component<PropsType> {
   static contextType = WorkFlowConfigContext
-
   declare context: React.ContextType<typeof WorkFlowConfigContext>
+
+  objectType: CfObjectType
+  mainDiv: React.RefObject<HTMLDivElement>
 
   constructor(props: PropsType) {
     super(props)
+    this.mainDiv = React.createRef()
     this.objectType = CfObjectType.OUTCOMEHORIZONTALLINK
   }
 
@@ -61,7 +64,7 @@ class OutcomeHorizontalLinkUnconnected extends ComponentWithToggleDrop<PropsType
     if (
       window.confirm(
         _t('Are you sure you want to delete this ') +
-          Constants.getVerbose(this.props.data, this.objectType).toLowerCase() +
+          Constants.getVerbose(this.props.outcomeHorizontalLink.data, this.objectType).toLowerCase() +
           '?'
       )
     ) {

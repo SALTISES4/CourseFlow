@@ -29,12 +29,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.utils.translation import gettext as _
 
-from course_flow.models.column import Column
-from course_flow.models.node import Node
 from course_flow.models.objectPermission import Permission
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.models.week import Week
-from course_flow.models.workflow import Workflow
+from course_flow.models.workflow_objects.column import Column
+from course_flow.models.workflow_objects.node import Node
+from course_flow.models.workflow_objects.week import Week
+from course_flow.models.workspace.workflow import Workflow
 from course_flow.serializers import ProjectSerializerShallow
 from course_flow.services import DAO
 

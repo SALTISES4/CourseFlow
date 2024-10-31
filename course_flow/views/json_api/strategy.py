@@ -33,8 +33,9 @@ from course_flow.sockets import redux_actions as actions
 
 
 def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
-    print(body)
+    body = json.loads(
+        request.body
+    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     try:
         workflow_type = body.get("workflowType")
         model = DAO.get_model_from_str(workflow_type)
@@ -61,7 +62,9 @@ def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
 
 @user_can_view("workflowPk")
 def duplicate__strategy(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
+    body = json.loads(
+        request.body
+    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     workflow = Workflow.objects.get(pk=body.get("workflowPk"))
     try:
         with transaction.atomic():
@@ -92,7 +95,9 @@ def duplicate__strategy(request: HttpRequest) -> JsonResponse:
 @user_can_edit("workflowPk")
 @user_can_view(False)
 def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
-    body = json.loads(request.body)
+    body = json.loads(
+        request.body
+    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     workflow_id = body.get("workflowPk")
     strategy_id = body.get("objectID")
     strategy_type = body.get("objectType")
@@ -210,7 +215,9 @@ def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
     :param request:
     :return:
     """
-    body = json.loads(request.body)
+    body = json.loads(
+        request.body
+    )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     try:
         object_id = body.get("weekPk")
         is_strategy = body.get("is_strategy")

@@ -1,23 +1,34 @@
 import { UserContext } from '@cf/context/userContext'
 import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useWorkflowWebsocketManager } from '@cfPages/Workspace/Workflow/hooks/useWorkflowWebsocketManager'
 import { EditableContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useEditable/context'
 import { WorkflowSidebarContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar/context'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
+import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
-import { useContext, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import ErrorView from "@cfViews/MsgViews/ErrorView";
+import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
+import React, { useContext, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const Workflow = () => {
   const userContext = useContext(UserContext)
   const { id } = useParams<{ id: string }>()
+  const workflowId = Number(id)
+  const navigate = useNavigate
+
   const workflowData = useSelector((state: AppState) => state.workflow) // Replace with actual Redux state selector
+  const dispatch = useDispatch()
 
   const [selectionManager, setSelectionManager] =
     useState<SelectionManager | null>(null)
+
+  const { onError } = useGenericMsgHandler()
+  const { isError, error } = useGetWorkflowByIdQuery({ id: workflowId })
 
   /*******************************************************
    * Listen to the websocket hook service layer
@@ -34,8 +45,7 @@ const Workflow = () => {
     changeField,
     lockUpdate
   } = useWorkflowWebsocketManager({
-    userId: userContext?.id || 0,
-    userName: userContext?.name || '',
+    user: userContext.user || null,
     workflowId: Number(id)
   })
 
@@ -68,9 +78,25 @@ const Workflow = () => {
     }
   }, [workflowData, clearQueue])
 
+  /**
+   * Essentially we are going to clean up the workflow based redux store on component 'unmount'
+   */
+  useEffect(() => {
+    // not sure if this is a good idea yeah
+    // but essentially, when we navigate away from workflow we're going to
+    // clear the 'workflow' bit of the store so we aren't in say,
+    // library area with a defined workflow store
+    return () => {
+      dispatch(ActionCreator.clearWorkflowData())
+    }
+  }, [])
+
   /*******************************************************
    *
    *******************************************************/
+  if (isError) {
+    return <ErrorView />
+  }
   if (!state.ready) {
     return <Loader />
   }

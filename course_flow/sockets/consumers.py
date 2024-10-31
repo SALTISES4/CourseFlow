@@ -1,5 +1,6 @@
 import json
-import logging
+from enum import Enum
+from pprint import pprint
 
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
@@ -7,9 +8,19 @@ from channels.generic.websocket import WebsocketConsumer
 from course_flow.apps import logger
 from course_flow.decorators import check_object_permission
 from course_flow.models.objectPermission import Permission
-from course_flow.models.workflow import Workflow
+from course_flow.models.workspace.workflow import Workflow
 
 
+class WsEventType(Enum):
+    MICRO_UPDATE = "micro_update"
+    LOCK_UPDATE = "lock_update"
+    CONNECTION_UPDATE = "connection_update"
+    WORKFLOW_ACTION = "workflow_action"
+
+
+#########################################################
+# TODO: figure out why this not async, maybe DB limitation
+#########################################################
 class WorkflowUpdateConsumer(WebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
@@ -21,15 +32,12 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
 
     def get_permission(self):
         workflow = Workflow.objects.get(pk=self.workflow_pk)
-        self.VIEW = check_object_permission(
-            workflow, self.user, Permission.PERMISSION_VIEW.value
-        )
-        self.EDIT = check_object_permission(
-            workflow, self.user, Permission.PERMISSION_EDIT.value
-        )
+        self.VIEW = check_object_permission(workflow, self.user, Permission.PERMISSION_VIEW.value)
+        self.EDIT = check_object_permission(workflow, self.user, Permission.PERMISSION_EDIT.value)
 
     def connect(self):
         self.workflow_pk = self.scope["url_route"]["kwargs"]["workflowPk"]
+        # set the channel group
         self.room_group_name = "workflow_" + self.workflow_pk
         self.user = self.scope["user"]
 
@@ -38,11 +46,11 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         except Exception as e:
             logger.exception("An error occurred")
             return self.close()
+
         if self.VIEW or self.EDIT:
-            async_to_sync(self.channel_layer.group_add)(
-                self.room_group_name, self.channel_name
-            )
+            async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
             return self.accept()
+
         return self.close()
 
     def disconnect(self, close_code):
@@ -54,67 +62,135 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             logger.exception("An error occurred")
             pass
 
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
 
     def receive(self, text_data=None, bytes_data=None):
-        print("got a message")
-        print(text_data)
+        """
+        this method handles incoming WS
+        1. as of now, it doesn't appear that we handle incoming WS anywhere else
+        2. incoming websockets have no effect on store (DB)
+          - i.e. we just use them to send out other messages on various channels
+          - editing locks
+          - connected users
+          -  workflow updates...?
+
+        :param text_data:
+        :param bytes_data:
+        :return:
+        """
+        pprint("receiving update")
+        pprint(text_data)
+        pprint(bytes_data)
+
+        # is user does not have permission to EDIT
+        # don't update group?
+        # @todo verify
         if not self.EDIT:
             return
+
         text_data_json = json.loads(text_data)
-        if text_data_json["type"] == "micro_update":
+
+        #########################################################
+        # MICRO_UPDATE
+        #########################################################
+
+        #########################################################
+        # IMPORTANT:
+        # incoming type does not necessarily match the type handler
+        # ex if text_data_json["type"] == WsEventType.MICRO_UPDATE.value:
+        # this is mapped to "type": "workflow_action"
+        # however no other event maps to workflow_action
+        # unclear still why incoming type is not also workflow_action
+        # TBD
+        #########################################################
+        if text_data_json["type"] == WsEventType.MICRO_UPDATE.value:
             action = text_data_json["action"]
+            event_payload = {
+                "type": "workflow_action",
+                "action": action,
+            }
+
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
-                {"type": "workflow_action", "action": action},
+                # unexpected argument hint is mistake
+                event_payload,
             )
-        elif text_data_json["type"] == "lock_update":
+
+        #########################################################
+        # LOCK_UPDATE
+        #########################################################
+        elif text_data_json["type"] == WsEventType.LOCK_UPDATE.value:
             lock = text_data_json["lock"]
             if lock["lock"]:
                 self.last_lock = {**lock, "lock": False}
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name, {"type": "lock_update", "action": lock}
-            )
-        elif text_data_json["type"] == "connection_update":
-            user_data = text_data_json["user_data"]
+
+            event_payload = {
+                "type": WsEventType.LOCK_UPDATE.value,
+                "action": lock,
+            }
+
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
-                {"type": "connection_update", "action": user_data},
+                # unexpected argument hint is mistake
+                event_payload,
             )
 
+        #########################################################
+        # CONNECTION_UPDATE
+        # client sends a 'heart beat' like use connection msg
+        # to show if user is online
+        # see: startUserUpdates in client
+        #########################################################
+        elif text_data_json["type"] == WsEventType.CONNECTION_UPDATE.value:
+            user_data = text_data_json["payload"]
+
+            event_payload = {"type": WsEventType.CONNECTION_UPDATE.value, "action": user_data}
+
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                # unexpected argument hint is mistake
+                event_payload,
+            )
+
+    #########################################################
+    # TYPE HANDLERS
+    #  if
+    #########################################################
     def workflow_action(self, event):
+        pprint("workflow_action yo")
+        pprint("event")
+        pprint(event)
         if not self.VIEW:
             return
-        # Send message to WebSocket
-        if event["type"] == "workflow_action":
-            self.send(text_data=json.dumps(event))
+        # redundant
+        # if event["type"] == "workflow_action":
+        self.send(text_data=json.dumps(event))
 
     def lock_update(self, event):
         if not self.VIEW:
             return
-        # Send message to WebSocket
-        if event["type"] == "lock_update":
-            self.send(text_data=json.dumps(event))
+        # redundant
+        # if event["type"] == "lock_update":
+        self.send(text_data=json.dumps(event))
 
     def connection_update(self, event):
+        pprint("connection update")
         if not self.VIEW:
             return
-        # Send message to WebSocket
-        if event["type"] == "connection_update":
-            self.send(text_data=json.dumps(event))
+        # redundant
+        # if event["type"] == "connection_update":
+        self.send(text_data=json.dumps(event))
 
     def workflow_parent_updated(self, event):
         if not self.VIEW:
             return
-        # Send message to WebSocket
-        if event["type"] == "workflow_parent_updated":
-            self.send(text_data=json.dumps(event))
+        # redundant
+        # if event["type"] == "workflow_parent_updated":
+        self.send(text_data=json.dumps(event))
 
     def workflow_child_updated(self, event):
         if not self.VIEW:
             return
-        # Send message to WebSocket
-        if event["type"] == "workflow_child_updated":
-            self.send(text_data=json.dumps(event))
+        # redundant
+        # if event["type"] == "workflow_child_updated":
+        self.send(text_data=json.dumps(event))

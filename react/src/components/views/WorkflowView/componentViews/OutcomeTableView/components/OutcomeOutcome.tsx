@@ -1,5 +1,5 @@
 import { CfObjectType } from '@cf/types/enum.js'
-import { TOutcomeOutcomeByID, getOutcomeOutcomeByID } from '@cfFindState'
+import { TOutcomeOutcomeByID, getOutcomeOutcomeById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -58,7 +58,7 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): TOutcomeOutcomeByID => {
-  return getOutcomeOutcomeByID(state, ownProps.objectId)
+  return getOutcomeOutcomeById(state, ownProps.objectId)
 }
 
 const TableOutcomeOutcome = connect<ConnectedProps, object, OwnProps, AppState>(

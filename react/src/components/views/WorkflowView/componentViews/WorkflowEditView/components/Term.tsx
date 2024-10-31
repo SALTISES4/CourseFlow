@@ -1,12 +1,15 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import { TTermByID, getTermByID } from '@cfFindState'
+import { TTermByID, getTermById } from '@cfFindState'
 // import $ from 'jquery'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
+import {
+  WeekUnconnected,
+  WeekUnconnectedPropsType
+} from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/Week'
 import { connect } from 'react-redux'
 
 import NodeWeek from './NodeWeek'
-import { WeekUnconnected, WeekUnconnectedPropsType } from './Week'
 
 type OwnProps = {
   objectId: number
@@ -168,7 +171,7 @@ const mapStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   return {
-    term: getTermByID(state, ownProps.objectId),
+    term: getTermById(state, ownProps.objectId),
     workflow: state.workflow
   }
 }

@@ -82,7 +82,7 @@ export function formatLibraryObject(
     id: libraryObject.id,
     title: libraryObject.title,
     description:
-      libraryObject.author && `${_t('Owned by')} ${libraryObject.author}`,
+      libraryObject.author && `${_t('Owned by')} ${libraryObject.author.name}`,
     isFavourite: libraryObject.favourite,
     isLinked: libraryObject.isLinked,
     type: libraryObject.type,

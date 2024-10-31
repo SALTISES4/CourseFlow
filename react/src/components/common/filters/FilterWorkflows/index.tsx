@@ -7,7 +7,6 @@ import Input from '@mui/material/Input'
 import InputAdornment from '@mui/material/InputAdornment'
 import Link from '@mui/material/Link'
 import MenuItem from '@mui/material/MenuItem'
-import { ELibraryObject } from '@XMLHTTP/types/entity'
 import Fuse from 'fuse.js'
 import {
   ChangeEvent,
@@ -27,19 +26,10 @@ import {
   Wrap
 } from './styles'
 
-// export type ResultType = {
-//   id: string
-//   group: string
-//   name: string
-//   chip: {
-//     type: CHIP_TYPE
-//     label: string
-//   }
-// }
-
 export type PropsType = {
   workflows: ResultType[]
   onChange: (item: ResultType) => void
+  onPropagateChange: (keyword: string) => void
   placeholder?: string
   resultsLimit?: number
   seeAllText?: string
@@ -50,7 +40,8 @@ const FilterWorkflows = ({
   placeholder = 'Search in projects...',
   seeAllText = 'See all results',
   resultsLimit = 8,
-  onChange
+  onChange,
+  onPropagateChange
 }: PropsType) => {
   const [term, setTerm] = useState('')
   const [selected, setSelected] = useState<ResultType>()
@@ -75,6 +66,9 @@ const FilterWorkflows = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  /*******************************************************
+   * LIFECYCLE HOOKS
+   *******************************************************/
   useEffect(() => {
     debouncedFilter(term)
     // trust me bro - debounced + controlled inputs are yuck
@@ -94,7 +88,13 @@ const FilterWorkflows = ({
     }
   }
 
-  // Manually control the suggestion list "selected" item
+  /*******************************************************
+   * LISTENERS / FUNCTIONS
+   *******************************************************/
+
+  /**
+   * Manually control the suggestion list "selected" item
+   **/
   const onInputKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(e.key)) {
       e.preventDefault()
@@ -120,7 +120,16 @@ const FilterWorkflows = ({
         setSelected(results[currentIndex - 1])
         break
       case 'Enter':
-        selected && onSuggestionClick(selected)
+        // @todo maybe we need some logic for where the user is focused
+        // this UX has not been fully thought through
+        // what about 'see all' case as wel
+        // so, for now, hijack enter for now to push input val to parent search
+        // this is not fully fleshed out
+        onPropagateChange(term)
+        onMenuClose()
+
+        // ...and comment out the previous command which was trigering a navigate click (also desirable if arrowing through results)
+        // selected && onSuggestionClick(selected)
         break
       case 'Escape':
         onMenuClose()
@@ -136,6 +145,8 @@ const FilterWorkflows = ({
 
   const onClearClick = () => {
     setTerm('')
+    // for now, if we clear the term, update the parent search state
+    onPropagateChange(term)
     inputRef.current && inputRef.current.focus()
   }
 
@@ -149,6 +160,9 @@ const FilterWorkflows = ({
     setMenuAnchor(null)
   }
 
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
     <Wrap ref={wrapRef}>
       <Input
@@ -201,7 +215,6 @@ const FilterWorkflows = ({
             onClick={() => onSuggestionClick(p)}
             selected={selected && selected.id === p.id}
           >
-            {/*<ProjectGroup>{p.group}</ProjectGroup>*/}
             <ProjectGroup>{p.description}</ProjectGroup>
             {/*<ProjectName>{p.name}</ProjectName>*/}
             <ProjectName>{p.title}</ProjectName>
@@ -210,6 +223,7 @@ const FilterWorkflows = ({
             </ProjectTag>
           </Suggestion>
         ))}
+
         {results.length >= resultsLimit && (
           <MenuItem key="see-all">
             <Link href="#" underline="always">

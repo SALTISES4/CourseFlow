@@ -3,15 +3,11 @@ from pprint import pprint
 from typing import Any, Dict, Optional
 
 import bleach
-from django.forms import model_to_dict
-from django.utils.functional import SimpleLazyObject
 from django.utils.translation import gettext as _
 from html2text import html2text
 from rest_framework import serializers
 
-from course_flow.apps import logger
-from course_flow.models import Project
-from course_flow.models.common import User, title_max_length
+from course_flow.models import title_max_length
 from course_flow.models.relations.weekWorkflow import WeekWorkflow
 
 bleach_allowed_attributes_description = {

@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-from course_flow.models.program import Program
+from course_flow.models.workspace.program import Program
 
 
 def forwards_func(apps, schema_editor):

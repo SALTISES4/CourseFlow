@@ -17,7 +17,7 @@ const CFPagination = ({ current, pages, onChange }: PropsType) => {
   const onPageChange = useCallback(
     (_: ChangeEvent<unknown>, value: number) => {
       setPage(value)
-      onChange && onChange(value)
+      onChange && onChange(value - 1)
     },
     [onChange]
   )

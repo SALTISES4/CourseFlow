@@ -7,7 +7,6 @@ import { ELibraryObject } from '@XMLHTTP/types/entity'
 import {
   EmptyPostResp,
   PageHomeQueryResp,
-  PageLibraryQueryResp
 } from '@XMLHTTP/types/query'
 
 import { Verb, cfApi } from './api'
@@ -20,6 +19,7 @@ export type LibraryObjectsSearchQueryResp = {
   dataPackage: {
     items: ELibraryObject[]
     meta: {
+      currentPage: number
       count: number
       pageCount: number
     }

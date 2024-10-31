@@ -9,7 +9,7 @@ import GridView from '@cfViews/WorkflowView/componentViews/GridView/GridView'
 import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeEditView'
 import OutcomeTableView from '@cfViews/WorkflowView/componentViews/OutcomeTableView'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
-import WorkflowView from '@cfViews/WorkflowView/componentViews/WorkflowView'
+import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditView'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
@@ -40,7 +40,7 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkFlowContextType) => {
       route: CFRoutes.WORKFLOW_WORKFLOW,
       relRoute: RelativeRoutes.WORKFLOW,
       label: _t('Workflows'),
-      content: <WorkflowView />,
+      content: <WorkflowEditView />,
       allowedTabs: [1, 2, 3, 4]
     },
     {

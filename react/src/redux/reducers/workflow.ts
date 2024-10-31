@@ -34,6 +34,14 @@ function workflowReducer(
       }
       return state
 
+    // pretty obvious what this is doing
+    // BUT really it should be cleaning up all the workflow related objects
+    // columnworfklow
+    // node
+    // week etc
+    case CommonActions.CLEAR_WORKFLOW_DATA:
+      return null
+
     /*******************************************************
      * WORKFLOW
      *******************************************************/
@@ -81,11 +89,7 @@ function workflowReducer(
       const old_index = state.outcomeworkflowSet.indexOf(action.payload.old_id)
       if (old_index >= 0) {
         newState.outcomeworkflowSet = newState.outcomeworkflowSet.slice()
-        newState.outcomeworkflowSet.splice(
-          old_index,
-          1,
-          action.payload.new_id
-        )
+        newState.outcomeworkflowSet.splice(old_index, 1, action.payload.new_id)
       }
       return newState
     }

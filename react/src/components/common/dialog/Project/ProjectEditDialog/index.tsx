@@ -63,17 +63,16 @@ const ProjectEditDialog = () => {
    * FUNCTIONS
    *******************************************************/
   function onSubmit(data: ProjectFormValues) {
-
-    console.log('treying top submiut')
-
-    // remove null values
-    const filteredObjectSeyts = data.objectSets
+    // remove null value first
+    // since the endpoint does not accept them
+    const filteredObjectSets = data.objectSets
       .filter((set) => set.term && set.title)
       .map((item) => ({
         id: item.id,
         title: item.title,
         term: item.term
       }))
+
     const payload = {
       id: Number(id),
       ...data,

@@ -59,7 +59,7 @@ export function updateValueQuery(
   document.lastUpdateCallFunction = () => {
     const url = apiPaths.json_api.workspace.field__update
     API_POST(url, post_object).then((response: EmptyPostResp) => {
-callBackFunction(response)
+      callBackFunction(response)
     })
   }
   document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
@@ -82,7 +82,7 @@ export function updateValueInstantQuery(
   })
 }
 
-//When the drag is complete, this is called to actually update the back-end
+//When the drag is complete, this is called to update the back-end
 export function dragAction(
   action_data,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
@@ -90,10 +90,9 @@ export function dragAction(
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
 
-  API_POST(
-    COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at,
-    action_data
-  ).then((response: EmptyPostResp) => {
+  // COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at
+  const url = apiPaths.json_api.workflow.object__order
+  API_POST(url, action_data).then((response: EmptyPostResp) => {
     callBackFunction(response)
     $('.ui-draggable').draggable('enable')
     COURSEFLOW_APP.tinyLoader.endLoad()
@@ -113,7 +112,10 @@ export function insertedAtInstant(
   console.log(parentType)
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at, {
+
+  //   COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at
+  const url = apiPaths.json_api.workflow.object__order
+  API_POST(url, {
     objectId: objectId,
     objectType: objectType,
     parentID: parentID,

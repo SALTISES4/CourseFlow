@@ -234,15 +234,7 @@ h3.big-space {
   display: inline;
 }
 
-.menubar {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  font-family: "Open Sans", sans-serif;
-  align-items: center;
-  background: $color-white-green;
-  box-sizing: border-box;
-}
+
 
 .workflow-title-bar {
   display: inline-block;
@@ -260,45 +252,7 @@ h3.big-space {
   display: inline-block;
 }
 
-.floatbar {
-  flex-shrink: 99;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px;
-}
 
-.floatbardiv {
-  display: inline-block;
-  vertical-align: middle;
-  background: $color-primary-blue;
-  margin: 5px;
-  padding: 5px;
-  height: 36px;
-  color: $color-white;
-  box-sizing: border-box;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.floatbardiv > * {
-  display: inline-block;
-}
-
-.floatbar img {
-  display: inline-block;
-  vertical-align: middle;
-  width: 24px;
-  margin: 5px;
-}
-
-.floatbar > div {
-  display: inline-block;
-  vertical-align: middle;
-  padding-left: 6px;
-  padding-right: 6px;
-  position: relative;
-}
 
 #visible-icons {
   display: flex;
@@ -310,78 +264,9 @@ h3.big-space {
   display: none;
 }
 
-.users-box {
-  position: relative;
-  height: 100%;
-  margin-right: 20px;
-  margin-bottom: 8px;
-}
 
-.users-box.connection-failed {
-  color: $color-primary-red;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-}
 
-.users-small .user-indicator {
-  margin-top: 10px;
-}
 
-.user-indicator {
-  color: $color-white;
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 10px;
-  text-align: center;
-  vertical-align: middle;
-}
-
-.users-small {
-  display: inline-block;
-  display: flex;
-  flex-wrap: wrap;
-  max-width: 76px;
-  gap: 20px 2px;
-  height: 100%;
-  overflow: hidden;
-}
-
-.users-small-wrapper {
-  height: 100%;
-  display: inline-block;
-}
-
-.users-more {
-  display: inline-block;
-  height: 100%;
-  color: $color-black;
-  padding-left: 3px;
-}
-
-.users-hidden {
-  display: none;
-  position: absolute;
-  padding: 5px;
-  background-color: $color-white;
-  border: 1px solid $color-gray;
-  z-index: 10;
-  right: 0px;
-  top: 2px;
-}
-
-.users-more:hover + .users-hidden,
-.users-hidden:hover {
-  display: inline-block;
-}
-
-#viewbar {
-  color: $color-text;
-  margin-right: 10px;
-  display: flex;
-  align-items: center;
-}
 
 
 
@@ -455,10 +340,6 @@ h3.big-space {
   color: $color-primary-blue;
 }
 
-[data-component="sidebar"] {
-  position: relative;
-  z-index: 1;
-}
 
 .left-panel {
   background: $color-white;
@@ -719,10 +600,6 @@ h3.big-space {
   display: none;
 }
 
-.floatbar .create-dropdown {
-  margin-left: -6px;
-  z-index: 5;
-}
 
 .create-dropdown.position-right {
   right: 0px;

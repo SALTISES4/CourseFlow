@@ -1,6 +1,4 @@
 import base64
-import logging
-import uuid
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericRelation
@@ -9,13 +7,12 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from course_flow.apps import logger
-
-from ._abstract import AbstractCourseFlowModel
+from course_flow.models._abstract import AbstractWorkspaceModel
 
 User = get_user_model()
 
 
-class Project(AbstractCourseFlowModel):
+class Project(AbstractWorkspaceModel):
     author = models.ForeignKey(
         User,
         related_name="authored_projects",
@@ -26,37 +23,23 @@ class Project(AbstractCourseFlowModel):
     ##########################################################
     # FIELDS
     #########################################################
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     published = models.BooleanField(default=False)
-
-    from_saltise = models.BooleanField(default=False)
-
-    is_template = models.BooleanField(default=False)
-
-    is_strategy = models.BooleanField(default=False)
 
     is_original = models.BooleanField(default=False)
 
     #########################################################
     # RELATIONS
     #########################################################
-    user_permissions = GenericRelation(
-        "ObjectPermission", related_query_name="project"
-    )
+    user_permissions = GenericRelation("ObjectPermission", related_query_name="project")
 
     favourited_by = GenericRelation("Favourite", related_query_name="project")
 
-    parent_project = models.ForeignKey(
-        "Project", on_delete=models.SET_NULL, null=True
-    )
+    # @todo why does a project have a parent project?
+    parent_project = models.ForeignKey("Project", on_delete=models.SET_NULL, null=True)
 
     # @todo this is wrong, no reason for this to be n2m
-    workflows = models.ManyToManyField(
-        "Workflow", through="WorkflowProject", blank=True
-    )
-
-    disciplines = models.ManyToManyField("Discipline", blank=True)
+    workflows = models.ManyToManyField("Workflow", through="WorkflowProject", blank=True)
 
     object_sets = models.ManyToManyField("ObjectSet", blank=True)
 

@@ -1,4 +1,6 @@
+import useMount from '@cf/hooks/useMount'
 import useSkipFirstRender from '@cf/hooks/useSkipFirstRender'
+import { SearchFilterOption } from '@cfComponents/filters/types'
 import FilterIcon from '@mui/icons-material/FilterAlt'
 import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
@@ -27,7 +29,7 @@ import {
 } from './styles'
 
 export type FilterMultiselectOption = {
-  value: string
+  value: string | number
   label: string
   selected?: boolean
   disabled?: boolean
@@ -41,7 +43,7 @@ type PropsType = {
   disabled?: boolean
   selected?: string
   options: FilterMultiselectOption[]
-  onChange: (value: string[]) => void
+  onChange: (values: SearchFilterOption[]) => void
 }
 
 const FilterMultiselect = ({
@@ -59,21 +61,21 @@ const FilterMultiselect = ({
   )
   const [value, setValue] = useState(preselected)
   const [search, setSearch] = useState('')
-  const [filterdOptions, setFilteredOptions] = useState(options)
+  const [filteredOptions, setFilteredOptions] = useState(options)
   const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
   const hasRendered = useSkipFirstRender()
 
+  useMount()
+
   useEffect(() => {
     if (hasRendered) {
-      onChange(value.map((s) => s.value))
+      onChange(value)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [onChange, value])
+  }, [value, options, filteredOptions])
 
   useEffect(() => {
     debouncedFilter(search)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search])
+  }, [search, options])
 
   const debouncedFilter = useMemo(() => {
     return debounce((term: string) => {
@@ -89,10 +91,12 @@ const FilterMultiselect = ({
       const filtered: typeof options = fuse
         .search(term)
         .map((result) => result.item)
+
+      console.log('filtered')
+      console.log(filtered)
       setFilteredOptions(filtered)
     }, 500)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [options])
 
   const onButtonClick: MouseEventHandler<HTMLButtonElement> = useCallback(
     (event) => {
@@ -137,11 +141,11 @@ const FilterMultiselect = ({
   }, [value])
 
   const onSelectAll = useCallback(() => {
-    const filtered = filterdOptions.filter((o) => !o.disabled)
+    const filtered = filteredOptions.filter((o) => !o.disabled)
     if (value.length !== filtered.length) {
-      setValue(filterdOptions.filter((o) => !o.disabled))
+      setValue(filteredOptions.filter((o) => !o.disabled))
     }
-  }, [value, filterdOptions])
+  }, [value, filteredOptions])
 
   return (
     <>
@@ -185,7 +189,7 @@ const FilterMultiselect = ({
             />
           </StyledSearch>
           <StyledMenu>
-            {filterdOptions.map((option) => {
+            {filteredOptions.map((option) => {
               const isSelected =
                 value.findIndex((v) => v.value === option.value) !== -1
 

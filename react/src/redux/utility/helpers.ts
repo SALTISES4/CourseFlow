@@ -5,6 +5,22 @@ import { Dispatch } from '@reduxjs/toolkit'
 import React from 'react'
 import { Action } from 'redux'
 
+export function toggleDropWrapper({
+  objectId,
+  objectType,
+  isDropped,
+  dispatch,
+  depth
+}: {
+  objectId: number
+  objectType: CfObjectType
+  isDropped: boolean
+  dispatch: Dispatch<Action>
+  depth: number
+}) {
+  toggleDropReduxAction(objectId, objectType, !isDropped, dispatch, depth)
+}
+
 /**
  *
  *  @toggleDrop
@@ -19,7 +35,7 @@ import { Action } from 'redux'
 export function toggleDropReduxAction(
   objectId: number,
   objectType: CfObjectType, //i thibnk this is CfObjectType
-  isDropped: string | boolean,
+  newDropState: string | boolean,
   dispatch: Dispatch<Action>,
   depth = 1
 ) {
@@ -29,19 +45,21 @@ export function toggleDropReduxAction(
       objectType,
       depth
     )
-    if (isDropped !== default_drop)
-      window.localStorage.setItem(objectType + objectId, String(isDropped))
+    if (newDropState !== default_drop)
+      window.localStorage.setItem(objectType + objectId, String(newDropState))
     else window.localStorage.removeItem(objectType + objectId)
   } catch (err) {
     const error = err as Error
     if (
       error.name === 'QuotaExceededError' ||
-      error.name === 'NS_ERROR_DOM_QUOTA_REACHED'
+      error.name === 'NS_ERROR_DOM_QUOTA_REACHED' // lol
     ) {
       window.localStorage.clear()
     }
   }
+
+  console.log(objectId, objectType, { isDropped: newDropState })
   dispatch(
-    ActionCreator.changeField(objectId, objectType, { isDropped: isDropped })
+    ActionCreator.changeField(objectId, objectType, { isDropped: newDropState })
   )
 }

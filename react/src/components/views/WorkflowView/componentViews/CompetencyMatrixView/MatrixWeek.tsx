@@ -1,10 +1,8 @@
 import { CfObjectType } from '@cf/types/enum'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
-import { getWeekByID } from '@cfFindState'
+import { getWeekById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
+import React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = {
@@ -21,14 +19,16 @@ type ConnectedProps = {
 }
 type OwnProps = {
   rank?: number
-} & ComponentWithToggleProps
+  objectId?: number
+}
 type PropsType = ConnectedProps & OwnProps
 
 /**
  * A block for a term in the competency matrix view. This shows
  * the time data.
  */
-class MatrixWeekUnconnected extends ComponentWithToggleDrop<PropsType> {
+class MatrixWeekUnconnected extends React.Component<PropsType> {
+  objectType: CfObjectType
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WEEK
@@ -73,7 +73,7 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => {
-  const data = getWeekByID(state, ownProps.objectId).data
+  const data = getWeekById(state, ownProps.objectId).data
   const node_weeks = Utility.filterThenSortByID(
     state.nodeweek,
     data.nodeweekSet
@@ -83,8 +83,7 @@ const mapStateToProps = (
     node_weeks.map((node_week) => node_week.node)
   ).filter((node) => !Utility.checkSetHidden(node, state.objectset))
   const linked_wf_data = nodes_data.map((node) => {
-    if (node.representsWorkflow)
-      return { ...node, ...node.linkedWorkflowData }
+    if (node.representsWorkflow) return { ...node, ...node.linkedWorkflowData }
     return node
   })
   const general_education = linked_wf_data.reduce(

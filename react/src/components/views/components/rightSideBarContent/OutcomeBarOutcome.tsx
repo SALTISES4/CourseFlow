@@ -2,19 +2,17 @@ import { OutcomeTitle } from '@cf/components/common/UIPrimitives/Titles.ts'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
 import {
   TGetOutcomeByID,
   TOutcomeOutcomeByID,
   getOutcomeByID,
-  getOutcomeOutcomeByID
+  getOutcomeOutcomeById
 } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { ChangeEvent } from 'react'
 import { connect } from 'react-redux'
-// import $ from 'jquery'
 
 /**
  * Used in the outcome bar
@@ -34,10 +32,10 @@ type OutcomeBarOutcomeOutcomePropsType = OutcomeBarOutcomeOutcomeOwnProps &
   OutcomeBarOutcomeOutcomeConnectedProps
 
 class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutcomeOutcomePropsType> {
-  private objectType: CfObjectType
+  objectType: CfObjectType
   constructor(props: OutcomeBarOutcomeOutcomePropsType) {
     super(props)
-    this.objectType = CfObjectType.OUTCOMEOUTCOME // @todo check addEditable
+    this.objectType = CfObjectType.OUTCOMEOUTCOME
   }
 
   /*******************************************************
@@ -58,7 +56,6 @@ class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutc
           parentID={this.props.parentID}
           throughParentID={this.props.data.id}
           readOnly={this.props.readOnly}
-          //renderer={this.props.renderer}
         />
       </div>
     )
@@ -69,7 +66,7 @@ const mapOutcomeOutcomeStateToProps = (
   state: AppState,
   ownProps: OutcomeBarOutcomeOutcomeOwnProps
 ): OutcomeBarOutcomeOutcomeConnectedProps => {
-  return getOutcomeOutcomeByID(state, ownProps.objectId)
+  return getOutcomeOutcomeById(state, ownProps.objectId)
 }
 
 const OutcomeBarOutcomeOutcome = connect<
@@ -108,13 +105,14 @@ type StateType = {
 
 export class OutcomeBarOutcomeUnconnected<
   P extends PropsType
-> extends ComponentWithToggleDrop<P, StateType> {
+> extends React.Component<P, StateType> {
   protected children_block: React.RefObject<HTMLDivElement>
-  // private objectType: string
+  mainDiv: React.RefObject<HTMLDivElement>
+  objectType: CfObjectType
 
   constructor(props: P) {
     super(props)
-    this.objectType = CfObjectType.OUTCOME // @todo check addEditable
+    this.objectType = CfObjectType.OUTCOME
     this.children_block = React.createRef()
     this.state = { isDropped: props.data.depth < 1 }
   }

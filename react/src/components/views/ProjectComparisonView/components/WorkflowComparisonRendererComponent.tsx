@@ -3,9 +3,6 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
 import { ProjectComparisonClass } from '@cfPages/Workspace/ProjectComparison'
 import * as React from 'react'
 
@@ -15,13 +12,13 @@ type OwnProps = {
   viewType: CfObjectType
   objectSets: any
   removeFunction: any
-} & ComponentWithToggleProps
+}
 
 /**
  * Acts as a loader, fetching workflow data from the server then creating a
  * WorkflowBaseView for the comparison
  */
-class WorkflowComparisonRendererComponent extends ComponentWithToggleDrop<OwnProps> {
+class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
   private workflowComparison: ProjectComparisonClass
   constructor(props: OwnProps) {
     super(props)

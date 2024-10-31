@@ -1,16 +1,17 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { ProjectDetailsType } from '@cf/types/common'
+import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import UserList from '@cfViews/components/workspaceOverview/UserList'
 import LinkIcon from '@mui/icons-material/Link'
 import Button from '@mui/material/Button'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import * as SC from 'components/views/components/workspaceOverview/styles'
 import { useParams } from 'react-router-dom'
+
+import * as SC from 'components/views/components/workspaceOverview/styles'
 
 import { ObjectSetThumbnail } from './styles'
 

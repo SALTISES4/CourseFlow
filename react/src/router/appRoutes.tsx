@@ -8,10 +8,11 @@ import NotificationsPage from '@cfPages/Notifications'
 import WorkflowComparison from '@cfPages/Workspace/ProjectComparison'
 import WorkflowPage from '@cfPages/Workspace/Workflow'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
+import { createBrowserRouter } from 'react-router-dom'
+
 import NotificationsSettingsPage from 'components/pages/Settings/NotificationsSettings'
 import ProfileSettingsPage from 'components/pages/Settings/ProfileSettings'
 import Project from 'components/pages/Workspace/Project'
-import { createBrowserRouter } from 'react-router-dom'
 
 /*******************************************************
  * NOTE:  RR6 drastically altered it's approach and no longer robustly supports absolute paths

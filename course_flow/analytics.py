@@ -3,8 +3,7 @@ import calendar
 import pandas as pd
 from django.core.cache import cache
 
-from course_flow.models.project import Project
-from course_flow.models.workflow import Workflow
+from course_flow.models.workspace import Project, Workflow
 from course_flow.serializers.admin import AnalyticsSerializer
 
 
@@ -26,12 +25,8 @@ def get_base_dataframe():
     if df is not None:
         return df
 
-    projects = AnalyticsSerializer(
-        Project.objects.exclude(author=None), many=True
-    ).data
-    workflows = AnalyticsSerializer(
-        Workflow.objects.exclude(author=None), many=True
-    ).data
+    projects = AnalyticsSerializer(Project.objects.exclude(author=None), many=True).data
+    workflows = AnalyticsSerializer(Workflow.objects.exclude(author=None), many=True).data
 
     df = pd.DataFrame(projects + workflows)
     created_data = df["created_on"].str.split(" ", expand=True)
@@ -81,9 +76,7 @@ def get_user_table(df=None):
     df3 = df1.groupby(["Year", "Month", "type"])
 
     user_counts = df2["User"].nunique()
-    active_counts = (
-        df1.loc[df1["is_active"]].groupby(["Year", "Month"])["User"].nunique()
-    )
+    active_counts = df1.loc[df1["is_active"]].groupby(["Year", "Month"])["User"].nunique()
 
     type_counts = df3["User"].nunique()
     type_counts = type_counts.unstack()
@@ -92,14 +85,11 @@ def get_user_table(df=None):
 
     year_counts = df1.groupby(["Year", "type"])["User"].nunique()
     year_counts_user = df1.groupby(["Year"])["User"].nunique()
-    year_counts_active = (
-        df1.loc[df1["is_active"]].groupby(["Year"])["User"].nunique()
-    )
+    year_counts_active = df1.loc[df1["is_active"]].groupby(["Year"])["User"].nunique()
     year_counts = (
         year_counts.reindex(
             pd.MultiIndex.from_product(
-                [level for level in year_counts.index.levels]
-                + [["Year Total"]]
+                [level for level in year_counts.index.levels] + [["Year Total"]]
             )
         )
         .unstack(1)
@@ -110,12 +100,8 @@ def get_user_table(df=None):
 
     type_counts = pd.concat([type_counts, year_counts.stack()]).sort_index()
     type_counts.fillna(0, inplace=True)
-    type_counts["Total Unique Users"] = type_counts[
-        "Total Unique Users"
-    ].astype("int")
-    type_counts["Total Active Users"] = type_counts[
-        "Total Active Users"
-    ].astype("int")
+    type_counts["Total Unique Users"] = type_counts["Total Unique Users"].astype("int")
+    type_counts["Total Active Users"] = type_counts["Total Active Users"].astype("int")
 
     fix_months(type_counts)
 
@@ -127,28 +113,19 @@ def get_user_details_table(df=None):
         df = get_base_dataframe()
     df = get_base_dataframe()
 
-    df_sum = (
-        df.groupby(["Year", "Month", "Institution", "User", "type"])
-        .size()
-        .unstack()
-    )
+    df_sum = df.groupby(["Year", "Month", "Institution", "User", "type"]).size().unstack()
     df2 = df.groupby(["Year", "Month", "Institution", "type"]).size().unstack()
     df2 = df2.reindex(
-        pd.MultiIndex.from_product(
-            [level for level in df2.index.levels] + [["Domain Total"]]
-        )
+        pd.MultiIndex.from_product([level for level in df2.index.levels] + [["Domain Total"]])
     )
     df3 = df.groupby(["Year", "Month", "type"]).size().unstack()
     df3 = df3.reindex(
-        pd.MultiIndex.from_product(
-            [level for level in df3.index.levels] + [["Month Total"], [""]]
-        )
+        pd.MultiIndex.from_product([level for level in df3.index.levels] + [["Month Total"], [""]])
     )
     df4 = df.groupby(["Year", "type"]).size()
     df4 = df4.reindex(
         pd.MultiIndex.from_product(
-            [level for level in df4.index.levels]
-            + [["Year Total"], [""], [""]]
+            [level for level in df4.index.levels] + [["Year Total"], [""], [""]]
         )
     ).unstack(1)
     df5 = df4.sum()

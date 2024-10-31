@@ -82,7 +82,9 @@ class WorkspaceEndpoint:
     @api_view(["POST"])
     @user_can_edit(False)
     def update_value(request: Request) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
 
         try:
             object_id = body.get("objectID")
@@ -138,7 +140,9 @@ class WorkspaceEndpoint:
         :return:
         """
 
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
         object_type = body.get("objectType")
 

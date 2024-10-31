@@ -1,5 +1,5 @@
 import { _t } from '@cf/utility/utilityFunctions'
-import { TGetWeekByIDType, getWeekByID } from '@cfFindState'
+import { TGetWeekByIDType, getWeekById } from '@cfFindState'
 // @components
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
@@ -164,7 +164,7 @@ const mapWeekStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): TGetWeekByIDType => {
-  return getWeekByID(state, ownProps.objectId)
+  return getWeekById(state, ownProps.objectId)
 }
 
 const ComparisonWeek = connect<ConnectedProps, object, OwnProps, AppState>(

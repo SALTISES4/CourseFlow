@@ -1,16 +1,13 @@
 import json
-import logging
-import traceback
 from pprint import pprint
 
-from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import transaction
 
 # from duplication
 from django.utils.translation import gettext as _
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -26,14 +23,14 @@ from course_flow.duplication_functions import (
     fast_duplicate_workflow,
 )
 from course_flow.models import Project
-from course_flow.models.node import Node
 from course_flow.models.relations import OutcomeWorkflow
 from course_flow.models.relations.outcomeHorizontalLink import (
     OutcomeHorizontalLink,
 )
 from course_flow.models.relations.outcomeNode import OutcomeNode
 from course_flow.models.relations.workflowProject import WorkflowProject
-from course_flow.models.workflow import SUBCLASSES, Workflow
+from course_flow.models.workflow_objects.node import Node
+from course_flow.models.workspace.workflow import SUBCLASSES, Workflow
 from course_flow.serializers import (
     LibraryObjectSerializer,
     LinkedWorkflowSerializerShallow,
@@ -49,7 +46,6 @@ from course_flow.serializers import (
 from course_flow.services import DAO
 from course_flow.services.workflow import WorkflowService
 from course_flow.sockets import redux_actions as actions
-from course_flow.views.mixins import UserCanViewMixin
 
 #########################################################
 # Bulk data API for workflows
@@ -120,7 +116,9 @@ class WorkflowEndpoint:
     def fetch_parent_detail(
         request: Request,
     ) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         workflow = Workflow.objects.get(pk=body.get("workflowPk"))
 
         try:
@@ -145,7 +143,9 @@ class WorkflowEndpoint:
     def fetch_child_workflow_data(
         request: Request,
     ) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         node = Node.objects.get(pk=body.get("nodePk"))
 
         try:
@@ -204,25 +204,24 @@ class WorkflowEndpoint:
     # @user_can_edit("projectPk")
     def create(request: Request) -> Response:
         """
-        Create a new workflow in a project
+        Create new or update existing workflow in a project
         :param request:
         :return:
         """
         serializer = WorkflowUpsertSerializer(data=request.data)
-        pprint(request.data)
-        if serializer.is_valid():
-            workflow = serializer.save(author=request.user)
-
-            return Response(
-                {"message": "success", "data_package": {"id": workflow.id}},
-                status=status.HTTP_201_CREATED,
-            )
-        else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+        if not serializer.is_valid():
+            logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        workflow = serializer.save(author=request.user)
+
+        return Response(
+            {"message": "success", "data_package": {"id": workflow.id}},
+            status=status.HTTP_201_CREATED,
+        )
 
     #########################################################
     # UPDATE
@@ -249,17 +248,15 @@ class WorkflowEndpoint:
 
         serializer = WorkflowUpsertSerializer(workflow, data=request.data)
 
-        pprint(serializer.initial_data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+        if not serializer.is_valid():
+            logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     #########################################################
     #  DUPLICATE WORKFLOW
@@ -269,7 +266,9 @@ class WorkflowEndpoint:
     @user_can_edit("projectPk")
     @api_view(["POST"])
     def duplicate_to_project(request: Request, pk: int) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         workflow = Workflow.objects.get(pk=pk)
         project = Project.objects.get(pk=body.get("projectPk"))
 
@@ -321,7 +320,9 @@ class WorkflowEndpoint:
         @todo what does this do?
         :return:
         """
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         node = Node.objects.get(pk=body.get("nodePk"))
 
         try:
@@ -353,7 +354,9 @@ class WorkflowEndpoint:
         @todo what does this do?
         :return:
         """
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         type_filter = body.get("type_filter")
         get_strategies = body.get("get_strategies", "false")
         projectPk = body.get("projectPk", False)
@@ -397,7 +400,9 @@ class WorkflowEndpoint:
             :return:
         """
 
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         # last_time = time.time()
         try:
             node_id = body.get("nodePk")
@@ -533,7 +538,7 @@ def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
 
     # @user_can_view("workflowPk")
     # def json_api_post_get_workflow_context(request: Request) -> Response:
-    #     body = json.loads(request.body)
+    #     body = json.loads(request.body) # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     #     workflowPk = body.get("workflowPk", False)
     #
     #     try:

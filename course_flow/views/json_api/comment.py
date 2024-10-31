@@ -37,7 +37,9 @@ class CommentEndpoint:
     def list_by_object(
         request: Request,
     ) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
         object_type = body.get("objectType")
         try:
@@ -47,9 +49,9 @@ class CommentEndpoint:
                 .comments.all()
                 .order_by("created_on")
             )
-            Notification.objects.filter(
-                comment__in=comments, user=request.user
-            ).update(is_unread=False)
+            Notification.objects.filter(comment__in=comments, user=request.user).update(
+                is_unread=False
+            )
             data_package = CommentSerializer(comments, many=True).data
 
         except AttributeError as e:
@@ -69,7 +71,9 @@ class CommentEndpoint:
     @user_can_comment(False)
     @api_view(["POST"])
     def create(request: Request) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
         object_type = body.get("objectType")
         text = bleach.clean(body.get("text"))
@@ -125,7 +129,9 @@ class CommentEndpoint:
     @user_can_edit(False)
     @api_view(["POST"])
     def delete(request: Request, pk: int) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_type = body.get("objectType")
         comment_id = body.get("commentPk")
 
@@ -148,14 +154,14 @@ class CommentEndpoint:
     @user_can_edit(False)
     @api_view(["POST"])
     def delete_all(request: Request) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
         object_type = body.get("objectType")
 
         try:
-            model = DAO.get_model_from_str(object_type).objects.get(
-                id=object_id
-            )
+            model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
             model.comments.all().delete()
 
         except (ProtectedError, ObjectDoesNotExist):

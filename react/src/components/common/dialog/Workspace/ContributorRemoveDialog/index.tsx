@@ -1,8 +1,8 @@
 import { StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
+import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
-import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -79,7 +79,7 @@ const ContributorRemoveDialog = ({
       <DialogTitle id="remove-user-modal">Remove user?</DialogTitle>
       <DialogContent dividers>
         <Typography gutterBottom>
-          Are you sure you want to remove <strong>{payload?.userName}</strong>?
+          Are you sure you want to remove <strong>{payload?.username}</strong>?
         </Typography>
       </DialogContent>
       <DialogActions>

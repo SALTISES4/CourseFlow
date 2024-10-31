@@ -1,12 +1,12 @@
 import { CfObjectType } from '@cf/types/enum'
-import { TColumnWorkflowByID, getColumnWorkflowByID } from '@cfFindState'
+import { TColumnWorkflowById, getColumnWorkflowByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
 import Column from './Column'
 
-type ConnectedProps = TColumnWorkflowByID
+type ConnectedProps = TColumnWorkflowById
 type OwnProps = {
   objectId: number
   parentID: number
@@ -56,7 +56,7 @@ class ColumnWorkflow extends React.Component<PropsType> {
 const mapColumnWorkflowStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TColumnWorkflowByID => {
+): TColumnWorkflowById => {
   return getColumnWorkflowByID(state, ownProps.objectId)
 }
 export default connect<ConnectedProps, object, OwnProps, AppState>(

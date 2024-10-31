@@ -8,6 +8,7 @@ import Loader from '@cfComponents/UIPrimitives/Loader'
 import Header from '@cfPages/Workspace/Project/components/Header'
 import { ActionMenu } from '@cfPages/Workspace/Project/components/menuBar/menus'
 import ProjectDialogs from '@cfPages/Workspace/Project/components/ProjectDialogs'
+import ErrorView from '@cfViews/MsgViews/ErrorView'
 import TabOverview from '@cfViews/ProjectView/TabOverview'
 import TabWorkflows from '@cfViews/ProjectView/TabWorkflows'
 import Box from '@mui/material/Box'
@@ -42,7 +43,7 @@ const ProjectDetails = () => {
    * QUERIES
    *******************************************************/
   const { data, error, isLoading, isError } = useGetProjectByIdQuery({
-    id: Number(id)
+    id: projectId
   })
 
   /*******************************************************
@@ -113,7 +114,11 @@ const ProjectDetails = () => {
    * CONSTANTS
    *******************************************************/
   if (isLoading || !project) return <Loader />
-  if (isError) return <div>An error occurred: {getErrorMessage(error)}</div>
+  if (isError) {
+    return (
+      <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />
+    )
+  }
 
   const ProjectTabsManager = () => {
     return (

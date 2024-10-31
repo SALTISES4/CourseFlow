@@ -9,14 +9,14 @@ import {
   EditableComponentWithActionsProps,
   EditableComponentWithActionsState
 } from '@cfEditableComponents/EditableComponentWithActions'
-import { TGetNodeByID, getNodeByID } from '@cfFindState'
+import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-type ConnectedProps = { node: TGetNodeByID; workflow: TWorkflow }
+type ConnectedProps = { node: TGetNodeById; workflow: TWorkflow }
 type OwnProps = {
   objectId: number
 } & EditableComponentWithActionsProps

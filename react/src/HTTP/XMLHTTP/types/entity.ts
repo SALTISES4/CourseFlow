@@ -1,8 +1,8 @@
 import { ObjectPermission, PermissionGroup } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
+import { WorkspaceType } from '@cf/types/enum'
 import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
-import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import { NodeTypeDisplay } from '@cfRedux/types/type'
 
 /*******************************************************
@@ -27,7 +27,7 @@ export type EUser = {
  *******************************************************/
 export type ELibraryObject = {
   id: number
-  author: string
+  author: EUser
   deleted: boolean
   createdOn: EDate
   lastModified: EDate

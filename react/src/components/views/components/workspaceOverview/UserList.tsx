@@ -1,10 +1,10 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { PermissionGroup } from '@cf/types/common'
+import { WorkspaceType } from '@cf/types/enum'
 import { permissionGroupMenuOptions } from '@cf/utility/permissions'
 import { getInitials } from '@cf/utility/utilityFunctions'
 import MenuButton from '@cfComponents/menu/MenuButton'
-import { WorkspaceType } from '@cfPages/Workspace/Workflow/types'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import List from '@mui/material/List'
@@ -125,7 +125,7 @@ const UserList = ({
                     onClick: () => {
                       dispatch(DialogMode.CONTRIBUTOR_REMOVE, {
                         userId: user.id,
-                        userName: user.name
+                        username: user.name
                       })
                     }
                   }

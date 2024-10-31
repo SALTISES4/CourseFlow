@@ -2,10 +2,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
-import ComponentWithToggleDrop, {
-  ComponentWithToggleProps
-} from '@cfEditableComponents/ComponentWithToggleDrop'
-import { TGetNodeByID, getNodeByID } from '@cfFindState'
+import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -14,25 +11,24 @@ import { connect } from 'react-redux'
  *  Basic component to represent a node in the outcomes table
  *
  */
-
-type ConnectedProps = TGetNodeByID
-type OwnProps = ComponentWithToggleProps
+type ConnectedProps = TGetNodeById
+type OwnProps = {
+  objectId?: number
+}
 
 type PropsType = ConnectedProps & OwnProps
-// type StateType = {
-//   initialRender: boolean
-// }
+
 /**
  *
  */
-class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop<PropsType> {
-  // StateType
+class NodeOutcomeViewUnconnected extends React.Component<PropsType> {
+  objectType: CfObjectType
+  mainDiv: React.RefObject<HTMLDivElement>
   constructor(props: PropsType) {
     super(props)
+    this.mainDiv = React.createRef()
+
     this.objectType = CfObjectType.NODE
-    // this.state = {
-    //   initialRender: true
-    // }
   }
 
   /*******************************************************
@@ -80,7 +76,7 @@ class NodeOutcomeViewUnconnected extends ComponentWithToggleDrop<PropsType> {
 const mapNodeStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TGetNodeByID => {
+): TGetNodeById => {
   return getNodeByID(state, ownProps.objectId)
 }
 const NodeOutcomeView = connect<ConnectedProps, object, OwnProps, AppState>(

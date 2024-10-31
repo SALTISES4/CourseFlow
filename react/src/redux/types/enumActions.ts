@@ -1,7 +1,8 @@
 // group all actions together which are global
 export enum CommonActions {
   REPLACE_STOREDATA = 'replaceStoreData',
-  REFRESH_STOREDATA = 'refreshStoreData'
+  REFRESH_STOREDATA = 'refreshStoreData',
+  CLEAR_WORKFLOW_DATA = 'clearWorkflowData'
 }
 
 export enum WorkFlowActions {

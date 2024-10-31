@@ -34,16 +34,11 @@ const Base = ({ showNotifications, children }: PropsType) => {
   return (
     <>
       <div className="main-wrapper">
-        <div data-component="sidebar">
-          <Sidebar />
-        </div>
+        <Sidebar />
 
         <div className="main-block">
-          <div data-component="topbar">
-            <TopBar />
-            <GlobalDialogs />
-          </div>
-
+          <TopBar />
+          <GlobalDialogs />
           <NotificationsAlert show={showNotifications} />
 
           {/* still being used as a portal in comparison view  */}
@@ -56,8 +51,6 @@ const Base = ({ showNotifications, children }: PropsType) => {
           </div>
         </div>
       </div>
-
-      <div id="popup-container"></div>
     </>
   )
 }

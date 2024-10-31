@@ -1,10 +1,8 @@
 // @ts-ignore
 import { apiPaths } from '@cf/router/apiRoutes'
-import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
-import ComponentWithToggleDrop from '@cfEditableComponents/ComponentWithToggleDrop'
-import { TStrategyByID, getStrategyByID } from '@cfFindState'
+import { TStrategyByID, getStrategyById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -22,15 +20,14 @@ type OwnPropsType = {
 type ReduxProps = TStrategyByID
 
 type PropsType = OwnPropsType & ReduxProps
-class StrategyUnconnected extends ComponentWithToggleDrop<PropsType> {
-  // @todo not used?
+class StrategyUnconnected extends React.Component<PropsType> {
+  mainDiv: React.RefObject<HTMLDivElement>
+
   constructor(props: PropsType) {
     super(props)
-    this.objectType = CfObjectType.STRATEGY // @todo check addEditable
-    this.objectClass = '.strategy' // @todo check addEditable
+    this.mainDiv = React.createRef()
 
-    // @ts-ignore
-    this.node_block = React.createRef() // @todo check addEditable
+    // this.node_block = React.createRef() // @todo check addEditable
   }
 
   /*******************************************************
@@ -103,7 +100,7 @@ const mapStrategyStateToProps = (
   state: AppState,
   ownProps: OwnPropsType
 ): TStrategyByID => {
-  return getStrategyByID(state, ownProps.objectId)
+  return getStrategyById(state, ownProps.objectId)
 }
 
 const Strategy = connect(mapStrategyStateToProps, null)(StrategyUnconnected)

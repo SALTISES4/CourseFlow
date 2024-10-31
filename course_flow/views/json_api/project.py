@@ -36,19 +36,20 @@ class ProjectEndpoint:
     @api_view(["POST"])
     def create(request: Request) -> Response:
         serializer = ProjectUpsertSerializer(data=request.data)
-        if serializer.is_valid():
-            project = serializer.save(author=request.user)
 
-            return Response(
-                {"message": "success", "data_package": {"id": project.id}},
-                status=status.HTTP_201_CREATED,
-            )
-        else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+        if not serializer.is_valid():
+            logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        project = serializer.save(author=request.user)
+
+        return Response(
+            {"message": "success", "data_package": {"id": project.id}},
+            status=status.HTTP_201_CREATED,
+        )
 
     #########################################################
     # UPDATE
@@ -65,18 +66,19 @@ class ProjectEndpoint:
             )
 
         serializer = ProjectUpsertSerializer(project, data=request.data)
-        if serializer.is_valid():
-            project = serializer.save()
-            return Response(
-                {"message": "success", "data_package": {"id": project.id}},
-                status=status.HTTP_200_OK,
-            )
-        else:
-            logger.exception(f"Bad error encountered with errors: {serializer.errors}")
+
+        if not serializer.is_valid():
+            logger.exception(f"Logged Exception: : {serializer.errors}")
             return Response(
                 {"error": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        project = serializer.save()
+        return Response(
+            {"message": "success", "data_package": {"id": project.id}},
+            status=status.HTTP_200_OK,
+        )
 
     #########################################################
     # GET
@@ -107,7 +109,7 @@ class ProjectEndpoint:
 
     @api_view(["POST"])
     def list_my_projects(request: Request) -> Response:
-        # body = json.loads(request.body)
+        # body = json.loads(request.body) # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         # try:
         #     workflow_id = Workflow.objects.get(pk=body.get("workflowPk")).id
         # except ObjectDoesNotExist:
@@ -133,7 +135,9 @@ class ProjectEndpoint:
     @staticmethod
     @user_can_view("projectPk")
     def duplicate(request: Request, pk: int) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         project = Project.objects.get(pk=body.get("projectPk"))
         try:
             with transaction.atomic():
@@ -170,7 +174,9 @@ class ProjectEndpoint:
     def workflows__list(
         request: Request,
     ) -> Response:
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         try:
             user = request.user
             project = Project.objects.get(pk=body.get("projectPk"))
@@ -203,7 +209,9 @@ class ProjectEndpoint:
         :param request:
         :return:
         """
-        body = json.loads(request.body)
+        body = json.loads(
+            request.body
+        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         project = Project.objects.get(pk=pk)
 
         term = body.get("term")
@@ -287,7 +295,7 @@ def json_api__project__detail__comparison__get(request):
         "is_strategy": is_strategy,
         "user_permission": user_permission,
         "public_view": public_view,
-        "user_name": current_user.username,
+        "username": current_user.username,
     }
 
     return JsonResponse({"action": "GET", "data_package": response_data})

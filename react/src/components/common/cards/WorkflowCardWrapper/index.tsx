@@ -24,6 +24,7 @@ export type WorkflowCardWrapperPropsType = Pick<
   isLinked: boolean
   type: LibraryObjectType
   isSelected?: boolean
+  onClick?: () => void
 }
 const WorkflowCardWrapper = ({
   id,
@@ -33,9 +34,10 @@ const WorkflowCardWrapper = ({
   isFavourite,
   type,
   isLinked,
-  isSelected = false
+  isSelected = false,
+  onClick
 }: WorkflowCardWrapperPropsType) => {
-  /*******************************************************
+  /******************************************E*************
    * FUNCTIONS
    *******************************************************/
   const navigateToItem = useNavigateToLibraryItem()
@@ -70,7 +72,7 @@ const WorkflowCardWrapper = ({
   const code = ''
   const deleted = false
 
-  const favourite = <Favourite id={id} isFavorite={isFavourite} type={type} />
+  const favourite = <Favourite id={id} isFavourite={isFavourite} type={type} />
 
   return (
     <WorkflowCardDumb
@@ -80,7 +82,8 @@ const WorkflowCardWrapper = ({
       isDisabledLink={isDisabledLink}
       description={description}
       isSelected={isSelected}
-      onClick={() => navigateToItem(id, type)}
+      // overridden onclick handler
+      onClick={onClick ? () => onClick() : () => navigateToItem(id, type)}
       chips={chips}
       footer={<Extras />}
     />

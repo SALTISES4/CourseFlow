@@ -30,8 +30,10 @@ type PropsType = ConnectedProps & OwnProps
 
 /**
  * The workflow view with drag and drop nodes/weeks/columns
+ * ...
+ * what view is this?
  */
-class WorkflowViewUnconnected extends EditableComponentWithSorting<
+class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
   PropsType,
   StateProps
 > {
@@ -131,8 +133,6 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
    *******************************************************/
   render() {
     const data = this.props.data
-    console.log('data in workflow view ')
-    console.log(data)
 
     const columnworkflows = data.columnworkflowSet?.map(
       (columnworkflow, index) => (
@@ -159,7 +159,6 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting<
     // the workflow for drawing node ports and links
     return (
       <div className={cssClass}>
-        <WorkflowLegend />
         <div className="column-row" id={data.id + '-column-block'}>
           {columnworkflows}
         </div>
@@ -193,9 +192,9 @@ const mapStateToProps = (state: AppState): ConnectedProps => ({
   outcome: state.outcome
 })
 
-const WorkflowView = connect<ConnectedProps, object, OwnProps, AppState>(
+const WorkflowEditView = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,
   null
-)(WorkflowViewUnconnected)
+)(WorkflowEditViewUnconnected)
 
-export default WorkflowView
+export default WorkflowEditView

@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group
 from django.contrib.humanize.templatetags import humanize
 
 from course_flow.models import UpdateNotification, User
-from course_flow.models.courseFlowUser import CourseFlowUser
+from course_flow.models.user import CourseFlowUser
 from course_flow.serializers import (
     UpdateNotificationSerializer,
     UserSerializer,
@@ -25,14 +25,12 @@ def get_user_notifications(user):
     prepared_notifications = []
     for notification in user.notifications.all():
         source_user = UserSerializer(notification.source_user).data
-        source_user_name = source_user["username"]
+        source_username = source_user["username"]
         if source_user["first_name"]:
-            source_user_name = source_user["first_name"]
+            source_username = source_user["first_name"]
 
         if source_user["first_name"] and source_user["last_name"]:
-            source_user_name = (
-                f"{source_user['first_name']} {source_user['last_name']}"
-            )
+            source_username = f"{source_user['first_name']} {source_user['last_name']}"
 
         prepared_notifications.append(
             {
@@ -41,7 +39,7 @@ def get_user_notifications(user):
                 "unread": notification.is_unread,
                 "date": humanize.naturaltime(notification.created_on),
                 "text": notification.text,
-                "from": source_user_name,
+                "from": source_username,
             }
         )
 
@@ -61,17 +59,13 @@ def get_app_update_notifications(user: User):
     if last_update is not None:
         if Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all():
             courseflow_user = CourseFlowUser.ensure_user(user)
-            show_notification_request = (
-                not courseflow_user.notifications_active
-            )
+            show_notification_request = not courseflow_user.notifications_active
 
         else:
             show_notification_request = False
 
         return {
-            "updateNotifications": UpdateNotificationSerializer(
-                last_update
-            ).data,
+            "updateNotifications": UpdateNotificationSerializer(last_update).data,
             "showNotificationRequest": show_notification_request,
         }
 

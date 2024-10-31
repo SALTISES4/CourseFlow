@@ -1,14 +1,14 @@
-import { TGetWeekWorkflowByID, getWeekWorkflowByID } from '@cfFindState'
+import { TGetWeekWorkflowById, getWeekWorkflowByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import ComparisonWeek from '@cfViews/ProjectComparisonView/ComparisonWeek'
 import {
   WeekWorkflowUnconnected,
   WeekWorkflowUnconnectedProps
-} from '@cfViews/WorkflowView/componentViews/WorkflowView/components/WeekWorkflow'
+} from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WeekWorkflow'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-type ConnectedProps = TGetWeekWorkflowByID
+type ConnectedProps = TGetWeekWorkflowById
 type OwnProps = WeekWorkflowUnconnectedProps
 
 type PropsType = ConnectedProps & OwnProps
@@ -24,9 +24,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected<PropsTyp
   render() {
     const data = this.props.data
 
-    const cssClasses = ['week-workflow', data.noDrag ? 'no-drag' : ''].join(
-      ' '
-    )
+    const cssClasses = ['week-workflow', data.noDrag ? 'no-drag' : ''].join(' ')
 
     const week = (
       <ComparisonWeek
@@ -41,7 +39,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected<PropsTyp
     return (
       <div
         className={cssClasses}
-        id={data.id}
+        id={String(data.id)}
         ref={this.mainDiv}
         data-child-id={data.week}
       >
@@ -53,7 +51,7 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected<PropsTyp
 const mapWeekWorkflowStateToProps = (
   state: AppState,
   ownProps: OwnProps
-): TGetWeekWorkflowByID => {
+): TGetWeekWorkflowById => {
   return getWeekWorkflowByID(state, ownProps.objectId)
 }
 

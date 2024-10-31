@@ -1,13 +1,8 @@
-import { WebSocketService } from '@cf/HTTP/WebSocketService'
-
-type CurrentUser = {
-  userId: number
-  userName: string
-}
+import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
+import { EUser } from '@XMLHTTP/types/entity'
 
 export type ConnectedUser = {
-  userId: string
-  userName: string
+  user: EUser
   userColour: string
   connected: boolean
   timeout: NodeJS.Timeout
@@ -23,7 +18,7 @@ class WebSocketServiceConnectedUserManager {
   private updateStateCallback: UpdateStateCallback
   private connectedUsers: ConnectedUser[]
   private userUpdateInterval: NodeJS.Timeout | null
-  private currenUser: CurrentUser
+  private currenUser: EUser
 
   constructor(
     websocket: WebSocketService,
@@ -35,16 +30,21 @@ class WebSocketServiceConnectedUserManager {
     this.userUpdateInterval = null
   }
 
-  // Call this method to initiate user update intervals
-  public startUserUpdates(user: CurrentUser): void {
+  /**
+   * method to initiate user update intervals
+   * this should probably just send the id (or really nothing at all as payload)
+   **/
+  public startUserUpdates(user: EUser): void {
     this.currenUser = user
     this.userUpdateInterval = setInterval(
       () => this.sendConnectionUpdate(),
-      30000
+      10000
     )
   }
 
-  // Call this method to clear user update intervals
+  /*******************************************************
+   * Call this method to clear user update intervals
+   *******************************************************/
   public stopUserUpdates(): void {
     if (this.userUpdateInterval) {
       clearInterval(this.userUpdateInterval)
@@ -60,47 +60,45 @@ class WebSocketServiceConnectedUserManager {
       return
     }
 
+    const payLoad = {
+      user: this.currenUser,
+      userColour: calcColor(this.currenUser.id),
+      connected: connected
+    }
+
     this.websocketService.send(
       JSON.stringify({
-        type: 'connection_update',
-        userData: {
-          userId: this.currenUser.userId,
-          userName: this.currenUser.userName,
-          userColour: calcColor(Number(this.currenUser.userId)),
-          connected: connected
-        }
+        type: WS_EVENT_TYPE.CONNECTION_UPDATE,
+        payload: payLoad
       })
     )
   }
 
   public connectionUpdateReceived(userData: ConnectedUser): void {
+
     const index = this.connectedUsers.findIndex(
-      (u) => u.userId === userData.userId
+      (u) => u.user.id === userData.user.id
     )
     if (index !== -1) {
-      if (this.connectedUsers[index].timeout)
+      if (this.connectedUsers[index].timeout) {
         clearTimeout(this.connectedUsers[index].timeout)
+      }
+
       this.connectedUsers[index] = {
         ...userData,
-        timeout: setTimeout(
-          () => this.removeConnection(userData.userId),
-          60000
-        )
+        timeout: setTimeout(() => this.removeConnection(userData.user.id), 60000)
       }
     } else {
       this.connectedUsers.push({
         ...userData,
-        timeout: setTimeout(
-          () => this.removeConnection(userData.userId),
-          60000
-        )
+        timeout: setTimeout(() => this.removeConnection(userData.user.id), 60000)
       })
     }
     this.updateStateCallback(this.connectedUsers)
   }
 
-  private removeConnection(userId: string): void {
-    const index = this.connectedUsers.findIndex((u) => u.userId === userId)
+  private removeConnection(userId: number): void {
+    const index = this.connectedUsers.findIndex((u) => u.user.id === userId)
     if (index !== -1) {
       if (this.connectedUsers[index].timeout)
         clearTimeout(this.connectedUsers[index].timeout)

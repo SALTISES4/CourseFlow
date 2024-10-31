@@ -1,6 +1,7 @@
 import { CookieTypes, useCookies } from '@cf/context/cookieContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { _t } from '@cf/utility/utilityFunctions'
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import CloseIcon from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -61,19 +62,31 @@ const Welcome = ({ hide }: PropsType) => {
       <SC.Actions>
         <Button
           variant="contained"
-          onClick={() => dispatch(DialogMode.PROGRAM_CREATE)}
+          onClick={() =>
+            dispatch(DialogMode.WORKFLOW_CREATE, {
+              workflowType: WorkflowType.PROGRAM
+            })
+          }
         >
           {_t('I want to create a program')}
         </Button>
         <Button
           variant="contained"
-          onClick={() => dispatch(DialogMode.COURSE_CREATE)}
+          onClick={() =>
+            dispatch(DialogMode.WORKFLOW_CREATE, {
+              workflowType: WorkflowType.COURSE
+            })
+          }
         >
           {_t('I want to create a course')}
         </Button>
         <Button
           variant="contained"
-          onClick={() => dispatch(DialogMode.ACTIVITY_CREATE)}
+          onClick={() =>
+            dispatch(DialogMode.WORKFLOW_CREATE, {
+              workflowType: WorkflowType.ACTIVITY
+            })
+          }
         >
           {_t('I want to create an activity')}
         </Button>
