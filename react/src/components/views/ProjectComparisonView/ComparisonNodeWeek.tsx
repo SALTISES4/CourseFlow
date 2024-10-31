@@ -3,7 +3,6 @@ import { TGetNodeWeekById, getNodeWeekByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import ComparisonNode from '@cfViews/ProjectComparisonView/ComparisonNode'
 import { NodeWeekUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
-import * as React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = TGetNodeWeekById
@@ -22,10 +21,10 @@ class ComparisonNodeWeekUnconnected extends NodeWeekUnconnected<PropsType> {
     return (
       <ComparisonNode
         objectId={data.node}
-        parentID={this.props.parentID}
+        parentId={this.props.parentId}
         // @ts-ignore
         column_order={this.props.column_order}
-        // throughParentID={data.id}
+        // throughParentId={data.id}
         // legacyRenderer={this.props.renderer}
         // legacyRenderer={{
         //   task_choices: this.props.renderer.task_choices,

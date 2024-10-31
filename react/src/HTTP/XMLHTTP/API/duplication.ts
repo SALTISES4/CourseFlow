@@ -34,7 +34,7 @@ export function duplicateBaseItemQuery(
   const projectPkString = projectID
 
   // project duplicate moved to own function (was in this if statement before)
- if (objectType === CfObjectType.STRATEGY) {
+  if (objectType === CfObjectType.STRATEGY) {
     const url = apiPaths.json_api.workflow.strategy__duplicate
     sendPostRequest(url, {
       workflowPk: itemPkString
@@ -46,24 +46,4 @@ export function duplicateBaseItemQuery(
       projectPk: projectPkString
     })
   }
-}
-
-//Causes the specified object to insert a sibling after itself
-export function duplicateSelfQuery(
-  objectId: number,
-  objectType: any,
-  parentID: number,
-  parentType: any,
-  throughType: any,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
-) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_self, {
-    parentID: parentID,
-    parentType: parentType,
-    objectId: objectId,
-    objectType: objectType,
-    throughType: throughType
-  }).then((response: EmptyPostResp) => {
-    callBackFunction(response)
-  })
 }

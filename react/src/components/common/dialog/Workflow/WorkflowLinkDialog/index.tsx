@@ -20,15 +20,19 @@ function WorkflowLinkDialog({ id }: any) {
 
   const getContent = () => {
     if (show) {
-      if (workflowData == null) getLinkedWorkflowMenuQuery(id, setWorkflowData)
-      else
+      if (workflowData == null) {
+        getLinkedWorkflowMenuQuery(id, setWorkflowData)
+      } else {
         return (
           <LinkWorkflowDialogContents
             data={workflowData}
             onDialogClose={onDialogClose}
           />
         )
-    } else return null
+      }
+    } else {
+      return null
+    }
   }
 
   return (

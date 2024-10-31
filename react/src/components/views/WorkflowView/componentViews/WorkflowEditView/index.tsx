@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import {
   EditableComponentWithSortingProps,
@@ -37,8 +37,8 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
   PropsType,
   StateProps
 > {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   constructor(props: PropsType) {
     super(props)
@@ -139,7 +139,7 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
         <ColumnWorkflow
           key={`columnworkflow-${columnworkflow}`}
           objectId={columnworkflow}
-          parentID={data.id}
+          parentId={data.id}
         />
       )
     )
@@ -148,12 +148,14 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
         condensed={data.condensed}
         key={`weekworkflow-${weekworkflow}`}
         objectId={weekworkflow}
-        parentID={data.id}
+        parentId={data.id}
       />
     ))
 
     let cssClass = 'workflow-details'
-    if (data.condensed) cssClass += ' condensed'
+    if (data.condensed) {
+      cssClass += ' condensed'
+    }
 
     // We render an svg canvas in front of the rest of
     // the workflow for drawing node ports and links
@@ -165,6 +167,9 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
         <div className="week-block" id={data.id + '-week-block'}>
           {weekworkflows}
         </div>
+        {/*
+        PLACEHOLDER PORTAL TARGET FOR ALL KINDS OF STUFF
+        */}
         <svg className="workflow-canvas" width="100%" height="100%">
           <defs>
             <marker

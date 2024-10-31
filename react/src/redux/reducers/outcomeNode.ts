@@ -20,7 +20,9 @@ export default function outcomeNodeReducer(
     }
 
     case CommonActions.REFRESH_STOREDATA: {
-      if (!action.payload.outcomenode) return state
+      if (!action.payload.outcomenode) {
+        return state
+      }
 
       const updatedItems = action.payload.outcomenode
         .map((newItem) => {

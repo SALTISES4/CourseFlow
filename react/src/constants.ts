@@ -1,4 +1,5 @@
 import { NumTuple } from '@cf/types/common'
+import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Utility from '@cfUtility'
 import { LanguageOptions } from '@XMLHTTP/API/user.rtk'
@@ -171,47 +172,61 @@ export const defaultDropState = {
 /*******************************************************
  * FUNCTIONS
  *******************************************************/
-export const getVerbose = function (data, objectType) {
-  switch (objectType) {
-    case 'node':
-      return data.nodeTypeDisplay
-    case 'workflow':
-    case 'activity':
-    case 'course':
-    case 'program':
-      return {
-        activity: _t('Activity'),
-        course: _t('Course'),
-        program: _t('Program'),
-        workflow: _t('Workflow')
-      }[data.type]
-    case 'week':
-      return data.weekTypeDisplay
-  }
-  return {
-    outcomeBase: _t('Outcome'),
-    nodelink: _t('Node Link'),
-    outcome: _t('Outcome'),
-    column: _t('Column'),
-    project: _t('Project'),
-    outcomehorizontallink: _t('Association to the parent outcome'),
-    outcomenode: _t('Association to the outcome')
-  }[objectType]
+
+/**
+ * this should be simplified
+ **/
+export const getLabelForCfObject = function ({
+  objectType
+}: {
+  objectType: CfObjectType
+}) {
+  return String(objectType)
+  // switch (objectType) {
+  //   case CfObjectType.NODE:
+  //     return data.nodeTypeDisplay
+  //
+  //   case CfObjectType.WORKFLOW:
+  //     return {
+  //       activity: _t('Activity'),
+  //       course: _t('Course'),
+  //       program: _t('Program'),
+  //       workflow: _t('Workflow')
+  //     }[data.type]
+  //
+  //   case CfObjectType.WEEK:
+  //     return data.weekTypeDisplay
+  // }
+  // return {
+  //   outcomeBase: _t('Outcome'),
+  //   nodelink: _t('Node Link'),
+  //   outcome: _t('Outcome'),
+  //   column: _t('Column'),
+  //   project: _t('Project'),
+  //   outcomehorizontallink: _t('Association to the parent outcome'),
+  //   outcomenode: _t('Association to the outcome')
+  // }[objectType]
 }
 
 export const getDefaultDropState = (objectId, objectType, depth = 1) => {
   let default_drop = defaultDropState[objectType]
   if (objectType === 'outcome') {
-    if (depth < default_drop.length) default_drop = default_drop[depth]
-    else default_drop = false
+    if (depth < default_drop.length) {
+      default_drop = default_drop[depth]
+    } else {
+      default_drop = false
+    }
   }
   return default_drop
 }
 
 // Get the colour from a column
 export function getColumnColour(data) {
-  if (data.colour == null) return defaultColumnSettings[data.columnType].colour
-  else return '#' + ('000000' + data.colour?.toString(16)).slice(-6)
+  if (data.colour == null) {
+    return defaultColumnSettings[data.columnType].colour
+  } else {
+    return '#' + ('000000' + data.colour?.toString(16)).slice(-6)
+  }
 }
 
 //get all possible object sets

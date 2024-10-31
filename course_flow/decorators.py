@@ -155,7 +155,7 @@ def get_model_from_request(model, body, **kwargs):
     else:
         get_parent = kwargs.get("get_parent", False)
         if get_parent:
-            request_data = body.get("parentID")
+            request_data = body.get("parentId")
             if request_data is None:
                 pk = None
                 model = None

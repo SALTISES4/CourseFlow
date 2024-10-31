@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
@@ -38,8 +38,8 @@ export class OutcomeEditViewUnconnected<
   P extends PropsType,
   S extends StateType
 > extends EditableComponentWithSorting<P, S> {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   constructor(props: P) {
     super(props)
@@ -144,7 +144,9 @@ export class OutcomeEditViewUnconnected<
             <div className="outcome-category-block">
               {category.outcomes.map((outcome) => {
                 let my_class = 'outcome-workflow'
-                if (outcome.through_noDrag) my_class += ' no-drag'
+                if (outcome.through_noDrag) {
+                  my_class += ' no-drag'
+                }
                 return (
                   <div
                     className={my_class}
@@ -155,7 +157,7 @@ export class OutcomeEditViewUnconnected<
                     <Outcome
                       key={outcome.id}
                       objectId={outcome.id}
-                      parentID={this.props.workflow.id}
+                      parentId={this.props.workflow.id}
                       //renderer={this.props.renderer}
                       show_horizontal={true}
                     />

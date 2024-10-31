@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
 import { EditableComponentWithSortingState } from '@cfEditableComponents/EditableComponentWithSorting'
@@ -26,7 +26,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
   PropsType,
   StateProps
 > {
-  static contextType = WorkFlowConfigContext
+  static contextType = WorkflowConfigContext
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
@@ -91,7 +91,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
         condensed={data.condensed}
         key={weekworkflow}
         objectId={weekworkflow}
-        parentID={data.id}
+        parentId={data.id}
         // renderer={renderer}
       />
     ))

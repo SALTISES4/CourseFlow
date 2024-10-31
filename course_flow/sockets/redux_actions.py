@@ -84,27 +84,31 @@ def changeThroughID(through_type, old_id, new_id, extra_data):
     }
 
 
-def deleteSelfAction(id, objectType, parentID, extra_data):
+def deleteSelfAction(id, objectType, parentId, extra_data):
     return {
         "type": objectType + "/deleteSelf",
-        "payload": {"id": id, "parent_id": parentID, "extra_data": extra_data},
+        "payload": {"id": id, "parent_id": parentId, "extra_data": extra_data},
     }
 
 
-def deleteSelfSoftAction(id, objectType, parentID, extra_data):
+def deleteSelfSoftAction(id, objectType, parentId, extra_data):
     return {
         "type": objectType + "/deleteSelfSoft",
-        "payload": {"id": id, "parent_id": parentID, "extra_data": extra_data},
+        "payload": {
+            "id": id,
+            "parent_id": parentId,
+            "extra_data": extra_data,
+        },
     }
 
 
-def restoreSelfAction(id, objectType, parentID, throughparentID, throughparent_index, extra_data):
+def restoreSelfAction(id, objectType, parentId, throughparentId, throughparent_index, extra_data):
     return {
         "type": objectType + "/restoreSelf",
         "payload": {
             "id": id,
-            "parent_id": parentID,
-            "throughparent_id": throughparentID,
+            "parent_id": parentId,
+            "throughparent_id": throughparentId,
             "throughparent_index": throughparent_index,
             "extra_data": extra_data,
         },

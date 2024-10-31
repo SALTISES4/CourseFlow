@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
@@ -6,9 +6,11 @@ import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
 import { TOutcomeNodeByID, getOutcomeNodeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -17,7 +19,7 @@ type ConnectedProps = {
 }
 
 type OwnProps = {
-  parentID?: number // is this required:
+  parentId?: number // is this required:
   outcomesType?: any
   deleteSelfOverride?: any
   objectId?: number
@@ -32,8 +34,8 @@ type PropsType = ConnectedProps & OwnProps
  *
  */
 class OutcomeNodeUnconnected extends React.Component<PropsType> {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   objectType: CfObjectType
   mainDiv: React.RefObject<HTMLDivElement>
@@ -65,7 +67,9 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
    *******************************************************/
 
   deleteSelf(data) {
-    if (this.props.deleteSelfOverride) this.props.deleteSelfOverride()
+    if (this.props.deleteSelfOverride) {
+      this.props.deleteSelfOverride()
+    }
     //Temporary confirmation; add better confirmation dialogue later
     else {
       COURSEFLOW_APP.tinyLoader.startLoad()
@@ -95,7 +99,9 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
 
       if (numOutcomenodes === 0) {
         indicator.css('display', 'none')
-      } else indicator.css('display', '')
+      } else {
+        indicator.css('display', '')
+      }
     }
   }
 
@@ -110,7 +116,7 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
     const icon = 'close.svg'
     return (
       <ActionButton
-        buttonIcon={icon}
+        buttonIcon={<DeleteIcon />}
         buttonClass="delete-self-button"
         titleText={_t('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
@@ -123,12 +129,16 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.outcomeNode?.data
-    if (!data) return <></>
+    if (!data) {
+      return <></>
+    }
 
     // @todo component blows up on re-render by losing redux state
     // results in
 
-    if (data?.outcome === -1 || !data?.outcome) return null
+    if (data?.outcome === -1 || !data?.outcome) {
+      return null
+    }
 
     return (
       <div
@@ -152,8 +162,8 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
           comments={true}
           edit={true}
           objectId={data.outcome}
-          parentID={this.props.parentID}
-          throughParentID={data.id}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
         />
       </div>
     )

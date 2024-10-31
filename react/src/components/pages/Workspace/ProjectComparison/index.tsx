@@ -1,5 +1,5 @@
 // @ts-nocheck
-import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
+import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
 import legacyWithRouter from '@cf/HOC/legacyWithRouter'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import Workflow from '@cfPages/Workspace/Workflow'
@@ -107,7 +107,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
 //
 //     return (
 //       <Provider store={this.store}>
-//         <WorkFlowConfigProvider initialValue={this}>
+//         <WorkflowConfigProvider initialValue={this}>
 //           {/*
 //           see:
 //             getWorkflowContextQuery(t
@@ -117,7 +117,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
 //             don't bother troubleshooting this until you are ready to unpack that
 //           */}
 //           <ComparisonWorkflowBase viewType={this.state.viewType} />
-//         </WorkFlowConfigProvider>
+//         </WorkflowConfigProvider>
 //       </Provider>
 //     )
 //   }

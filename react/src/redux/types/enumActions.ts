@@ -5,7 +5,7 @@ export enum CommonActions {
   CLEAR_WORKFLOW_DATA = 'clearWorkflowData'
 }
 
-export enum WorkFlowActions {
+export enum WorkflowActions {
   CREATELOCK = 'workflow/createLock',
   changeField = 'workflow/changeField',
   DELETE_SELF_SOFT = 'workflow/deleteSelfSoft',

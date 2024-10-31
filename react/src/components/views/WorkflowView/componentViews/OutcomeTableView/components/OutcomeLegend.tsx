@@ -1,5 +1,5 @@
 import LegendLine from '@cf/components/common/UIPrimitives/LegendLine'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import Slider from '@cfComponents/UIPrimitives/Slider'
@@ -8,7 +8,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 const OutcomeLegend: React.FC = () => {
-  const workFlowConfigContext = useContext(WorkFlowConfigContext)
+  const workFlowConfigContext = useContext(WorkflowConfigContext)
 
   const [showLegend, setShowLegend] = useState<boolean>(() => {
     return !!JSON.parse(localStorage.getItem('show_legend'))

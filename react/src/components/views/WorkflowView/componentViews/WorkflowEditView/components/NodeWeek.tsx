@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 type ConnectedProps = TGetNodeWeekById
 type OwnProps = {
   objectId: number
-  parentID: number
+  parentId: number
   column_order: any
   // renderer: any
 }
@@ -36,9 +36,8 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
     return (
       <Node
         objectId={data.node}
-        parentID={this.props.parentID}
-        // @ts-ignore
-        throughParentID={data.id}
+        parentId={this.props.parentId}
+        throughParentId={data.id}
         column_order={this.props.column_order}
       />
     )
@@ -50,7 +49,9 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
   render() {
     const data = this.props.data
     let my_class = 'node-week'
-    if (data.noDrag) my_class += ' no-drag'
+    if (data.noDrag) {
+      my_class += ' no-drag'
+    }
 
     return (
       <div
@@ -58,7 +59,6 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
         id={data.id}
         data-child-id={data.node}
         data-column-id={this.props.column}
-
         // ref={this.mainDiv} // @todo this is not defined
       >
         <this.NodeWrapper />

@@ -61,7 +61,7 @@ const MenuButton = ({
       <StyledButton
         disabled={disabled}
         variant="outlined"
-        endIcon={disabled ? null : icon ?? <KeyboardArrowDownIcon />}
+        endIcon={disabled ? null : (icon ?? <KeyboardArrowDownIcon />)}
         onClick={onButtonClick}
         menuActive={!!menuAnchor}
       >

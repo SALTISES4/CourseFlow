@@ -1,6 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
+import EditableComponent from '@cfEditableComponents/EditableComponent'
 import {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType
@@ -16,7 +16,6 @@ import GridNode from './GridNode'
  * A block representing a term in the grid view
  */
 type OwnProps = {
-  // renderer: any
   rank: number
   data: any
 } & EditableComponentWithCommentsType
@@ -35,7 +34,7 @@ type ConnectedProps = {
 
 type PropsType = OwnProps & ConnectedProps
 
-class GridWeekUnconnected extends EditableComponentWithComments<
+class GridWeekUnconnected extends EditableComponent<
   PropsType,
   EditableComponentWithCommentsStateType
 > {
@@ -71,7 +70,10 @@ class GridWeekUnconnected extends EditableComponentWithComments<
         ref={this.mainDiv}
         style={this.getBorderStyle()}
         onClick={(evt) =>
-          this.context.selectionManager.changeSelection({ evt, newSelection: this })
+          this.context.selectionManager.changeSelection({
+            evt,
+            newSelection: this
+          })
         }
       >
         <div className="week-title">
@@ -115,19 +117,22 @@ const mapStateToProps = (
   // so this will always be false, verify and remove check
   const override_data = nodes_data.map((node) => {
     // @ts-ignore
-    if (node.representsWorkflow)
+    if (node.representsWorkflow) {
       return {
         ...node,
         // @ts-ignore
         ...node.linkedWorkflowData
       }
-    else return node
+    } else {
+      return node
+    }
   })
 
   const general_education = override_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.timeGeneralHours)
+      if (currentValue && currentValue.timeGeneralHours) {
         return previousValue + currentValue.timeGeneralHours
+      }
       return previousValue
     },
     0
@@ -135,23 +140,26 @@ const mapStateToProps = (
 
   const specific_education = override_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.timeSpecificHours)
+      if (currentValue && currentValue.timeSpecificHours) {
         return previousValue + currentValue.timeSpecificHours
+      }
       return previousValue
     },
     0
   )
 
   const total_theory = override_data.reduce((previousValue, currentValue) => {
-    if (currentValue && currentValue.ponderationTheory)
+    if (currentValue && currentValue.ponderationTheory) {
       return previousValue + currentValue.ponderationTheory
+    }
     return previousValue
   }, 0)
 
   const total_practical = override_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationPractical)
+      if (currentValue && currentValue.ponderationPractical) {
         return previousValue + currentValue.ponderationPractical
+      }
       return previousValue
     },
     0
@@ -159,8 +167,9 @@ const mapStateToProps = (
 
   const total_individual = override_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationIndividual)
+      if (currentValue && currentValue.ponderationIndividual) {
         return previousValue + currentValue.ponderationIndividual
+      }
       return previousValue
     },
     0
@@ -169,8 +178,9 @@ const mapStateToProps = (
   const total_time = total_theory + total_practical + total_individual
 
   const total_required = override_data.reduce((previousValue, currentValue) => {
-    if (currentValue && currentValue.timeRequired)
+    if (currentValue && currentValue.timeRequired) {
       return previousValue + parseInt(currentValue.timeRequired)
+    }
     return previousValue
   }, 0)
 

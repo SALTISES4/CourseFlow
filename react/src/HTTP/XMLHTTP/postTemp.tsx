@@ -11,9 +11,12 @@ export function openWorkflowSelectMenu(response, updateFunction) {
 //Called when a node should have its column changed
 export function columnChanged(selectionManager, objectId, columnID) {
   // @todo ?? dragAction is never defined outside this file
-  if (!selectionManager.dragAction) selectionManager.dragAction = {}
-  if (!selectionManager.dragAction['nodeweek'])
+  if (!selectionManager.dragAction) {
+    selectionManager.dragAction = {}
+  }
+  if (!selectionManager.dragAction['nodeweek']) {
     selectionManager.dragAction['nodeweek'] = {}
+  }
 
   selectionManager.dragAction['nodeweek'] = {
     ...selectionManager.dragAction['nodeweek'],
@@ -36,31 +39,35 @@ export function insertedAt(
   selectionManager,
   objectId,
   objectType,
-  parentID,
+  parentId,
   parentType,
   newPosition,
   throughType
 ) {
   console.log('inserted at')
 
-  if (!selectionManager.dragAction) selectionManager.dragAction = {}
-  if (!selectionManager.dragAction[throughType])
+  if (!selectionManager.dragAction) {
+    selectionManager.dragAction = {}
+  }
+  if (!selectionManager.dragAction[throughType]) {
     selectionManager.dragAction[throughType] = {}
+  }
   selectionManager.dragAction[throughType] = {
     ...selectionManager.dragAction[throughType],
     objectId: objectId,
     objectType: objectType,
-    parentID: parentID,
+    parentId: parentId,
     parentType: parentType,
     newPosition: newPosition,
     throughType: throughType,
     inserted: true
   }
   $(document).off(throughType + '-dropped')
-  if (objectId)
+  if (objectId) {
     $(document).on(throughType + '-dropped', () => {
       dragAction(selectionManager.dragAction[throughType])
       selectionManager.dragAction[throughType] = null
       $(document).off(throughType + '-dropped')
     })
+  }
 }

@@ -33,8 +33,9 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component<PropsTy
           this.props.restriction_set &&
           this.props.restriction_set.weeks &&
           this.props.restriction_set.weeks.indexOf(week) == -1
-        )
+        ) {
           return null
+        }
         const week_rank = weekworkflow.rank
 
         const week_component = (

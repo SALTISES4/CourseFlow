@@ -1,10 +1,10 @@
 import * as Constants from '@cf/constants'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
 import Slider from '@cfComponents/UIPrimitives/Slider'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TNode, TWeek } from '@cfRedux/types/type'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -15,7 +15,7 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * first pass on FV conversion is done
  *******************************************************/
 const WorkflowLegend = () => {
-  const workFlowConfigContext = React.useContext(WorkFlowConfigContext)
+  const workFlowConfigContext = React.useContext(WorkflowConfigContext)
 
   const [showLegend, setShowLegend] = useState<boolean>(() => {
     return JSON.parse(localStorage.getItem('show_legend'))
@@ -36,26 +36,27 @@ const WorkflowLegend = () => {
   }
 
   // Redux state selections
-  const contexts = useSelector((state: AppState) =>
-    state.node
-      .map((node) => parseInt(node.contextClassification.toString(), 10))
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .filter((value) => value > 0)
+  const stateNodes = useSelector<AppState, TNode[]>(
+    (state: AppState) => state.node
+  )
+  const stateWeeks = useSelector<AppState, TWeek[]>(
+    (state: AppState) => state.week
   )
 
-  const tasks = useSelector((state: AppState) =>
-    state.node
-      .map((node) => parseInt(node.taskClassification.toString(), 10))
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .filter((value) => value > 0)
-  )
+  const contexts = stateNodes
+    .map((node) => parseInt(node.contextClassification.toString(), 10))
+    .filter((value, index, self) => self.indexOf(value) === index)
+    .filter((value) => value > 0)
 
-  const strategies = useSelector((state: AppState) =>
-    state.week
-      .map((week) => parseInt(week.strategyClassification.toString(), 10))
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .filter((value) => value > 0)
-  )
+  const tasks = stateNodes
+    .map((node) => parseInt(node.taskClassification.toString(), 10))
+    .filter((value, index, self) => self.indexOf(value) === index)
+    .filter((value) => value > 0)
+
+  const strategies = stateWeeks
+    .map((week) => parseInt(week.strategyClassification.toString(), 10))
+    .filter((value, index, self) => self.indexOf(value) === index)
+    .filter((value) => value > 0)
 
   const getSlider = () => {
     if (showSlider) {

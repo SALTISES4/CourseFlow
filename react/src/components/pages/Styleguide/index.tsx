@@ -7,8 +7,6 @@ const Styleguide = () => {
       <Typography variant="h3" sx={{ mb: 4 }}>
         Courseflow Styleguide
       </Typography>
-
-
     </OuterContentWrap>
   )
 }

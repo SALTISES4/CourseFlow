@@ -18,6 +18,9 @@ class NodeBarColumnCreator extends NodeBarColumnUnconnected<NodeBarColumnUnconne
    *******************************************************/
   componentDidMount() {
     this.makeDraggable()
+
+    // @todo HACK, this is being used to bypass react and pass information around the DOM
+
     // @ts-ignore
     $(this.mainDiv.current)[0].dataDraggable = {
       column: null,

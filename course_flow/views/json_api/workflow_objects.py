@@ -94,7 +94,7 @@ class WorkflowObjectEndpoint:
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
         object_type = body.get("objectType")
-        parent_id = body.get("parentID")
+        parent_id = body.get("parentId")
         parent_type = body.get("parentType")
         through_type = body.get("throughType")
         node_updates = []
@@ -116,7 +116,8 @@ class WorkflowObjectEndpoint:
                         newmodel.title = newmodel.title + _("(copy)")
                         newmodel.save()
                     except (ValidationError, TypeError):
-                        pass
+                        logger.exception("An error occurred")
+
                     new_model_serialized = WeekSerializerShallow(newmodel).data
                     new_through_serialized = WeekWorkflowSerializerShallow(newthroughmodel).data
                     new_children_serialized = {
@@ -153,7 +154,8 @@ class WorkflowObjectEndpoint:
                         newmodel.title = newmodel.title + _("(copy)")
                         newmodel.save()
                     except (ValidationError, TypeError):
-                        pass
+                        logger.exception("An error occurred")
+
                     new_model_serialized = NodeSerializerShallow(
                         newmodel, context={"user": request.user}
                     ).data
@@ -250,7 +252,7 @@ class WorkflowObjectEndpoint:
         response_data = {
             "new_model": new_model_serialized,
             "new_through": new_through_serialized,
-            "parentID": parent_id,
+            "parentId": parent_id,
             "children": new_children_serialized,
             "node_updates": node_updates,
         }
@@ -366,7 +368,7 @@ class WorkflowObjectEndpoint:
             "new_through": new_through_serialized,
             "children": children,
             "node_updates": node_updates,
-            "parentID": parent_id,
+            "parentId": parent_id,
         }
         workflow = model.get_workflow()
         if object_type == "outcome" and through_type == "outcomeworkflow":
@@ -563,7 +565,7 @@ class WorkflowObjectEndpoint:
                 response_data = {
                     "new_model": new_model_serialized,
                     "new_through": new_through_serialized,
-                    "parentID": parent_id,
+                    "parentId": parent_id,
                     "children": new_children_serialized,
                 }
 

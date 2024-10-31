@@ -42,9 +42,9 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
       if (
         props.outcome[i].childOutcomeLinks.length === 0 ||
         props.outcome[i].depth >= 2
-      )
+      ) {
         children = []
-      else
+      } else {
         children = filterThenSortByID(
           props.outcomeoutcome,
           props.outcome[i].childOutcomeLinks
@@ -52,6 +52,7 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           // @ts-ignore
           createOutcomeNodeBranch(props, outcomeoutcome.child, nodecategory)
         )
+      }
 
       const outcomenodes = []
 
@@ -81,7 +82,9 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
               break
             }
           }
-          if (!added) outcomenodes_group.push({ nodeId: node, degree: null })
+          if (!added) {
+            outcomenodes_group.push({ nodeId: node, degree: null })
+          }
         }
         let total = null
         if (children.length > 0) {
@@ -89,14 +92,22 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           let all_null = true
           for (let k = 0; k < children.length; k++) {
             var child_total = children[k].outcomenodes[ii].total
-            if (child_total !== null) all_null = false
+            if (child_total !== null) {
+              all_null = false
+            }
             total &= child_total
           }
-          if (all_null) total = null
+          if (all_null) {
+            total = null
+          }
         } else {
           total = outcomenodes_group.reduce((acc, curr) => {
-            if (curr.degree === null) return acc
-            if (acc === null) return curr.degree
+            if (curr.degree === null) {
+              return acc
+            }
+            if (acc === null) {
+              return curr.degree
+            }
             return acc | curr.degree
           }, null)
         }
@@ -110,14 +121,22 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
         let all_null = true
         for (let k = 0; k < children.length; k++) {
           var child_total = children[k].outcomenodes.total
-          if (child_total !== null) all_null = false
+          if (child_total !== null) {
+            all_null = false
+          }
           total &= child_total
         }
-        if (all_null) total = null
+        if (all_null) {
+          total = null
+        }
       } else {
         total = outcomenodes.reduce((acc, curr) => {
-          if (curr.total === null) return acc
-          if (acc === null) return curr.total
+          if (curr.total === null) {
+            return acc
+          }
+          if (acc === null) {
+            return curr.total
+          }
           return acc | curr.total
         }, null)
       }
@@ -130,7 +149,9 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
 }
 
 function createChildren(outcome, props, nodeCategories) {
-  if (outcome.childOutcomeLinks.length === 0 || outcome.depth >= 2) return []
+  if (outcome.childOutcomeLinks.length === 0 || outcome.depth >= 2) {
+    return []
+  }
 
   return outcome.childOutcomeLinks.map((link) =>
     createOutcomeNodeBranch(props, link.child, nodeCategories)
@@ -146,7 +167,9 @@ function createOutcomeNodesGroup(
 ) {
   const outcomenodesGroup = category.nodes.map((node) => {
     const outcomenode = getOutcomeNode(props, node, outcomeId)
-    if (outcomenode) return { nodeId: node, degree: outcomenode.degree }
+    if (outcomenode) {
+      return { nodeId: node, degree: outcomenode.degree }
+    }
 
     return createOutcomeNodeForChildren(node, children, categoryIndex)
   })
@@ -177,7 +200,9 @@ function calculateGroupTotal(children, outcomenodesGroup) {
     return calculateTotalForChildren(children, outcomenodesGroup)
   }
   return outcomenodesGroup.reduce((acc, curr) => {
-    if (curr.degree === null) return acc
+    if (curr.degree === null) {
+      return acc
+    }
     return acc === null ? curr.degree : acc | curr.degree
   }, null)
 }
@@ -187,7 +212,9 @@ function calculateTotalForChildren(children, outcomenodesGroup) {
   let allNull = true
   for (const child of children) {
     const childTotal = outcomenodesGroup.map((group) => group.total)
-    if (childTotal !== null) allNull = false
+    if (childTotal !== null) {
+      allNull = false
+    }
     total &= childTotal
   }
   return allNull ? null : total
@@ -197,13 +224,17 @@ function calculateTotal(children, outcomenodes) {
   if (children.length > 0) {
     return children.reduce((acc, child) => {
       const childTotal = child?.outcomenodes.total
-      if (childTotal !== null) return acc & childTotal
+      if (childTotal !== null) {
+        return acc & childTotal
+      }
       return acc
     }, 15)
   }
   return outcomenodes.reduce((acc, group) => {
     const groupTotal = group.total
-    if (groupTotal === null) return acc
+    if (groupTotal === null) {
+      return acc
+    }
     return acc === null ? groupTotal : acc | groupTotal
   }, null)
 }

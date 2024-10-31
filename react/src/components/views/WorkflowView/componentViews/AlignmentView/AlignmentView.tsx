@@ -60,8 +60,9 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
               this.state.sort == 'outcome' &&
               i == this.state.active &&
               j == this.state.active2
-            )
+            ) {
               view_class += ' active'
+            }
             return (
               <div
                 id={'button-outcome-' + outcome.data.id}
@@ -82,8 +83,9 @@ class AlignmentView extends React.Component<PropsType, StateProps> {
     //Choices of terms (weeks) to sort by
     const view_buttons_terms = this.props.terms.map((week, index: number) => {
       let view_class = 'hover-shade'
-      if (this.state.sort == 'week' && index == this.state.active)
+      if (this.state.sort == 'week' && index == this.state.active) {
         view_class += ' active'
+      }
       return (
         <div
           key={index}

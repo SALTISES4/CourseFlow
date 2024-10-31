@@ -29,8 +29,12 @@ class ComparisonViewBar extends React.Component<PropsType> {
         .sort((a, b) => {
           const x = a.term
           const y = b.term
-          if (x < y) return -1
-          if (x > y) return 1
+          if (x < y) {
+            return -1
+          }
+          if (x > y) {
+            return 1
+          }
           return 0
         })
         .map((set, index) => (

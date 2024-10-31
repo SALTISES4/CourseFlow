@@ -1,11 +1,11 @@
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useGetCurrentUserQuery } from '@XMLHTTP/API/user.rtk'
-import {EUser} from "@XMLHTTP/types/entity";
+import { EUser } from '@XMLHTTP/types/entity'
 import React, { ReactNode } from 'react'
 
 type UserContextType = {
   id: number
-  user: EUser,
+  user: EUser
   changeFieldID: number
 }
 
@@ -21,7 +21,9 @@ const UserProvider = ({ children }: UserProviderProps) => {
 
   const changeFieldId = Math.floor(Math.random() * 10000)
 
-  if (isLoading) return <Loader />
+  if (isLoading) {
+    return <Loader />
+  }
 
   return (
     <UserContext.Provider

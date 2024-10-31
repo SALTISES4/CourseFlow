@@ -71,7 +71,9 @@ const FilterWorkflowResults = ({
   const navigateToItem = useNavigateToLibraryItem()
   const { data, error, isLoading, isError } = useLibraryObjectsSearchQuery({})
 
-  if (isError) return <div>error</div>
+  if (isError) {
+    return <div>error</div>
+  }
 
   const res = data?.dataPackage?.items || []
 
@@ -122,7 +124,9 @@ const LibrarySearchView = ({
     useLibraryObjectsSearchQuery(searchArgs)
 
   useEffect(() => {
-    if (!defaultOptionsSearchOptions) return
+    if (!defaultOptionsSearchOptions) {
+      return
+    }
 
     const args = LibraryHelper.reduceStateToSearchArgs(searchFilterState)
 
@@ -169,7 +173,9 @@ const LibrarySearchView = ({
    **/
 
   const renderSort = () => {
-    if (!config.sortOptions) return <></>
+    if (!config.sortOptions) {
+      return <></>
+    }
 
     return (
       <SortableFilterButton
@@ -194,7 +200,9 @@ const LibrarySearchView = ({
   }
 
   const renderRelationshipFilter = () => {
-    if (!config.filterGroups.relationshipFilter) return <></>
+    if (!config.filterGroups.relationshipFilter) {
+      return <></>
+    }
 
     const filterGroup = searchFilterState.filterGroups.relationshipFilter
     const { options, name } = filterGroup
@@ -229,7 +237,9 @@ const LibrarySearchView = ({
   }
 
   const renderWorkspaceTypeFilter = () => {
-    if (!config.filterGroups.workspaceTypeFilter) return <></>
+    if (!config.filterGroups.workspaceTypeFilter) {
+      return <></>
+    }
 
     const filterGroup = searchFilterState.filterGroups.workspaceTypeFilter
 
@@ -269,7 +279,9 @@ const LibrarySearchView = ({
    *  DisciplineFilter
    *******************************************************/
   const renderDisciplineFilter = useCallback(() => {
-    if (!config.filterGroups.disciplineFilter) return <></>
+    if (!config.filterGroups.disciplineFilter) {
+      return <></>
+    }
 
     return (
       <>
@@ -299,7 +311,9 @@ const LibrarySearchView = ({
    *  IS TEMPLATE
    *******************************************************/
   const renderTemplateFilter = () => {
-    if (!config.filterGroups.templateFilter) return <></>
+    if (!config.filterGroups.templateFilter) {
+      return <></>
+    }
     return (
       <>
         <FilterToggle
@@ -355,7 +369,9 @@ const LibrarySearchView = ({
       ))
     }
 
-    if (!data) return <NotFoundView />
+    if (!data) {
+      return <NotFoundView />
+    }
     if (isError) {
       return (
         <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />

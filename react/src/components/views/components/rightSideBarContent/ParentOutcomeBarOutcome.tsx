@@ -1,6 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
-import {OutcomeTitle} from "@cfComponents/UIPrimitives/Titles.ts";
+import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import {
   TGetOutcomeByID,
   TOutcomeOutcomeByID,
@@ -36,8 +36,8 @@ class ParentOutcomeOutcomeUnconnected extends React.Component<ParentOutcomeOutco
       <div className="outcome-outcome" id={String(this.props.data.id)}>
         <ParentOutcome
           objectId={this.props.data.child} // @todo was data.child
-          parentID={this.props.parentID}
-          throughParentID={this.props.data.id}
+          parentId={this.props.parentId}
+          throughParentId={this.props.data.id}
           readOnly={this.props.readOnly}
           // renderer={this.props.renderer}
         />
@@ -85,7 +85,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
       <ParentOutcomeOutcome
         key={item}
         objectId={item}
-        parentID={Number(data.id)}
+        parentId={Number(data.id)}
         readOnly={this.props.readOnly}
         // renderer={this.props.renderer}
       />

@@ -30,7 +30,9 @@ const ActionMenu = () => {
     deleteProject
   } = useMenuActions()
 
-  if (isLoading) return <></>
+  if (isLoading) {
+    return <></>
+  }
   const project = data.dataPackage
   const projectPermission = calcProjectPermissions(project.userPermissions)
 

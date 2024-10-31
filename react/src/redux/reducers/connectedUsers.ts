@@ -68,8 +68,9 @@ export default function columnReducer(
         action.payload.changeFieldID ===
         // @ts-ignore
         COURSEFLOW_APP.contextData.changeFieldID
-      )
+      ) {
         return state
+      }
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }

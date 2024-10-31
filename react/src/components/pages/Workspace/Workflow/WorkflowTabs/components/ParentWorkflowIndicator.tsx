@@ -2,7 +2,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 import * as SC from '@cfComponents/globalNav/Sidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TNode } from '@cfRedux/types/type'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -20,26 +20,18 @@ type WorkflowNode = {
   deleted: boolean
 }
 
-type WorkflowReduxState = {
-  childWorkflows: WorkflowNode[]
-}
-
-function ParentWorkflowIndicator() {
+const ParentWorkflowIndicator = () => {
   const { id } = useParams()
-
-  const { childWorkflows } = useSelector<AppState, WorkflowReduxState>(
-    (state) => ({
-      childWorkflows: state.node
-        .filter((node) => node.linkedWorkflowData)
-        .map((node) => ({
-          id: node.linkedWorkflow,
-          title: node.linkedWorkflowData?.title || '',
-          description: node.linkedWorkflowData?.description || '',
-          url: node.linkedWorkflowData?.url || '',
-          deleted: node.linkedWorkflowData?.deleted || false
-        }))
-    })
-  )
+  const nodes = useSelector<AppState, TNode[]>((state) => state.node)
+  const childWorkflows = nodes
+    .filter((node) => node.linkedWorkflowData)
+    .map((node) => ({
+      id: node.linkedWorkflow,
+      title: node.linkedWorkflowData?.title || '',
+      description: node.linkedWorkflowData?.description || '',
+      url: node.linkedWorkflowData?.url || '',
+      deleted: node.linkedWorkflowData?.deleted || false
+    }))
 
   const { data, error, isLoading, isError } = useGetParentWorkflowInfoQuery(
     {
@@ -50,13 +42,17 @@ function ParentWorkflowIndicator() {
     }
   )
 
-  if (!id) return null
+  if (!id) {
+    return null
+  }
 
   /*******************************************************
    * RENDER COMPONENTS
    *******************************************************/
   const ParentWorkflows = () => {
-    if (isLoading) return <Loader />
+    if (isLoading) {
+      return <Loader />
+    }
 
     if (!data || !data.parentWorkflows.length) {
       return <></>

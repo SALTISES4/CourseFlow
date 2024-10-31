@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/utilityFunctions'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
@@ -15,7 +15,7 @@ import {
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
 import { AppState } from '@cfRedux/types/type'
-import WorkflowLegend from "@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend";
+import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
 import Box from '@mui/material/Box'
 import Tabs from '@mui/material/Tabs'
 import { useContext, useEffect } from 'react'
@@ -41,7 +41,7 @@ type StateType = {
 // with possible exception of addDeleteSelf (which needs addressing independently)
 // class WorkflowTabsUnconnected extends EditableComponent<PropsType, StateType> {
 const WorkflowTabs = () => {
-  const context = useContext(WorkFlowConfigContext)
+  const context = useContext(WorkflowConfigContext)
   const workflow = useSelector((state: AppState) => state.workflow)
 
   useWorkflowSidebar({

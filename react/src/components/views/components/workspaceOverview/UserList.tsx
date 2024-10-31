@@ -83,7 +83,9 @@ const UserList = ({
     }
   }
 
-  if (!data || isLoading) return <></>
+  if (!data || isLoading) {
+    return <></>
+  }
 
   return (
     <SC.InfoBlockContent>

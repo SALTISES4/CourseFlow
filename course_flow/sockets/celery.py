@@ -24,7 +24,6 @@ app.autodiscover_tasks()
 @app.task
 def heartbeat():
     logger.info("Heartbeat check")
-    pass
 
 
 def try_async(func):
@@ -51,8 +50,10 @@ def try_async(func):
             available_workers = celery.current_app.control.inspect().active()
 
             if available_workers:
-                info = "Celery workers available ({}).  Executing {} asynchronously.".format(  # noqa
-                    list(available_workers.keys()), func.__name__
+                info = (
+                    "Celery workers available ({}).  Executing {} asynchronously.".format(  # noqa
+                        list(available_workers.keys()), func.__name__
+                    )
                 )
                 logger.info(info)
                 return func.delay(*args, **kwargs)

@@ -1,5 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { LibraryObjectType, WorkspaceType } from '@cf/types/enum'
+import { CfObjectType, LibraryObjectType, WorkspaceType } from '@cf/types/enum'
+import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
@@ -80,3 +81,120 @@ export const {
   useUnarchiveMutation,
   useDeleteSelfHardMutation
 } = extendedApi
+
+/*******************************************************
+ * LEGACY / PROCEDURAL
+ * these are api requests left over from the legacy structure which are
+ * still being used while we finish transitioning from classes
+ *******************************************************/
+
+/*******************************************************
+ * CONTEXTUAL EDIT HOVER MENU
+ * - API actions for editing, deleting, restoring, duplicating etc.
+ *  generic node objects
+ *    - column
+ *    - node
+ *    - week
+ *
+ *******************************************************/
+
+/**
+ * deleteSelfQueryLegacy
+ **/
+export function deleteSelfQueryLegacy(
+  objectId: number,
+  objectType: CfObjectType,
+  soft = false,
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+) {
+  const urlHard = apiPaths.json_api.workspace.delete
+  const urlSoft = apiPaths.json_api.workspace.delete_soft
+  const base = soft ? urlSoft : urlHard
+  const url = generatePath(base, { id: objectId })
+
+  API_POST(url, {
+    objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    callBackFunction(response)
+  })
+}
+
+/**
+ * restoreSelfQueryLegacy
+ **/
+export function restoreSelfQueryLegacy(
+  objectId: number,
+  objectType: CfObjectType,
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+) {
+  const base = apiPaths.json_api.workspace.restore
+  const url = generatePath(base, { id: objectId })
+
+  API_POST(url, {
+    objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    callBackFunction(response)
+  })
+}
+
+/**
+ * Causes the specified object to insert a child to itself
+ **/
+export function insertChildQuery(
+  objectId: number,
+  objectType: CfObjectType,
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+) {
+  API_POST(apiPaths.json_api.workflow.object__insert_child, {
+    objectId: objectId,
+    objectType: objectType
+  }).then((response: EmptyPostResp) => {
+    callBackFunction(response)
+  })
+}
+
+/**
+ *
+ **/
+export function insertSiblingQuery(
+  objectId: number,
+  objectType: CfObjectType,
+  parentId: number,
+  parentType: CfObjectType,
+  throughType: CfObjectType,
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+) {
+  API_POST(apiPaths.json_api.workflow.object__insert_sibling, {
+    objectId,
+    objectType,
+    parentId,
+    parentType,
+    throughType
+  })
+    .then((response: EmptyPostResp) => {
+      callBackFunction(response)
+    })
+    .catch((e) => {
+      console.log(e)
+    })
+}
+
+//Causes the specified object to insert a sibling after itself
+export function duplicateSelfQuery(
+  objectId: number,
+  objectType: CfObjectType,
+  parentId: number,
+  parentType: CfObjectType,
+  throughType: CfObjectType,
+  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+) {
+  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_self, {
+    parentId: parentId,
+    parentType: parentType,
+    objectId: objectId,
+    objectType: objectType,
+    throughType: throughType
+  }).then((response: EmptyPostResp) => {
+    callBackFunction(response)
+  })
+}

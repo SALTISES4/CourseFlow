@@ -54,6 +54,10 @@
     "import"
   ],
   "rules": {
+    "curly": [
+      "warn",
+      "all"
+    ],
     "no-var": "warn",
     "no-undef": "warn",
     "no-prototype-builtins": "warn",

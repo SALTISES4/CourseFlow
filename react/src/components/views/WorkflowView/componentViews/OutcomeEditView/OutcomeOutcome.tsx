@@ -11,7 +11,7 @@ import Outcome from './Outcome'
  */
 type ConnectedProps = TOutcomeOutcomeByID
 type OwnProps = {
-  parentID: number
+  parentId: number
   objectId: number
   // renderer: any
   show_horizontal: any
@@ -32,7 +32,9 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
     const data = this.props.data
     let my_class = 'outcome-outcome outcome-outcome-' + this.props.parent_depth
     // @ts-ignore
-    if (data.noDrag) my_class += ' no-drag'
+    if (data.noDrag) {
+      my_class += ' no-drag'
+    }
 
     //Child outcomes. See comment in models/outcome.py for more info.
     return (
@@ -44,8 +46,8 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
       >
         <Outcome
           objectId={data.child}
-          parentID={this.props.parentID}
-          throughParentID={data.id}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
           // renderer={this.props.renderer}
           show_horizontal={this.props.show_horizontal}
         />

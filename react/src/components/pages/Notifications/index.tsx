@@ -172,8 +172,12 @@ const NotificationsPage = (): JSX.Element => {
   /*******************************************************
    * CONSTANTS / VARIABLES for render
    *******************************************************/
-  if (isLoading) return <Loader />
-  if (isError) return <div>An error occurred: {getErrorMessage(error)}</div>
+  if (isLoading) {
+    return <Loader />
+  }
+  if (isError) {
+    return <div>An error occurred: {getErrorMessage(error)}</div>
+  }
 
   const { items, meta } = data.dataPackage
   const totalPaginationPages = Math.ceil(

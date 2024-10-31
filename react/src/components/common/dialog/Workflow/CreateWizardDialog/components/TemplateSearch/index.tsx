@@ -25,7 +25,9 @@ const TemplateSearch = ({ selected, onTemplateSelect }: PropsType) => {
 
   function onSearchChange(e: ChangeEvent<HTMLInputElement>) {}
 
-  if (!data || isLoading) return <Loader />
+  if (!data || isLoading) {
+    return <Loader />
+  }
 
   const workflowData = data.dataPackage.items.map((project) => {
     return formatLibraryObject(project)

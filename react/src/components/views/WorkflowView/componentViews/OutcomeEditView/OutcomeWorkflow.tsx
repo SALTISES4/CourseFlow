@@ -11,7 +11,7 @@ type OwnProps = {
   objectId: any
   show_horizontal: any
   renderer: any
-  parentID: any
+  parentId: any
 }
 
 type PropsType = ConnectedProps & OwnProps
@@ -35,13 +35,15 @@ class OutcomeWorkflowUnconnected extends React.Component<PropsType> {
   render() {
     const data = this.props.data
     let my_class = 'outcome-workflow'
-    if (data.noDrag) my_class += ' no-drag'
+    if (data.noDrag) {
+      my_class += ' no-drag'
+    }
     return (
       <div className={my_class} id={data.id}>
         <Outcome
           objectId={data.outcome}
-          parentID={this.props.parentID}
-          throughParentID={data.id}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
           // renderer={this.props.renderer}
           show_horizontal={this.props.show_horizontal}
         />

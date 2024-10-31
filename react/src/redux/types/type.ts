@@ -80,6 +80,7 @@ export type TNodeweek = ENodeweek
 
 export type TWeek = EWeek & {
   isDropped?: boolean
+  lock?: Lock
 }
 
 export type TWeekworkflow = EWeekworkflow & {

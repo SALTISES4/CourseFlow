@@ -14,7 +14,9 @@ export default function nodelinkReducer(
 ): TNodelink[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
-      if (action.payload.nodelink) return action.payload.nodelink
+      if (action.payload.nodelink) {
+        return action.payload.nodelink
+      }
       return state
 
     case CommonActions.REFRESH_STOREDATA:

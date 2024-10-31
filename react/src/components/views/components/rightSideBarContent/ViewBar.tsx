@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
@@ -22,8 +22,8 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * workflow that allows this.
  */
 class ViewBarUnconnected extends React.Component<PropsType> {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   /*******************************************************
    * FUNCTIONS
@@ -127,8 +127,12 @@ class ViewBarUnconnected extends React.Component<PropsType> {
           .sort((a, b) => {
             const x = a.term
             const y = b.term
-            if (x < y) return -1
-            if (x > y) return 1
+            if (x < y) {
+              return -1
+            }
+            if (x > y) {
+              return 1
+            }
             return 0
           })
           .map((set, index) => (

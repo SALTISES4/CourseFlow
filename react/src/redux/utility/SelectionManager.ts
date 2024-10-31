@@ -6,7 +6,6 @@ import {
   EditableComponentProps,
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
-import React from 'react'
 
 type CurrentSelectionDataType = {
   hash: ''
@@ -80,7 +79,7 @@ export class SelectionManager {
   // }
 
   private deselectCurrentSelection(): void {
-    //     this.currentSelection.setState({ selected: false })
+    this.currentSelection.setState({ selected: false })
     if (!this.readOnly) {
       this.unlockCurrentSelection()
     }
@@ -106,7 +105,7 @@ export class SelectionManager {
     // have the component listen to that state fop its own hash
 
     //
-    this.currentSelection.setState({ selected: true })
+    this.currentSelection?.setState({ selected: true })
   }
 
   private lockCurrentSelection(): void {
@@ -202,7 +201,6 @@ export class SelectionManager {
   /**
    * Handles the deletion of a selection.
    * @param selection - The selection to be deleted.
-   * @todo used in editable component with actions is it ever called?
    */
   deleted(selection: any): void {
     if (selection === this.currentSelection) {

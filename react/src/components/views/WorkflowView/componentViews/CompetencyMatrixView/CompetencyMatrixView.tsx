@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
@@ -75,9 +75,9 @@ type PropsType = ConnectedProps & OwnProps
  * workflow.
  */
 class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
-  static contextType = WorkFlowConfigContext
+  static contextType = WorkflowConfigContext
 
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  declare context: React.ContextType<typeof WorkflowConfigContext>
   // private nodecategory_json: string
   private objectType: CfObjectType
 
@@ -157,19 +157,21 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     )
 
     const linked_wf_data = nodes_data.map((node) => {
-      if (node.representsWorkflow)
+      if (node.representsWorkflow) {
         return {
           ...node,
           // @ts-ignore
           ...node.linkedWorkflowData
         }
+      }
       return node
     })
 
     const general_education = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.timeGeneralHours)
+        if (currentValue && currentValue.timeGeneralHours) {
           return previousValue + currentValue.timeGeneralHours
+        }
         return previousValue
       },
       0
@@ -177,8 +179,9 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     const specific_education = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.timeSpecificHours)
+        if (currentValue && currentValue.timeSpecificHours) {
           return previousValue + currentValue.timeSpecificHours
+        }
         return previousValue
       },
       0
@@ -186,8 +189,9 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     const total_theory = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.ponderationTheory)
+        if (currentValue && currentValue.ponderationTheory) {
           return previousValue + currentValue.ponderationTheory
+        }
         return previousValue
       },
       0
@@ -195,8 +199,9 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     const total_practical = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.ponderationPractical)
+        if (currentValue && currentValue.ponderationPractical) {
           return previousValue + currentValue.ponderationPractical
+        }
         return previousValue
       },
       0
@@ -204,8 +209,9 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
     const total_individual = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.ponderationIndividual)
+        if (currentValue && currentValue.ponderationIndividual) {
           return previousValue + currentValue.ponderationIndividual
+        }
         return previousValue
       },
       0
@@ -214,8 +220,9 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     const total_time = total_theory + total_practical + total_individual
     const total_required = linked_wf_data.reduce(
       (previousValue, currentValue) => {
-        if (currentValue && currentValue.timeRequired)
+        if (currentValue && currentValue.timeRequired) {
           return previousValue + parseFloat(currentValue.timeRequired)
+        }
         return previousValue
       },
       0

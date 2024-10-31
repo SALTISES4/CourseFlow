@@ -4,10 +4,7 @@ import {
   ToggleFavouriteMutationArgs
 } from '@XMLHTTP/types/args'
 import { ELibraryObject } from '@XMLHTTP/types/entity'
-import {
-  EmptyPostResp,
-  PageHomeQueryResp,
-} from '@XMLHTTP/types/query'
+import { EmptyPostResp, PageHomeQueryResp } from '@XMLHTTP/types/query'
 
 import { Verb, cfApi } from './api'
 

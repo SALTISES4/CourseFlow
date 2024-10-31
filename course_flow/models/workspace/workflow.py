@@ -171,7 +171,6 @@ class Workflow(AbstractWorkspaceModel):
                 return getattr(self, subclass).type
             except AttributeError as e:
                 logger.exception("An error occurred")
-                pass
         return "workflow"
 
     def __str__(self):

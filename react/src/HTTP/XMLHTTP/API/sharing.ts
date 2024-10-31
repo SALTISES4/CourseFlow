@@ -57,8 +57,9 @@ export function getUsersForObjectQueryLegacy(
   objectType: string,
   callBackFunction = (_data: UsersForObjectQueryResp) => console.log('success')
 ) {
-  if (['program', 'course', 'activity'].indexOf(objectType) >= 0)
+  if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
     objectType = 'workflow'
+  }
   const base = apiPaths.json_api.workspaceUser.list
   const url = generatePath(base, { id: objectId })
   API_POST(url, {

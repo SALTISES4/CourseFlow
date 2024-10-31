@@ -1,14 +1,18 @@
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cf/components/common/editableComponents/EditableComponent'
 import { TitleText } from '@cf/components/common/UIPrimitives/Titles.ts'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
-import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
 import {
-  EditableComponentWithActionsProps,
-  EditableComponentWithActionsState
-} from '@cfEditableComponents/EditableComponentWithActions'
+  DeleteSelfButton,
+  DuplicateSelfButton,
+  InsertSiblingButton
+} from '@cfEditableComponents/hoverEditActions'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
@@ -17,12 +21,10 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = { node: TGetNodeById; workflow: TWorkflow }
-type OwnProps = {
-  objectId: number
-} & EditableComponentWithActionsProps
+type OwnProps = EditableComponentProps
 type StateProps = {
   show_outcomes: boolean
-} & EditableComponentWithActionsState
+} & EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -37,13 +39,44 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * renderer.task_choices
  * renderer.readOnly
  */
-class ComparisonNodeUnconnected extends EditableComponentWithActions<
+class ComparisonNodeUnconnected extends EditableComponent<
   PropsType,
   StateProps
 > {
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.NODE
+  }
+
+  HoverMenu = () => {
+    const mouseoverActions = []
+    if (this.props.workflow.workflowPermissions.write) {
+      mouseoverActions.push(
+        <InsertSiblingButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DuplicateSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DeleteSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+        />
+      )
+    }
+
+    if (this.props.workflow.workflowPermissions.viewComments) {
+      mouseoverActions.push(<this.AddCommenting />)
+    }
+    return mouseoverActions
   }
 
   /*******************************************************
@@ -79,7 +112,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
     }
 
     let outcomenodes
-    if (this.state.show_outcomes)
+    if (this.state.show_outcomes) {
       outcomenodes = (
         <div
           className={'outcome-node-container column-111111-' + data.column}
@@ -97,6 +130,7 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
           ))}
         </div>
       )
+    }
 
     if (data.outcomenodeUniqueSet.length > 0) {
       side_actions.push(
@@ -162,16 +196,6 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
       data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
-    const mouseover_actions = []
-    if (this.props.workflow.workflowPermissions.write) {
-      mouseover_actions.push(<this.AddInsertSibling data={data} />)
-      mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
-      mouseover_actions.push(<this.AddDeleteSelf data={data} />)
-    }
-    if (this.props.workflow.workflowPermissions.viewComments) {
-      mouseover_actions.push(<this.AddCommenting />)
-    }
-
     return (
       <>
         {this.addEditable(data_override)}
@@ -181,7 +205,8 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
           id={data.id}
           ref={this.mainDiv}
           onClick={(evt) => {
-            return () => selectionManager.changeSelection({ evt, newSelection: this })
+            return () =>
+              selectionManager.changeSelection({ evt, newSelection: this })
           }}
         >
           <div className="node-top-row">
@@ -195,7 +220,9 @@ class ComparisonNodeUnconnected extends EditableComponentWithActions<
               defaultText={_t('Click to edit')}
             />
           </div>
-          <div className="mouseover-actions">{mouseover_actions}</div>
+          <div className="mouseover-actions">
+            <this.HoverMenu />
+          </div>
           <div className="side-actions">{side_actions}</div>
         </div>
       </>

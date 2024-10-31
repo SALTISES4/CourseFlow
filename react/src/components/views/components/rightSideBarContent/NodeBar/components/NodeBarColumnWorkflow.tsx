@@ -14,7 +14,7 @@ import { connect } from 'react-redux'
  */
 type SelfProps = {
   objectId?: number
-  // parentID?: number / @todo does not seem to be used
+  // parentId?: number / @todo does not seem to be used
   columnType?: number | string
   columnChoices: FieldChoice[] // was from renderer, need to check this, look at column type as well in relation to  NodeBarColumnCreator
 }
@@ -34,7 +34,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
    *
    *******************************************************/
   render() {
-    if (this.props.data)
+    if (this.props.data) {
       return (
         // @todo was
         // <div className="node-bar-column-workflow" ref={this.mainDiv}>
@@ -42,13 +42,13 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
         <div className="node-bar-column-workflow">
           <NodeBarColumn
             objectId={this.props.data.column}
-            // throughParentID={this.props.data.id} // @todo does not seem to be used
-            // parentID={this.props.parentID} // @todo does not seem to be used
+            // throughParentId={this.props.data.id} // @todo does not seem to be used
+            // parentId={this.props.parentId} // @todo does not seem to be used
             // renderer={this.props.renderer} // @todo look in renderer for column choices or columnType
           />
         </div>
       )
-    else
+    } else {
       return (
         // @todo was
         // <div className="node-bar-column-workflow" ref={this.mainDiv}>
@@ -60,6 +60,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
           />
         </div>
       )
+    }
   }
 }
 const mapStateToProps = (

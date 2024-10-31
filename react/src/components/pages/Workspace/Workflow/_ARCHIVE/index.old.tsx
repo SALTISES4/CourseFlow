@@ -1,5 +1,5 @@
 import { UserContext } from '@cf/context/userContext'
-import WorkFlowConfigProvider from '@cf/context/workFlowConfigContext'
+import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
 import legacyWithRouter from '@cf/HOC/legacyWithRouter'
 import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
@@ -398,7 +398,7 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
     }
 
     return (
-      <WorkFlowConfigProvider
+      <WorkflowConfigProvider
         // some of these could have been direct props to WorkflowBaseView
         // but gor now it makes sense to keep them together and organized
         initialValue={{
@@ -416,7 +416,7 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
         }}
       >
         <WorkflowTabs />
-      </WorkFlowConfigProvider>
+      </WorkflowConfigProvider>
     )
   }
 }

@@ -51,7 +51,9 @@ const OverviewTab = ({
   )
 
   const ObjectSets = () => {
-    if (!objectSets) return <></>
+    if (!objectSets) {
+      return <></>
+    }
     return (
       <SC.InfoBlock sx={{ mt: 3 }}>
         <SC.InfoBlockTitle>{_t('Object sets')}</SC.InfoBlockTitle>

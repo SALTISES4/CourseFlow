@@ -30,6 +30,7 @@ from .relations.outcomeWorkflow import OutcomeWorkflow
 from .relations.weekWorkflow import WeekWorkflow
 from .relations.workflowProject import WorkflowProject
 
+# to delete but wrapped up in migrations
 from .liveprojectmodels import LiveProject
 from .liveprojectmodels import LiveAssignment
 from .liveprojectmodels import LiveProjectUser

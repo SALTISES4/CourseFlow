@@ -1,5 +1,4 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { CfObjectType } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { AddTerminologyQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
@@ -82,44 +81,6 @@ export function newNodeLink(
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)
   })
-}
-
-// Causes the specified object to insert a child to itself
-export function insertChildQuery(
-  objectId: number,
-  objectType: CfObjectType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
-) {
-  API_POST(apiPaths.json_api.workflow.object__insert_child, {
-    objectId: objectId,
-    objectType: objectType
-  }).then((response: EmptyPostResp) => {
-    callBackFunction(response)
-  })
-}
-
-export function insertSiblingQuery(
-  objectId: number,
-  objectType: CfObjectType,
-  parentId: number,
-  parentType: CfObjectType,
-  throughType: CfObjectType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
-) {
-  API_POST(apiPaths.json_api.workflow.object__insert_sibling, {
-    objectId,
-    objectType,
-    parentId,
-    parentType,
-    throughType
-  })
-    .then((response: EmptyPostResp) => {
-      callBackFunction(response)
-    })
-    .catch((e) => {
-      console.log(e)
-      COURSEFLOW_APP.tinyLoader.endLoad()
-    })
 }
 
 /**

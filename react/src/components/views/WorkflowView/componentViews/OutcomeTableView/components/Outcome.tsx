@@ -4,7 +4,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import { toggleDropWrapper } from '@cfRedux/utility/helpers'
+import { toggleExpand } from '@cfRedux/utility/helpers'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -30,8 +30,11 @@ class TableCell extends React.Component<TableCellPropsType> {
    *******************************************************/
   toggleFunction() {
     let value
-    if (this.props.degree) value = 0
-    else value = 1
+    if (this.props.degree) {
+      value = 0
+    } else {
+      value = 1
+    }
     COURSEFLOW_APP.tinyLoader.startLoad()
     updateOutcomenodeDegree(
       this.props.nodeID,
@@ -159,8 +162,8 @@ type ConnectedProps = TGetOutcomeByID
 // @todo no idea what's required props here
 type OwnProps = {
   objectId: number
-  parentID?: number
-  throughParentID?: number
+  parentId?: number
+  throughParentId?: number
   renderer?: any
   show_horizontal?: boolean
   comments?: boolean
@@ -254,7 +257,7 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
             <div
               className="outcome-drop"
               onClick={() =>
-                toggleDropWrapper({
+                toggleExpand({
                   objectId: this.props.objectId,
                   objectType: this.objectType,
                   isDropped: this.props.data.isDropped,
@@ -327,10 +330,11 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
     )
 
     let child_rows
-    if (isDropped)
+    if (isDropped) {
       child_rows = this.props.outcome_tree.children.map((child) => (
         <this.ChildOutcomeView child={child} />
       ))
+    }
     return [full_row, child_rows]
   }
 }

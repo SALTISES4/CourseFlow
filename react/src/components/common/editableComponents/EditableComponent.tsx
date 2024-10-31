@@ -1,5 +1,5 @@
 import * as Constants from '@cf/constants'
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
 import * as Utility from '@cf/utility/utilityFunctions'
@@ -7,17 +7,23 @@ import * as Utility from '@cf/utility/utilityFunctions'
 import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
+import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
+import CommentBox from '@cfEditableComponents/components/CommentBox'
 import QuillDiv from '@cfEditableComponents/components/QuillDiv'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
+import ActionCreator from '@cfRedux/ActionCreator'
 import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
+import AddCommentIcon from '@mui/icons-material/AddComment'
 import Button from '@mui/material/Button'
 import { Dispatch } from '@reduxjs/toolkit'
+import { getCommentsForObjectQuery } from '@XMLHTTP/API/comment'
 import { toggleStrategyQuery } from '@XMLHTTP/API/update'
 import { updateObjectSet } from '@XMLHTTP/API/update'
 import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
-import ReactDOM from 'react-dom'
 import { Action } from 'redux'
+
+import SidebarEditTabProxy from './components/SidebarEditTabProxy'
 
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
@@ -34,8 +40,10 @@ const LinkedWorkflowButton = (id: any) => {
 //Extends the React component to add a few features that are used in a large number of components
 
 export type EditableComponentProps = {
-  dispatch?: Dispatch<Action> // @todo where is dispatch coming from?
   objectId?: number
+  parentId?: number
+  throughParentId?: number
+  dispatch?: Dispatch<Action> // @todo where is dispatch coming from?
   data?: any
   placeholder?: any
   text?: any
@@ -46,6 +54,7 @@ export type EditableComponentProps = {
 
 type StateType = {
   selected: boolean
+  show_comments: boolean // was in EditableComponentWithComments
 }
 export type EditableComponentStateType = StateType
 
@@ -53,11 +62,12 @@ class EditableComponent<
   P extends EditableComponentProps,
   S extends StateType
 > extends React.Component<P, S> {
-  contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
   mainDiv: React.RefObject<HTMLDivElement>
 
   objectType: CfObjectType
+  objectClass: string
 
   constructor(props: P) {
     super(props)
@@ -84,13 +94,14 @@ class EditableComponent<
 
   checkboxChanged(field, evt) {
     const do_change = true
-    if (do_change)
+    if (do_change) {
       this.context.editableMethods.changeField(
         this.props.data.id,
         Constants.objectDictionary[this.objectType],
         field,
         evt.target.checked
       )
+    }
   }
 
   valueChanged(field, newValue) {
@@ -104,7 +115,9 @@ class EditableComponent<
 
   getBorderStyle() {
     const data = this.props.data
-    if (!data) return
+    if (!data) {
+      return
+    }
 
     const border = data.lock ? '2px solid ' + data.lock.userColour : undefined
     return {
@@ -129,10 +142,17 @@ class EditableComponent<
 
   inputChanged(field, evt) {
     let value = evt.target.value
-    if (evt.target.type == 'number') value = parseInt(value) || 0
-    else if (!value) value = ''
-    if (field == 'colour') value = parseInt(value.replace('#', ''), 16)
-    if (evt.target.type == 'number' && value == '') value = 0
+    if (evt.target.type == 'number') {
+      value = parseInt(value) || 0
+    } else if (!value) {
+      value = ''
+    }
+    if (field == 'colour') {
+      value = parseInt(value.replace('#', ''), 16)
+    }
+    if (evt.target.type == 'number' && value == '') {
+      value = 0
+    }
     this.context.editableMethods.changeField(
       this.props.data.id,
       Constants.objectDictionary[this.objectType],
@@ -188,8 +208,10 @@ class EditableComponent<
                 Math.floor(choice.type / 100) == data.nodeType ||
                 choice.type == 0
             )
-            .map((choice) => (
-              <option value={choice.type}>{choice.name}</option>
+            .map((choice, index) => (
+              <option key={`${choice.type}_${index}`} value={choice.type}>
+                {choice.name}
+              </option>
             ))}
         </select>
       </div>
@@ -218,8 +240,10 @@ class EditableComponent<
             value={data.timeUnits}
             onChange={this.inputChanged.bind(this, 'timeUnits')}
           >
-            {choices.timeChoices.map((choice) => (
-              <option value={choice.type}>{choice.name}</option>
+            {choices.timeChoices.map((choice, index) => (
+              <option key={`${choice.type}_${index}`} value={choice.type}>
+                {choice.name}
+              </option>
             ))}
           </select>
         </div>
@@ -299,8 +323,10 @@ class EditableComponent<
                 Math.floor(choice.type / 100) == data.nodeType ||
                 choice.type == 0
             )
-            .map((choice) => (
-              <option value={choice.type}>{choice.name}</option>
+            .map((choice, index) => (
+              <option key={`${choice.type}_${index}`} value={choice.type}>
+                {choice.name}
+              </option>
             ))}
         </select>
       </div>
@@ -375,8 +401,10 @@ class EditableComponent<
             value={data.outcomesType}
             onChange={this.inputChanged.bind(this, 'outcomesType')}
           >
-            {choices.contextChoices.map((choice) => (
-              <option value={choice.type}>{choice.name}</option>
+            {choices.contextChoices.map((choice, index) => (
+              <option key={`${choice.type}_${index}`} value={choice.type}>
+                {choice.name}
+              </option>
             ))}
           </select>
         </div>
@@ -506,8 +534,10 @@ class EditableComponent<
           value={data.strategyClassification}
           onChange={this.inputChanged.bind(this, 'strategyClassification')}
         >
-          {choices.contextChoices.map((choice) => (
-            <option value={choice.type}>{choice.name}</option>
+          {choices.contextChoices.map((choice, index) => (
+            <option key={`${choice.type}_${index}`} value={choice.type}>
+              {choice.name}
+            </option>
           ))}
         </select>
         <button
@@ -527,25 +557,23 @@ class EditableComponent<
     )
   }
 
-  DeleteForSidebar = ({ readOnly, no_delete, type, data }) => {
-    if (!readOnly && !no_delete && (type != 'outcome' || data.depth > 0)) {
-      if (type == 'workflow') {
-        return <></>
-      } else {
-        return (
-          <>
-            <h4>{_t('Delete')}</h4>
-            <this.AddDeleteSelf data={data} />
-          </>
-        )
-      }
-    }
-  }
-
-  //  @todo only implemented in children
-  AddDeleteSelf = ({ data, alt_icon }: { data: any; alt_icon?: string }) => {
-    return <></>
-  }
+  // delete self button is getting moved
+  // i think he means the delete button which shows up in the sidebar ?
+  // DeleteForSidebar = ({ readOnly, no_delete, type, data }) => {
+  //   if (!readOnly && !no_delete && (type != 'outcome' || data.depth > 0)) {
+  //     if (type == 'workflow') {
+  //       return <></>
+  //     } else {
+  //       return (
+  //         <>
+  //           <h4>{_t('Delete')}</h4>
+  //
+  //           <this.DeleteSelfButton data={data} />
+  //         </>
+  //       )
+  //     }
+  //   }
+  // }
 
   // i think we are ready to delete all this
   EditForm = ({ data, noDelete }) => {
@@ -570,8 +598,8 @@ class EditableComponent<
 
       if (allowed_sets.length >= 0) {
         const disable_sets = data.depth || readOnly ? true : false
-        const set_options = allowed_sets.map((set) => (
-          <div>
+        const set_options = allowed_sets.map((set, index) => (
+          <div key={`${set.id}_${index}`}>
             <input
               disabled={disable_sets}
               type="checkbox"
@@ -582,7 +610,7 @@ class EditableComponent<
             <label htmlFor={set.id}>{set.title}</label>
           </div>
         ))
-        sets = [<h4>{_t('Sets')}</h4>, set_options]
+        sets = [<h4 key="set_title">{_t('Sets')}</h4>, set_options]
       }
     }
 
@@ -591,9 +619,11 @@ class EditableComponent<
         className="right-panel-inner"
         onClick={(evt) => evt.stopPropagation()}
       >
-        <h3>{_t('Edit ') + Constants.getVerbose(data, this.objectType)}</h3>
+        <h3>
+          {_t('Edit ') +
+            Constants.getLabelForCfObject({ objectType: this.objectType })}
+        </h3>
         <h3>asdfasdf</h3>
-
         {[
           CfObjectType.NODE,
           CfObjectType.WEEK,
@@ -609,7 +639,6 @@ class EditableComponent<
             titleLength={title_length}
           />
         )}
-
         {/*
             @todo this needs to be done with composition
           */}
@@ -624,7 +653,6 @@ class EditableComponent<
             description={description}
           />
         )}
-
         {type === CfObjectType.COLUMN && (
           <this.BrowseOptions
             data={data}
@@ -632,32 +660,26 @@ class EditableComponent<
             override={override}
           />
         )}
-
         {((type === CfObjectType.OUTCOME && data.depth === 0) ||
           (type === CfObjectType.WORKFLOW &&
             data.type == WorkflowType.COURSE)) && (
           <this.CodeOptional data={data} readOnly={readOnly} />
         )}
-
         {type === CfObjectType.NODE && data.nodeType < 2 && (
           <this.Context data={data} readOnly={readOnly} />
         )}
-
         {type === CfObjectType.NODE && data.nodeType < 2 && (
           <this.Task data={data} readOnly={readOnly} />
         )}
-
         {(type === CfObjectType.NODE || type == CfObjectType.WORKFLOW) && (
           <this.Time data={data} readOnly={readOnly} override={override} />
         )}
-
         {type === CfObjectType.COLUMN && (
           <this.Colour data={data} readOnly={readOnly} />
         )}
-
         {
           // @todo this is mixed up data types
-          //  type should notbe able to be worklow OR course OR  outcome etc
+          //  type should not be able to be worklow OR course OR  outcome etc
           ((type === CfObjectType.WORKFLOW &&
             data.type == WorkflowType.COURSE) ||
             (type == CfObjectType.NODE && data.nodeType == 2)) && (
@@ -668,40 +690,116 @@ class EditableComponent<
             />
           )
         }
-
         {type === CfObjectType.NODE && data.nodeType !== 0 && (
           <>
             <WorkflowLinkDialog id={data.id} />
             <this.LinkedWorkflow data={data} readOnly={readOnly} />
           </>
         )}
-
         {type == CfObjectType.NODE && data.nodeType != 2 && (
           <this.Other data={data} readOnly={readOnly} />
         )}
-
         {type == CfObjectType.NODELINK && (
           <this.Style data={data} readOnly={readOnly} />
         )}
-
         {type === CfObjectType.WORKFLOW && (
           <this.Workflow data={data} readOnly={readOnly} />
         )}
-
         {type === CfObjectType.WEEK && data.objectType < 2 && (
           <this.Strategy data={data} readOnly={readOnly} />
         )}
-
         {sets}
-        <this.DeleteForSidebar
-          readOnly={readOnly}
-          no_delete={noDelete}
-          type={type}
-          data={data}
-        />
+
+        {/*<this.DeleteForSidebar*/}
+        {/*  readOnly={readOnly}*/}
+        {/*  no_delete={noDelete}*/}
+        {/*  type={type}*/}
+        {/*  data={data}*/}
+        {/*/>*/}
       </div>
     )
   }
+
+  /*******************************************************
+   * EDITABLE 'COMMENT' CLASS
+   *
+   * this has been extracted from EditableComponentWithComments
+   * this is temporary while we fix the class inheritance
+   *
+   *  see lucid chart if we need to refer to components which extended the EditableComponentWithComments class
+   *  https://lucid.app/lucidchart/70835342-0dbd-4d23-86f7-a1e001ce470c/edit?invitationId=inv_b058f1a6-2a8c-428f-84c3-a8b7c6559906&page=AYPlMB8I45gX#
+   *
+   *******************************************************/
+  commentClick(evt) {
+    evt.stopPropagation()
+    if (!this.state.show_comments) {
+      this.reloadComments(true)
+    } else {
+      this.setState({ show_comments: false })
+    }
+  }
+
+  reloadComments(show_comments: boolean) {
+    const data = this.props.data
+    COURSEFLOW_APP.tinyLoader.startLoad()
+    getCommentsForObjectQuery(
+      data.id,
+      Constants.objectDictionary[this.objectType],
+      (responseData) => {
+        this.props.dispatch(
+          ActionCreator.reloadCommentsAction(
+            this.props.data.id,
+            Constants.objectDictionary[this.objectType],
+            responseData.dataPackage
+          )
+        )
+        if (show_comments) {
+          this.setState({ show_comments: true })
+        }
+        // this.setState({
+        //   show_comments: true,
+        //   comment_data: responseData.dataPackage
+        // })
+        COURSEFLOW_APP.tinyLoader.endLoad()
+      }
+    )
+  }
+
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  AddCommenting = () => {
+    return (
+      <>
+        <ActionButton
+          buttonIcon={<AddCommentIcon />}
+          buttonClass="comment-button"
+          titleText={_t('Comments')}
+          handleClick={this.commentClick.bind(this)}
+        />
+        {/*
+
+        */}
+        {/*
+        comments broken because moved workflow out of context
+        */}
+        {this.state.show_comments && <>comments placeholder </>}
+        {/*<CommentBox*/}
+        {/*  show={this.state.show_comments}*/}
+        {/*  comments={this.props.data.comments}*/}
+        {/*  parent={this}*/}
+        {/*  workflowId={this.context.workflow.workflowId}*/}
+        {/*  unreadComments={this.context.workflow.unreadComments}*/}
+        {/*  readOnly={this.context.permissions.workflowPermissions.readOnly}*/}
+        {/*  add_comments={this.context.workflow.add_comments}*/}
+        {/*/>*/}
+      </>
+    )
+  }
+
+  /*******************************************************
+   *
+   *******************************************************/
 
   /*******************************************************
    * PORTAL (RENDER)
@@ -712,11 +810,16 @@ class EditableComponent<
       return <></>
     }
 
-    // #edit-menu dynamic, in RightSideBar component
-    return ReactDOM.createPortal(
-      <this.EditForm data={data} noDelete={noDelete} />,
-      document.getElementById('edit-menu')
-    ) as unknown as ReactPortal
+    // TODO: remove
+    // // #edit-menu dynamic, in RightSideBar component
+    // return ReactDOM.createPortal(
+    //   <this.EditForm data={data} noDelete={noDelete} />,
+    //   document.getElementById('edit-menu')
+    // ) as unknown as ReactPortal
+
+    // TODO: figure out where the id/hash is coming from
+    // to uniquely identify a clicked element
+    return <SidebarEditTabProxy id={3} />
   }
 }
 

@@ -42,7 +42,9 @@ function outcomeHorizontalLinkReducer(
       )
 
     case OutcomeHorizontalLinkActions.UPDATE_DEGREE:
-      if (action.payload.outcomehorizontallink === -1) return state
+      if (action.payload.outcomehorizontallink === -1) {
+        return state
+      }
 
       const newOutcomeHorizontalLinkOutcomes = action.payload.dataPackage.map(
         (outcomeHorizontalLink) =>

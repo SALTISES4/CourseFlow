@@ -22,7 +22,9 @@ export default function nodeReducer(
 ): TNode[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
-      if (action.payload.node) return action.payload.node
+      if (action.payload.node) {
+        return action.payload.node
+      }
       return state
 
     case CommonActions.REFRESH_STOREDATA: {
@@ -187,7 +189,9 @@ export default function nodeReducer(
       })
 
     case StrategyActions.ADD_STRATEGY: {
-      if (action.payload.nodes_added.length == 0) return state
+      if (action.payload.nodes_added.length == 0) {
+        return state
+      }
       return [...state, ...action.payload.nodes_added]
     }
     /*******************************************************
@@ -210,7 +214,9 @@ export default function nodeReducer(
     case OutcomeActions.INSERT_BELOW:
     case OutcomeBaseActions.INSERT_CHILD:
     case OutcomeOutcomeActions.CHANGE_ID:
-      if (action.payload.node_updates.length === 0) return state
+      if (action.payload.node_updates.length === 0) {
+        return state
+      }
       return state.map((item) => {
         const update = action.payload.node_updates.find(
           (updateItem) => updateItem.id === item.id
@@ -225,7 +231,9 @@ export default function nodeReducer(
       })
 
     case OutcomeNodeActions.UPDATE_DEGREE:
-      if (action.payload.outcomenode === -1) return state
+      if (action.payload.outcomenode === -1) {
+        return state
+      }
       return state.map((item) => {
         return item.id === action.payload.dataPackage[0].node
           ? {

@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/utilityFunctions'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
@@ -34,7 +34,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
   PropsType,
   StateProps
 > {
-  static contextType = WorkFlowConfigContext
+  static contextType = WorkflowConfigContext
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
@@ -76,7 +76,9 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
     let max_height = 0
     $('.comparison-view .workflow-header').each(function () {
       const this_height = $(this).height()
-      if (this_height > max_height) max_height = this_height
+      if (this_height > max_height) {
+        max_height = this_height
+      }
     })
     $('.comparison-view .workflow-header').css({ height: max_height + 'px' })
   }

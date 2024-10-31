@@ -279,7 +279,7 @@ class WorkflowEndpoint:
                     clone.title = clone.title + _("(copy)")
                     clone.save()
                 except (ValidationError, TypeError):
-                    pass
+                    logger.exception("An error occurred")
 
                 WorkflowProject.objects.create(project=project, workflow=clone)
 

@@ -1,4 +1,4 @@
-import {WorkspaceType} from "@cf/types/enum";
+import { WorkspaceType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import {
   SortDirection,
@@ -233,16 +233,22 @@ class LibraryHelper {
          **/
 
         if (!options) {
-          if (value !== undefined) acc.push({ name, value })
+          if (value !== undefined) {
+            acc.push({ name, value })
+          }
           return acc
         }
 
         if (selectMultiple) {
           const enabledValues = getEnabledValues(options)
-          if (enabledValues.length > 0) acc.push({ name, value: enabledValues })
+          if (enabledValues.length > 0) {
+            acc.push({ name, value: enabledValues })
+          }
         } else {
           const enabledValue = getFirstEnabledValue(options)
-          if (enabledValue) acc.push({ name, value: enabledValue })
+          if (enabledValue) {
+            acc.push({ name, value: enabledValue })
+          }
         }
 
         return acc

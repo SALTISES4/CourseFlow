@@ -103,7 +103,9 @@ export function capWords(str: string) {
   return str
     .split(' ')
     .map((entry) => {
-      if (entry.length === 0) return entry
+      if (entry.length === 0) {
+        return entry
+      }
       return entry[0].toUpperCase() + entry.substr(1)
     })
     .join(' ')
@@ -142,9 +144,15 @@ export function unescapeCharacters(string) {
 
 export function getUserDisplay(user) {
   let str = ''
-  if (user.firstName) str += user.firstName + ' '
-  if (user.lastName) str += user.lastName + ' '
-  if (!str && user.username) str = user.username + ' '
+  if (user.firstName) {
+    str += user.firstName + ' '
+  }
+  if (user.lastName) {
+    str += user.lastName + ' '
+  }
+  if (!str && user.username) {
+    str = user.username + ' '
+  }
   return str || user.email
 }
 
@@ -174,7 +182,9 @@ export function getCanvasOffset(node_dom) {
  * @param padding
  */
 export function mouseOutsidePadding(evt, elem, padding) {
-  if (elem.length === 0) return true
+  if (elem.length === 0) {
+    return true
+  }
   const offset = elem.offset()
   const width = elem.outerWidth()
   const height = elem.outerHeight()
@@ -327,8 +337,11 @@ export function checkSetHidden(data, objectsets) {
 }
 
 export function pushOrCreate(obj, index, value) {
-  if (obj[index]) obj[index].push(value)
-  else obj[index] = [value]
+  if (obj[index]) {
+    obj[index].push(value)
+  } else {
+    obj[index] = [value]
+  }
 }
 
 /**
@@ -383,14 +396,18 @@ export class Utility {
    * @stringifyMaxDepth
    **/
   static stringifyMaxDepth(obj, depth = 1) {
-    if (!obj || typeof obj !== 'object') return JSON.stringify(obj)
+    if (!obj || typeof obj !== 'object') {
+      return JSON.stringify(obj)
+    }
 
     let curDepthResult = '"<?>"' // too deep
     if (depth > 0) {
       curDepthResult = Object.keys(obj)
         .map((key) => {
           let val = Utility.stringifyMaxDepth(obj[key], depth - 1)
-          if (val === undefined) val = 'null'
+          if (val === undefined) {
+            val = 'null'
+          }
           return `"${key}": ${val}`
         })
         .join(', ')

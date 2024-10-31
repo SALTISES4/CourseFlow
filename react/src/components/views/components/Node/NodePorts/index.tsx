@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
 import * as Utility from '@cfUtility'
@@ -33,7 +33,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
 
     // @todo this needs to get workflow permissions out of store
     // if (!this.props.workflow.workflowPermission)
-    if (true)
+    if (true) {
       d3.selectAll<SVGCircleElement, any>(
         'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
       ).call(
@@ -79,6 +79,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
             d3.select('.node-link-creator').remove()
           })
       )
+    }
 
     this.updatePorts()
 

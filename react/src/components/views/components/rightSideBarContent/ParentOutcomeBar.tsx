@@ -1,4 +1,4 @@
-import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
+import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
 import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
 import {
@@ -27,8 +27,8 @@ type SelfProps = {
 }
 type PropsType = SelfProps & ConnectedProps
 class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
-  static contextType = WorkFlowConfigContext
-  declare context: React.ContextType<typeof WorkFlowConfigContext>
+  static contextType = WorkflowConfigContext
+  declare context: React.ContextType<typeof WorkflowConfigContext>
 
   constructor(props: PropsType) {
     super(props)
@@ -60,9 +60,9 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
                   objectId={outcomeItem.id}
                   // renderer={this.props.renderer} // @todo previous props were undefined, are they needed?
                   // @ts-ignore // @todo
-                  parentID={null}
+                  parentId={null}
                   readOnly={!this.props.workflow.workflowPermissions.write}
-                  throughParentID={null}
+                  throughParentId={null}
                 />
               </div>
             ))}

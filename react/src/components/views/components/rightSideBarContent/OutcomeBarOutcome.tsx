@@ -24,7 +24,7 @@ import { connect } from 'react-redux'
 
 type OutcomeBarOutcomeOutcomeOwnProps = {
   objectId: number
-  parentID: number
+  parentId: number
   readOnly: boolean
 }
 type OutcomeBarOutcomeOutcomeConnectedProps = TOutcomeOutcomeByID
@@ -53,8 +53,8 @@ class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutc
       <div className="outcome-outcome" id={String(this.props.data.id)}>
         <OutcomeBarOutcome
           objectId={this.props.data.child}
-          parentID={this.props.parentID}
-          throughParentID={this.props.data.id}
+          parentId={this.props.parentId}
+          throughParentId={this.props.data.id}
           readOnly={this.props.readOnly}
         />
       </div>
@@ -87,9 +87,9 @@ const OutcomeBarOutcomeOutcome = connect<
 
 type OwnProps = {
   objectId: number
-  parentID?: number
+  parentId?: number
   readOnly: boolean
-  throughParentID?: number
+  throughParentId?: number
 }
 export type OutcomeBarOutcomePropsType = OwnProps
 
@@ -122,8 +122,7 @@ export class OutcomeBarOutcomeUnconnected<
    *******************************************************/
   componentDidMount() {
     this.makeDraggable()
-    // @todo - dataDraggable is not a property of a div element, what is happening here?
-    // are we trying to store a 'data' attribute ont this div ref?
+    // @todo HACK, this is being used to bypass react and pass information around the DOM
     // @ts-ignore
     $(this.mainDiv.current)[0].dataDraggable = { outcome: this.props.data.id }
     $(this.mainDiv.current).mouseenter((evt) => {
@@ -149,7 +148,9 @@ export class OutcomeBarOutcomeUnconnected<
   }
 
   makeDraggable() {
-    if (this.props.readOnly) return
+    if (this.props.readOnly) {
+      return
+    }
     const draggable_selector = 'outcome'
     const draggable_type = 'outcome'
 
@@ -185,24 +186,28 @@ export class OutcomeBarOutcomeUnconnected<
   toggleCSS(is_toggled: boolean, type: string) {
     if (is_toggled) {
       $('.outcome-' + this.props.data.id).addClass('outcome-' + type)
-      if (this.props.nodes.length)
+      if (this.props.nodes.length) {
         $(this.props.nodes.map((node) => '.node#' + node).join(', ')).addClass(
           'outcome-' + type
         )
-      if (this.props.horizontaloutcomes.length)
+      }
+      if (this.props.horizontaloutcomes.length) {
         $(
           this.props.horizontaloutcomes.map((oc) => '.outcome-' + oc).join(', ')
         ).addClass('outcome-' + type)
+      }
     } else {
       $('.outcome-' + this.props.data.id).removeClass('outcome-' + type)
-      if (this.props.nodes.length)
+      if (this.props.nodes.length) {
         $(
           this.props.nodes.map((node) => '.node#' + node).join(', ')
         ).removeClass('outcome-' + type)
-      if (this.props.horizontaloutcomes.length)
+      }
+      if (this.props.horizontaloutcomes.length) {
         $(
           this.props.horizontaloutcomes.map((oc) => '.outcome-' + oc).join(', ')
         ).removeClass('outcome-' + type)
+      }
     }
   }
 
@@ -215,24 +220,31 @@ export class OutcomeBarOutcomeUnconnected<
     let dropIcon
     let droptext
 
-    if (Utility.checkSetHidden(data, this.props.objectSets)) return null
+    if (Utility.checkSetHidden(data, this.props.objectSets)) {
+      return null
+    }
 
     //Child outcomes. See comment in models/outcome.py for more info.
-    if (this.state.isDropped)
+    if (this.state.isDropped) {
       children = data.childOutcomeLinks.map((outcomeoutcome) => (
         <OutcomeBarOutcomeOutcome
           key={outcomeoutcome}
           objectId={outcomeoutcome}
-          parentID={data.id}
+          parentId={data.id}
           readOnly={this.props.readOnly}
         />
       ))
+    }
 
-    if (this.state.isDropped) dropIcon = 'droptriangleup'
-    else dropIcon = 'droptriangledown'
+    if (this.state.isDropped) {
+      dropIcon = 'droptriangleup'
+    } else {
+      dropIcon = 'droptriangledown'
+    }
 
-    if (this.state.isDropped) droptext = _t('hide')
-    else
+    if (this.state.isDropped) {
+      droptext = _t('hide')
+    } else {
       droptext =
         _t('show ') +
         data.childOutcomeLinks.length +
@@ -242,6 +254,7 @@ export class OutcomeBarOutcomeUnconnected<
           'descendants',
           data.childOutcomeLinks.length
         )
+    }
 
     return (
       <div

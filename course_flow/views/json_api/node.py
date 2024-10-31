@@ -66,7 +66,7 @@ class NodeEndpoint:
             "new_model": NodeSerializerShallow(node).data,
             "new_through": NodeWeekSerializerShallow(node_week).data,
             "index": position,
-            "parentID": week_id,
+            "parentId": week_id,
             "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflow).data,
             "column": ColumnSerializerShallow(column).data,
         }

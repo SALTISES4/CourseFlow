@@ -143,7 +143,9 @@ export default function outcomeReducer(
     case OutcomeOutcomeActions.MOVED_TO: {
       const { oldParent, oldParentIndex, newParent, newParentIndex } =
         findParentIndices(state, action)
-      if (!oldParent || !newParent) return state
+      if (!oldParent || !newParent) {
+        return state
+      }
 
       const newOldParentLinks = oldParent.childOutcomeLinks.filter(
         (id) => id !== action.payload.id
@@ -211,9 +213,11 @@ export default function outcomeReducer(
     case OutcomeActions.INSERT_BELOW:
     case OutcomeBaseActions.INSERT_CHILD: {
       const parentIndex = state.findIndex(
-        (item) => item.id === action.payload.parentID
+        (item) => item.id === action.payload.parentId
       )
-      if (parentIndex === -1) return state
+      if (parentIndex === -1) {
+        return state
+      }
 
       const newState = state.slice()
       const parentItem = { ...newState[parentIndex] }
@@ -239,8 +243,9 @@ export default function outcomeReducer(
         action.payload.changeFieldID ===
         // @ts-ignore
         COURSEFLOW_APP.contextData.changeFieldID
-      )
+      ) {
         return state
+      }
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }
@@ -253,8 +258,9 @@ export default function outcomeReducer(
         action.payload.changeFieldID ===
         // @ts-ignore
         COURSEFLOW_APP.contextData.changeFieldID
-      )
+      ) {
         return state
+      }
       return state.map((item) =>
         action.payload.ids.includes(item.id)
           ? { ...item, ...action.payload.json }
@@ -266,14 +272,15 @@ export default function outcomeReducer(
      *******************************************************/
     case OutcomeHorizontalLinkActions.UPDATE_DEGREE:
       // Returns -1 if the outcome had already been added to the node
-      if (action.payload.outcomehorizontallink === -1) return state
+      if (action.payload.outcomehorizontallink === -1) {
+        return state
+      }
 
       return state.map((item) => {
         if (item.id === action.payload.dataPackage[0].outcome) {
           return {
             ...item,
-            outcomeHorizontalLinks:
-              action.payload.new_outcomeHorizontalLinks,
+            outcomeHorizontalLinks: action.payload.new_outcomeHorizontalLinks,
             outcomeHorizontalLinksUnique:
               action.payload.new_outcomeHorizontalLinksUnique
           }

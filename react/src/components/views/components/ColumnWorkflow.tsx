@@ -9,7 +9,7 @@ import Column from './Column'
 type ConnectedProps = TColumnWorkflowById
 type OwnProps = {
   objectId: number
-  parentID: number
+  parentId: number
 }
 type PropsType = ConnectedProps & OwnProps
 
@@ -45,9 +45,8 @@ class ColumnWorkflow extends React.Component<PropsType> {
       >
         <Column
           objectId={data.column}
-          parentID={this.props.parentID}
-          throughParentID={data.id}
-          // renderer={this.props.renderer}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
         />
       </div>
     )

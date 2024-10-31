@@ -1,25 +1,27 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
+import {
+  DeleteSelfButton,
+  DuplicateSelfButton,
+  InsertSiblingButton
+} from '@cfEditableComponents/hoverEditActions'
 import { TTermByID, getTermById } from '@cfFindState'
-// import $ from 'jquery'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
 } from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/Week'
+import * as React from 'react'
 import { connect } from 'react-redux'
 
 import NodeWeek from './NodeWeek'
-
-type OwnProps = {
-  objectId: number
-  throughParentID?: any
-} & WeekUnconnectedPropsType
 
 type ConnectedProps = {
   term: TTermByID
   workflow: TWorkflow
 }
+
+type OwnProps = WeekUnconnectedPropsType
 
 type PropsType = OwnProps & ConnectedProps
 
@@ -49,12 +51,47 @@ class Term extends WeekUnconnected<PropsType> {
     )
   }
 
+  HoverMenu = () => {
+    const mouseoverActions = []
+    if (
+      this.props.workflow.workflowPermissions.write &&
+      !this.props.workflow.isStrategy
+    ) {
+      mouseoverActions.push(
+        <InsertSiblingButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DuplicateSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DeleteSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+        />
+      )
+    }
+
+    if (this.props.workflow.workflowPermissions.viewComments) {
+      mouseoverActions.push(<this.AddCommenting />)
+    }
+    return mouseoverActions
+  }
+
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
     const data = this.props.data
     const node_blocks = []
+
     for (let i = 0; i < this.props.column_order.length; i++) {
       const col = this.props.column_order[i]
       const nodeweeks = []
@@ -65,20 +102,21 @@ class Term extends WeekUnconnected<PropsType> {
             <NodeWeek
               key={nodeweek}
               objectId={nodeweek}
-              parentID={data.id}
+              parentId={data.id}
               // renderer={this.props.renderer}
               column_order={this.props.column_order}
             />
           )
         }
       }
-      if (nodeweeks.length == 0)
+      if (nodeweeks.length == 0) {
         nodeweeks.push(
           <div
             className="node-week placeholder"
             style={{ height: '100%' }}
           ></div>
         )
+      }
       node_blocks.push(
         <div
           className={'node-block term column-' + col}
@@ -107,18 +145,6 @@ class Term extends WeekUnconnected<PropsType> {
 
     const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
 
-    const mouseover_actions = []
-
-    if (this.props.workflow.workflowPermissions.write) {
-      mouseover_actions.push(<this.AddInsertSibling data={data} />)
-      mouseover_actions.push(<this.AddDuplicateSelf data={data} />)
-      mouseover_actions.push(<this.AddDeleteSelf data={data} />)
-    }
-
-    if (this.props.workflow.workflowPermissions.viewComments) {
-      mouseover_actions.push(<this.AddCommenting />)
-    }
-
     return (
       <>
         {this.addEditable(data)}
@@ -135,7 +161,9 @@ class Term extends WeekUnconnected<PropsType> {
           }
         >
           <div className="mouseover-container-bypass">
-            <div className="mouseover-actions">{mouseover_actions}</div>
+            <div className="mouseover-actions">
+              <this.HoverMenu />
+            </div>
           </div>
           <TitleText
             text={data.title}

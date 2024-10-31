@@ -17,7 +17,9 @@ const Home = () => {
    *******************************************************/
   const { data, error, isLoading } = useGetHomeContextQuery()
 
-  if (isLoading) return <Loader />
+  if (isLoading) {
+    return <Loader />
+  }
 
   const { projects, templates } = data.dataPackage
 

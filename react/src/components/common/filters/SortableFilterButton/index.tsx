@@ -31,7 +31,9 @@ type PropsType = {
 type StateType = SortOption
 
 function toggleSortDirection(dir: SortDirection | null): SortDirection {
-  if (!dir || dir === SortDirection.ASC) return SortDirection.DESC
+  if (!dir || dir === SortDirection.ASC) {
+    return SortDirection.DESC
+  }
   return SortDirection.ASC
 }
 

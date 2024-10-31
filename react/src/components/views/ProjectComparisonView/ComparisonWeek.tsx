@@ -8,7 +8,7 @@ import ComparisonNodeWeek from '@cfViews/ProjectComparisonView/ComparisonNodeWee
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
-} from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
+} from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/Week'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
@@ -18,8 +18,8 @@ type ConnectedProps = TGetWeekByIDType
 type OwnProps = {
   // renderer: any
   objectId: number
-  parentID?: number
-  throughParentID: number
+  parentId?: number
+  throughParentId: number
 } & WeekUnconnectedPropsType
 type PropsType = ConnectedProps & OwnProps
 
@@ -29,6 +29,7 @@ type PropsType = ConnectedProps & OwnProps
  * week and into the week of another workflow.
  */
 // @ts-ignore
+
 export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
   /*******************************************************
    * LIFECYCLE
@@ -113,7 +114,9 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').each(
       function () {
         const this_height = $(this).height()
-        if (this_height > max_height) max_height = this_height
+        if (this_height > max_height) {
+          max_height = this_height
+        }
       }
     )
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').css({
@@ -145,17 +148,18 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
       <ComparisonNodeWeek
         key={nodeweek}
         objectId={nodeweek}
-        parentID={this.props.data.id}
+        parentId={this.props.data.id}
         // renderer={this.props.renderer}
         column_order={this.props.column_order}
       />
     ))
-    if (nodes.length == 0)
+    if (nodes.length == 0) {
       nodes.push(
         <div className="node-week placeholder" style={{ height: '100%' }}>
           Drag and drop nodes from the sidebar to add.
         </div>
       )
+    }
     return nodes
   }
 }

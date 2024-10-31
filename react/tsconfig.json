@@ -82,11 +82,12 @@
       ],
       "@cfSCSS/*": [
         "./scss/*"
-      ],
+      ]
     }
   },
   "include": [
-    "./**/*"
+    "./**/*",
+    "node_modules/@types/jquery/JQuery.d.ts"
   ],
   "exclude": [
     "./build/**/*",

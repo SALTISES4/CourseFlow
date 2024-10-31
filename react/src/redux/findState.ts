@@ -54,13 +54,14 @@ export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
  * WEEK
  *******************************************************/
 export type TGetWeekByIDType = {
-  data: any
-  column_order: any
-  sibling_count?: any
+  data: TWeek
+  column_order: number[]
+  sibling_count?: number
   nodeweeks: any
-  workflowId?: any
+  workflowId?: number
 }
 
+// @todo why are weeks and terms handled differently
 export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
   for (const i in state.week) {
     const week = { ...state.week[i] } // create a shallow copy to avoid mutations
@@ -70,6 +71,8 @@ export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
         // consider moving this logic to a reducer
         week.isDropped = getDropped(id, 'week')
       }
+
+      // redux should not be marshalling like this
       return {
         data: week,
         column_order: state.workflow.columnworkflowSet.map(
@@ -94,6 +97,8 @@ export type TTermByID = {
   nodes_by_column: any
   nodeweeks: any
 }
+
+// @todo why are weeks and terms handled differently
 export const getTermById = (state: AppState, id: number): TTermByID => {
   for (const i in state.week) {
     const week = state.week[i]
@@ -116,8 +121,11 @@ export const getTermById = (state: AppState, id: number): TTermByID => {
       for (var j = 0; j < nodeweeks.length; j++) {
         const node_week = getNodeWeekByID(state, nodeweeks[j]).data
         const node = getNodeByID(state, node_week.node).data
-        if (node.column) nodes_by_column[node.column].push(nodeweeks[j])
-        else nodes_by_column[nodes_by_column.keys()[0]].push(nodeweeks[j])
+        if (node.column) {
+          nodes_by_column[node.column].push(nodeweeks[j])
+        } else {
+          nodes_by_column[nodes_by_column.keys()[0]].push(nodeweeks[j])
+        }
       }
       return {
         data: week,
@@ -182,7 +190,9 @@ export const getOutcomeByID = (
   for (const i in stateSection) {
     const outcome = stateSection[i]
 
-    if (outcome.id !== id) continue
+    if (outcome.id !== id) {
+      continue
+    }
 
     // Create a shallow copy to avoid mutation
     const updatedOutcome = { ...outcome }
@@ -210,16 +220,23 @@ export const getOutcomeByID = (
       titles = [...rank]
 
       stateSection.forEach((sectionItem) => {
-        if (sectionItem.id === rootInfo.id) rootOutcome = sectionItem
+        if (sectionItem.id === rootInfo.id) {
+          rootOutcome = sectionItem
+        }
 
         rootInfo.rank.forEach((rankItem, k) => {
-          if (rankItem.parent !== sectionItem.id) return
+          if (rankItem.parent !== sectionItem.id) {
+            return
+          }
 
           titles[k] = sectionItem.title
           if (!rank[k]) {
             if (sectionItem.code) {
-              if (k > 0) rank[k - 1] = sectionItem.code
-              else topRank = sectionItem.code
+              if (k > 0) {
+                rank[k - 1] = sectionItem.code
+              } else {
+                topRank = sectionItem.code
+              }
             }
             rank[k] =
               sectionItem.childOutcomeLinks.indexOf(rankItem.through) + 1
@@ -277,8 +294,9 @@ export const getWeekWorkflowByID = (
 ): TGetWeekWorkflowById => {
   for (const i in state.weekworkflow) {
     const weekworkflow = state.weekworkflow[i]
-    if (weekworkflow.id == id)
+    if (weekworkflow.id == id) {
       return { data: weekworkflow, order: state.workflow.weekworkflowSet }
+    }
   }
 }
 
@@ -295,11 +313,12 @@ export const getOutcomeWorkflowByID = (
 ): TGetOutcomeWorkflowByID => {
   for (const i in state.outcomeworkflow) {
     const outcomeworkflow = state.outcomeworkflow[i]
-    if (outcomeworkflow.id == id)
+    if (outcomeworkflow.id == id) {
       return {
         data: outcomeworkflow,
         order: state.workflow.outcomeworkflowSet
       }
+    }
   }
   console.log('no outcomeworkflow found with id', id)
 }
@@ -369,7 +388,7 @@ export type TGetNodeLinkById = {
 export const getNodeLinkByID = (
   state: AppState,
   id: number
-): TGetNodeLinkById => {
+): TGetNodeLinkById | void => {
   for (const i in state.nodelink) {
     const nodelink = state.nodelink[i]
     if (nodelink.id === id) {
@@ -436,7 +455,9 @@ function findTopRank(state: AppState, outcome) {
 export const getChildWorkflowById = (state: AppState, id: number) => {
   for (const i in state.child_workflow) {
     const workflow = state.child_workflow[i]
-    if (workflow.id === id) return { data: workflow }
+    if (workflow.id === id) {
+      return { data: workflow }
+    }
   }
   console.log('failed to find child workflow')
   return -1
@@ -530,7 +551,7 @@ export const getSortedOutcomeNodesFromNodes = (
   const objectSets = state.objectset.filter(
     (objectset) => objectset.term === outcomes[0].type
   )
-  if (objectSets.length === 0)
+  if (objectSets.length === 0) {
     return [
       {
         objectset: {
@@ -539,6 +560,7 @@ export const getSortedOutcomeNodesFromNodes = (
         outcomes: outcomes
       }
     ]
+  }
   const categories = [
     {
       objectset: { title: _t('Uncategorized') },
@@ -675,7 +697,9 @@ const getDropped = (objectId: number, objectType, depth = 1) => {
     const storedDrop = JSON.parse(
       window.localStorage.getItem(objectType + objectId)
     )
-    if (storedDrop === null) return default_drop
+    if (storedDrop === null) {
+      return default_drop
+    }
     return storedDrop
   } catch (err) {
     return default_drop
@@ -686,8 +710,9 @@ const getDropped = (objectId: number, objectType, depth = 1) => {
 export const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
   for (const i in outcomeNodes) {
     const outcomeNode = outcomeNodes[i]
-    if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId)
+    if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId) {
       return { data: outcomeNode }
+    }
   }
   return { data: null }
 }
