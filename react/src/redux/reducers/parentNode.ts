@@ -11,7 +11,9 @@ export default function parentNodeReducer(state = [], action) {
       return action.payload.parentNode || state
 
     case CommonActions.REFRESH_STOREDATA:
-      if (!action.payload.parentNode) return state
+      if (!action.payload.parentNode) {
+        return state
+      }
 
       return action.payload.parentNode.reduce(
         (acc, newItem) => {
@@ -30,7 +32,9 @@ export default function parentNodeReducer(state = [], action) {
      * OUTCOME NODE
      *******************************************************/
     case OutcomeNodeActions.UPDATE_DEGREE:
-      if (action.payload.outcomenode === -1) return state
+      if (action.payload.outcomenode === -1) {
+        return state
+      }
 
       return state.map((item) =>
         item.id === action.payload.dataPackage[0].node

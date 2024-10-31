@@ -69,7 +69,6 @@ class WeekWorkflowUnconnected<P extends PropsType> extends React.Component<P> {
       $(this.mainDiv?.current).hasClass('dragging') ? 'dragging' : ''
     ].join(' ')
 
-
     return (
       <div
         className={cssClasses}

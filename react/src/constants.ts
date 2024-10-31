@@ -211,16 +211,22 @@ export const getLabelForCfObject = function ({
 export const getDefaultDropState = (objectId, objectType, depth = 1) => {
   let default_drop = defaultDropState[objectType]
   if (objectType === 'outcome') {
-    if (depth < default_drop.length) default_drop = default_drop[depth]
-    else default_drop = false
+    if (depth < default_drop.length) {
+      default_drop = default_drop[depth]
+    } else {
+      default_drop = false
+    }
   }
   return default_drop
 }
 
 // Get the colour from a column
 export function getColumnColour(data) {
-  if (data.colour == null) return defaultColumnSettings[data.columnType].colour
-  else return '#' + ('000000' + data.colour?.toString(16)).slice(-6)
+  if (data.colour == null) {
+    return defaultColumnSettings[data.columnType].colour
+  } else {
+    return '#' + ('000000' + data.colour?.toString(16)).slice(-6)
+  }
 }
 
 //get all possible object sets

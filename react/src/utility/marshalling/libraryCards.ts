@@ -39,11 +39,12 @@ function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
 
 function getTemplateChip(workflow: ELibraryObject): WorkflowCardChipType {
   const isTemplate = workflow.isTemplate
-  if (isTemplate)
+  if (isTemplate) {
     return {
       type: ChipOptions.TEMPLATE,
       label: _t('Template')
     }
+  }
   return null
 }
 

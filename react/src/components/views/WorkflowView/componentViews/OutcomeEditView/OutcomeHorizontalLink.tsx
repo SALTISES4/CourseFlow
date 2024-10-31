@@ -137,7 +137,9 @@ class OutcomeHorizontalLinkUnconnected extends React.Component<PropsType> {
   render() {
     const data = this.props.outcomeHorizontalLink.data
     //It's possible we don't actually have this data, if the horizontal link is dead
-    if (!data) return null
+    if (!data) {
+      return null
+    }
     return (
       <div
         className={'outcome-node outcome-' + data.id}

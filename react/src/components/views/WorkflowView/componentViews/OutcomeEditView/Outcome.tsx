@@ -67,11 +67,15 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    if (this.props.show_horizontal) this.makeDragAndDrop()
+    if (this.props.show_horizontal) {
+      this.makeDragAndDrop()
+    }
   }
 
   componentDidUpdate() {
-    if (this.props.show_horizontal) this.makeDragAndDrop()
+    if (this.props.show_horizontal) {
+      this.makeDragAndDrop()
+    }
   }
 
   /*******************************************************
@@ -90,7 +94,9 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       '#workflow-' + this.props.workflow.id,
       '.outcome'
     )
-    if (this.props.outcome.data.depth === 0) this.makeDroppable()
+    if (this.props.outcome.data.depth === 0) {
+      this.makeDroppable()
+    }
   }
 
   sortableMovedFunction(id, new_position, type, new_parent, child_id) {
@@ -176,6 +182,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           COURSEFLOW_APP.tinyLoader.startLoad()
           updateOutcomehorizontallinkDegree(
             props.objectId,
+            // @todo HACK, this is being used to bypass react and pass information around the DOM
             // @ts-ignore
             drag_item[0].dataDraggable.outcome,
             1,
@@ -231,9 +238,11 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     let outcomehorizontallinks
     const side_actions = []
 
-    if (Utility.checkSetHidden(data, this.props.objectSets)) return null
+    if (Utility.checkSetHidden(data, this.props.objectSets)) {
+      return null
+    }
     //Child outcomes. See comment in models/outcome.py for more info.
-    if (data.isDropped)
+    if (data.isDropped) {
       children = data.childOutcomeLinks.map((outcomeoutcome) => (
         <OutcomeOutcome
           key={outcomeoutcome}
@@ -244,8 +253,9 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           parent_depth={this.props.outcome.data.depth}
         />
       ))
+    }
 
-    if (this.state.show_horizontal_links)
+    if (this.state.show_horizontal_links) {
       outcomehorizontallinks = (
         <div
           className={'outcome-node-container'}
@@ -264,6 +274,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           ))}
         </div>
       )
+    }
 
     if (
       this.props.show_horizontal &&

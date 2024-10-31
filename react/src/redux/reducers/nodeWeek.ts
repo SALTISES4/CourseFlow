@@ -14,7 +14,9 @@ export default function nodeweekReducer(
 ): TNodeweek[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
-      if (action.payload.nodeweek) return action.payload.nodeweek
+      if (action.payload.nodeweek) {
+        return action.payload.nodeweek
+      }
       return state
 
     case CommonActions.REFRESH_STOREDATA:

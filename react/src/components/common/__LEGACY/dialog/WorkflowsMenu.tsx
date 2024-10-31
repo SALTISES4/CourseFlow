@@ -53,10 +53,11 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
     if (
       this.props.type === 'linkedWorkflow_menu' ||
       this.props.type === 'added_workflow_menu'
-    )
+    ) {
       this.project_workflows = props.data.dataPackage.currentProject.sections
         .map((section) => section.objects.map((object) => object.id))
         .flat()
+    }
   }
 
   /*******************************************************
@@ -100,8 +101,9 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
       if (
         this.state.selected &&
         this.project_workflows.indexOf(this.state.selected) < 0
-      )
+      ) {
         text = _t('Copy to Current Project and ') + text
+      }
       actions.push(
         <button
           id="set-linked-workflow-cancel"
@@ -152,8 +154,9 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
         if (
           this.state.selected &&
           this.project_workflows.indexOf(this.state.selected) < 0
-        )
+        ) {
           text = _t('Copy to Current Project')
+        }
       } else {
         text = _t('Select')
       }
@@ -219,8 +222,9 @@ class WorkflowsMenu extends React.Component<PropsType, StateProps> {
       this.props.type === 'added_workflow_menu' ||
       this.props.type === 'target_project_menu' ||
       this.props.type === 'workflow_select_menu'
-    )
+    ) {
       noHyperlink = true
+    }
     const tabs = []
     const tab_li = []
     let i = 0

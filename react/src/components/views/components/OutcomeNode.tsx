@@ -67,7 +67,9 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
    *******************************************************/
 
   deleteSelf(data) {
-    if (this.props.deleteSelfOverride) this.props.deleteSelfOverride()
+    if (this.props.deleteSelfOverride) {
+      this.props.deleteSelfOverride()
+    }
     //Temporary confirmation; add better confirmation dialogue later
     else {
       COURSEFLOW_APP.tinyLoader.startLoad()
@@ -97,7 +99,9 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
 
       if (numOutcomenodes === 0) {
         indicator.css('display', 'none')
-      } else indicator.css('display', '')
+      } else {
+        indicator.css('display', '')
+      }
     }
   }
 
@@ -125,12 +129,16 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.outcomeNode?.data
-    if (!data) return <></>
+    if (!data) {
+      return <></>
+    }
 
     // @todo component blows up on re-render by losing redux state
     // results in
 
-    if (data?.outcome === -1 || !data?.outcome) return null
+    if (data?.outcome === -1 || !data?.outcome) {
+      return null
+    }
 
     return (
       <div

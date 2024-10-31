@@ -5,7 +5,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { UtilityLoader } from '@cf/utility/UtilityLoader'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
-import {deleteSelfQueryLegacy} from "@XMLHTTP/API/workspace.rtk";
+import { deleteSelfQueryLegacy } from '@XMLHTTP/API/workspace.rtk'
 import { useDispatch } from 'react-redux'
 
 export const useMenuActions = () => {

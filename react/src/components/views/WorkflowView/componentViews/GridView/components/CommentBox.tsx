@@ -82,7 +82,9 @@ class CommentBox extends React.Component<PropsType, StateType> {
     const current_value = this.input.current.value
     let to_add = ''
 
-    if (cursor_pos > 0 && current_value[cursor_pos - 1] != ' ') to_add += ' '
+    if (cursor_pos > 0 && current_value[cursor_pos - 1] != ' ') {
+      to_add += ' '
+    }
 
     to_add += '@' + user.username + ' '
 
@@ -164,7 +166,9 @@ class CommentBox extends React.Component<PropsType, StateType> {
 
   appendComment() {
     const text = $(this.input.current)[0].value
-    if (!text) return
+    if (!text) {
+      return
+    }
     const parent = this.props.parent
     const props = parent.props
     $(this.input.current)[0].value = ''
@@ -207,12 +211,17 @@ class CommentBox extends React.Component<PropsType, StateType> {
     const side_actions = $(this.props.parent?.mainDiv?.current)
       .children('.side-actions')
       .children('.comment-indicator-container')
-    if (side_actions.length > 0) render_div = side_actions[0]
-    else render_div = this.props.parent?.mainDiv?.current
+    if (side_actions.length > 0) {
+      render_div = side_actions[0]
+    } else {
+      render_div = this.props.parent?.mainDiv?.current
+    }
     let comment_indicator = null
     if (has_comments) {
       let indicator_class = 'comment-indicator hover-shade'
-      if (has_unread) indicator_class += ' unread'
+      if (has_unread) {
+        indicator_class += ' unread'
+      }
       comment_indicator = reactDom.createPortal(
         <div
           className={indicator_class}
@@ -229,11 +238,13 @@ class CommentBox extends React.Component<PropsType, StateType> {
     }
 
     let comments
-    if (this.props.comments)
+    if (this.props.comments) {
       comments = this.props.comments.map((comment, index) => {
         const is_unread = this.unreadComments.indexOf(comment.id) >= 0
         let comment_class = 'comment'
-        if (is_unread) comment_class += ' unread'
+        if (is_unread) {
+          comment_class += ' unread'
+        }
         const text = comment.text.replace(
           /@\w[@a-zA-Z0-9_.]{1,}/g,
           (val) => '<b>' + val + '</b>'
@@ -267,6 +278,7 @@ class CommentBox extends React.Component<PropsType, StateType> {
           </div>
         )
       })
+    }
 
     const top_contents = []
     top_contents.push(
@@ -278,7 +290,7 @@ class CommentBox extends React.Component<PropsType, StateType> {
         <img src={apiPaths.external.static_assets.icon + 'close.svg'} />
       </div>
     )
-    if (!this.props.readOnly && comments.length > 1)
+    if (!this.props.readOnly && comments.length > 1) {
       top_contents.push(
         <div
           className="hover-shade"
@@ -288,10 +300,12 @@ class CommentBox extends React.Component<PropsType, StateType> {
           <img src={apiPaths.external.static_assets.icon + 'rubbish.svg'} />
         </div>
       )
+    }
 
     let input_default = _t('Add a comment')
-    if (this.props.comments && this.props.comments.length > 0)
+    if (this.props.comments && this.props.comments.length > 0) {
       input_default = _t('Reply')
+    }
 
     let tag_box
     if (this.state.tagging) {

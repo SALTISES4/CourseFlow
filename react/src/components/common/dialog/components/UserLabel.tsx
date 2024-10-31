@@ -50,8 +50,9 @@ class UserLabel extends React.Component<PropsType, StateProps> {
     if (
       this.props.cannotChange &&
       this.props.cannotChange.indexOf(this.props.user.id) >= 0
-    )
+    ) {
       disabled = true
+    }
     if (this.props.type !== 'owner') {
       if (this.props.type === 'add') {
         permission_select = (

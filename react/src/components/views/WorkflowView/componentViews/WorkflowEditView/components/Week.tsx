@@ -98,7 +98,9 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     const columns = this.props.column_order
     const old_column_index = columns.indexOf(old_column)
     const new_column_index = old_column_index + delta_x
-    if (new_column_index < 0 || new_column_index >= columns.length) return
+    if (new_column_index < 0 || new_column_index >= columns.length) {
+      return
+    }
     const new_column = columns[new_column_index]
 
     //legacy: hack debouncer
@@ -192,6 +194,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           addStrategyQuery(
             this.props.parentId,
             new_index,
+            // @todo HACK, this is being used to bypass react and pass information around the DOM
             // @ts-ignore
             drag_item[0].dataDraggable.strategy,
             (responseData) => {

@@ -75,8 +75,11 @@ class RightSideBar extends React.Component<PropsType> {
       disabled: [0],
       collapsible: true,
       activate: (evt, ui) => {
-        if (ui.oldTab.length === 0) $('#sidebar').removeClass('collapsed')
-        else if (ui.newTab.length === 0) $('#sidebar').addClass('collapsed')
+        if (ui.oldTab.length === 0) {
+          $('#sidebar').removeClass('collapsed')
+        } else if (ui.newTab.length === 0) {
+          $('#sidebar').addClass('collapsed')
+        }
       }
     })
 
@@ -93,7 +96,7 @@ class RightSideBar extends React.Component<PropsType> {
    * COMPONENTS
    *******************************************************/
   NodeBarWrapper = () => {
-    if (this.props.wfcontext === WorkflowContext.WORKFLOW)
+    if (this.props.wfcontext === WorkflowContext.WORKFLOW) {
       return (
         <NodeBar
           // viewType={this.props.renderer.viewType}
@@ -102,6 +105,7 @@ class RightSideBar extends React.Component<PropsType> {
           columnChoices={choices.column_choices}
         />
       )
+    }
     return null
   }
 
@@ -121,9 +125,7 @@ class RightSideBar extends React.Component<PropsType> {
 
   ViewBarWrapper = () => {
     if (this.props.wfcontext === WorkflowContext.WORKFLOW) {
-      return (
-        <ViewBar data={this.props.data} />
-      )
+      return <ViewBar data={this.props.data} />
     }
     if (this.props.wfcontext === WorkflowContext.COMPARISON) {
       return (
@@ -137,7 +139,9 @@ class RightSideBar extends React.Component<PropsType> {
   }
 
   RestoreBarWrapper = () => {
-    if (this.props.wfcontext === WorkflowContext.WORKFLOW) return <RestoreBar />
+    if (this.props.wfcontext === WorkflowContext.WORKFLOW) {
+      return <RestoreBar />
+    }
     return null
   }
 

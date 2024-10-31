@@ -197,8 +197,9 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
           !this.state.show_all &&
           this.props.restriction_set?.child_outcomes?.indexOf(childOutcome) ===
             -1
-        )
+        ) {
           return null
+        }
 
         return (
           <AlignmentHorizontalReverseChildOutcome
@@ -225,13 +226,14 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
 
     let outcomeadder
 
-    if (this.props.workflow.workflowPermissions.write)
+    if (this.props.workflow.workflowPermissions.write) {
       outcomeadder = (
         <OutcomeAdder
           outcome_set={outcome_restriction}
           addFunction={updateOutcomenodeDegree.bind(this, this.props.objectId)}
         />
       )
+    }
 
     const outcomes_for_node = (
       <div>
@@ -246,7 +248,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
 
     let add_new_outcome
 
-    if (this.props.workflow.workflowPermissions.write && data.linkedWorkflow)
+    if (this.props.workflow.workflowPermissions.write && data.linkedWorkflow) {
       add_new_outcome = (
         <div
           id="add-new-outcome"
@@ -260,6 +262,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
           <div>{_t('Add new')}</div>
         </div>
       )
+    }
 
     if (data.linkedWorkflow && this.props.restriction_set?.child_outcomes) {
       if (this.state.show_all) {
@@ -313,7 +316,9 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
         <div
           style={style}
           className={'node column-' + data.column}
-          onClick={(evt) => selectionManager.changeSelection({ evt, newSelection: this })}
+          onClick={(evt) =>
+            selectionManager.changeSelection({ evt, newSelection: this })
+          }
           ref={this.mainDiv}
         >
           <div className="node-top-row">
@@ -373,12 +378,14 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
 
       let child_outcomes
 
-      if (child_workflow != -1)
+      if (child_workflow != -1) {
         child_outcomes = Utility.filterThenSortByID(
           state.outcomeworkflow,
           child_workflow.data.outcomeworkflowSet
         ).map((outcomeworkflow) => outcomeworkflow.outcome)
-      else child_outcomes = -1
+      } else {
+        child_outcomes = -1
+      }
 
       return {
         workflow: state.workflow,

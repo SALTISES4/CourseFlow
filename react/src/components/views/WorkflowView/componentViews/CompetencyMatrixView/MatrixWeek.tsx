@@ -83,42 +83,49 @@ const mapStateToProps = (
     node_weeks.map((node_week) => node_week.node)
   ).filter((node) => !Utility.checkSetHidden(node, state.objectset))
   const linked_wf_data = nodes_data.map((node) => {
-    if (node.representsWorkflow) return { ...node, ...node.linkedWorkflowData }
+    if (node.representsWorkflow) {
+      return { ...node, ...node.linkedWorkflowData }
+    }
     return node
   })
   const general_education = linked_wf_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.timeGeneralHours)
+      if (currentValue && currentValue.timeGeneralHours) {
         return previousValue + currentValue.timeGeneralHours
+      }
       return previousValue
     },
     0
   )
   const specific_education = linked_wf_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.timeSpecificHours)
+      if (currentValue && currentValue.timeSpecificHours) {
         return previousValue + currentValue.timeSpecificHours
+      }
       return previousValue
     },
     0
   )
   const total_theory = linked_wf_data.reduce((previousValue, currentValue) => {
-    if (currentValue && currentValue.ponderationTheory)
+    if (currentValue && currentValue.ponderationTheory) {
       return previousValue + currentValue.ponderationTheory
+    }
     return previousValue
   }, 0)
   const total_practical = linked_wf_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationPractical)
+      if (currentValue && currentValue.ponderationPractical) {
         return previousValue + currentValue.ponderationPractical
+      }
       return previousValue
     },
     0
   )
   const total_individual = linked_wf_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationIndividual)
+      if (currentValue && currentValue.ponderationIndividual) {
         return previousValue + currentValue.ponderationIndividual
+      }
       return previousValue
     },
     0
@@ -126,8 +133,9 @@ const mapStateToProps = (
   const total_time = total_theory + total_practical + total_individual
   const total_required = linked_wf_data.reduce(
     (previousValue, currentValue) => {
-      if (currentValue && currentValue.timeRequired)
+      if (currentValue && currentValue.timeRequired) {
         return previousValue + parseFloat(currentValue.timeRequired)
+      }
       return previousValue
     },
     0

@@ -75,9 +75,7 @@ export default function weekReducer(
 
     case NodeWeekActions.MOVED_TO:
       return state.map((item) => {
-        const newSet = item.nodeweekSet.filter(
-          (id) => id !== action.payload.id
-        )
+        const newSet = item.nodeweekSet.filter((id) => id !== action.payload.id)
         if (item.id === action.payload.new_parent) {
           newSet.splice(action.payload.new_index, 0, action.payload.id)
         }

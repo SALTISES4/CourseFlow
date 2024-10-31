@@ -14,7 +14,9 @@ class CustomLinkSanitizer extends QuillLink {
     const sanitizedUrl = super.sanitize(url)
 
     // Not whitelisted URL based on protocol so, let's return `blank`
-    if (!sanitizedUrl || sanitizedUrl === 'about:blank') return sanitizedUrl
+    if (!sanitizedUrl || sanitizedUrl === 'about:blank') {
+      return sanitizedUrl
+    }
 
     // Verify if the URL already have a whitelisted protocol
     const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(
@@ -23,7 +25,9 @@ class CustomLinkSanitizer extends QuillLink {
       }
     )
 
-    if (hasWhitelistedProtocol) return sanitizedUrl
+    if (hasWhitelistedProtocol) {
+      return sanitizedUrl
+    }
 
     // if not, then append only 'http' to not to be a relative URL
     return `https://${sanitizedUrl}`

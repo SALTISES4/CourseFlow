@@ -258,7 +258,9 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   pushImport(imports, importType, text, disabled) {
     let a_class = 'hover-shade'
-    if (disabled) a_class = ' disabled'
+    if (disabled) {
+      a_class = ' disabled'
+    }
     imports.push()
   }
 

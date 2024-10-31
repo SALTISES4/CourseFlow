@@ -114,7 +114,9 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').each(
       function () {
         const this_height = $(this).height()
-        if (this_height > max_height) max_height = this_height
+        if (this_height > max_height) {
+          max_height = this_height
+        }
       }
     )
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').css({
@@ -151,12 +153,13 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
         column_order={this.props.column_order}
       />
     ))
-    if (nodes.length == 0)
+    if (nodes.length == 0) {
       nodes.push(
         <div className="node-week placeholder" style={{ height: '100%' }}>
           Drag and drop nodes from the sidebar to add.
         </div>
       )
+    }
     return nodes
   }
 }

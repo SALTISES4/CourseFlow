@@ -19,11 +19,15 @@ function columnWorkflowReducer(
 ): TColumnworkflow[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
-      if (action.payload.columnworkflow) return action.payload.columnworkflow
+      if (action.payload.columnworkflow) {
+        return action.payload.columnworkflow
+      }
       return state
 
     case CommonActions.REFRESH_STOREDATA: {
-      if (!action.payload.columnworkflow) return state
+      if (!action.payload.columnworkflow) {
+        return state
+      }
 
       return action.payload.columnworkflow.reduce(
         (acc, newItem) => {

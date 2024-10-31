@@ -25,7 +25,9 @@ const ConnectedUser = ({
 const ConnectionBar = ({ show }: { show: boolean }) => {
   const context = useContext(WorkFlowConfigContext)
 
-  if (!show) return null
+  if (!show) {
+    return null
+  }
 
   if (!context.ws.wsConnected) {
     return <Alert severity="warning">{_t('Not Connected')}</Alert>

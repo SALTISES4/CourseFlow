@@ -250,7 +250,9 @@ function workflowReducer(
 
     case OutcomeBaseActions.INSERT_BELOW:
     case OutcomeActions.NEW_OUTCOME: {
-      if (state.id != action.payload.new_through.workflow) return state
+      if (state.id != action.payload.new_through.workflow) {
+        return state
+      }
       const newState = { ...state }
       const new_outcomeworkflowSet = state.outcomeworkflowSet.slice()
       new_outcomeworkflowSet.splice(

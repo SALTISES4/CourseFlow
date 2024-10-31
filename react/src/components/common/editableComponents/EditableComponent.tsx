@@ -93,13 +93,14 @@ class EditableComponent<
 
   checkboxChanged(field, evt) {
     const do_change = true
-    if (do_change)
+    if (do_change) {
       this.context.editableMethods.changeField(
         this.props.data.id,
         Constants.objectDictionary[this.objectType],
         field,
         evt.target.checked
       )
+    }
   }
 
   valueChanged(field, newValue) {
@@ -113,7 +114,9 @@ class EditableComponent<
 
   getBorderStyle() {
     const data = this.props.data
-    if (!data) return
+    if (!data) {
+      return
+    }
 
     const border = data.lock ? '2px solid ' + data.lock.userColour : undefined
     return {
@@ -138,10 +141,17 @@ class EditableComponent<
 
   inputChanged(field, evt) {
     let value = evt.target.value
-    if (evt.target.type == 'number') value = parseInt(value) || 0
-    else if (!value) value = ''
-    if (field == 'colour') value = parseInt(value.replace('#', ''), 16)
-    if (evt.target.type == 'number' && value == '') value = 0
+    if (evt.target.type == 'number') {
+      value = parseInt(value) || 0
+    } else if (!value) {
+      value = ''
+    }
+    if (field == 'colour') {
+      value = parseInt(value.replace('#', ''), 16)
+    }
+    if (evt.target.type == 'number' && value == '') {
+      value = 0
+    }
     this.context.editableMethods.changeField(
       this.props.data.id,
       Constants.objectDictionary[this.objectType],
@@ -713,7 +723,9 @@ class EditableComponent<
     evt.stopPropagation()
     if (!this.state.show_comments) {
       this.reloadComments(true)
-    } else this.setState({ show_comments: false })
+    } else {
+      this.setState({ show_comments: false })
+    }
   }
 
   reloadComments(show_comments: boolean) {

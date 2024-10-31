@@ -50,9 +50,11 @@ export function toggleDropReduxAction(
       objectType,
       depth
     )
-    if (newDropState !== default_drop)
+    if (newDropState !== default_drop) {
       window.localStorage.setItem(objectType + objectId, String(newDropState))
-    else window.localStorage.removeItem(objectType + objectId)
+    } else {
+      window.localStorage.removeItem(objectType + objectId)
+    }
   } catch (err) {
     const error = err as Error
 

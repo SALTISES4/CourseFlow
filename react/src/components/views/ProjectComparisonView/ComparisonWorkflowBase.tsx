@@ -76,7 +76,9 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
     let max_height = 0
     $('.comparison-view .workflow-header').each(function () {
       const this_height = $(this).height()
-      if (this_height > max_height) max_height = this_height
+      if (this_height > max_height) {
+        max_height = this_height
+      }
     })
     $('.comparison-view .workflow-header').css({ height: max_height + 'px' })
   }

@@ -153,7 +153,9 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
     ))
 
     let cssClass = 'workflow-details'
-    if (data.condensed) cssClass += ' condensed'
+    if (data.condensed) {
+      cssClass += ' condensed'
+    }
 
     // We render an svg canvas in front of the rest of
     // the workflow for drawing node ports and links

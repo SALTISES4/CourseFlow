@@ -54,8 +54,9 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
         this.props.restriction_set &&
         this.props.restriction_set.nodes &&
         this.props.restriction_set.nodes.indexOf(nodeweek.node) == -1
-      )
+      ) {
         return null
+      }
       return (
         <AlignmentHorizontalReverseNode
           key={index}

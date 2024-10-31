@@ -34,7 +34,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
    *
    *******************************************************/
   render() {
-    if (this.props.data)
+    if (this.props.data) {
       return (
         // @todo was
         // <div className="node-bar-column-workflow" ref={this.mainDiv}>
@@ -48,7 +48,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
           />
         </div>
       )
-    else
+    } else {
       return (
         // @todo was
         // <div className="node-bar-column-workflow" ref={this.mainDiv}>
@@ -60,6 +60,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component<PropsType> {
           />
         </div>
       )
+    }
   }
 }
 const mapStateToProps = (

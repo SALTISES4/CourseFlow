@@ -62,7 +62,9 @@ const ProjectDetails = () => {
   }, [])
 
   useEffect(() => {
-    if (!data?.dataPackage) return
+    if (!data?.dataPackage) {
+      return
+    }
 
     const project = formatProjectEntity(data.dataPackage)
     setProject(project)
@@ -113,7 +115,9 @@ const ProjectDetails = () => {
   /*******************************************************
    * CONSTANTS
    *******************************************************/
-  if (isLoading || !project) return <Loader />
+  if (isLoading || !project) {
+    return <Loader />
+  }
   if (isError) {
     return (
       <ErrorView message={`An error occurred: ${getErrorMessage(error)}`} />

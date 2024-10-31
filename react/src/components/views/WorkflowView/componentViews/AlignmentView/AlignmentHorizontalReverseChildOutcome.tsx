@@ -47,8 +47,9 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component<
               this.props.restriction_set.parentOutcomes.indexOf(
                 this.props.outcomenodes[i].outcome
               ) == -1
-            )
+            ) {
               return null
+            }
             return (
               <AlignmentHorizontalReverseParentOutcome
                 child_outcome={this.props.objectId}

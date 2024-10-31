@@ -109,13 +109,14 @@ class Term extends WeekUnconnected<PropsType> {
           )
         }
       }
-      if (nodeweeks.length == 0)
+      if (nodeweeks.length == 0) {
         nodeweeks.push(
           <div
             className="node-week placeholder"
             style={{ height: '100%' }}
           ></div>
         )
+      }
       node_blocks.push(
         <div
           className={'node-block term column-' + col}

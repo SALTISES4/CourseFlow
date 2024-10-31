@@ -5,7 +5,7 @@ import {
 } from '@cfComponents/filters/types'
 import Button from '@mui/material/Button'
 import { produce } from 'immer'
-import {MouseEventHandler, ReactNode, useEffect, useState} from 'react'
+import { MouseEventHandler, ReactNode, useEffect, useState } from 'react'
 
 import { StyledMenu, StyledMenuItem } from './styles'
 
@@ -38,11 +38,9 @@ const FilterButton = ({
     setMenuAnchor(event.currentTarget)
   }
 
-    useEffect(() => {
-//    console.log('rendering')
-
-  }, [onChange, enabled, el ])
-
+  useEffect(() => {
+    //    console.log('rendering')
+  }, [onChange, enabled, el])
 
   const onOptionClick = (option: SearchFilterOption) => {
     setEl(option)

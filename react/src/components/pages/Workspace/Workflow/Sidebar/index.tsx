@@ -55,7 +55,7 @@ function getCurrentTab(
 
   switch (tab) {
     case 'edit':
-//      return <EditTab {...editable} />
+      //      return <EditTab {...editable} />
       return <EditTab {...forcePayload} />
     case 'add':
       return <AddTab {...(props[tab] as SidebarDataType['add'])} />

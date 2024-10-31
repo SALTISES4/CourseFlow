@@ -35,7 +35,7 @@ class StrategyUnconnected extends React.Component<PropsType> {
    *******************************************************/
   componentDidMount() {
     this.makeDraggable()
-    // @todo
+    // @todo HACK, this is being used to bypass react and pass information around the DOM
     // @ts-ignore
     $(this.mainDiv.current)[0].dataDraggable = { strategy: this.props.data.id }
   }

@@ -17,20 +17,16 @@ export default function gridMenuReducer(
 
       // Determine which part of the state to update
       const target =
-        action.payload.type === 'project'
-          ? 'ownedProjects'
-          : 'owned_strategies'
+        action.payload.type === 'project' ? 'ownedProjects' : 'owned_strategies'
 
       // Deep copy the sections to maintain immutability
-      newState[target].sections = newState[target].sections.map(
-        (section) => ({
-          ...section,
-          objects:
-            section.objectType === action.payload.type
-              ? [...section.objects, action.payload.newItem]
-              : [...section.objects]
-        })
-      )
+      newState[target].sections = newState[target].sections.map((section) => ({
+        ...section,
+        objects:
+          section.objectType === action.payload.type
+            ? [...section.objects, action.payload.newItem]
+            : [...section.objects]
+      }))
 
       return newState
 

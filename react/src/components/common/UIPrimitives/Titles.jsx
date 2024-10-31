@@ -37,9 +37,12 @@ export class NodeTitle extends React.Component {
     let text
     if (data.representsWorkflow && data.linkedWorkflowData) {
       text = data.linkedWorkflowData.title
-      if (data.linkedWorkflowData.code)
+      if (data.linkedWorkflowData.code) {
         text = data.linkedWorkflowData.code + ' - ' + text
-    } else text = data.title
+      }
+    } else {
+      text = data.title
+    }
 
     if (text == null || text == '') {
       text = _t('Untitled')

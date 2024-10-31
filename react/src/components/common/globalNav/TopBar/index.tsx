@@ -5,7 +5,7 @@ import strings from '@cf/utility/strings'
 import { _t } from '@cf/utility/utilityFunctions'
 import { getNameInitials } from '@cf/utility/utilityFunctions'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
-import {WorkflowType} from "@cfPages/Workspace/Workflow/types";
+import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
@@ -44,7 +44,9 @@ const TopBar = () => {
    * MENUS
    *******************************************************/
   const AddMenu = ({ show }: { show: boolean }) => {
-    if (!show) return
+    if (!show) {
+      return
+    }
 
     const header: MenuItemType = {
       content: (
@@ -145,8 +147,12 @@ const TopBar = () => {
   const NotificationsMenu = () => {
     const { data, error, isLoading, isError } = useGetNotificationsQuery()
 
-    if (isLoading) return <></>
-    if (!data) return <></>
+    if (isLoading) {
+      return <></>
+    }
+    if (!data) {
+      return <></>
+    }
 
     const content = (
       <>

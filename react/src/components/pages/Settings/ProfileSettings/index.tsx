@@ -1,4 +1,4 @@
-import {languageOptions} from "@cf/constants";
+import { languageOptions } from '@cf/constants'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { OuterContentWrap } from '@cf/mui/helper'
 import strings from '@cf/utility/strings'

@@ -112,7 +112,7 @@ class ComparisonNodeUnconnected extends EditableComponent<
     }
 
     let outcomenodes
-    if (this.state.show_outcomes)
+    if (this.state.show_outcomes) {
       outcomenodes = (
         <div
           className={'outcome-node-container column-111111-' + data.column}
@@ -130,6 +130,7 @@ class ComparisonNodeUnconnected extends EditableComponent<
           ))}
         </div>
       )
+    }
 
     if (data.outcomenodeUniqueSet.length > 0) {
       side_actions.push(

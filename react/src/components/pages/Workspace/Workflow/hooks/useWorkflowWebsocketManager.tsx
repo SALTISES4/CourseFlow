@@ -82,7 +82,9 @@ export const useWorkflowWebsocketManager = ({
    * this is not optimized
    *******************************************************/
   useEffect(() => {
-    if (!wsService || !wsUserConnectedService) return
+    if (!wsService || !wsUserConnectedService) {
+      return
+    }
 
     wsService.connect(
       onMessageReceived,
@@ -319,7 +321,7 @@ export const useWorkflowWebsocketManager = ({
       (obj: any, time: number, lock: boolean) => {
         const payload: { type: WS_EVENT_TYPE; lock: any } = {
           type: WS_EVENT_TYPE.LOCK_UPDATE,
-          lock: { ...obj, expires: Date.now() + time, user , lock }
+          lock: { ...obj, expires: Date.now() + time, user, lock }
         }
 
         if (wsService) {

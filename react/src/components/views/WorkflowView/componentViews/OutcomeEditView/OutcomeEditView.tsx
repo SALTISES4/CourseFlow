@@ -144,7 +144,9 @@ export class OutcomeEditViewUnconnected<
             <div className="outcome-category-block">
               {category.outcomes.map((outcome) => {
                 let my_class = 'outcome-workflow'
-                if (outcome.through_noDrag) my_class += ' no-drag'
+                if (outcome.through_noDrag) {
+                  my_class += ' no-drag'
+                }
                 return (
                   <div
                     className={my_class}

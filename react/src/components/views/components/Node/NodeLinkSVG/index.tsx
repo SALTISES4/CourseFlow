@@ -109,7 +109,9 @@ class PathGenerator {
 
   //Recursively checks to see whether we need to move around a node, if not, we just need to join the arrays
   findNextPoint() {
-    if (this.findcounter > 8) return
+    if (this.findcounter > 8) {
+      return
+    }
     this.findcounter++
 
     const isSourceNegative =
@@ -392,8 +394,7 @@ class NodeLinkSVG extends React.Component<PropsType> {
 
   render() {
     try {
-
-//     console.log(this.props)
+      //     console.log(this.props)
 
       const source_transform = Utility.getSVGTranslation(
         this.props.sourcePort_handle

@@ -59,28 +59,13 @@ class RestoreBarUnconnected extends React.Component<PropsType> {
    *******************************************************/
   render() {
     const columns = this.props.columns.map((column) => (
-      <RestoreBarItem
-        key={column.id}
-        objectType="column"
-        data={column}
-        // renderer={this.props.renderer}
-      />
+      <RestoreBarItem key={column.id} objectType="column" data={column} />
     ))
     const weeks = this.props.weeks.map((week) => (
-      <RestoreBarItem
-        key={week.id}
-        objectType="week"
-        data={week}
-        // renderer={this.props.renderer}
-      />
+      <RestoreBarItem key={week.id} objectType="week" data={week} />
     ))
     const nodes = this.props.nodes.map((node) => (
-      <RestoreBarItem
-        key={node.id}
-        objectType="node"
-        data={node}
-        // renderer={this.props.renderer}
-      />
+      <RestoreBarItem key={node.id} objectType="node" data={node} />
     ))
     const outcomes = this.props.outcomes.map((outcome) => (
       <RestoreBarItem

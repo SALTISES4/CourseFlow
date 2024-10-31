@@ -26,7 +26,7 @@ class ActionCreator {
     userId?,
     userColour?
   ) => {
-    if (lock)
+    if (lock) {
       return {
         type: objectType + '/createLock',
         payload: {
@@ -34,7 +34,7 @@ class ActionCreator {
           lock: { userId: userId, userColour: userColour }
         }
       }
-    else
+    } else {
       return {
         type: objectType + '/createLock',
         payload: {
@@ -42,6 +42,7 @@ class ActionCreator {
           lock: null
         }
       }
+    }
   }
 
   static reloadCommentsAction = (id, objectType, comment_data) => {

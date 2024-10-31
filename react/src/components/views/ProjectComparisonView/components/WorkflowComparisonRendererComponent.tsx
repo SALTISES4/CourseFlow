@@ -81,12 +81,13 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
   }
 
   componentDidUpdate(prevProps: OwnProps) {
-    if (prevProps.viewType != this.props.viewType)
+    if (prevProps.viewType != this.props.viewType) {
       // no this doesn't work any more
       //
       // @ts-ignore
       // @todo create a stable view of the workflow
       this.workflowComparison.render(this.props.viewType)
+    }
   }
 
   componentWillUnmount() {

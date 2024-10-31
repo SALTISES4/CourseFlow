@@ -75,7 +75,6 @@ class WebSocketServiceConnectedUserManager {
   }
 
   public connectionUpdateReceived(userData: ConnectedUser): void {
-
     const index = this.connectedUsers.findIndex(
       (u) => u.user.id === userData.user.id
     )
@@ -86,12 +85,18 @@ class WebSocketServiceConnectedUserManager {
 
       this.connectedUsers[index] = {
         ...userData,
-        timeout: setTimeout(() => this.removeConnection(userData.user.id), 60000)
+        timeout: setTimeout(
+          () => this.removeConnection(userData.user.id),
+          60000
+        )
       }
     } else {
       this.connectedUsers.push({
         ...userData,
-        timeout: setTimeout(() => this.removeConnection(userData.user.id), 60000)
+        timeout: setTimeout(
+          () => this.removeConnection(userData.user.id),
+          60000
+        )
       })
     }
     this.updateStateCallback(this.connectedUsers)
@@ -100,8 +105,9 @@ class WebSocketServiceConnectedUserManager {
   private removeConnection(userId: number): void {
     const index = this.connectedUsers.findIndex((u) => u.user.id === userId)
     if (index !== -1) {
-      if (this.connectedUsers[index].timeout)
+      if (this.connectedUsers[index].timeout) {
         clearTimeout(this.connectedUsers[index].timeout)
+      }
       this.connectedUsers.splice(index, 1)
       this.updateStateCallback(this.connectedUsers)
     }

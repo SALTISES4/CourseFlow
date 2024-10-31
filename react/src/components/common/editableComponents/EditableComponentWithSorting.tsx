@@ -83,8 +83,12 @@ class EditableComponentWithSorting<
     }
 
     let cursorAt = {}
-    if (draggable_type == 'weekworkflow') cursorAt = { top: 20 }
-    if (draggable_type == 'nodeweek') cursorAt = { top: 20, left: 50 }
+    if (draggable_type == 'weekworkflow') {
+      cursorAt = { top: 20 }
+    }
+    if (draggable_type == 'nodeweek') {
+      cursorAt = { top: 20, left: 50 }
+    }
     const props = this.props
     sortable_block.draggable({
       containment: containment,
@@ -260,6 +264,8 @@ class EditableComponentWithSorting<
         const drop_item = $(e.target)
         const drag_item = ui.draggable
         const new_index = drop_item.prevAll().length + 1
+
+        // @todo HACK, this is being used to bypass react and pass information around the DOM
         if (draggable_type == 'nodeweek' && drag_item.hasClass('new-node')) {
           newNodeQuery(
             this.props.objectId,
@@ -284,11 +290,21 @@ class EditableComponentWithSorting<
   lockChild(id, lock, through_type) {
     let objectType
 
-    if (through_type == 'nodeweek') objectType = 'node'
-    if (through_type == 'weekworkflow') objectType = 'week'
-    if (through_type == 'columnworkflow') objectType = 'column'
-    if (through_type == 'outcomeoutcome') objectType = 'outcome'
-    if (through_type == 'outcomeworkflow') objectType = 'outcome'
+    if (through_type == 'nodeweek') {
+      objectType = 'node'
+    }
+    if (through_type == 'weekworkflow') {
+      objectType = 'week'
+    }
+    if (through_type == 'columnworkflow') {
+      objectType = 'column'
+    }
+    if (through_type == 'outcomeoutcome') {
+      objectType = 'outcome'
+    }
+    if (through_type == 'outcomeworkflow') {
+      objectType = 'outcome'
+    }
 
     this.context.editableMethods.lockUpdate(
       { objectId: id, objectType: objectType },

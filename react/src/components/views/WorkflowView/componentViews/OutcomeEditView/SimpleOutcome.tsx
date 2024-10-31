@@ -66,11 +66,15 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    if (this.props.checkHidden) this.props.checkHidden()
+    if (this.props.checkHidden) {
+      this.props.checkHidden()
+    }
   }
 
   componentDidUpdate() {
-    if (this.props.checkHidden) this.props.checkHidden()
+    if (this.props.checkHidden) {
+      this.props.checkHidden()
+    }
   }
 
   /*******************************************************
@@ -103,7 +107,9 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
   render() {
     const data = this.props.data
 
-    if (Utility.checkSetHidden(data, this.props.objectSets)) return null
+    if (Utility.checkSetHidden(data, this.props.objectSets)) {
+      return null
+    }
 
     //Child outcomes. See comment in models/outcome.py for more info.
     const children = this.state.isDropped ? (

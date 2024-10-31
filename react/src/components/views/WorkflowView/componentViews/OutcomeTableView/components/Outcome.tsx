@@ -30,8 +30,11 @@ class TableCell extends React.Component<TableCellPropsType> {
    *******************************************************/
   toggleFunction() {
     let value
-    if (this.props.degree) value = 0
-    else value = 1
+    if (this.props.degree) {
+      value = 0
+    } else {
+      value = 1
+    }
     COURSEFLOW_APP.tinyLoader.startLoad()
     updateOutcomenodeDegree(
       this.props.nodeID,
@@ -327,10 +330,11 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
     )
 
     let child_rows
-    if (isDropped)
+    if (isDropped) {
       child_rows = this.props.outcome_tree.children.map((child) => (
         <this.ChildOutcomeView child={child} />
       ))
+    }
     return [full_row, child_rows]
   }
 }

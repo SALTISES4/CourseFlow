@@ -38,7 +38,7 @@ const NotificationsSettingsPage = () => {
   const [mutate, { isSuccess, isError, data: updateData }] =
     useUpdateNotificationSettingsMutation()
 
-    const { onError, onSuccess } = useGenericMsgHandler()
+  const { onError, onSuccess } = useGenericMsgHandler()
 
   /*******************************************************
    * FORM HOOK

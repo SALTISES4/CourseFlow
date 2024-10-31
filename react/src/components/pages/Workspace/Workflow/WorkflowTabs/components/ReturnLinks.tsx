@@ -50,7 +50,9 @@ const ReturnLinks = () => {
   // this returns you to the editable version
   // not really understanding this yet, why not use the same link but with view permissions for all users?
   const EditableProjectLink = () => {
-    if (!publicView || !canView) return <></>
+    if (!publicView || !canView) {
+      return <></>
+    }
 
     const path = generatePath(CFRoutes.PROJECT, {
       id: String(project.id)
@@ -65,7 +67,9 @@ const ReturnLinks = () => {
 
   // this is not managed properly yet for if you are in a workflow or project view
   const EditableWorkflowLink = () => {
-    if (!publicView || !canView) return <></>
+    if (!publicView || !canView) {
+      return <></>
+    }
 
     const path = generatePath(CFRoutes.WORKFLOW, {
       id: String(project.id)

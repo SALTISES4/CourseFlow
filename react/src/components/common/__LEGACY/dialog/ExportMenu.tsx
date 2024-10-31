@@ -2,7 +2,7 @@
 // TODO: Deprecate/remove this component in favor of "ExportProject" dialog
 // which could be renamed since the same dialog appears when exporting workflows
 
-import {apiPaths} from "@cf/router/apiRoutes";
+import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as React from 'react'
 // import $ from 'jquery'
@@ -87,7 +87,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
       <label htmlFor="export_type">{_t('Nodes')}</label>
     ])
 
-    if (type == 'project' || type == 'course')
+    if (type == 'project' || type == 'course') {
       exports.push([
         <input
           name="export_type"
@@ -98,8 +98,9 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
         />,
         <label htmlFor="export_type">{_t('Course Framework')}</label>
       ])
+    }
 
-    if (type == 'project' || type == 'program')
+    if (type == 'project' || type == 'program') {
       exports.push([
         <input
           name="export_type"
@@ -110,9 +111,10 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
         />,
         <label htmlFor="export_type">{_t('Competency Matrix')}</label>
       ])
+    }
 
     // brought from master branch
-    if (type == 'project' || type == 'program')
+    if (type == 'project' || type == 'program') {
       exports.push([
         <input
           name="export_type"
@@ -123,6 +125,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
         />,
         <label htmlFor="export_type">{_t('Sobec Validation')}</label>
       ])
+    }
 
     return exports
   }
@@ -199,12 +202,7 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
           className="window-close-button"
           onClick={this.props.actionFunction}
         >
-          <img
-            src={
-               apiPaths.external.static_assets.icon +
-              'close.svg'
-            }
-          />
+          <img src={apiPaths.external.static_assets.icon + 'close.svg'} />
         </div>
       </div>
     )

@@ -112,9 +112,12 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
   updateHidden() {
     if ($(this.mainDiv.current).css('display') == 'none') {
       const week = $(this.mainDiv.current).parent('.node-week').parent()
-      if (week.children('.node-week:not(.empty)').length > 1)
+      if (week.children('.node-week:not(.empty)').length > 1) {
         $(this.mainDiv.current).parent('.node-week').addClass('empty')
-    } else $(this.mainDiv.current).parent('.nodeweek').removeClass('empty')
+      }
+    } else {
+      $(this.mainDiv.current).parent('.nodeweek').removeClass('empty')
+    }
   }
 
   updatePorts() {
@@ -163,9 +166,11 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
         const drag_item = ui.draggable
         if (drag_item.hasClass('outcome')) {
           COURSEFLOW_APP.tinyLoader.startLoad()
+
+          // @todo HACK, this is being used to bypass react and pass information around the DOM
           updateOutcomenodeDegree(
             this.props.objectId,
-            // @ts-ignore // data draggable is custom
+            // @ts-ignore // data draggable is custom /HACK
             drag_item[0].dataDraggable.outcome,
             1,
             (responseData) => {
@@ -180,13 +185,16 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
   mouseIn(_evt) {
     const myComponent = this
 
-    if ($('.workflow-canvas').hasClass('creating-node-link')) return
-    if (this.props.workflow.workflowPermissions.write)
+    if ($('.workflow-canvas').hasClass('creating-node-link')) {
+      return
+    }
+    if (this.props.workflow.workflowPermissions.write) {
       $(
         "circle[data-node-id='" +
           this.props.objectId +
           "'][data-port-type='source']"
       ).addClass('mouseover')
+    }
 
     // @ts-ignore // not sure whether to import d3 directly yet
     d3.selectAll('.node-ports').raise()
@@ -283,10 +291,11 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
       node_links = data.outgoingLinks.map((link) => (
         <NodeLink key={link} objectId={link} node_div={this.mainDiv} />
       ))
-      if (data.hasAutolink)
+      if (data.hasAutolink) {
         auto_link = (
           <AutoLink nodeID={this.props.objectId} node_div={this.mainDiv} />
         )
+      }
     }
 
     if (this.state.show_outcomes) {
@@ -382,13 +391,14 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
       }
     }
 
-    if (data.linkedWorkflow)
+    if (data.linkedWorkflow) {
       linkIcon = (
         <div className={link_class} onClick={clickfunc}>
           <img src={apiPaths.external.static_assets.icon + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
       )
+    }
     let dropText = ''
     if (
       data_override.description &&
@@ -396,8 +406,9 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
         /(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
         ''
       ) != ''
-    )
+    ) {
       dropText = '...'
+    }
     const titleText = <NodeTitle data={data} />
 
     const style: React.CSSProperties = {

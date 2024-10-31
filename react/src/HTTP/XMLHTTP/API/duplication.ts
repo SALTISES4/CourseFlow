@@ -34,7 +34,7 @@ export function duplicateBaseItemQuery(
   const projectPkString = projectID
 
   // project duplicate moved to own function (was in this if statement before)
- if (objectType === CfObjectType.STRATEGY) {
+  if (objectType === CfObjectType.STRATEGY) {
     const url = apiPaths.json_api.workflow.strategy__duplicate
     sendPostRequest(url, {
       workflowPk: itemPkString
@@ -47,4 +47,3 @@ export function duplicateBaseItemQuery(
     })
   }
 }
-

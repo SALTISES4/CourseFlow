@@ -112,7 +112,9 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
   }
 
   setPublication(published) {
-    if (published === this.state.published) return
+    if (published === this.state.published) {
+      return
+    }
     const component = this
     if (
       !published ||
@@ -181,7 +183,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
 
     if (data.type !== 'project') {
       const publicView = this.state.publicView
-      if (!publicView)
+      if (!publicView) {
         return (
           <div
             className="public-link-button  hover-shade"
@@ -200,7 +202,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             </div>
           </div>
         )
-      else
+      } else {
         return [
           <div className="flex-middle">
             <div
@@ -305,6 +307,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             </div>
           </div>
         ]
+      }
     }
   }
 
@@ -328,8 +331,12 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
         public_disabled |= data.disciplines.length == 0 // @todo not allowed
       }
 
-      if (!public_disabled && !published) public_class += ' hover-shade'
-      if (public_disabled) public_class += ' disabled'
+      if (!public_disabled && !published) {
+        public_class += ' hover-shade'
+      }
+      if (public_disabled) {
+        public_class += ' disabled'
+      }
       const public_text = _t('Any CourseFlow teacher can view')
       let disabled_indicator
 
@@ -376,7 +383,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
       ]
     } else {
       let published_icon
-      if (published)
+      if (published) {
         published_icon = (
           <div className="big-buttons-wrapper">
             <div className="big-button active">
@@ -390,7 +397,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             </div>
           </div>
         )
-      else
+      } else {
         published_icon = (
           <div className="big-buttons-wrapper">
             <div className="big-button active">
@@ -402,6 +409,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
             </div>
           </div>
         )
+      }
       return [published_icon, <this.PublicLink />]
     }
   }
