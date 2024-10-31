@@ -403,7 +403,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
     if (
       data_override.description &&
       data_override.description.replace(
-        /(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
+        /(<p>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
         ''
       ) != ''
     ) {

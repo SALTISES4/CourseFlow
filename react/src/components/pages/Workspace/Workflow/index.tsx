@@ -3,6 +3,7 @@ import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { useWorkflowWebsocketManager } from '@cfPages/Workspace/Workflow/hooks/useWorkflowWebsocketManager'
+import { EditableContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useEditable/context'
 import { WorkflowSidebarContextProvider } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar/context'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
@@ -53,7 +54,7 @@ const Workflow = () => {
   })
 
   /*******************************************************
-   * Once the websocket id 'initialized' that measn connected
+   * Once the websocket id 'initialized' that means connected
    * AND it performs the query
    * AND stores data in store
    * then this component is listens to store and in turn sets ready state
@@ -65,8 +66,7 @@ const Workflow = () => {
    * not only that but it doesn't make sense this is all one render blocking query
    * ..
    * maybe we don't need to use the store at all here
-   * maybe we should be relyong on the RTK query cache
-
+   * maybe we should be relying on the RTK query cache
    *******************************************************/
   useEffect(() => {
     if (workflowData && workflowData.workflowPermissions) {
@@ -103,22 +103,24 @@ const Workflow = () => {
 
   return (
     <WorkflowSidebarContextProvider>
-      <WorkflowConfigProvider
-        initialValue={{
-          selectionManager: selectionManager!,
-          editableMethods: {
-            lockUpdate,
-            microUpdate,
-            changeField
-          },
-          ws: {
-            wsConnected: isWsInit,
-            connectedUsers
-          }
-        }}
-      >
-        <WorkflowTabs />
-      </WorkflowConfigProvider>
+      <EditableContextProvider>
+        <WorkFlowConfigProvider
+          initialValue={{
+            selectionManager: selectionManager!,
+            editableMethods: {
+              lockUpdate,
+              microUpdate,
+              changeField
+            },
+            ws: {
+              wsConnected: isWsInit,
+              connectedUsers
+            }
+          }}
+        >
+          <WorkflowTabs />
+        </WorkFlowConfigProvider>
+      </EditableContextProvider>
     </WorkflowSidebarContextProvider>
   )
 }

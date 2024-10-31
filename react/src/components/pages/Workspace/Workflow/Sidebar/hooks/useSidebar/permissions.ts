@@ -64,7 +64,7 @@ const permissionMatrix: PermissionMatrixType = {
   }
 }
 
-export function isTabVisibile(
+export function isTabVisible(
   tab: keyof SidebarDataType,
   config: ConfigType
 ): boolean {

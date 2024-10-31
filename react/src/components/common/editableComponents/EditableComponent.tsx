@@ -21,8 +21,9 @@ import { toggleStrategyQuery } from '@XMLHTTP/API/update'
 import { updateObjectSet } from '@XMLHTTP/API/update'
 import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
-import ReactDOM from 'react-dom'
 import { Action } from 'redux'
+
+import SidebarEditTabProxy from './components/SidebarEditTabProxy'
 
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
@@ -207,8 +208,10 @@ class EditableComponent<
                 Math.floor(choice.type / 100) == data.nodeType ||
                 choice.type == 0
             )
-            .map((choice) => (
-              <option value={choice.type}>{choice.name}</option>
+            .map((choice, index) => (
+              <option key={`${choice.type}_${index}`} value={choice.type}>
+                {choice.name}
+              </option>
             ))}
         </select>
       </div>
@@ -237,8 +240,10 @@ class EditableComponent<
             value={data.timeUnits}
             onChange={this.inputChanged.bind(this, 'timeUnits')}
           >
-            {choices.timeChoices.map((choice) => (
-              <option value={choice.type}>{choice.name}</option>
+            {choices.timeChoices.map((choice, index) => (
+              <option key={`${choice.type}_${index}`} value={choice.type}>
+                {choice.name}
+              </option>
             ))}
           </select>
         </div>
@@ -318,8 +323,10 @@ class EditableComponent<
                 Math.floor(choice.type / 100) == data.nodeType ||
                 choice.type == 0
             )
-            .map((choice) => (
-              <option value={choice.type}>{choice.name}</option>
+            .map((choice, index) => (
+              <option key={`${choice.type}_${index}`} value={choice.type}>
+                {choice.name}
+              </option>
             ))}
         </select>
       </div>
@@ -394,8 +401,10 @@ class EditableComponent<
             value={data.outcomesType}
             onChange={this.inputChanged.bind(this, 'outcomesType')}
           >
-            {choices.contextChoices.map((choice) => (
-              <option value={choice.type}>{choice.name}</option>
+            {choices.contextChoices.map((choice, index) => (
+              <option key={`${choice.type}_${index}`} value={choice.type}>
+                {choice.name}
+              </option>
             ))}
           </select>
         </div>
@@ -525,8 +534,10 @@ class EditableComponent<
           value={data.strategyClassification}
           onChange={this.inputChanged.bind(this, 'strategyClassification')}
         >
-          {choices.contextChoices.map((choice) => (
-            <option value={choice.type}>{choice.name}</option>
+          {choices.contextChoices.map((choice, index) => (
+            <option key={`${choice.type}_${index}`} value={choice.type}>
+              {choice.name}
+            </option>
           ))}
         </select>
         <button
@@ -587,8 +598,8 @@ class EditableComponent<
 
       if (allowed_sets.length >= 0) {
         const disable_sets = data.depth || readOnly ? true : false
-        const set_options = allowed_sets.map((set) => (
-          <div>
+        const set_options = allowed_sets.map((set, index) => (
+          <div key={`${set.id}_${index}`}>
             <input
               disabled={disable_sets}
               type="checkbox"
@@ -599,7 +610,7 @@ class EditableComponent<
             <label htmlFor={set.id}>{set.title}</label>
           </div>
         ))
-        sets = [<h4>{_t('Sets')}</h4>, set_options]
+        sets = [<h4 key="set_title">{_t('Sets')}</h4>, set_options]
       }
     }
 
@@ -799,11 +810,16 @@ class EditableComponent<
       return <></>
     }
 
-    // #edit-menu dynamic, in RightSideBar component
-    return ReactDOM.createPortal(
-      <this.EditForm data={data} noDelete={noDelete} />,
-      document.getElementById('edit-menu')
-    ) as unknown as ReactPortal
+    // TODO: remove
+    // // #edit-menu dynamic, in RightSideBar component
+    // return ReactDOM.createPortal(
+    //   <this.EditForm data={data} noDelete={noDelete} />,
+    //   document.getElementById('edit-menu')
+    // ) as unknown as ReactPortal
+
+    // TODO: figure out where the id/hash is coming from
+    // to uniquely identify a clicked element
+    return <SidebarEditTabProxy id={3} />
   }
 }
 
