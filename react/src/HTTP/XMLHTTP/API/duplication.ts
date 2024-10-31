@@ -48,22 +48,3 @@ export function duplicateBaseItemQuery(
   }
 }
 
-//Causes the specified object to insert a sibling after itself
-export function duplicateSelfQuery(
-  objectId: number,
-  objectType: any,
-  parentID: number,
-  parentType: any,
-  throughType: any,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
-) {
-  API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_self, {
-    parentID: parentID,
-    parentType: parentType,
-    objectId: objectId,
-    objectType: objectType,
-    throughType: throughType
-  }).then((response: EmptyPostResp) => {
-    callBackFunction(response)
-  })
-}

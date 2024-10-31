@@ -139,7 +139,7 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
         <ColumnWorkflow
           key={`columnworkflow-${columnworkflow}`}
           objectId={columnworkflow}
-          parentID={data.id}
+          parentId={data.id}
         />
       )
     )
@@ -148,7 +148,7 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
         condensed={data.condensed}
         key={`weekworkflow-${weekworkflow}`}
         objectId={weekworkflow}
-        parentID={data.id}
+        parentId={data.id}
       />
     ))
 

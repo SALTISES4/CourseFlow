@@ -9,6 +9,11 @@ import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
+import {
+  DeleteSelfButton,
+  DuplicateSelfButton,
+  InsertSiblingButton
+} from '@cfEditableComponents/hoverEditActions'
 import { TGetWeekByIDType, getWeekById } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
@@ -28,7 +33,6 @@ type ConnectedProps = {
   workflow: TWorkflow
 }
 type OwnProps = {
-  throughParentID?: number
   rank?: number
   column_order?: any // @todo i think this is delivered by redux
   nodes_by_column?: any
@@ -46,7 +50,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   EditableComponentWithSortingState
 > {
   protected node_block: React.RefObject<HTMLDivElement>
-  objectClass: string
 
   constructor(props: P) {
     super(props)
@@ -187,7 +190,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
         if (drag_item.hasClass('new-strategy')) {
           const loader = new UtilityLoader('body')
           addStrategyQuery(
-            this.props.parentID,
+            this.props.parentId,
             new_index,
             // @ts-ignore
             drag_item[0].dataDraggable.strategy,
@@ -215,10 +218,44 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       <NodeWeek
         key={nodeId}
         objectId={nodeId}
-        parentID={this.props.week.data.id}
+        parentId={this.props.week.data.id}
         column_order={this.props.week.column_order}
       />
     ))
+  }
+
+  HoverMenu = () => {
+    const mouseoverActions = []
+    if (
+      this.props.workflow.workflowPermissions.write &&
+      !this.props.workflow.isStrategy
+    ) {
+      mouseoverActions.push(
+        <InsertSiblingButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DuplicateSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DeleteSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+        />
+      )
+    }
+
+    if (this.props.workflow.workflowPermissions.viewComments) {
+      mouseoverActions.push(<this.AddCommenting />)
+    }
+    return mouseoverActions
   }
 
   /*******************************************************
@@ -227,7 +264,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   render() {
     const data = this.props.week.data
     const selectionManager = this.context.selectionManager
-    // const cssClass = 'week'
 
     const cssClasses = [
       'week',
@@ -243,19 +279,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
     const style: React.CSSProperties = {
       border: data.lock ? '2px solid ' + data.lock.userColour : undefined
-    }
-
-    const mouseoverActions = []
-    if (
-      this.props.workflow.workflowPermissions.write &&
-      !this.props.workflow.isStrategy
-    ) {
-      mouseoverActions.push(<this.InsertSiblingButton data={data} />)
-      mouseoverActions.push(<this.DuplicateSelfButton data={data} />)
-      mouseoverActions.push(<this.DeleteSelfButton data={data} />)
-    }
-    if (this.props.workflow.workflowPermissions.viewComments) {
-      mouseoverActions.push(<this.AddCommenting />)
     }
 
     // @todo this will go when the new sidebar is done
@@ -284,9 +307,13 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           }}
         >
           <div className="mouseover-container-bypass">
-            <div className="mouseover-actions">{mouseoverActions}</div>
+            <div className="mouseover-actions">
+              <this.HoverMenu />
+            </div>
           </div>
+
           <TitleText text={data.title} defaultText={defaultText} />
+
           <div
             className="node-block"
             id={this.props.objectId + '-node-block'}
@@ -294,6 +321,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           >
             <this.Nodes />
           </div>
+
           <div
             className="week-drop-row hover-shade"
             onClick={this.toggleDrop.bind(this)}

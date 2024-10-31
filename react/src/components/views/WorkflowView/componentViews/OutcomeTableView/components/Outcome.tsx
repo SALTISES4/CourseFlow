@@ -4,7 +4,7 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import { toggleDropWrapper } from '@cfRedux/utility/helpers'
+import { toggleExpand } from '@cfRedux/utility/helpers'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -159,8 +159,8 @@ type ConnectedProps = TGetOutcomeByID
 // @todo no idea what's required props here
 type OwnProps = {
   objectId: number
-  parentID?: number
-  throughParentID?: number
+  parentId?: number
+  throughParentId?: number
   renderer?: any
   show_horizontal?: boolean
   comments?: boolean
@@ -254,7 +254,7 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
             <div
               className="outcome-drop"
               onClick={() =>
-                toggleDropWrapper({
+                toggleExpand({
                   objectId: this.props.objectId,
                   objectType: this.objectType,
                   isDropped: this.props.data.isDropped,

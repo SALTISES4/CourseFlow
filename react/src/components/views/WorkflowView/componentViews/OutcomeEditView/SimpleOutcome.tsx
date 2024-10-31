@@ -3,11 +3,10 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
-import {
-  EditableComponentWithCommentsStateType,
-  EditableComponentWithCommentsType
-} from '@cfEditableComponents/EditableComponentWithComments'
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cfEditableComponents/EditableComponent'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
@@ -26,23 +25,23 @@ type ConnectedProps = {
 }
 type OwnProps = {
   objectId: number
-  parentID: number
-  throughParentID?: number
+  parentId: number
+  throughParentId?: number
   checkHidden?: () => void
   comments?: boolean
   edit?: boolean
-  // throughParentID: number
+  // throughParentId: number
   // legacyRenderer: EditableComponentWithCommentsType['legacyRenderer'] & {
   //   viewComments: any
   //   selectionManager: any
   // }
-} & EditableComponentWithCommentsType
+} & EditableComponentProps
 
 export type SimpleOutcomeUnconnectedPropsType = OwnProps
 
 type StateProps = {
   isDropped: boolean
-} & EditableComponentWithCommentsStateType
+} & EditableComponentStateType
 
 type PropsType = ConnectedProps & OwnProps
 
@@ -50,7 +49,7 @@ type PropsType = ConnectedProps & OwnProps
  * A simple outcome block without any action buttons for displaying
  * outcomes tagged to nodes or other outcomes.
  */
-export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
+export class SimpleOutcomeUnconnected extends EditableComponent<
   PropsType,
   StateProps
 > {
@@ -89,7 +88,7 @@ export class SimpleOutcomeUnconnected extends EditableComponentWithComments<
       <SimpleOutcomeOutcome
         key={outcomeoutcome}
         objectId={outcomeoutcome}
-        parentID={this.props.data.id}
+        parentId={this.props.data.id}
         // renderer={this.props.renderer}
         comments={this.props.comments}
         edit={this.props.edit}

@@ -211,7 +211,7 @@ export default function outcomeReducer(
     case OutcomeActions.INSERT_BELOW:
     case OutcomeBaseActions.INSERT_CHILD: {
       const parentIndex = state.findIndex(
-        (item) => item.id === action.payload.parentID
+        (item) => item.id === action.payload.parentId
       )
       if (parentIndex === -1) return state
 

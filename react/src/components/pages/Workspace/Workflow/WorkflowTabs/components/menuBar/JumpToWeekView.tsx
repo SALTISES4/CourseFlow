@@ -15,8 +15,8 @@ type ConnectedProps = {
 type OwnProps = {
   objectId: number
   rank: number
-  parentID?: number
-  throughParentID?: number
+  parentId?: number
+  throughParentId?: number
 }
 type PropsType = ConnectedProps & OwnProps
 

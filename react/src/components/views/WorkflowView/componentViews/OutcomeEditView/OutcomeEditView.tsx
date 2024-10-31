@@ -155,7 +155,7 @@ export class OutcomeEditViewUnconnected<
                     <Outcome
                       key={outcome.id}
                       objectId={outcome.id}
-                      parentID={this.props.workflow.id}
+                      parentId={this.props.workflow.id}
                       //renderer={this.props.renderer}
                       show_horizontal={true}
                     />

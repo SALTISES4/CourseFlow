@@ -256,7 +256,6 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
       return (
         <div className="workflow-details">
           <OutcomeLegend
-            renderer={this.props.renderer}
             //  outcomesType={this.props.workflow.outcomesType} @todo this was supplied by redux
           />
           <div className="outcome-table node-rows">

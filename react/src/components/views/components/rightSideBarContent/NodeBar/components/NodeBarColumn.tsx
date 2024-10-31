@@ -9,8 +9,8 @@ import { connect } from 'react-redux'
 type ConnectedProps = TGetColumnByID
 type OwnProps = {
   objectId?: number
-  // parentID?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
-  // throughParentID?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
+  // parentId?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
+  // throughParentId?: number // are these optional? see  react/src/components/common/rightSideBarContent/NodeBar/components/NodeBarColumnWorkflow.tsx
   columnChoices?: any
   columnType?: any
 }

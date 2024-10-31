@@ -1,3 +1,4 @@
+import EditableComponent from '@cf/components/common/editableComponents/EditableComponent'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
@@ -40,7 +41,7 @@ type PropsType = ConnectedProps & OwnProps
  * the outcomes that the child workflow has that have the required parent outcomes
  * tagged to them
  */
-class AlignmentHorizontalReverseNode extends EditableComponentWithComments<
+class AlignmentHorizontalReverseNode extends EditableComponent<
   PropsType,
   StateProps
 > {

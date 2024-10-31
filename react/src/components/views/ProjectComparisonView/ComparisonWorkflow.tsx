@@ -91,7 +91,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
         condensed={data.condensed}
         key={weekworkflow}
         objectId={weekworkflow}
-        parentID={data.id}
+        parentId={data.id}
         // renderer={renderer}
       />
     ))

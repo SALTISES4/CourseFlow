@@ -5,7 +5,7 @@ import { Dispatch } from '@reduxjs/toolkit'
 import React from 'react'
 import { Action } from 'redux'
 
-export function toggleDropWrapper({
+export function toggleExpand({
   objectId,
   objectType,
   isDropped,
@@ -24,6 +24,11 @@ export function toggleDropWrapper({
 /**
  *
  *  @toggleDrop
+ *  DROP is a bad choice of word, especially as we are also
+ *  heavily using drag and drop actions
+ *  the original developer was probably confused by the term dropdown
+ *
+ *  use 'expand' moving forward where possible
  *
  *  Toggles whether an object is dropped. No longer sent to database.
  * @param objectId
@@ -50,6 +55,9 @@ export function toggleDropReduxAction(
     else window.localStorage.removeItem(objectType + objectId)
   } catch (err) {
     const error = err as Error
+
+    // this suggests an abuse of local storage
+    // to investigate at some point
     if (
       error.name === 'QuotaExceededError' ||
       error.name === 'NS_ERROR_DOM_QUOTA_REACHED' // lol

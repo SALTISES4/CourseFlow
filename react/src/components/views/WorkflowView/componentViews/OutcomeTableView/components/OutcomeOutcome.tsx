@@ -9,7 +9,7 @@ import Outcome from './Outcome'
 type ConnectedProps = TOutcomeOutcomeByID
 type OwnProps = {
   objectId: number
-  parentID: any
+  parentId: any
   nodecategory: any
   updateParentCompletion: any
   completion_status_from_parents: any
@@ -41,8 +41,8 @@ class TableOutcomeOutcomeUnconnected extends React.Component<PropsType> {
         <Outcome
           // renderer={this.props.renderer}
           objectId={data.child}
-          parentID={this.props.parentID}
-          throughParentID={data.id}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
           nodecategory={this.props.nodecategory}
           updateParentCompletion={this.props.updateParentCompletion}
           completion_status_from_parents={

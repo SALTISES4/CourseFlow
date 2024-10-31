@@ -1,22 +1,21 @@
-// @ts-nocheck
 import * as Constants from '@cf/constants'
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/utilityFunctions'
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cfEditableComponents/EditableComponent'
 import { newNodeQuery } from '@XMLHTTP/API/create'
 import * as React from 'react'
 
-import EditableComponentWithActions, {
-  EditableComponentWithActionsProps,
-  EditableComponentWithActionsState
-} from './EditableComponentWithActions'
 // import $ from 'jquery'
 
 type OwnProps = {
   objectId?: number
-} & EditableComponentWithActionsProps
+} & EditableComponentProps
 export type EditableComponentWithSortingProps = OwnProps
 
-type StateType = EditableComponentWithActionsState
+type StateType = EditableComponentStateType
 export type EditableComponentWithSortingState = StateType
 
 /**
@@ -25,7 +24,7 @@ export type EditableComponentWithSortingState = StateType
 class EditableComponentWithSorting<
   P extends OwnProps,
   S extends StateType
-> extends EditableComponentWithActions<P, S> {
+> extends EditableComponent<P, S> {
   static contextType = WorkFlowConfigContext
 
   declare context: React.ContextType<typeof WorkFlowConfigContext>

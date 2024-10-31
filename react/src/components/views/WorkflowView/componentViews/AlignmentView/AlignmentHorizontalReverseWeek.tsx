@@ -3,7 +3,7 @@ import { CfObjectType } from '@cf/types/enum.js'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
+import EditableComponent from '@cfEditableComponents/EditableComponent'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
 import { AppState, TNodeweek, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
@@ -28,7 +28,7 @@ type PropsType = ConnectedProps & OwnProps
 /**
  * The representation of a week in the alignment view.
  */
-class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
+class AlignmentHorizontalReverseWeek extends EditableComponent<
   PropsType,
   StateProps
 > {
@@ -77,7 +77,10 @@ class AlignmentHorizontalReverseWeek extends EditableComponentWithComments<
         ref={this.mainDiv}
         style={this.getBorderStyle()}
         onClick={(evt) =>
-          this.context.selectionManager.changeSelection({ evt, newSelection: this })
+          this.context.selectionManager.changeSelection({
+            evt,
+            newSelection: this
+          })
         }
       >
         <TitleText text={data.title} defaultText={defaultText} />

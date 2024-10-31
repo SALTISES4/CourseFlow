@@ -19,7 +19,7 @@ type ConnectedProps = {
   outcomeHorizontalLink: TOutcomeHorizontalLinkByID
 }
 type OwnProps = {
-  parentID?: number
+  parentId?: number
   objectId?: number
 }
 type PropsType = ConnectedProps & OwnProps
@@ -154,8 +154,8 @@ class OutcomeHorizontalLinkUnconnected extends React.Component<PropsType> {
           // renderer={this.context}
           checkHidden={this.checkHidden.bind(this)}
           objectId={data.parentOutcome}
-          parentID={this.props.parentID}
-          throughParentID={data.id}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
         />
       </div>
     )

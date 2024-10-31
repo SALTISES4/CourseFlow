@@ -11,7 +11,7 @@ type ConnectedProps = TGetWeekWorkflowById
 type OwnProps = {
   condensed: boolean
   objectId: number
-  parentID: number
+  parentId: number
 }
 
 export type WeekWorkflowUnconnectedProps = OwnProps
@@ -41,9 +41,8 @@ class WeekWorkflowUnconnected<P extends PropsType> extends React.Component<P> {
         <Term
           objectId={data.week}
           rank={this.props.order.indexOf(data.id)}
-          parentID={this.props.parentID}
-          // renderer={this.props.renderer}
-          throughParentID={data.id}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
         />
       )
     }
@@ -52,8 +51,8 @@ class WeekWorkflowUnconnected<P extends PropsType> extends React.Component<P> {
       <Week
         objectId={data.week}
         rank={this.props.order.indexOf(data.id)}
-        parentID={this.props.parentID}
-        throughParentID={data.id}
+        parentId={this.props.parentId}
+        throughParentId={data.id}
       />
     )
   }
@@ -70,9 +69,6 @@ class WeekWorkflowUnconnected<P extends PropsType> extends React.Component<P> {
       $(this.mainDiv?.current).hasClass('dragging') ? 'dragging' : ''
     ].join(' ')
 
-    // let my_class = 'week-workflow'
-    // if (data.noDrag) my_class += ' no-drag'
-    // if ($(this.mainDiv?.current).hasClass('dragging')) my_class += ' dragging'
 
     return (
       <div

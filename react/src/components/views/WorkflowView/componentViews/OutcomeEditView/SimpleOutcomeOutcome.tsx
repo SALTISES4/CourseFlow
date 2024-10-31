@@ -10,7 +10,7 @@ type OwnProps = {
   objectId: number
   edit: any
   comments: any
-  parentID: any
+  parentId: any
 }
 
 type ConnectedProps = TOutcomeOutcomeByID
@@ -36,8 +36,8 @@ export class SimpleOutcomeOutcomeUnconnected extends React.Component<PropsType> 
     return (
       <SimpleOutcome
         objectId={data.child}
-        parentID={this.props.parentID}
-        throughParentID={data.id}
+        parentId={this.props.parentId}
+        throughParentId={data.id}
         comments={this.props.comments}
         edit={this.props.edit}
         // renderer={this.props.renderer}

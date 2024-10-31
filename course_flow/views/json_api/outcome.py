@@ -130,7 +130,7 @@ def json_api_post_insert_child_outcome(request: HttpRequest) -> JsonResponse:
             "outcomeoutcome": [],
         },
         "node_updates": node_updates,
-        "parentID": model.id,
+        "parentId": model.id,
     }
     workflow = model.get_workflow()
     actions.dispatch_wf(
@@ -168,7 +168,7 @@ def json_api_post_new_outcome_for_workflow(
     response_data = {
         "new_model": OutcomeSerializerShallow(outcome).data,
         "new_through": OutcomeWorkflowSerializerShallow(outcome_workflow).data,
-        "parentID": workflow_id,
+        "parentId": workflow_id,
     }
     actions.dispatch_wf(workflow, actions.newOutcomeAction(response_data))
     actions.dispatch_to_parent_wf(workflow, actions.newOutcomeAction(response_data))

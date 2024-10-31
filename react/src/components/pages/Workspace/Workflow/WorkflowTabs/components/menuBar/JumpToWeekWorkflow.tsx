@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 type ConnectedProps = TGetWeekWorkflowById
 type OwnProps = {
   objectId: number
-  parentID?: number
+  parentId?: number
   order?: any // @this is conflict with the redux props map, is it an intentional ovveride?
 }
 type PropsType = ConnectedProps & OwnProps
@@ -25,8 +25,8 @@ class JumpToWeekWorkflowUnconnected extends React.Component<PropsType> {
       <JumpToWeekView
         objectId={data.week}
         rank={this.props.order.indexOf(data.id)}
-        parentID={this.props.parentID}
-        throughParentID={data.id}
+        parentId={this.props.parentId}
+        throughParentId={data.id}
       />
     )
   }

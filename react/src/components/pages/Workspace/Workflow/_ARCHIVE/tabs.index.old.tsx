@@ -263,12 +263,12 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   }
 
   duplicateItem(responseData) {
-    if (responseData.parentID != null) {
+    if (responseData.parentId != null) {
       const utilLoader = new UtilityLoader('body')
       duplicateBaseItemQuery(
         this.data.id,
         this.data.type,
-        responseData.parentID,
+        responseData.parentId,
         (responseData) => {
           utilLoader.endLoad()
           // @ts-ignore

@@ -3,7 +3,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
-import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
+import EditableComponent from '@cfEditableComponents/EditableComponent'
 import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
 import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
@@ -22,10 +22,7 @@ type StateProps = EditableComponentWithCommentsStateType
 /**
  * A node in the grid view
  */
-class GridNodeUnconnected extends EditableComponentWithComments<
-  PropsType,
-  StateProps
-> {
+class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
   static contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
@@ -81,7 +78,9 @@ class GridNodeUnconnected extends EditableComponentWithComments<
           style={style}
           id={data.id}
           ref={this.mainDiv}
-          onClick={(evt) => selectionManager.changeSelection({ evt, newSelection: this })}
+          onClick={(evt) =>
+            selectionManager.changeSelection({ evt, newSelection: this })
+          }
           className={cssClass}
         >
           <div className="node-top-row">

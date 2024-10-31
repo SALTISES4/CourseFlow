@@ -30,8 +30,8 @@ class WeekWorkflowComparisonUnconnected extends WeekWorkflowUnconnected<PropsTyp
       <ComparisonWeek
         objectId={data.week}
         rank={this.props.order.indexOf(data.id)}
-        parentID={this.props.parentID}
-        throughParentID={data.id}
+        parentId={this.props.parentId}
+        throughParentId={data.id}
         // renderer={this.props.renderer}
       />
     )

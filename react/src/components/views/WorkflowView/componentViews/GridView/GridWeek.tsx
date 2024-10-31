@@ -1,6 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
+import EditableComponent from '@cfEditableComponents/EditableComponent'
 import {
   EditableComponentWithCommentsStateType,
   EditableComponentWithCommentsType
@@ -16,7 +16,6 @@ import GridNode from './GridNode'
  * A block representing a term in the grid view
  */
 type OwnProps = {
-  // renderer: any
   rank: number
   data: any
 } & EditableComponentWithCommentsType
@@ -35,7 +34,7 @@ type ConnectedProps = {
 
 type PropsType = OwnProps & ConnectedProps
 
-class GridWeekUnconnected extends EditableComponentWithComments<
+class GridWeekUnconnected extends EditableComponent<
   PropsType,
   EditableComponentWithCommentsStateType
 > {
@@ -71,7 +70,10 @@ class GridWeekUnconnected extends EditableComponentWithComments<
         ref={this.mainDiv}
         style={this.getBorderStyle()}
         onClick={(evt) =>
-          this.context.selectionManager.changeSelection({ evt, newSelection: this })
+          this.context.selectionManager.changeSelection({
+            evt,
+            newSelection: this
+          })
         }
       >
         <div className="week-title">

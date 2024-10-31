@@ -61,6 +61,7 @@ export type TGetWeekByIDType = {
   workflowId?: number
 }
 
+// @todo why are weeks and terms handled differently
 export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
   for (const i in state.week) {
     const week = { ...state.week[i] } // create a shallow copy to avoid mutations
@@ -96,6 +97,8 @@ export type TTermByID = {
   nodes_by_column: any
   nodeweeks: any
 }
+
+// @todo why are weeks and terms handled differently
 export const getTermById = (state: AppState, id: number): TTermByID => {
   for (const i in state.week) {
     const week = state.week[i]

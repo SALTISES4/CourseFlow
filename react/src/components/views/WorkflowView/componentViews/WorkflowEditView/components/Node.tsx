@@ -5,14 +5,18 @@ import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import * as Constants from '@cfConstants'
-import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cfEditableComponents/EditableComponent'
 import {
-  EditableComponentWithActionsProps,
-  EditableComponentWithActionsState
-} from '@cfEditableComponents/EditableComponentWithActions'
+  DeleteSelfButton,
+  DuplicateSelfButton,
+  InsertSiblingButton
+} from '@cfEditableComponents/hoverEditActions'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import { toggleDropWrapper } from '@cfRedux/utility/helpers'
+import { toggleExpand } from '@cfRedux/utility/helpers'
 import * as Utility from '@cfUtility'
 import NodePorts from '@cfViews/components/Node/NodePorts'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
@@ -30,15 +34,14 @@ type ConnectedProps = {
 }
 
 type OwnProps = {
-  objectId: number
   column_order: any
-} & EditableComponentWithActionsProps
+} & EditableComponentProps
 
 type StateProps = {
   initial_render: boolean
   show_outcomes: boolean
   hovered: boolean
-} & EditableComponentWithActionsState
+} & EditableComponentStateType
 
 type PropsType = ConnectedProps & OwnProps
 
@@ -47,10 +50,7 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 /**
  * Represents the node in the workflow view
  */
-class NodeUnconnected extends EditableComponentWithActions<
-  PropsType,
-  StateProps
-> {
+class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
   static contextType = WorkFlowConfigContext
   declare context: React.ContextType<typeof WorkFlowConfigContext>
 
@@ -187,6 +187,7 @@ class NodeUnconnected extends EditableComponentWithActions<
           this.props.objectId +
           "'][data-port-type='source']"
       ).addClass('mouseover')
+
     // @ts-ignore // not sure whether to import d3 directly yet
     d3.selectAll('.node-ports').raise()
     this.setState({
@@ -213,27 +214,60 @@ class NodeUnconnected extends EditableComponentWithActions<
   }
 
   /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  HoverMenu = () => {
+    const mouseoverActions = []
+    if (this.props.workflow.workflowPermissions.write) {
+      mouseoverActions.push(
+        <InsertSiblingButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DuplicateSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DeleteSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+        />
+      )
+    }
+
+    if (this.props.workflow.workflowPermissions.addComments) {
+      mouseoverActions.push(<this.AddCommenting />)
+    }
+    return mouseoverActions
+  }
+
+  /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    let data_override
     let nodePorts
     let node_links
     let auto_link
     let outcomenodes
     let lefticon
     let righticon
-    let dropIcon
     let linkIcon
-    const mouseover_actions = []
+    const side_actions = []
 
     const data = this.props.node.data
+    const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
+    let linktext = _t('Visit workflow')
+    let link_class = 'linked-workflow'
 
-    if (data.representsWorkflow) {
-      data_override = { ...data, ...data.linkedWorkflowData, id: data.id }
-    } else {
-      data_override = { ...data }
-    }
+    const data_override = data.representsWorkflow
+      ? { ...data, ...data.linkedWorkflowData, id: data.id }
+      : { ...data }
 
     if (!this.state.initial_render) {
       // this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
@@ -255,7 +289,7 @@ class NodeUnconnected extends EditableComponentWithActions<
         )
     }
 
-    if (this.state.show_outcomes)
+    if (this.state.show_outcomes) {
       outcomenodes = (
         <div
           className={'outcome-node-container column-' + data.column}
@@ -271,8 +305,7 @@ class NodeUnconnected extends EditableComponentWithActions<
           ))}
         </div>
       )
-
-    const side_actions = []
+    }
     if (data.outcomenodeUniqueSet.length > 0) {
       side_actions.push(
         <div className="outcome-node-indicator">
@@ -292,7 +325,7 @@ class NodeUnconnected extends EditableComponentWithActions<
       )
     }
 
-    if (data.contextClassification > 0)
+    if (data.contextClassification > 0) {
       lefticon = (
         <div className="node-icon">
           <img
@@ -309,6 +342,8 @@ class NodeUnconnected extends EditableComponentWithActions<
           />
         </div>
       )
+    }
+
     if (data.taskClassification > 0) {
       righticon = (
         <div className="node-icon">
@@ -327,15 +362,6 @@ class NodeUnconnected extends EditableComponentWithActions<
         </div>
       )
     }
-
-    if (data.isDropped) {
-      dropIcon = 'droptriangleup'
-    } else {
-      dropIcon = 'droptriangledown'
-    }
-
-    let linktext = _t('Visit workflow')
-    let link_class = 'linked-workflow'
 
     let clickfunc = this.doubleClick.bind(this)
 
@@ -395,16 +421,6 @@ class NodeUnconnected extends EditableComponentWithActions<
       data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
-    if (this.props.workflow.workflowPermissions.write) {
-      mouseover_actions.push(<this.InsertSiblingButton data={data} />)
-      mouseover_actions.push(<this.DuplicateSelfButton data={data} />)
-      mouseover_actions.push(<this.DeleteSelfButton data={data} />)
-    }
-
-    if (this.props.workflow.workflowPermissions.addComments) {
-      mouseover_actions.push(<this.AddCommenting />)
-    }
-
     return (
       <>
         {this.addEditable(data_override)}
@@ -439,7 +455,7 @@ class NodeUnconnected extends EditableComponentWithActions<
           <div
             className="node-drop-row hover-shade"
             onClick={() =>
-              toggleDropWrapper({
+              toggleExpand({
                 objectId: this.props.objectId,
                 objectType: this.objectType,
                 isDropped: this.props.node.data.isDropped,
@@ -464,7 +480,9 @@ class NodeUnconnected extends EditableComponentWithActions<
             </div>
           </div>
 
-          <div className="mouseover-actions">{mouseover_actions}</div>
+          <div className="mouseover-actions">
+            <this.HoverMenu />
+          </div>
           {nodePorts}
           {node_links}
           {auto_link}

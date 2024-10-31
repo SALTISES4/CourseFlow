@@ -8,7 +8,7 @@ import ComparisonNodeWeek from '@cfViews/ProjectComparisonView/ComparisonNodeWee
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
-} from '@cfViews/WorkflowView/componentViews/WorkflowView/components/Week'
+} from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/Week'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
@@ -18,8 +18,8 @@ type ConnectedProps = TGetWeekByIDType
 type OwnProps = {
   // renderer: any
   objectId: number
-  parentID?: number
-  throughParentID: number
+  parentId?: number
+  throughParentId: number
 } & WeekUnconnectedPropsType
 type PropsType = ConnectedProps & OwnProps
 
@@ -29,6 +29,7 @@ type PropsType = ConnectedProps & OwnProps
  * week and into the week of another workflow.
  */
 // @ts-ignore
+
 export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
   /*******************************************************
    * LIFECYCLE
@@ -145,7 +146,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
       <ComparisonNodeWeek
         key={nodeweek}
         objectId={nodeweek}
-        parentID={this.props.data.id}
+        parentId={this.props.data.id}
         // renderer={this.props.renderer}
         column_order={this.props.column_order}
       />

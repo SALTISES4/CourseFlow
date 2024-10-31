@@ -1,6 +1,13 @@
 import { CfObjectType } from '@cf/types/enum'
-import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
-import { EditableComponentWithActionsState } from '@cfEditableComponents/EditableComponentWithActions'
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cfEditableComponents/EditableComponent'
+import {
+  DeleteSelfButton,
+  DuplicateSelfButton,
+  InsertSiblingButton
+} from '@cfEditableComponents/hoverEditActions'
 import { TGetColumnByID, getColumnById } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
@@ -10,18 +17,18 @@ type ConnectedProps = {
   column: TGetColumnByID
   workflow: TWorkflow
 }
+
 type OwnProps = {
-  objectId: number
-  parentID?: number
-  throughParentID?: number
-}
-type StateProps = EditableComponentWithActionsState
+  throughParentId?: number
+} & EditableComponentProps
+
+type StateProps = EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
 
 /**
  * The column in a workflow.
  */
-class Column extends EditableComponentWithActions<PropsType, StateProps> {
+class Column extends EditableComponent<PropsType, StateProps> {
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.COLUMN
@@ -43,25 +50,39 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
     return colors[type]
   }
 
-  // /*******************************************************
-  //  * COMPONENTS
-  //  *******************************************************/
-  // Icon = () => {
-  //   if (this.props.data.icon && this.props.data.icon != '') {
-  //     return (
-  //       <span className="material-symbols-rounded">{this.props.data.icon}</span>
-  //     )
-  //   }
-  //   return (
-  //     <img
-  //       src={
-  //          apiPaths.external.static_assets.icon +
-  //         Constants.defaultColumnSettings[this.props.data.columnType].icon +
-  //         '.svg'
-  //       }
-  //     />
-  //   )
-  // }
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  HoverMenu = () => {
+    const mouseoverActions = []
+    if (this.props.workflow.workflowPermissions.write) {
+      mouseoverActions.push(
+        <InsertSiblingButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DuplicateSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DeleteSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+        />
+      )
+    }
+
+    if (this.props.workflow.workflowPermissions.addComments) {
+      mouseoverActions.push(<this.AddCommenting />)
+    }
+    return mouseoverActions
+  }
 
   /*******************************************************
    * RENDER
@@ -80,18 +101,6 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
       data.lock ? 'locked locked-' + data.lock.userId : ''
     ].join(' ')
 
-    const mouseoverActions = []
-
-    if (this.props.workflow.workflowPermissions.write) {
-      mouseoverActions.push(<this.InsertSiblingButton data={data} />)
-      mouseoverActions.push(<this.DuplicateSelfButton data={data} />)
-      mouseoverActions.push(<this.DeleteSelfButton data={data} />)
-    }
-
-    if (this.props.workflow.workflowPermissions.viewComments) {
-      mouseoverActions.push(<this.AddCommenting />)
-    }
-
     return (
       <div
         ref={this.mainDiv}
@@ -99,7 +108,10 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
         className={cssClass}
         onClick={(evt) =>
           // @ts-ignore
-          this.context.selectionManager.changeSelection({ evt, newSelection: this })
+          this.context.selectionManager.changeSelection({
+            evt,
+            newSelection: this
+          })
         }
       >
         <div className="column-line">
@@ -110,7 +122,9 @@ class Column extends EditableComponentWithActions<PropsType, StateProps> {
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
         {this.addEditable(data)}
-        <div className="mouseover-actions">{mouseoverActions}</div>
+        <div className="mouseover-actions">
+          <this.HoverMenu />
+        </div>
       </div>
     )
   }

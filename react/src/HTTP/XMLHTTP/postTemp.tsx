@@ -36,7 +36,7 @@ export function insertedAt(
   selectionManager,
   objectId,
   objectType,
-  parentID,
+  parentId,
   parentType,
   newPosition,
   throughType
@@ -50,7 +50,7 @@ export function insertedAt(
     ...selectionManager.dragAction[throughType],
     objectId: objectId,
     objectType: objectType,
-    parentID: parentID,
+    parentId: parentId,
     parentType: parentType,
     newPosition: newPosition,
     throughType: throughType,

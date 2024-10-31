@@ -7,6 +7,12 @@ import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
+import {
+  DeleteSelfButton,
+  DuplicateSelfButton,
+  InsertSiblingButton,
+  insertChild
+} from '@cfEditableComponents/hoverEditActions'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
@@ -27,7 +33,7 @@ type ConnectedProps = {
   workflow: TWorkflow
 }
 type OwnProps = {
-  throughParentID?: number
+  throughParentId?: number
   show_horizontal?: boolean
 } & EditableComponentWithSortingProps
 
@@ -183,6 +189,40 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
   }
 
   /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  HoverMenu = () => {
+    const mouseoverActions = []
+    if (this.props.workflow.workflowPermissions.write) {
+      mouseoverActions.push(
+        <InsertSiblingButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DuplicateSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+          parentId={this.props.parentId}
+        />
+      )
+      mouseoverActions.push(
+        <DeleteSelfButton
+          id={this.props.objectId}
+          objectType={this.objectType}
+        />
+      )
+    }
+
+    if (this.props.workflow.workflowPermissions.addComments) {
+      mouseoverActions.push(<this.AddCommenting />)
+    }
+    return mouseoverActions
+  }
+
+  /*******************************************************
    * RENDER
    *******************************************************/
   render() {
@@ -190,7 +230,6 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     let children
     let outcomehorizontallinks
     const side_actions = []
-    const mouseover_actions = []
 
     if (Utility.checkSetHidden(data, this.props.objectSets)) return null
     //Child outcomes. See comment in models/outcome.py for more info.
@@ -199,7 +238,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         <OutcomeOutcome
           key={outcomeoutcome}
           objectId={outcomeoutcome}
-          parentID={data.id}
+          parentId={data.id}
           // renderer={this.context}
           show_horizontal={this.props.show_horizontal}
           parent_depth={this.props.outcome.data.depth}
@@ -245,18 +284,6 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           {outcomehorizontallinks}
         </div>
       )
-    }
-
-    if (this.props.workflow.workflowPermissions.write) {
-      mouseover_actions.push(<this.InsertSiblingButton data={data} />)
-      mouseover_actions.push(<this.DuplicateSelfButton data={data} />)
-      mouseover_actions.push(<this.DeleteSelfButton data={data} />)
-      if (data.depth < 2) {
-        mouseover_actions.push(<this.InsertChildButton data={data} />)
-      }
-    }
-    if (this.props.workflow.workflowPermissions.viewComments) {
-      mouseover_actions.push(<this.AddCommenting />)
     }
 
     const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
@@ -350,13 +377,20 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           {this.props.workflow.workflowPermissions.write && data.depth < 2 && (
             <div
               className="outcome-create-child"
-              onClick={this.insertChild.bind(this, data)}
+              onClick={() =>
+                insertChild({
+                  id: this.props.objectId,
+                  objectType: this.objectType
+                })
+              }
             >
               {_t('+ Add New')}
             </div>
           )}
 
-          <div className="mouseover-actions">{mouseover_actions}</div>
+          <div className="mouseover-actions">
+            <this.HoverMenu />
+          </div>
 
           <div className="side-actions">
             {side_actions}

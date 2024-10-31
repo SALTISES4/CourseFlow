@@ -6,9 +6,11 @@ import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
 import { TOutcomeNodeByID, getOutcomeNodeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -17,7 +19,7 @@ type ConnectedProps = {
 }
 
 type OwnProps = {
-  parentID?: number // is this required:
+  parentId?: number // is this required:
   outcomesType?: any
   deleteSelfOverride?: any
   objectId?: number
@@ -110,7 +112,7 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
     const icon = 'close.svg'
     return (
       <ActionButton
-        buttonIcon={icon}
+        buttonIcon={<DeleteIcon />}
         buttonClass="delete-self-button"
         titleText={_t('Delete')}
         handleClick={this.deleteSelf.bind(this, data)}
@@ -152,8 +154,8 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
           comments={true}
           edit={true}
           objectId={data.outcome}
-          parentID={this.props.parentID}
-          throughParentID={data.id}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
         />
       </div>
     )

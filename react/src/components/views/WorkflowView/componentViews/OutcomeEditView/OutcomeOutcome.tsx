@@ -11,7 +11,7 @@ import Outcome from './Outcome'
  */
 type ConnectedProps = TOutcomeOutcomeByID
 type OwnProps = {
-  parentID: number
+  parentId: number
   objectId: number
   // renderer: any
   show_horizontal: any
@@ -44,8 +44,8 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
       >
         <Outcome
           objectId={data.child}
-          parentID={this.props.parentID}
-          throughParentID={data.id}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
           // renderer={this.props.renderer}
           show_horizontal={this.props.show_horizontal}
         />

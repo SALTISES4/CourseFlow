@@ -202,7 +202,6 @@ export class SelectionManager {
   /**
    * Handles the deletion of a selection.
    * @param selection - The selection to be deleted.
-   * @todo used in editable component with actions is it ever called?
    */
   deleted(selection: any): void {
     if (selection === this.currentSelection) {

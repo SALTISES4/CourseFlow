@@ -75,7 +75,7 @@ class Importer:
                 response_data = {
                     "new_model": OutcomeSerializerShallow(outcome).data,
                     "new_through": OutcomeWorkflowSerializerShallow(outcomeworkflow).data,
-                    "parentID": workflow.id,
+                    "parentId": workflow.id,
                 }
                 actions.dispatch_wf(workflow, actions.newOutcomeAction(response_data))
                 actions.dispatch_to_parent_wf(workflow, actions.newOutcomeAction(response_data))
@@ -89,7 +89,7 @@ class Importer:
                 response_data = {
                     "new_model": new_model_serialized,
                     "new_through": new_through_serialized,
-                    "parentID": outcomeoutcome.parent.id,
+                    "parentId": outcomeoutcome.parent.id,
                 }
                 actions.dispatch_wf(
                     workflow,
@@ -158,7 +158,7 @@ class Importer:
                     response_data = {
                         "new_model": WeekSerializerShallow(week).data,
                         "new_through": WeekWorkflowSerializerShallow(weekworkflow).data,
-                        "parentID": workflow.id,
+                        "parentId": workflow.id,
                     }
                     actions.dispatch_wf(
                         workflow,
@@ -215,7 +215,7 @@ class Importer:
                 response_data = {
                     "new_model": NodeSerializerShallow(node).data,
                     "new_through": NodeWeekSerializerShallow(nodeweek).data,
-                    "parentID": week.id,
+                    "parentId": week.id,
                 }
 
                 actions.dispatch_wf(workflow, actions.insertBelowAction(response_data, "node"))

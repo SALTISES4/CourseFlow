@@ -1,11 +1,10 @@
 import { WorkFlowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cfConstants'
-import EditableComponentWithActions from '@cfEditableComponents/EditableComponentWithActions'
-import {
-  EditableComponentWithActionsProps,
-  EditableComponentWithActionsState
-} from '@cfEditableComponents/EditableComponentWithActions'
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cfEditableComponents/EditableComponent'
 import { TGetNodeLinkById, getNodeLinkByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import NodeLinkSVG from '@cfViews/components/Node/NodeLinkSVG'
@@ -16,17 +15,16 @@ import { connect } from 'react-redux'
 
 type ConnectedProps = TGetNodeLinkById
 type OwnProps = {
-  objectId: number
   node_div: React.RefObject<HTMLDivElement>
-} & EditableComponentWithActionsProps
-type StateProps = EditableComponentWithActionsState
+} & EditableComponentProps
+type StateProps = EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
 
 /**
  * The arrow manually drawn between two nodes (as opposed to the
  * autolink which is automatically drawn). This can have text added.
  */
-class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
+class NodeLink extends EditableComponent<PropsType, StateProps> {
   static contextType = WorkFlowConfigContext
 
   declare context: React.ContextType<typeof WorkFlowConfigContext>
@@ -35,6 +33,7 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
   private targetPort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private sourcePort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private rerenderEvents: string
+
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.NODELINK
@@ -91,8 +90,6 @@ class NodeLink extends EditableComponentWithActions<PropsType, StateProps> {
 
       // console.log('cssSourcePortSelector')
       // console.log(cssSourcePortSelector)
-
-
 
       // this css selector defines the circle attached to each node
       // to which the line is connected

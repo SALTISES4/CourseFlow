@@ -89,7 +89,7 @@ export default function weekReducer(
     case NodeActions.INSERT_BELOW:
     case NodeActions.NEW_NODE:
       return state.map((item) => {
-        if (item.id === action.payload.parentID) {
+        if (item.id === action.payload.parentId) {
           const newSet = [...item.nodeweekSet]
           newSet.splice(action.payload.index, 0, action.payload.new_through.id)
           return { ...item, nodeweekSet: newSet }
@@ -313,7 +313,7 @@ export default function weekReducer(
 //
 //     case NodeActions.INSERT_BELOW:
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].id == action.payload.parentID) {
+//         if (state[i].id == action.payload.parentId) {
 //           var newState = state.slice()
 //           newState[i] = { ...state[i] }
 //           var new_nodeweekSet = state[i].nodeweekSet.slice()
@@ -330,7 +330,7 @@ export default function weekReducer(
 //
 //     case NodeActions.NEW_NODE:
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].id == action.payload.parentID) {
+//         if (state[i].id == action.payload.parentId) {
 //           var newState = state.slice()
 //           newState[i] = { ...state[i] }
 //           var new_nodeweekSet = state[i].nodeweekSet.slice()

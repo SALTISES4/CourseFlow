@@ -24,7 +24,7 @@ import { connect } from 'react-redux'
 
 type OutcomeBarOutcomeOutcomeOwnProps = {
   objectId: number
-  parentID: number
+  parentId: number
   readOnly: boolean
 }
 type OutcomeBarOutcomeOutcomeConnectedProps = TOutcomeOutcomeByID
@@ -53,8 +53,8 @@ class OutcomeBarOutcomeOutcomeUnconnected extends React.Component<OutcomeBarOutc
       <div className="outcome-outcome" id={String(this.props.data.id)}>
         <OutcomeBarOutcome
           objectId={this.props.data.child}
-          parentID={this.props.parentID}
-          throughParentID={this.props.data.id}
+          parentId={this.props.parentId}
+          throughParentId={this.props.data.id}
           readOnly={this.props.readOnly}
         />
       </div>
@@ -87,9 +87,9 @@ const OutcomeBarOutcomeOutcome = connect<
 
 type OwnProps = {
   objectId: number
-  parentID?: number
+  parentId?: number
   readOnly: boolean
-  throughParentID?: number
+  throughParentId?: number
 }
 export type OutcomeBarOutcomePropsType = OwnProps
 
@@ -223,7 +223,7 @@ export class OutcomeBarOutcomeUnconnected<
         <OutcomeBarOutcomeOutcome
           key={outcomeoutcome}
           objectId={outcomeoutcome}
-          parentID={data.id}
+          parentId={data.id}
           readOnly={this.props.readOnly}
         />
       ))

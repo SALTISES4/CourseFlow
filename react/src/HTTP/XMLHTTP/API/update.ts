@@ -103,7 +103,7 @@ export function dragAction(
 export function insertedAtInstant(
   objectId,
   objectType,
-  parentID,
+  parentId,
   parentType,
   newPosition,
   throughType,
@@ -118,7 +118,7 @@ export function insertedAtInstant(
   API_POST(url, {
     objectId: objectId,
     objectType: objectType,
-    parentID: parentID,
+    parentId: parentId,
     parentType: parentType,
     newPosition: newPosition,
     throughType: throughType,
