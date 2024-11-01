@@ -20,6 +20,8 @@ import {
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
+import { SideBarState } from '../reducers/sidebar'
+
 export type AppState = {
   workflow: TWorkflow
   columnworkflow: TColumnworkflow[]
@@ -36,6 +38,7 @@ export type AppState = {
   objectset: TObjectSet[]
   strategy: TStrategy[]
   //
+  sidebar: SideBarState
   parentWorkflow?: TParentWorkflow[]
   parentNode?: TParentNode[]
   parentProject?: TProject
