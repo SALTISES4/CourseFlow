@@ -8,24 +8,19 @@ import { WorkflowSidebarContextProvider } from '@cfPages/Workspace/Workflow/Side
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
-import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import ErrorView from '@cfViews/MsgViews/ErrorView'
 import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 const Workflow = () => {
   const userContext = useContext(UserContext)
   const { id } = useParams<{ id: string }>()
   const workflowId = Number(id)
-  const navigate = useNavigate
 
-  const workflowData = useSelector((state: AppState) => state.workflow) // Replace with actual Redux state selector
+  const workflowData = useSelector((state: AppState) => state.workflow)
   const dispatch = useDispatch()
-
-  const [selectionManager, setSelectionManager] =
-    useState<SelectionManager | null>(null)
 
   const { onError } = useGenericMsgHandler()
   const { isError, error } = useGetWorkflowByIdQuery({ id: workflowId })
@@ -49,9 +44,7 @@ const Workflow = () => {
     workflowId: Number(id)
   })
 
-  const [state, setState] = useState({
-    ready: false
-  })
+  const [isLoading, setIsLoading] = useState(true)
 
   /*******************************************************
    * Once the websocket is 'initialized' that means:
@@ -71,10 +64,7 @@ const Workflow = () => {
    *******************************************************/
   useEffect(() => {
     if (workflowData && workflowData.workflowPermissions) {
-      setSelectionManager(
-        new SelectionManager(workflowData.workflowPermissions.read)
-      )
-      setState((prevState) => ({ ...prevState, ready: true }))
+      setIsLoading(false)
       clearQueue(workflowData.editCount)
     }
   }, [workflowData, clearQueue])
@@ -90,6 +80,7 @@ const Workflow = () => {
     return () => {
       dispatch(ActionCreator.clearWorkflowData())
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   /*******************************************************
@@ -98,7 +89,8 @@ const Workflow = () => {
   if (isError) {
     return <ErrorView />
   }
-  if (!state.ready) {
+
+  if (isLoading) {
     return <Loader />
   }
 
@@ -107,7 +99,7 @@ const Workflow = () => {
       <EditableContextProvider>
         <WorkflowConfigProvider
           initialValue={{
-            selectionManager: selectionManager,
+            selectionManager: null,
             editableMethods: {
               lockUpdate,
               microUpdate,
