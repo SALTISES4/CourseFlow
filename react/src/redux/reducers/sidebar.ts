@@ -2,7 +2,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { SidebarActions } from '@cfRedux/types/enumActions'
 import { AnyAction } from '@reduxjs/toolkit'
 
-export type SideBarState = {
+export type SidebarState = {
   id: number
   objectType: CfObjectType
   parentId: number
@@ -12,12 +12,12 @@ export interface SetSidebarAction extends AnyAction {
   type: SidebarActions
   payload: {
     id: number
-    objectType: CfObjectType
     parentId?: number
+    objectType: CfObjectType
   }
 }
 
-function sidebarReducer(state: SideBarState = null, action: SetSidebarAction) {
+function sidebarReducer(state: SidebarState = null, action: SetSidebarAction) {
   switch (action.type) {
     case SidebarActions.SET_SIDEBAR_DATA:
       return action.payload || state
