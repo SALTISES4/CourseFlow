@@ -1,3 +1,4 @@
+import { CfObjectType } from '@cf/types/enum'
 import {
   ColumnWorkflowActions,
   CommonActions,
@@ -7,6 +8,7 @@ import {
   ObjectSetActions,
   OutcomeOutcomeActions,
   OutcomeWorkflowActions,
+  SidebarActions,
   WeekWorkflowActions
 } from '@cfRedux/types/enumActions'
 
@@ -45,7 +47,7 @@ class ActionCreator {
     }
   }
 
-  static reloadCommentsAction = (id, objectType, comment_data) => {
+  static reloadCommentsAction = (id: number, objectType, comment_data) => {
     return {
       type: objectType + '/reloadComments',
       payload: {
@@ -56,7 +58,7 @@ class ActionCreator {
     }
   }
 
-  static changeField = (id, objectType, json) => {
+  static changeField = (id: number, objectType, json) => {
     return {
       type: objectType + '/changeField',
       payload: {
@@ -89,14 +91,19 @@ class ActionCreator {
     }
   }
 
-  static reloadAssignmentsAction = (id, hasAssignment) => {
+  static reloadAssignmentsAction = (id: number, hasAssignment) => {
     return {
       type: NodeActions.RELOAD_ASSIGNMENTS,
       payload: { id: id, hasAssignment: hasAssignment }
     }
   }
 
-  static moveColumnWorkflow = (id, new_position, new_parent, child_id) => {
+  static moveColumnWorkflow = (
+    id: number,
+    new_position,
+    new_parent,
+    child_id
+  ) => {
     return {
       type: ColumnWorkflowActions.MOVED_TO,
       payload: {
@@ -108,7 +115,12 @@ class ActionCreator {
     }
   }
 
-  static moveWeekWorkflow = (id, new_position, new_parent, child_id) => {
+  static moveWeekWorkflow = (
+    id: number,
+    new_position,
+    new_parent,
+    child_id
+  ) => {
     return {
       type: WeekWorkflowActions.MOVED_TO,
       payload: {
@@ -120,14 +132,14 @@ class ActionCreator {
     }
   }
 
-  static columnChangeNode = (id, new_column) => {
+  static columnChangeNode = (id: number, new_column) => {
     return {
       type: NodeActions.CHANGED_COLUMN,
       payload: { id: id, new_column: new_column }
     }
   }
 
-  static moveNodeWeek = (id, new_position, new_parent, child_id) => {
+  static moveNodeWeek = (id: number, new_position, new_parent, child_id) => {
     return {
       type: NodeWeekActions.MOVED_TO,
       payload: {
@@ -139,7 +151,12 @@ class ActionCreator {
     }
   }
 
-  static moveOutcomeOutcome = (id, new_position, new_parent, child_id) => {
+  static moveOutcomeOutcome = (
+    id: number,
+    new_position,
+    new_parent,
+    child_id
+  ) => {
     return {
       type: OutcomeOutcomeActions.MOVED_TO,
       payload: {
@@ -151,7 +168,12 @@ class ActionCreator {
     }
   }
 
-  static moveOutcomeWorkflow = (id, new_position, new_parent, child_id) => {
+  static moveOutcomeWorkflow = (
+    id: number,
+    new_position,
+    new_parent,
+    child_id
+  ) => {
     return {
       type: OutcomeWorkflowActions.MOVED_TO,
       payload: {
@@ -170,10 +192,21 @@ class ActionCreator {
     }
   }
 
-  static toggleObjectSet = (id, hidden) => {
+  static toggleObjectSet = (id: number, hidden: boolean) => {
     return {
       type: ObjectSetActions.TOGGLE_OBJECT_SET,
       payload: { id: id, hidden: hidden }
+    }
+  }
+
+  static sidebarUpdate = (
+    id: number,
+    objectType: CfObjectType,
+    parentId?: number
+  ) => {
+    return {
+      type: SidebarActions.SET_SIDEBAR_DATA,
+      payload: { id, objectType, parentId }
     }
   }
 }

@@ -8,9 +8,67 @@ import {
 import { TWeek } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { week?: TWeek[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { week: TWeek[] }
+}
+
+interface WeekGenericAction extends AnyAction {
+  type:
+    | WeekActions.CREATE_LOCK
+    | WeekActions.RELOAD_COMMENTS
+    | WeekActions.TOGGLE_STRATEGY
+    | WeekActions.CHANGE_FIELD
+    | WeekActions.DELETE_SELF
+    | WeekActions.DELETE_SELF_SOFT
+    | WeekActions.RESTORE_SELF
+  payload: {
+    id: number
+    [key: string]: any // Additional properties as needed
+  }
+}
+
+interface InsertBelowAction extends AnyAction {
+  type: WeekActions.INSERT_BELOW | StrategyActions.ADD_STRATEGY
+  payload: {
+    new_model: TWeek
+  }
+}
+
+interface NodeWeekChangeIdAction extends AnyAction {
+  type: NodeWeekActions.CHANGE_ID
+  payload: {
+    old_id: number
+    new_id: number
+  }
+}
+
+interface NodeWeekMovedToAction extends AnyAction {
+  type: NodeWeekActions.MOVED_TO
+  payload: {
+    id: number
+    new_parent: number
+    new_index: number
+  }
+}
+
+// Union type for all actions handled by the reducer
+type WeekActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | WeekGenericAction
+  | InsertBelowAction
+  | NodeWeekChangeIdAction
+  | NodeWeekMovedToAction
+
 export default function weekReducer(
   state: TWeek[] = [],
-  action: AnyAction
+  action: WeekActionTypes
 ): TWeek[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:

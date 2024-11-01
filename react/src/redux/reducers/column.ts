@@ -7,10 +7,78 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TColumn } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { column?: TColumn[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { column: TColumn[] }
+}
+
+interface CreateLockAction extends AnyAction {
+  type: ColumnActions.CREATE_LOCK
+  payload: { id: number; lock: boolean }
+}
+
+interface DeleteSelfAction extends AnyAction {
+  type: ColumnActions.DELETE_SELF
+  payload: { id: number }
+}
+
+interface DeleteSelfSoftAction extends AnyAction {
+  type: ColumnActions.DELETE_SELF_SOFT
+  payload: { id: number }
+}
+
+interface RestoreSelfAction extends AnyAction {
+  type: ColumnActions.RESTORE_SELF
+  payload: { id: number }
+}
+
+interface InsertBelowAction extends AnyAction {
+  type: ColumnActions.INSERT_BELOW
+  payload: { new_model: TColumn }
+}
+
+interface ChangeFieldAction extends AnyAction {
+  type: ColumnActions.CHANGE_FIELD
+  payload: { id: number; json: any; changeFieldID?: number }
+}
+
+interface ReloadCommentsAction extends AnyAction {
+  type: ColumnActions.RELOAD_COMMENTS
+  payload: { id: number; comment_data: any }
+}
+
+interface NewNodeAction extends AnyAction {
+  type: NodeActions.NEW_NODE
+  payload: { column: TColumn }
+}
+
+interface AddStrategyAction extends AnyAction {
+  type: StrategyActions.ADD_STRATEGY
+  payload: { columns_added: TColumn[] }
+}
+
+// Union type for all actions handled by the reducer
+type ColumnActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | CreateLockAction
+  | DeleteSelfAction
+  | DeleteSelfSoftAction
+  | RestoreSelfAction
+  | InsertBelowAction
+  | ChangeFieldAction
+  | ReloadCommentsAction
+  | NewNodeAction
+  | AddStrategyAction
 
 export default function columnReducer(
   state: TColumn[] = [],
-  action: AnyAction
+  action: ColumnActionTypes
 ): TColumn[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:

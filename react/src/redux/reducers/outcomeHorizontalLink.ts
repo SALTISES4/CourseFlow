@@ -6,9 +6,33 @@ import { TOutcomeHorizontalLink } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import { AnyAction } from '@reduxjs/toolkit'
 
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { outcomehorizontallink?: TOutcomeHorizontalLink[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { outcomehorizontallink: TOutcomeHorizontalLink[] }
+}
+
+interface UpdateDegreeAction extends AnyAction {
+  type: OutcomeHorizontalLinkActions.UPDATE_DEGREE
+  payload: {
+    outcomehorizontallink: number
+    dataPackage: TOutcomeHorizontalLink[] // Adjust this if "dataPackage" should be more specific
+  }
+}
+
+// Union type for all actions handled by the reducer
+type OutcomeHorizontalLinkActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | UpdateDegreeAction
+
 function outcomeHorizontalLinkReducer(
   state: TOutcomeHorizontalLink[] = [],
-  action: AnyAction
+  action: OutcomeHorizontalLinkActionTypes
 ): TOutcomeHorizontalLink[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA: {

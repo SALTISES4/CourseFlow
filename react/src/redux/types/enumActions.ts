@@ -125,3 +125,7 @@ export enum ObjectSetActions {
 export enum OutcomeHorizontalLinkActions {
   UPDATE_DEGREE = 'outcomehorizontallink/updateDegree'
 }
+
+export enum SidebarActions {
+  SET_SIDEBAR_DATA = 'sidebar/set'
+}

@@ -3,8 +3,11 @@ import { CfObjectType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
-import EditableComponent from '@cfEditableComponents/EditableComponent'
-import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cfEditableComponents/EditableComponent'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -12,22 +15,25 @@ import { connect } from 'react-redux'
 type OwnProps = {
   // renderer: any
   data: any
-}
+} & EditableComponentProps
 type ConnectedProps = {
   column: TColumn
   workflow: TWorkflow
 }
 type PropsType = OwnProps & ConnectedProps
-type StateProps = EditableComponentWithCommentsStateType
+type StateProps = EditableComponentStateType
 /**
  * A node in the grid view
  */
 class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
   static contextType = WorkflowConfigContext
   declare context: React.ContextType<typeof WorkflowConfigContext>
+  private manager: BetterSelectionManager
 
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
+
     this.objectType = CfObjectType.NODE
   }
 
@@ -70,16 +76,20 @@ class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
     )
     const comments = permissions.read ? <this.AddCommenting /> : ''
 
-    const portal = this.addEditable(data_override, true)
+    //     const portal = this.addEditable(data_override, true)
     return (
       <>
-        {portal}
+        {/*{portal}*/}
         <div
           style={style}
           id={data.id}
           ref={this.mainDiv}
-          onClick={(evt) =>
-            selectionManager.changeSelection({ evt, newSelection: this })
+          onClick={() =>
+            this.manager.updateSidebar(
+              data.id,
+              this.objectType,
+              this.props.parentId
+            )
           }
           className={cssClass}
         >

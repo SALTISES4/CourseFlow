@@ -15,6 +15,7 @@ import {
 } from '@cfEditableComponents/hoverEditActions'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
@@ -51,8 +52,11 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
   StateProps
 > {
   private children_block: React.RefObject<HTMLOListElement>
+  private manager: BetterSelectionManager
+
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
     this.objectType = CfObjectType.OUTCOME
 
     // @todo i'm sure this check does something, but it's obscure, to verify
@@ -341,17 +345,18 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       <>
         {
           // Portal
-          this.addEditable(data)
+          //          this.addEditable(data)
         }
         <div
           style={style}
           className={cssClass}
           ref={this.mainDiv}
-          onClick={(evt) =>
-            this.context.selectionManager.changeSelection({
-              evt,
-              newSelection: this
-            })
+          onClick={() =>
+            this.manager.updateSidebar(
+              data.id,
+              this.objectType,
+              this.props.parentId
+            )
           }
         >
           <div className="outcome-title">

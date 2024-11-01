@@ -10,9 +10,64 @@ import {
 import { TOutcomenode } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import { AnyAction } from '@reduxjs/toolkit'
+
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { outcomenode?: TOutcomenode[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { outcomenode: TOutcomenode[] }
+}
+
+interface UpdateDegreeAction extends AnyAction {
+  type: OutcomeNodeActions.UPDATE_DEGREE
+  payload: { outcomenode: number; dataPackage: TOutcomenode[] }
+}
+
+interface DeleteSelfAction extends AnyAction {
+  type: OutcomeBaseActions.DELETE_SELF | OutcomeActions.DELETE_SELF
+  payload: { id: number }
+}
+
+interface InsertChildAction extends AnyAction {
+  type: OutcomeActions.INSERT_CHILD | OutcomeBaseActions.INSERT_CHILD
+  payload: {
+    children: { outcomenode: TOutcomenode[] }
+  }
+}
+
+interface InsertBelowAction extends AnyAction {
+  type:
+    | WeekActions.INSERT_BELOW
+    | NodeActions.INSERT_BELOW
+    | OutcomeActions.INSERT_BELOW
+  payload: {
+    children: { outcomenode: TOutcomenode[] }
+  }
+}
+
+interface ChangeIdAction extends AnyAction {
+  type: OutcomeOutcomeActions.CHANGE_ID
+  payload: {
+    children: { outcomenode: TOutcomenode[] }
+  }
+}
+
+// Union type for all actions handled by the reducer
+type OutcomeNodeActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | UpdateDegreeAction
+  | DeleteSelfAction
+  | InsertChildAction
+  | InsertBelowAction
+  | ChangeIdAction
+
 export default function outcomeNodeReducer(
   state: TOutcomenode[] = [],
-  action: AnyAction
+  action: OutcomeNodeActionTypes
 ): TOutcomenode[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA: {

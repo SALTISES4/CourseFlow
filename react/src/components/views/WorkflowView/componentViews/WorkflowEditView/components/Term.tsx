@@ -147,17 +147,18 @@ class Term extends WeekUnconnected<PropsType> {
 
     return (
       <>
-        {this.addEditable(data)}
+        {/*{this.addEditable(data)}*/}
 
         <div
           style={style}
           className={cssClasses}
           ref={this.mainDiv}
-          onClick={(evt) =>
-            this.context.selectionManager.changeSelection({
-              evt,
-              newSelection: this
-            })
+          onClick={() =>
+            this.manager.updateSidebar(
+              data.id,
+              this.objectType,
+              this.props.parentId
+            )
           }
         >
           <div className="mouseover-container-bypass">

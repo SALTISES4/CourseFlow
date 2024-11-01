@@ -4,8 +4,54 @@ import {
   OutcomeBaseActions,
   OutcomeNodeActions
 } from '@cfRedux/types/enumActions'
+import { TParentNode } from '@cfRedux/types/type'
+import { AnyAction } from '@reduxjs/toolkit'
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { parentNode?: TParentNode[] }
+}
 
-export default function parentNodeReducer(state = [], action) {
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { parentNode: TParentNode[] }
+}
+
+interface UpdateDegreeAction extends AnyAction {
+  type: OutcomeNodeActions.UPDATE_DEGREE
+  payload: {
+    outcomenode: number
+    dataPackage: any[] //  more specific
+  }
+}
+
+interface DeleteSelfAction extends AnyAction {
+  type: OutcomeActions.DELETE_SELF | OutcomeBaseActions.DELETE_SELF
+  payload: { extra_data: any[] } // Specify
+}
+
+interface DeleteSelfSoftAction extends AnyAction {
+  type: OutcomeActions.DELETE_SELF_SOFT | OutcomeBaseActions.DELETE_SELF_SOFT
+  payload: { extra_data: any[] }
+}
+
+interface RestoreSelfAction extends AnyAction {
+  type: OutcomeActions.RESTORE_SELF | OutcomeBaseActions.RESTORE_SELF
+  payload: { extra_data: any[] }
+}
+
+// Union type for all actions handled by the reducer
+type ParentNodeActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | UpdateDegreeAction
+  | DeleteSelfAction
+  | DeleteSelfSoftAction
+  | RestoreSelfAction
+
+export default function parentNodeReducer(
+  state = [],
+  action: ParentNodeActionTypes
+) {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       return action.payload.parentNode || state

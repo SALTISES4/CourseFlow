@@ -7,10 +7,71 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TNodelink } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { nodelink?: TNodelink[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { nodelink: TNodelink[] }
+}
+
+interface CreateLockAction extends AnyAction {
+  type: NodeLinkActions.CREATE_LOCK
+  payload: { id: number; lock: boolean }
+}
+
+interface ChangeFieldAction extends AnyAction {
+  type: NodeLinkActions.CHANGE_FIELD
+  payload: { id: number; json: any; changeFieldID?: number }
+}
+
+interface NewNodeLinkAction extends AnyAction {
+  type: NodeLinkActions.NEW_NODE_LINK
+  payload: { new_model: TNodelink }
+}
+
+interface DeleteSelfAction extends AnyAction {
+  type: NodeLinkActions.DELETE_SELF
+  payload: { id: number }
+}
+
+interface DeleteSelfSoftAction extends AnyAction {
+  type: NodeLinkActions.DELETE_SELF_SOFT
+  payload: { id: number }
+}
+
+interface RestoreSelfAction extends AnyAction {
+  type: NodeLinkActions.RESTORE_SELF
+  payload: { id: number }
+}
+
+interface InsertBelowWeekAction extends AnyAction {
+  type: WeekActions.INSERT_BELOW
+  payload: { children?: { nodelink: TNodelink[] } }
+}
+
+interface AddStrategyAction extends AnyAction {
+  type: StrategyActions.ADD_STRATEGY
+  payload: { nodelinks_added: TNodelink[] }
+}
+
+type NodelinkActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | CreateLockAction
+  | ChangeFieldAction
+  | NewNodeLinkAction
+  | DeleteSelfAction
+  | DeleteSelfSoftAction
+  | RestoreSelfAction
+  | InsertBelowWeekAction
+  | AddStrategyAction
 
 export default function nodelinkReducer(
   state: TNodelink[] = [],
-  action: AnyAction
+  action: NodelinkActionTypes
 ): TNodelink[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:

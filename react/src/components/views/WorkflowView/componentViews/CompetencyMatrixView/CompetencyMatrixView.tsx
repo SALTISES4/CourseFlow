@@ -64,7 +64,6 @@ type ConnectedProps = {
 }
 type OwnProps = {
   objectId?: number
-  outcomesType?: any
   objectset?: any // is this not from store ?
   viewType?: WorkflowViewType // @todo can this just come from context?
 }
@@ -361,10 +360,8 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
           {category.outcomes.map((outcome) => (
             <OutcomeBase
               key={outcome}
-              // renderer={this.props.renderer}
               objectId={outcome}
               nodecategory={nodecategory}
-              outcome_type={this.props.outcomesType}
               type="competency_matrix"
             />
           ))}
@@ -388,7 +385,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
       return (
         <div className="workflow-details">
-          <OutcomeLegend outcomesType={this.props.outcomesType} />
+          <OutcomeLegend  />
           <div className="competency-matrix node-rows">
             <div className="outcome-row node-row">
               <div className="outcome-wrapper">
@@ -417,7 +414,6 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
 
 const mapStateToProps = (
   state: AppState,
-  ownProps: OwnProps
 ): ConnectedProps => {
   return {
     weekworkflows: state.weekworkflow,

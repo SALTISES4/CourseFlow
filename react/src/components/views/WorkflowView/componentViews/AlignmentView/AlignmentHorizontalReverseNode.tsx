@@ -1,13 +1,15 @@
-import EditableComponent from '@cf/components/common/editableComponents/EditableComponent'
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cf/components/common/editableComponents/EditableComponent'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
-import EditableComponentWithComments from '@cfEditableComponents/EditableComponentWithComments'
-import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
 import { getChildWorkflowById } from '@cfFindState'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
@@ -30,10 +32,10 @@ type ConnectedProps = {
 type OwnProps = {
   restriction_set: any
   objectId: any
-}
+} & EditableComponentProps
 type StateProps = {
   show_all?: boolean
-} & EditableComponentWithCommentsStateType
+} & EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -45,10 +47,14 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
   PropsType,
   StateProps
 > {
+  private manager: BetterSelectionManager
+
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
+
     this.objectType = CfObjectType.NODE
-    this.state = {} as EditableComponentWithCommentsStateType
+    this.state = {} as EditableComponentStateType
   }
 
   /*******************************************************
@@ -316,8 +322,15 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
         <div
           style={style}
           className={'node column-' + data.column}
-          onClick={(evt) =>
-            selectionManager.changeSelection({ evt, newSelection: this })
+          // onClick={(evt) =>
+          //   selectionManager.changeSelection({ evt, newSelection: this })
+          // }
+          onClick={() =>
+            this.manager.updateSidebar(
+              data.id,
+              this.objectType,
+              this.props.parentId
+            )
           }
           ref={this.mainDiv}
         >
@@ -329,7 +342,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
             {child_outcomes}
           </div>
           <div className="node-drop-row">{show_all}</div>
-          {this.addEditable(data_override, true)}
+{/*          {this.addEditable(data_override, true)}*/}
           <div className="side-actions">
             <div className="comment-indicator-container"></div>
           </div>

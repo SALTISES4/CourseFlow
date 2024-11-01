@@ -16,6 +16,7 @@ import {
 } from '@cfEditableComponents/hoverEditActions'
 import { TGetWeekByIDType, getWeekById } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import { addStrategyQuery } from '@XMLHTTP/API/create'
 import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
@@ -50,9 +51,11 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   EditableComponentWithSortingState
 > {
   protected node_block: React.RefObject<HTMLDivElement>
+  protected manager: BetterSelectionManager
 
   constructor(props: P) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
     this.objectType = CfObjectType.WEEK
     this.objectClass = '.week'
     this.node_block = React.createRef()
@@ -266,7 +269,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
    *******************************************************/
   render() {
     const data = this.props.week.data
-    const selectionManager = this.context.selectionManager
 
     const cssClasses = [
       'week',
@@ -285,29 +287,25 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     }
 
     // @todo this will go when the new sidebar is done
-    const portal = this.addEditable(data)
+    // const portal = this.addEditable(data)
 
     return (
       <>
-        {
-          // @todo this will go when the new sidebar is done
-          portal
-        }
+        {/*{*/}
+        {/*  // @todo this will go when the new sidebar is done*/}
+        {/*  portal*/}
+        {/*}*/}
         <div
           style={style}
           className={cssClasses}
           ref={this.mainDiv}
-          onClick={(evt) => {
-            return selectionManager.changeSelection({
-              evt,
-              newSelection: this,
-              payload: {
-                hash: '12123',
-                id: 12,
-                contentType: CfObjectType.WEEK
-              }
-            })
-          }}
+          onClick={() =>
+            this.manager.updateSidebar(
+              data.id,
+              this.objectType,
+              this.props.parentId
+            )
+          }
         >
           <div className="mouseover-container-bypass">
             <div className="mouseover-actions">

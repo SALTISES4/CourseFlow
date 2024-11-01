@@ -13,10 +13,47 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TWorkflow } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { workflow?: TWorkflow }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { workflow: TWorkflow }
+}
+
+interface ClearWorkflowDataAction extends AnyAction {
+  type: CommonActions.CLEAR_WORKFLOW_DATA
+}
+
+interface WorkflowGenericAction extends AnyAction {
+  type:
+    | WorkflowActions
+    | OutcomeWorkflowActions
+    | ColumnWorkflowActions
+    | WeekWorkflowActions
+    | WeekActions
+    | StrategyActions
+    | OutcomeActions
+    | OutcomeBaseActions
+    | NodeActions
+    | ColumnActions
+  payload: {
+    [key: string]: any // This handles various payloads generically
+  }
+}
+
+// Union type for all actions handled by the reducer
+type WorkflowActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | ClearWorkflowDataAction
+  | WorkflowGenericAction
 
 function workflowReducer(
   state: TWorkflow = {} as TWorkflow,
-  action: AnyAction
+  action: WorkflowActionTypes
 ): TWorkflow {
   switch (action.type) {
     /*******************************************************

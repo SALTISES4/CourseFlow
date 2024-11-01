@@ -7,9 +7,54 @@ import {
 import { TWeekworkflow } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { weekworkflow?: TWeekworkflow[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { weekworkflow: TWeekworkflow[] }
+}
+
+interface MovedToAction extends AnyAction {
+  type: WeekWorkflowActions.MOVED_TO
+  payload: { id: number }
+}
+
+interface ChangeIdAction extends AnyAction {
+  type: WeekWorkflowActions.CHANGE_ID
+  payload: { old_id: number; new_id: number }
+}
+
+interface DeleteSelfWeekAction extends AnyAction {
+  type: WeekActions.DELETE_SELF
+  payload: { parent_id: number }
+}
+
+interface InsertBelowWeekAction extends AnyAction {
+  type: WeekActions.INSERT_BELOW
+  payload: { new_through: TWeekworkflow }
+}
+
+interface AddStrategyAction extends AnyAction {
+  type: StrategyActions.ADD_STRATEGY
+  payload: { new_through: TWeekworkflow }
+}
+
+// Union type for all actions handled by the reducer
+type WeekWorkflowActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | MovedToAction
+  | ChangeIdAction
+  | DeleteSelfWeekAction
+  | InsertBelowWeekAction
+  | AddStrategyAction
+
 export default function weekworkflowReducer(
   state: TWeekworkflow[] = [] as TWeekworkflow[],
-  action: AnyAction
+  action: WeekWorkflowActionTypes
 ): TWeekworkflow[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA: {

@@ -9,6 +9,139 @@ import {
 import { TOutcome } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
+// Common Actions
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { outcome?: TOutcome[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { outcome: TOutcome[] }
+}
+
+// Outcome Actions
+interface CreateLockAction extends AnyAction {
+  type: OutcomeActions.CREATE_LOCK
+  payload: { id: number; lock: boolean }
+}
+
+interface RestoreSelfAction extends AnyAction {
+  type: OutcomeActions.RESTORE_SELF
+  payload: {
+    id: number
+    parent_id: number
+    throughparent_index: int
+    throughparent_id: number
+  }
+}
+
+interface DeleteSelfAction extends AnyAction {
+  type: OutcomeActions.DELETE_SELF
+  payload: { id: number; parent_id: number }
+}
+
+interface UpdateHorizontalLinkAction extends AnyAction {
+  type: OutcomeActions.UPDATE_HORIZONTAL_LINK
+  payload: { id: number; data: any[] } // Specify the data structure if possible
+}
+
+interface DeleteSelfSoftAction extends AnyAction {
+  type: OutcomeActions.DELETE_SELF_SOFT
+  payload: { id: number; parent_id: number }
+}
+
+interface NewOutcomeAction extends AnyAction {
+  type: OutcomeActions.NEW_OUTCOME
+  payload: { new_model: TOutcome; children?: { outcome: TOutcome[] } }
+}
+
+interface InsertChildAction extends AnyAction {
+  type: OutcomeActions.INSERT_CHILD
+  payload: {
+    parent_id: number
+    new_through: {
+      id: number
+      rank: number
+    }
+    children?: { outcome: TOutcome[] }
+  }
+}
+
+interface InsertBelowAction extends AnyAction {
+  type: OutcomeActions.INSERT_BELOW
+  payload: {
+    parentId: number
+    new_through: {
+      id: number
+      rank: number
+    }
+    children?: { outcome: TOutcome[] }
+  }
+}
+
+interface ReloadCommentsAction extends AnyAction {
+  type: OutcomeActions.RELOAD_COMMENTS
+  payload: { id: number; comment_data: any[] } // Specify the structure of `comment_data`
+}
+
+interface ChangeFieldAction extends AnyAction {
+  type: OutcomeActions.CHANGE_FIELD
+  payload: { id: number; json: any; changeFieldID: number }
+}
+
+interface ChangeFieldManyAction extends AnyAction {
+  type: OutcomeActions.CHANGE_FIELD_MANY
+  payload: { ids: number[]; json: any; changeFieldID: number }
+}
+
+// Outcome Base Actions
+interface DeleteSelfBaseAction extends AnyAction {
+  type: OutcomeBaseActions.DELETE_SELF
+  payload: { id: number }
+}
+
+interface DeleteSelfSoftBaseAction extends AnyAction {
+  type: OutcomeBaseActions.DELETE_SELF_SOFT
+  payload: { id: number }
+}
+
+interface RestoreSelfBaseAction extends AnyAction {
+  type: OutcomeBaseActions.RESTORE_SELF
+  payload: { id: number }
+}
+
+interface ReloadCommentsBaseAction extends AnyAction {
+  type: OutcomeBaseActions.RELOAD_COMMENTS
+  payload: { id: number; comment_data: any[] }
+}
+
+interface InsertBelowBaseAction extends AnyAction {
+  type: OutcomeBaseActions.INSERT_BELOW
+  payload: { new_model: TOutcome; children?: { outcome: TOutcome[] } }
+}
+
+// Union type for all actions handled by the reducer
+type OutcomeActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | CreateLockAction
+  | RestoreSelfAction
+  | DeleteSelfAction
+  | UpdateHorizontalLinkAction
+  | DeleteSelfSoftAction
+  | NewOutcomeAction
+  | InsertChildAction
+  | InsertBelowAction
+  | ReloadCommentsAction
+  | ChangeFieldAction
+  | ChangeFieldManyAction
+  | DeleteSelfBaseAction
+  | DeleteSelfSoftBaseAction
+  | RestoreSelfBaseAction
+  | ReloadCommentsBaseAction
+  | InsertBelowBaseAction
+
 /*******************************************************
  * HELPERS
  *******************************************************/
@@ -54,7 +187,7 @@ const findParentIndices = (state, action) => {
  */
 export default function outcomeReducer(
   state: TOutcome[] = [],
-  action: AnyAction
+  action: OutcomeActionTypes
 ): TOutcome[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA: {

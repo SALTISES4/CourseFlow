@@ -16,9 +16,98 @@ import * as Utility from '@cfUtility'
 import { AnyAction } from '@reduxjs/toolkit'
 // import $ from 'jquery'
 
+/*******************************************************
+ * TYPES FOR STORE
+ *******************************************************/
+// Common Actions
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { node?: TNode[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { node: TNode[] }
+}
+
+// Column Actions
+interface DeleteSelfAction extends AnyAction {
+  type: ColumnActions.DELETE_SELF
+  payload: { id: number; extra_data: any }
+}
+
+interface DeleteSelfSoftAction extends AnyAction {
+  type: ColumnActions.DELETE_SELF_SOFT
+  payload: { id: number; extra_data: any }
+}
+
+interface RestoreSelfAction extends AnyAction {
+  type: ColumnActions.RESTORE_SELF
+  payload: { id: number }
+}
+
+// Node Actions
+interface ChangeColumnAction extends AnyAction {
+  type: NodeActions.CHANGED_COLUMN
+  payload: { id: number; new_column: string }
+}
+
+interface DeleteNodeSelfAction extends AnyAction {
+  type: NodeActions.DELETE_SELF
+  payload: { id: number }
+}
+
+interface CreateLockAction extends AnyAction {
+  type: NodeActions.CREATE_LOCK
+  payload: { id: number; lock: boolean }
+}
+
+// Node Link Actions
+interface DeleteNodeLinkSelfAction extends AnyAction {
+  type: NodeLinkActions.DELETE_SELF
+  payload: { id: number }
+}
+
+interface DeleteNodeLinkSelfSoftAction extends AnyAction {
+  type: NodeLinkActions.DELETE_SELF_SOFT
+  payload: { id: number }
+}
+
+interface RestoreNodeLinkSelfAction extends AnyAction {
+  type: NodeLinkActions.RESTORE_SELF
+  payload: { parent_id: number; id: number }
+}
+
+// Strategy Actions
+interface AddStrategyAction extends AnyAction {
+  type: StrategyActions.ADD_STRATEGY
+  payload: { nodes_added: TNode[] }
+}
+
+// Outcome Actions
+interface DeleteOutcomeSelfAction extends AnyAction {
+  type: OutcomeActions.DELETE_SELF
+  payload: { extra_data: any[] }
+}
+
+type NodeActionsUnion =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | DeleteSelfAction
+  | DeleteSelfSoftAction
+  | RestoreSelfAction
+  | ChangeColumnAction
+  | DeleteNodeSelfAction
+  | CreateLockAction
+  | DeleteNodeLinkSelfAction
+  | DeleteNodeLinkSelfSoftAction
+  | RestoreNodeLinkSelfAction
+  | AddStrategyAction
+  | DeleteOutcomeSelfAction
+
 export default function nodeReducer(
   state: TNode[] = [],
-  action: AnyAction
+  action: NodeActionsUnion
 ): TNode[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
@@ -78,6 +167,7 @@ export default function nodeReducer(
       )
 
     case NodeActions.DELETE_SELF: {
+      // @todo no
       Utility.triggerHandlerEach($('.week .node'), 'component-updated')
       return state.filter((item) => item.id !== action.payload.id)
     }
@@ -90,6 +180,7 @@ export default function nodeReducer(
       )
 
     case NodeActions.DELETE_SELF_SOFT: {
+      // @todo no
       Utility.triggerHandlerEach($('.week .node'), 'component-updated')
       return state.map((item) =>
         item.id === action.payload.id
@@ -103,6 +194,7 @@ export default function nodeReducer(
     }
 
     case NodeActions.RESTORE_SELF:
+      // @todo no
       Utility.triggerHandlerEach($('.week .node'), 'component-updated')
       return state.map((item) =>
         item.id === action.payload.id ? { ...item, deleted: false } : item

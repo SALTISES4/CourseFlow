@@ -1,10 +1,20 @@
 import { GridMenuActions } from '@cfRedux/types/enumActions'
+import { AnyAction } from '@reduxjs/toolkit'
 
 type ParentWorkflow = any
 
+interface ItemAddedAction extends AnyAction {
+  type: GridMenuActions.ITEM_ADDED
+  payload: {
+    type: string // Define more specifically if possible
+    newItem: any // Define more specifically if possible
+  }
+}
+type ProjectMenuActionTypes = ItemAddedAction
+
 export default function projectMenuReducer(
   state: ParentWorkflow = {},
-  action
+  action: ProjectMenuActionTypes
 ): ParentWorkflow {
   switch (action.type) {
     case GridMenuActions.ITEM_ADDED:

@@ -1,10 +1,27 @@
 import { CommonActions } from '@cfRedux/types/enumActions'
 import { TProject } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { parentProject?: TProject }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { parentProject?: TProject }
+}
+
+interface ClearWorkflowDataAction extends AnyAction {
+  type: CommonActions.CLEAR_WORKFLOW_DATA
+}
+type ParentProjectActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | ClearWorkflowDataAction
 
 export default function parentProjectReducer(
   state: TProject = {} as TProject,
-  action: AnyAction
+  action: ParentProjectActionTypes
 ): TProject {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:

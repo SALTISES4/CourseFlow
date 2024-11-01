@@ -54,16 +54,17 @@ const Workflow = () => {
   })
 
   /*******************************************************
-   * Once the websocket id 'initialized' that means connected
+   * Once the websocket is 'initialized' that means:
+   * WS connected
    * AND it performs the query
    * AND stores data in store
-   * then this component is listens to store and in turn sets ready state
+   * then this component listens to store and in turn, sets ready state
    *
    * @todo This might change:
-   * it doesn't really make sense that we are waiting for the socket to open before
+   * it doesn't make sense that we are waiting for the socket to open before
    * we fetch the workflow data.
-   * socket is just about async updates, presumably that's why we have a queue manager? But we don't trust it right now
-   * not only that but it doesn't make sense this is all one render blocking query
+   * socket is just about async updates, presumably that's why we have a queue manager? But we don't trust it right now.
+   * Not only that but it doesn't make sense this is all one render blocking query
    * ..
    * maybe we don't need to use the store at all here
    * maybe we should be relying on the RTK query cache
@@ -79,13 +80,13 @@ const Workflow = () => {
   }, [workflowData, clearQueue])
 
   /**
-   * Essentially we are going to clean up the workflow based redux store on component 'unmount'
+   * Clean up the workflow based redux store on component 'unmount'
    */
   useEffect(() => {
-    // not sure if this is a good idea yeah
-    // but essentially, when we navigate away from workflow we're going to
-    // clear the 'workflow' bit of the store so we aren't in say,
+    // When we navigate away from workflow,
+    // clear the 'workflow' bit of the store so we aren't in for example,
     // library area with a defined workflow store
+    // this approach could use work refinement
     return () => {
       dispatch(ActionCreator.clearWorkflowData())
     }
@@ -106,7 +107,7 @@ const Workflow = () => {
       <EditableContextProvider>
         <WorkflowConfigProvider
           initialValue={{
-            selectionManager: selectionManager!,
+            selectionManager: selectionManager,
             editableMethods: {
               lockUpdate,
               microUpdate,

@@ -6,6 +6,7 @@ import EditableComponent, {
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
 import { TGetNodeLinkById, getNodeLinkByID } from '@cfFindState'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState } from '@cfRedux/types/type'
 import NodeLinkSVG from '@cfViews/components/Node/NodeLinkSVG'
 import * as React from 'react'
@@ -33,9 +34,11 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
   private targetPort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private sourcePort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private rerenderEvents: string
+  private manager: BetterSelectionManager
 
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
     this.objectType = CfObjectType.NODELINK
     this.objectClass = '.node-link'
     this.rerenderEvents = 'ports-rendered.' + this.props.data.id
@@ -159,11 +162,12 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
         sourcePort={data.sourcePort}
         targetPort_handle={this.targetPort_handle}
         targetPort={data.targetPort}
-        clickFunction={(evt) =>
-          this.context.selectionManager.changeSelection({
-            evt,
-            newSelection: this
-          })
+        clickFunction={() =>
+          this.manager.updateSidebar(
+            data.id,
+            this.objectType,
+            this.props.parentId
+          )
         }
         selected={this.state.selected}
         source_dimensions={source_dims}
@@ -176,7 +180,7 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
     return (
       <>
         {portal}
-        {this.addEditable(data)}
+        {/*{this.addEditable(data)}*/}
       </>
     )
   }

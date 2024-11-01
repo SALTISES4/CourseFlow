@@ -15,6 +15,7 @@ import {
   InsertSiblingButton
 } from '@cfEditableComponents/hoverEditActions'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import { toggleExpand } from '@cfRedux/utility/helpers'
 import * as Utility from '@cfUtility'
@@ -54,8 +55,11 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
   static contextType = WorkflowConfigContext
   declare context: React.ContextType<typeof WorkflowConfigContext>
 
+  private manager: BetterSelectionManager
+
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(props.dispatch)
     this.objectType = CfObjectType.NODE
     this.state = {
       initial_render: true,
@@ -434,7 +438,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
     return (
       <>
-        {this.addEditable(data_override)}
+        {/*{this.addEditable(data_override)}*/}
         <div
           id={String(data.id)}
           style={style}
@@ -442,11 +446,19 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
           ref={this.mainDiv}
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
-          onClick={(evt) =>
-            this.context.selectionManager.changeSelection({
-              evt,
-              newSelection: this
-            })
+          // onClick={(evt) =>
+          //   this.context.selectionManager.changeSelection({
+          //     evt,
+          //     newSelection: this
+          //   })
+          // }
+
+          onClick={() =>
+            this.manager.updateSidebar(
+              data.id,
+              CfObjectType.NODE,
+              this.props.parentId
+            )
           }
         >
           <div className="node-top-row">

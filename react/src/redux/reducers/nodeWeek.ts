@@ -7,10 +7,66 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TNodeweek } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { nodeweek?: TNodeweek[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { nodeweek: TNodeweek[] }
+}
+
+interface ChangeIdNodeWeekAction extends AnyAction {
+  type: NodeWeekActions.CHANGE_ID
+  payload: { old_id: number; new_id: number }
+}
+
+interface MovedToNodeWeekAction extends AnyAction {
+  type: NodeWeekActions.MOVED_TO
+  payload: { id: number; new_parent: number }
+}
+
+interface DeleteSelfNodeAction extends AnyAction {
+  type: NodeActions.DELETE_SELF
+  payload: { parent_id: number }
+}
+
+interface InsertBelowNodeAction extends AnyAction {
+  type: NodeActions.INSERT_BELOW
+  payload: { new_through: TNodeweek }
+}
+
+interface NewNodeAction extends AnyAction {
+  type: NodeActions.NEW_NODE
+  payload: { new_through: TNodeweek }
+}
+
+interface InsertBelowWeekAction extends AnyAction {
+  type: WeekActions.INSERT_BELOW
+  payload: { children?: { nodeweek: TNodeweek[] } }
+}
+
+interface AddStrategyAction extends AnyAction {
+  type: StrategyActions.ADD_STRATEGY
+  payload: { nodeweeks_added: TNodeweek[] }
+}
+
+// Union type for all actions handled by the reducer
+type NodeWeekActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | ChangeIdNodeWeekAction
+  | MovedToNodeWeekAction
+  | DeleteSelfNodeAction
+  | InsertBelowNodeAction
+  | NewNodeAction
+  | InsertBelowWeekAction
+  | AddStrategyAction
 
 export default function nodeweekReducer(
   state: TNodeweek[] = [],
-  action: AnyAction
+  action: NodeWeekActionTypes
 ): TNodeweek[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:

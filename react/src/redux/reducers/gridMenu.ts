@@ -2,9 +2,17 @@ import { GridMenuActions } from '@cfRedux/types/enumActions'
 import { AnyAction } from '@reduxjs/toolkit'
 type GridMenu = any
 
+interface ItemAddedAction extends AnyAction {
+  type: GridMenuActions.ITEM_ADDED
+  payload: {
+    type: 'project' | 'strategy'
+    newItem: any // Define this type more specifically if possible
+  }
+}
+
 export default function gridMenuReducer(
   state: GridMenu = {},
-  action: AnyAction
+  action: ItemAddedAction
 ) {
   switch (action.type) {
     case GridMenuActions.ITEM_ADDED:

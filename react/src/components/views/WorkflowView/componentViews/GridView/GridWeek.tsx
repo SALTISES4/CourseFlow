@@ -1,11 +1,11 @@
 import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponent from '@cfEditableComponents/EditableComponent'
-import {
-  EditableComponentWithCommentsStateType,
-  EditableComponentWithCommentsType
-} from '@cfEditableComponents/EditableComponentWithComments'
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cfEditableComponents/EditableComponent'
 import { getNodeByID } from '@cfFindState'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TNodeweek, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import { connect } from 'react-redux'
@@ -18,7 +18,7 @@ import GridNode from './GridNode'
 type OwnProps = {
   rank: number
   data: any
-} & EditableComponentWithCommentsType
+} & EditableComponentProps
 
 type ConnectedProps = {
   workflow: TWorkflow
@@ -36,12 +36,14 @@ type PropsType = OwnProps & ConnectedProps
 
 class GridWeekUnconnected extends EditableComponent<
   PropsType,
-  EditableComponentWithCommentsStateType
+  EditableComponentStateType
 > {
+  private manager: BetterSelectionManager
+
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
 
-    // from this.renderer
     // viewComments
     // selectionManager
     this.objectType = CfObjectType.WEEK // @todo check addEditable
@@ -62,18 +64,19 @@ class GridWeekUnconnected extends EditableComponent<
       <></>
     )
 
-    this.addEditable(data, true)
+//    this.addEditable(data, true)
 
     return (
       <div
         className="week"
         ref={this.mainDiv}
         style={this.getBorderStyle()}
-        onClick={(evt) =>
-          this.context.selectionManager.changeSelection({
-            evt,
-            newSelection: this
-          })
+        onClick={() =>
+          this.manager.updateSidebar(
+            data.id,
+            this.objectType,
+            this.props.parentId
+          )
         }
       >
         <div className="week-title">

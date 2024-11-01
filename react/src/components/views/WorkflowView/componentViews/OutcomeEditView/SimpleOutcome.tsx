@@ -8,6 +8,7 @@ import EditableComponent, {
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import * as React from 'react'
@@ -55,9 +56,13 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
 > {
   static contextType = WorkflowConfigContext
   private children_block: React.RefObject<HTMLDivElement>
+  private manager: BetterSelectionManager
+
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.OUTCOME
+    this.manager = new BetterSelectionManager(this.props.dispatch)
+
     this.children_block = React.createRef()
     this.state = { isDropped: false } as StateProps
   }
@@ -138,13 +143,10 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
     const comments = this.props.workflow.workflowPermissions.viewComments ? (
       <this.AddCommenting />
     ) : null
-    const editPortal = this.props.edit ? this.addEditable(data, true) : null
+    //     const editPortal = this.props.edit ? this.addEditable(data, true) : null
 
-    const onClick = (evt) => {
-      return this.context.selectionManager.changeSelection({
-        evt,
-        newSelection: this
-      })
+    const onClick = () => {
+      this.manager.updateSidebar(data.id, this.objectType, this.props.parentId)
     }
 
     const cssClass = [
@@ -155,7 +157,7 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
 
     return (
       <>
-        {editPortal}
+        {/*{editPortal}*/}
         <div
           className={cssClass}
           style={this.getBorderStyle()}

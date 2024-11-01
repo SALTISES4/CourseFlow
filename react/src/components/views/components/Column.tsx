@@ -9,6 +9,7 @@ import {
   InsertSiblingButton
 } from '@cfEditableComponents/hoverEditActions'
 import { TGetColumnByID, getColumnById } from '@cfFindState'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -29,8 +30,10 @@ type PropsType = ConnectedProps & OwnProps
  * The column in a workflow.
  */
 class Column extends EditableComponent<PropsType, StateProps> {
+  private manager: BetterSelectionManager
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
     this.objectType = CfObjectType.COLUMN
     this.objectClass = '.column'
   }
@@ -106,12 +109,12 @@ class Column extends EditableComponent<PropsType, StateProps> {
         ref={this.mainDiv}
         style={style}
         className={cssClass}
-        onClick={(evt) =>
-          // @ts-ignore
-          this.context.selectionManager.changeSelection({
-            evt,
-            newSelection: this
-          })
+        onClick={() =>
+          this.manager.updateSidebar(
+            data.id,
+            this.objectType,
+            this.props.parentId
+          )
         }
       >
         <div className="column-line">
@@ -121,7 +124,7 @@ class Column extends EditableComponent<PropsType, StateProps> {
           )}
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
-        {this.addEditable(data)}
+        {/*{this.addEditable(data)}*/}
         <div className="mouseover-actions">
           <this.HoverMenu />
         </div>

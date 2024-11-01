@@ -7,9 +7,66 @@ import {
 import { TOutcomeOutcome } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { outcomeoutcome?: TOutcomeOutcome[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { outcomeoutcome: TOutcomeOutcome[] }
+}
+
+interface ChangeIdAction extends AnyAction {
+  type: OutcomeOutcomeActions.CHANGE_ID
+  payload: {
+    old_id: number
+    new_id: number
+  }
+}
+
+interface MovedToAction extends AnyAction {
+  type: OutcomeOutcomeActions.MOVED_TO
+  payload: {
+    id: number
+    new_parent: number
+  }
+}
+
+interface DeleteSelfAction extends AnyAction {
+  type: OutcomeActions.DELETE_SELF
+  payload: { parent_id: number }
+}
+
+interface InsertChildAction extends AnyAction {
+  type: OutcomeActions.INSERT_CHILD
+  payload: {
+    new_through: TOutcomeOutcome
+    children?: { outcomeoutcome: TOutcomeOutcome[] }
+  }
+}
+
+interface InsertBelowAction extends AnyAction {
+  type: OutcomeActions.INSERT_BELOW | OutcomeBaseActions.INSERT_BELOW
+  payload: {
+    new_through: TOutcomeOutcome
+    children?: { outcomeoutcome: TOutcomeOutcome[] }
+  }
+}
+
+// Union type for all actions handled by the reducer
+type OutcomeOutcomeActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | ChangeIdAction
+  | MovedToAction
+  | DeleteSelfAction
+  | InsertChildAction
+  | InsertBelowAction
+
 function outcomeOutcomeReducer(
   state: TOutcomeOutcome[] = [],
-  action: AnyAction
+  action: OutcomeOutcomeActionTypes
 ): TOutcomeOutcome[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:

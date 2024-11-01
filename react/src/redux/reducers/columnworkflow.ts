@@ -8,6 +8,57 @@ import {
 import { TColumnworkflow } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { columnworkflow?: TColumnworkflow[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { columnworkflow: TColumnworkflow[] }
+}
+
+interface ChangeIdAction extends AnyAction {
+  type: ColumnWorkflowActions.CHANGE_ID
+  payload: { old_id: number; new_id: number }
+}
+
+interface MovedToAction extends AnyAction {
+  type: ColumnWorkflowActions.MOVED_TO
+  payload: { id: number }
+}
+
+interface DeleteSelfAction extends AnyAction {
+  type: ColumnActions.DELETE_SELF
+  payload: { parent_id: number }
+}
+
+interface InsertBelowAction extends AnyAction {
+  type: ColumnActions.INSERT_BELOW
+  payload: { new_through: TColumnworkflow }
+}
+
+interface NewNodeAction extends AnyAction {
+  type: NodeActions.NEW_NODE
+  payload: { columnworkflow: TColumnworkflow }
+}
+
+interface AddStrategyAction extends AnyAction {
+  type: StrategyActions.ADD_STRATEGY
+  payload: { columnworkflows_added: TColumnworkflow[] }
+}
+
+// Union type for all actions handled by the reducer
+type ColumnWorkflowActionTypes =
+  | ReplaceStoreDataAction
+  | RefreshStoreDataAction
+  | ChangeIdAction
+  | MovedToAction
+  | DeleteSelfAction
+  | InsertBelowAction
+  | NewNodeAction
+  | AddStrategyAction
+
 /**
  *
  * @param state
@@ -15,7 +66,7 @@ import { AnyAction } from '@reduxjs/toolkit'
  */
 function columnWorkflowReducer(
   state: TColumnworkflow[] = [],
-  action: AnyAction
+  action: ColumnWorkflowActionTypes
 ): TColumnworkflow[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:

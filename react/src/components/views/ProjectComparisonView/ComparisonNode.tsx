@@ -14,6 +14,7 @@ import {
   InsertSiblingButton
 } from '@cfEditableComponents/hoverEditActions'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/components/OutcomeNode'
@@ -43,8 +44,12 @@ class ComparisonNodeUnconnected extends EditableComponent<
   PropsType,
   StateProps
 > {
+  private manager: BetterSelectionManager
+
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
+
     this.objectType = CfObjectType.NODE
   }
 
@@ -99,7 +104,6 @@ class ComparisonNodeUnconnected extends EditableComponent<
     } else {
       data_override = { ...data }
     }
-    const selectionManager = this.context.selectionManager
 
     const style: React.CSSProperties = {
       backgroundColor: Constants.getColumnColour(this.props.node.column)
@@ -198,16 +202,23 @@ class ComparisonNodeUnconnected extends EditableComponent<
 
     return (
       <>
-        {this.addEditable(data_override)}
+        {/*{this.addEditable(data_override)}*/}
         <div
           style={style}
           className={cssClasses}
           id={data.id}
           ref={this.mainDiv}
-          onClick={(evt) => {
-            return () =>
-              selectionManager.changeSelection({ evt, newSelection: this })
-          }}
+          // onClick={(evt) => {
+          //   return () =>
+          //     selectionManager.changeSelection({ evt, newSelection: this })
+          // }}
+          onClick={() =>
+            this.manager.updateSidebar(
+              data.id,
+              this.objectType,
+              this.props.parentId
+            )
+          }
         >
           <div className="node-top-row">
             <div className="node-icon">{lefticon}</div>

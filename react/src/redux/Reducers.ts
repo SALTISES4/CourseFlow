@@ -13,11 +13,14 @@ import outcomeworkflowReducer from '@cfRedux/reducers/outcomeWorkflow'
 import parentNodeReducer from '@cfRedux/reducers/parentNode'
 import parentProjectReducer from '@cfRedux/reducers/parentProject'
 import parentWorkflowReducer from '@cfRedux/reducers/parentWorfkflow'
+import sidebarReducer from '@cfRedux/reducers/sidebar'
 import strategyReducer from '@cfRedux/reducers/strategy'
 import weekReducer from '@cfRedux/reducers/week'
 import weekworkflowReducer from '@cfRedux/reducers/weekworkflow'
 import workflowReducer from '@cfRedux/reducers/workflow'
 import * as Redux from 'redux'
+
+// @todo need to wrap these up
 
 export const rootWorkflowReducers = {
   workflow: workflowReducer,
@@ -40,12 +43,16 @@ export const rootWorkflowReducers = {
   strategy: strategyReducer,
   objectset: objectSetReducer
 }
-
+export const rootSidebarReducers = {
+  sidebar: sidebarReducer
+}
 const rootOutcomeReducers = {
   outcome: outcomeReducer,
   outcomeoutcome: outcomeOutcomeReducer
 }
 
 export const rootWorkflowReducer = Redux.combineReducers(rootWorkflowReducers)
+
+export const rootSidebarReducer = Redux.combineReducers(rootSidebarReducers)
 
 export const rootOutcomeReducer = Redux.combineReducers(rootOutcomeReducers)

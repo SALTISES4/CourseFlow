@@ -1,6 +1,5 @@
 // import './wdyr'
 import createCache from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { configureStore } from '@reduxjs/toolkit'
@@ -10,9 +9,6 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { RouterProvider } from 'react-router-dom'
-
-import theme from './mui/theme'
-
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 import CfRouter from '@cf/router/appRoutes'
@@ -20,8 +16,11 @@ import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
 import UserProvider from '@cf/context/userContext'
-import { rootWorkflowReducers } from '@cfRedux/Reducers'
+import { rootSidebarReducers, rootWorkflowReducers } from '@cfRedux/Reducers'
 import { SidebarRootStyles } from '@cfComponents/globalNav/Sidebar/styles'
+import { CacheProvider } from '@emotion/react'
+
+import theme from './mui/theme'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -70,6 +69,7 @@ const store = configureStore({
     // workflow: Reducers.rootWorkflowReducer,
     // outcome: Reducers.rootOutcomeReducer,
     ...rootWorkflowReducers,
+    ...rootSidebarReducers,
     [cfApi.reducerPath]: cfApi.reducer
   },
   devTools: process.env.NODE_ENV !== 'production', // Enable Redux DevTools only in non-production environments

@@ -6,14 +6,13 @@ import { useSelector } from 'react-redux'
 
 import Outcome from './Outcome'
 
-type OwnProps = {
+type PropsType = {
   type: string
   nodecategory: any
   objectId: number
-  outcome_type: any // This prop seems unused in the original component
 }
 
-const OutcomeBase = ({ type, nodecategory, objectId }: OwnProps) => {
+const OutcomeBase = ({ type, nodecategory, objectId }: PropsType) => {
   const outcomesType = useSelector(
     (state: AppState) => state.workflow.outcomesType
   )
@@ -37,12 +36,7 @@ const OutcomeBase = ({ type, nodecategory, objectId }: OwnProps) => {
         />
       )
     }
-    return (
-      <CompetencyMatrixView
-        outcomesType={outcomesType}
-        objectId={outcomeTree.id}
-      />
-    )
+    return <CompetencyMatrixView objectId={outcomeTree.id} />
   }
 
   return <OutcomeView outcomeTree={outcomeTree} />

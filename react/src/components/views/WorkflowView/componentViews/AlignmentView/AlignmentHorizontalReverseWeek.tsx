@@ -3,8 +3,11 @@ import { CfObjectType } from '@cf/types/enum.js'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { _t } from '@cf/utility/utilityFunctions'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponent from '@cfEditableComponents/EditableComponent'
-import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
+import EditableComponent, {
+  EditableComponentProps,
+  EditableComponentStateType
+} from '@cfEditableComponents/EditableComponent'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TNodeweek, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
 import * as React from 'react'
@@ -21,8 +24,8 @@ type OwnProps = {
   objectId: number
   week_rank: number
   restriction_set: any
-}
-type StateProps = EditableComponentWithCommentsStateType
+} & EditableComponentProps
+type StateProps = EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -33,10 +36,13 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
   StateProps
 > {
   static contextType = WorkflowConfigContext
+  private manager: BetterSelectionManager
 
   declare context: React.ContextType<typeof WorkflowConfigContext>
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
+
     this.objectType = CfObjectType.WEEK
     this.state = {} as StateProps
   }
@@ -72,21 +78,23 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
 
     const comments = permissions.read ? <this.AddCommenting /> : null
 
+    //      {this.addEditable(data, true)}
     return (
       <div
         className="week"
         ref={this.mainDiv}
         style={this.getBorderStyle()}
-        onClick={(evt) =>
-          this.context.selectionManager.changeSelection({
-            evt,
-            newSelection: this
-          })
+        onClick={() =>
+          this.manager.updateSidebar(
+            data.id,
+            this.objectType,
+            this.props.parentId
+          )
         }
       >
         <TitleText text={data.title} defaultText={defaultText} />
         <div className="node-block">{nodeweeks}</div>
-        {this.addEditable(data, true)}
+
         <div className="side-actions">
           <div className="comment-indicator-container"></div>
         </div>

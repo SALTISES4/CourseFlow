@@ -194,7 +194,6 @@ export const getOutcomeByID = (
       continue
     }
 
-    // Create a shallow copy to avoid mutation
     const updatedOutcome = { ...outcome }
 
     // Ensure isDropped is set without mutating state
@@ -216,7 +215,7 @@ export const getOutcomeByID = (
         []
       )
 
-      rank = rootInfo.rank.map(() => null) // Fill rank with null values
+      rank = rootInfo.rank.map(() => null)
       titles = [...rank]
 
       stateSection.forEach((sectionItem) => {
@@ -250,13 +249,11 @@ export const getOutcomeByID = (
     titles.push(updatedOutcome.title)
     rank.unshift(topRank)
 
-    // Create hovertext and prefix
     const hovertext = rank
       .map((rankItem, i) => `${rankItem}. ${titles[i]}`)
       .join(' -> ')
     const prefix = rank.join('.')
 
-    // Return the final result without mutating the original state
     return {
       data: updatedOutcome,
       hovertext: hovertext,

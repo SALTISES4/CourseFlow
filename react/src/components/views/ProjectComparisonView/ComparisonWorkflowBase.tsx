@@ -7,6 +7,7 @@ import EditableComponent, {
 } from '@cfEditableComponents/EditableComponent'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState } from '@cfRedux/types/type'
 import {
   getWorkflowParentDataQuery,
@@ -34,9 +35,11 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
   PropsType,
   StateProps
 > {
+  private manager: BetterSelectionManager
   static contextType = WorkflowConfigContext
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
     this.objectType = CfObjectType.WORKFLOW
   }
 
@@ -59,7 +62,8 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    * FUNCTIONS
    *******************************************************/
   openEdit(evt) {
-    this.context.selectionManager.changeSelection({ evt, newSelection: this })
+    //     this.context.selectionManager.changeSelection({ evt, newSelection: this })
+    this.manager.updateSidebar(this.props.data.id, this.objectType)
   }
 
   addObjectSetTrigger() {
@@ -109,10 +113,10 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
       border: data.lock ? '2px solid ' + data.lock.userColour : undefined // @todo not sure what the best default state is for this
     }
 
-    const portal = this.addEditable(data, true)
+    //     const portal = this.addEditable(data, true)
     return (
       <>
-        {portal}
+        {/*        {portal}*/}
         <div className="workflow-header" style={style}>
           {/*<WorkflowCard*/}
           {/*  workflowData={data}*/}
