@@ -23,8 +23,6 @@ import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
 import { Action } from 'redux'
 
-import SidebarEditTabProxy from './components/SidebarEditTabProxy'
-
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 const LinkedWorkflowButton = (id: any) => {
@@ -816,10 +814,6 @@ class EditableComponent<
     //   <this.EditForm data={data} noDelete={noDelete} />,
     //   document.getElementById('edit-menu')
     // ) as unknown as ReactPortal
-
-    // TODO: figure out where the id/hash is coming from
-    // to uniquely identify a clicked element
-    return <SidebarEditTabProxy id={3} />
   }
 }
 
