@@ -63,6 +63,9 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    *******************************************************/
   openEdit(evt) {
     //     this.context.selectionManager.changeSelection({ evt, newSelection: this })
+    if (evt && evt.stopPropagation) {
+      evt.stopPropagation()
+    }
     this.manager.updateSidebar(this.props.data.id, this.objectType)
   }
 

@@ -325,13 +325,14 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
           // onClick={(evt) =>
           //   selectionManager.changeSelection({ evt, newSelection: this })
           // }
-          onClick={() =>
+          onClick={(e) => {
+            e.stopPropagation()
             this.manager.updateSidebar(
               data.id,
               this.objectType,
               this.props.parentId
             )
-          }
+          }}
           ref={this.mainDiv}
         >
           <div className="node-top-row">
@@ -342,7 +343,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
             {child_outcomes}
           </div>
           <div className="node-drop-row">{show_all}</div>
-{/*          {this.addEditable(data_override, true)}*/}
+          {/*          {this.addEditable(data_override, true)}*/}
           <div className="side-actions">
             <div className="comment-indicator-container"></div>
           </div>

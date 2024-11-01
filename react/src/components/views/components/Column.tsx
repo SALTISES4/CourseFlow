@@ -109,13 +109,14 @@ class Column extends EditableComponent<PropsType, StateProps> {
         ref={this.mainDiv}
         style={style}
         className={cssClass}
-        onClick={() =>
+        onClick={(e) => {
+          e.stopPropagation()
           this.manager.updateSidebar(
             data.id,
             this.objectType,
             this.props.parentId
           )
-        }
+        }}
       >
         <div className="column-line">
           {this.colorChooser(

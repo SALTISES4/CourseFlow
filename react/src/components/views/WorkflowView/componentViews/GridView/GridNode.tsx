@@ -84,13 +84,14 @@ class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
           style={style}
           id={data.id}
           ref={this.mainDiv}
-          onClick={() =>
+          onClick={(e) => {
+            e.stopPropagation()
             this.manager.updateSidebar(
               data.id,
               this.objectType,
               this.props.parentId
             )
-          }
+          }}
           className={cssClass}
         >
           <div className="node-top-row">
