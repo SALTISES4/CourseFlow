@@ -129,6 +129,8 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     }
 
     this.lockChild(id, true, 'nodeweek')
+
+    // assign the node to a new column within the week
     this.context.editableMethods.microUpdate(
       ActionCreator.columnChangeNode(id, new_column)
     )

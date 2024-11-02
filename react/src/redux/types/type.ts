@@ -1,4 +1,4 @@
-import { Lock } from '@cf/types/common'
+import { CfLock } from '@cf/types/common'
 import { WorkflowPermission } from '@cf/utility/permissions'
 import {
   EColumn,
@@ -54,17 +54,17 @@ export type TOutcomeOutcome = EOutcomeOutcome
 
 // @todo look into where lock comes from
 export type TOutcome = EOutcome & {
-  lock?: Lock
+  lock?: CfLock
 }
 
 // @todo look into where lock comes from
 export type TColumn = EColumn & {
-  lock?: Lock
+  lock?: CfLock
 }
 
 // @todo look into where lock comes from
 export type TNode = ENode & {
-  lock?: Lock
+  lock?: CfLock
 }
 export type TUser = EUser & {
   userColour?: string
@@ -80,7 +80,7 @@ export type TNodeweek = ENodeweek
 
 export type TWeek = EWeek & {
   isDropped?: boolean
-  lock?: Lock
+  lock?: CfLock
 }
 
 export type TWeekworkflow = EWeekworkflow & {

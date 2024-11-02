@@ -63,7 +63,7 @@ export default function columnReducer(
     case ColumnActions.INSERT_BELOW:
       return [...state, action.payload.new_model]
 
-    case ColumnActions.changeField:
+    case ColumnActions.CHANGE_FIELD:
       if (
         action.payload.changeFieldID ===
         // @ts-ignore
@@ -180,7 +180,7 @@ export default function columnReducer(
 //       newState.push(action.payload.new_model)
 //       return newState
 //
-//     case ColumnActions.changeField:
+//     case ColumnActions.CHANGE_FIELD:
 //       if (
 //         action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
 //       )

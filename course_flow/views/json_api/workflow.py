@@ -45,7 +45,7 @@ from course_flow.serializers import (
 )
 from course_flow.services import DAO
 from course_flow.services.workflow import WorkflowService
-from course_flow.sockets import redux_actions as actions
+from course_flow.sockets.emitters import WorkflowUpdateEmitter
 
 #########################################################
 # Bulk data API for workflows
@@ -297,7 +297,7 @@ class WorkflowEndpoint:
 
         linked_workflows = Workflow.objects.filter(linked_nodes__week__workflow=clone)
         for wf in linked_workflows:
-            actions.dispatch_parent_updated(wf)
+            WorkflowUpdateEmitter.emit_parent_updated(wf)
 
         return Response(
             {
@@ -441,10 +441,12 @@ class WorkflowEndpoint:
             "linked_workflow_data": linked_workflow_data,
         }
         if original_workflow is not None:
-            actions.dispatch_parent_updated(original_workflow)
+            WorkflowUpdateEmitter.emit_parent_updated(original_workflow)
         if workflow is not None:
-            actions.dispatch_parent_updated(workflow)
-        actions.dispatch_wf(parent_workflow, actions.setLinkedWorkflowAction(response_data))
+            WorkflowUpdateEmitter.emit_parent_updated(workflow)
+        WorkflowUpdateEmitter.emit_workflow_update(
+            parent_workflow, WorkflowUpdateEmitter.set_linked_workflow_action(response_data)
+        )
         return Response({"message": "success"})
 
 

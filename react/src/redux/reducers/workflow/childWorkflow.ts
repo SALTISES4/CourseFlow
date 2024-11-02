@@ -13,28 +13,28 @@ interface ReplaceStoreDataAction extends AnyAction {
 
 interface RefreshStoreDataAction extends AnyAction {
   type: CommonActions.REFRESH_STOREDATA
-  payload: { child_workflow: TChildWorkflow[] }
+  payload: { childWorkflow: TChildWorkflow[] }
 }
 
 interface DeleteSelfOutcomeBaseAction extends AnyAction {
   type: OutcomeBaseActions.DELETE_SELF | OutcomeBaseActions.DELETE_SELF_SOFT
-  payload: { parent_id: number }
+  payload: { parentId: number }
 }
 
 interface RestoreSelfOutcomeBaseAction extends AnyAction {
   type: OutcomeBaseActions.RESTORE_SELF
   payload: {
-    parent_id: number
-    throughparent_index: number
-    throughparent_id: number
+    parentId: number
+    throughparentIndex: number
+    throughparentId: number
   }
 }
 
 interface InsertBelowOutcomeBaseAction extends AnyAction {
   type: OutcomeBaseActions.INSERT_BELOW
   payload: {
-    parent_id: number
-    new_through: {
+    parentId: number
+    newThrough: {
       id: number
       workflow: number
       rank: number
@@ -45,8 +45,8 @@ interface InsertBelowOutcomeBaseAction extends AnyAction {
 interface NewOutcomeAction extends AnyAction {
   type: OutcomeActions.NEW_OUTCOME
   payload: {
-    parent_id: number
-    new_through: {
+    parentId: number
+    newThrough: {
       id: number
       workflow: number
     }
@@ -61,17 +61,17 @@ type ChildWorkflowActionTypes =
   | InsertBelowOutcomeBaseAction
   | NewOutcomeAction
 
-function childWorkflowReducer(state  = [], action: ChildWorkflowActionTypes) {
+function childWorkflowReducer(state = [], action: ChildWorkflowActionTypes) {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
       return action.payload.child_workflow || state
 
     case CommonActions.REFRESH_STOREDATA: {
-      if (!action.payload.child_workflow) {
+      if (!action.payload.childWorkflow) {
         return state
       }
 
-      return action.payload.child_workflow.reduce(
+      return action.payload.childWorkflow.reduce(
         (updatedState, newChildWorkflowItem) => {
           const existingIndex = updatedState.findIndex(
             (item) => item.id === newChildWorkflowItem.id
@@ -96,29 +96,49 @@ function childWorkflowReducer(state  = [], action: ChildWorkflowActionTypes) {
       return state.map((item) => ({
         ...item,
         outcomeworkflowSet: item.outcomeworkflowSet.filter(
-          (id) => id !== action.payload.parent_id
+          (id) => id !== action.payload.parentId
         )
       }))
     }
 
+    // case OutcomeBaseActions.RESTORE_SELF:
+    //   return state.map((item) => {
+    //     if (item.id === action.payload.parentId) {
+    //       const newOutcomeworkflowSet = [...item.outcomeworkflowSet]
+    //       const index =
+    //         action.type === OutcomeBaseActions.RESTORE_SELF
+    //           ? action.payload.throughparentIndex
+    //           : action.payload.newThrough.rank
+    //
+    //       newOutcomeworkflowSet.splice(
+    //         index,
+    //         0,
+    //         action.payload.throughparentId || action.payload.newThrough.id
+    //       )
+    //       return { ...item, outcomeworkflowSet: newOutcomeworkflowSet }
+    //     }
+    //     return item
+    //   })
+
+    // @todo untangle this
     case OutcomeBaseActions.RESTORE_SELF:
     case OutcomeBaseActions.INSERT_BELOW:
     case OutcomeActions.NEW_OUTCOME:
       return state.map((item) => {
         if (
-          item.id === action.payload.parent_id ||
-          item.id === action.payload.new_through.workflow
+          item.id === action.payload.parentId ||
+          item.id === action.payload.newThrough.workflow
         ) {
           const new_outcomeworkflowSet = [...item.outcomeworkflowSet]
           const index =
             action.type === OutcomeBaseActions.RESTORE_SELF
-              ? action.payload.throughparent_index
-              : action.payload.new_through.rank
+              ? action.payload.throughparentIndex
+              : action.payload.newThrough.rank
 
           new_outcomeworkflowSet.splice(
             index,
             0,
-            action.payload.throughparent_id || action.payload.new_through.id
+            action.payload.throughparentId || action.payload.newThrough.id
           )
           return { ...item, outcomeworkflowSet: new_outcomeworkflowSet }
         }

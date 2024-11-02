@@ -55,7 +55,7 @@ from course_flow.serializers import (
     serializer_lookups_shallow,
 )
 from course_flow.services import DAO
-from course_flow.sockets import redux_actions as actions
+from course_flow.sockets.emitters import WorkflowUpdateEmitter
 
 
 #########################################################
@@ -262,15 +262,15 @@ class WorkflowObjectEndpoint:
         if object_type == "outcome" and through_type == "outcomeworkflow":
             object_type = "outcome_base"
 
-        actions.dispatch_wf(
+        WorkflowUpdateEmitter.emit_workflow_update(
             workflow,
-            actions.insertBelowAction(response_data, object_type),
+            WorkflowUpdateEmitter.insert_below_action(response_data, object_type),
         )
 
         if object_type == "outcome" or object_type == "outcome_base":
-            actions.dispatch_to_parent_wf(
+            WorkflowUpdateEmitter.dispatch_to_parent_wf(
                 workflow,
-                actions.insertBelowAction(response_data, object_type),
+                WorkflowUpdateEmitter.insert_below_action(response_data, object_type),
             )
 
         linked_workflows = False
@@ -280,7 +280,7 @@ class WorkflowObjectEndpoint:
             linked_workflows = Workflow.objects.filter(linked_nodes__week=model)
         if linked_workflows:
             for wf in linked_workflows:
-                actions.dispatch_parent_updated(wf)
+                WorkflowUpdateEmitter.emit_parent_updated(wf)
 
         return Response({"message": "success"}, status=status.HTTP_200_OK)
 
@@ -373,14 +373,14 @@ class WorkflowObjectEndpoint:
         workflow = model.get_workflow()
         if object_type == "outcome" and through_type == "outcomeworkflow":
             object_type = "outcome_base"
-        actions.dispatch_wf(
+        WorkflowUpdateEmitter.emit_workflow_update(
             workflow,
-            actions.insertBelowAction(response_data, object_type),
+            WorkflowUpdateEmitter.insert_below_action(response_data, object_type),
         )
         if object_type == "outcome" or object_type == "outcome_base":
-            actions.dispatch_to_parent_wf(
+            WorkflowUpdateEmitter.dispatch_to_parent_wf(
                 workflow,
-                actions.insertBelowAction(response_data, object_type),
+                WorkflowUpdateEmitter.insert_below_action(response_data, object_type),
             )
         return JsonResponse({"message": "success"})
 
@@ -552,10 +552,10 @@ class WorkflowObjectEndpoint:
                         ).data,
                     }
 
-                delete_action = actions.deleteSelfAction(
+                delete_action = WorkflowUpdateEmitter.delete_self_action(
                     object_id, object_type_sent, old_through_id, extra_data
                 )
-                actions.dispatch_wf(
+                WorkflowUpdateEmitter.emit_workflow_update(
                     workflow1,
                     delete_action,
                 )
@@ -569,27 +569,29 @@ class WorkflowObjectEndpoint:
                     "children": new_children_serialized,
                 }
 
-                actions.dispatch_wf(
+                WorkflowUpdateEmitter.emit_workflow_update(
                     workflow2,
-                    actions.insertBelowAction(response_data, object_type_sent),
+                    WorkflowUpdateEmitter.insert_below_action(response_data, object_type_sent),
                 )
 
                 # Send the relevant signals to parent and child workflows
                 if object_type == "outcome" or object_type == "outcome_base":
-                    actions.dispatch_to_parent_wf(
+                    WorkflowUpdateEmitter.dispatch_to_parent_wf(
                         workflow1,
                         delete_action,
                     )
                     if linked_workflows:
                         for wf in linked_workflows:
-                            actions.dispatch_wf(wf, delete_action)
-                            actions.dispatch_wf(
+                            WorkflowUpdateEmitter.emit_workflow_update(wf, delete_action)
+                            WorkflowUpdateEmitter.emit_workflow_update(
                                 wf,
-                                actions.updateHorizontalLinks({"data": outcomes_to_update}),
+                                WorkflowUpdateEmitter.update_horizontal_links(
+                                    {"data": outcomes_to_update}
+                                ),
                             )
                 if object_type != "outcome" and object_type != "outcome_base" and linked_workflows:
                     for wf in linked_workflows:
-                        actions.dispatch_parent_updated(wf)
+                        WorkflowUpdateEmitter.emit_parent_updated(wf)
             else:
                 if object_type == "outcome":
                     outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_outcome(model)
@@ -612,23 +614,25 @@ class WorkflowObjectEndpoint:
                 else:
                     extra_data = {}
 
-                actions.dispatch_wf(
+                WorkflowUpdateEmitter.emit_workflow_update(
                     workflow,
-                    actions.changeThroughID(
+                    WorkflowUpdateEmitter.change_through_id(
                         through_type, old_through_id, new_through.id, extra_data
                     ),
                 )
                 if object_type == "outcome":
-                    actions.dispatch_to_parent_wf(
+                    WorkflowUpdateEmitter.dispatch_to_parent_wf(
                         workflow,
-                        actions.changeThroughID(
+                        WorkflowUpdateEmitter.change_through_id(
                             through_type,
                             old_through_id,
                             new_through.id,
                             extra_data,
                         ),
                     )
-        actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
+        WorkflowUpdateEmitter.dispatch_wf_lock(
+            workflow, WorkflowUpdateEmitter.unlock(model.id, object_type)
+        )
         return Response({"message": "success"})
 
 
@@ -679,13 +683,13 @@ def json_api_post_update_outcomehorizontallink_degree(
         "new_outcome_horizontal_links": new_outcome_horizontal_links,
         "new_outcome_horizontal_links_unique": new_outcome_horizontal_links_unique,
     }
-    actions.dispatch_wf(
+    WorkflowUpdateEmitter.emit_workflow_update(
         workflow,
-        actions.updateOutcomehorizontallinkDegreeAction(response_data),
+        WorkflowUpdateEmitter.update_outcomehorizontallink_degree_action(response_data),
     )
-    actions.dispatch_to_parent_wf(
+    WorkflowUpdateEmitter.dispatch_to_parent_wf(
         workflow,
-        actions.updateOutcomehorizontallinkDegreeAction(response_data),
+        WorkflowUpdateEmitter.update_outcomehorizontallink_degree_action(response_data),
     )
     return JsonResponse({"message": "success"})
 
@@ -726,20 +730,20 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
     try:
         workflow = objects_to_update[0].get_workflow()
         if len(objects_to_update) == 1:
-            action = actions.changeField(
+            action = WorkflowUpdateEmitter.change_field(
                 object_id,
                 object_type,
                 {"sets": [object_set.id for object_set in object_to_update.sets.all()]},
             )
         else:
-            action = actions.changeFieldMany(
+            action = WorkflowUpdateEmitter.change_field_many(
                 [obj.id for obj in objects_to_update],
                 object_type,
                 {"sets": [object_set.id for object_set in object_to_update.sets.all()]},
             )
-        actions.dispatch_wf(workflow, action)
+        WorkflowUpdateEmitter.emit_workflow_update(workflow, action)
         if object_type == "outcome":
-            actions.dispatch_to_parent_wf(workflow, action)
+            WorkflowUpdateEmitter.dispatch_to_parent_wf(workflow, action)
     except AttributeError as e:
         logger.exception("An error occurred")
         pass

@@ -72,7 +72,7 @@ export function API_POST<T>(url = '', data = {}): Promise<any> {
           return response.json()
         }
         // here we have a handled server error
-        // parse out the message we're returning from API
+        // aparse out the message we're returning from API
         // TDB whether we pass these messages on to the frontend
         return response.json().then((err) => {
           rej({

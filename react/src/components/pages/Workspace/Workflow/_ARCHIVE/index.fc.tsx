@@ -258,7 +258,7 @@ const Workflow: React.FC<PropsType> = () => {
   )
 
   const lockUpdate = useCallback(
-    (obj: any, time: number, lock: boolean) => {
+    (obj: CfLock, time: number, lock: boolean) => {
       if (wsService) {
         wsService.send(
           JSON.stringify({

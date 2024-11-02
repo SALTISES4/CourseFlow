@@ -7,7 +7,7 @@ export enum CommonActions {
 
 export enum WorkflowActions {
   CREATELOCK = 'workflow/createLock',
-  changeField = 'workflow/changeField',
+  CHANGE_FIELD = 'workflow/changeField',
   DELETE_SELF_SOFT = 'workflow/deleteSelfSoft',
   RESTORE_SELF = 'workflow/restoreSelf'
 }
@@ -18,7 +18,7 @@ export enum WeekActions {
   RESTORE_SELF = 'week/restoreSelf',
   INSERT_BELOW = 'week/insertBelow',
   CREATE_LOCK = 'week/createLock',
-  changeField = 'week/changeField',
+  CHANGE_FIELD = 'week/changeField',
   RELOAD_COMMENTS = 'week/reloadComments'
 }
 
@@ -37,8 +37,8 @@ export enum OutcomeActions {
   CREATE_LOCK = 'outcome/createLock',
   RELOAD_COMMENTS = 'outcome/reloadComments',
   UPDATE_HORIZONTAL_LINK = 'outcome/updateHorizontalLinks',
-  changeField = 'outcome/changeField',
-  changeField_MANY = 'outcome/changeFieldMany'
+  CHANGE_FIELD = 'outcome/changeField',
+  CHANGE_FIELD_MANY = 'outcome/changeFieldMany'
 }
 
 export enum OutcomeNodeActions {
@@ -52,8 +52,8 @@ export enum OutcomeBaseActions {
   INSERT_BELOW = 'outcomeBase/insertBelow',
   INSERT_CHILD = 'outcomeBase/insertChild',
   RELOAD_COMMENTS = 'outcomeBase/reloadComments',
-  changeField = 'outcomeBase/changeField',
-  changeField_MANY = 'outcomeBase/changeFieldMany'
+  CHANGE_FIELD = 'outcomeBase/changeField',
+  CHANGE_FIELD_MANY = 'outcomeBase/changeFieldMany'
 }
 
 export enum OutcomeWorkflowActions {
@@ -78,7 +78,7 @@ export enum ColumnActions {
   INSERT_BELOW = 'column/insertBelow',
   CREATE_LOCK = 'column/createLock',
   RELOAD_COMMENTS = 'column/reloadComments',
-  changeField = 'column/changeField'
+  CHANGE_FIELD = 'column/changeField'
 }
 
 export enum ColumnWorkflowActions {
@@ -100,14 +100,14 @@ export enum NodeActions {
   CHANGED_COLUMN = 'node/changedColumn',
   CREATE_LOCK = 'node/createLock',
   INSERT_BELOW = 'node/insertBelow',
-  changeField = 'node/changeField',
+  CHANGE_FIELD = 'node/changeField',
   RELOAD_COMMENTS = 'node/reloadComments',
-  SET_linkedWorkflow = 'node/setLinkedWorkflow'
+  SET_LINKED_WORKFLOW = 'node/setLinkedWorkflow'
 }
 
 export enum NodeLinkActions {
   CREATE_LOCK = 'nodelink/createLock',
-  changeField = 'nodelink/changeField',
+  CHANGE_FIELD = 'nodelink/changeField',
   RESTORE_SELF = 'nodelink/restoreSelf',
   DELETE_SELF = 'nodelink/deleteSelf',
   DELETE_SELF_SOFT = 'nodelink/deleteSelfSoft',

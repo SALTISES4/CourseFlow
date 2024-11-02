@@ -104,7 +104,7 @@ function workflowReducer(
       return state
     }
 
-    case WorkflowActions.changeField: {
+    case WorkflowActions.CHANGE_FIELD: {
       if (
         action.payload.changeFieldID ===
         // @ts-ignore

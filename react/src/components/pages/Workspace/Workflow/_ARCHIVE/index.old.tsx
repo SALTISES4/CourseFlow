@@ -354,7 +354,7 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
   // lock an object, indicating it should not be selectable
   // by any other users
   // this should not live here, it go in the draggable class
-  lockUpdate(obj, time, lock) {
+  lockUpdate(obj: CfLock, time, lock: boolean) {
     if (this.wsService) {
       this.wsService.send(
         JSON.stringify({

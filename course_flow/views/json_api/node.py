@@ -3,6 +3,9 @@ import logging
 
 from django.core.exceptions import ValidationError
 from django.http import HttpRequest, JsonResponse
+from rest_framework.decorators import api_view
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 from course_flow.apps import logger
 from course_flow.decorators import user_can_edit, user_can_view_or_none
@@ -21,13 +24,15 @@ from course_flow.serializers import (
     NodeWeekSerializerShallow,
 )
 from course_flow.services import DAO
-from course_flow.sockets import redux_actions as actions
+from course_flow.sockets.emitters import WorkflowUpdateEmitter
 
 
 class NodeEndpoint:
+    @staticmethod
     @user_can_edit("weekPk")
     @user_can_view_or_none("columnPk")
-    def create(request: HttpRequest) -> JsonResponse:
+    @api_view(["POST"])
+    def create(request: Request) -> Response:
         body = json.loads(
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
@@ -60,7 +65,7 @@ class NodeEndpoint:
 
         except ValidationError as e:
             logger.exception("An error occurred")
-            return JsonResponse({"action": "error"})
+            return Response({"action": "error"})
 
         response_data = {
             "new_model": NodeSerializerShallow(node).data,
@@ -70,12 +75,19 @@ class NodeEndpoint:
             "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflow).data,
             "column": ColumnSerializerShallow(column).data,
         }
-        actions.dispatch_wf(week.get_workflow(), actions.newNodeAction(response_data))
-        return JsonResponse({"message": "success"})
 
+        # what
+        WorkflowUpdateEmitter.emit_workflow_update(
+            week.get_workflow(), WorkflowUpdateEmitter.new_node_action(response_data)
+        )
+
+        return Response({"message": "success"})
+
+    @staticmethod
+    @api_view(["POST"])
     @user_can_edit("nodePk")
     @user_can_edit(False)
-    def node_link__create(request: HttpRequest) -> JsonResponse:
+    def node_link__create(request: Request) -> Response:
         body = json.loads(
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
@@ -102,5 +114,9 @@ class NodeEndpoint:
         response_data = {
             "new_model": NodeLinkSerializerShallow(node_link).data,
         }
-        actions.dispatch_wf(node.get_workflow(), actions.newNodeLinkAction(response_data))
-        return JsonResponse({"message": "success"})
+
+        WorkflowUpdateEmitter.emit_workflow_update(
+            node.get_workflow(), WorkflowUpdateEmitter.new_node_link_action(response_data)
+        )
+
+        return Response({"message": "success"})

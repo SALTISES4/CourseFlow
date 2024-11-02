@@ -29,7 +29,7 @@ from course_flow.serializers import (
     WeekWorkflowSerializerShallow,
 )
 from course_flow.services import DAO
-from course_flow.sockets import redux_actions as actions
+from course_flow.sockets.emitters import WorkflowUpdateEmitter
 
 
 def json_api_post_get_templates(request: HttpRequest) -> JsonResponse:
@@ -192,7 +192,9 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
                     many=True,
                 ).data,
             }
-            actions.dispatch_wf(workflow, actions.newStrategyAction(response_data))
+            WorkflowUpdateEmitter.emit_workflow_update(
+                workflow, WorkflowUpdateEmitter.new_strategy_action(response_data)
+            )
             return JsonResponse({"message": "success"})
 
         else:
@@ -258,6 +260,8 @@ def json_api_post_week_toggle_strategy(request: HttpRequest) -> JsonResponse:
         "strategy": strategy_serialized,
     }
 
-    actions.dispatch_wf(workflow, actions.toggleStrategyAction(response_data))
+    WorkflowUpdateEmitter.emit_workflow_update(
+        workflow, WorkflowUpdateEmitter.toggle_strategy_action(response_data)
+    )
 
     return JsonResponse({"message": "success"})

@@ -18,18 +18,40 @@ interface RefreshStoreDataAction extends AnyAction {
   payload: { week: TWeek[] }
 }
 
+interface WeekByIdDataAction extends AnyAction {
+  type:
+    | WeekActions.DELETE_SELF
+    | WeekActions.DELETE_SELF_SOFT
+    | NodeActions.DELETE_SELF
+    | NodeActions.DELETE_SELF_SOFT
+  payload: { id: number }
+}
+
 interface WeekGenericAction extends AnyAction {
   type:
     | WeekActions.CREATE_LOCK
     | WeekActions.RELOAD_COMMENTS
-    | WeekActions.TOGGLE_STRATEGY
     | WeekActions.CHANGE_FIELD
-    | WeekActions.DELETE_SELF
-    | WeekActions.DELETE_SELF_SOFT
     | WeekActions.RESTORE_SELF
+    | StrategyActions.TOGGLE_STRATEGY
   payload: {
     id: number
-    [key: string]: any // Additional properties as needed
+    [key: string]: any
+  }
+}
+
+interface NodeGenericAction extends AnyAction {
+  type:
+    | NodeActions.RESTORE_SELF
+    | NodeActions.INSERT_BELOW
+    | NodeActions.NEW_NODE
+  payload: {
+    id: number
+    index: number
+    parentId: number
+    newThrough: {
+      id: number
+    }
   }
 }
 
@@ -62,9 +84,11 @@ type WeekActionTypes =
   | ReplaceStoreDataAction
   | RefreshStoreDataAction
   | WeekGenericAction
+  | WeekByIdDataAction
   | InsertBelowAction
   | NodeWeekChangeIdAction
   | NodeWeekMovedToAction
+  | NodeGenericAction
 
 export default function weekReducer(
   state: TWeek[] = [],
@@ -96,7 +120,7 @@ export default function weekReducer(
       return state.map((item) =>
         item.id === action.payload.id ? { ...item, ...action.payload } : item
       )
-    case WeekActions.changeField:
+    case WeekActions.CHANGE_FIELD:
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }
@@ -112,16 +136,19 @@ export default function weekReducer(
       return state.filter((item) => item.id !== action.payload.id)
 
     case WeekActions.DELETE_SELF_SOFT:
-    case WeekActions.RESTORE_SELF:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? {
-              ...item,
-              deleted: !item.deleted,
-              deletedOn: item.deleted ? undefined : 'This session'
-            }
-          : item
-      )
+    case WeekActions.RESTORE_SELF: {
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return {
+            ...item,
+            deleted: !item.deleted,
+            deletedOn: item.deleted ? undefined : 'This session'
+          }
+        }
+
+        return item
+      })
+    }
 
     case NodeWeekActions.CHANGE_ID:
       return state.map((item) => ({
@@ -136,8 +163,8 @@ export default function weekReducer(
         const newSet = item.nodeweekSet.filter((id) => id !== action.payload.id)
         if (item.id === action.payload.new_parent) {
           newSet.splice(action.payload.new_index, 0, action.payload.id)
+          return { ...item, nodeweekSet: newSet }
         }
-        return { ...item, nodeweekSet: newSet }
         return item
       })
 
@@ -147,7 +174,7 @@ export default function weekReducer(
       return state.map((item) => {
         if (item.id === action.payload.parentId) {
           const newSet = [...item.nodeweekSet]
-          newSet.splice(action.payload.index, 0, action.payload.new_through.id)
+          newSet.splice(action.payload.index, 0, action.payload.newThrough.id)
           return { ...item, nodeweekSet: newSet }
         }
         return item
@@ -255,7 +282,7 @@ export default function weekReducer(
 //       return state
 //     }
 //
-//     case WeekActions.changeField: {
+//     case WeekActions.CHANGE_FIELD: {
 //       if (
 //         // @ts-ignore
 //         action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID

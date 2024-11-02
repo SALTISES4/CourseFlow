@@ -1,5 +1,6 @@
 import * as Constants from '@cf/constants'
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
+import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import EditableComponent, {
   EditableComponentProps,
@@ -77,6 +78,8 @@ class EditableComponentWithSorting<
     handle: string | boolean = false, // @todo review this union
     containment = '.workflow-container'
   ) {
+    //   this is because we moved workflow out of context
+    // but we aren't  going to wrap this one yet
     // if (this.context.permissions.workflowPermissions.readOnly) {
     if (false) {
       return
@@ -287,27 +290,30 @@ class EditableComponentWithSorting<
     this.lockChild(id, true, through_type)
   }
 
-  lockChild(id, lock, through_type) {
-    let objectType
+  lockChild(id: number, lock: boolean, through_type: CfObjectType) {
+    let objectType: CfObjectType
 
     if (through_type == 'nodeweek') {
-      objectType = 'node'
+      objectType = CfObjectType.NODE
     }
     if (through_type == 'weekworkflow') {
-      objectType = 'week'
+      objectType = CfObjectType.WEEK
     }
     if (through_type == 'columnworkflow') {
-      objectType = 'column'
+      objectType = CfObjectType.COLUMN
     }
     if (through_type == 'outcomeoutcome') {
-      objectType = 'outcome'
+      objectType = CfObjectType.OUTCOME
     }
     if (through_type == 'outcomeworkflow') {
-      objectType = 'outcome'
+      objectType = CfObjectType.OUTCOME
     }
 
     this.context.editableMethods.lockUpdate(
-      { objectId: id, objectType: objectType },
+      {
+        objectId: id,
+        objectType: objectType
+      },
       Constants.lockTimes.move,
       lock
     )

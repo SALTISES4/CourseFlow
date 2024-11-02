@@ -24,7 +24,7 @@ from course_flow.serializers import (
     OutcomeSerializerShallow,
     OutcomeWorkflowSerializerShallow,
 )
-from course_flow.sockets import redux_actions as actions
+from course_flow.sockets.emitters import WorkflowUpdateEmitter
 
 
 @user_can_edit("nodePk")
@@ -74,13 +74,19 @@ def json_api_post_update_outcomenode_degree(
         "new_outcomenode_set": new_outcomenode_set,
         "new_outcomenode_unique_set": new_outcomenode_unique_set,
     }
-    update_action = actions.updateOutcomenodeDegreeAction(response_data)
-    actions.dispatch_wf(
+
+    # here the developer is dyanmically sending back a socket msg
+    # WITH a redux action type attached to it
+    # the original idea being i guess to be for the backend to be in charge of whether the frontend
+    # update store ... look for all WorkflowUpdateEmitter.* commands and fix them
+    update_action = WorkflowUpdateEmitter.update_outcomenode_degree_action(response_data)
+
+    WorkflowUpdateEmitter.emit_workflow_update(
         workflow,
         update_action,
     )
     if node.linked_workflow is not None:
-        actions.dispatch_wf(
+        WorkflowUpdateEmitter.emit_workflow_update(
             node.linked_workflow,
             update_action,
         )
@@ -133,12 +139,14 @@ def json_api_post_insert_child_outcome(request: HttpRequest) -> JsonResponse:
         "parentId": model.id,
     }
     workflow = model.get_workflow()
-    actions.dispatch_wf(
+    WorkflowUpdateEmitter.emit_workflow_update(
         workflow,
-        actions.insertChildAction(response_data, object_type),
+        WorkflowUpdateEmitter.insert_child_action(response_data, object_type),
     )
     if object_type == "outcome":
-        actions.dispatch_to_parent_wf(workflow, actions.insertChildAction(response_data, "outcome"))
+        WorkflowUpdateEmitter.dispatch_to_parent_wf(
+            workflow, WorkflowUpdateEmitter.insert_child_action(response_data, "outcome")
+        )
     return JsonResponse({"message": "success"})
 
 
@@ -170,7 +178,11 @@ def json_api_post_new_outcome_for_workflow(
         "new_through": OutcomeWorkflowSerializerShallow(outcome_workflow).data,
         "parentId": workflow_id,
     }
-    actions.dispatch_wf(workflow, actions.newOutcomeAction(response_data))
-    actions.dispatch_to_parent_wf(workflow, actions.newOutcomeAction(response_data))
+    WorkflowUpdateEmitter.emit_workflow_update(
+        workflow, WorkflowUpdateEmitter.new_outcome_action(response_data)
+    )
+    WorkflowUpdateEmitter.dispatch_to_parent_wf(
+        workflow, WorkflowUpdateEmitter.new_outcome_action(response_data)
+    )
 
     return JsonResponse({"message": "success"})

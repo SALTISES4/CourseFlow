@@ -22,17 +22,21 @@ class ActionCreator {
    * COMMON / DYNAMIC OBJECT
    *******************************************************/
   static createLockAction = (
-    objectId,
-    objectType,
-    lock?,
-    userId?,
-    userColour?
+    objectId: number,
+    objectType: CfObjectType,
+    lock?: boolean,
+    userId?: number,
+    userColour?: string
   ) => {
+    console.log('createLockAction')
+    console.log(lock)
+
     if (lock) {
       return {
-        type: objectType + '/createLock',
+        type: objectType + '/createLock', // this is a redux antipattern
         payload: {
           id: objectId,
+          // where are rest of props for lock?
           lock: { userId: userId, userColour: userColour }
         }
       }
@@ -47,9 +51,18 @@ class ActionCreator {
     }
   }
 
-  static reloadCommentsAction = (id: number, objectType, comment_data) => {
+  static reloadCommentsAction = (
+    id: number,
+    objectType: CfObjectType,
+    comment_data
+  ) => {
+    console.log(
+      'what is comment_data'
+    )
+    console.log(comment_data)
+
     return {
-      type: objectType + '/reloadComments',
+      type: objectType + '/reloadComments', // this is a redux antipattern
       payload: {
         id: id,
         objectType: objectType,
@@ -58,9 +71,13 @@ class ActionCreator {
     }
   }
 
-  static changeField = (id: number, objectType, json) => {
+  static changeField = (id: number, objectType: CfObjectType, json) => {
+    console.log(
+      'what is  static changeField = (id: number, objectType: CfObjectType, json) => {'
+    )
+    console.log(json)
     return {
-      type: objectType + '/changeField',
+      type: objectType + '/changeField', // this is a redux antipattern
       payload: {
         id: id,
         objectType: objectType,
@@ -78,6 +95,8 @@ class ActionCreator {
   })
 
   static replaceStoreData = (dataPackage) => {
+    console.log('what is   static replaceStoreData = (dataPackage) => {')
+    console.log(dataPackage)
     return {
       type: CommonActions.REPLACE_STOREDATA,
       payload: dataPackage
@@ -85,107 +104,116 @@ class ActionCreator {
   }
 
   static refreshStoreData = (dataPackage) => {
+    console.log('what is  refreshStoreData = (dataPackage) => {')
+    console.log(dataPackage)
     return {
       type: CommonActions.REFRESH_STOREDATA,
       payload: dataPackage
     }
   }
 
-  static reloadAssignmentsAction = (id: number, hasAssignment) => {
-    return {
-      type: NodeActions.RELOAD_ASSIGNMENTS,
-      payload: { id: id, hasAssignment: hasAssignment }
-    }
-  }
+  // static reloadAssignmentsAction = (id: number, hasAssignment) => {
+  //   return {
+  //     type: NodeActions.RELOAD_ASSIGNMENTS,
+  //     payload: { id: id, hasAssignment: hasAssignment }
+  //   }
+  // }
 
   static moveColumnWorkflow = (
     id: number,
-    new_position,
-    new_parent,
-    child_id
+    newIndex: number,
+    newParent: number,
+    childId: number
   ) => {
     return {
       type: ColumnWorkflowActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
   static moveWeekWorkflow = (
     id: number,
-    new_position,
-    new_parent,
-    child_id
+    newIndex: number,
+    newParent: number,
+    childId: number
   ) => {
     return {
       type: WeekWorkflowActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
-  static columnChangeNode = (id: number, new_column) => {
+  static columnChangeNode = (id: number, newColumn: number) => {
     return {
       type: NodeActions.CHANGED_COLUMN,
-      payload: { id: id, new_column: new_column }
+      payload: { id, newColumn }
     }
   }
 
-  static moveNodeWeek = (id: number, new_position, new_parent, child_id) => {
+  static moveNodeWeek = (
+    id: number,
+    newIndex: number,
+    newParent: number,
+    childId: number
+  ) => {
     return {
       type: NodeWeekActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
   static moveOutcomeOutcome = (
     id: number,
-    new_position,
-    new_parent,
-    child_id
+    newIndex: number,
+    newParent: number,
+    childId: number
   ) => {
     return {
       type: OutcomeOutcomeActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
   static moveOutcomeWorkflow = (
     id: number,
-    new_position,
-    new_parent,
-    child_id
+    newIndex: number,
+    newParent: number,
+    childId: number
   ) => {
     return {
       type: OutcomeWorkflowActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
   static gridMenuItemAdded = (responseData) => {
+    console.log('what is gridMenuItemAdded = (responseData)')
+    console.log(responseData)
     return {
       type: GridMenuActions.ITEM_ADDED,
       payload: responseData

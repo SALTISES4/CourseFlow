@@ -11,8 +11,8 @@ from django.utils import timezone
 from course_flow.models import ObjectSet, User
 from course_flow.services import DAO, Utility
 from course_flow.services.export_import import Exporter, Importer
-from course_flow.sockets import redux_actions as actions
 from course_flow.sockets.celery import logger, try_async
+from course_flow.sockets.emitters import WorkflowUpdateEmitter
 
 
 @try_async
@@ -33,14 +33,10 @@ def async_send_export_email(
     if object_type == "project":
         project_sets = ObjectSet.objects.filter(project=model_object)
     else:
-        project_sets = ObjectSet.objects.filter(
-            project=model_object.get_project()
-        )
+        project_sets = ObjectSet.objects.filter(project=model_object.get_project())
     allowed_sets = project_sets.filter(id__in=allowed_sets)
     if export_type == "outcome":
-        file = exporter.get_outcomes_export(
-            model_object, object_type, export_format, allowed_sets
-        )
+        file = exporter.get_outcomes_export(model_object, object_type, export_format, allowed_sets)
     elif export_type == "framework":
         file = exporter.get_course_frameworks_export(
             model_object, object_type, export_format, allowed_sets
@@ -50,13 +46,9 @@ def async_send_export_email(
             model_object, object_type, export_format, allowed_sets
         )
     elif export_type == "sobec":
-        file = exporter.get_sobec_export(
-            model_object, object_type, export_format, allowed_sets
-        )
+        file = exporter.get_sobec_export(model_object, object_type, export_format, allowed_sets)
     elif export_type == "node":
-        file = exporter.get_nodes_export(
-            model_object, object_type, export_format, allowed_sets
-        )
+        file = exporter.get_nodes_export(model_object, object_type, export_format, allowed_sets)
     if export_format == "excel":
         file_ext = "xlsx"
     elif export_format == "csv":
@@ -81,9 +73,7 @@ def async_send_export_email(
     if export_format == "csv":
         file_data = "text/csv"
     elif export_format == "excel":
-        file_data = (
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+        file_data = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     if settings.DEBUG:
         with open("last_export." + file_ext, "wb") as out_file:
             out_file.write(file)
@@ -95,13 +85,9 @@ def async_send_export_email(
     )
     try:
         email.send()
-        logger.info(
-            f"Email - {email_subject} - {filename} - sent to {user_email}"
-        )
+        logger.info(f"Email - {email_subject} - {filename} - sent to {user_email}")
     except SMTPException:
-        logger.info(
-            f"Email - {email_subject} - {filename} - could NOT be sent to {user_email}"
-        )
+        logger.info(f"Email - {email_subject} - {filename} - could NOT be sent to {user_email}")
 
 
 @try_async
@@ -113,9 +99,9 @@ def async_import_file_data(pk, object_type, task_type, file_json, user_id):
     user = User.objects.get(pk=user_id)
 
     if object_type == "workflow":
-        actions.dispatch_wf(
+        WorkflowUpdateEmitter.emit_workflow_update(
             model_object,
-            actions.changeField(pk, "workflow", {"importing": True}, False),
+            WorkflowUpdateEmitter.change_field(pk, "workflow", {"importing": True}, False),
         )
 
     cache.set(object_type + str(pk) + "importing", True, 300)
@@ -135,7 +121,7 @@ def async_import_file_data(pk, object_type, task_type, file_json, user_id):
     cache.delete(object_type + str(pk) + "importing")
 
     if object_type == "workflow":
-        actions.dispatch_wf(
+        WorkflowUpdateEmitter.emit_workflow_update(
             model_object,
-            actions.changeField(pk, "workflow", {"importing": False}, False),
+            WorkflowUpdateEmitter.change_field(pk, "workflow", {"importing": False}, False),
         )

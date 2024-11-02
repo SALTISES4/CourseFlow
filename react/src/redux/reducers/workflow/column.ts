@@ -1,3 +1,4 @@
+import {CfLock} from "@cf/types/common";
 import { _t } from '@cf/utility/utilityFunctions'
 import {
   ColumnActions,
@@ -7,6 +8,7 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TColumn } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
+
 interface ReplaceStoreDataAction extends AnyAction {
   type: CommonActions.REPLACE_STOREDATA
   payload: { column?: TColumn[] }
@@ -19,21 +21,14 @@ interface RefreshStoreDataAction extends AnyAction {
 
 interface CreateLockAction extends AnyAction {
   type: ColumnActions.CREATE_LOCK
-  payload: { id: number; lock: boolean }
+  payload: { id: number; lock: CfLock }
 }
 
-interface DeleteSelfAction extends AnyAction {
-  type: ColumnActions.DELETE_SELF
-  payload: { id: number }
-}
-
-interface DeleteSelfSoftAction extends AnyAction {
-  type: ColumnActions.DELETE_SELF_SOFT
-  payload: { id: number }
-}
-
-interface RestoreSelfAction extends AnyAction {
-  type: ColumnActions.RESTORE_SELF
+interface ColumnByIdAction extends AnyAction {
+  type:
+    | ColumnActions.DELETE_SELF
+    | ColumnActions.DELETE_SELF_SOFT
+    | ColumnActions.RESTORE_SELF
   payload: { id: number }
 }
 
@@ -62,14 +57,11 @@ interface AddStrategyAction extends AnyAction {
   payload: { columns_added: TColumn[] }
 }
 
-// Union type for all actions handled by the reducer
 type ColumnActionTypes =
   | ReplaceStoreDataAction
   | RefreshStoreDataAction
   | CreateLockAction
-  | DeleteSelfAction
-  | DeleteSelfSoftAction
-  | RestoreSelfAction
+  | ColumnByIdAction
   | InsertBelowAction
   | ChangeFieldAction
   | ReloadCommentsAction
@@ -81,10 +73,12 @@ export default function columnReducer(
   action: ColumnActionTypes
 ): TColumn[] {
   switch (action.type) {
-    case CommonActions.REPLACE_STOREDATA:
-      return action.payload.column || state
+    case CommonActions.REPLACE_STOREDATA: {
+      return action.payload.column
+    }
 
     case CommonActions.REFRESH_STOREDATA:
+      // @todo why?
       return action.payload.column
         ? action.payload.column.reduce(
             (newState, new_obj) => {
@@ -102,12 +96,14 @@ export default function columnReducer(
           )
         : state
 
-    case ColumnActions.CREATE_LOCK:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? { ...item, lock: action.payload.lock }
-          : item
-      )
+    case ColumnActions.CREATE_LOCK: {
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, lock: action.payload.lock }
+        }
+        return item
+      })
+    }
 
     case ColumnActions.DELETE_SELF:
       return state.filter((item) => item.id !== action.payload.id)
@@ -118,7 +114,7 @@ export default function columnReducer(
           ? {
               ...item,
               deleted: true,
-              deletedOn: _t('This session')
+              deletedOn: _t('This session') // ??
             }
           : item
       )
@@ -131,7 +127,7 @@ export default function columnReducer(
     case ColumnActions.INSERT_BELOW:
       return [...state, action.payload.new_model]
 
-    case ColumnActions.changeField:
+    case ColumnActions.CHANGE_FIELD:
       if (
         action.payload.changeFieldID ===
         COURSEFLOW_APP.contextData.changeFieldID
@@ -144,12 +140,14 @@ export default function columnReducer(
           : item
       )
 
-    case ColumnActions.RELOAD_COMMENTS:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? { ...item, comments: action.payload.comment_data }
-          : item
-      )
+    case ColumnActions.RELOAD_COMMENTS: {
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, comments: action.payload.comment_data }
+        }
+        return item
+      })
+    }
 
     case NodeActions.NEW_NODE:
       return state.some((item) => item.id === action.payload.column.id)
@@ -247,7 +245,7 @@ export default function columnReducer(
 //       newState.push(action.payload.new_model)
 //       return newState
 //
-//     case ColumnActions.changeField:
+//     case ColumnActions.CHANGE_FIELD:
 //       if (
 //         action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
 //       )

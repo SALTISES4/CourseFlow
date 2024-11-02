@@ -3,6 +3,8 @@ import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import { EUser } from '@cf/HTTP/XMLHTTP/types/entity'
+import { CfLock } from '@cf/types/common'
+import { CfObjectType } from '@cf/types/enum'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
@@ -310,7 +312,7 @@ export const useWorkflowWebsocketManager = ({
       [wsService]
     ),
     changeField: useCallback(
-      (id: number, objectType: string, field: string, value: any) => {
+      (id: number, objectType: CfObjectType, field: string, value: any) => {
         const json: Record<string, any> = { [field]: value }
         dispatch(ActionCreator.changeField(id, objectType, json))
         updateValueQuery(id, objectType, json, true)
@@ -319,7 +321,7 @@ export const useWorkflowWebsocketManager = ({
     ),
     lockUpdate: useCallback(
       (obj: any, time: number, lock: boolean) => {
-        const payload: { type: WS_EVENT_TYPE; lock: any } = {
+        const payload: { type: WS_EVENT_TYPE; lock: CfLock } = {
           type: WS_EVENT_TYPE.LOCK_UPDATE,
           lock: { ...obj, expires: Date.now() + time, user, lock }
         }

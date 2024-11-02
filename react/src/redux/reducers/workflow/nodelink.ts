@@ -1,3 +1,4 @@
+import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 import {
   CommonActions,
@@ -7,19 +8,15 @@ import {
 } from '@cfRedux/types/enumActions'
 import { TNodelink } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
-interface ReplaceStoreDataAction extends AnyAction {
-  type: CommonActions.REPLACE_STOREDATA
-  payload: { nodelink?: TNodelink[] }
-}
 
-interface RefreshStoreDataAction extends AnyAction {
-  type: CommonActions.REFRESH_STOREDATA
-  payload: { nodelink: TNodelink[] }
+interface GenericNodeLinkAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA | CommonActions.REFRESH_STOREDATA
+  payload: { nodelink?: TNodelink[] }
 }
 
 interface CreateLockAction extends AnyAction {
   type: NodeLinkActions.CREATE_LOCK
-  payload: { id: number; lock: boolean }
+  payload: { id: number; lock: CfLock }
 }
 
 interface ChangeFieldAction extends AnyAction {
@@ -32,18 +29,11 @@ interface NewNodeLinkAction extends AnyAction {
   payload: { new_model: TNodelink }
 }
 
-interface DeleteSelfAction extends AnyAction {
-  type: NodeLinkActions.DELETE_SELF
-  payload: { id: number }
-}
-
-interface DeleteSelfSoftAction extends AnyAction {
-  type: NodeLinkActions.DELETE_SELF_SOFT
-  payload: { id: number }
-}
-
-interface RestoreSelfAction extends AnyAction {
-  type: NodeLinkActions.RESTORE_SELF
+interface NodeLinkByIdAction extends AnyAction {
+  type:
+    | NodeLinkActions.DELETE_SELF
+    | NodeLinkActions.DELETE_SELF_SOFT
+    | NodeLinkActions.RESTORE_SELF
   payload: { id: number }
 }
 
@@ -58,14 +48,11 @@ interface AddStrategyAction extends AnyAction {
 }
 
 type NodelinkActionTypes =
-  | ReplaceStoreDataAction
-  | RefreshStoreDataAction
+  | GenericNodeLinkAction
+  | NodeLinkByIdAction
   | CreateLockAction
   | ChangeFieldAction
   | NewNodeLinkAction
-  | DeleteSelfAction
-  | DeleteSelfSoftAction
-  | RestoreSelfAction
   | InsertBelowWeekAction
   | AddStrategyAction
 
@@ -106,7 +93,7 @@ export default function nodelinkReducer(
           : item
       )
 
-    case NodeLinkActions.changeField:
+    case NodeLinkActions.CHANGE_FIELD:
       if (
         action.payload.changeFieldID ===
         //@ts-ignore

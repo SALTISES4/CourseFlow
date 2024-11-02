@@ -1,3 +1,4 @@
+import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 import {
   ColumnActions,
@@ -19,61 +20,93 @@ import { AnyAction } from '@reduxjs/toolkit'
 /*******************************************************
  * TYPES FOR STORE
  *******************************************************/
-// Common Actions
-interface ReplaceStoreDataAction extends AnyAction {
-  type: CommonActions.REPLACE_STOREDATA
+interface GenericNodeAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA | CommonActions.REFRESH_STOREDATA
   payload: { node?: TNode[] }
 }
 
-interface RefreshStoreDataAction extends AnyAction {
-  type: CommonActions.REFRESH_STOREDATA
-  payload: { node: TNode[] }
-}
-
 // Column Actions
-interface DeleteSelfAction extends AnyAction {
-  type: ColumnActions.DELETE_SELF
+interface DeleteColumnAction extends AnyAction {
+  type:
+    | ColumnActions.DELETE_SELF
+    | ColumnActions.DELETE_SELF_SOFT
+    | ColumnActions.RESTORE_SELF
   payload: { id: number; extra_data: any }
-}
-
-interface DeleteSelfSoftAction extends AnyAction {
-  type: ColumnActions.DELETE_SELF_SOFT
-  payload: { id: number; extra_data: any }
-}
-
-interface RestoreSelfAction extends AnyAction {
-  type: ColumnActions.RESTORE_SELF
-  payload: { id: number }
 }
 
 // Node Actions
 interface ChangeColumnAction extends AnyAction {
   type: NodeActions.CHANGED_COLUMN
-  payload: { id: number; new_column: string }
+  payload: { id: number; newColumn: number }
 }
 
-interface DeleteNodeSelfAction extends AnyAction {
+interface DeleteNodeAction extends AnyAction {
   type: NodeActions.DELETE_SELF
   payload: { id: number }
 }
 
-interface CreateLockAction extends AnyAction {
-  type: NodeActions.CREATE_LOCK
-  payload: { id: number; lock: boolean }
+interface DeleteSoftNodeAction extends AnyAction {
+  type: NodeActions.DELETE_SELF_SOFT
+  payload: { id: number }
 }
+
+interface CreateLockNodeAction extends AnyAction {
+  type:
+    | NodeActions.CREATE_LOCK
+    | NodeActions.RESTORE_SELF
+    | NodeActions.NEW_NODE
+    | NodeActions.INSERT_BELOW
+    | NodeActions.CHANGE_FIELD
+    | NodeActions.RELOAD_COMMENTS
+    | NodeActions.SET_LINKED_WORKFLOW
+  payload: { id: number; lock: CfLock }
+}
+//
+// interface CreateLockNodeAction extends AnyAction {
+//   type: NodeActions.RESTORE_SELF
+//   payload: { id: number; lock: boolean }
+// }
+//
+// interface CreateLockNodeAction extends AnyAction {
+//   type: NodeActions.INSERT_BELOW
+//   payload: { id: number; lock: boolean }
+// }
+// interface CreateLockNodeAction extends AnyAction {
+//   type: NodeActions.NEW_NODE
+//   payload: { id: number; lock: boolean }
+// }
+// interface CreateLockNodeAction extends AnyAction {
+//   type: NodeActions.changeField
+//   payload: { id: number; lock: boolean }
+// }
+//
+// interface CreateLockNodeAction extends AnyAction {
+//   type: NodeActions.RELOAD_COMMENTS
+//   payload: { id: number; lock: boolean }
+// }
+//
+// interface CreateLockNodeAction extends AnyAction {
+//   type: NodeActions.RELOAD_ASSIGNMENTS
+//   payload: { id: number; lock: boolean }
+// }
+//
+// interface CreateLockNodeAction extends AnyAction {
+//   type: NodeActions.RELOAD_COMMENTS
+//   payload: { id: number; lock: boolean }
+// }
 
 // Node Link Actions
-interface DeleteNodeLinkSelfAction extends AnyAction {
-  type: NodeLinkActions.DELETE_SELF
+interface DeleteNodeLinkAction extends AnyAction {
+  type: NodeLinkActions.DELETE_SELF | NodeLinkActions.DELETE_SELF_SOFT
   payload: { id: number }
 }
 
-interface DeleteNodeLinkSelfSoftAction extends AnyAction {
-  type: NodeLinkActions.DELETE_SELF_SOFT
+interface CreateNodeLinkAction extends AnyAction {
+  type: NodeLinkActions.NEW_NODE_LINK
   payload: { id: number }
 }
 
-interface RestoreNodeLinkSelfAction extends AnyAction {
+interface RestoreNodeLinkAction extends AnyAction {
   type: NodeLinkActions.RESTORE_SELF
   payload: { parent_id: number; id: number }
 }
@@ -85,25 +118,52 @@ interface AddStrategyAction extends AnyAction {
 }
 
 // Outcome Actions
-interface DeleteOutcomeSelfAction extends AnyAction {
-  type: OutcomeActions.DELETE_SELF
+interface DeleteOutcomeAction extends AnyAction {
+  type:
+    | OutcomeActions.DELETE_SELF
+    | OutcomeActions.DELETE_SELF_SOFT
+    | OutcomeActions.RESTORE_SELF
+    | OutcomeBaseActions.DELETE_SELF
+    | OutcomeBaseActions.DELETE_SELF_SOFT
+    | OutcomeBaseActions.RESTORE_SELF
+  payload: { extra_data: any[] }
+}
+
+interface CreateOutcomeAction extends AnyAction {
+  type:
+    | OutcomeActions.INSERT_CHILD
+    | OutcomeActions.INSERT_BELOW
+    | OutcomeBaseActions.INSERT_CHILD
+    | OutcomeOutcomeActions.CHANGE_ID
+  payload: { extra_data: any[] }
+}
+
+interface OutcomeNodeAction extends AnyAction {
+  type: OutcomeNodeActions.UPDATE_DEGREE
+  payload: { extra_data: any[] }
+}
+
+interface CreateWeekAction extends AnyAction {
+  type: WeekActions.INSERT_BELOW
   payload: { extra_data: any[] }
 }
 
 type NodeActionsUnion =
-  | ReplaceStoreDataAction
-  | RefreshStoreDataAction
-  | DeleteSelfAction
-  | DeleteSelfSoftAction
-  | RestoreSelfAction
+  | GenericNodeAction
+  | DeleteColumnAction
   | ChangeColumnAction
-  | DeleteNodeSelfAction
-  | CreateLockAction
-  | DeleteNodeLinkSelfAction
-  | DeleteNodeLinkSelfSoftAction
-  | RestoreNodeLinkSelfAction
+  | DeleteNodeAction
+  | DeleteSoftNodeAction
+  | DeleteSoftNodeAction
+  | CreateLockNodeAction
+  | DeleteNodeLinkAction
+  | RestoreNodeLinkAction
   | AddStrategyAction
-  | DeleteOutcomeSelfAction
+  | DeleteOutcomeAction
+  | OutcomeNodeAction
+  | CreateWeekAction
+  | CreateOutcomeAction
+  | CreateNodeLinkAction
 
 export default function nodeReducer(
   state: TNode[] = [],
@@ -111,6 +171,7 @@ export default function nodeReducer(
 ): TNode[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
+
       if (action.payload.node) {
         return action.payload.node
       }
@@ -118,6 +179,7 @@ export default function nodeReducer(
 
     case CommonActions.REFRESH_STOREDATA: {
       const updatedState = [...state]
+
       if (action.payload.node) {
         action.payload.node.forEach((nodeItem) => {
           const existingIndex = updatedState.findIndex(
@@ -141,7 +203,7 @@ export default function nodeReducer(
     case ColumnActions.RESTORE_SELF: {
       const isDeleteAction =
         action.type === ColumnActions.DELETE_SELF ||
-        action.type === 'column/deleteSelfSoft'
+        action.type === ColumnActions.DELETE_SELF_SOFT
       const newColumn = isDeleteAction
         ? action.payload.extra_data
         : action.payload.id
@@ -151,61 +213,39 @@ export default function nodeReducer(
           : action.payload.extra_data.includes(item.id)
         return shouldUpdateColumn ? { ...item, column: newColumn } : item
       })
+
       // @todo need to remove these kind of side effects from...
       Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+
       return updatedState
     }
 
     /*******************************************************
      * NODE
      *******************************************************/
+
+    // there is no need to check whether node exists in store here
+    // @todo is there really any point of each of these being an individual case?
+    // UPDATE_NODE is probably fine
+    // this seems convoluted
     case NodeActions.CHANGED_COLUMN:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? { ...item, column: action.payload.new_column }
-          : item
-      )
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, column: action.payload.newColumn }
+        }
+        return item
+      })
 
-    case NodeActions.DELETE_SELF: {
-      // @todo no
-      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
-      return state.filter((item) => item.id !== action.payload.id)
-    }
-
+    // candidate for UPDATE_NODE
     case NodeActions.CREATE_LOCK:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? { ...item, lock: action.payload.lock }
-          : item
-      )
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, lock: action.payload.lock }
+        }
+        return item
+      })
 
-    case NodeActions.DELETE_SELF_SOFT: {
-      // @todo no
-      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? {
-              ...item,
-              deleted: true,
-              deletedOn: _t('This session')
-            }
-          : item
-      )
-    }
-
-    case NodeActions.RESTORE_SELF:
-      // @todo no
-      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
-      return state.map((item) =>
-        item.id === action.payload.id ? { ...item, deleted: false } : item
-      )
-
-    case NodeActions.INSERT_BELOW:
-    case NodeActions.NEW_NODE: {
-      return [...state, action.payload.new_model]
-    }
-
-    case NodeActions.changeField:
+    case NodeActions.CHANGE_FIELD:
       // if (
       //   action.payload.changeFieldID ===
       //   COURSEFLOW_APP.contextData.changeFieldID
@@ -214,9 +254,51 @@ export default function nodeReducer(
       // }
       return state.map((item) =>
         item.id === action.payload.id
-          ? { ...item, ...action.payload.json }
+          ? // no
+            { ...item, ...action.payload.json }
           : item
       )
+
+    // there is no need to check whether node exists in store here
+    case NodeActions.DELETE_SELF: {
+      // @todo no
+      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+
+      return state.filter((item) => item.id !== action.payload.id)
+    }
+
+    case NodeActions.DELETE_SELF_SOFT: {
+      // @todo no
+      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return {
+            ...item,
+            deleted: true,
+            deletedOn: _t('This session')
+          }
+        }
+
+        return item
+      })
+    }
+
+    case NodeActions.RESTORE_SELF:
+      // @todo no
+      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+
+      return state.map((item) => {
+        if (item.id === action.payload.id) {
+          return { ...item, deleted: false }
+        }
+        return item
+      })
+
+    case NodeActions.INSERT_BELOW:
+    case NodeActions.NEW_NODE: {
+      return [...state, action.payload.new_model]
+    }
 
     case NodeActions.RELOAD_COMMENTS:
       return state.map((item) =>
@@ -225,7 +307,7 @@ export default function nodeReducer(
           : item
       )
 
-    case NodeActions.SET_linkedWorkflow:
+    case NodeActions.SET_LINKED_WORKFLOW:
       return state.map((item) =>
         item.id === action.payload.id
           ? {
@@ -236,12 +318,12 @@ export default function nodeReducer(
           : item
       )
 
-    case NodeActions.RELOAD_ASSIGNMENTS:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? { ...item, hasAssignment: action.payload.hasAssignment }
-          : item
-      )
+    // case NodeActions.RELOAD_ASSIGNMENTS:
+    //   return state.map((item) =>
+    //     item.id === action.payload.id
+    //       ? { ...item, hasAssignment: action.payload.hasAssignment }
+    //       : item
+    //   )
 
     /*******************************************************
      * NODE LINK

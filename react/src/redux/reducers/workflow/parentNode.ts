@@ -20,7 +20,7 @@ interface UpdateDegreeAction extends AnyAction {
   type: OutcomeNodeActions.UPDATE_DEGREE
   payload: {
     outcomenode: number
-    dataPackage: any[] //  more specific
+    dataPackage: any[]
   }
 }
 
@@ -56,7 +56,7 @@ export default function parentNodeReducer(
     case CommonActions.REPLACE_STOREDATA:
       return action.payload.parentNode || state
 
-    case CommonActions.REFRESH_STOREDATA:
+    case CommonActions.REFRESH_STOREDATA: {
       if (!action.payload.parentNode) {
         return state
       }
@@ -73,24 +73,31 @@ export default function parentNodeReducer(
         },
         [...state]
       )
+    }
 
     /*******************************************************
      * OUTCOME NODE
      *******************************************************/
-    case OutcomeNodeActions.UPDATE_DEGREE:
+    /*
+     * called dynamically as response to WS message event
+     * */
+    case OutcomeNodeActions.UPDATE_DEGREE: {
       if (action.payload.outcomenode === -1) {
         return state
       }
 
-      return state.map((item) =>
-        item.id === action.payload.dataPackage[0].node
-          ? {
-              ...item,
-              outcomenodeSet: action.payload.new_outcomenodeSet,
-              outcomenodeUniqueSet: action.payload.new_outcomenodeUniqueSet
-            }
-          : item
-      )
+      return state.map((item) => {
+        if (item.id === action.payload.dataPackage[0].node) {
+          return {
+            ...item,
+            outcomenodeSet: action.payload.newOutcomenodeSet,
+            outcomenodeUniqueSet: action.payload.newOutcomenodeUniqueSet
+          }
+        }
+
+        return item
+      })
+    }
 
     /*******************************************************
      * OUTCOME
@@ -100,7 +107,7 @@ export default function parentNodeReducer(
     case OutcomeActions.RESTORE_SELF:
     case OutcomeBaseActions.RESTORE_SELF:
     case OutcomeBaseActions.DELETE_SELF:
-    case OutcomeBaseActions.DELETE_SELF_SOFT:
+    case OutcomeBaseActions.DELETE_SELF_SOFT: {
       return state.map((item, index) =>
         action.payload.extra_data.find((data) => data.id === item.id)
           ? {
@@ -109,6 +116,7 @@ export default function parentNodeReducer(
             }
           : item
       )
+    }
 
     default:
       return state

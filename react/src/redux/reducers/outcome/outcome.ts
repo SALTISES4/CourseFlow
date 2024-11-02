@@ -23,7 +23,7 @@ interface RefreshStoreDataAction extends AnyAction {
 // Outcome Actions
 interface CreateLockAction extends AnyAction {
   type: OutcomeActions.CREATE_LOCK
-  payload: { id: number; lock: boolean }
+  payload: { id: number; lock: CfLock }
 }
 
 interface RestoreSelfAction extends AnyAction {
@@ -370,8 +370,8 @@ export default function outcomeReducer(
       return [...newState, action.payload.new_model, ...childrenToAdd]
     }
 
-    case OutcomeActions.changeField:
-    case OutcomeBaseActions.changeField:
+    case OutcomeActions.CHANGE_FIELD:
+    case OutcomeBaseActions.CHANGE_FIELD:
       if (
         action.payload.changeFieldID ===
         // @ts-ignore

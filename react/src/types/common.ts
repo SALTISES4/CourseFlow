@@ -1,4 +1,4 @@
-import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
+import { CfObjectType } from '@cf/types/enum'
 import { EUser } from '@XMLHTTP/types/entity'
 import { MouseEvent as ReactMouseEvent } from 'react'
 
@@ -34,9 +34,13 @@ export type FieldChoice = {
   name: string
 }
 
-export type Lock = {
+export type CfLock = {
+  expires: number
+  userId: number
   userColour: string
-  userId: string
+  lock: boolean
+  objectId: number
+  objectType: CfObjectType
 }
 
 export type FormFieldSerialized = {

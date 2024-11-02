@@ -1,9 +1,9 @@
+import * as Utility from '@cf/utility/utilityFunctions'
 import {
   CommonActions,
   OutcomeHorizontalLinkActions
 } from '@cfRedux/types/enumActions'
 import { TOutcomeHorizontalLink } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import { AnyAction } from '@reduxjs/toolkit'
 
 interface ReplaceStoreDataAction extends AnyAction {

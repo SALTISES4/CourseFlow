@@ -29,7 +29,7 @@ from course_flow.serializers import (
 from course_flow.services import DAO, Utility
 from course_flow.services.events_dispatch import EventsDispatch
 from course_flow.services.workspace import WorkspaceService
-from course_flow.sockets import redux_actions as actions
+from course_flow.sockets.emitters import WorkflowUpdateEmitter
 from course_flow.views.json_api._validators import DeleteRequestSerializer
 
 
@@ -81,14 +81,14 @@ class WorkspaceEndpoint:
             return Response({"action": "error"})
         try:
             workflow = object_to_update.get_workflow()
-            actions.dispatch_wf(
+            WorkflowUpdateEmitter.emit_workflow_update(
                 workflow,
-                actions.changeField(object_id, object_type, data, changeFieldID),
+                WorkflowUpdateEmitter.change_field(object_id, object_type, data, changeFieldID),
             )
             if object_type == "outcome":
-                actions.dispatch_to_parent_wf(
+                WorkflowUpdateEmitter.dispatch_to_parent_wf(
                     workflow,
-                    actions.changeField(object_id, object_type, data),
+                    WorkflowUpdateEmitter.change_field(object_id, object_type, data),
                 )
 
         except AttributeError as e:
@@ -410,7 +410,7 @@ class WorkspaceEndpoint:
             return Response({"error": "ObjectDoesNotExist"}, status=400)
 
         if workflow is not None:
-            action = actions.restoreSelfAction(
+            action = WorkflowUpdateEmitter.restore_self_action(
                 object_id,
                 object_type,
                 parent_id,
@@ -418,27 +418,29 @@ class WorkspaceEndpoint:
                 throughparent_index,
                 extra_data,
             )
-            actions.dispatch_wf(
+            WorkflowUpdateEmitter.emit_workflow_update(
                 workflow,
                 action,
             )
             if object_type == "outcome" or object_type == "outcome_base":
-                actions.dispatch_to_parent_wf(
+                WorkflowUpdateEmitter.dispatch_to_parent_wf(
                     workflow,
                     action,
                 )
                 if linked_workflows:
                     for wf in linked_workflows:
-                        actions.dispatch_wf(wf, action)
-                        actions.dispatch_wf(
+                        WorkflowUpdateEmitter.emit_workflow_update(wf, action)
+                        WorkflowUpdateEmitter.emit_workflow_update(
                             wf,
-                            actions.updateHorizontalLinks({"data": outcomes_to_update}),
+                            WorkflowUpdateEmitter.update_horizontal_links(
+                                {"data": outcomes_to_update}
+                            ),
                         )
         if object_type != "outcome" and object_type != "outcome_base" and linked_workflows:
             for wf in linked_workflows:
-                actions.dispatch_parent_updated(wf)
+                WorkflowUpdateEmitter.emit_parent_updated(wf)
         if object_type in ["workflow", "activity", "course", "program"]:
             for parent_workflow in parent_workflows:
-                actions.dispatch_child_updated(parent_workflow, model.get_workflow())
+                WorkflowUpdateEmitter.emit_child_updated(parent_workflow, model.get_workflow())
 
         return Response({"message": "success"}, status=status.HTTP_200_OK)
