@@ -212,13 +212,14 @@ class ComparisonNodeUnconnected extends EditableComponent<
           //   return () =>
           //     selectionManager.changeSelection({ evt, newSelection: this })
           // }}
-          onClick={() =>
+          onClick={(e) => {
+            e.stopPropagation()
             this.manager.updateSidebar(
               data.id,
               this.objectType,
               this.props.parentId
             )
-          }
+          }}
         >
           <div className="node-top-row">
             <div className="node-icon">{lefticon}</div>

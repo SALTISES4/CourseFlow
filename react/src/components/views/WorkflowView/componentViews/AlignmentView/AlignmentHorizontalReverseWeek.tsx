@@ -84,13 +84,14 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
         className="week"
         ref={this.mainDiv}
         style={this.getBorderStyle()}
-        onClick={() =>
+        onClick={(e) => {
+          e.stopPropagation()
           this.manager.updateSidebar(
             data.id,
             this.objectType,
             this.props.parentId
           )
-        }
+        }}
       >
         <TitleText text={data.title} defaultText={defaultText} />
         <div className="node-block">{nodeweeks}</div>

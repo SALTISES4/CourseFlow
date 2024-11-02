@@ -145,10 +145,6 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
     ) : null
     //     const editPortal = this.props.edit ? this.addEditable(data, true) : null
 
-    const onClick = () => {
-      this.manager.updateSidebar(data.id, this.objectType, this.props.parentId)
-    }
-
     const cssClass = [
       'outcome outcome-' + data.id,
       this.state.isDropped ? ' dropped' : '',
@@ -162,7 +158,14 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
           className={cssClass}
           style={this.getBorderStyle()}
           ref={this.mainDiv}
-          onClick={onClick}
+          onClick={(e) => {
+            e.stopPropagation()
+            this.manager.updateSidebar(
+              data.id,
+              this.objectType,
+              this.props.parentId
+            )
+          }}
         >
           <div className="outcome-title">
             <OutcomeTitle

@@ -301,13 +301,14 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           style={style}
           className={cssClasses}
           ref={this.mainDiv}
-          onClick={() =>
+          onClick={(e) => {
+            e.stopPropagation()
             this.manager.updateSidebar(
               data.id,
               this.objectType,
               this.props.parentId
             )
-          }
+          }}
         >
           <div className="mouseover-container-bypass">
             <div className="mouseover-actions">

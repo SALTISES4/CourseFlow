@@ -351,13 +351,14 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           style={style}
           className={cssClass}
           ref={this.mainDiv}
-          onClick={() =>
+          onClick={(e) => {
+            e.stopPropagation()
             this.manager.updateSidebar(
               data.id,
               this.objectType,
               this.props.parentId
             )
-          }
+          }}
         >
           <div className="outcome-title">
             <OutcomeTitle

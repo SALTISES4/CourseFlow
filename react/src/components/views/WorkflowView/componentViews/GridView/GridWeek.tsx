@@ -64,20 +64,21 @@ class GridWeekUnconnected extends EditableComponent<
       <></>
     )
 
-//    this.addEditable(data, true)
+    // this.addEditable(data, true)
 
     return (
       <div
         className="week"
         ref={this.mainDiv}
         style={this.getBorderStyle()}
-        onClick={() =>
+        onClick={(e) => {
+          e.stopPropagation()
           this.manager.updateSidebar(
             data.id,
             this.objectType,
             this.props.parentId
           )
-        }
+        }}
       >
         <div className="week-title">
           <TitleText text={data.title} defaultText={defaultText} />

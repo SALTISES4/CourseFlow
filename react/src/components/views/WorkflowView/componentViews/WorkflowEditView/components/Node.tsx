@@ -442,7 +442,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
         <div
           id={String(data.id)}
           style={style}
-          className={cssClass}
+          className={`${cssClass} wtf`}
           ref={this.mainDiv}
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
@@ -453,13 +453,14 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
           //   })
           // }
 
-          onClick={() =>
+          onClick={(e) => {
+            e.stopPropagation()
             this.manager.updateSidebar(
               data.id,
               CfObjectType.NODE,
               this.props.parentId
             )
-          }
+          }}
         >
           <div className="node-top-row">
             {lefticon}

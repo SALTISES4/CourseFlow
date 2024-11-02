@@ -162,13 +162,14 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
         sourcePort={data.sourcePort}
         targetPort_handle={this.targetPort_handle}
         targetPort={data.targetPort}
-        clickFunction={() =>
+        clickFunction={(e) => {
+          e.stopPropagation()
           this.manager.updateSidebar(
             data.id,
             this.objectType,
             this.props.parentId
           )
-        }
+        }}
         selected={this.state.selected}
         source_dimensions={source_dims}
         target_dimensions={target_dims}
