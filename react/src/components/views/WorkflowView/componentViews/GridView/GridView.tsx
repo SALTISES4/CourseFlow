@@ -9,6 +9,7 @@ import GridWeek from './GridWeek'
 
 /**
  * Creates a grid with just nodes by week and their times
+ * seems to be only or program
  */
 
 type OwnProps = NonNullable<unknown>

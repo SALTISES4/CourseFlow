@@ -59,7 +59,7 @@ class WorkspaceEndpoint:
 
         try:
             object_id = body.get("objectID")
-            object_type = body.get("objectType")
+            object_type = body.get("object_type")
             data = body.get("data")
             changeFieldID = body.get("changeFieldID", False)
             objects = DAO.get_model_from_str(object_type).objects

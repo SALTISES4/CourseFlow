@@ -16,6 +16,8 @@ class WsEventType(Enum):
     LOCK_UPDATE = "lock_update"
     CONNECTION_UPDATE = "connection_update"
     WORKFLOW_ACTION = "workflow_action"
+    WORKFLOW_PARENT_UPDATED = "workflow_parent_updated"
+    WORKFLOW_CHILD_UPDATED = "workflow_child_updated"
 
 
 #########################################################

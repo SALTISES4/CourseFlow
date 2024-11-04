@@ -8,7 +8,7 @@ import EditableComponentWithSorting from '@cfEditableComponents/EditableComponen
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
-import ColumnWorkflow from '@cfViews/components/ColumnWorkflow'
+import ColumnWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/ColumnWorkflow'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
 import { connect } from 'react-redux'

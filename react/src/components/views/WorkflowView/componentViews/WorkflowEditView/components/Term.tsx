@@ -25,6 +25,10 @@ type OwnProps = WeekUnconnectedPropsType
 
 type PropsType = OwnProps & ConnectedProps
 
+// this should not be handled like this
+// term and week are the same model
+// term should definitely NOT extend week
+// they are siblings
 /**
  * The term variation of a week, used in the program level or in the
  * condensed view. This displays the nodes side by side.

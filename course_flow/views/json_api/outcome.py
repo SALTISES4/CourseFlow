@@ -104,7 +104,7 @@ def json_api_post_insert_child_outcome(request: HttpRequest) -> JsonResponse:
         request.body
     )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     object_id = body.get("objectID")
-    object_type = body.get("objectType")
+    object_type = body.get("object_type")
 
     try:
         if object_type == "outcome":

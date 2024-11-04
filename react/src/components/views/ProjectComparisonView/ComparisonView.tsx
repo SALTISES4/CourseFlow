@@ -10,7 +10,7 @@ import {
 // import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents'
 import * as Utility from '@cfUtility'
 // @components
-import RightSideBar from '@cfViews/components/rightSideBarContent/RightSideBar'
+import RightSideBar from '@cfViews/common/rightSideBarContent/RightSideBar'
 import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'

@@ -19,15 +19,16 @@ import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import { toggleExpand } from '@cfRedux/utility/helpers'
 import * as Utility from '@cfUtility'
-import NodePorts from '@cfViews/components/Node/NodePorts'
-import OutcomeNode from '@cfViews/components/OutcomeNode'
+import OutcomeNode from '@cfViews/common/OutcomeNode'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 
-import AutoLink from './AutoLink'
-import NodeLink from './NodeLink'
+import NodePorts from 'components/views/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
+
+import AutoLink from './node/AutoLink'
+import NodeLink from './node/NodeLink'
 
 type ConnectedProps = {
   node: TGetNodeById

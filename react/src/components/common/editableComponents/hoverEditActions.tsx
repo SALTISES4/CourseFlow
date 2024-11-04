@@ -1,16 +1,19 @@
 import * as Constants from '@cf/constants'
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/utilityFunctions'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
 import QueueIcon from '@mui/icons-material/Queue'
+import { useUpdateNotificationSettingsMutation } from '@XMLHTTP/API/user.rtk'
 import {
   deleteSelfQueryLegacy,
   duplicateSelfQuery,
   insertChildQuery,
   insertSiblingQuery,
-  restoreSelfQueryLegacy
+  restoreSelfQueryLegacy,
+  useArchiveMutation
 } from '@XMLHTTP/API/workspace.rtk'
 import * as React from 'react'
 import { ReactElement } from 'react'
@@ -68,6 +71,7 @@ export function deleteObject({ id, objectType }: ActionItemArgs): void {
       Constants.objectDictionary[objectType],
       true, //why
       (responseData) => {
+        console.log('end loaded')
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
@@ -90,7 +94,7 @@ export function duplicateSelf({
   objectType,
   parentId
 }: ActionItemWithParentArgs): void {
-  //  const type = this.objectType
+  //  const type = this.object_type
   COURSEFLOW_APP.tinyLoader.startLoad()
   duplicateSelfQuery(
     id,
@@ -107,7 +111,7 @@ export function duplicateSelf({
 export function insertChild({ id, objectType }: ActionItemArgs): void {
   console.log('inserting child')
 
-  //   const type = this.objectType
+  //   const type = this.object_type
   COURSEFLOW_APP.tinyLoader.startLoad()
   insertChildQuery(id, objectType, (responseData) => {
     COURSEFLOW_APP.tinyLoader.endLoad()
@@ -119,7 +123,7 @@ export function insertSibling({
   objectType,
   parentId
 }: ActionItemWithParentArgs): void {
-  //  const type = this.objectType
+  //  const type = this.object_type
   COURSEFLOW_APP.tinyLoader.startLoad()
 
   insertSiblingQuery(
@@ -186,12 +190,25 @@ export const DeleteSelfButton = ({
 }: ActionItemArgs & {
   altIcon?: ReactElement
 }) => {
+  const [mutate, { isSuccess, isError, data: updateData }] =
+    useArchiveMutation()
+  const { onError, onSuccess } = useGenericMsgHandler()
+
+  const clickHandler = async () => {
+    try {
+      const resp = await mutate({ id, payload: { objectType } }).unwrap()
+      onSuccess(resp)
+    } catch (e) {
+      onError(e)
+    }
+  }
+
   return (
     <ActionButton
       buttonIcon={altIcon || <DeleteIcon />}
       buttonClass="delete-self-button"
       titleText={_t('Delete')}
-      handleClick={() => deleteObject({ id, objectType })}
+      handleClick={clickHandler}
     />
   )
 }

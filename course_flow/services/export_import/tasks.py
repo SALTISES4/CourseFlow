@@ -11,8 +11,8 @@ from django.utils import timezone
 from course_flow.models import ObjectSet, User
 from course_flow.services import DAO, Utility
 from course_flow.services.export_import import Exporter, Importer
-from course_flow.sockets.celery import logger, try_async
 from course_flow.sockets.emitters import WorkflowUpdateEmitter
+from course_flow.sockets.socket_manager import logger, try_async
 
 
 @try_async

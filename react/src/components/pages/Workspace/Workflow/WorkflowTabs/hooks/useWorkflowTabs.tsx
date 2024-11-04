@@ -4,15 +4,17 @@ import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/utilityFunctions'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import AlignmentView from '@cfViews/WorkflowView/componentViews/AlignmentView/AlignmentView'
-import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/CompetencyMatrixView/CompetencyMatrixView'
 import GridView from '@cfViews/WorkflowView/componentViews/GridView/GridView'
+import OutcomeAnalytics from "@cfViews/WorkflowView/componentViews/OutcomeAnalytics/OutcomeAnalytics";
 import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeEditView'
-import OutcomeTableView from '@cfViews/WorkflowView/componentViews/OutcomeTableView'
+import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/CompetencyMatrixView/CompetencyMatrixView'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
 import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditView'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
+
+import OutcomeTableView from 'components/views/WorkflowView/componentViews/OutcomeOverviewView/OutcomeTableView'
 
 const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
   const { id } = useParams()
@@ -69,7 +71,7 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       route: CFRoutes.WORKFLOW_ALIGNMENT_ANALYSIS,
       relRoute: RelativeRoutes.ALIGNMENT_ANALYSIS,
       label: _t('Outcome Analytics'),
-      content: <AlignmentView />,
+      content: <OutcomeAnalytics />,
       allowedTabs: [3],
       hidden: ['activity'].includes(workflow.type)
     },

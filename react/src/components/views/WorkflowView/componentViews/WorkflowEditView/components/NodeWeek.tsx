@@ -16,6 +16,7 @@ type PropsType = ConnectedProps & OwnProps
 
 /**
  * Represents the node-week throughmodel
+ * this should not exist...
  */
 class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
   private objectType: string

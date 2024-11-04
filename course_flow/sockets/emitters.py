@@ -2,12 +2,14 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.db.models import F
 
+from course_flow.models import Workflow
 from course_flow.models.workflow_objects.node import Node
+from course_flow.sockets.consumers import WsEventType
 
 
 class WorkflowUpdateEmitter:
     @staticmethod
-    def emit_workflow_update(workflow, action):
+    def emit_workflow_update(workflow: Workflow, action):
         """
         Updates the workflow's edit count, saves the changes, and emits a message
         over the channel layer to notify subscribers of the action taken on the workflow.
@@ -32,7 +34,7 @@ class WorkflowUpdateEmitter:
         )
 
     @staticmethod
-    def dispatch_to_parent_wf(workflow, action):
+    def dispatch_to_parent_wf(workflow: Workflow, action):
         channel_layer = get_channel_layer()
         for parent_node in Node.objects.filter(linked_workflow=workflow):
             parent_workflow = parent_node.get_workflow()
@@ -42,25 +44,25 @@ class WorkflowUpdateEmitter:
             async_to_sync(channel_layer.group_send)(
                 "workflow_" + str(parent_workflow.pk),
                 {
-                    "type": "workflow_action",
+                    "type": WsEventType.WORKFLOW_ACTION.value,
                     "action": action,
                     "edit_count": parent_workflow.edit_count,
                 },
             )
 
     @staticmethod
-    def emit_parent_updated(workflow):
+    def emit_parent_updated(workflow: Workflow):
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             "workflow_" + str(workflow.pk),
             {
-                "type": "workflow_parent_updated",
+                "type": WsEventType.WORKFLOW_PARENT_UPDATED.value,
                 "edit_count": workflow.edit_count,
             },
         )
 
     @staticmethod
-    def emit_child_updated(workflow, child_workflow):
+    def emit_child_updated(workflow: Workflow, child_workflow: Workflow):
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             "workflow_" + str(workflow.pk),
@@ -72,18 +74,22 @@ class WorkflowUpdateEmitter:
         )
 
     @staticmethod
-    def dispatch_wf_lock(workflow, action):
+    def dispatch_wf_lock(workflow: Workflow, action):
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             "workflow_" + str(workflow.pk),
-            {"type": "lock_update", "action": action},
+            {
+                "type": "lock_update",
+                "action": action,
+            },
         )
 
     ##########################################################
-    # EVENT PAYLOAD BUILDERS
+    # EVENT PAYLOAD CREATORS
+    # developer has reused the same idea as action creators
     #########################################################
     @staticmethod
-    def unlock(object_id, object_type):
+    def unlock(object_id: int, object_type):
         return {
             "lock": False,
             "object_id": object_id,
@@ -96,39 +102,39 @@ class WorkflowUpdateEmitter:
     # it's also a problem that there is this tight coupling to the redux
     # event naming
     @staticmethod
-    def change_through_id(through_type, old_id, new_id, extra_data):
+    def change_through_id(through_type, old_id: int, new_id: int, extra_data):
         return {
             "type": through_type + "/changeID",
             "payload": {"old_id": old_id, "new_id": new_id, **extra_data},
         }
 
     @staticmethod
-    def delete_self_action(id, objectType, parentId, extra_data):
+    def delete_self_action(object_id: int, objectType, parent_id: int, extra_data):
         return {
             "type": objectType + "/deleteSelf",
-            "payload": {"id": id, "parent_id": parentId, "extra_data": extra_data},
+            "payload": {"id": object_id, "parent_id": parent_id, "extra_data": extra_data},
         }
 
     @staticmethod
-    def delete_self_soft_action(id, objectType, parentId, extra_data):
+    def delete_self_soft_action(object_id: int, objectType, parent_id: int, extra_data):
         return {
             "type": objectType + "/deleteSelfSoft",
             "payload": {
-                "id": id,
-                "parent_id": parentId,
+                "id": object_id,
+                "parent_id": parent_id,
                 "extra_data": extra_data,
             },
         }
 
     @staticmethod
     def restore_self_action(
-        id, objectType, parentId, throughparentId, throughparent_index, extra_data
+        object_id: int, objectType, parent_id: int, throughparentId, throughparent_index, extra_data
     ):
         return {
             "type": objectType + "/restoreSelf",
             "payload": {
-                "id": id,
-                "parent_id": parentId,
+                "id": object_id,
+                "parent_id": parent_id,
                 "throughparent_id": throughparentId,
                 "throughparent_index": throughparent_index,
                 "extra_data": extra_data,
@@ -136,12 +142,12 @@ class WorkflowUpdateEmitter:
         }
 
     @staticmethod
-    def insert_below_action(response_data, objectType):
-        return {"type": objectType + "/insertBelow", "payload": response_data}
+    def insert_below_action(response_data, object_type):
+        return {"type": object_type + "/insertBelow", "payload": response_data}
 
     @staticmethod
-    def insert_child_action(response_data, objectType):
-        return {"type": objectType + "/insertChild", "payload": response_data}
+    def insert_child_action(response_data, object_type):
+        return {"type": object_type + "/insertChild", "payload": response_data}
 
     @staticmethod
     def set_linked_workflow_action(response_data):
@@ -160,24 +166,24 @@ class WorkflowUpdateEmitter:
         return {"type": "nodelink/newNodeLink", "payload": response_data}
 
     @staticmethod
-    def change_field(id, objectType, json, changeFieldID=0):
+    def change_field(object_id: int, object_type: str, json, changeFieldID=0):
         return {
-            "type": objectType + "/changeField",
+            "type": object_type + "/changeField",
             "payload": {
-                "id": id,
-                "objectType": objectType,
+                "id": object_id,
+                "object_type": object_type,
                 "json": json,
                 "changeFieldID": changeFieldID,
             },
         }
 
     @staticmethod
-    def change_field_many(ids, objectType, json, changeFieldID=0):
+    def change_field_many(object_ids: [int], object_type, json, changeFieldID=0):
         return {
-            "type": objectType + "/changeFieldMany",
+            "type": object_type + "/changeFieldMany",
             "payload": {
-                "ids": ids,
-                "objectType": objectType,
+                "ids": object_ids,
+                "object_type": object_type,
                 "json": json,
                 "changeFieldID": changeFieldID,
             },
