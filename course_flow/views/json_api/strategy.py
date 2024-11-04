@@ -100,7 +100,7 @@ def json_api_post_add_strategy(request: HttpRequest) -> JsonResponse:
     )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     workflow_id = body.get("workflowPk")
     strategy_id = body.get("objectID")
-    strategy_type = body.get("objectType")
+    strategy_type = body.get("object_type")
     position = body.get("position")
     workflow = Workflow.objects.get(pk=workflow_id)
     strategy = DAO.get_model_from_str(strategy_type).objects.get(pk=strategy_id)

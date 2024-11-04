@@ -23,7 +23,7 @@ const extendedApi = cfApi.injectEndpoints({
       {
         id: number
         payload: {
-          objectType: WorkspaceType
+          objectType: CfObjectType
         }
       }
     >({

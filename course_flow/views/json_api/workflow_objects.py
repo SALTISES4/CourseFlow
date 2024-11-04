@@ -93,7 +93,7 @@ class WorkflowObjectEndpoint:
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
         parent_id = body.get("parentId")
         parent_type = body.get("parentType")
         through_type = body.get("throughType")
@@ -306,7 +306,7 @@ class WorkflowObjectEndpoint:
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectId")
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
         parent_id = body.get("parentId")
         parent_type = body.get("parentType")
         through_type = body.get("throughType")
@@ -646,7 +646,7 @@ def json_api_post_update_outcomehorizontallink_degree(
         request.body
     )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     outcome_id = body.get("outcomePk")
-    object_type = body.get("objectType")
+    object_type = body.get("object_type")
     parent_id = body.get("objectID")
     degree = body.get("degree")
     try:
@@ -704,7 +704,7 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
     )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     try:
         object_id = body.get("objectID")
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
         objectset_id = body.get("objectsetPk")
         add = body.get("add")
         objects = DAO.get_model_from_str(object_type).objects

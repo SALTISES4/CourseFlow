@@ -93,7 +93,7 @@ class NodeEndpoint:
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         node_id = body.get("nodePk")
         target_id = body.get("objectID")
-        target_type = body.get("objectType")
+        target_type = body.get("object_type")
         source_port = body.get("sourcePort")
         target_port = body.get("targetPort")
         node = Node.objects.get(pk=node_id)

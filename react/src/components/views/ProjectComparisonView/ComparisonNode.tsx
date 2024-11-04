@@ -17,7 +17,7 @@ import { TGetNodeById, getNodeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
-import OutcomeNode from '@cfViews/components/OutcomeNode'
+import OutcomeNode from '@cfViews/common/OutcomeNode'
 import * as React from 'react'
 import { connect } from 'react-redux'
 

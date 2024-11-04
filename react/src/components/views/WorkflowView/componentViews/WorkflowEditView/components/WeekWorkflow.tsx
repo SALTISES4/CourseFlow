@@ -12,6 +12,7 @@ type PropsType = {
   parentId: number
 }
 
+// this component should not exist...
 const WeekWorkflow = ({ condensed, objectId, parentId }: PropsType) => {
   const weekWorkflow = useSelector((state: AppState) =>
     getWeekWorkflowByID(state, objectId)

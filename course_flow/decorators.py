@@ -101,7 +101,7 @@ def is_owner(model):
                     model = model[:-2]
             else:
                 pk = body.get("objectId", "")
-                model = body.get("objectType", "")
+                model = body.get("object_type", "")
 
             if not pk or not model:
                 return HttpResponseBadRequest()
@@ -169,7 +169,7 @@ def get_model_from_request(model, body, **kwargs):
                 model = None
             else:
                 pk = request_data
-                model = body.get("objectType")
+                model = body.get("object_type")
 
     # @todo check this for formatting
     return {"model": model, "pk": pk}

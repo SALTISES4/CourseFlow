@@ -41,7 +41,7 @@ class CommentEndpoint:
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
         try:
             comments = (
                 DAO.get_model_from_str(object_type)
@@ -75,7 +75,7 @@ class CommentEndpoint:
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
         text = bleach.clean(body.get("text"))
         try:
             obj = DAO.get_model_from_str(object_type).objects.get(id=object_id)
@@ -132,7 +132,7 @@ class CommentEndpoint:
         body = json.loads(
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
         comment_id = body.get("commentPk")
 
         try:
@@ -158,7 +158,7 @@ class CommentEndpoint:
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
 
         try:
             model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
