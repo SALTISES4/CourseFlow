@@ -20,7 +20,7 @@ import {
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
-import { SidebarState } from '../reducers/sidebar'
+import { SidebarState } from '../reducers/sidebar/types'
 
 export type AppState = {
   workflow: TWorkflow

@@ -8,7 +8,6 @@ import {
   ObjectSetActions,
   OutcomeOutcomeActions,
   OutcomeWorkflowActions,
-  SidebarActions,
   WeekWorkflowActions
 } from '@cfRedux/types/enumActions'
 
@@ -196,17 +195,6 @@ class ActionCreator {
     return {
       type: ObjectSetActions.TOGGLE_OBJECT_SET,
       payload: { id: id, hidden: hidden }
-    }
-  }
-
-  static sidebarUpdate = (
-    id: number,
-    objectType: CfObjectType,
-    parentId?: number
-  ) => {
-    return {
-      type: SidebarActions.SET_SIDEBAR_DATA,
-      payload: { id, objectType, parentId }
     }
   }
 }

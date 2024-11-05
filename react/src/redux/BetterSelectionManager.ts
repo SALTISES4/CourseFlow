@@ -1,7 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { SetSidebarAction } from '@cfRedux/reducers/sidebar'
-import { Dispatch } from 'redux'
+import { SET_EDIT } from '@cfRedux/reducers/sidebar/actions'
+import store from '@cfRedux/store'
 
 // thin wrapper around ActionCreator.sidebarUpdate
 // this class may be redundant / pointless
@@ -13,15 +12,8 @@ import { Dispatch } from 'redux'
 // we can decide if it needs to take on more responsibility later but
 
 class BetterSelectionManager {
-  dispatch: Dispatch<SetSidebarAction>
-
-  constructor(dispatch: Dispatch<SetSidebarAction>) {
-    this.dispatch = dispatch
-  }
-
   updateSidebar(id: number, objectType: CfObjectType, parentId?: number) {
-    const action = ActionCreator.sidebarUpdate(id, objectType, parentId)
-    this.dispatch(action)
+    store.dispatch(SET_EDIT({ id, objectType, parentId }))
   }
 }
 
