@@ -9,12 +9,12 @@ import * as React from 'react'
 //The ports used to connect links for the nodes
 type PropsType = {
   dispatch: any
-  node_div: any
-  nodeID: any
+  nodeDiv: any
+  nodeId: any
 }
 type StateType = {
-  node_offset: any
-  node_dimensions: any
+  nodeOffset: any
+  nodeDimensions: any
 }
 
 export class NodePorts extends React.Component<PropsType, StateType> {
@@ -25,7 +25,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
   }
 
   componentDidUpdate() {
-    $(this.props.node_div.current).triggerHandler('ports-rendered')
+    $(this.props.nodeDiv.current).triggerHandler('ports-rendered')
   }
 
   componentDidMount() {
@@ -35,33 +35,33 @@ export class NodePorts extends React.Component<PropsType, StateType> {
     // if (!this.props.workflow.workflowPermission)
     if (true) {
       d3.selectAll<SVGCircleElement, any>(
-        'g.port-' + this.props.nodeID + " circle[data-port-type='source']"
+        'g.port-' + this.props.nodeId + " circle[data-port-type='source']"
       ).call(
         d3
           .drag<SVGCircleElement, any>()
           .on('start', function (d) {
             $('.workflow-canvas').addClass('creating-node-link')
 
-            const canvas_offset = $('.workflow-canvas').offset()
+            const canvasOffset = $('.workflow-canvas').offset()
 
             d3.select('.node-link-creator').remove()
 
             d3.select('.workflow-canvas')
               .append('line')
               .attr('class', 'node-link-creator')
-              .attr('x1', d3.event.sourceEvent.x - canvas_offset.left)
-              .attr('y1', d3.event.sourceEvent.y - canvas_offset.top)
-              .attr('x2', d3.event.sourceEvent.x - canvas_offset.left)
-              .attr('y2', d3.event.sourceEvent.y - canvas_offset.top)
+              .attr('x1', d3.event.sourceEvent.x - canvasOffset.left)
+              .attr('y1', d3.event.sourceEvent.y - canvasOffset.top)
+              .attr('x2', d3.event.sourceEvent.x - canvasOffset.left)
+              .attr('y2', d3.event.sourceEvent.y - canvasOffset.top)
               .attr('stroke', 'red')
               .attr('stroke-width', '2')
           })
 
           .on('drag', function (d) {
-            const canvas_offset = $('.workflow-canvas').offset()
+            const canvasOffset = $('.workflow-canvas').offset()
             d3.select('.node-link-creator')
-              .attr('x2', d3.event.sourceEvent.x - canvas_offset.left)
-              .attr('y2', d3.event.sourceEvent.y - canvas_offset.top)
+              .attr('x2', d3.event.sourceEvent.x - canvasOffset.left)
+              .attr('y2', d3.event.sourceEvent.y - canvasOffset.top)
           })
           .on('end', function (d) {
             $('.workflow-canvas').removeClass('creating-node-link')
@@ -83,38 +83,38 @@ export class NodePorts extends React.Component<PropsType, StateType> {
 
     this.updatePorts()
 
-    $(this.props.node_div.current).on(
+    $(this.props.nodeDiv.current).on(
       'component-updated',
       this.updatePorts.bind(this)
     )
-    //$(this.props.node_div.current).triggerHandler("ports-rendered");
+    //$(this.props.nodeDiv.current).triggerHandler("ports-rendered");
   }
 
   updatePorts() {
-    if (!this.props.node_div.current) {
+    if (!this.props.nodeDiv.current) {
       return
     }
-    const node = $(this.props.node_div.current)
-    const node_offset = Utility.getCanvasOffset(node)
-    const node_dimensions = {
+    const node = $(this.props.nodeDiv.current)
+    const nodeOffset = Utility.getCanvasOffset(node)
+    const nodeDimensions = {
       width: node.outerWidth(),
       height: node.outerHeight()
     }
-    //if(node.closest(".week-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
+    //if(node.closest(".week-workflow").hasClass("dragging")||this.state.nodeOffset==nodeOffset&&this.state.nodeDimensions==nodeDimensions)return;
     this.setState({
-      node_offset: node_offset,
-      node_dimensions: node_dimensions
+      nodeOffset: nodeOffset,
+      nodeDimensions: nodeDimensions
     })
   }
 
   nodeLinkAdded(target, sourcePort, targetPort) {
     const props = this.props
-    if (target == this.props.nodeID) {
+    if (target == this.props.nodeId) {
       return
     }
 
     newNodeLink(
-      props.nodeID,
+      props.nodeId,
       target,
       Constants.portKeys.indexOf(sourcePort),
       Constants.portKeys.indexOf(targetPort)
@@ -126,27 +126,27 @@ export class NodePorts extends React.Component<PropsType, StateType> {
    *******************************************************/ q
   render() {
     const ports = []
-    let node_dimensions
+    let nodeDimensions
 
-    if (this.state.node_dimensions) {
-      node_dimensions = this.state.node_dimensions
+    if (this.state.nodeDimensions) {
+      nodeDimensions = this.state.nodeDimensions
       this.positioned = true
     } else {
-      node_dimensions = { width: 0, height: 0 }
+      nodeDimensions = { width: 0, height: 0 }
     }
 
-    for (const port_type in Constants.nodePorts) {
-      for (const port in Constants.nodePorts[port_type]) {
+    for (const portType in Constants.nodePorts) {
+      for (const port in Constants.nodePorts[portType]) {
         ports.push(
           <circle
-            data-port-type={port_type}
+            data-port-type={portType}
             data-port={port}
-            data-node-id={this.props.nodeID}
+            data-node-id={this.props.nodeId}
             r="6"
-            key={port_type + port}
-            cx={Constants.nodePorts[port_type][port][0] * node_dimensions.width}
+            key={portType + port}
+            cx={Constants.nodePorts[portType][port][0] * nodeDimensions.width}
             cy={
-              Constants.nodePorts[port_type][port][1] * node_dimensions.height
+              Constants.nodePorts[portType][port][1] * nodeDimensions.height
             }
           />
         )
@@ -154,17 +154,17 @@ export class NodePorts extends React.Component<PropsType, StateType> {
     }
 
     const style = {}
-    if ($(this.props.node_div.current).css('display') == 'none') {
+    if ($(this.props.nodeDiv.current).css('display') == 'none') {
       style['display'] = 'none'
     }
 
     let transform
-    if (this.state.node_offset) {
+    if (this.state.nodeOffset) {
       transform =
         'translate(' +
-        this.state.node_offset.left +
+        this.state.nodeOffset.left +
         ',' +
-        this.state.node_offset.top +
+        this.state.nodeOffset.top +
         ')'
     } else {
       transform = 'translate(0,0)'
@@ -173,7 +173,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
     return (
       <g
         style={style}
-        className={'node-ports port-' + this.props.nodeID}
+        className={'node-ports port-' + this.props.nodeId}
         stroke="black"
         strokeWidth="2"
         fill="white"

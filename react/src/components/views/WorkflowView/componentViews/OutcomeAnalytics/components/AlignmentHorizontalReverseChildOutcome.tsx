@@ -11,14 +11,14 @@ import OutcomeAdder from './OutcomeAdder'
 type ConnectedProps = {
   data: any
   outcomenodes: any[]
-  horizontal_links: any[]
-  all_horizontal_link_outcomes: any[]
+  horizontalLinks: any[]
+  allHorizontalLinkOutcomes: any[]
 }
 
 type OwnProps = {
-  node_data: any
+  nodeData: any
   objectId: any
-  restriction_set: any
+  restrictionSet: any
 }
 // type StateProps = {}
 type PropsType = ConnectedProps & OwnProps
@@ -35,52 +35,46 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component<
    *******************************************************/
   render() {
     const data = this.props.data
-    const parentOutcomes = this.props.horizontal_links.map(
-      (horizontal_link) => {
-        for (let i = 0; i < this.props.outcomenodes.length; i++) {
+    const parentOutcomes = this.props.horizontalLinks.map((horizontalLink) => {
+      for (let i = 0; i < this.props.outcomenodes.length; i++) {
+        if (
+          this.props.outcomenodes[i].outcome == horizontalLink.parentOutcome
+        ) {
           if (
-            this.props.outcomenodes[i].outcome == horizontal_link.parentOutcome
+            this.props.restrictionSet &&
+            this.props.restrictionSet.parentOutcomes &&
+            this.props.restrictionSet.parentOutcomes.indexOf(
+              this.props.outcomenodes[i].outcome
+            ) == -1
           ) {
-            if (
-              this.props.restriction_set &&
-              this.props.restriction_set.parentOutcomes &&
-              this.props.restriction_set.parentOutcomes.indexOf(
-                this.props.outcomenodes[i].outcome
-              ) == -1
-            ) {
-              return null
-            }
-            return (
-              <AlignmentHorizontalReverseParentOutcome
-                child_outcome={this.props.objectId}
-                outcomenode={this.props.outcomenodes[i]}
-                // renderer={this.props.renderer}
-              />
-            )
+            return null
           }
+          return (
+            <AlignmentHorizontalReverseParentOutcome
+              childOutcome={this.props.objectId}
+              outcomenode={this.props.outcomenodes[i]}
+              // renderer={this.props.renderer}
+            />
+          )
         }
-        return null
       }
-    )
+      return null
+    })
 
-    let outcome_restriction = this.props.outcomenodes
+    let outcomeRestriction = this.props.outcomenodes
       .filter(
-        (ocn) =>
-          this.props.all_horizontal_link_outcomes.indexOf(ocn.outcome) == -1
+        (ocn) => this.props.allHorizontalLinkOutcomes.indexOf(ocn.outcome) == -1
       )
       .map((ocn) => ocn.outcome)
-    if (
-      this.props.restriction_set &&
-      this.props.restriction_set.parentOutcomes
-    ) {
-      outcome_restriction = outcome_restriction
+    if (this.props.restrictionSet && this.props.restrictionSet.parentOutcomes) {
+      outcomeRestriction = outcomeRestriction
         .filter(
-          (oc) => this.props.restriction_set.parentOutcomes.indexOf(oc) >= 0
+          (oc) => this.props.restrictionSet.parentOutcomes.indexOf(oc) >= 0
         )
         .sort(
           (a, b) =>
-            this.props.restriction_set.parentOutcomes.indexOf(a) -
-            this.props.restriction_set.parentOutcomes.indexOf(b)
+            this.props.restrictionSet.parentOutcomes.indexOf(a) -
+            this.props.restrictionSet.parentOutcomes.indexOf(b)
         )
     }
 
@@ -99,7 +93,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component<
           <div className="alignment-row">
             <OutcomeAdder
               // renderer={this.props.renderer}
-              outcome_set={outcome_restriction}
+              outcomeSet={outcomeRestriction}
               addFunction={updateOutcomehorizontallinkDegree.bind(
                 this,
                 this.props.objectId
@@ -125,7 +119,7 @@ const mapStateToProps = (
   if (outcome) {
     const allowedOutcomenodes = Utility.filterThenSortByID(
       state.outcomenode,
-      ownProps.node_data.outcomenodeSet
+      ownProps.nodeData.outcomenodeSet
     )
 
     const allowedHorizontalLinks = Utility.filterThenSortByID(
@@ -141,8 +135,8 @@ const mapStateToProps = (
     return {
       data: outcome,
       outcomenodes: allowedOutcomenodes,
-      horizontal_links: allowedHorizontalLinks,
-      all_horizontal_link_outcomes: horizontalLinkOutcomes
+      horizontalLinks: allowedHorizontalLinks,
+      allHorizontalLinkOutcomes: horizontalLinkOutcomes
     }
   }
 
@@ -150,8 +144,8 @@ const mapStateToProps = (
   return {
     data: null,
     outcomenodes: [],
-    horizontal_links: [],
-    all_horizontal_link_outcomes: []
+    horizontalLinks: [],
+    allHorizontalLinkOutcomes: []
   }
 }
 export default connect<ConnectedProps, object, OwnProps, AppState>(

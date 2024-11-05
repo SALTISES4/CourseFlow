@@ -16,7 +16,7 @@ export function setUserPermission(
 
   API_POST(url, {
     objectType: objectType,
-    permission_user: userId,
+    permissionUser: userId,
     permissionType: permissionType
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)

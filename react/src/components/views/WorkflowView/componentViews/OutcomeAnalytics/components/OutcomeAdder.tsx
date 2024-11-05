@@ -51,7 +51,7 @@ const OutcomeAdderOption = connect<ConnectedProps, object, OwnProps, AppState>(
 
 type OutcomeAdderProps = {
   // renderer: any
-  outcome_set: any
+  outcomeSet: any
   addFunction: any
 }
 class OutcomeAdder extends React.Component<OutcomeAdderProps> {
@@ -73,7 +73,7 @@ class OutcomeAdder extends React.Component<OutcomeAdderProps> {
    * RENDER
    *******************************************************/
   render() {
-    const options = this.props.outcome_set.map((outcome) => (
+    const options = this.props.outcomeSet.map((outcome) => (
       <OutcomeAdderOption objectId={outcome} />
     ))
 

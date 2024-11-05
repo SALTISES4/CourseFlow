@@ -15,7 +15,7 @@ import * as React from 'react'
 import { Action } from 'redux'
 
 type StateType = {
-  show_comments: boolean
+  showComments: boolean
 } & EditableComponentStateType
 
 type OwnProps = {

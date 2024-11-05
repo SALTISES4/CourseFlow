@@ -24,7 +24,7 @@ import { connect } from 'react-redux'
 type ConnectedProps = { node: TGetNodeById; workflow: TWorkflow }
 type OwnProps = EditableComponentProps
 type StateProps = {
-  show_outcomes: boolean
+  showOutcomes: boolean
 } & EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
 
@@ -37,7 +37,7 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * renderer.selectionManager
  * renderer.viewComments
  * renderer.contextChoices
- * renderer.task_choices
+ * renderer.taskChoices
  * renderer.readOnly
  */
 class ComparisonNodeUnconnected extends EditableComponent<
@@ -88,21 +88,21 @@ class ComparisonNodeUnconnected extends EditableComponent<
    * RENDER
    *******************************************************/
   render() {
-    const side_actions = []
-    let data_override
+    const sideActions = []
+    let dataOverride
     let lefticon
     let righticon
 
     const data = this.props.data
 
     if (data.representsWorkflow) {
-      data_override = {
+      dataOverride = {
         ...data,
         ...data.linkedWorkflowData,
         id: data.id
       }
     } else {
-      data_override = { ...data }
+      dataOverride = { ...data }
     }
 
     const style: React.CSSProperties = {
@@ -116,13 +116,13 @@ class ComparisonNodeUnconnected extends EditableComponent<
     }
 
     let outcomenodes
-    if (this.state.show_outcomes) {
+    if (this.state.showOutcomes) {
       outcomenodes = (
         <div
           className={'outcome-node-container column-111111-' + data.column}
           onMouseLeave={() => {
             this.setState({
-              show_outcomes: false
+              showOutcomes: false
             })
           }}
           style={{
@@ -137,12 +137,12 @@ class ComparisonNodeUnconnected extends EditableComponent<
     }
 
     if (data.outcomenodeUniqueSet.length > 0) {
-      side_actions.push(
+      sideActions.push(
         <div className="outcome-node-indicator">
           <div
             className={'outcome-node-indicator-number column-' + data.column}
             onMouseEnter={() => {
-              this.setState({ show_outcomes: true })
+              this.setState({ showOutcomes: true })
             }}
             style={{
               borderColor: Constants.getColumnColour(this.props.node.column)
@@ -202,7 +202,7 @@ class ComparisonNodeUnconnected extends EditableComponent<
 
     return (
       <>
-        {/*{this.addEditable(data_override)}*/}
+        {/*{this.addEditable(dataOverride)}*/}
         <div
           style={style}
           className={cssClasses}
@@ -228,14 +228,14 @@ class ComparisonNodeUnconnected extends EditableComponent<
           </div>
           <div className="node-details">
             <TitleText
-              text={data_override.description}
+              text={dataOverride.description}
               defaultText={_t('Click to edit')}
             />
           </div>
           <div className="mouseover-actions">
             <this.HoverMenu />
           </div>
-          <div className="side-actions">{side_actions}</div>
+          <div className="side-actions">{sideActions}</div>
         </div>
       </>
     )

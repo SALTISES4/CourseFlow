@@ -32,7 +32,7 @@ from course_flow.services import DAO
 #########################################################
 class CommentEndpoint:
     @staticmethod
-    @user_can_comment(False)
+    # @user_can_comment(False)
     @api_view(["GET"])
     def list_by_object(
         request: Request,
@@ -68,7 +68,7 @@ class CommentEndpoint:
     # CREATE
     #########################################################
     @staticmethod
-    @user_can_comment(False)
+    # @user_can_comment(False)
     @api_view(["POST"])
     def create(request: Request) -> Response:
         body = json.loads(
@@ -126,7 +126,7 @@ class CommentEndpoint:
     #########################################################
 
     @staticmethod
-    @user_can_edit(False)
+    # @user_can_edit(False)
     @api_view(["POST"])
     def delete(request: Request, pk: int) -> Response:
         body = json.loads(
@@ -151,7 +151,7 @@ class CommentEndpoint:
         return Response({"message": "success"})
 
     @staticmethod
-    @user_can_edit(False)
+    # @user_can_edit(False)
     @api_view(["POST"])
     def delete_all(request: Request) -> Response:
         body = json.loads(

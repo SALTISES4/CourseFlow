@@ -7,7 +7,7 @@ import EditableComponentWithComments, {
 } from './EditableComponentWithComments'
 
 type OwnProps = {
-  sibling_count?: any
+  siblingCount?: any
   parentId?: any
 } & EditableComponentWithCommentsType
 export type EditableComponentWithActionsProps = OwnProps

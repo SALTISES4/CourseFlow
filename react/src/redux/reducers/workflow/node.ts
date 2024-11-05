@@ -31,7 +31,7 @@ interface DeleteColumnAction extends AnyAction {
     | ColumnActions.DELETE_SELF
     | ColumnActions.DELETE_SELF_SOFT
     | ColumnActions.RESTORE_SELF
-  payload: { id: number; extra_data: any }
+  payload: { id: number; extraData: any }
 }
 
 // Node Actions
@@ -108,13 +108,13 @@ interface CreateNodeLinkAction extends AnyAction {
 
 interface RestoreNodeLinkAction extends AnyAction {
   type: NodeLinkActions.RESTORE_SELF
-  payload: { parent_id: number; id: number }
+  payload: { parentId: number; id: number }
 }
 
 // Strategy Actions
 interface AddStrategyAction extends AnyAction {
   type: StrategyActions.ADD_STRATEGY
-  payload: { nodes_added: TNode[] }
+  payload: { nodesAdded: TNode[] }
 }
 
 // Outcome Actions
@@ -126,7 +126,7 @@ interface DeleteOutcomeAction extends AnyAction {
     | OutcomeBaseActions.DELETE_SELF
     | OutcomeBaseActions.DELETE_SELF_SOFT
     | OutcomeBaseActions.RESTORE_SELF
-  payload: { extra_data: any[] }
+  payload: { extraData: any[] }
 }
 
 interface CreateOutcomeAction extends AnyAction {
@@ -135,17 +135,17 @@ interface CreateOutcomeAction extends AnyAction {
     | OutcomeActions.INSERT_BELOW
     | OutcomeBaseActions.INSERT_CHILD
     | OutcomeOutcomeActions.CHANGE_ID
-  payload: { extra_data: any[] }
+  payload: { extraData: any[] }
 }
 
 interface OutcomeNodeAction extends AnyAction {
   type: OutcomeNodeActions.UPDATE_DEGREE
-  payload: { extra_data: any[] }
+  payload: { extraData: any[] }
 }
 
 interface CreateWeekAction extends AnyAction {
   type: WeekActions.INSERT_BELOW
-  payload: { extra_data: any[] }
+  payload: { extraData: any[] }
 }
 
 type NodeActionsUnion =
@@ -205,12 +205,12 @@ export default function nodeReducer(
         action.type === ColumnActions.DELETE_SELF ||
         action.type === ColumnActions.DELETE_SELF_SOFT
       const newColumn = isDeleteAction
-        ? action.payload.extra_data
+        ? action.payload.extraData
         : action.payload.id
       const updatedState = state.map((item) => {
         const shouldUpdateColumn = isDeleteAction
           ? item.column === action.payload.id
-          : action.payload.extra_data.includes(item.id)
+          : action.payload.extraData.includes(item.id)
         return shouldUpdateColumn ? { ...item, column: newColumn } : item
       })
 
@@ -247,8 +247,8 @@ export default function nodeReducer(
 
     case NodeActions.CHANGE_FIELD:
       // if (
-      //   action.payload.changeFieldID ===
-      //   COURSEFLOW_APP.contextData.changeFieldID
+      //   action.payload.changeFieldId ===
+      //   COURSEFLOW_APP.contextData.changeFieldId
       // ) {
       //   return state
       // }
@@ -297,13 +297,13 @@ export default function nodeReducer(
 
     case NodeActions.INSERT_BELOW:
     case NodeActions.NEW_NODE: {
-      return [...state, action.payload.new_model]
+      return [...state, action.payload.newModel]
     }
 
     case NodeActions.RELOAD_COMMENTS:
       return state.map((item) =>
         item.id === action.payload.id
-          ? { ...item, comments: action.payload.comment_data }
+          ? { ...item, comments: action.payload.commentData }
           : item
       )
 
@@ -342,7 +342,7 @@ export default function nodeReducer(
 
     case NodeLinkActions.RESTORE_SELF:
       return state.map((item) => {
-        if (item.id === action.payload.parent_id) {
+        if (item.id === action.payload.parentId) {
           return {
             ...item,
             outgoingLinks: [...item.outgoingLinks, action.payload.id]
@@ -353,20 +353,20 @@ export default function nodeReducer(
 
     case NodeLinkActions.NEW_NODE_LINK:
       return state.map((item) => {
-        if (item.id === action.payload.new_model.sourceNode) {
+        if (item.id === action.payload.newModel.sourceNode) {
           return {
             ...item,
-            outgoingLinks: [...item.outgoingLinks, action.payload.new_model.id]
+            outgoingLinks: [...item.outgoingLinks, action.payload.newModel.id]
           }
         }
         return item
       })
 
     case StrategyActions.ADD_STRATEGY: {
-      if (action.payload.nodes_added.length == 0) {
+      if (action.payload.nodesAdded.length == 0) {
         return state
       }
-      return [...state, ...action.payload.nodes_added]
+      return [...state, ...action.payload.nodesAdded]
     }
     /*******************************************************
      * OUTCOME
@@ -378,7 +378,7 @@ export default function nodeReducer(
     case OutcomeBaseActions.DELETE_SELF_SOFT:
     case OutcomeBaseActions.RESTORE_SELF:
       return state.map((item) => {
-        const update = action.payload.extra_data.find(
+        const update = action.payload.extraData.find(
           (updateItem) => updateItem.id === item.id
         )
         return update ? { ...item, ...update } : item
@@ -388,11 +388,11 @@ export default function nodeReducer(
     case OutcomeActions.INSERT_BELOW:
     case OutcomeBaseActions.INSERT_CHILD:
     case OutcomeOutcomeActions.CHANGE_ID:
-      if (action.payload.node_updates.length === 0) {
+      if (action.payload.nodeUpdates.length === 0) {
         return state
       }
       return state.map((item) => {
-        const update = action.payload.node_updates.find(
+        const update = action.payload.nodeUpdates.find(
           (updateItem) => updateItem.id === item.id
         )
         return update
@@ -412,8 +412,8 @@ export default function nodeReducer(
         return item.id === action.payload.dataPackage[0].node
           ? {
               ...item,
-              outcomenodeSet: action.payload.new_outcomenodeSet,
-              outcomenodeUniqueSet: action.payload.new_outcomenodeUniqueSet
+              outcomenodeSet: action.payload.newOutcomenodeSet,
+              outcomenodeUniqueSet: action.payload.newOutcomenodeUniqueSet
             }
           : item
       })

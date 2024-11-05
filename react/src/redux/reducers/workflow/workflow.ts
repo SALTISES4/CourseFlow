@@ -106,9 +106,9 @@ function workflowReducer(
 
     case WorkflowActions.CHANGE_FIELD: {
       if (
-        action.payload.changeFieldID ===
+        action.payload.changeFieldId ===
         // @ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldID
+        COURSEFLOW_APP.contextData.changeFieldId
       ) {
         return state
       }
@@ -123,29 +123,29 @@ function workflowReducer(
      *******************************************************/
     case OutcomeWorkflowActions.CHANGE_ID: {
       const newState = { ...state }
-      const old_index = state.outcomeworkflowSet.indexOf(action.payload.old_id)
-      if (old_index >= 0) {
+      const oldIndex = state.outcomeworkflowSet.indexOf(action.payload.oldId)
+      if (oldIndex >= 0) {
         newState.outcomeworkflowSet = newState.outcomeworkflowSet.slice()
-        newState.outcomeworkflowSet.splice(old_index, 1, action.payload.new_id)
+        newState.outcomeworkflowSet.splice(oldIndex, 1, action.payload.newId)
       }
       return newState
     }
 
     case OutcomeWorkflowActions.MOVED_TO: {
-      const new_outcomeworkflowSet = state.outcomeworkflowSet.slice()
-      for (let i = 0; i < new_outcomeworkflowSet.length; i++) {
-        if (new_outcomeworkflowSet[i] == action.payload.id) {
-          new_outcomeworkflowSet.splice(
-            action.payload.new_index,
+      const newOutcomeworkflowSet = state.outcomeworkflowSet.slice()
+      for (let i = 0; i < newOutcomeworkflowSet.length; i++) {
+        if (newOutcomeworkflowSet[i] == action.payload.id) {
+          newOutcomeworkflowSet.splice(
+            action.payload.newIndex,
             0,
-            new_outcomeworkflowSet.splice(i, 1)[0]
+            newOutcomeworkflowSet.splice(i, 1)[0]
           )
           break
         }
       }
       return {
         ...state,
-        outcomeworkflowSet: new_outcomeworkflowSet
+        outcomeworkflowSet: newOutcomeworkflowSet
       }
     }
 
@@ -154,22 +154,22 @@ function workflowReducer(
      *******************************************************/
     case ColumnWorkflowActions.CHANGE_ID: {
       const newState = { ...state }
-      const old_index = state.columnworkflowSet.indexOf(action.payload.old_id)
-      if (old_index >= 0) {
+      const oldIndex = state.columnworkflowSet.indexOf(action.payload.oldId)
+      if (oldIndex >= 0) {
         newState.columnworkflowSet = newState.columnworkflowSet.slice()
-        newState.columnworkflowSet.splice(old_index, 1, action.payload.new_id)
+        newState.columnworkflowSet.splice(oldIndex, 1, action.payload.newId)
       }
       return newState
     }
 
     case ColumnWorkflowActions.MOVED_TO: {
-      const new_columnworkflowSet = state.columnworkflowSet.slice()
-      for (let i = 0; i < new_columnworkflowSet.length; i++) {
-        if (new_columnworkflowSet[i] == action.payload.id) {
-          new_columnworkflowSet.splice(
-            action.payload.new_index,
+      const newColumnworkflowSet = state.columnworkflowSet.slice()
+      for (let i = 0; i < newColumnworkflowSet.length; i++) {
+        if (newColumnworkflowSet[i] == action.payload.id) {
+          newColumnworkflowSet.splice(
+            action.payload.newIndex,
             0,
-            new_columnworkflowSet.splice(i, 1)[0]
+            newColumnworkflowSet.splice(i, 1)[0]
           )
           break
         }
@@ -177,10 +177,10 @@ function workflowReducer(
       // this is here becasue this data is rare
       console.log('state.columnworkflowSet')
       console.log(state.columnworkflowSet)
-      console.log(new_columnworkflowSet)
+      console.log(newColumnworkflowSet)
       return {
         ...state,
-        columnworkflowSet: new_columnworkflowSet
+        columnworkflowSet: newColumnworkflowSet
       }
     }
 
@@ -188,28 +188,28 @@ function workflowReducer(
      * WEEK WORKFLOW
      *******************************************************/
     case WeekWorkflowActions.MOVED_TO: {
-      const new_weekworkflowSet = state.weekworkflowSet.slice()
-      for (let i = 0; i < new_weekworkflowSet.length; i++) {
-        if (new_weekworkflowSet[i] == action.payload.id) {
-          new_weekworkflowSet.splice(
-            action.payload.new_index,
+      const newWeekworkflowSet = state.weekworkflowSet.slice()
+      for (let i = 0; i < newWeekworkflowSet.length; i++) {
+        if (newWeekworkflowSet[i] == action.payload.id) {
+          newWeekworkflowSet.splice(
+            action.payload.newIndex,
             0,
-            new_weekworkflowSet.splice(i, 1)[0]
+            newWeekworkflowSet.splice(i, 1)[0]
           )
           break
         }
       }
       return {
         ...state,
-        weekworkflowSet: new_weekworkflowSet
+        weekworkflowSet: newWeekworkflowSet
       }
     }
 
     case WeekWorkflowActions.CHANGE_ID: {
-      const old_index = state.weekworkflowSet.indexOf(action.payload.old_id)
-      if (old_index >= 0) {
+      const oldIndex = state.weekworkflowSet.indexOf(action.payload.oldId)
+      if (oldIndex >= 0) {
         const updatedWeekworkflowSet = state.weekworkflowSet.slice()
-        updatedWeekworkflowSet.splice(old_index, 1, action.payload.new_id)
+        updatedWeekworkflowSet.splice(oldIndex, 1, action.payload.newId)
         return {
           ...state,
           weekworkflowSet: updatedWeekworkflowSet
@@ -223,11 +223,11 @@ function workflowReducer(
      *******************************************************/
     case WeekActions.DELETE_SELF:
     case WeekActions.DELETE_SELF_SOFT: {
-      if (state.weekworkflowSet.indexOf(action.payload.parent_id) >= 0) {
+      if (state.weekworkflowSet.indexOf(action.payload.parentId) >= 0) {
         const newState = { ...state }
         newState.weekworkflowSet = state.weekworkflowSet.slice()
         newState.weekworkflowSet.splice(
-          newState.weekworkflowSet.indexOf(action.payload.parent_id),
+          newState.weekworkflowSet.indexOf(action.payload.parentId),
           1
         )
         return newState
@@ -239,22 +239,22 @@ function workflowReducer(
       const newState = { ...state }
       newState.weekworkflowSet = state.weekworkflowSet.slice()
       newState.weekworkflowSet.splice(
-        action.payload.throughparent_index,
+        action.payload.throughparentIndex,
         0,
-        action.payload.throughparent_id
+        action.payload.throughparentId
       )
       return newState
     }
 
     case WeekActions.INSERT_BELOW: {
       const newState = { ...state }
-      const new_weekworkflowSet = state.weekworkflowSet.slice()
-      new_weekworkflowSet.splice(
-        action.payload.new_through.rank,
+      const newWeekworkflowSet = state.weekworkflowSet.slice()
+      newWeekworkflowSet.splice(
+        action.payload.newThrough.rank,
         0,
-        action.payload.new_through.id
+        action.payload.newThrough.id
       )
-      newState.weekworkflowSet = new_weekworkflowSet
+      newState.weekworkflowSet = newWeekworkflowSet
       return newState
     }
 
@@ -263,12 +263,12 @@ function workflowReducer(
      *******************************************************/
     case OutcomeBaseActions.DELETE_SELF:
     case OutcomeBaseActions.DELETE_SELF_SOFT:
-      const parent_id = action.payload.parent_id
-      if (state.outcomeworkflowSet.includes(parent_id)) {
+      const parentId = action.payload.parentId
+      if (state.outcomeworkflowSet.includes(parentId)) {
         return {
           ...state,
           outcomeworkflowSet: state.outcomeworkflowSet.filter(
-            (id) => id !== parent_id
+            (id) => id !== parentId
           )
         }
       }
@@ -278,26 +278,26 @@ function workflowReducer(
       const newState = { ...state }
       newState.outcomeworkflowSet = state.outcomeworkflowSet.slice()
       newState.outcomeworkflowSet.splice(
-        action.payload.throughparent_index,
+        action.payload.throughparentIndex,
         0,
-        action.payload.throughparent_id
+        action.payload.throughparentId
       )
       return newState
     }
 
     case OutcomeBaseActions.INSERT_BELOW:
     case OutcomeActions.NEW_OUTCOME: {
-      if (state.id != action.payload.new_through.workflow) {
+      if (state.id != action.payload.newThrough.workflow) {
         return state
       }
       const newState = { ...state }
-      const new_outcomeworkflowSet = state.outcomeworkflowSet.slice()
-      new_outcomeworkflowSet.splice(
-        action.payload.new_through.rank,
+      const newOutcomeworkflowSet = state.outcomeworkflowSet.slice()
+      newOutcomeworkflowSet.splice(
+        action.payload.newThrough.rank,
         0,
-        action.payload.new_through.id
+        action.payload.newThrough.id
       )
-      newState.outcomeworkflowSet = new_outcomeworkflowSet
+      newState.outcomeworkflowSet = newOutcomeworkflowSet
       return newState
     }
 
@@ -306,21 +306,21 @@ function workflowReducer(
      *******************************************************/
     case StrategyActions.ADD_STRATEGY: {
       const newState = { ...state }
-      const new_weekworkflowSet = state.weekworkflowSet.slice()
-      new_weekworkflowSet.splice(
+      const newWeekworkflowSet = state.weekworkflowSet.slice()
+      newWeekworkflowSet.splice(
         action.payload.index,
         0,
-        action.payload.new_through.id
+        action.payload.newThrough.id
       )
-      newState.weekworkflowSet = new_weekworkflowSet
-      if (action.payload.columnworkflows_added.length > 0) {
-        const new_columnworkflowSet = state.columnworkflowSet.slice()
-        new_columnworkflowSet.push(
-          ...action.payload.columnworkflows_added.map(
+      newState.weekworkflowSet = newWeekworkflowSet
+      if (action.payload.columnworkflowsAdded.length > 0) {
+        const newColumnworkflowSet = state.columnworkflowSet.slice()
+        newColumnworkflowSet.push(
+          ...action.payload.columnworkflowsAdded.map(
             (columnworkflow) => columnworkflow.id
           )
         )
-        newState.columnworkflowSet = new_columnworkflowSet
+        newState.columnworkflowSet = newColumnworkflowSet
       }
       return newState
     }
@@ -335,9 +335,9 @@ function workflowReducer(
       ) {
         return state
       }
-      const new_columnworkflowSet = state.columnworkflowSet.slice()
-      new_columnworkflowSet.push(action.payload.columnworkflow.id)
-      newState.columnworkflowSet = new_columnworkflowSet
+      const newColumnworkflowSet = state.columnworkflowSet.slice()
+      newColumnworkflowSet.push(action.payload.columnworkflow.id)
+      newState.columnworkflowSet = newColumnworkflowSet
       return newState
     }
 
@@ -348,19 +348,19 @@ function workflowReducer(
       const newState = { ...state }
       newState.columnworkflowSet = state.columnworkflowSet.slice()
       newState.columnworkflowSet.splice(
-        action.payload.throughparent_index,
+        action.payload.throughparentIndex,
         0,
-        action.payload.throughparent_id
+        action.payload.throughparentId
       )
       return newState
     }
     case ColumnActions.DELETE_SELF:
     case ColumnActions.DELETE_SELF_SOFT: {
-      if (state.columnworkflowSet.indexOf(action.payload.parent_id) >= 0) {
+      if (state.columnworkflowSet.indexOf(action.payload.parentId) >= 0) {
         const newState = { ...state }
         newState.columnworkflowSet = state.columnworkflowSet.slice()
         newState.columnworkflowSet.splice(
-          newState.columnworkflowSet.indexOf(action.payload.parent_id),
+          newState.columnworkflowSet.indexOf(action.payload.parentId),
           1
         )
         return newState
@@ -370,13 +370,13 @@ function workflowReducer(
 
     case ColumnActions.INSERT_BELOW: {
       const newState = { ...state }
-      const new_columnworkflowSet = state.columnworkflowSet.slice()
-      new_columnworkflowSet.splice(
-        action.payload.new_through.rank,
+      const newColumnworkflowSet = state.columnworkflowSet.slice()
+      newColumnworkflowSet.splice(
+        action.payload.newThrough.rank,
         0,
-        action.payload.new_through.id
+        action.payload.newThrough.id
       )
-      newState.columnworkflowSet = new_columnworkflowSet
+      newState.columnworkflowSet = newColumnworkflowSet
       return newState
     }
 

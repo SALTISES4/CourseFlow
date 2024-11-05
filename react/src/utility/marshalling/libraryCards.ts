@@ -76,9 +76,9 @@ export function formatLibraryObject(
   WorkflowCardWrapperPropsType,
   'id' | 'title' | 'description' | 'isFavourite' | 'chips' | 'isLinked' | 'type'
 > {
-  const type_chip = getTypeChip(libraryObject)
-  const template_chip = getTemplateChip(libraryObject)
-  const count_chip = getWorkflowCountChip(libraryObject)
+  const typeChip = getTypeChip(libraryObject)
+  const templateChip = getTemplateChip(libraryObject)
+  const countChip = getWorkflowCountChip(libraryObject)
   return {
     id: libraryObject.id,
     title: libraryObject.title,
@@ -87,7 +87,7 @@ export function formatLibraryObject(
     isFavourite: libraryObject.favourite,
     isLinked: libraryObject.isLinked,
     type: libraryObject.type,
-    chips: [type_chip, template_chip, count_chip].filter(
+    chips: [typeChip, templateChip, countChip].filter(
       (entry) => entry != null
     )
   }

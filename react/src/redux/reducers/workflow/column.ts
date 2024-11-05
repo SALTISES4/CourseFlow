@@ -34,17 +34,17 @@ interface ColumnByIdAction extends AnyAction {
 
 interface InsertBelowAction extends AnyAction {
   type: ColumnActions.INSERT_BELOW
-  payload: { new_model: TColumn }
+  payload: { newModel: TColumn }
 }
 
 interface ChangeFieldAction extends AnyAction {
   type: ColumnActions.CHANGE_FIELD
-  payload: { id: number; json: any; changeFieldID?: number }
+  payload: { id: number; json: any; changeFieldId?: number }
 }
 
 interface ReloadCommentsAction extends AnyAction {
   type: ColumnActions.RELOAD_COMMENTS
-  payload: { id: number; comment_data: any }
+  payload: { id: number; commentData: any }
 }
 
 interface NewNodeAction extends AnyAction {
@@ -54,7 +54,7 @@ interface NewNodeAction extends AnyAction {
 
 interface AddStrategyAction extends AnyAction {
   type: StrategyActions.ADD_STRATEGY
-  payload: { columns_added: TColumn[] }
+  payload: { columnsAdded: TColumn[] }
 }
 
 type ColumnActionTypes =
@@ -81,16 +81,16 @@ export default function columnReducer(
       // @todo why?
       return action.payload.column
         ? action.payload.column.reduce(
-            (newState, new_obj) => {
-              const index = newState.findIndex((item) => item.id === new_obj.id)
+            (newState, newObj) => {
+              const index = newState.findIndex((item) => item.id === newObj.id)
               if (index !== -1) {
                 return [
                   ...newState.slice(0, index),
-                  new_obj,
+                  newObj,
                   ...newState.slice(index + 1)
                 ]
               }
-              return [...newState, new_obj]
+              return [...newState, newObj]
             },
             [...state]
           )
@@ -125,12 +125,12 @@ export default function columnReducer(
       )
 
     case ColumnActions.INSERT_BELOW:
-      return [...state, action.payload.new_model]
+      return [...state, action.payload.newModel]
 
     case ColumnActions.CHANGE_FIELD:
       if (
-        action.payload.changeFieldID ===
-        COURSEFLOW_APP.contextData.changeFieldID
+        action.payload.changeFieldId ===
+        COURSEFLOW_APP.contextData.changeFieldId
       ) {
         return state
       }
@@ -143,7 +143,7 @@ export default function columnReducer(
     case ColumnActions.RELOAD_COMMENTS: {
       return state.map((item) => {
         if (item.id === action.payload.id) {
-          return { ...item, comments: action.payload.comment_data }
+          return { ...item, comments: action.payload.commentData }
         }
         return item
       })
@@ -155,9 +155,9 @@ export default function columnReducer(
         : [...state, action.payload.column]
 
     case StrategyActions.ADD_STRATEGY:
-      return action.payload.columns_added.length === 0
+      return action.payload.columnsAdded.length === 0
         ? state
-        : [...state, ...action.payload.columns_added]
+        : [...state, ...action.payload.columnsAdded]
 
     default:
       return state
@@ -177,17 +177,17 @@ export default function columnReducer(
 //       const newState = state.slice()
 //       if (action.payload.column) {
 //         for (var i = 0; i < action.payload.column.length; i++) {
-//           const new_obj = action.payload.collumn[i]
+//           const newObj = action.payload.collumn[i]
 //           let added = false
 //           for (let j = 0; j < newState.length; j++) {
-//             if (newState[j].id == new_obj.id) {
-//               newState.splice(j, 1, new_obj)
+//             if (newState[j].id == newObj.id) {
+//               newState.splice(j, 1, newObj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           newState.push(new_obj)
+//           newState.push(newObj)
 //         }
 //       }
 //       return newState
@@ -242,12 +242,12 @@ export default function columnReducer(
 //
 //     case ColumnActions.INSERT_BELOW:
 //       newState = state.slice()
-//       newState.push(action.payload.new_model)
+//       newState.push(action.payload.newModel)
 //       return newState
 //
 //     case ColumnActions.CHANGE_FIELD:
 //       if (
-//         action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+//         action.payload.changeFieldId == COURSEFLOW_APP.contextData.changeFieldId
 //       )
 //         return state
 //       for (var i = 0; i < state.length; i++) {
@@ -264,7 +264,7 @@ export default function columnReducer(
 //       for (var i = 0; i < newState.length; i++) {
 //         const obj = newState[i]
 //         if (obj.id == action.payload.id) {
-//           newState[i] = { ...obj, comments: action.payload.comment_data }
+//           newState[i] = { ...obj, comments: action.payload.commentData }
 //           return newState
 //         }
 //       }
@@ -285,9 +285,9 @@ export default function columnReducer(
 //      * STRATEGY
 //      *******************************************************/
 //     case StrategyActions.ADD_STRATEGY:
-//       if (action.payload.columns_added.length == 0) return state
+//       if (action.payload.columnsAdded.length == 0) return state
 //       newState = state.slice()
-//       newState.push(...action.payload.columns_added)
+//       newState.push(...action.payload.columnsAdded)
 //       return newState
 //
 //     default:

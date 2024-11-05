@@ -18,12 +18,11 @@ import { TGetWeekByIDType, getWeekById } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
+import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWeek'
 import { addStrategyQuery } from '@XMLHTTP/API/create'
 import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
 import * as React from 'react'
 import { connect } from 'react-redux'
-
-import NodeWeek from './NodeWeek'
 
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
@@ -35,8 +34,8 @@ type ConnectedProps = {
 }
 type OwnProps = {
   rank?: number
-  column_order?: any // @todo i think this is delivered by redux
-  nodes_by_column?: any
+  columnOrder?: any // @todo i think this is delivered by redux
+  nodesByColumn?: any
 } & EditableComponentWithSortingProps
 export type WeekUnconnectedPropsType = OwnProps
 
@@ -50,7 +49,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   P,
   EditableComponentWithSortingState
 > {
-  protected node_block: React.RefObject<HTMLDivElement>
+  protected nodeBlock: React.RefObject<HTMLDivElement>
   protected manager: BetterSelectionManager
 
   constructor(props: P) {
@@ -58,7 +57,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     this.manager = new BetterSelectionManager(this.props.dispatch)
     this.objectType = CfObjectType.WEEK
     this.objectClass = '.week'
-    this.node_block = React.createRef()
+    this.nodeBlock = React.createRef()
   }
 
   /*******************************************************
@@ -83,7 +82,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   makeDragAndDrop() {
     //Makes the nodeweeks in the node block draggable
     this.makeSortableNode(
-      $(this.node_block.current).children('.node-week').not('.ui-draggable'),
+      $(this.nodeBlock.current).children('.node-week').not('.ui-draggable'),
       this.props.objectId,
       'nodeweek',
       '.node-week',
@@ -97,34 +96,34 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     this.makeDroppable()
   }
 
-  sortableColumnChangedFunction(id, delta_x, old_column) {
-    const columns = this.props.column_order
-    const old_column_index = columns.indexOf(old_column)
-    const new_column_index = old_column_index + delta_x
-    if (new_column_index < 0 || new_column_index >= columns.length) {
+  sortableColumnChangedFunction(id, deltaX, oldColumn) {
+    const columns = this.props.columnOrder
+    const oldColumnIndex = columns.indexOf(oldColumn)
+    const newColumnIndex = oldColumnIndex + deltaX
+    if (newColumnIndex < 0 || newColumnIndex >= columns.length) {
       return
     }
-    const new_column = columns[new_column_index]
+    const newColumn = columns[newColumnIndex]
 
     //legacy: hack debouncer
     // @todo ...
     // @ts-ignore
-    if (this.recently_sent_column_change) {
+    if (this.recentlySentColumnChange) {
       if (
         // @ts-ignore
-        this.recently_sent_column_change.column === new_column &&
+        this.recentlySentColumnChange.column === newColumn &&
         // @ts-ignore
-        Date.now() - this.recently_sent_column_change.lastCall <= 500
+        Date.now() - this.recentlySentColumnChange.lastCall <= 500
       ) {
         // @ts-ignore
-        this.recently_sent_column_change.lastCall = Date.now()
+        this.recentlySentColumnChange.lastCall = Date.now()
         return
       }
     }
 
     // @ts-ignore
-    this.recently_sent_column_change = {
-      column: new_column,
+    this.recentlySentColumnChange = {
+      column: newColumn,
       lastCall: Date.now()
     }
 
@@ -132,32 +131,32 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
     // assign the node to a new column within the week
     this.context.editableMethods.microUpdate(
-      ActionCreator.columnChangeNode(id, new_column)
+      ActionCreator.columnChangeNode(id, newColumn)
     )
-    columnChanged(this.context, id, new_column) // @todo drag action needs to be designed and is not on renderer (context) anymore
+    columnChanged(this.context, id, newColumn) // @todo drag action needs to be designed and is not on renderer (context) anymore
   }
 
-  sortableMovedFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedFunction(id, newPosition, type, newParent, childId) {
     //Correction for if we are in a term
-    if (this.props.nodes_by_column) {
-      for (const col in this.props.nodes_by_column) {
-        if (this.props.nodes_by_column[col].indexOf(id) >= 0) {
-          const previous = this.props.nodes_by_column[col][new_position]
-          new_position = this.props.data.nodeweekSet.indexOf(previous)
+    if (this.props.nodesByColumn) {
+      for (const col in this.props.nodesByColumn) {
+        if (this.props.nodesByColumn[col].indexOf(id) >= 0) {
+          const previous = this.props.nodesByColumn[col][newPosition]
+          newPosition = this.props.data.nodeweekSet.indexOf(previous)
         }
       }
     }
 
     this.context.editableMethods.microUpdate(
-      ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
+      ActionCreator.moveNodeWeek(id, newPosition, newParent, childId)
     )
     insertedAt(
       this.context.selectionManager,
-      child_id,
+      childId,
       'node',
-      new_parent,
+      newParent,
       'week',
-      new_position,
+      newPosition,
       'nodeweek'
     )
   }
@@ -169,39 +168,39 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       // @ts-ignore
       droppable: '.strategy-ghost',
       over: (e, ui) => {
-        const drop_item = $(e.target)
-        const drag_item = ui.draggable
-        const drag_helper = ui.helper
+        const dropItem = $(e.target)
+        const dragItem = ui.draggable
+        const dragHelper = ui.helper
 
-        if (drag_item.hasClass('new-strategy')) {
-          drag_helper.addClass('valid-drop')
-          drop_item.addClass('new-strategy-drop-over')
+        if (dragItem.hasClass('new-strategy')) {
+          dragHelper.addClass('valid-drop')
+          dropItem.addClass('new-strategy-drop-over')
         } else {
           return
         }
       },
       out: (e, ui) => {
-        const drag_item = ui.draggable
-        const drag_helper = ui.helper
-        const drop_item = $(e.target)
-        if (drag_item.hasClass('new-strategy')) {
-          drag_helper.removeClass('valid-drop')
-          drop_item.removeClass('new-strategy-drop-over')
+        const dragItem = ui.draggable
+        const dragHelper = ui.helper
+        const dropItem = $(e.target)
+        if (dragItem.hasClass('new-strategy')) {
+          dragHelper.removeClass('valid-drop')
+          dropItem.removeClass('new-strategy-drop-over')
         }
       },
       drop: (e, ui) => {
         $('.new-strategy-drop-over').removeClass('new-strategy-drop-over')
-        const drop_item = $(e.target)
-        const drag_item = ui.draggable
-        const new_index = drop_item.parent().prevAll().length + 1
-        if (drag_item.hasClass('new-strategy')) {
+        const dropItem = $(e.target)
+        const dragItem = ui.draggable
+        const newIndex = dropItem.parent().prevAll().length + 1
+        if (dragItem.hasClass('new-strategy')) {
           const loader = new UtilityLoader('body')
           addStrategyQuery(
             this.props.parentId,
-            new_index,
+            newIndex,
             // @todo HACK, this is being used to bypass react and pass information around the DOM
             // @ts-ignore
-            drag_item[0].dataDraggable.strategy,
+            dragItem[0].dataDraggable.strategy,
             (responseData) => {
               loader.endLoad()
             }
@@ -214,8 +213,8 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  Nodes = () => {
-    if (!this.props.week.data.nodeweekSet.length) {
+  Nodes = ({ nodeweekSet }: { nodeweekSet: any }) => {
+    if (!nodeweekSet?.length) {
       return (
         <div className="node-week placeholder" style={{ height: '100%' }}>
           Drag and drop nodes from the sidebar to add.
@@ -227,7 +226,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
         key={nodeId}
         objectId={nodeId}
         parentId={this.props.week.data.id}
-        column_order={this.props.week.column_order}
+        columnOrder={this.props.week.columnOrder}
       />
     ))
   }
@@ -321,9 +320,9 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           <div
             className="node-block"
             id={this.props.objectId + '-node-block'}
-            ref={this.node_block}
+            ref={this.nodeBlock}
           >
-            <this.Nodes />
+            <this.Nodes nodeweekSet={this.props.week.data.nodeweekSet} />
           </div>
 
           <div

@@ -126,6 +126,12 @@ export enum OutcomeHorizontalLinkActions {
   UPDATE_DEGREE = 'outcomehorizontallink/updateDegree'
 }
 
-export enum SidebarActions {
-  SET_SIDEBAR_DATA = 'sidebar/set'
+export enum ReduxSlice {
+  SIDEBAR = 'sidebar',
+  NODE = 'node',
+  NODELINK = 'nodelink',
+  NODEWEEK = 'nodeweek',
+  WEEK = 'week',
+  COLUMN = 'column',
+  WORKFLOW = 'workflow'
 }

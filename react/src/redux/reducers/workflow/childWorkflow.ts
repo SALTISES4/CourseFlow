@@ -8,7 +8,7 @@ import { AnyAction } from '@reduxjs/toolkit'
 
 interface ReplaceStoreDataAction extends AnyAction {
   type: CommonActions.REPLACE_STOREDATA
-  payload: { child_workflow?: TChildWorkflow[] }
+  payload: { childWorkflow?: TChildWorkflow[] }
 }
 
 interface RefreshStoreDataAction extends AnyAction {
@@ -64,7 +64,7 @@ type ChildWorkflowActionTypes =
 function childWorkflowReducer(state = [], action: ChildWorkflowActionTypes) {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
-      return action.payload.child_workflow || state
+      return action.payload.childWorkflow || state
 
     case CommonActions.REFRESH_STOREDATA: {
       if (!action.payload.childWorkflow) {
@@ -129,18 +129,18 @@ function childWorkflowReducer(state = [], action: ChildWorkflowActionTypes) {
           item.id === action.payload.parentId ||
           item.id === action.payload.newThrough.workflow
         ) {
-          const new_outcomeworkflowSet = [...item.outcomeworkflowSet]
+          const newOutcomeworkflowSet = [...item.outcomeworkflowSet]
           const index =
             action.type === OutcomeBaseActions.RESTORE_SELF
               ? action.payload.throughparentIndex
               : action.payload.newThrough.rank
 
-          new_outcomeworkflowSet.splice(
+          newOutcomeworkflowSet.splice(
             index,
             0,
             action.payload.throughparentId || action.payload.newThrough.id
           )
-          return { ...item, outcomeworkflowSet: new_outcomeworkflowSet }
+          return { ...item, outcomeworkflowSet: newOutcomeworkflowSet }
         }
         return item
       })
@@ -155,8 +155,8 @@ export default childWorkflowReducer
 // function childWorkflowReducer(state = [], action: AnyAction) {
 //   switch (action.type) {
 //     case CommonActions.REPLACE_STOREDATA: {
-//       if (action.payload.child_workflow) {
-//         return action.payload.child_workflow
+//       if (action.payload.childWorkflow) {
+//         return action.payload.childWorkflow
 //       }
 //       return state
 //     }
@@ -164,8 +164,8 @@ export default childWorkflowReducer
 //     case CommonActions.REFRESH_STOREDATA: {
 //       const newState = [...state] // Use spread operator for cloning arrays
 //
-//       if (action.payload.child_workflow) {
-//         action.payload.child_workflow.forEach((newObj) => {
+//       if (action.payload.childWorkflow) {
+//         action.payload.childWorkflow.forEach((newObj) => {
 //           const existingIndex = newState.findIndex(
 //             (item) => item.id === newObj.id
 //           )
@@ -183,9 +183,9 @@ export default childWorkflowReducer
 //
 //     case OutcomeBaseActions.DELETE_SELF:
 //     case OutcomeBaseActions.DELETE_SELF_SOFT: {
-//       // Find index of the state item that contains the parent_id in its outcomeworkflowSet
+//       // Find index of the state item that contains the parentId in its outcomeworkflowSet
 //       const index = state.findIndex((item) =>
-//         item.outcomeworkflowSet.includes(action.payload.parent_id)
+//         item.outcomeworkflowSet.includes(action.payload.parentId)
 //       )
 //
 //       // If found, create a new state with the modified item
@@ -195,7 +195,7 @@ export default childWorkflowReducer
 //             ? {
 //                 ...item,
 //                 outcomeworkflowSet: item.outcomeworkflowSet.filter(
-//                   (id) => id !== action.payload.parent_id
+//                   (id) => id !== action.payload.parentId
 //                 )
 //               }
 //             : item
@@ -207,15 +207,15 @@ export default childWorkflowReducer
 //
 //     case OutcomeBaseActions.RESTORE_SELF: {
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].id == action.payload.parent_id) {
+//         if (state[i].id == action.payload.parentId) {
 //           var newState = state.slice()
 //           newState[i] = { ...state[i] }
 //           newState[i].outcomeworkflowSet =
 //             state[i].outcomeworkflowSet.slice()
 //           newState[i].outcomeworkflowSet.splice(
-//             action.payload.throughparent_index,
+//             action.payload.throughparentIndex,
 //             0,
-//             action.payload.throughparent_id
+//             action.payload.throughparentId
 //           )
 //           return newState
 //         }
@@ -226,16 +226,16 @@ export default childWorkflowReducer
 //     case OutcomeBaseActions.INSERT_BELOW:
 //     case OutcomeActions.NEW_OUTCOME: {
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].id == action.payload.new_through.workflow) {
+//         if (state[i].id == action.payload.newThrough.workflow) {
 //           var newState = state.slice()
 //           newState[i] = { ...state[i] }
-//           const new_outcomeworkflowSet = state[i].outcomeworkflowSet.slice()
-//           new_outcomeworkflowSet.splice(
-//             action.payload.new_through.rank,
+//           const newOutcomeworkflowSet = state[i].outcomeworkflowSet.slice()
+//           newOutcomeworkflowSet.splice(
+//             action.payload.newThrough.rank,
 //             0,
-//             action.payload.new_through.id
+//             action.payload.newThrough.id
 //           )
-//           newState[i].outcomeworkflowSet = new_outcomeworkflowSet
+//           newState[i].outcomeworkflowSet = newOutcomeworkflowSet
 //           return newState
 //         }
 //       }

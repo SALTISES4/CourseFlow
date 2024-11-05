@@ -4,7 +4,7 @@ import * as React from 'react'
 
 type PropsType = {
   outcomenode: any
-  child_outcome: any
+  childOutcome: any
 }
 /**
  * Display the parent outcome tagged to a child workflow's outcome in the
@@ -26,7 +26,7 @@ class AlignmentHorizontalReverseParentOutcome extends React.Component<PropsType>
           deleteSelfOverride={() => {
             COURSEFLOW_APP.tinyLoader.startLoad()
             updateOutcomehorizontallinkDegree(
-              props.child_outcome,
+              props.childOutcome,
               data.outcome,
               0,
               (responseData) => {

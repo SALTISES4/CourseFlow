@@ -8,12 +8,12 @@ import EditableComponentWithSorting from '@cfEditableComponents/EditableComponen
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import * as Utility from '@cfUtility'
-import ColumnWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/ColumnWorkflow'
+import ColumnWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWorkflow'
+import WeekWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWorkflow'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import WeekWorkflow from './components/WeekWorkflow'
 import WorkflowLegend from './components/WorkflowLegend'
 // import $ from 'jquery'
 
@@ -93,36 +93,36 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
 
   sortableMovedFunction(
     id: number,
-    new_position: number,
+    newPosition: number,
     type: string,
-    new_parent: number,
-    child_id: number
+    newParent: number,
+    childId: number
   ) {
     if (type === 'columnworkflow') {
       this.context.editableMethods.microUpdate(
-        ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveColumnWorkflow(id, newPosition, newParent, childId)
       )
       insertedAt(
         this.context.selectionManager,
-        child_id,
+        childId,
         'column',
-        new_parent,
+        newParent,
         'workflow',
-        new_position,
+        newPosition,
         'columnworkflow'
       )
     }
     if (type === 'weekworkflow') {
       this.context.editableMethods.microUpdate(
-        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveWeekWorkflow(id, newPosition, newParent, childId)
       )
       insertedAt(
         this.context.selectionManager,
-        child_id,
+        childId,
         'week',
-        new_parent,
+        newParent,
         'workflow',
-        new_position,
+        newPosition,
         'weekworkflow'
       )
     }

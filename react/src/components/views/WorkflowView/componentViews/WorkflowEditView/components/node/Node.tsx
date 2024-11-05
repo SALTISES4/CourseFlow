@@ -20,6 +20,8 @@ import { AppState, TWorkflow } from '@cfRedux/types/type'
 import { toggleExpand } from '@cfRedux/utility/helpers'
 import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
+import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
+import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
@@ -27,21 +29,18 @@ import { connect } from 'react-redux'
 
 import NodePorts from 'components/views/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
 
-import AutoLink from './node/AutoLink'
-import NodeLink from './node/NodeLink'
-
 type ConnectedProps = {
   node: TGetNodeById
   workflow: TWorkflow
 }
 
 type OwnProps = {
-  column_order: any
+  columnOrder: any
 } & EditableComponentProps
 
 type StateProps = {
-  initial_render: boolean
-  show_outcomes: boolean
+  initialRender: boolean
+  showOutcomes: boolean
   hovered: boolean
 } & EditableComponentStateType
 
@@ -63,8 +62,8 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
     this.manager = new BetterSelectionManager(props.dispatch)
     this.objectType = CfObjectType.NODE
     this.state = {
-      initial_render: true,
-      show_outcomes: false
+      initialRender: true,
+      showOutcomes: false
     } as StateProps
   }
 
@@ -72,9 +71,9 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    if (this.state.initial_render) {
+    if (this.state.initialRender) {
       this.setState({
-        initial_render: false
+        initialRender: false
       })
     }
 
@@ -143,40 +142,40 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
       // @ts-ignore // droppable does not exist in type DroppableOptions
       droppable: '.outcome-ghost',
       over: (e, ui) => {
-        const drop_item = $(e.target)
-        const drag_item = ui.draggable
-        const drag_helper = ui.helper
-        const new_index = drop_item.prevAll().length
-        const new_parent_id = parseInt(drop_item.parent().attr('id'))
+        const dropItem = $(e.target)
+        const dragItem = ui.draggable
+        const dragHelper = ui.helper
+        const newIndex = dropItem.prevAll().length
+        const newParentId = parseInt(dropItem.parent().attr('id'))
 
-        if (drag_item.hasClass('outcome')) {
-          drag_helper.addClass('valid-drop')
-          drop_item.addClass('outcome-drop-over')
+        if (dragItem.hasClass('outcome')) {
+          dragHelper.addClass('valid-drop')
+          dropItem.addClass('outcome-drop-over')
           return
         } else {
           return
         }
       },
       out: (e, ui) => {
-        const drag_item = ui.draggable
-        const drag_helper = ui.helper
-        const drop_item = $(e.target)
-        if (drag_item.hasClass('outcome')) {
-          drag_helper.removeClass('valid-drop')
-          drop_item.removeClass('outcome-drop-over')
+        const dragItem = ui.draggable
+        const dragHelper = ui.helper
+        const dropItem = $(e.target)
+        if (dragItem.hasClass('outcome')) {
+          dragHelper.removeClass('valid-drop')
+          dropItem.removeClass('outcome-drop-over')
         }
       },
       drop: (e, ui) => {
         $('.outcome-drop-over').removeClass('outcome-drop-over')
-        const drag_item = ui.draggable
-        if (drag_item.hasClass('outcome')) {
+        const dragItem = ui.draggable
+        if (dragItem.hasClass('outcome')) {
           COURSEFLOW_APP.tinyLoader.startLoad()
 
           // @todo HACK, this is being used to bypass react and pass information around the DOM
           updateOutcomenodeDegree(
             this.props.objectId,
             // @ts-ignore // data draggable is custom /HACK
-            drag_item[0].dataDraggable.outcome,
+            dragItem[0].dataDraggable.outcome,
             1,
             (responseData) => {
               COURSEFLOW_APP.tinyLoader.endLoad()
@@ -265,50 +264,50 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
    *******************************************************/
   render() {
     let nodePorts
-    let node_links
-    let auto_link
+    let nodeLinks
+    let autoLink
     let outcomenodes
     let lefticon
     let righticon
     let linkIcon
-    const side_actions = []
+    const sideActions = []
 
     const data = this.props.node.data
     const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
     let linktext = _t('Visit workflow')
-    let link_class = 'linked-workflow'
+    let linkClass = 'linked-workflow'
 
-    const data_override = data.representsWorkflow
+    const dataOverride = data.representsWorkflow
       ? { ...data, ...data.linkedWorkflowData, id: data.id }
       : { ...data }
 
-    if (!this.state.initial_render) {
+    if (!this.state.initialRender) {
       // this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
       nodePorts = reactDom.createPortal(
         <NodePorts
           // renderer={renderer}
-          nodeID={this.props.objectId}
-          node_div={this.mainDiv}
+          nodeId={this.props.objectId}
+          nodeDiv={this.mainDiv}
           dispatch={this.props.dispatch}
         />,
         $('.workflow-canvas')[0]
       )
-      node_links = data.outgoingLinks.map((link) => (
-        <NodeLink key={link} objectId={link} node_div={this.mainDiv} />
+      nodeLinks = data.outgoingLinks.map((link) => (
+        <NodeLink key={link} objectId={link} nodeDiv={this.mainDiv} />
       ))
       if (data.hasAutolink) {
-        auto_link = (
-          <AutoLink nodeID={this.props.objectId} node_div={this.mainDiv} />
+        autoLink = (
+          <AutoLink nodeId={this.props.objectId} nodeDiv={this.mainDiv} />
         )
       }
     }
 
-    if (this.state.show_outcomes) {
+    if (this.state.showOutcomes) {
       outcomenodes = (
         <div
           className={'outcome-node-container column-' + data.column}
           onMouseLeave={() => {
-            this.setState({ show_outcomes: false })
+            this.setState({ showOutcomes: false })
           }}
           style={{
             borderColor: Constants.getColumnColour(this.props.node.column)
@@ -320,13 +319,14 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
         </div>
       )
     }
+
     if (data.outcomenodeUniqueSet.length > 0) {
-      side_actions.push(
+      sideActions.push(
         <div className="outcome-node-indicator">
           <div
             className={'outcome-node-indicator-number column-' + data.column}
             onMouseEnter={() => {
-              this.setState({ show_outcomes: true })
+              this.setState({ showOutcomes: true })
             }}
             style={{
               borderColor: Constants.getColumnColour(this.props.node.column)
@@ -386,19 +386,19 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
       ) {
         linktext = _t('<Inaccessible>')
         clickfunc = null
-        link_class += ' link-noaccess'
+        linkClass += ' link-noaccess'
       } else if (data.linkedWorkflowData.deleted) {
         linktext = _t('<Deleted>')
         clickfunc = null
-        link_class += ' link-noaccess'
+        linkClass += ' link-noaccess'
       } else {
-        link_class += ' hover-shade'
+        linkClass += ' hover-shade'
       }
     }
 
     if (data.linkedWorkflow) {
       linkIcon = (
-        <div className={link_class} onClick={clickfunc}>
+        <div className={linkClass} onClick={clickfunc}>
           <img src={apiPaths.external.static_assets.icon + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
@@ -406,8 +406,8 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
     }
     let dropText = ''
     if (
-      data_override.description &&
-      data_override.description.replace(
+      dataOverride.description &&
+      dataOverride.description.replace(
         /(<p>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
         ''
       ) != ''
@@ -418,7 +418,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
     const style: React.CSSProperties = {
       left:
-        Constants.columnwidth * this.props.column_order.indexOf(data.column) +
+        Constants.columnwidth * this.props.columnOrder.indexOf(data.column) +
         'px',
       backgroundColor: Constants.getColumnColour(this.props.node.column)
     }
@@ -439,7 +439,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
     return (
       <>
-        {/*{this.addEditable(data_override)}*/}
+        {/*{this.addEditable(dataOverride)}*/}
         <div
           id={String(data.id)}
           style={style}
@@ -447,12 +447,6 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
           ref={this.mainDiv}
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
-          // onClick={(evt) =>
-          //   this.context.selectionManager.changeSelection({
-          //     evt,
-          //     newSelection: this
-          //   })
-          // }
 
           onClick={(e) => {
             e.stopPropagation()
@@ -472,7 +466,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
           <div className="node-details">
             <TitleText
-              text={data_override.description}
+              text={dataOverride.description}
               defaultText={_t('Click to edit')}
             />
           </div>
@@ -497,10 +491,10 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
             </div>
             <div className="node-drop-side node-drop-right">
               <div className="node-drop-time">
-                {data_override.timeRequired &&
-                  data_override.timeRequired +
+                {dataOverride.timeRequired &&
+                  dataOverride.timeRequired +
                     ' ' +
-                    choices.timeChoices[data_override.timeUnits].name}
+                    choices.timeChoices[dataOverride.timeUnits].name}
               </div>
             </div>
           </div>
@@ -509,10 +503,10 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
             <this.HoverMenu />
           </div>
           {nodePorts}
-          {node_links}
-          {auto_link}
+          {nodeLinks}
+          {autoLink}
           <div className="side-actions">
-            {side_actions}
+            {sideActions}
             <div className="comment-indicator-container"></div>
             <div className="assignment-indicator-container"></div>
           </div>

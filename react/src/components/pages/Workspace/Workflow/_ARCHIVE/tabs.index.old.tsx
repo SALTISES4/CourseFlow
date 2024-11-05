@@ -101,7 +101,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   // Constants
   objectType = CfObjectType.WORKFLOW
-  private allowed_tabs = [0, 1, 2, 3, 4]
+  private allowedTabs = [0, 1, 2, 3, 4]
 
   private readOnly: boolean
 
@@ -296,7 +296,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const disabled_tabs = []
 
     for (let i = 0; i <= 4; i++) {
-      if (this.allowed_tabs.indexOf(i) < 0) {
+      if (this.allowedTabs.indexOf(i) < 0) {
         disabled_tabs.push(i)
       }
     }
@@ -307,14 +307,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     $('#sidebar').tabs({ disabled: false })
     const current_tab = $('#sidebar').tabs('option', 'active')
 
-    if (this.allowed_tabs.indexOf(current_tab) < 0) {
-      if (this.allowed_tabs.length == 0) {
+    if (this.allowedTabs.indexOf(current_tab) < 0) {
+      if (this.allowedTabs.length == 0) {
         $('#sidebar').tabs({
           active: false
         })
       } else {
         $('#sidebar').tabs({
-          active: this.allowed_tabs[0]
+          active: this.allowedTabs[0]
         })
       }
     }

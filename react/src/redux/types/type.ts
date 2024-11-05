@@ -43,7 +43,7 @@ export type AppState = {
   parentNode?: TParentNode[]
   parentProject?: TProject
   outcomehorizontallink?: TOutcomeHorizontalLink[]
-  child_workflow?: TChildWorkflow[]
+  childWorkflow?: TChildWorkflow[]
 }
 
 export type RootOutcomeStateType = Pick<AppState, 'outcomeoutcome' | 'outcome'>

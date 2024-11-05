@@ -15,7 +15,7 @@ type TableCellPropsType = {
   total?: boolean
   readOnly: boolean
   degree: number
-  nodeID?: number
+  nodeId?: number
   outcomeID?: number
   grandTotal?: boolean
   // renderer={this.props.renderer}
@@ -37,7 +37,7 @@ class TableCell extends React.Component<TableCellPropsType> {
     }
     COURSEFLOW_APP.tinyLoader.startLoad()
     updateOutcomenodeDegree(
-      this.props.nodeID,
+      this.props.nodeId,
       this.props.outcomeID,
       value,
       (responseData) => {
@@ -50,7 +50,7 @@ class TableCell extends React.Component<TableCellPropsType> {
     const value = evt.target.value
     COURSEFLOW_APP.tinyLoader.startLoad()
     updateOutcomenodeDegree(
-      this.props.nodeID,
+      this.props.nodeId,
       this.props.outcomeID,
       value,
       (responseData) => {
@@ -165,14 +165,14 @@ type OwnProps = {
   parentId?: number
   throughParentId?: number
   renderer?: any
-  show_horizontal?: boolean
+  showHorizontal?: boolean
   comments?: boolean
   edit?: boolean
-  outcome_tree?: any
+  outcomeTree?: any
   nodecategory?: any
   outcomesType?: any
   updateParentCompletion?: any
-  completion_status_from_parents?: any
+  completionStatusFromParents?: any
   readOnly?: boolean
 }
 type PropsType = ConnectedProps & OwnProps
@@ -210,7 +210,7 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
       <Outcome
         outcomesType={this.props.outcomesType}
         objectId={child.id}
-        outcome_tree={child}
+        outcomeTree={child}
         // renderer={this.props.renderer}
       />
     )
@@ -236,7 +236,7 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
           data.childOutcomeLinks.length
         )
 
-    const outcome_head = (
+    const outcomeHead = (
       <div className="outcome-wrapper">
         <div
           className="outcome-head"
@@ -283,19 +283,19 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
       </div>
     )
 
-    const outcome_row = this.props.outcome_tree?.outcomenodes?.map(
+    const outcomeRow = this.props.outcomeTree?.outcomenodes?.map(
       (outcomenodegroup) => {
-        const group_row = outcomenodegroup?.map((outcomenode) => (
+        const groupRow = outcomenodegroup?.map((outcomenode) => (
           <TableCell
             outcomesType={this.props.outcomesType}
             degree={outcomenode.degree}
             readOnly={this.props.readOnly}
-            nodeID={outcomenode.nodeId}
-            outcomeID={this.props.outcome_tree.id}
+            nodeId={outcomenode.nodeId}
+            outcomeID={this.props.outcomeTree.id}
           />
         ))
 
-        group_row.unshift(
+        groupRow.unshift(
           <TableCell
             outcomesType={this.props.outcomesType}
             readOnly={this.props.readOnly}
@@ -306,36 +306,36 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
         return (
           <div className="table-group">
             <div className="table-cell blank-cell" />
-            {group_row}
+            {groupRow}
           </div>
         )
       }
     )
 
-    outcome_row.push(<div className="table-cell blank-cell" />)
-    outcome_row.push(
+    outcomeRow.push(<div className="table-cell blank-cell" />)
+    outcomeRow.push(
       <TableCell
         outcomesType={this.props.outcomesType}
-        degree={this.props.outcome_tree.outcomenodes.total}
+        degree={this.props.outcomeTree.outcomenodes.total}
         readOnly={this.props.readOnly}
         total={true}
         grandTotal={true}
       />
     )
-    const full_row = (
+    const fullRow = (
       <div className={'outcome-row depth-' + data.depth}>
-        {outcome_head}
-        <div className="outcome-cells">{outcome_row}</div>
+        {outcomeHead}
+        <div className="outcome-cells">{outcomeRow}</div>
       </div>
     )
 
-    let child_rows
+    let childRows
     if (isDropped) {
-      child_rows = this.props.outcome_tree.children.map((child) => (
+      childRows = this.props.outcomeTree.children.map((child) => (
         <this.ChildOutcomeView child={child} />
       ))
     }
-    return [full_row, child_rows]
+    return [fullRow, childRows]
   }
 }
 

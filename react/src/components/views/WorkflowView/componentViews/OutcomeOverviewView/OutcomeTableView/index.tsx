@@ -63,113 +63,113 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
   }
 
   getNodecategory() {
-    const week_order = Utility.filterThenSortByID<TWeekworkflow>(
+    const weekOrder = Utility.filterThenSortByID<TWeekworkflow>(
       this.props.weekworkflow,
       this.props.workflow.weekworkflowSet
     ).map((weekworkflow) => weekworkflow.week)
 
-    const weeks_ordered = Utility.filterThenSortByID<TWeek>(
+    const weeksOrdered = Utility.filterThenSortByID<TWeek>(
       this.props.week,
-      week_order
+      weekOrder
     )
 
-    const nodeweek_order = [].concat(
-      ...weeks_ordered.map((week) => week.nodeweekSet)
+    const nodeweekOrder = [].concat(
+      ...weeksOrdered.map((week) => week.nodeweekSet)
     )
-    let nodeweeks_ordered = Utility.filterThenSortByID<TNodeweek>(
+    let nodeweeksOrdered = Utility.filterThenSortByID<TNodeweek>(
       this.props.nodeweek,
-      nodeweek_order
+      nodeweekOrder
     )
 
-    const node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node)
+    const nodeOrder = nodeweeksOrdered.map((nodeweek) => nodeweek.node)
 
-    const nodes_ordered = Utility.filterThenSortByID<TNode>(
+    const nodesOrdered = Utility.filterThenSortByID<TNode>(
       this.props.node,
-      node_order
+      nodeOrder
     ).filter((node) => !Utility.checkSetHidden(node, this.props.objectSets))
 
     switch (parseInt(this.props.workflow.outcomesSort)) {
       case 0: {
-        const nodes_allowed = nodes_ordered.map((node) => node.id)
-        nodeweeks_ordered = nodeweeks_ordered.filter(
-          (nodeweek) => nodes_allowed.indexOf(nodeweek.node) >= 0
+        const nodesAllowed = nodesOrdered.map((node) => node.id)
+        nodeweeksOrdered = nodeweeksOrdered.filter(
+          (nodeweek) => nodesAllowed.indexOf(nodeweek.node) >= 0
         )
-        const nodes_by_week = {}
-        for (let i = 0; i < nodeweeks_ordered.length; i++) {
-          const nodeweek = nodeweeks_ordered[i]
-          Utility.pushOrCreate(nodes_by_week, nodeweek.week, nodeweek.node)
+        const nodesByWeek = {}
+        for (let i = 0; i < nodeweeksOrdered.length; i++) {
+          const nodeweek = nodeweeksOrdered[i]
+          Utility.pushOrCreate(nodesByWeek, nodeweek.week, nodeweek.node)
         }
-        return weeks_ordered.map((week, index) => {
+        return weeksOrdered.map((week, index) => {
           return {
             title: week.title || week.weekTypeDisplay + ' ' + (index + 1),
-            nodes: nodes_by_week[week.id] || []
+            nodes: nodesByWeek[week.id] || []
           }
         })
       }
 
       case 1: {
-        const column_order = Utility.filterThenSortByID<TColumnworkflow>(
+        const columnOrder = Utility.filterThenSortByID<TColumnworkflow>(
           this.props.columnworkflow,
           this.props.workflow.columnworkflowSet
         ).map((columnworkflow) => columnworkflow.column)
-        const columns_ordered = Utility.filterThenSortByID<TColumn>(
+        const columnsOrdered = Utility.filterThenSortByID<TColumn>(
           this.props.column,
-          column_order
+          columnOrder
         )
-        const nodes_by_column = {}
-        for (let i = 0; i < nodes_ordered.length; i++) {
-          const node = nodes_ordered[i]
-          Utility.pushOrCreate(nodes_by_column, node.column, node.id)
+        const nodesByColumn = {}
+        for (let i = 0; i < nodesOrdered.length; i++) {
+          const node = nodesOrdered[i]
+          Utility.pushOrCreate(nodesByColumn, node.column, node.id)
         }
-        return columns_ordered.map((column, index) => {
+        return columnsOrdered.map((column, index) => {
           return {
             title: column.title || column.columnTypeDisplay,
-            nodes: nodes_by_column[column_order[index]] || []
+            nodes: nodesByColumn[columnOrder[index]] || []
           }
         })
       }
 
       case 2: {
-        const workflow_type = ['activity', 'course', 'program'].indexOf(
+        const workflowType = ['activity', 'course', 'program'].indexOf(
           this.props.workflow.type
         )
-        const task_ordered = this.props.renderer.task_choices.filter(
+        const taskOrdered = this.props.renderer.taskChoices.filter(
           (x) =>
             x.type == 0 ||
-            (x.type > 100 * workflow_type && x.type < 100 * (workflow_type + 1))
+            (x.type > 100 * workflowType && x.type < 100 * (workflowType + 1))
         )
-        const nodes_by_task = {}
-        for (let i = 0; i < nodes_ordered.length; i++) {
-          const node = nodes_ordered[i]
-          Utility.pushOrCreate(nodes_by_task, node.taskClassification, node.id)
+        const nodesByTask = {}
+        for (let i = 0; i < nodesOrdered.length; i++) {
+          const node = nodesOrdered[i]
+          Utility.pushOrCreate(nodesByTask, node.taskClassification, node.id)
         }
-        return task_ordered.map((task) => {
-          return { title: task.name, nodes: nodes_by_task[task.type] || [] }
+        return taskOrdered.map((task) => {
+          return { title: task.name, nodes: nodesByTask[task.type] || [] }
         })
       }
 
       case 3: {
-        const workflow_type = ['activity', 'course', 'program'].indexOf(
+        const workflowType = ['activity', 'course', 'program'].indexOf(
           this.props.workflow.type
         )
-        const context_ordered = this.props.renderer.contextChoices.filter(
+        const contextOrdered = this.props.renderer.contextChoices.filter(
           (x) =>
             x.type == 0 ||
-            (x.type > 100 * workflow_type && x.type < 100 * (workflow_type + 1))
+            (x.type > 100 * workflowType && x.type < 100 * (workflowType + 1))
         )
-        const nodes_by_context = {}
-        for (let i = 0; i < nodes_ordered.length; i++) {
-          const node = nodes_ordered[i]
+        const nodesByContext = {}
+        for (let i = 0; i < nodesOrdered.length; i++) {
+          const node = nodesOrdered[i]
           Utility.pushOrCreate(
-            nodes_by_context,
+            nodesByContext,
             node.contextClassification,
             node.id
           )
         }
-        return context_ordered.map((context) => {
+        return contextOrdered.map((context) => {
           return {
             title: context.name,
-            nodes: nodes_by_context[context.type] || []
+            nodes: nodesByContext[context.type] || []
           }
         })
       }
@@ -193,15 +193,15 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
     const outcomesSorted = this.getOutcomesSorted()
 
-    let has_nodes = false
+    let hasNodes = false
     for (let i = 0; i < nodecategory.length; i++) {
       if (nodecategory[i].nodes.length > 0) {
-        has_nodes = true
+        hasNodes = true
         break
       }
     }
 
-    if (outcomesSorted.length === 0 || !has_nodes) {
+    if (outcomesSorted.length === 0 || !hasNodes) {
       let text
       if (this.context.workflowView === WorkflowViewType.OUTCOME_TABLE) {
         text = _t(

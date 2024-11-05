@@ -87,7 +87,7 @@ class WorkflowEndpoint:
 
     @staticmethod
     @api_view(["GET"])
-    # @user_can_view("pk") # @todo poorly designed
+    # #@user_can_view("pk") # @todo poorly designed
     def fetch_detail(request: Request, pk: int) -> Response:
         current_user = request.user
 
@@ -111,7 +111,7 @@ class WorkflowEndpoint:
         )
 
     @staticmethod
-    @user_can_view("workflowPk")
+    # @user_can_view("workflowPk")
     @api_view(["POST"])
     def fetch_parent_detail(
         request: Request,
@@ -138,7 +138,7 @@ class WorkflowEndpoint:
 
     # @todo what is this doing, probably misnamed
     @staticmethod
-    @user_can_view("nodePk")
+    # @user_can_view("nodePk")
     @api_view(["POST"])
     def fetch_child_workflow_data(
         request: Request,
@@ -170,7 +170,7 @@ class WorkflowEndpoint:
         )
 
     @staticmethod
-    # @user_can_view("workflowPk") @todo permissions should not have any opinion on the request VERB
+    # #@user_can_view("workflowPk") @todo permissions should not have any opinion on the request VERB
     @api_view(["GET"])
     def fetch_parent_detail_full(request: Request, pk: int) -> Response:
         workflow_id = pk
@@ -201,7 +201,7 @@ class WorkflowEndpoint:
     #########################################################
     @staticmethod
     @api_view(["POST"])
-    # @user_can_edit("projectPk")
+    # #@user_can_edit("projectPk")
     def create(request: Request) -> Response:
         """
         Create new or update existing workflow in a project
@@ -262,8 +262,8 @@ class WorkflowEndpoint:
     #  DUPLICATE WORKFLOW
     #########################################################
     @staticmethod
-    @user_can_view("workflowPk")
-    @user_can_edit("projectPk")
+    # @user_can_view("workflowPk")
+    # @user_can_edit("projectPk")
     @api_view(["POST"])
     def duplicate_to_project(request: Request, pk: int) -> Response:
         body = json.loads(
@@ -312,7 +312,7 @@ class WorkflowEndpoint:
     # LISTS
     #########################################################
     @staticmethod
-    @user_can_edit("nodePk")
+    # @user_can_edit("nodePk")
     def possible_linked(
         request: Request,
     ) -> Response:
@@ -335,7 +335,7 @@ class WorkflowEndpoint:
 
         except AttributeError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
@@ -346,7 +346,7 @@ class WorkflowEndpoint:
         )
 
     @staticmethod
-    @user_can_view_or_none("projectPk")
+    # @user_can_view_or_none("projectPk")
     def possible_added(
         request: Request,
     ) -> Response:
@@ -378,7 +378,7 @@ class WorkflowEndpoint:
 
         except AttributeError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
@@ -389,8 +389,8 @@ class WorkflowEndpoint:
         )
 
     @staticmethod
-    @user_can_edit("nodePk")
-    @user_can_view_or_none("workflowPk")
+    # @user_can_edit("nodePk")
+    # @user_can_view_or_none("workflowPk")
     def link_to_node(request: Request) -> Response:
         """
             @todo ??
@@ -433,7 +433,7 @@ class WorkflowEndpoint:
 
         except ValidationError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         response_data = {
             "id": node_id,
@@ -488,7 +488,7 @@ def json_api_get_public_workflow_data(request: Request, pk) -> Response:
         data_package = WorkflowService.get_workflow_full(workflow.get_subclass(), request.user)
     except AttributeError as e:
         logger.exception("An error occurred")
-        return Response({"action": "error"})
+        return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(
         {
@@ -507,7 +507,7 @@ def json_api_get_public_workflow_child_data(request: Request, pk) -> Response:
         )
     except AttributeError as e:
         logger.exception("An error occurred")
-        return Response({"action": "error"})
+        return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
     return Response(
         {
             "message": "success",
@@ -524,7 +524,7 @@ def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
         data_package = get_parent_outcome_data(workflow.get_subclass(), request.user)
     except AttributeError as e:
         logger.exception("An error occurred")
-        return Response({"action": "error"})
+        return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(
         {
@@ -538,7 +538,7 @@ def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
     # workflows.
     ################################################
 
-    # @user_can_view("workflowPk")
+    # #@user_can_view("workflowPk")
     # def json_api_post_get_workflow_context(request: Request) -> Response:
     #     body = json.loads(request.body) # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
     #     workflowPk = body.get("workflowPk", False)
@@ -554,7 +554,7 @@ def json_api_get_public_workflow_parent_data(request: Request, pk) -> Response:
     # logger.exception("An error occurred")
 
 
-#         return Response({"action": "error"})
+#         return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 #
 #     return Response(
 #         {

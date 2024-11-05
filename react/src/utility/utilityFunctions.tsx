@@ -12,18 +12,18 @@ type GenericObject = {
  *******************************************************/
 /**
  * take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
- * @param object_list
- * @param id_list
+ * @param objectList
+ * @param idList
  */
 export function filterThenSortByID<T extends object>(
-  object_list: MaybeWithId<T>[],
-  id_list: any[]
+  objectList: MaybeWithId<T>[],
+  idList: any[]
 ): T[] {
-  return object_list
+  return objectList
     .filter(
-      (obj): obj is T & { id: any } => hasId(obj) && id_list.includes(obj.id)
+      (obj): obj is T & { id: any } => hasId(obj) && idList.includes(obj.id)
     )
-    .sort((a, b) => id_list.indexOf(a.id) - id_list.indexOf(b.id))
+    .sort((a, b) => idList.indexOf(a.id) - idList.indexOf(b.id))
 }
 
 /**
@@ -162,17 +162,17 @@ export function getUserDisplay(user) {
 
 /**
  * Get the offset from the canvas of a specific jquery object
- * @param node_dom
+ * @param nodeDom
  */
-export function getCanvasOffset(node_dom) {
-  const node_offset = node_dom.offset()
+export function getCanvasOffset(nodeDom) {
+  const nodeOffset = nodeDom.offset()
   const canvasElement = document.querySelector('.workflow-canvas')
-  const canvas_offset = getElementOffset(canvasElement)
+  const canvasOffset = getElementOffset(canvasElement)
 
-  node_offset.left -= canvas_offset.left
-  node_offset.top -= canvas_offset.top
+  nodeOffset.left -= canvasOffset.left
+  nodeOffset.top -= canvasOffset.top
 
-  return node_offset
+  return nodeOffset
 }
 
 /**
@@ -305,10 +305,10 @@ export function formatDate(dateString: Date) {
 /**
  *  Get the little tag that sits in front of usernames signifying the role
  *  @todo move to component
- * @param user_type
+ * @param userType
  */
-export function getUserTag(user_type) {
-  function permission_translate() {
+export function getUserTag(userType) {
+  function permissionTranslate() {
     return {
       author: _t('Owner'),
       edit: _t('Editor'),
@@ -317,8 +317,8 @@ export function getUserTag(user_type) {
     }
   }
   return (
-    <span className={'user-tag permission-' + user_type}>
-      {permission_translate()[user_type]}
+    <span className={'user-tag permission-' + userType}>
+      {permissionTranslate()[userType]}
     </span>
   )
 }

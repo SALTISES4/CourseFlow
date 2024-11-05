@@ -20,8 +20,8 @@ interface RefreshStoreDataAction extends AnyAction {
 interface ChangeIdAction extends AnyAction {
   type: OutcomeOutcomeActions.CHANGE_ID
   payload: {
-    old_id: number
-    new_id: number
+    oldId: number
+    newId: number
   }
 }
 
@@ -29,19 +29,19 @@ interface MovedToAction extends AnyAction {
   type: OutcomeOutcomeActions.MOVED_TO
   payload: {
     id: number
-    new_parent: number
+    newParent: number
   }
 }
 
 interface DeleteSelfAction extends AnyAction {
   type: OutcomeActions.DELETE_SELF
-  payload: { parent_id: number }
+  payload: { parentId: number }
 }
 
 interface InsertChildAction extends AnyAction {
   type: OutcomeActions.INSERT_CHILD
   payload: {
-    new_through: TOutcomeOutcome
+    newThrough: TOutcomeOutcome
     children?: { outcomeoutcome: TOutcomeOutcome[] }
   }
 }
@@ -49,7 +49,7 @@ interface InsertChildAction extends AnyAction {
 interface InsertBelowAction extends AnyAction {
   type: OutcomeActions.INSERT_BELOW | OutcomeBaseActions.INSERT_BELOW
   payload: {
-    new_through: TOutcomeOutcome
+    newThrough: TOutcomeOutcome
     children?: { outcomeoutcome: TOutcomeOutcome[] }
   }
 }
@@ -92,20 +92,20 @@ function outcomeOutcomeReducer(
 
     case OutcomeOutcomeActions.CHANGE_ID:
       return state.map((item) =>
-        item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, noDrag: false }
+        item.id === action.payload.oldId
+          ? { ...item, id: action.payload.newId, noDrag: false }
           : item
       )
 
     case OutcomeOutcomeActions.MOVED_TO:
       return state.map((item) =>
         item.id === action.payload.id
-          ? { ...item, parent: action.payload.new_parent, noDrag: true }
+          ? { ...item, parent: action.payload.newParent, noDrag: true }
           : item
       )
 
     case OutcomeActions.DELETE_SELF:
-      return state.filter((item) => item.id !== action.payload.parent_id)
+      return state.filter((item) => item.id !== action.payload.parentId)
 
     case OutcomeBaseActions.INSERT_BELOW:
     case OutcomeActions.INSERT_CHILD:
@@ -113,7 +113,7 @@ function outcomeOutcomeReducer(
       const newItems = action.payload.children
         ? action.payload.children.outcomeoutcome
         : []
-      return [...state, action.payload.new_through, ...newItems]
+      return [...state, action.payload.newThrough, ...newItems]
 
     default:
       return state
@@ -130,17 +130,17 @@ function outcomeOutcomeReducer(
   //     const newState = state.slice()
   //     if (action.payload.outcomeoutcome) {
   //       for (var i = 0; i < action.payload.outcomeoutcome.length; i++) {
-  //         const new_obj = action.payload.outcomeoutcome[i]
+  //         const newObj = action.payload.outcomeoutcome[i]
   //         let added = false
   //         for (let j = 0; j < newState.length; j++) {
-  //           if (newState[j].id == new_obj.id) {
-  //             newState.splice(j, 1, new_obj)
+  //           if (newState[j].id == newObj.id) {
+  //             newState.splice(j, 1, newObj)
   //             added = true
   //             break
   //           }
   //         }
   //         if (added) continue
-  //         newState.push(new_obj)
+  //         newState.push(newObj)
   //       }
   //     }
   //     return newState
@@ -148,11 +148,11 @@ function outcomeOutcomeReducer(
   //
   //   case 'outcomeoutcome/changeID': {
   //     for (var i = 0; i < state.length; i++) {
-  //       if (state[i].id == action.payload.old_id) {
+  //       if (state[i].id == action.payload.oldId) {
   //         var newState = state.slice()
   //         newState[i] = {
   //           ...newState[i],
-  //           id: action.payload.new_id,
+  //           id: action.payload.newId,
   //           noDrag: false
   //         }
   //         return newState
@@ -167,7 +167,7 @@ function outcomeOutcomeReducer(
   //       if (state[i].id == action.payload.id) {
   //         newState[i] = {
   //           ...state[i],
-  //           parent: action.payload.new_parent,
+  //           parent: action.payload.newParent,
   //           noDrag: true
   //         }
   //       }
@@ -177,7 +177,7 @@ function outcomeOutcomeReducer(
   //
   //   case 'outcome/deleteSelf': {
   //     for (var i = 0; i < state.length; i++) {
-  //       if (state[i].id == action.payload.parent_id) {
+  //       if (state[i].id == action.payload.parentId) {
   //         var newState = state.slice()
   //         newState.splice(i, 1)
   //         return newState
@@ -203,7 +203,7 @@ function outcomeOutcomeReducer(
   //   case 'outcome/insertChild':
   //   case 'outcome/insertBelow': {
   //     const newState = state.slice()
-  //     newState.push(action.payload.new_through)
+  //     newState.push(action.payload.newThrough)
   //     if (action.payload.children) {
   //       for (
   //         var i = 0;

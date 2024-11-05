@@ -64,18 +64,18 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
     Utility.triggerHandlerEach($('.week .node'), 'component-updated')
   }
 
-  sortableMovedFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedFunction(id, newPosition, type, newParent, childId) {
     if (type === 'weekworkflow') {
       this.context.editableMethods.microUpdate(
-        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveWeekWorkflow(id, newPosition, newParent, childId)
       )
       insertedAt(
         this.context, // dragaction
-        child_id,
+        childId,
         'week',
-        new_parent,
+        newParent,
         'workflow',
-        new_position,
+        newPosition,
         'weekworkflow'
       )
     }

@@ -37,8 +37,8 @@ export class JumpToWeekViewUnconnected extends React.Component<PropsType> {
    * FUNCTIONS
    *******************************************************/
   jumpTo() {
-    const week_id = this.props.week.data.id
-    const week = $(".week-workflow[data-child-id='" + week_id + "'] > .week")
+    const weekId = this.props.week.data.id
+    const week = $(".week-workflow[data-child-id='" + weekId + "'] > .week")
     if (week.length > 0) {
       // @todo remove this
       const container = $('#container')

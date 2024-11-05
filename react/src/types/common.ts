@@ -6,15 +6,15 @@ export type ToDefine = any
 
 export type ObjectPermission = {
   permissionType: number
-  role_type: number
+  roleType: number
   lastViewed?: Date
 }
 
 export type QueryPages = {
-  total_results: number
-  page_count: number
-  current_page: number
-  results_per_page: number
+  totalResults: number
+  pageCount: number
+  currentPage: number
+  resultsPerPage: number
 }
 
 export type Discipline = {

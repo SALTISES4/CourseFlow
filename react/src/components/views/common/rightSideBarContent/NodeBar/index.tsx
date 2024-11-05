@@ -20,8 +20,8 @@ type OwnProps = {
 type ConnectedProps = {
   data: AppState['workflow']
   columns: AppState['column']
-  available_strategies: AppState['strategy']
-  // saltise_strategies: AppState['saltise_strategy']
+  availableStrategies: AppState['strategy']
+  // saltise_strategies: AppState['saltiseStrategy']
 }
 
 type PropsType = OwnProps & ConnectedProps
@@ -35,7 +35,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.data
-    let nodebar_nodes = []
+    let nodebarNodes = []
 
     const nodebarColumnWorkflows = data.columnworkflowSet.map(
       (columnWorkflow: number, index: number) => (
@@ -46,10 +46,10 @@ class NodeBarUnconnected extends React.Component<PropsType> {
         />
       )
     )
-    const columns_present = this.props.columns.map((col) => col.columnType)
+    const columnsPresent = this.props.columns.map((col) => col.columnType)
 
     for (let i = 0; i < data.defaultColumns.length; i++) {
-      if (columns_present.indexOf(data.defaultColumns[i]) < 0) {
+      if (columnsPresent.indexOf(data.defaultColumns[i]) < 0) {
         nodebarColumnWorkflows.push(
           <NodeBarColumnWorkflow
             // renderer={this.props.renderer}
@@ -74,12 +74,12 @@ class NodeBarUnconnected extends React.Component<PropsType> {
     )
 
     if (!this.props.readOnly) {
-      nodebar_nodes = [
+      nodebarNodes = [
         <h4>{_t('Nodes')}</h4>,
         <div className="node-bar-column-block">{nodebarColumnWorkflows}</div>
       ]
     }
-    const strategies = this.props.available_strategies.map((strategy) => (
+    const strategies = this.props.availableStrategies.map((strategy) => (
       <Strategy key={strategy.id} objectId={strategy.id} data={strategy} />
     ))
     // const saltise_strategies = this.props.saltise_strategies.map((strategy) => (
@@ -90,7 +90,7 @@ class NodeBarUnconnected extends React.Component<PropsType> {
       <div id="node-bar-workflow" className="right-panel-inner">
         <h3 className="drag-and-drop">{_t('Add to workflow')}</h3>
         <hr />
-        {nodebar_nodes}
+        {nodebarNodes}
         <hr />
         <h4>{_t('My strategies')}</h4>
         <div className="strategy-bar-strategy-block">{strategies}</div>
@@ -108,8 +108,8 @@ class NodeBarUnconnected extends React.Component<PropsType> {
 const mapStateToProps = (state: AppState): ConnectedProps => ({
   data: state.workflow,
   columns: state.column,
-  available_strategies: state.strategy
-  // saltise_strategies: state.saltise_strategy
+  availableStrategies: state.strategy
+  // saltise_strategies: state.saltiseStrategy
 })
 
 const NodeBar = connect<ConnectedProps, object, OwnProps, AppState>(

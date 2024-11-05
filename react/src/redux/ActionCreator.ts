@@ -8,7 +8,6 @@ import {
   ObjectSetActions,
   OutcomeOutcomeActions,
   OutcomeWorkflowActions,
-  SidebarActions,
   WeekWorkflowActions
 } from '@cfRedux/types/enumActions'
 
@@ -54,19 +53,17 @@ class ActionCreator {
   static reloadCommentsAction = (
     id: number,
     objectType: CfObjectType,
-    comment_data
+    commentData
   ) => {
-    console.log(
-      'what is comment_data'
-    )
-    console.log(comment_data)
+    console.log('what is commentData')
+    console.log(commentData)
 
     return {
       type: objectType + '/reloadComments', // this is a redux antipattern
       payload: {
         id: id,
         objectType: objectType,
-        comment_data
+        commentData
       }
     }
   }
@@ -224,17 +221,6 @@ class ActionCreator {
     return {
       type: ObjectSetActions.TOGGLE_OBJECT_SET,
       payload: { id: id, hidden: hidden }
-    }
-  }
-
-  static sidebarUpdate = (
-    id: number,
-    objectType: CfObjectType,
-    parentId?: number
-  ) => {
-    return {
-      type: SidebarActions.SET_SIDEBAR_DATA,
-      payload: { id, objectType, parentId }
     }
   }
 }

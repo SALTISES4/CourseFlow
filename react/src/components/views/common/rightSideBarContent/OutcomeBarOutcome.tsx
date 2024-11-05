@@ -106,14 +106,14 @@ type StateType = {
 export class OutcomeBarOutcomeUnconnected<
   P extends PropsType
 > extends React.Component<P, StateType> {
-  protected children_block: React.RefObject<HTMLDivElement>
+  protected childrenBlock: React.RefObject<HTMLDivElement>
   mainDiv: React.RefObject<HTMLDivElement>
   objectType: CfObjectType
 
   constructor(props: P) {
     super(props)
     this.objectType = CfObjectType.OUTCOME
-    this.children_block = React.createRef()
+    this.childrenBlock = React.createRef()
     this.state = { isDropped: props.data.depth < 1 }
   }
 
@@ -131,10 +131,10 @@ export class OutcomeBarOutcomeUnconnected<
     $(this.mainDiv.current).mouseleave((evt) => {
       this.toggleCSS(false, 'hover')
     })
-    $(this.children_block.current).mouseleave((evt) => {
+    $(this.childrenBlock.current).mouseleave((evt) => {
       this.toggleCSS(true, 'hover')
     })
-    $(this.children_block.current).mouseenter((evt) => {
+    $(this.childrenBlock.current).mouseenter((evt) => {
       this.toggleCSS(false, 'hover')
     })
   }
@@ -151,8 +151,8 @@ export class OutcomeBarOutcomeUnconnected<
     if (this.props.readOnly) {
       return
     }
-    const draggable_selector = 'outcome'
-    const draggable_type = 'outcome'
+    const draggableSelector = 'outcome'
+    const draggableType = 'outcome'
 
     $(this.mainDiv?.current).draggable({
       helper: (_e, _item) => {
@@ -165,12 +165,12 @@ export class OutcomeBarOutcomeUnconnected<
       cursorAt: { top: 20, left: 100 },
       distance: 10,
       start: (_e, _ui) => {
-        $('.workflow-canvas').addClass('dragging-' + draggable_type)
-        $(draggable_selector).addClass('dragging')
+        $('.workflow-canvas').addClass('dragging-' + draggableType)
+        $(draggableSelector).addClass('dragging')
       },
       stop: (_e, _ui) => {
-        $('.workflow-canvas').removeClass('dragging-' + draggable_type)
-        $(draggable_selector).removeClass('dragging')
+        $('.workflow-canvas').removeClass('dragging-' + draggableType)
+        $(draggableSelector).removeClass('dragging')
       }
     })
   }
@@ -183,8 +183,8 @@ export class OutcomeBarOutcomeUnconnected<
     }
   }
 
-  toggleCSS(is_toggled: boolean, type: string) {
-    if (is_toggled) {
+  toggleCSS(isToggled: boolean, type: string) {
+    if (isToggled) {
       $('.outcome-' + this.props.data.id).addClass('outcome-' + type)
       if (this.props.nodes.length) {
         $(this.props.nodes.map((node) => '.node#' + node).join(', ')).addClass(
@@ -293,7 +293,7 @@ export class OutcomeBarOutcomeUnconnected<
           <div
             className="children-block"
             id={this.props.objectId + '-children-block'}
-            ref={this.children_block}
+            ref={this.childrenBlock}
           >
             {children}
           </div>

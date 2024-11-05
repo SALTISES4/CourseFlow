@@ -28,13 +28,13 @@ type OwnProps = {
   workflowId: any
   unreadComments: any
   readOnly: boolean
-  add_comments: any
+  addComments: any
 }
 
 type StateType = {
   tagging?: boolean
   userList?: any[]
-  has_rendered?: boolean
+  hasRendered?: boolean
 }
 
 type PropsType = OwnProps
@@ -57,7 +57,7 @@ class CommentBox extends React.Component<PropsType, StateType> {
    *******************************************************/
   componentDidMount() {
     this.setState({
-      has_rendered: true
+      hasRendered: true
     })
   }
 
@@ -77,21 +77,21 @@ class CommentBox extends React.Component<PropsType, StateType> {
    *******************************************************/
 
   addUserTag(user: TUser) {
-    const cursor_pos = this.tagPosition
+    const cursorPos = this.tagPosition
 
-    const current_value = this.input.current.value
-    let to_add = ''
+    const currentValue = this.input.current.value
+    let toAdd = ''
 
-    if (cursor_pos > 0 && current_value[cursor_pos - 1] != ' ') {
-      to_add += ' '
+    if (cursorPos > 0 && currentValue[cursorPos - 1] != ' ') {
+      toAdd += ' '
     }
 
-    to_add += '@' + user.username + ' '
+    toAdd += '@' + user.username + ' '
 
     const newValue =
-      current_value.slice(0, cursor_pos) +
-      to_add +
-      current_value.slice(cursor_pos + 1)
+      currentValue.slice(0, cursorPos) +
+      toAdd +
+      currentValue.slice(cursorPos + 1)
 
     this.input.current.value = newValue
     this.input.current.selectionStart = this.input.current.value.length
@@ -203,16 +203,16 @@ class CommentBox extends React.Component<PropsType, StateType> {
         return this.unreadComments?.includes(value)
       }).length > 0
 
-    if (this.state.has_rendered) {
+    if (this.state.hasRendered) {
       has_comments = this.props.comments.length > 0
     }
 
     let render_div
-    const side_actions = $(this.props.parent?.mainDiv?.current)
+    const sideActions = $(this.props.parent?.mainDiv?.current)
       .children('.side-actions')
       .children('.comment-indicator-container')
-    if (side_actions.length > 0) {
-      render_div = side_actions[0]
+    if (sideActions.length > 0) {
+      render_div = sideActions[0]
     } else {
       render_div = this.props.parent?.mainDiv?.current
     }
@@ -335,7 +335,7 @@ class CommentBox extends React.Component<PropsType, StateType> {
           <div className="comment-top-row">{top_contents}</div>
           <hr />
           <div className="comment-block">{comments}</div>
-          {this.props.add_comments && (
+          {this.props.addComments && (
             <div className="comment-input-line">
               <textarea
                 ref={this.input}

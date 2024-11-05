@@ -45,7 +45,7 @@ class UserLabel extends React.Component<PropsType, StateProps> {
    * RENDER
    *******************************************************/
   render() {
-    let permission_select
+    let permissionSelect
     let disabled = false
     if (
       this.props.cannotChange &&
@@ -55,7 +55,7 @@ class UserLabel extends React.Component<PropsType, StateProps> {
     }
     if (this.props.type !== 'owner') {
       if (this.props.type === 'add') {
-        permission_select = (
+        permissionSelect = (
           <div className="flex-middle">
             <div className="permission-select">
               <select ref={this.select} disabled={disabled}>
@@ -75,7 +75,7 @@ class UserLabel extends React.Component<PropsType, StateProps> {
           </div>
         )
       } else {
-        permission_select = (
+        permissionSelect = (
           <div className="permission-select">
             <select
               value={this.props.type}
@@ -100,7 +100,7 @@ class UserLabel extends React.Component<PropsType, StateProps> {
           </div>
           <div className="user-username">{this.props.user.username}</div>
         </div>
-        {permission_select}
+        {permissionSelect}
       </li>
     )
   }

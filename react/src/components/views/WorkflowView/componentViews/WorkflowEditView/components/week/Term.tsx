@@ -7,14 +7,13 @@ import {
 } from '@cfEditableComponents/hoverEditActions'
 import { TTermByID, getTermById } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
+import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWeek'
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
-} from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/Week'
+} from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/Week'
 import * as React from 'react'
 import { connect } from 'react-redux'
-
-import NodeWeek from './NodeWeek'
 
 type ConnectedProps = {
   term: TTermByID
@@ -41,7 +40,7 @@ class Term extends WeekUnconnected<PropsType> {
   makeDragAndDrop() {
     //Makes the nodeweeks in the node block draggable
     this.makeSortableNode(
-      $(this.node_block.current)
+      $(this.nodeBlock.current)
         .children()
         .children('.node-week')
         .not('.ui-draggable'),
@@ -94,21 +93,21 @@ class Term extends WeekUnconnected<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.data
-    const node_blocks = []
+    const nodeBlocks = []
 
-    for (let i = 0; i < this.props.column_order.length; i++) {
-      const col = this.props.column_order[i]
+    for (let i = 0; i < this.props.columnOrder.length; i++) {
+      const col = this.props.columnOrder[i]
       const nodeweeks = []
       for (let j = 0; j < data.nodeweekSet.length; j++) {
         const nodeweek = data.nodeweekSet[j]
-        if (this.props.nodes_by_column[col].indexOf(nodeweek) >= 0) {
+        if (this.props.nodesByColumn[col].indexOf(nodeweek) >= 0) {
           nodeweeks.push(
             <NodeWeek
               key={nodeweek}
               objectId={nodeweek}
               parentId={data.id}
               // renderer={this.props.renderer}
-              column_order={this.props.column_order}
+              columnOrder={this.props.columnOrder}
             />
           )
         }
@@ -121,7 +120,7 @@ class Term extends WeekUnconnected<PropsType> {
           ></div>
         )
       }
-      node_blocks.push(
+      nodeBlocks.push(
         <div
           className={'node-block term column-' + col}
           id={this.props.objectId + '-node-block-column-' + col}
@@ -178,9 +177,9 @@ class Term extends WeekUnconnected<PropsType> {
           <div
             className="node-block"
             id={this.props.objectId + '-node-block'}
-            ref={this.node_block}
+            ref={this.nodeBlock}
           >
-            {node_blocks}
+            {nodeBlocks}
           </div>
           <div
             className="week-drop-row hover-shade"

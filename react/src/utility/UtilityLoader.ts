@@ -2,14 +2,14 @@
  *  this has been refactored to remove jquery
  */
 export class UtilityLoader {
-  private load_screen: HTMLDivElement
+  private loadScreen: HTMLDivElement
   constructor(identifier) {
     // Create a new div element
-    this.load_screen = document.createElement('div')
-    this.load_screen.className = 'load-screen'
+    this.loadScreen = document.createElement('div')
+    this.loadScreen.className = 'load-screen'
 
     // Prevent default click behavior
-    this.load_screen.addEventListener('click', (evt) => {
+    this.loadScreen.addEventListener('click', (evt) => {
       evt.preventDefault()
     })
 
@@ -24,7 +24,7 @@ export class UtilityLoader {
     }
 
     if (parentElement) {
-      parentElement.appendChild(this.load_screen)
+      parentElement.appendChild(this.loadScreen)
     } else {
       console.error(`Element with identifier "${identifier}" not found.`)
     }
@@ -32,8 +32,8 @@ export class UtilityLoader {
 
   endLoad() {
     // Remove the load screen from its parent
-    if (this.load_screen && this.load_screen.parentNode) {
-      this.load_screen.parentNode.removeChild(this.load_screen)
+    if (this.loadScreen && this.loadScreen.parentNode) {
+      this.loadScreen.parentNode.removeChild(this.loadScreen)
     }
   }
 }

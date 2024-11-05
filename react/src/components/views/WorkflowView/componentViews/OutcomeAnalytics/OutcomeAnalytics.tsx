@@ -53,23 +53,23 @@ class OutcomeAnalyticsUnconnected extends React.Component<
   render() {
     const data = this.props.data
     //Choices of outcomes to sort by
-    let view_buttons_outcomes = this.props.outcomes.map((category, i) => {
+    let viewButtonsOutcomes = this.props.outcomes.map((category, i) => {
       return [
         <h4>{category.objectset.title}:</h4>,
         <div className=" hide-print">
           {category.outcomes.map((outcome, j) => {
-            let view_class = 'hover-shade'
+            let viewClass = 'hover-shade'
             if (
               this.state.sort == 'outcome' &&
               i == this.state.active &&
               j == this.state.active2
             ) {
-              view_class += ' active'
+              viewClass += ' active'
             }
             return (
               <div
                 id={'button-outcome-' + outcome.data.id}
-                className={view_class}
+                className={viewClass}
                 onClick={this.changeView.bind(this, i, 'outcome', j)}
               >
                 <OutcomeTitle
@@ -84,16 +84,16 @@ class OutcomeAnalyticsUnconnected extends React.Component<
       ]
     })
     //Choices of terms (weeks) to sort by
-    const view_buttons_terms = this.props.terms.map((week, index: number) => {
-      let view_class = 'hover-shade'
+    const viewButtonsTerms = this.props.terms.map((week, index: number) => {
+      let viewClass = 'hover-shade'
       if (this.state.sort == 'week' && index == this.state.active) {
-        view_class += ' active'
+        viewClass += ' active'
       }
       return (
         <div
           key={index}
           id={'button-week-' + week.id}
-          className={view_class}
+          className={viewClass}
           // @ts-ignore
           onClick={this.changeView.bind(this, index, 'week')}
         >
@@ -102,16 +102,16 @@ class OutcomeAnalyticsUnconnected extends React.Component<
       )
     })
 
-    let outcomes_block
-    let terms_block
-    let alignment_block
-    let alignment_reverse_block
+    let outcomesBlock
+    let termsBlock
+    let alignmentBlock
+    let alignmentReverseBlock
 
-    let outcome_data
+    let outcomeData
     if (this.state.sort == 'outcome') {
       const found = false
       try {
-        outcome_data =
+        outcomeData =
           this.props.outcomes[this.state.active].outcomes[this.state.active2]
             .data
       } catch (err) {
@@ -129,24 +129,24 @@ class OutcomeAnalyticsUnconnected extends React.Component<
     }
 
     if (this.state.active == -1) {
-      view_buttons_outcomes = _t(
+      viewButtonsOutcomes = _t(
         'No outcomes have been added yet. Use the Edit Outcomes menu to get started'
       )
     } else if (this.state.sort == 'outcome') {
-      outcomes_block = (
-        <AlignmentOutcomesBlock workflow_type={data.type} data={outcome_data} />
+      outcomesBlock = (
+        <AlignmentOutcomesBlock workflowType={data.type} data={outcomeData} />
       )
-      alignment_reverse_block = (
-        <AlignmentHorizontalReverseBlock sort="outcome" data={outcome_data} />
+      alignmentReverseBlock = (
+        <AlignmentHorizontalReverseBlock sort="outcome" data={outcomeData} />
       )
     }
 
     if (this.state.sort == 'week') {
-      alignment_reverse_block = (
+      alignmentReverseBlock = (
         <AlignmentHorizontalReverseBlock
           sort="week"
           data={this.props.terms[this.state.active]}
-          base_outcomes={this.props.outcomes}
+          baseOutcomes={this.props.outcomes}
         />
       )
     }
@@ -154,13 +154,13 @@ class OutcomeAnalyticsUnconnected extends React.Component<
     return (
       <div className="workflow-details">
         <h3>{_t('Filters')}:</h3>
-        {view_buttons_outcomes}
+        {viewButtonsOutcomes}
         <h4>{_t('Sections')}:</h4>
-        <div className="hide-print">{view_buttons_terms}</div>
-        {outcomes_block}
-        {terms_block}
-        {alignment_block}
-        {alignment_reverse_block}
+        <div className="hide-print">{viewButtonsTerms}</div>
+        {outcomesBlock}
+        {termsBlock}
+        {alignmentBlock}
+        {alignmentReverseBlock}
       </div>
     )
   }

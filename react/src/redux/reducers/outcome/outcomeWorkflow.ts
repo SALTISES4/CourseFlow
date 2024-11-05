@@ -47,8 +47,8 @@ function outcomeworkflowReducer(
 
     case OutcomeWorkflowActions.CHANGE_ID:
       return state.map((item) =>
-        item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, noDrag: false }
+        item.id === action.payload.oldId
+          ? { ...item, id: action.payload.newId, noDrag: false }
           : item
       )
 
@@ -57,7 +57,7 @@ function outcomeworkflowReducer(
 
     case OutcomeBaseActions.INSERT_BELOW:
     case OutcomeActions.NEW_OUTCOME:
-      return [...state, action.payload.new_through]
+      return [...state, action.payload.newThrough]
 
     default:
       return state
@@ -81,17 +81,17 @@ export default outcomeworkflowReducer
 //       const newState = state.slice()
 //       if (action.payload.outcomeworkflow) {
 //         for (let i = 0; i < action.payload.outcomeworkflow.length; i++) {
-//           const new_obj = action.payload.outcomeworkflow[i]
+//           const newObj = action.payload.outcomeworkflow[i]
 //           let added = false
 //           for (let j = 0; j < newState.length; j++) {
-//             if (newState[j].id === new_obj.id) {
-//               newState.splice(j, 1, new_obj)
+//             if (newState[j].id === newObj.id) {
+//               newState.splice(j, 1, newObj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           newState.push(new_obj)
+//           newState.push(newObj)
 //         }
 //       }
 //       return newState
@@ -112,11 +112,11 @@ export default outcomeworkflowReducer
 //
 //     case OutcomeWorkflowActions.CHANGE_ID: {
 //       for (let i = 0; i < state.length; i++) {
-//         if (state[i].id === action.payload.old_id) {
+//         if (state[i].id === action.payload.oldId) {
 //           const newState = state.slice()
 //           newState[i] = {
 //             ...newState[i],
-//             id: action.payload.new_id,
+//             id: action.payload.newId,
 //             noDrag: false
 //           }
 //           return newState
@@ -138,13 +138,13 @@ export default outcomeworkflowReducer
 //
 //     case OutcomeBaseActions.INSERT_BELOW: {
 //       const newState = state.slice()
-//       newState.push(action.payload.new_through)
+//       newState.push(action.payload.newThrough)
 //       return newState
 //     }
 //
 //     case OutcomeActions.NEW_OUTCOME: {
 //       const newState = state.slice()
-//       newState.push(action.payload.new_through)
+//       newState.push(action.payload.newThrough)
 //       return newState
 //     }
 //

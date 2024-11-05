@@ -40,7 +40,7 @@ const MatrixNode = ({ objectId }: OwnProps) => {
           // @ts-ignore
           titletext={
             data.timeUnits
-              ? _t(data.renderer.time_choices[data.timeUnits].name) // @todo no more 'renderer'!
+              ? _t(data.renderer.timeChoices[data.timeUnits].name) // @todo no more 'renderer'!
               : ''
           }
         >
@@ -104,7 +104,7 @@ export default MatrixNode
 //           className="table-cell"
 //           // @todo this atrribute is not allowed on a div
 //           // @ts-ignore
-//           titletext={this.props.renderer.time_choices[data.timeUnits].name}
+//           titletext={this.props.renderer.timeChoices[data.timeUnits].name}
 //         >
 //           {data.timeRequired}
 //         </div>
@@ -117,7 +117,7 @@ export default MatrixNode
 //    *******************************************************/
 //   render() {
 //     const data = this.props.data
-//     const data_override = data.representsWorkflow
+//     const dataOverride = data.representsWorkflow
 //       ? {
 //           ...data,
 //           ...data.linkedWorkflowData,
@@ -128,7 +128,7 @@ export default MatrixNode
 //     return (
 //       <div className="matrix-time-row">
 //         <div className="table-cell blank" />
-//         <this.TimeData data={data_override} />
+//         <this.TimeData data={dataOverride} />
 //       </div>
 //     )
 //   }

@@ -54,17 +54,9 @@ interface CourseflowAppGlobals {
 interface Path {
   post_paths: { [key: string]: string }
   get_paths: GetPaths
-
   create_path: CreatePath
   update_path: UpdatePath
   public_update_path: PublicUpdatePath
-  home_path: string
-  explore_path: string
-  my_library_path: string
-  my_favourites_path: string
-  my_liveprojects_path: string
-  registration_path: string
-  logout_path: string
   /* SORTED */
   html: HTMLPaths
   json_api: JSONAPIPaths
@@ -185,7 +177,7 @@ export interface GlobalContextData {
 }
 
 interface ContextData {
-  changeFieldID: number
+  changeFieldId: number
 }
 
 interface TinyLoader {

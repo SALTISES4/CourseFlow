@@ -28,8 +28,8 @@ const NodeBarColumn: React.FC<OwnProps> = ({
         return
       }
 
-      const draggable_selector = 'node-week'
-      const draggable_type = 'nodeweek'
+      const draggableSelector = 'node-week'
+      const draggableType = 'nodeweek'
 
       $(element).draggable({
         helper: (_e, _item) => {
@@ -42,12 +42,12 @@ const NodeBarColumn: React.FC<OwnProps> = ({
         cursorAt: { top: 20, left: 100 },
         distance: 10,
         start: (_e, _ui) => {
-          $('.workflow-canvas').addClass('dragging-' + draggable_type)
-          $(draggable_selector).addClass('dragging')
+          $('.workflow-canvas').addClass('dragging-' + draggableType)
+          $(draggableSelector).addClass('dragging')
         },
         stop: (_e, _ui) => {
-          $('.workflow-canvas').removeClass('dragging-' + draggable_type)
-          $(draggable_selector).removeClass('dragging')
+          $('.workflow-canvas').removeClass('dragging-' + draggableType)
+          $(draggableSelector).removeClass('dragging')
         }
       })
 
@@ -129,8 +129,8 @@ export default NodeBarColumn
 //    * FUNCTIONS
 //    *******************************************************/
 //   makeDraggable() {
-//     const draggable_selector = 'node-week'
-//     const draggable_type = 'nodeweek'
+//     const draggableSelector = 'node-week'
+//     const draggableType = 'nodeweek'
 //
 //     $(this.mainDiv?.current).draggable({
 //       helper: (_e: any, _item: any) => {
@@ -143,12 +143,12 @@ export default NodeBarColumn
 //       cursorAt: { top: 20, left: 100 },
 //       distance: 10,
 //       start: (_e, _ui) => {
-//         $('.workflow-canvas').addClass('dragging-' + draggable_type)
-//         $(draggable_selector).addClass('dragging')
+//         $('.workflow-canvas').addClass('dragging-' + draggableType)
+//         $(draggableSelector).addClass('dragging')
 //       },
 //       stop: (_e, _ui) => {
-//         $('.workflow-canvas').removeClass('dragging-' + draggable_type)
-//         $(draggable_selector).removeClass('dragging')
+//         $('.workflow-canvas').removeClass('dragging-' + draggableType)
+//         $(draggableSelector).removeClass('dragging')
 //       }
 //     })
 //   }

@@ -119,7 +119,7 @@ class ProjectEndpoint:
             data_package = ProjectService.get_my_projects(request.user)
         except AttributeError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
@@ -133,7 +133,7 @@ class ProjectEndpoint:
     #########################################################
 
     @staticmethod
-    @user_can_view("projectPk")
+    # @user_can_view("projectPk")
     def duplicate(request: Request, pk: int) -> Response:
         body = json.loads(
             request.body
@@ -170,7 +170,7 @@ class ProjectEndpoint:
     # RELATIONS
     #########################################################
     @staticmethod
-    @user_can_view("projectPk")
+    # @user_can_view("projectPk")
     @api_view(["POST"])
     def workflows__list(
         request: Request,
@@ -202,7 +202,7 @@ class ProjectEndpoint:
         )
 
     @staticmethod
-    @user_can_edit("projectPk")
+    # @user_can_edit("projectPk")
     def object_set__create(request: Request, pk: int) -> Response:
         """
         Add an object set to a project

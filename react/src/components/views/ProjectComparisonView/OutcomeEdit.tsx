@@ -55,7 +55,7 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected<
     }
   }
 
-  sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedOutFunction(id, newPosition, type, newParent, childId) {
     if (
       type === CfObjectType.OUTCOMEWORKFLOW &&
       confirm(
@@ -71,15 +71,15 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected<
         'outcome',
         this.props.workflow.id,
         'workflow',
-        new_position,
+        newPosition,
         'outcomeworkflow'
       )
       insertedAtInstant(
-        child_id,
+        childId,
         'outcome',
         this.props.workflow.id,
         'workflow',
-        new_position,
+        newPosition,
         'outcomeworkflow'
       )
     }

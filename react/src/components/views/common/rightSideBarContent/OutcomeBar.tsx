@@ -19,7 +19,7 @@ import OutcomeBarOutcome from './OutcomeBarOutcome'
  */
 type ConnectedProps = {
   data: TSortedOutcomes
-  workflow_type: WorkflowType
+  workflowType: WorkflowType
 }
 
 type StateProps = ReturnType<typeof mapStateToProps>
@@ -80,7 +80,7 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
       : outcomeBarOutcomes
 
     const edittext = Utility.capWords(
-      _t('Edit') + ' ' + _t(this.props.workflow_type + ' outcomes')
+      _t('Edit') + ' ' + _t(this.props.workflowType + ' outcomes')
     )
 
     return (
@@ -107,7 +107,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => ({
     state,
     state.workflow.outcomeworkflowSet
   ),
-  workflow_type: state.workflow.type
+  workflowType: state.workflow.type
 })
 
 const OutcomeBarConnected = connect<

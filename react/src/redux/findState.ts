@@ -27,9 +27,9 @@ import * as Constants from '../constants'
  *******************************************************/
 export type TGetColumnByID = {
   data: TColumn
-  sibling_count: number
+  siblingCount: number
   columnworkflows: Pick<AppState['workflow'], 'columnworkflowSet'>
-  column_order: Pick<AppState['workflow'], 'columnworkflowSet'>
+  columnOrder: Pick<AppState['workflow'], 'columnworkflowSet'>
 }
 
 export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
@@ -38,9 +38,9 @@ export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
     if (column.id == id) {
       return {
         data: column,
-        sibling_count: state.workflow.columnworkflowSet.length,
+        siblingCount: state.workflow.columnworkflowSet.length,
         columnworkflows: state.workflow.columnworkflowSet,
-        column_order: state.workflow.columnworkflowSet.map(
+        columnOrder: state.workflow.columnworkflowSet.map(
           (columnworkflowId) =>
             getColumnWorkflowByID(state, columnworkflowId).data.column
         )
@@ -55,8 +55,8 @@ export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
  *******************************************************/
 export type TGetWeekByIDType = {
   data: TWeek
-  column_order: number[]
-  sibling_count?: number
+  columnOrder: number[]
+  siblingCount?: number
   nodeweeks: any
   workflowId?: number
 }
@@ -75,11 +75,11 @@ export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
       // redux should not be marshalling like this
       return {
         data: week,
-        column_order: state.workflow.columnworkflowSet.map(
+        columnOrder: state.workflow.columnworkflowSet.map(
           (columnworkflowId) =>
             getColumnWorkflowByID(state, columnworkflowId).data.column
         ),
-        sibling_count: state.workflow.weekworkflowSet.length,
+        siblingCount: state.workflow.weekworkflowSet.length,
         nodeweeks: state.nodeweek,
         workflowId: state.workflow.id
       }
@@ -93,8 +93,8 @@ export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
  *******************************************************/
 export type TTermByID = {
   data: any
-  column_order: any
-  nodes_by_column: any
+  columnOrder: any
+  nodesByColumn: any
   nodeweeks: any
 }
 
@@ -109,28 +109,28 @@ export const getTermById = (state: AppState, id: number): TTermByID => {
 
       const nodeweeks = week.nodeweekSet
 
-      const column_order = Utility.filterThenSortByID<TWeek['nodeweekSet']>(
+      const columnOrder = Utility.filterThenSortByID<TWeek['nodeweekSet']>(
         state.columnworkflow,
         state.workflow.columnworkflowSet
       ).map((columnworkflow) => columnworkflow.column)
 
-      const nodes_by_column = {}
-      for (var j = 0; j < column_order.length; j++) {
-        nodes_by_column[column_order[j]] = []
+      const nodesByColumn = {}
+      for (var j = 0; j < columnOrder.length; j++) {
+        nodesByColumn[columnOrder[j]] = []
       }
       for (var j = 0; j < nodeweeks.length; j++) {
-        const node_week = getNodeWeekByID(state, nodeweeks[j]).data
-        const node = getNodeByID(state, node_week.node).data
+        const nodeWeek = getNodeWeekByID(state, nodeweeks[j]).data
+        const node = getNodeByID(state, nodeWeek.node).data
         if (node.column) {
-          nodes_by_column[node.column].push(nodeweeks[j])
+          nodesByColumn[node.column].push(nodeweeks[j])
         } else {
-          nodes_by_column[nodes_by_column.keys()[0]].push(nodeweeks[j])
+          nodesByColumn[nodesByColumn.keys()[0]].push(nodeweeks[j])
         }
       }
       return {
         data: week,
-        column_order: column_order,
-        nodes_by_column: nodes_by_column,
+        columnOrder: columnOrder,
+        nodesByColumn: nodesByColumn,
         nodeweeks: state.nodeweek
       }
     }
@@ -429,8 +429,8 @@ function findTopRank(state: AppState, outcome) {
           ) + 1
         )
       }
-      for (let k = 0; k < state.child_workflow.length; k++) {
-        const index = state.child_workflow[k].outcomeworkflowSet.indexOf(
+      for (let k = 0; k < state.childWorkflow.length; k++) {
+        const index = state.childWorkflow[k].outcomeworkflowSet.indexOf(
           state.outcomeworkflow[j].id
         )
         if (index >= 0) {
@@ -450,8 +450,8 @@ function findTopRank(state: AppState, outcome) {
 }
 
 export const getChildWorkflowById = (state: AppState, id: number) => {
-  for (const i in state.child_workflow) {
-    const workflow = state.child_workflow[i]
+  for (const i in state.childWorkflow) {
+    const workflow = state.childWorkflow[i]
     if (workflow.id === id) {
       return { data: workflow }
     }
@@ -468,9 +468,9 @@ export const getOutcomeOutcomeById = (
   state: AppState,
   id: number
 ): TOutcomeOutcomeByID => {
-  const state_section = state.outcomeoutcome
-  for (const i in state_section) {
-    const outcomeOutcome = state_section[i]
+  const stateSection = state.outcomeoutcome
+  for (const i in stateSection) {
+    const outcomeOutcome = stateSection[i]
     if (outcomeOutcome.id === id) {
       return {
         data: outcomeOutcome
@@ -544,7 +544,7 @@ export const getSortedOutcomeNodesFromNodes = (
     return outcomes
   }
 
-  const base_title = Utility.capWords(_t('outcomes'))
+  const baseTitle = Utility.capWords(_t('outcomes'))
   const objectSets = state.objectset.filter(
     (objectset) => objectset.term === outcomes[0].type
   )
@@ -552,7 +552,7 @@ export const getSortedOutcomeNodesFromNodes = (
     return [
       {
         objectset: {
-          title: base_title
+          title: baseTitle
         },
         outcomes: outcomes
       }
@@ -596,14 +596,14 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     outcomeworkflowSet
   )
 
-  const outcome_ids = outcomeworkflows.map(
+  const outcomeIds = outcomeworkflows.map(
     (outcomeworkflow) => outcomeworkflow.outcome
   )
 
   // @todo clean up
   const outcomes = Utility.filterThenSortByID<TOutcome>(
     state.outcome,
-    outcome_ids
+    outcomeIds
   )
 
   if (outcomes.length === 0) {
@@ -614,10 +614,10 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   const updatedOutcomes = outcomes.map((outcome, index) => ({
     ...outcome, // Shallow copy of each outcome
     outcomeworkflow: outcomeworkflows[index].id,
-    through_noDrag: outcomeworkflows[index].noDrag
+    throughNoDrag: outcomeworkflows[index].noDrag
   }))
 
-  const base_title = Utility.capWords(_t('outcomes'))
+  const baseTitle = Utility.capWords(_t('outcomes'))
 
   const objectSets = state.objectset.filter(
     (objectset) => objectset.term === updatedOutcomes[0].type
@@ -627,7 +627,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     return [
       {
         objectset: {
-          title: base_title
+          title: baseTitle
         },
         outcomes: updatedOutcomes
       }
@@ -685,7 +685,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
  *******************************************************/
 
 const getDropped = (objectId: number, objectType, depth = 1) => {
-  const default_drop = Constants.getDefaultDropState(
+  const defaultDrop = Constants.getDefaultDropState(
     objectId,
     objectType,
     depth
@@ -695,11 +695,11 @@ const getDropped = (objectId: number, objectType, depth = 1) => {
       window.localStorage.getItem(objectType + objectId)
     )
     if (storedDrop === null) {
-      return default_drop
+      return defaultDrop
     }
     return storedDrop
   } catch (err) {
-    return default_drop
+    return defaultDrop
   }
 }
 
@@ -717,36 +717,36 @@ export const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
 /**
  *  // @todo doesn't really belong here (not a state selector)
  * //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
- * @param outcomes_unsorted
- * @param outcomeworkflows_unsorted
+ * @param outcomesUnsorted
+ * @param outcomeworkflowsUnsorted
  * @param outcomeworkflowSet
- * @param objectSets_unfiltered
+ * @param objectSetsUnfiltered
  */
 export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
-  outcomes_unsorted,
-  outcomeworkflows_unsorted,
+  outcomesUnsorted,
+  outcomeworkflowsUnsorted,
   outcomeworkflowSet,
-  objectSets_unfiltered
+  objectSetsUnfiltered
 ) => {
   // Get sorted outcome workflows based on the provided IDs
   const outcomeworkflows = Utility.filterThenSortByID(
-    outcomeworkflows_unsorted,
+    outcomeworkflowsUnsorted,
     outcomeworkflowSet
   )
 
   // Extract the outcome IDs from the sorted outcome workflows
-  const outcome_ids = outcomeworkflows.map(
+  const outcomeIds = outcomeworkflows.map(
     (outcomeworkflow) => outcomeworkflow.outcome
   )
 
   // Filter and sort the outcomes based on the outcome IDs
-  const outcomes = Utility.filterThenSortByID(outcomes_unsorted, outcome_ids)
+  const outcomes = Utility.filterThenSortByID(outcomesUnsorted, outcomeIds)
 
   // Create a new array to avoid mutating the original outcomes
   const updatedOutcomes = outcomes.map((outcome, index) => ({
     ...outcome, // Shallow copy of each outcome
     outcomeworkflow: outcomeworkflows[index].id,
-    through_noDrag: outcomeworkflows[index].noDrag
+    throughNoDrag: outcomeworkflows[index].noDrag
   }))
 
   // If there are no outcomes, return their IDs
@@ -755,10 +755,10 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   }
 
   // Prepare the base title for uncategorized outcomes
-  const base_title = Utility.capWords(_t('outcomes'))
+  const baseTitle = Utility.capWords(_t('outcomes'))
 
   // Filter the objectSets to match the first outcome's type
-  const objectSets = objectSets_unfiltered.filter(
+  const objectSets = objectSetsUnfiltered.filter(
     (objectset) => objectset.term === updatedOutcomes[0].type
   )
 
@@ -766,7 +766,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   if (objectSets.length === 0) {
     return [
       {
-        objectset: { title: base_title },
+        objectset: { title: baseTitle },
         outcomes: updatedOutcomes.map((outcome) => outcome.id)
       }
     ]

@@ -71,15 +71,60 @@ const extendedApi = cfApi.injectEndpoints({
           body: args.payload
         }
       }
+    }),
+    /*******************************************************
+     *  OBJECTS
+     *******************************************************/
+    insertChild: builder.mutation<
+      EmptyPostResp,
+      {
+        payload: {
+          id: number
+          objectType: CfObjectType
+        }
+      }
+    >({
+      query: (args) => {
+        const url = apiPaths.json_api.workflow.object__insert_child
+        return {
+          method: Verb.POST,
+          url,
+          body: args.payload
+        }
+      }
+    }),
+    insertSibling: builder.mutation<
+      EmptyPostResp,
+      {
+        payload: {
+          id: number
+          objectType: CfObjectType
+          parentId: number
+          parentType: CfObjectType
+          throughType: CfObjectType
+        }
+      }
+    >({
+      query: (args) => {
+        const url = apiPaths.json_api.workflow.object__insert_child
+        return {
+          method: Verb.POST,
+          url,
+          body: args.payload
+        }
+      }
     })
   }),
+
   overrideExisting: false
 })
 
 export const {
   useArchiveMutation,
   useUnarchiveMutation,
-  useDeleteSelfHardMutation
+  useDeleteSelfHardMutation,
+  useInsertChildMutation,
+  useInsertSiblingMutation
 } = extendedApi
 
 /*******************************************************
@@ -140,44 +185,44 @@ export function restoreSelfQueryLegacy(
 /**
  * Causes the specified object to insert a child to itself
  **/
-export function insertChildQuery(
-  objectId: number,
-  objectType: CfObjectType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
-) {
-  API_POST(apiPaths.json_api.workflow.object__insert_child, {
-    objectId: objectId,
-    objectType: objectType
-  }).then((response: EmptyPostResp) => {
-    callBackFunction(response)
-  })
-}
+// export function insertChildQuery(
+//   objectId: number,
+//   objectType: CfObjectType,
+//   callBackFunction = (_data: EmptyPostResp) => console.log('success')
+// ) {
+//   API_POST(apiPaths.json_api.workflow.object__insert_child, {
+//     objectId: objectId,
+//     objectType: objectType
+//   }).then((response: EmptyPostResp) => {
+//     callBackFunction(response)
+//   })
+// }
 
 /**
  *
  **/
-export function insertSiblingQuery(
-  objectId: number,
-  objectType: CfObjectType,
-  parentId: number,
-  parentType: CfObjectType,
-  throughType: CfObjectType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
-) {
-  API_POST(apiPaths.json_api.workflow.object__insert_sibling, {
-    objectId,
-    objectType,
-    parentId,
-    parentType,
-    throughType
-  })
-    .then((response: EmptyPostResp) => {
-      callBackFunction(response)
-    })
-    .catch((e) => {
-      console.log(e)
-    })
-}
+// export function insertSiblingQuery(
+//   objectId: number,
+//   objectType: CfObjectType,
+//   parentId: number,
+//   parentType: CfObjectType,
+//   throughType: CfObjectType,
+//   callBackFunction = (_data: EmptyPostResp) => console.log('success')
+// ) {
+//   API_POST(apiPaths.json_api.workflow.object__insert_sibling, {
+//     objectId,
+//     objectType,
+//     parentId,
+//     parentType,
+//     throughType
+//   })
+//     .then((response: EmptyPostResp) => {
+//       callBackFunction(response)
+//     })
+//     .catch((e) => {
+//       console.log(e)
+//     })
+// }
 
 //Causes the specified object to insert a sibling after itself
 export function duplicateSelfQuery(

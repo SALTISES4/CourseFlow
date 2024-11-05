@@ -68,8 +68,8 @@ from course_flow.sockets.emitters import WorkflowUpdateEmitter
 #########################################################
 class WorkflowObjectEndpoint:
     @staticmethod
-    # @user_can_view(False)
-    # @user_can_edit(False, get_parent=True)
+    # #@user_can_view(False)
+    # #@user_can_edit(False, get_parent=True)
     @api_view(["POST"])
     def duplicate(request: Request) -> Response:
         """
@@ -285,9 +285,10 @@ class WorkflowObjectEndpoint:
         return Response({"message": "success"}, status=status.HTTP_200_OK)
 
     @staticmethod
-    @user_can_view(False)
-    # @user_can_edit(False, get_parent=True)
-    def insert_sibling(request: HttpRequest) -> JsonResponse:
+    @api_view(["POST"])
+    # #@user_can_view(False)
+    # #@user_can_edit(False, get_parent=True)
+    def insert_sibling(request: Request) -> Response:
         """
          Creates a new item
          why isn't this called create? not sure yet
@@ -297,19 +298,15 @@ class WorkflowObjectEndpoint:
 
             ...
 
-
-
         :param request:
         :return:
         """
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        object_id = body.get("objectId")
-        object_type = body.get("object_type")
-        parent_id = body.get("parentId")
-        parent_type = body.get("parentType")
-        through_type = body.get("throughType")
+        data = request.data
+        object_id = data.get("id")
+        object_type = data.get("object_type")
+        parent_id = data.get("parent_id")
+        parent_type = data.get("parent_type")
+        through_type = data.get("through_type")
 
         try:
             model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
@@ -319,6 +316,7 @@ class WorkflowObjectEndpoint:
                 old_through_kwargs = {"child": model, "parent": parent}
             else:
                 old_through_kwargs = {object_type: model, parent_type: parent}
+
             through = DAO.get_model_from_str(through_type).objects.get(**old_through_kwargs)
 
             if object_type == "week":
@@ -361,7 +359,7 @@ class WorkflowObjectEndpoint:
 
         except ValidationError as e:
             logger.exception("An error occurred")
-            return JsonResponse({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         response_data = {
             "new_model": new_model_serialized,
@@ -382,13 +380,14 @@ class WorkflowObjectEndpoint:
                 workflow,
                 WorkflowUpdateEmitter.insert_below_action(response_data, object_type),
             )
-        return JsonResponse({"message": "success"})
+
+        return Response({"message": "success"}, status=status.HTTP_200_OK)
 
     @staticmethod
     @api_view(["POST"])
-    # @user_can_edit(False)
-    # @user_can_edit_or_none(False, get_parent=True)
-    # @user_can_edit_or_none("columnPk")
+    # #@user_can_edit(False)
+    # #@user_can_edit_or_none(False, get_parent=True)
+    # #@user_can_edit_or_none("columnPk")
     # @from_same_workflow(False, False, get_parent=True)
     # @from_same_workflow(False, "columnPk")
     def order(request: Request) -> Response:
@@ -522,7 +521,7 @@ class WorkflowObjectEndpoint:
 
         except ValidationError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         workflow = model.get_workflow()
 

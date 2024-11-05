@@ -20,7 +20,7 @@ interface RefreshStoreDataAction extends AnyAction {
 
 interface ChangeIdAction extends AnyAction {
   type: ColumnWorkflowActions.CHANGE_ID
-  payload: { old_id: number; new_id: number }
+  payload: { oldId: number; newId: number }
 }
 
 interface MovedToAction extends AnyAction {
@@ -30,12 +30,12 @@ interface MovedToAction extends AnyAction {
 
 interface DeleteSelfAction extends AnyAction {
   type: ColumnActions.DELETE_SELF
-  payload: { parent_id: number }
+  payload: { parentId: number }
 }
 
 interface InsertBelowAction extends AnyAction {
   type: ColumnActions.INSERT_BELOW
-  payload: { new_through: TColumnworkflow }
+  payload: { newThrough: TColumnworkflow }
 }
 
 interface NewNodeAction extends AnyAction {
@@ -45,7 +45,7 @@ interface NewNodeAction extends AnyAction {
 
 interface AddStrategyAction extends AnyAction {
   type: StrategyActions.ADD_STRATEGY
-  payload: { columnworkflows_added: TColumnworkflow[] }
+  payload: { columnworkflowsAdded: TColumnworkflow[] }
 }
 
 // Union type for all actions handled by the reducer
@@ -96,8 +96,8 @@ function columnWorkflowReducer(
 
     case ColumnWorkflowActions.CHANGE_ID: {
       return state.map((item) =>
-        item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, noDrag: false }
+        item.id === action.payload.oldId
+          ? { ...item, id: action.payload.newId, noDrag: false }
           : item
       )
     }
@@ -109,12 +109,12 @@ function columnWorkflowReducer(
     }
 
     case ColumnActions.DELETE_SELF: {
-      return state.filter((item) => item.id !== action.payload.parent_id)
+      return state.filter((item) => item.id !== action.payload.parentId)
     }
 
     case ColumnActions.INSERT_BELOW: {
       const newState = state.slice()
-      newState.push(action.payload.new_through)
+      newState.push(action.payload.newThrough)
       return newState
     }
 
@@ -126,11 +126,11 @@ function columnWorkflowReducer(
     }
 
     case StrategyActions.ADD_STRATEGY: {
-      if (action.payload.columnworkflows_added.length == 0) {
+      if (action.payload.columnworkflowsAdded.length == 0) {
         return state
       }
       const newState = state.slice()
-      newState.push(...action.payload.columnworkflows_added)
+      newState.push(...action.payload.columnworkflowsAdded)
       return newState
     }
 

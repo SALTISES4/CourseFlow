@@ -1,6 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { SetSidebarAction } from '@cfRedux/reducers/sidebar'
+import sidebarSlice, { SidebarState } from '@cfRedux/reducers/sidebar/sidebar'
 import { Dispatch } from 'redux'
 
 // thin wrapper around ActionCreator.sidebarUpdate
@@ -11,6 +10,7 @@ import { Dispatch } from 'redux'
 // dispatch is passed as props
 // has no access to context
 // we can decide if it needs to take on more responsibility later but
+type SetSidebarAction = ReturnType<typeof sidebarSlice.actions.set>
 
 class BetterSelectionManager {
   dispatch: Dispatch<SetSidebarAction>
@@ -20,7 +20,12 @@ class BetterSelectionManager {
   }
 
   updateSidebar(id: number, objectType: CfObjectType, parentId?: number) {
-    const action = ActionCreator.sidebarUpdate(id, objectType, parentId)
+    const payload: SidebarState = {
+      id,
+      objectType,
+      parentId: parentId || null
+    }
+    const action = sidebarSlice.actions.set(payload)
     this.dispatch(action)
   }
 }

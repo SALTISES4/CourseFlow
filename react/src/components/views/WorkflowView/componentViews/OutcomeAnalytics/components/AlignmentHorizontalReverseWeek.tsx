@@ -22,8 +22,8 @@ type ConnectedProps = {
 }
 type OwnProps = {
   objectId: number
-  week_rank: number
-  restriction_set: any
+  weekRank: number
+  restrictionSet: any
 } & EditableComponentProps
 type StateProps = EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
@@ -53,13 +53,13 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
   render() {
     const data = this.props.data
 
-    const defaultText = data.weekTypeDisplay + ' ' + (this.props.week_rank + 1)
+    const defaultText = data.weekTypeDisplay + ' ' + (this.props.weekRank + 1)
 
     const nodeweeks = this.props.nodeweeks.map((nodeweek, index) => {
       if (
-        this.props.restriction_set &&
-        this.props.restriction_set.nodes &&
-        this.props.restriction_set.nodes.indexOf(nodeweek.node) == -1
+        this.props.restrictionSet &&
+        this.props.restrictionSet.nodes &&
+        this.props.restrictionSet.nodes.indexOf(nodeweek.node) == -1
       ) {
         return null
       }
@@ -67,7 +67,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
         <AlignmentHorizontalReverseNode
           key={index}
           objectId={nodeweek.node}
-          restriction_set={this.props.restriction_set}
+          restrictionSet={this.props.restrictionSet}
         />
       )
     })

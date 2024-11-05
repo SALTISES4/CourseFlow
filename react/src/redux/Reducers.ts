@@ -38,13 +38,13 @@ export const rootWorkflowReducers = {
   outcomehorizontallink: outcomeHorizontalLinkReducer,
   parentWorkflow: parentWorkflowReducer,
   parentNode: parentNodeReducer,
-  child_workflow: childWorkflowReducer,
+  childWorkflow: childWorkflowReducer,
   parentProject: parentProjectReducer,
   strategy: strategyReducer,
   objectset: objectSetReducer
 }
 export const rootSidebarReducers = {
-  sidebar: sidebarReducer
+  sidebar: sidebarReducer.reducer
 }
 const rootOutcomeReducers = {
   outcome: outcomeReducer,

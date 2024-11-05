@@ -45,12 +45,12 @@ export function toggleDropReduxAction(
   depth = 1
 ) {
   try {
-    const default_drop = Constants.getDefaultDropState(
+    const defaultDrop = Constants.getDefaultDropState(
       objectId,
       objectType,
       depth
     )
-    if (newDropState !== default_drop) {
+    if (newDropState !== defaultDrop) {
       window.localStorage.setItem(objectType + objectId, String(newDropState))
     } else {
       window.localStorage.removeItem(objectType + objectId)
