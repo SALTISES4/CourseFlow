@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import * as Constants from '@cfConstants'
+import * as Constants from '@cf/utility/constants'
 import { TStrategyByID, getStrategyById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'

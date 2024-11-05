@@ -1,5 +1,5 @@
 // @ts-nocheck
-import * as Constants from '@cf/constants'
+import * as Constants from '@cf/utility/constants'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import EditableComponent, {

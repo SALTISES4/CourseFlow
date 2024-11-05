@@ -1,6 +1,6 @@
-import * as Constants from '@cf/constants'
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType

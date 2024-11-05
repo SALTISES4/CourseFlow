@@ -246,12 +246,7 @@ export default function nodeReducer(
       })
 
     case NodeActions.CHANGE_FIELD:
-      // if (
-      //   action.payload.changeFieldId ===
-      //   COURSEFLOW_APP.contextData.changeFieldId
-      // ) {
-      //   return state
-      // }
+
       return state.map((item) =>
         item.id === action.payload.id
           ? // no

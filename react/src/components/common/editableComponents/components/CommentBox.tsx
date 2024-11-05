@@ -1,5 +1,5 @@
-import * as Constants from '@cf/constants'
 import { apiPaths } from '@cf/router/apiRoutes'
+import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { TUser } from '@cfRedux/types/type'

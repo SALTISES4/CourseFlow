@@ -23,7 +23,7 @@ export enum WeekActions {
 }
 
 export enum WeekWorkflowActions {
-  CHANGE_ID = 'weekworkflow/changeID',
+  CHANGE_ID = 'weekworkflow/changeId',
   MOVED_TO = 'weekworkflow/movedTo'
 }
 
@@ -58,11 +58,11 @@ export enum OutcomeBaseActions {
 
 export enum OutcomeWorkflowActions {
   MOVED_TO = 'outcomeworkflow/movedTo',
-  CHANGE_ID = 'outcomeworkflow/changeID'
+  CHANGE_ID = 'outcomeworkflow/changeId'
 }
 
 export enum OutcomeOutcomeActions {
-  CHANGE_ID = 'outcomeoutcome/changeID',
+  CHANGE_ID = 'outcomeoutcome/changeId',
   MOVED_TO = 'outcomeoutcome/movedTo'
 }
 
@@ -82,12 +82,12 @@ export enum ColumnActions {
 }
 
 export enum ColumnWorkflowActions {
-  CHANGE_ID = 'columnworkflow/changeID',
+  CHANGE_ID = 'columnworkflow/changeId',
   MOVED_TO = 'columnworkflow/movedTo'
 }
 
 export enum NodeWeekActions {
-  CHANGE_ID = 'nodeweek/changeID',
+  CHANGE_ID = 'nodeweek/changeId',
   MOVED_TO = 'nodeweek/movedTo'
 }
 

@@ -1,5 +1,5 @@
-// @ts-nocheck
-import ThemeHelper from "@cf/utility/ThemeHelper.class";
+import * as Constants from '@cf/utility/constants'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
 import { _t } from '@cf/utility/Utility.class'
 import {
@@ -14,8 +14,6 @@ import {
   TWeek,
   TWeekworkflow
 } from '@cfRedux/types/type'
-
-import * as Constants from '../constants'
 
 /*******************************************************
  *
@@ -687,11 +685,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
  *******************************************************/
 
 const getDropped = (objectId: number, objectType, depth = 1) => {
-  const defaultDrop = Constants.getDefaultDropState(
-    objectId,
-    objectType,
-    depth
-  )
+  const defaultDrop = Constants.getDefaultDropState(objectId, objectType, depth)
   try {
     const storedDrop = JSON.parse(
       window.localStorage.getItem(objectType + objectId)

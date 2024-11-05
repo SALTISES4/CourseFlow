@@ -1,4 +1,4 @@
-import * as Constants from '@cfConstants'
+import * as Constants from '@cf/utility/constants'
 import { TGetColumnByID, getColumnById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import React, { useCallback, useEffect, useRef } from 'react'

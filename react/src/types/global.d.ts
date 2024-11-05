@@ -34,7 +34,6 @@ declare global {
   const d3: d3
   const globalD3: d3
   const COURSEFLOW_APP: CourseflowAppGlobals
-  const makeActiveSidebar: (id: string) => void // @todo
 }
 
 interface CourseflowAppGlobals {
@@ -43,9 +42,8 @@ interface CourseflowAppGlobals {
   globalContextData: GlobalContextData
 
   // consumed by the current view (home, profile settings, etc)
-  contextData: ContextData
-  tinyLoader: TinyLoader
-  makeDropdown: (
+  tinyLoader: TinyLoader // @todo this should be deprecated
+  makeDropdown: ( // @todo this should be deprecated
     item: HTMLElement | HTMLDivElement | jQuery<HTMLDivElement> | string, // @todo ...
     item2?: HTMLElement | HTMLDivElement | jQuery<HTMLDivElement> | string // @todo ...
   ) => void
@@ -54,29 +52,14 @@ interface CourseflowAppGlobals {
 interface Path {
   post_paths: { [key: string]: string }
   get_paths: GetPaths
-  create_path: CreatePath
   update_path: UpdatePath
-  public_update_path: PublicUpdatePath
   /* SORTED */
   html: HTMLPaths
-  json_api: JSONAPIPaths
+//   json_api: JSONAPIPaths
   static_assets: GenericPath
 }
 
-interface CreatePath {
-  activity_strategy: string
-  course_strategy: string
-  project: string
-  activity: string
-  course: string
-  program: string
-}
-
 interface GetPaths {
-  get_library: string
-  get_favourites: string
-  import: string
-  get_public_workflow_child_data: string
   get_public_parentWorkflow_info: string
 }
 
@@ -95,53 +78,53 @@ interface GenericPath {
   [key: string]: string
 }
 
-interface JSONAPIPaths {
-  create_project: string
-  create_workflow: string
-  update_profile: string
-  get_notifications_page: string
-  update_notifications_settings: string
-  mark_all_notifications_as_read: string
-  delete_notification: string
-  library: {
-    home: string
-    explore: string
-    library__objects_search: string
-    library__favourites__projects: string
-    library__library__projects: string
-    library__toggle_favourite__post: string
-  }
-  user: {
-    list: string
-    profile_settings: string
-    profile_settings__update: string
-    notification_settings: string
-    notification_settings__update: string
-    favourite_toggle: string
-  }
-  project: {
-    detail: string
-    create: string
-  }
-  comment: {
-    list_by_object: string
-    create: string
-    delete: string
-    delete_all: string
-  }
-  notification: {
-    list: string
-    delete: string
-    mark_all_as_read: string
-  }
-}
+// interface JSONAPIPaths {
+//   create_project: string
+//   create_workflow: string
+//   update_profile: string
+//   get_notifications_page: string
+//   update_notifications_settings: string
+//   mark_all_notifications_as_read: string
+//   delete_notification: string
+//   library: {
+//     home: string
+//     explore: string
+//     library__objects_search: string
+//     library__favourites__projects: string
+//     library__library__projects: string
+//     library__toggle_favourite__post: string
+//   }
+//   user: {
+//     list: string
+//     profile_settings: string
+//     profile_settings__update: string
+//     notification_settings: string
+//     notification_settings__update: string
+//     favourite_toggle: string
+//   }
+//   project: {
+//     detail: string
+//     create: string
+//   }
+//   comment: {
+//     list_by_object: string
+//     create: string
+//     delete: string
+//     delete_all: string
+//   }
+//   notification: {
+//     list: string
+//     delete: string
+//     mark_all_as_read: string
+//   }
+// }
 
-interface PublicUpdatePath {
-  activity: string
-  course: string
-  program: string
-  workflow: string
-}
+// interface PublicUpdatePath {
+//   activity: string
+//   course: string
+//   program: string
+//   workflow: string
+// }
 
 interface UpdatePath {
   project: string
@@ -174,10 +157,6 @@ export interface GlobalContextData {
         }
       | Record<string, never>
   }
-}
-
-interface ContextData {
-  changeFieldId: number
 }
 
 interface TinyLoader {

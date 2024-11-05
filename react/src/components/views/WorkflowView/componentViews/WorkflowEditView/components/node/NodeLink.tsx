@@ -1,6 +1,6 @@
-import * as Constants from '@cf/constants'
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType
@@ -103,8 +103,6 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
         `[data-port='${Constants.portKeys[data.targetPort]}']`
       ].join('')
 
-      // console.log(      'cssSourceTargetSelector')
-      // console.log(      cssSourceTargetSelector)
 
       this.sourcePortHandle = d3.select(cssSourcePortSelector)
       this.targetPortHandle = d3.select(cssSourceTargetSelector)
@@ -120,6 +118,7 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
     if (data.dashed) {
       style.strokeDasharray = '5,5'
     }
+
     if (
       this.sourceNode.css('display') == 'none' ||
       this.targetNode.css('display') == 'none'

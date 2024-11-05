@@ -1,4 +1,5 @@
 import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
+import ThemeHelper from "@cf/utility/ThemeHelper.class";
 import { EUser } from '@XMLHTTP/types/entity'
 
 export type ConnectedUser = {
@@ -8,8 +9,7 @@ export type ConnectedUser = {
   timeout: NodeJS.Timeout
 }
 
-const calcColor = (id: number) =>
-  'hsl(' + (((id * 5) % 360) + 1) + ', 50%, 50%)'
+
 
 type UpdateStateCallback = (users: ConnectedUser[]) => void
 
@@ -18,6 +18,8 @@ class WebSocketServiceConnectedUserManager {
   private updateStateCallback: UpdateStateCallback
   private connectedUsers: ConnectedUser[]
   private userUpdateInterval: NodeJS.Timeout | null
+
+  // how is currenUser set?
   private currenUser: EUser
 
   constructor(
@@ -62,7 +64,7 @@ class WebSocketServiceConnectedUserManager {
 
     const payLoad = {
       user: this.currenUser,
-      userColour: calcColor(this.currenUser.id),
+      userColour: ThemeHelper.calcColor(this.currenUser.id),
       connected: connected
     }
 

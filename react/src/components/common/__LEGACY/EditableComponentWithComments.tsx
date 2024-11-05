@@ -1,6 +1,6 @@
-import * as Constants from '@cf/constants'
-// @components
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
+import * as Constants from '@cf/utility/constants'
+// @components
 import { _t } from '@cf/utility/Utility.class'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import CommentBox from '@cfEditableComponents/components/CommentBox'

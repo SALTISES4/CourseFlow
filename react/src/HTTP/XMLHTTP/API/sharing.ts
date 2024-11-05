@@ -23,24 +23,6 @@ export function setUserPermission(
   })
 }
 
-// export function getUsersForObjectQuery(
-//   objectId: number,
-//   objectType: string
-// ): Promise<UsersForObjectQueryResp> {
-//   //@todo fix this
-//   if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
-//     objectType = 'workflow'
-//   }
-//
-//   return API_POST<UsersForObjectQueryResp>(
-//     COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
-//     {
-//       objectId: objectId,
-//       objectType: objectType
-//     }
-//   )
-// }
-
 // to remove
 /**
  *  @getUsersForObjectQuery

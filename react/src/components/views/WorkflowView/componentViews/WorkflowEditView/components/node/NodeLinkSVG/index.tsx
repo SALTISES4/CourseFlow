@@ -1,5 +1,5 @@
 import { NumTuple, ObjectLock } from '@cf/types/common'
-import ThemeHelper from "@cf/utility/ThemeHelper.class";
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import PathGenerator from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG/PathGenerator.class'
 import * as React from 'react'
 
@@ -33,15 +33,18 @@ type Dimensions = {
 type Style = any
 
 type PropsType = OwnProps
+type State = {
+  hovered: boolean
+}
 
-// top
-class NodeLinkSVG extends React.Component<PropsType> {
+class NodeLinkSVG extends React.Component<PropsType, State> {
   mainDiv: React.RefObject<SVGGElement>
 
   constructor(props: PropsType) {
     super(props)
 
     this.mainDiv = React.createRef()
+    this.state = {} as State
   }
 
   getPathArray(
@@ -87,31 +90,32 @@ class NodeLinkSVG extends React.Component<PropsType> {
   // }
 
   getStyle() {
-    // if (this.props.hovered || this.state.hovered) { // @todo there is no state here
-    if (this.props.hovered) {
-      // @todo there is no state here
+
+    if (this.props.hovered || this.state.hovered) {
       return {
         ...this.props.style,
         stroke: 'yellow',
         opacity: 1
       }
     }
+
     if (this.props.nodeSelected) {
       return {
         ...this.props.style,
-        // @ts-ignore
-        stroke: COURSEFLOW_APP.contextData.myColour ?? '', // @todo find out where this comes from
+        // current user's color
+        stroke: ThemeHelper.calcColor(10), // maybe get the user id here, we'll see...
         opacity: 0.4
       }
     }
+
     if (this.props.selected) {
       return {
         ...this.props.style,
-        // @ts-ignore
-        stroke: COURSEFLOW_APP.contextData.myColour ?? '', // @todo find out where this comes from
+        stroke: ThemeHelper.calcColor(10),// maybe get the user id here, we'll see...
         opacity: 1
       }
     }
+
     if (this.props.lock) {
       return {
         ...this.props.style,
@@ -158,7 +162,6 @@ class NodeLinkSVG extends React.Component<PropsType> {
 
   render() {
     try {
-      //     console.log(this.props)
 
       const sourceTransform = ThemeHelper.getSVGTranslation(
         this.props.sourcePortHandle

@@ -1,4 +1,4 @@
-import { SnackbarOptions } from '@cf/constants'
+import { SnackbarOptions } from '@cf/utility/constants'
 import { enqueueSnackbar } from 'notistack'
 import * as React from 'react'
 

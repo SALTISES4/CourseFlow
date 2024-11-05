@@ -1,6 +1,6 @@
-import * as Constants from '@cf/constants'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
@@ -307,7 +307,10 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     }
 
     const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour(this.props.column)
+      backgroundColor: Constants.getColumnColour({
+        columnType: this.props.column.columnType,
+        colour: this.props.column.colour
+      })
     }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.userColour

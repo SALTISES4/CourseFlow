@@ -171,7 +171,9 @@ class Importer:
                 else:
                     WorkflowUpdateEmitter.emit_workflow_update(
                         workflow,
-                        WorkflowUpdateEmitter.change_field(week.id, "week", data, False),
+                        WorkflowUpdateEmitter.prepare_change_field_payload(
+                            object_id=week.id, object_type="week", json=data
+                        ),
                     )
 
             elif type == "node":

@@ -1,5 +1,5 @@
-import * as Constants from '@cf/constants'
 import { NodeDom } from '@cf/types/global'
+import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { Dispatch } from '@reduxjs/toolkit'
 import { newNodeLinkQuery } from '@XMLHTTP/API/create'

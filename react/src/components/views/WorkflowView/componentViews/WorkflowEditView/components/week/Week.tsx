@@ -1,6 +1,6 @@
-import * as Constants from '@cf/constants'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import ThemeHelper from "@cf/utility/ThemeHelper.class";
 import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'

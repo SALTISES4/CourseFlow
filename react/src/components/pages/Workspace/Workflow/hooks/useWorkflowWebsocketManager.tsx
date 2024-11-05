@@ -236,40 +236,22 @@ export const useWorkflowWebsocketManager = ({
     [messageQueue]
   )
 
-  /**
-   *
-   */
-  // const parseAndRouteMessage = useCallback(
-  //   (e: MessageEvent) => {
-  //     console.log('parseAndRouteMessage')
-  //     const data = JSON.parse(e.data)
-  //
-  //     switch (data.type) {
-  //       case WS_EVENT_TYPE.WORKFLOW_ACTION:
-  //         dispatch(data.action)
-  //         break
-  //       case WS_EVENT_TYPE.LOCK_UPDATE:
-  //         onLockUpdateReceived(data.action)
-  //         break
-  //       case WS_EVENT_TYPE.CONNECTION_UPDATE:
-  //         onUserConnectionUpdateReceived(data.action)
-  //         break
-  //       case WS_EVENT_TYPE.WORKFLOW_PARENT_UPDATED:
-  //         onParentWorkflowUpdateReceived()
-  //         break
-  //       case WS_EVENT_TYPE.WORKFLOW_CHILD_UPDATED:
-  //         onChildWorkflowUpdateReceived(data.childWorkflowId)
-  //         break
-  //       default:
-  //         console.log('socket message not handled')
-  //         break
-  //     }
-  //   },
-  //   [dispatch]
-  // )
-
   const parseAndRouteMessage = (e: MessageEvent) => {
     const data = JSON.parse(e.data)
+
+    // @todo need to insert type guards here
+
+    console.log(data)
+
+    // here we will insert the publisher filter logic
+    // it might not stay here
+    if (
+      data.hasOwnProperty('publishingUserId') &&
+      data.user.id === data?.publishingUserId
+    ) {
+      // drop message
+      return
+    }
 
     switch (data.type) {
       case WS_EVENT_TYPE.WORKFLOW_ACTION:
@@ -314,6 +296,9 @@ export const useWorkflowWebsocketManager = ({
     changeField: useCallback(
       (id: number, objectType: CfObjectType, field: string, value: any) => {
         const json: Record<string, any> = { [field]: value }
+
+        // dispatch value to redux and then perform REST query
+        // this is therefore an optimistic update, but we are not performing
         dispatch(ActionCreator.changeField(id, objectType, json))
         updateValueQuery(id, objectType, json, true)
       },

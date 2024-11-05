@@ -1,14 +1,15 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
-import * as Constants from '@cfConstants'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
+import clsx from 'clsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -61,15 +62,12 @@ class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
     )
 
     const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour(this.props.column),
+      backgroundColor: Constants.getColumnColour({
+        columnType: this.props.column.columnType,
+        colour: this.props.column.colour
+      }),
       outline: data.lock ? '2px solid ' + data.lock.userColour : undefined
     }
-
-    const cssClass = [
-      'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],
-      data.isDropped ? 'dropped' : '',
-      data.lock ? 'locked locked-' + data.lock.userId : ''
-    ].join(' ')
 
     const permissions = calcWorkflowPermissions(
       this.props.workflow.userPermissions
@@ -77,12 +75,19 @@ class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
     const comments = permissions.read ? <this.AddCommenting /> : ''
 
     //     const portal = this.addEditable(dataOverride, true)
+
     return (
       <>
         {/*{portal}*/}
         <div
-          style={style}
           id={data.id}
+          className={clsx(
+            `node column-${data.column}`,
+            Constants.nodeKeys[data.nodeType],
+            data.isDropped && 'dropped',
+            data.lock && `locked locked-${data.lock.userId}`
+          )}
+          style={style}
           ref={this.mainDiv}
           onClick={(e) => {
             e.stopPropagation()
@@ -92,7 +97,6 @@ class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
               this.props.parentId
             )
           }}
-          className={cssClass}
         >
           <div className="node-top-row">
             <NodeTitle data={data} />

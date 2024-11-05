@@ -1,6 +1,8 @@
 import { _t } from '@cf/utility/Utility.class'
 
 class ThemeHelper {
+  static calcColor = (id: number) =>
+    'hsl(' + (((id * 5) % 360) + 1) + ', 50%, 50%)'
   /*******************************************************
    * STRINGS
    *******************************************************/

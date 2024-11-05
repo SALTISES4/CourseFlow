@@ -695,8 +695,8 @@ def json_api_post_update_outcomehorizontallink_degree(
 
 # @todo clarify this vocabulary
 # Toggle on or off an object set for an object.
-@user_can_edit(False)
-@user_can_view("objectsetPk")
+# @user_can_edit(False)
+# @user_can_view("objectsetPk")
 def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
     body = json.loads(
         request.body
@@ -728,11 +728,12 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"action": "error"})
     try:
         workflow = objects_to_update[0].get_workflow()
+
         if len(objects_to_update) == 1:
-            action = WorkflowUpdateEmitter.change_field(
-                object_id,
-                object_type,
-                {"sets": [object_set.id for object_set in object_to_update.sets.all()]},
+            action = WorkflowUpdateEmitter.prepare_change_field_payload(
+                object_id=object_id,
+                object_type=object_type,
+                json={"sets": [object_set.id for object_set in object_to_update.sets.all()]},
             )
         else:
             action = WorkflowUpdateEmitter.change_field_many(
@@ -740,9 +741,12 @@ def json_api_post_update_object_set(request: HttpRequest) -> JsonResponse:
                 object_type,
                 {"sets": [object_set.id for object_set in object_to_update.sets.all()]},
             )
+
         WorkflowUpdateEmitter.emit_workflow_update(workflow, action)
+
         if object_type == "outcome":
             WorkflowUpdateEmitter.dispatch_to_parent_wf(workflow, action)
+
     except AttributeError as e:
         logger.exception("An error occurred")
         pass

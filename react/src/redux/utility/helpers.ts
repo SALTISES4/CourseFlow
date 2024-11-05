@@ -1,5 +1,5 @@
-import * as Constants from '@cf/constants'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { Dispatch } from '@reduxjs/toolkit'
 import React from 'react'

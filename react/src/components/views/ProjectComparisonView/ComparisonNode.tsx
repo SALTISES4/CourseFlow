@@ -5,10 +5,10 @@ import EditableComponent, {
 import { TitleText } from '@cf/components/common/UIPrimitives/Titles.ts'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
-import * as Constants from '@cfConstants'
 import {
   DeleteSelfButton,
   DuplicateSelfButton,
@@ -106,7 +106,10 @@ class ComparisonNodeUnconnected extends EditableComponent<
     }
 
     const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour(this.props.node.column)
+      backgroundColor: Constants.getColumnColour({
+        columnType: this.props.node.column.columnType,
+        colour: this.props.node.column.colour
+      })
     }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.userColour
@@ -126,7 +129,10 @@ class ComparisonNodeUnconnected extends EditableComponent<
             })
           }}
           style={{
-            borderColor: Constants.getColumnColour(this.props.node.column)
+            borderColor: Constants.getColumnColour({
+              columnType: this.props.node.column.columnType,
+              colour: this.props.node.column.colour
+            })
           }}
         >
           {data.outcomenodeUniqueSet.map((outcomenode) => (
@@ -145,7 +151,10 @@ class ComparisonNodeUnconnected extends EditableComponent<
               this.setState({ showOutcomes: true })
             }}
             style={{
-              borderColor: Constants.getColumnColour(this.props.node.column)
+              borderColor: Constants.getColumnColour({
+                columnType: this.props.node.column.columnType,
+                colour: this.props.node.column.colour
+              })
             }}
           >
             {data.outcomenodeUniqueSet.length}

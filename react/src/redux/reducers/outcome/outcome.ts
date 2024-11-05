@@ -88,12 +88,12 @@ interface ReloadCommentsAction extends AnyAction {
 
 interface ChangeFieldAction extends AnyAction {
   type: OutcomeActions.CHANGE_FIELD
-  payload: { id: number; json: any; changeFieldId: number }
+  payload: { id: number; json: any }
 }
 
 interface ChangeFieldManyAction extends AnyAction {
   type: OutcomeActions.CHANGE_FIELD_MANY
-  payload: { ids: number[]; json: any; changeFieldId: number }
+  payload: { ids: number[]; json: any }
 }
 
 // Outcome Base Actions
@@ -373,28 +373,16 @@ export default function outcomeReducer(
 
     case OutcomeActions.CHANGE_FIELD:
     case OutcomeBaseActions.CHANGE_FIELD:
-      if (
-        action.payload.changeFieldId ===
-        // @ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldId
-      ) {
-        return state
-      }
+
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }
           : item
       )
 
-    case OutcomeActions.changeField_MANY:
-    case OutcomeBaseActions.changeField_MANY:
-      if (
-        action.payload.changeFieldId ===
-        // @ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldId
-      ) {
-        return state
-      }
+    case OutcomeActions.CHANGE_FIELD_MANY:
+    case OutcomeBaseActions.CHANGE_FIELD_MANY:
+
       return state.map((item) =>
         action.payload.ids.includes(item.id)
           ? { ...item, ...action.payload.json }

@@ -1,12 +1,12 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import * as Constants from '@cfConstants'
 import EditableComponent, {
   EditableComponentProps,
   EditableComponentStateType
@@ -81,8 +81,6 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
     this.makeDroppable()
     this.updateHidden()
 
-    // $(this.mainDiv.current).on('mouseenter', this.mouseIn.bind(this))
-    // $(this.mainDiv.current).on('dblclick', this.doubleClick.bind(this))
     this.mainDiv.current.addEventListener('mouseenter', this.mouseIn.bind(this))
     this.mainDiv.current.addEventListener(
       'dblclick',
@@ -113,7 +111,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
+  //WHY?: Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
   updateHidden() {
     if ($(this.mainDiv.current).css('display') == 'none') {
       const week = $(this.mainDiv.current).parent('.node-week').parent()
@@ -137,7 +135,6 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
   }
 
   makeDroppable() {
-    // @ts-ignore
     $(this.mainDiv.current).droppable({
       tolerance: 'pointer',
       // @ts-ignore // droppable does not exist in type DroppableOptions
@@ -275,7 +272,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
     const data = this.props.node.data
     const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
-    let linktext = _t('Visit workflow')
+    let linkText = _t('Visit workflow')
     let linkClass = 'linked-workflow'
 
     const dataOverride = data.representsWorkflow
@@ -311,7 +308,10 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
             this.setState({ showOutcomes: false })
           }}
           style={{
-            borderColor: Constants.getColumnColour(this.props.node.column)
+            borderColor: Constants.getColumnColour({
+              columnType: this.props.node.column.columnType,
+              colour: this.props.node.column.colour
+            })
           }}
         >
           {data.outcomenodeUniqueSet.map((outcomenode) => (
@@ -330,7 +330,10 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
               this.setState({ showOutcomes: true })
             }}
             style={{
-              borderColor: Constants.getColumnColour(this.props.node.column)
+              borderColor: Constants.getColumnColour({
+                columnType: this.props.node.column.columnType,
+                colour: this.props.node.column.colour
+              })
             }}
           >
             {data.outcomenodeUniqueSet.length}
@@ -385,11 +388,11 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
         data.linkedWorkflowData.url == 'noaccess' ||
         data.linkedWorkflowData.url == 'nouser'
       ) {
-        linktext = _t('<Inaccessible>')
+        linkText = _t('<Inaccessible>')
         clickfunc = null
         linkClass += ' link-noaccess'
       } else if (data.linkedWorkflowData.deleted) {
-        linktext = _t('<Deleted>')
+        linkText = _t('<Deleted>')
         clickfunc = null
         linkClass += ' link-noaccess'
       } else {
@@ -401,10 +404,11 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
       linkIcon = (
         <div className={linkClass} onClick={clickfunc}>
           <img src={apiPaths.external.static_assets.icon + 'wflink.svg'} />
-          <div>{linktext}</div>
+          <div>{linkText}</div>
         </div>
       )
     }
+
     let dropText = ''
     if (
       dataOverride.description &&
@@ -421,7 +425,10 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
       left:
         Constants.columnwidth * this.props.columnOrder.indexOf(data.column) +
         'px',
-      backgroundColor: Constants.getColumnColour(this.props.node.column)
+      backgroundColor: Constants.getColumnColour({
+        columnType: this.props.node.column.columnType,
+        colour: this.props.node.column.colour
+      })
     }
 
     if (data.lock) {

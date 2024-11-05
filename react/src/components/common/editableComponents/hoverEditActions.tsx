@@ -1,6 +1,6 @@
-import * as Constants from '@cf/constants'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'

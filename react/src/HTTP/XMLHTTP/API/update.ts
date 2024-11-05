@@ -2,11 +2,9 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
-//
 /**
  * @updateValue
- * Update the value of an object in database. JSON may be partial. Debounced in case the user is typing a lot.
- *
+ * @todo desc: TBD
  * endpoint: workflow/updatevalue/
  *
  * @param objectId
@@ -22,47 +20,16 @@ export function updateValueQuery(
   changeField = false,
   callBackFunction = (data: EmptyPostResp) => console.log('success')
 ) {
-  const t = 1000
-  const previousCall = document.lastUpdateCall
-
-  document.lastUpdateCall = {
-    time: Date.now(),
-    id: objectId,
-    type: objectType,
-    field: Object.keys(json)[0]
-  }
-
-  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-    clearTimeout(document.lastUpdateCallTimer)
-  }
-  if (
-    previousCall &&
-    (previousCall.id !== document.lastUpdateCall.id ||
-      previousCall.type !== document.lastUpdateCall.type ||
-      previousCall.field !== document.lastUpdateCall.field)
-  ) {
-    document.lastUpdateCallFunction()
-  }
   const postObject = {
     objectId: objectId,
     objectType: objectType,
-    data: json,
-    changeFieldId: 0
+    data: json
   }
 
-  if (changeField) {
-    // @ts-ignore
-    postObject.changeFieldId = // @ts-ignore
-      COURSEFLOW_APP.contextData.changeFieldId as number
-  }
-
-  document.lastUpdateCallFunction = () => {
-    const url = apiPaths.json_api.workspace.field__update
-    API_POST(url, postObject).then((response: EmptyPostResp) => {
-      callBackFunction(response)
-    })
-  }
-  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
+  const url = apiPaths.json_api.workspace.field__update
+  API_POST(url, postObject).then((response: EmptyPostResp) => {
+    callBackFunction(response)
+  })
 }
 
 //As above, but not debounced

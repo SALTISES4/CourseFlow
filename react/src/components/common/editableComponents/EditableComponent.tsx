@@ -1,7 +1,7 @@
-import * as Constants from '@cf/constants'
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import Utility from '@cf/utility/Utility.class'
 // import $ from 'jquery'
 import { _t } from '@cf/utility/Utility.class'

@@ -1,6 +1,6 @@
 import { EventUnion } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
-import * as Constants from '@cfConstants'
+import * as Constants from '@cf/utility/constants'
 import EditableComponent from '@cfEditableComponents/EditableComponent'
 import {
   EditableComponentProps,
