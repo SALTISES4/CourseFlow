@@ -26,7 +26,7 @@ class StrategyUnconnected extends React.Component<PropsType> {
     super(props)
     this.mainDiv = React.createRef()
 
-    // this.node_block = React.createRef() // @todo check addEditable
+    // this.nodeBlock = React.createRef() // @todo check addEditable
   }
 
   /*******************************************************
@@ -43,8 +43,8 @@ class StrategyUnconnected extends React.Component<PropsType> {
    * FUNCTIONS
    *******************************************************/
   makeDraggable() {
-    const draggable_selector = 'week-workflow'
-    const draggable_type = 'weekworkflow'
+    const draggableSelector = 'week-workflow'
+    const draggableType = 'weekworkflow'
 
     $(this.mainDiv?.current).draggable({
       helper: (_e, _item) => {
@@ -57,12 +57,12 @@ class StrategyUnconnected extends React.Component<PropsType> {
       cursorAt: { top: 20, left: 100 },
       distance: 10,
       start: (_e, _ui) => {
-        $('.workflow-canvas').addClass('dragging-' + draggable_type)
-        $(draggable_selector).addClass('dragging')
+        $('.workflow-canvas').addClass('dragging-' + draggableType)
+        $(draggableSelector).addClass('dragging')
       },
       stop: (_e, _ui) => {
-        $('.workflow-canvas').removeClass('dragging-' + draggable_type)
-        $(draggable_selector).removeClass('dragging')
+        $('.workflow-canvas').removeClass('dragging-' + draggableType)
+        $(draggableSelector).removeClass('dragging')
       }
     })
   }

@@ -59,7 +59,7 @@ class LibraryEndpoint:
 
     @staticmethod
     @login_required
-    # @user_can_view(False)
+    # #@user_can_view(False)
     @api_view(["POST"])
     def toggle_favourite(
         request: Request,

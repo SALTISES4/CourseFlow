@@ -51,29 +51,29 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  sortableColumnChangedFunction(id, delta_x, old_column) {
+  sortableColumnChangedFunction(id, deltaX, oldColumn) {
     console.log('column change not sent')
   }
 
-  sortableMovedFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedFunction(id, newPosition, type, newParent, childId) {
     this.context.editableMethods.microUpdate(
-      ActionCreator.moveNodeWeek(id, new_position, new_parent, child_id)
+      ActionCreator.moveNodeWeek(id, newPosition, newParent, childId)
     )
 
     // @todo same issue with rendere / drag action
     insertedAt(
       // @ts-ignore dragaction
       this.props.renderer,
-      child_id,
+      childId,
       'node',
-      new_parent,
+      newParent,
       'week',
-      new_position,
+      newPosition,
       'nodeweek'
     )
   }
 
-  sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedOutFunction(id, newPosition, type, newParent, childId) {
     if (
       confirm(
         _t(
@@ -87,17 +87,17 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
         this.props.renderer,
         null,
         'node',
-        new_parent,
+        newParent,
         'week',
-        new_position,
+        newPosition,
         'nodeweek'
       )
       insertedAtInstant(
-        child_id,
+        childId,
         'node',
-        new_parent,
+        newParent,
         'week',
-        new_position,
+        newPosition,
         'nodeweek'
       )
     }
@@ -110,24 +110,24 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').css({
       height: ''
     })
-    let max_height = 0
+    let maxHeight = 0
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').each(
       function () {
-        const this_height = $(this).height()
-        if (this_height > max_height) {
-          max_height = this_height
+        const thisHeight = $(this).height()
+        if (thisHeight > maxHeight) {
+          maxHeight = thisHeight
         }
       }
     )
     $('.week-block .week-workflow:nth-child(' + rank + ') .week').css({
-      height: max_height + 'px'
+      height: maxHeight + 'px'
     })
   }
 
   makeDragAndDrop() {
     //Makes the nodeweeks in the node block draggable
     this.makeSortableNode(
-      $(this.node_block.current).children('.node-week').not('.ui-draggable'),
+      $(this.nodeBlock.current).children('.node-week').not('.ui-draggable'),
       this.props.objectId,
       'nodeweek',
       '.node-week',
@@ -150,7 +150,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
         objectId={nodeweek}
         parentId={this.props.data.id}
         // renderer={this.props.renderer}
-        column_order={this.props.column_order}
+        columnOrder={this.props.columnOrder}
       />
     ))
     if (nodes.length == 0) {

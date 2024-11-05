@@ -75,23 +75,23 @@ export class OutcomeEditViewUnconnected<
     }
   }
 
-  sortableMovedFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedFunction(id, newPosition, type, newParent, childId) {
     this.context.editableMethods.microUpdate(
       ActionCreator.moveOutcomeWorkflow(
         id,
-        new_position,
+        newPosition,
         this.props.workflow.id,
-        child_id
+        childId
       )
     )
     insertedAt(
       // @ts-ignore
       this.context.selectionManager,
-      child_id,
+      childId,
       'outcome',
       this.props.workflow.id,
       'workflow',
-      new_position,
+      newPosition,
       'outcomeworkflow'
     )
   }
@@ -143,13 +143,13 @@ export class OutcomeEditViewUnconnected<
             <h4>{category.objectset.title + ':'}</h4>
             <div className="outcome-category-block">
               {category.outcomes.map((outcome) => {
-                let my_class = 'outcome-workflow'
-                if (outcome.through_noDrag) {
-                  my_class += ' no-drag'
+                let myClass = 'outcome-workflow'
+                if (outcome.throughNoDrag) {
+                  myClass += ' no-drag'
                 }
                 return (
                   <div
-                    className={my_class}
+                    className={myClass}
                     data-child-id={outcome.id}
                     id={outcome.outcomeworkflow}
                     key={outcome.outcomeworkflow}
@@ -159,7 +159,7 @@ export class OutcomeEditViewUnconnected<
                       objectId={outcome.id}
                       parentId={this.props.workflow.id}
                       //renderer={this.props.renderer}
-                      show_horizontal={true}
+                      showHorizontal={true}
                     />
                   </div>
                 )

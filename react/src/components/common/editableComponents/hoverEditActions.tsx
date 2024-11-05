@@ -6,14 +6,13 @@ import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
 import QueueIcon from '@mui/icons-material/Queue'
-import { useUpdateNotificationSettingsMutation } from '@XMLHTTP/API/user.rtk'
 import {
   deleteSelfQueryLegacy,
   duplicateSelfQuery,
-  insertChildQuery,
-  insertSiblingQuery,
   restoreSelfQueryLegacy,
-  useArchiveMutation
+  useArchiveMutation,
+  useInsertChildMutation,
+  useInsertSiblingMutation
 } from '@XMLHTTP/API/workspace.rtk'
 import * as React from 'react'
 import { ReactElement } from 'react'
@@ -41,12 +40,12 @@ export function deleteObject({ id, objectType }: ActionItemArgs): void {
    *
    * this check should not live in this function, move this to the actual component button
    *******************************************************/
-  // const count   =   this.props.sibling_count
+  // const count   =   this.props.siblingCount
   const count = 4
   if (
     (objectType === 'week' || objectType === 'column') &&
     count < 2
-    // this.props.sibling_count < 2
+    // this.props.siblingCount < 2
   ) {
     alert(_t('You cannot delete the last ') + objectType)
     return
@@ -108,32 +107,32 @@ export function duplicateSelf({
   )
 }
 
-export function insertChild({ id, objectType }: ActionItemArgs): void {
-  console.log('inserting child')
+// export function insertChild({ id, objectType }: ActionItemArgs): void {
+//   console.log('inserting child')
+//
+//   //   const type = this.object_type
+//   COURSEFLOW_APP.tinyLoader.startLoad()
+//   insertChildQuery(id, objectType, (responseData) => {
+//     COURSEFLOW_APP.tinyLoader.endLoad()
+//   })
+// }
 
-  //   const type = this.object_type
-  COURSEFLOW_APP.tinyLoader.startLoad()
-  insertChildQuery(id, objectType, (responseData) => {
-    COURSEFLOW_APP.tinyLoader.endLoad()
-  })
-}
-
-export function insertSibling({
-  id,
-  objectType,
-  parentId
-}: ActionItemWithParentArgs): void {
-  //  const type = this.object_type
-  COURSEFLOW_APP.tinyLoader.startLoad()
-
-  insertSiblingQuery(
-    id,
-    objectType,
-    parentId,
-    Constants.parentDictionary[objectType],
-    Constants.throughParentDictionary[objectType]
-  )
-}
+// export function insertSibling({
+//   id,
+//   objectType,
+//   parentId
+// }: ActionItemWithParentArgs): void {
+//   //  const type = this.object_type
+//   COURSEFLOW_APP.tinyLoader.startLoad()
+//
+//   insertSiblingQuery(
+//     id,
+//     objectType,
+//     parentId,
+//     Constants.parentDictionary[objectType],
+//     Constants.throughParentDictionary[objectType]
+//   )
+// }
 
 /*******************************************************
  * Adds a button that duplicates the item (with a confirmation).
@@ -153,12 +152,28 @@ export const DuplicateSelfButton = (data: ActionItemWithParentArgs) => {
  * Adds a button that inserts a child to them item
  *******************************************************/
 export const InsertChildButton = (data: ActionItemArgs) => {
+  const [mutate, { isSuccess, isError, data: updateData }] =
+    useInsertChildMutation()
+  const { onError, onSuccess } = useGenericMsgHandler()
+
+  const clickHandler = async () => {
+    try {
+      const resp = await mutate({
+        payload: {
+          ...data
+        }
+      }).unwrap()
+      onSuccess(resp)
+    } catch (e) {
+      onError(e)
+    }
+  }
   return (
     <ActionButton
       buttonIcon={<QueueIcon />}
       buttonClass="insert-child-button"
       titleText={_t('Insert Child')}
-      handleClick={() => insertChild(data)}
+      handleClick={clickHandler}
     />
   )
 }
@@ -167,12 +182,31 @@ export const InsertChildButton = (data: ActionItemArgs) => {
  * Adds a button that inserts a sibling below the item.
  *******************************************************/
 export const InsertSiblingButton = (data: ActionItemWithParentArgs) => {
+  const [mutate, { isSuccess, isError, data: updateData }] =
+    useInsertSiblingMutation()
+  const { onError, onSuccess } = useGenericMsgHandler()
+
+  const clickHandler = async () => {
+    try {
+      const resp = await mutate({
+        payload: {
+          ...data,
+          parentType: Constants.parentDictionary[data.objectType],
+          throughType: Constants.throughParentDictionary[data.objectType]
+        }
+      }).unwrap()
+      onSuccess(resp)
+    } catch (e) {
+      onError(e)
+    }
+  }
+
   return (
     <ActionButton
       buttonIcon={<QueueIcon />}
       buttonClass="insert-sibling-button"
       titleText={_t('Insert Below')}
-      handleClick={() => insertSibling(data)}
+      handleClick={clickHandler}
     />
   )
 }

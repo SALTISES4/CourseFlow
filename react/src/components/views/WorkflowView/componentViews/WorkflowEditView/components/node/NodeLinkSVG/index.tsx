@@ -1,259 +1,24 @@
-import * as Constants from '@cf/constants'
 import { ObjectLock } from '@cf/types/common'
 import { NumTuple } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Utility from '@cf/utility/utilityFunctions'
-import * as math from 'mathjs'
+import PathGenerator from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG/PathGenerator.class'
 import * as React from 'react'
-
-// eslint-disable-next-line no-undef
-type Direction = { source: NumTuple; target: NumTuple }
-
-type DirectionArray = { source: number[][]; target: number[][] }
-type Port = 'source' | 'target'
 
 /**
  * Creates paths between two ports
  *  SVG portion of a NodeLink
  */
-class PathGenerator {
-  // private direction: DirectionArray
-  private direction: Direction
-  private hasTicked: { source: boolean; target: boolean }
-  private node_dims: Direction
-  private findcounter: number
-  private full_array: any[]
-  private point_arrays: DirectionArray
-  private last_point: Direction
-  constructor(
-    source_point: NumTuple,
-    sourcePort: number,
-    target_point: NumTuple,
-    targetPort: number,
-    source_dims: NumTuple,
-    target_dims: NumTuple
-  ) {
-    this.point_arrays = {
-      source: [source_point],
-      target: [target_point]
-    }
-    this.last_point = { source: source_point, target: target_point }
-    this.direction = {
-      source: Constants.portDirection[sourcePort] as NumTuple,
-      target: Constants.portDirection[targetPort] as NumTuple
-    }
-    this.hasTicked = { source: false, target: false }
-    this.node_dims = { source: source_dims, target: target_dims }
-    this.findcounter = 0
-    this.full_array = []
-  }
-
-  //finds and returns the path
-  findPath() {
-    try {
-      this.findNextPoint()
-    } catch (err) {
-      console.log('error calculating path')
-    }
-    this.full_array = this.joinArrays()
-    return this.full_array
-  }
-
-  //gets the total length of our path
-  getPathLength(): number {
-    return this.full_array
-      .slice(1)
-      .reduce(
-        (acc, currentPoint, index) =>
-          acc + math.norm(math.subtract(currentPoint, this.full_array[index])),
-        0
-      )
-  }
-  // getPathLength() {
-  //   let length = 0
-  //   for (let i = 1; i < this.full_array.length; i++) {
-  //     const seg_len = mathnorm(
-  //       mathsubtract(this.full_array[i], this.full_array[i - 1])
-  //     )
-  //     length += seg_len
-  //   }
-  //   return length
-  // }
-
-  //gets the point at the given fraction of our path length
-  getFractionalPoint(position: number): NumTuple {
-    const totalLength = this.getPathLength()
-    if (totalLength === 0) {
-      return [0, 0]
-    }
-
-    let runLength = 0
-    const targetLength = totalLength * position
-
-    for (let i = 1; i < this.full_array.length; i++) {
-      const segment = math.subtract(this.full_array[i], this.full_array[i - 1])
-      const segmentLength = math.number(math.norm(segment))
-
-      runLength += segmentLength
-      if (runLength >= targetLength) {
-        const remainingLength = targetLength - (runLength - segmentLength)
-        return math.add(
-          this.full_array[i - 1],
-          math.multiply(math.divide(segment, segmentLength), remainingLength)
-        )
-      }
-    }
-
-    return this.full_array[1]
-  }
-
-  //Recursively checks to see whether we need to move around a node, if not, we just need to join the arrays
-  findNextPoint() {
-    if (this.findcounter > 8) {
-      return
-    }
-    this.findcounter++
-
-    const isSourceNegative =
-      math.dot(
-        this.direction['source'],
-        math.subtract(this.last_point['target'], this.last_point['source'])
-      ) < 0
-
-    const isTargetNegative =
-      math.dot(
-        this.direction['target'],
-        math.subtract(this.last_point['source'], this.last_point['target'])
-      ) < 0
-
-    if (isSourceNegative) {
-      this.tickPerpendicular('source')
-      this.findNextPoint()
-    } else if (isTargetNegative) {
-      this.tickPerpendicular('target')
-      this.findNextPoint()
-    }
-  }
-
-  addPoint(point: NumTuple, port: Port = 'source') {
-    this.point_arrays[port].push(point)
-    this.last_point[port] = point
-  }
-
-  addDelta(delta: NumTuple, port: Port = 'source') {
-    this.addPoint(math.add(delta, this.last_point[port]), port)
-  }
-
-  //Pads out away from the node edge
-  padOut(port: Port) {
-    this.addDelta(
-      // is of type MathType
-      math.multiply(Constants.portPadding, this.direction[port]) as NumTuple,
-      port
-    )
-  }
-
-  //Turns perpendicular to move around the edge of the node
-  tickPerpendicular(port: Port = 'source') {
-    const otherPort: Port = port === 'target' ? 'source' : 'target'
-
-    this.padOut(port)
-
-    const test = math.multiply([1, 0], this.direction[port][1] ** 2)
-
-    // @ts-ignore
-    const matrix = math.matrix([
-      math.multiply([1, 0], this.direction[port][1] ** 2),
-      math.multiply([0, 1], this.direction[port][0] ** 2)
-    ])
-    const sub = math.subtract(this.last_point[otherPort], this.last_point[port])
-
-    // const new_direction = math.multiply(matrix, sub)._data // _data is a private class property
-
-    const new_direction = math.multiply(matrix, sub).toArray()
-    const norm = math.norm(new_direction)
-
-    if (norm === 0) {
-      throw 'Non-numeric'
-    }
-
-    this.direction[port] = math.multiply(
-      // @ts-ignore
-      1.0 / math.norm(new_direction),
-      new_direction
-    ) as NumTuple
-
-    this.addDelta(
-      math.multiply(
-        this.getNodeOutline(this.direction[port], port),
-        this.direction[port]
-      ) as NumTuple,
-      port
-    )
-  }
-
-  //Determines how far we need to move in order to move around the edge of the node
-  getNodeOutline(direction: [number, number], port: Port): number {
-    if (this.hasTicked[port]) {
-      return Math.abs(math.dot(direction, this.node_dims[port]))
-    } else {
-      this.hasTicked[port] = true
-      return Math.abs(math.dot(direction, this.node_dims[port]) / 2)
-    }
-  }
-
-  //joins the two arrays, either as a corner or a double corner
-  /**
-   *
-   */
-  joinArrays(): number[][] {
-    const joined = this.point_arrays['source'].slice()
-    //We have remaining either a corner or both point towards each other
-    if (math.dot(this.direction['source'], this.direction['target']) == 0) {
-      //corner
-      joined.push([
-        this.direction['source'][0] ** 2 * this.last_point['target'][0] +
-          this.direction['target'][0] ** 2 * this.last_point['source'][0],
-        this.direction['source'][1] ** 2 * this.last_point['target'][1] +
-          this.direction['target'][1] ** 2 * this.last_point['source'][1]
-      ])
-    } else {
-      if (this.hasTicked.source == false && this.hasTicked.target == false) {
-        this.padOut('target')
-        this.padOut('source')
-      }
-      //double corner
-      const diff = math.subtract(
-        this.last_point['target'],
-        this.last_point['source']
-      )
-      const mid1 = [
-        (this.direction['source'][0] ** 2 * diff[0]) / 2,
-        (this.direction['source'][1] ** 2 * diff[1]) / 2
-      ]
-      const mid2 = [
-        (-(this.direction['source'][0] ** 2) * diff[0]) / 2,
-        (-(this.direction['source'][1] ** 2) * diff[1]) / 2
-      ]
-      joined.push(math.add(this.last_point['source'], mid1))
-      joined.push(math.add(this.last_point['target'], mid2))
-    }
-    for (let i = this.point_arrays['target'].length - 1; i >= 0; i--) {
-      joined.push(this.point_arrays['target'][i])
-    }
-    return joined
-  }
-}
 
 export type OwnProps = {
   hovered: boolean
-  node_selected: boolean
-  sourcePort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  nodeSelected: boolean
+  sourcePortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   sourcePort: number
-  targetPort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  targetPortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   targetPort: number
-  source_dimensions: Dimensions
-  target_dimensions: Dimensions
+  sourceDimensions: Dimensions
+  targetDimensions: Dimensions
   textPosition?: number
   style?: Style
   clickFunction?: (evt: React.MouseEvent) => void
@@ -269,7 +34,7 @@ type Dimensions = {
 
 type Style = any
 
-type PropsType = OwnProps // & ComponentWithToggleProps
+type PropsType = OwnProps
 
 // top
 class NodeLinkSVG extends React.Component<PropsType> {
@@ -282,28 +47,30 @@ class NodeLinkSVG extends React.Component<PropsType> {
   }
 
   getPathArray(
-    source_point: NumTuple,
+    sourcePoint: NumTuple,
     sourcePort: number,
-    target_point: NumTuple,
+    targetPoint: NumTuple,
     targetPort: number
   ) {
-    const source_dims: NumTuple = [
-      this.props.source_dimensions.width,
-      this.props.source_dimensions.height
+    const sourceDims: NumTuple = [
+      this.props.sourceDimensions.width,
+      this.props.sourceDimensions.height
     ]
-    const target_dims: NumTuple = [
-      this.props.target_dimensions.width,
-      this.props.target_dimensions.height
+    const targetDims: NumTuple = [
+      this.props.targetDimensions.width,
+      this.props.targetDimensions.height
     ]
     return new PathGenerator(
-      source_point,
+      sourcePoint,
       sourcePort,
-      target_point,
+      targetPoint,
       targetPort,
-      source_dims,
-      target_dims
+      sourceDims,
+      targetDims
     )
   }
+
+
   getPath(pathArray: NumTuple[]): string {
     return pathArray.reduce(
       (acc, point, index) =>
@@ -312,11 +79,11 @@ class NodeLinkSVG extends React.Component<PropsType> {
     )
   }
 
-  // getPath(path_array) {
+  // getPath(pathArray) {
   //   let path = 'M'
-  //   for (let i = 0; i < path_array.length; i++) {
+  //   for (let i = 0; i < pathArray.length; i++) {
   //     if (i > 0) path += ' L'
-  //     const thispoint = path_array[i]
+  //     const thispoint = pathArray[i]
   //     path += thispoint[0] + ' ' + thispoint[1]
   //   }
   //   return path
@@ -332,7 +99,7 @@ class NodeLinkSVG extends React.Component<PropsType> {
         opacity: 1
       }
     }
-    if (this.props.node_selected) {
+    if (this.props.nodeSelected) {
       return {
         ...this.props.style,
         // @ts-ignore
@@ -396,8 +163,8 @@ class NodeLinkSVG extends React.Component<PropsType> {
     try {
       //     console.log(this.props)
 
-      const source_transform = Utility.getSVGTranslation(
-        this.props.sourcePort_handle
+      const sourceTransform = Utility.getSVGTranslation(
+        this.props.sourcePortHandle
           .select(function () {
             // @todo be careful of the scope of this here
             // we need to sort this out
@@ -406,15 +173,15 @@ class NodeLinkSVG extends React.Component<PropsType> {
           .attr('transform')
       )
 
-      this.props.targetPort_handle
+      this.props.targetPortHandle
         .select(function () {
           // @todo be careful of the scope of this here
           return this.parentNode as Element
         })
         .attr('transform')
 
-      const target_transform = Utility.getSVGTranslation(
-        this.props.targetPort_handle
+      const targetTransform = Utility.getSVGTranslation(
+        this.props.targetPortHandle
           .select(function () {
             // @todo be careful of the scope of this here
             return this.parentNode as Element
@@ -423,28 +190,28 @@ class NodeLinkSVG extends React.Component<PropsType> {
       )
 
       // @todo what is all this doing?
-      const source_point: NumTuple = [
-        parseInt(this.props.sourcePort_handle.attr('cx')) +
-          parseInt(source_transform[0]),
-        parseInt(this.props.sourcePort_handle.attr('cy')) +
-          parseInt(source_transform[1])
+      const sourcePoint: NumTuple = [
+        parseInt(this.props.sourcePortHandle.attr('cx')) +
+          parseInt(sourceTransform[0]),
+        parseInt(this.props.sourcePortHandle.attr('cy')) +
+          parseInt(sourceTransform[1])
       ]
 
-      const target_point: NumTuple = [
-        parseInt(this.props.targetPort_handle.attr('cx')) +
-          parseInt(target_transform[0]),
-        parseInt(this.props.targetPort_handle.attr('cy')) +
-          parseInt(target_transform[1])
+      const targetPoint: NumTuple = [
+        parseInt(this.props.targetPortHandle.attr('cx')) +
+          parseInt(targetTransform[0]),
+        parseInt(this.props.targetPortHandle.attr('cy')) +
+          parseInt(targetTransform[1])
       ]
 
-      const path_array = this.getPathArray(
-        source_point,
+      const pathArray = this.getPathArray(
+        sourcePoint,
         this.props.sourcePort,
-        target_point,
+        targetPoint,
         this.props.targetPort
       )
 
-      const path = this.getPath(path_array.findPath())
+      const path = this.getPath(pathArray.findPath())
 
       const style = this.getStyle()
 
@@ -473,7 +240,7 @@ class NodeLinkSVG extends React.Component<PropsType> {
             d={path}
             markerEnd="url(#arrow)"
           />
-          <this.Title pathArray={path_array} />
+          <this.Title pathArray={pathArray} />
         </g>
       )
     } catch (err) {

@@ -19,13 +19,13 @@ export default function gridMenuReducer(
       // Create a deep copy of the relevant part of the state
       const newState = {
         ...state,
-        owned_strategies: { ...state.owned_strategies },
+        ownedStrategies: { ...state.ownedStrategies },
         ownedProjects: { ...state.ownedProjects }
       }
 
       // Determine which part of the state to update
       const target =
-        action.payload.type === 'project' ? 'ownedProjects' : 'owned_strategies'
+        action.payload.type === 'project' ? 'ownedProjects' : 'ownedStrategies'
 
       // Deep copy the sections to maintain immutability
       newState[target].sections = newState[target].sections.map((section) => ({
@@ -48,17 +48,17 @@ export default function gridMenuReducer(
 //     case GridMenuActions.ITEM_ADDED:
 //       var newState = { ...state } // @todo why the shallow copy here?
 //       if (action.payload.type !== 'project') {
-//         newState.owned_strategies = { ...newState.owned_strategies }
-//         newState.owned_strategies.sections =
-//           newState.owned_strategies.sections.slice()
+//         newState.ownedStrategies = { ...newState.ownedStrategies }
+//         newState.ownedStrategies.sections =
+//           newState.ownedStrategies.sections.slice()
 //         for (var i = 0; i < newState.ownedProjects.sections.length; i++) {
 //           if (
-//             newState.owned_strategies.sections[i].objectType ==
+//             newState.ownedStrategies.sections[i].objectType ==
 //             action.payload.type
 //           ) {
-//             newState.owned_strategies.sections[i].objects =
-//               newState.owned_strategies.sections[i].objects.slice()
-//             newState.owned_strategies.sections[i].objects.push(
+//             newState.ownedStrategies.sections[i].objects =
+//               newState.ownedStrategies.sections[i].objects.slice()
+//             newState.ownedStrategies.sections[i].objects.push(
 //               action.payload.newItem
 //             )
 //           }

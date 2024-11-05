@@ -6,7 +6,7 @@ import Outcome from '../../OutcomeEditView/Outcome' // @todo if weird error , ch
 
 type PropsType = {
   data: any
-  workflow_type: any
+  workflowType: any
 }
 /*
  * Shows the outcome we are looking at in the analytics view,
@@ -14,7 +14,7 @@ type PropsType = {
  */
 const AlignmentOutcomesBlock = (props: PropsType) => {
   const data = props.data
-  const titlestr = Utility.capWords(_t(props.workflow_type + ' outcome'))
+  const titlestr = Utility.capWords(_t(props.workflowType + ' outcome'))
   /*******************************************************
    * RENDER
    *******************************************************/

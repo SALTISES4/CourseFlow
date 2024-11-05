@@ -16,7 +16,7 @@ import { connect } from 'react-redux'
 
 type ConnectedProps = TGetNodeLinkById
 type OwnProps = {
-  node_div: React.RefObject<HTMLDivElement>
+  nodeDiv: React.RefObject<HTMLDivElement>
 } & EditableComponentProps
 type StateProps = EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
@@ -31,8 +31,8 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
   declare context: React.ContextType<typeof WorkflowConfigContext>
   private sourceNode: JQuery
   private targetNode: JQuery
-  private targetPort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
-  private sourcePort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  private targetPortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  private sourcePortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private rerenderEvents: string
   private manager: BetterSelectionManager
 
@@ -75,10 +75,10 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
       !this.sourceNode.outerWidth() ||
       !this.targetNode ||
       !this.targetNode.outerWidth() ||
-      !this.targetPort_handle ||
-      this.targetPort_handle.empty()
+      !this.targetPortHandle ||
+      this.targetPortHandle.empty()
     ) {
-      this.sourceNode = $(this.props.node_div.current)
+      this.sourceNode = $(this.props.nodeDiv.current)
       this.targetNode = $('#' + data.targetNode + '.node')
 
       this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
@@ -106,14 +106,14 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
       // console.log(      'cssSourceTargetSelector')
       // console.log(      cssSourceTargetSelector)
 
-      this.sourcePort_handle = d3.select(cssSourcePortSelector)
-      this.targetPort_handle = d3.select(cssSourceTargetSelector)
+      this.sourcePortHandle = d3.select(cssSourcePortSelector)
+      this.targetPortHandle = d3.select(cssSourceTargetSelector)
     }
 
-    const node_selected =
+    const nodeSelected =
       this.sourceNode.attr('data-selected') === 'true' ||
       this.targetNode.attr('data-selected') === 'true'
-    const node_hovered =
+    const nodeHovered =
       this.sourceNode.attr('data-hovered') === 'true' ||
       this.targetNode.attr('data-hovered') === 'true'
 
@@ -127,17 +127,17 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
       style.display = 'none'
     }
 
-    const source_dims = {
+    const sourceDims = {
       width: this.sourceNode.outerWidth(),
       height: this.sourceNode.outerHeight()
     }
 
-    const target_dims = {
+    const targetDims = {
       width: this.targetNode.outerWidth(),
       height: this.targetNode.outerHeight()
     }
 
-    if (!source_dims.width || !target_dims.width) {
+    if (!sourceDims.width || !targetDims.width) {
       return null
     }
 
@@ -153,14 +153,14 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
     const portal = reactDom.createPortal(
       <NodeLinkSVG
         style={style}
-        hovered={node_hovered}
-        node_selected={node_selected}
+        hovered={nodeHovered}
+        nodeSelected={nodeSelected}
         lock={data.lock} // @todo where is lock defined?
         title={data.title}
         textPosition={data.textPosition}
-        sourcePort_handle={this.sourcePort_handle}
+        sourcePortHandle={this.sourcePortHandle}
         sourcePort={data.sourcePort}
-        targetPort_handle={this.targetPort_handle}
+        targetPortHandle={this.targetPortHandle}
         targetPort={data.targetPort}
         clickFunction={(e) => {
           e.stopPropagation()
@@ -171,8 +171,8 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
           )
         }}
         selected={this.state.selected}
-        source_dimensions={source_dims}
-        target_dimensions={target_dims}
+        sourceDimensions={sourceDims}
+        targetDimensions={targetDims}
       />,
 
       $('.workflow-canvas')[0]

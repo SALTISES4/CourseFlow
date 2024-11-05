@@ -152,7 +152,7 @@ class WorkspaceUserEndpoint:
             return Response({"error": "An error occurred"}, status=500)
 
     @staticmethod
-    # @user_can_view(False)
+    # #@user_can_view(False)
     @api_view(["POST"])
     def list_legacy(request: Request, pk: int) -> Response:
         """
@@ -240,7 +240,7 @@ class WorkspaceUserEndpoint:
 
         except ValidationError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
@@ -261,7 +261,7 @@ class WorkspaceUserEndpoint:
         )
 
     @staticmethod
-    # @user_can_edit(False)
+    # #@user_can_edit(False)
     @api_view(["POST"])
     def create(request: Request, pk: int) -> Response:
         """
@@ -287,7 +287,7 @@ class WorkspaceUserEndpoint:
         )
 
     # @staticmethod
-    # @user_can_edit("objectId")
+    # #@user_can_edit("objectId")
     # @api_view(["POST"])
     # def delete(request: Request, pk: int) -> Response:
     #     """
@@ -412,7 +412,7 @@ class WorkspaceUserEndpoint:
             )
 
     @staticmethod
-    # @user_can_edit(False)
+    # #@user_can_edit(False)
     @api_view(["POST"])
     def json_api_post_set_permission(request: Request) -> Response:
         """

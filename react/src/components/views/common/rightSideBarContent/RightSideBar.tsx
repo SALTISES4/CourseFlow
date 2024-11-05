@@ -30,7 +30,7 @@ import ViewBar from './ViewBar'
 //   viewType: any
 //   isStrategy: any
 //   readOnly: any
-//   column_choices: any
+//   columnChoices: any
 // }
 
 type PropsType = {
@@ -56,7 +56,7 @@ class RightSideBar extends React.Component<PropsType> {
    *  viewType
    *  isStrategy
    *  readOnly
-   *  column_choices
+   *  columnChoices
    *******************************************************/
 
   /*******************************************************
@@ -102,7 +102,7 @@ class RightSideBar extends React.Component<PropsType> {
           // viewType={this.props.renderer.viewType}
           // renderer={this.props.renderer}
           readOnly={this.context.permissions.workflowPermissions.readOnly}
-          columnChoices={choices.column_choices}
+          columnChoices={choices.columnChoices}
         />
       )
     }

@@ -43,22 +43,22 @@ export function updateValueQuery(
   ) {
     document.lastUpdateCallFunction()
   }
-  const post_object = {
+  const postObject = {
     objectId: objectId,
     objectType: objectType,
     data: json,
-    changeFieldID: 0
+    changeFieldId: 0
   }
 
   if (changeField) {
     // @ts-ignore
-    post_object.changeFieldID = // @ts-ignore
-      COURSEFLOW_APP.contextData.changeFieldID as number
+    postObject.changeFieldId = // @ts-ignore
+      COURSEFLOW_APP.contextData.changeFieldId as number
   }
 
   document.lastUpdateCallFunction = () => {
     const url = apiPaths.json_api.workspace.field__update
-    API_POST(url, post_object).then((response: EmptyPostResp) => {
+    API_POST(url, postObject).then((response: EmptyPostResp) => {
       callBackFunction(response)
     })
   }
@@ -84,7 +84,7 @@ export function updateValueInstantQuery(
 
 //When the drag is complete, this is called to update the back-end
 export function dragAction(
-  action_data,
+  actionData,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   COURSEFLOW_APP.tinyLoader.startLoad()
@@ -92,7 +92,7 @@ export function dragAction(
 
   // COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at
   const url = apiPaths.json_api.workflow.object__order
-  API_POST(url, action_data).then((response: EmptyPostResp) => {
+  API_POST(url, actionData).then((response: EmptyPostResp) => {
     callBackFunction(response)
     $('.ui-draggable').draggable('enable')
     COURSEFLOW_APP.tinyLoader.endLoad()
@@ -133,7 +133,7 @@ export function insertedAtInstant(
 
 //Causes the specified throughmodel to update its degree
 export function updateOutcomenodeDegree(
-  nodeID: number,
+  nodeId: number,
   outcomeID: number,
   value,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
@@ -141,7 +141,7 @@ export function updateOutcomenodeDegree(
   API_POST(
     COURSEFLOW_APP.globalContextData.path.post_paths.update_outcomenode_degree,
     {
-      nodePk: nodeID,
+      nodePk: nodeId,
       outcomePk: outcomeID,
       degree: value
     }

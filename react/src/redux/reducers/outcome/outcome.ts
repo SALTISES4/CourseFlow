@@ -1,3 +1,4 @@
+import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/utilityFunctions'
 import {
   CommonActions,
@@ -30,15 +31,15 @@ interface RestoreSelfAction extends AnyAction {
   type: OutcomeActions.RESTORE_SELF
   payload: {
     id: number
-    parent_id: number
-    throughparent_index: int
-    throughparent_id: number
+    parentId: number
+    throughparentIndex: number
+    throughparentId: number
   }
 }
 
 interface DeleteSelfAction extends AnyAction {
   type: OutcomeActions.DELETE_SELF
-  payload: { id: number; parent_id: number }
+  payload: { id: number; parentId: number }
 }
 
 interface UpdateHorizontalLinkAction extends AnyAction {
@@ -48,19 +49,19 @@ interface UpdateHorizontalLinkAction extends AnyAction {
 
 interface DeleteSelfSoftAction extends AnyAction {
   type: OutcomeActions.DELETE_SELF_SOFT
-  payload: { id: number; parent_id: number }
+  payload: { id: number; parentId: number }
 }
 
 interface NewOutcomeAction extends AnyAction {
   type: OutcomeActions.NEW_OUTCOME
-  payload: { new_model: TOutcome; children?: { outcome: TOutcome[] } }
+  payload: { newModel: TOutcome; children?: { outcome: TOutcome[] } }
 }
 
 interface InsertChildAction extends AnyAction {
   type: OutcomeActions.INSERT_CHILD
   payload: {
-    parent_id: number
-    new_through: {
+    parentId: number
+    newThrough: {
       id: number
       rank: number
     }
@@ -72,7 +73,7 @@ interface InsertBelowAction extends AnyAction {
   type: OutcomeActions.INSERT_BELOW
   payload: {
     parentId: number
-    new_through: {
+    newThrough: {
       id: number
       rank: number
     }
@@ -82,17 +83,17 @@ interface InsertBelowAction extends AnyAction {
 
 interface ReloadCommentsAction extends AnyAction {
   type: OutcomeActions.RELOAD_COMMENTS
-  payload: { id: number; comment_data: any[] } // Specify the structure of `comment_data`
+  payload: { id: number; commentData: any[] } // Specify the structure of `commentData`
 }
 
 interface ChangeFieldAction extends AnyAction {
   type: OutcomeActions.CHANGE_FIELD
-  payload: { id: number; json: any; changeFieldID: number }
+  payload: { id: number; json: any; changeFieldId: number }
 }
 
 interface ChangeFieldManyAction extends AnyAction {
   type: OutcomeActions.CHANGE_FIELD_MANY
-  payload: { ids: number[]; json: any; changeFieldID: number }
+  payload: { ids: number[]; json: any; changeFieldId: number }
 }
 
 // Outcome Base Actions
@@ -113,12 +114,12 @@ interface RestoreSelfBaseAction extends AnyAction {
 
 interface ReloadCommentsBaseAction extends AnyAction {
   type: OutcomeBaseActions.RELOAD_COMMENTS
-  payload: { id: number; comment_data: any[] }
+  payload: { id: number; commentData: any[] }
 }
 
 interface InsertBelowBaseAction extends AnyAction {
   type: OutcomeBaseActions.INSERT_BELOW
-  payload: { new_model: TOutcome; children?: { outcome: TOutcome[] } }
+  payload: { newModel: TOutcome; children?: { outcome: TOutcome[] } }
 }
 
 // Union type for all actions handled by the reducer
@@ -170,7 +171,7 @@ const findParentIndices = (state, action) => {
   })
 
   const newParent = state.find((item, index) => {
-    if (item.id === action.payload.new_parent) {
+    if (item.id === action.payload.newParent) {
       newParentIndex = index
       return true
     }
@@ -212,12 +213,12 @@ export default function outcomeReducer(
 
     case OutcomeActions.RESTORE_SELF:
       return updateStateForId(state, action, (item) => {
-        if (item.id === action.payload.parent_id) {
+        if (item.id === action.payload.parentId) {
           const newChildLinks = [...item.childOutcomeLinks]
           newChildLinks.splice(
-            action.payload.throughparent_index,
+            action.payload.throughparentIndex,
             0,
-            action.payload.throughparent_id
+            action.payload.throughparentId
           )
           return { ...item, childOutcomeLinks: newChildLinks }
         }
@@ -232,7 +233,7 @@ export default function outcomeReducer(
         .map((item) => ({
           ...item,
           childOutcomeLinks: item.childOutcomeLinks.filter(
-            (linkId) => linkId !== action.payload.parent_id
+            (linkId) => linkId !== action.payload.parentId
           )
         }))
 
@@ -244,9 +245,9 @@ export default function outcomeReducer(
 
     case OutcomeActions.DELETE_SELF_SOFT:
       return updateStateForId(state, action, (item) => {
-        if (item.childOutcomeLinks.includes(action.payload.parent_id)) {
+        if (item.childOutcomeLinks.includes(action.payload.parentId)) {
           const newChildLinks = item.childOutcomeLinks.filter(
-            (linkId) => linkId !== action.payload.parent_id
+            (linkId) => linkId !== action.payload.parentId
           )
           return { ...item, childOutcomeLinks: newChildLinks }
         }
@@ -264,10 +265,10 @@ export default function outcomeReducer(
      *******************************************************/
     case OutcomeOutcomeActions.CHANGE_ID:
       return state.map((item) => {
-        const oldIndex = item.childOutcomeLinks.indexOf(action.payload.old_id)
+        const oldIndex = item.childOutcomeLinks.indexOf(action.payload.oldId)
         if (oldIndex >= 0) {
           const newLinks = [...item.childOutcomeLinks]
-          newLinks.splice(oldIndex, 1, action.payload.new_id)
+          newLinks.splice(oldIndex, 1, action.payload.newId)
           return { ...item, childOutcomeLinks: newLinks }
         }
         return item
@@ -284,7 +285,7 @@ export default function outcomeReducer(
         (id) => id !== action.payload.id
       )
       const newParentLinks = [...newParent.childOutcomeLinks]
-      newParentLinks.splice(action.payload.new_index, 0, action.payload.id)
+      newParentLinks.splice(action.payload.newIndex, 0, action.payload.id)
 
       const newState = [...state]
       newState[oldParentIndex] = {
@@ -330,7 +331,7 @@ export default function outcomeReducer(
     case OutcomeBaseActions.RELOAD_COMMENTS:
       return state.map((item) =>
         item.id === action.payload.id
-          ? { ...item, comments: action.payload.comment_data }
+          ? { ...item, comments: action.payload.commentData }
           : item
       )
 
@@ -338,7 +339,7 @@ export default function outcomeReducer(
     case OutcomeBaseActions.INSERT_BELOW:
       return [
         ...state,
-        action.payload.new_model,
+        action.payload.newModel,
         ...(action.payload.children ? action.payload.children.outcome : [])
       ]
 
@@ -357,9 +358,9 @@ export default function outcomeReducer(
       const newChildOutcomeLinks = [...parentItem.childOutcomeLinks]
 
       newChildOutcomeLinks.splice(
-        action.payload.new_through.rank,
+        action.payload.newThrough.rank,
         0,
-        action.payload.new_through.id
+        action.payload.newThrough.id
       )
       parentItem.childOutcomeLinks = newChildOutcomeLinks
       newState[parentIndex] = parentItem
@@ -367,15 +368,15 @@ export default function outcomeReducer(
       const childrenToAdd = action.payload.children
         ? action.payload.children.outcome
         : []
-      return [...newState, action.payload.new_model, ...childrenToAdd]
+      return [...newState, action.payload.newModel, ...childrenToAdd]
     }
 
     case OutcomeActions.CHANGE_FIELD:
     case OutcomeBaseActions.CHANGE_FIELD:
       if (
-        action.payload.changeFieldID ===
+        action.payload.changeFieldId ===
         // @ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldID
+        COURSEFLOW_APP.contextData.changeFieldId
       ) {
         return state
       }
@@ -388,9 +389,9 @@ export default function outcomeReducer(
     case OutcomeActions.changeField_MANY:
     case OutcomeBaseActions.changeField_MANY:
       if (
-        action.payload.changeFieldID ===
+        action.payload.changeFieldId ===
         // @ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldID
+        COURSEFLOW_APP.contextData.changeFieldId
       ) {
         return state
       }
@@ -413,9 +414,9 @@ export default function outcomeReducer(
         if (item.id === action.payload.dataPackage[0].outcome) {
           return {
             ...item,
-            outcomeHorizontalLinks: action.payload.new_outcomeHorizontalLinks,
+            outcomeHorizontalLinks: action.payload.newOutcomeHorizontalLinks,
             outcomeHorizontalLinksUnique:
-              action.payload.new_outcomeHorizontalLinksUnique
+              action.payload.newOutcomeHorizontalLinksUnique
           }
         }
         return item

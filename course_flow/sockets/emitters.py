@@ -1,6 +1,9 @@
+from pprint import pprint
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.db.models import F
+from djangorestframework_camel_case.util import camelize
 
 from course_flow.models import Workflow
 from course_flow.models.workflow_objects.node import Node
@@ -22,66 +25,84 @@ class WorkflowUpdateEmitter:
         workflow.save()
         workflow.refresh_from_db()
         channel_layer = get_channel_layer()
-
         room_group_name = "workflow_" + str(workflow.pk)
-        async_to_sync(channel_layer.group_send)(
-            room_group_name,
-            {
-                "type": "workflow_action",
-                "action": action,
-                "edit_count": str(workflow.edit_count),
-            },
-        )
+
+        message = {
+            "type": "workflow_action",
+            "action": action,
+            "edit_count": str(workflow.edit_count),
+        }
+        camel_case_message = camelize(message)
+
+        async_to_sync(channel_layer.group_send)(room_group_name, camel_case_message)
 
     @staticmethod
     def dispatch_to_parent_wf(workflow: Workflow, action):
         channel_layer = get_channel_layer()
+
         for parent_node in Node.objects.filter(linked_workflow=workflow):
             parent_workflow = parent_node.get_workflow()
             parent_workflow.edit_count = F("edit_count") + 1
             parent_workflow.save()
             parent_workflow.refresh_from_db()
+
+            message = {
+                "type": WsEventType.WORKFLOW_ACTION.value,
+                "action": action,
+                "edit_count": parent_workflow.edit_count,
+            }
+
+            camel_case_message = camelize(message)
+
             async_to_sync(channel_layer.group_send)(
                 "workflow_" + str(parent_workflow.pk),
-                {
-                    "type": WsEventType.WORKFLOW_ACTION.value,
-                    "action": action,
-                    "edit_count": parent_workflow.edit_count,
-                },
+                camel_case_message,
             )
 
     @staticmethod
     def emit_parent_updated(workflow: Workflow):
         channel_layer = get_channel_layer()
+
+        message = {
+            "type": WsEventType.WORKFLOW_PARENT_UPDATED.value,
+            "edit_count": workflow.edit_count,
+        }
+        camel_case_message = camelize(message)
+
         async_to_sync(channel_layer.group_send)(
             "workflow_" + str(workflow.pk),
-            {
-                "type": WsEventType.WORKFLOW_PARENT_UPDATED.value,
-                "edit_count": workflow.edit_count,
-            },
+            camel_case_message,
         )
 
     @staticmethod
     def emit_child_updated(workflow: Workflow, child_workflow: Workflow):
         channel_layer = get_channel_layer()
+
+        message = {
+            "type": "workflow_child_updated",
+            "edit_count": workflow.edit_count,
+            "child_workflow_id": child_workflow.pk,
+        }
+        camel_case_message = camelize(message)
+
         async_to_sync(channel_layer.group_send)(
             "workflow_" + str(workflow.pk),
-            {
-                "type": "workflow_child_updated",
-                "edit_count": workflow.edit_count,
-                "child_workflow_id": child_workflow.pk,
-            },
+            camel_case_message,
         )
 
     @staticmethod
     def dispatch_wf_lock(workflow: Workflow, action):
         channel_layer = get_channel_layer()
+
+        message = {
+            "type": "lock_update",
+            "action": action,
+        }
+        camel_case_message = camelize(message)
+
         async_to_sync(channel_layer.group_send)(
             "workflow_" + str(workflow.pk),
-            {
-                "type": "lock_update",
-                "action": action,
-            },
+            camel_case_message,
         )
 
     ##########################################################
@@ -166,26 +187,26 @@ class WorkflowUpdateEmitter:
         return {"type": "nodelink/newNodeLink", "payload": response_data}
 
     @staticmethod
-    def change_field(object_id: int, object_type: str, json, changeFieldID=0):
+    def change_field(object_id: int, object_type: str, json, change_field_id=0):
         return {
             "type": object_type + "/changeField",
             "payload": {
                 "id": object_id,
                 "object_type": object_type,
                 "json": json,
-                "changeFieldID": changeFieldID,
+                "change_field_id": change_field_id,
             },
         }
 
     @staticmethod
-    def change_field_many(object_ids: [int], object_type, json, changeFieldID=0):
+    def change_field_many(object_ids: [int], object_type, json, change_field_id=0):
         return {
             "type": object_type + "/changeFieldMany",
             "payload": {
                 "ids": object_ids,
                 "object_type": object_type,
                 "json": json,
-                "changeFieldID": changeFieldID,
+                "change_field_id": change_field_id,
             },
         }
 

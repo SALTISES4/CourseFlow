@@ -102,13 +102,13 @@ export default function outcomeNodeReducer(
         return state
       }
 
-      const new_outcomenode_outcomes = action.payload.dataPackage.map(
+      const newOutcomenodeOutcomes = action.payload.dataPackage.map(
         (outcomenode) =>
           Utility.cantorPairing(outcomenode.node, outcomenode.outcome)
       )
 
       const updatedState = state.map((item) => {
-        const index = new_outcomenode_outcomes.indexOf(
+        const index = newOutcomenodeOutcomes.indexOf(
           Utility.cantorPairing(item.node, item.outcome)
         )
         return index >= 0 ? action.payload.dataPackage[index] : item
@@ -118,7 +118,7 @@ export default function outcomeNodeReducer(
         .concat(
           action.payload.dataPackage.filter(
             (item) =>
-              !new_outcomenode_outcomes.includes(
+              !newOutcomenodeOutcomes.includes(
                 Utility.cantorPairing(item.node, item.outcome)
               )
           )
@@ -160,17 +160,17 @@ export default function outcomeNodeReducer(
 //       const newState = state.slice()
 //       if (action.payload.outcomenode) {
 //         for (let i = 0; i < action.payload.outcomenode.length; i++) {
-//           const new_obj = action.payload.outcomenode[i]
+//           const newObj = action.payload.outcomenode[i]
 //           let added = false
 //           for (let j = 0; j < newState.length; j++) {
-//             if (newState[j].id == new_obj.id) {
-//               newState.splice(j, 1, new_obj)
+//             if (newState[j].id == newObj.id) {
+//               newState.splice(j, 1, newObj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           newState.push(new_obj)
+//           newState.push(newObj)
 //         }
 //       }
 //       return newState
@@ -180,13 +180,13 @@ export default function outcomeNodeReducer(
 //       //Returns -1 if the outcome had already been added to the node
 //       if (action.payload.outcomenode == -1) return state
 //       const newState = state.slice()
-//       const new_outcomenode_outcomes = action.payload.dataPackage.map(
+//       const newOutcomenodeOutcomes = action.payload.dataPackage.map(
 //         (outcomenode) =>
 //           Utility.cantorPairing(outcomenode.node, outcomenode.outcome)
 //       )
 //       const dataPackage_copy = action.payload.dataPackage.slice()
 //       for (let i = 0; i < newState.length; i++) {
-//         const new_outcomenode_index = new_outcomenode_outcomes.indexOf(
+//         const new_outcomenode_index = newOutcomenodeOutcomes.indexOf(
 //           Utility.cantorPairing(newState[i].node, newState[i].outcome)
 //         )
 //         if (new_outcomenode_index >= 0) {

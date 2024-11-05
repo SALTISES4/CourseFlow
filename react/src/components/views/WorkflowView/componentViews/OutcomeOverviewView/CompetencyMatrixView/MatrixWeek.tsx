@@ -7,13 +7,13 @@ import { connect } from 'react-redux'
 
 type ConnectedProps = {
   data: any
-  total_theory: number
-  total_practical: number
-  total_individual: number
-  total_required: number
-  total_time: number
-  general_education: number
-  specific_education: number
+  totalTheory: number
+  totalPractical: number
+  totalIndividual: number
+  totalRequired: number
+  totalTime: number
+  generalEducation: number
+  specificEducation: number
   objectSets: AppState['objectset']
   nodes: any
 }
@@ -46,24 +46,24 @@ class MatrixWeekUnconnected extends React.Component<PropsType> {
       <div className="matrix-time-row">
         <div className="total-cell table-cell blank"></div>
         <div className="total-cell table-cell">
-          {this.props.general_education}
+          {this.props.generalEducation}
         </div>
         <div className="total-cell table-cell">
-          {this.props.specific_education}
+          {this.props.specificEducation}
         </div>
         <div className="total-cell table-cell">
-          {this.props.general_education + this.props.specific_education}
+          {this.props.generalEducation + this.props.specificEducation}
         </div>
         <div className="total-cell table-cell blank"></div>
-        <div className="total-cell table-cell">{this.props.total_theory}</div>
+        <div className="total-cell table-cell">{this.props.totalTheory}</div>
         <div className="total-cell table-cell">
-          {this.props.total_practical}
+          {this.props.totalPractical}
         </div>
         <div className="total-cell table-cell">
-          {this.props.total_individual}
+          {this.props.totalIndividual}
         </div>
-        <div className="total-cell table-cell">{this.props.total_time}</div>
-        <div className="total-cell table-cell">{this.props.total_required}</div>
+        <div className="total-cell table-cell">{this.props.totalTime}</div>
+        <div className="total-cell table-cell">{this.props.totalRequired}</div>
       </div>
     )
   }
@@ -75,21 +75,21 @@ const mapStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   const data = getWeekById(state, ownProps.objectId).data
-  const node_weeks = Utility.filterThenSortByID(
+  const nodeWeeks = Utility.filterThenSortByID(
     state.nodeweek,
     data.nodeweekSet
   )
-  const nodes_data = Utility.filterThenSortByID(
+  const nodesData = Utility.filterThenSortByID(
     state.node,
-    node_weeks.map((node_week) => node_week.node)
+    nodeWeeks.map((nodeWeek) => nodeWeek.node)
   ).filter((node) => !Utility.checkSetHidden(node, state.objectset))
-  const linked_wf_data = nodes_data.map((node) => {
+  const linkedWfData = nodesData.map((node) => {
     if (node.representsWorkflow) {
       return { ...node, ...node.linkedWorkflowData }
     }
     return node
   })
-  const general_education = linked_wf_data.reduce(
+  const generalEducation = linkedWfData.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.timeGeneralHours) {
         return previousValue + currentValue.timeGeneralHours
@@ -98,7 +98,7 @@ const mapStateToProps = (
     },
     0
   )
-  const specific_education = linked_wf_data.reduce(
+  const specificEducation = linkedWfData.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.timeSpecificHours) {
         return previousValue + currentValue.timeSpecificHours
@@ -107,13 +107,13 @@ const mapStateToProps = (
     },
     0
   )
-  const total_theory = linked_wf_data.reduce((previousValue, currentValue) => {
+  const totalTheory = linkedWfData.reduce((previousValue, currentValue) => {
     if (currentValue && currentValue.ponderationTheory) {
       return previousValue + currentValue.ponderationTheory
     }
     return previousValue
   }, 0)
-  const total_practical = linked_wf_data.reduce(
+  const totalPractical = linkedWfData.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.ponderationPractical) {
         return previousValue + currentValue.ponderationPractical
@@ -122,7 +122,7 @@ const mapStateToProps = (
     },
     0
   )
-  const total_individual = linked_wf_data.reduce(
+  const totalIndividual = linkedWfData.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.ponderationIndividual) {
         return previousValue + currentValue.ponderationIndividual
@@ -131,8 +131,8 @@ const mapStateToProps = (
     },
     0
   )
-  const total_time = total_theory + total_practical + total_individual
-  const total_required = linked_wf_data.reduce(
+  const totalTime = totalTheory + totalPractical + totalIndividual
+  const totalRequired = linkedWfData.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.timeRequired) {
         return previousValue + parseFloat(currentValue.timeRequired)
@@ -144,15 +144,15 @@ const mapStateToProps = (
 
   return {
     data: data,
-    total_theory: total_theory,
-    total_practical: total_practical,
-    total_individual: total_individual,
-    total_required: total_required,
-    total_time: total_time,
-    general_education: general_education,
-    specific_education: specific_education,
+    totalTheory: totalTheory,
+    totalPractical: totalPractical,
+    totalIndividual: totalIndividual,
+    totalRequired: totalRequired,
+    totalTime: totalTime,
+    generalEducation: generalEducation,
+    specificEducation: specificEducation,
     objectSets: state.objectset,
-    nodes: nodes_data
+    nodes: nodesData
   }
 }
 export default connect<ConnectedProps, object, OwnProps, AppState>(

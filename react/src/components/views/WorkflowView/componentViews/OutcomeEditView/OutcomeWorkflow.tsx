@@ -9,7 +9,7 @@ import Outcome from './Outcome'
 type ConnectedProps = TGetOutcomeWorkflowByID
 type OwnProps = {
   objectId: any
-  show_horizontal: any
+  showHorizontal: any
   renderer: any
   parentId: any
 }
@@ -34,18 +34,18 @@ class OutcomeWorkflowUnconnected extends React.Component<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.data
-    let my_class = 'outcome-workflow'
+    let myClass = 'outcome-workflow'
     if (data.noDrag) {
-      my_class += ' no-drag'
+      myClass += ' no-drag'
     }
     return (
-      <div className={my_class} id={data.id}>
+      <div className={myClass} id={data.id}>
         <Outcome
           objectId={data.outcome}
           parentId={this.props.parentId}
           throughParentId={data.id}
           // renderer={this.props.renderer}
-          show_horizontal={this.props.show_horizontal}
+          showHorizontal={this.props.showHorizontal}
         />
       </div>
     )

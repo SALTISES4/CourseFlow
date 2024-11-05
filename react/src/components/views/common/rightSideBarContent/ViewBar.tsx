@@ -53,70 +53,70 @@ class ViewBarUnconnected extends React.Component<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.data
-    let sort_block
+    let sortBlock
     if (
       this.context.workflowView === WorkflowViewType.OUTCOME_TABLE ||
       this.context.workflowView === WorkflowViewType.HORIZONTAL_OUTCOME_TABLE
     ) {
-      const table_type_value = data.tableType || 0
-      const sort_type = (
+      const tableTypeValue = data.tableType || 0
+      const sortType = (
         <div className="node-bar-sort-block">
           {choices.outcomeSortChoices.map((choice, index) => (
             <div key={index}>
               <input
                 disabled={
-                  table_type_value === 1 ||
+                  tableTypeValue === 1 ||
                   // @ts-ignore
                   (data.type === 'program' && choice.type > 1)
                 }
                 type="radio"
-                id={'sort_type_choice' + choice.type}
-                name={'sort_type_choice' + choice.type}
+                id={'sortType_choice' + choice.type}
+                name={'sortType_choice' + choice.type}
                 value={choice.type}
                 checked={data.outcomesSort === choice.type}
                 onChange={this.changeSort.bind(this)}
               />
-              <label htmlFor={'sort_type_choice' + choice.type}>
+              <label htmlFor={'sortType_choice' + choice.type}>
                 {choice.name}
               </label>
             </div>
           ))}
         </div>
       )
-      const table_type = (
+      const tableType = (
         <div className="node-bar-sort-block">
           <div>
             <input
               type="radio"
-              id={'table_type_table'}
-              name="table_type_table"
+              id={'tableType_table'}
+              name="tableType_table"
               value={0}
-              checked={table_type_value === 0}
+              checked={tableTypeValue === 0}
               onChange={this.changeTableType.bind(this)}
             />
-            <label htmlFor="table_type_table">{_t('Table Style')}</label>
+            <label htmlFor="tableType_table">{_t('Table Style')}</label>
           </div>
           <div>
             <input
               type="radio"
-              id={'table_type_matrix'}
-              name="table_type_matrix"
+              id={'tableType_matrix'}
+              name="tableType_matrix"
               value={1}
-              checked={table_type_value === 1}
+              checked={tableTypeValue === 1}
               onChange={this.changeTableType.bind(this)}
             />
-            <label htmlFor="table_type_matrix">
+            <label htmlFor="tableType_matrix">
               {_t('Competency Matrix Style')}
             </label>
           </div>
         </div>
       )
-      sort_block = (
+      sortBlock = (
         <div>
           <h4>{_t('Sort Nodes')}:</h4>
-          {sort_type}
+          {sortType}
           <h4>{_t('Table Type')}:</h4>
-          {table_type}
+          {tableType}
         </div>
       )
     }
@@ -154,7 +154,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
       <div id="node-bar-workflow" className="right-panel-inner">
         <h3>{_t('View options')}</h3>
         <hr />
-        {sort_block}
+        {sortBlock}
         <h4>{_t('Object Sets')}</h4>
         {sets}
       </div>

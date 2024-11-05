@@ -23,13 +23,13 @@ type OwnProps = {
 type ConnectedProps = {
   workflow: TWorkflow
   nodes: any
-  general_education: number
-  specific_education: number
-  total_theory: number
-  total_practical: number
-  total_individual: number
-  total_time: number
-  total_required: number
+  generalEducation: number
+  specificEducation: number
+  totalTheory: number
+  totalPractical: number
+  totalIndividual: number
+  totalTime: number
+  totalRequired: number
 }
 
 type PropsType = OwnProps & ConnectedProps
@@ -83,11 +83,11 @@ class GridWeekUnconnected extends EditableComponent<
         <div className="week-title">
           <TitleText text={data.title} defaultText={defaultText} />
           <div className="grid-ponderation">
-            {this.props.total_theory +
+            {this.props.totalTheory +
               '/' +
-              this.props.total_practical +
+              this.props.totalPractical +
               '/' +
-              this.props.total_individual}
+              this.props.totalIndividual}
           </div>
         </div>
         {nodes}
@@ -107,19 +107,19 @@ const mapStateToProps = (
 ): ConnectedProps => {
   const data = ownProps.data
 
-  const node_weeks = Utility.filterThenSortByID<TNodeweek>(
+  const nodeWeeks = Utility.filterThenSortByID<TNodeweek>(
     state.nodeweek,
     data.nodeweekSet
   )
-  const nodes_data = node_weeks
+  const nodesData = nodeWeeks
     .map((nodeweek) => getNodeByID(state, nodeweek.node).data)
     .filter((node) => !Utility.checkSetHidden(node, state.objectset))
-  // let nodes_data = Utility.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Utility.checkSetHidden(node,state.objectset));
+  // let nodesData = Utility.filterThenSortByID(state.node,nodeWeeks.map(nodeWeek=>nodeWeek.node)).filter(node=>!Utility.checkSetHidden(node,state.objectset));
 
   // @todo getNodeByID returns GetNodeByIDType
   // which does not contain representsWorkflow property
   // so this will always be false, verify and remove check
-  const override_data = nodes_data.map((node) => {
+  const overrideData = nodesData.map((node) => {
     // @ts-ignore
     if (node.representsWorkflow) {
       return {
@@ -132,7 +132,7 @@ const mapStateToProps = (
     }
   })
 
-  const general_education = override_data.reduce(
+  const generalEducation = overrideData.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.timeGeneralHours) {
         return previousValue + currentValue.timeGeneralHours
@@ -142,7 +142,7 @@ const mapStateToProps = (
     0
   )
 
-  const specific_education = override_data.reduce(
+  const specificEducation = overrideData.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.timeSpecificHours) {
         return previousValue + currentValue.timeSpecificHours
@@ -152,14 +152,14 @@ const mapStateToProps = (
     0
   )
 
-  const total_theory = override_data.reduce((previousValue, currentValue) => {
+  const totalTheory = overrideData.reduce((previousValue, currentValue) => {
     if (currentValue && currentValue.ponderationTheory) {
       return previousValue + currentValue.ponderationTheory
     }
     return previousValue
   }, 0)
 
-  const total_practical = override_data.reduce(
+  const totalPractical = overrideData.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.ponderationPractical) {
         return previousValue + currentValue.ponderationPractical
@@ -169,7 +169,7 @@ const mapStateToProps = (
     0
   )
 
-  const total_individual = override_data.reduce(
+  const totalIndividual = overrideData.reduce(
     (previousValue, currentValue) => {
       if (currentValue && currentValue.ponderationIndividual) {
         return previousValue + currentValue.ponderationIndividual
@@ -179,9 +179,9 @@ const mapStateToProps = (
     0
   )
 
-  const total_time = total_theory + total_practical + total_individual
+  const totalTime = totalTheory + totalPractical + totalIndividual
 
-  const total_required = override_data.reduce((previousValue, currentValue) => {
+  const totalRequired = overrideData.reduce((previousValue, currentValue) => {
     if (currentValue && currentValue.timeRequired) {
       return previousValue + parseInt(currentValue.timeRequired)
     }
@@ -190,14 +190,14 @@ const mapStateToProps = (
 
   return {
     workflow: state.workflow,
-    nodes: override_data,
-    general_education: general_education,
-    specific_education: specific_education,
-    total_theory: total_theory,
-    total_practical: total_practical,
-    total_individual: total_individual,
-    total_time: total_time,
-    total_required: total_required
+    nodes: overrideData,
+    generalEducation: generalEducation,
+    specificEducation: specificEducation,
+    totalTheory: totalTheory,
+    totalPractical: totalPractical,
+    totalIndividual: totalIndividual,
+    totalTime: totalTime,
+    totalRequired: totalRequired
   }
 }
 const GridWeek = connect<ConnectedProps, object, OwnProps, AppState>(

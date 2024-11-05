@@ -11,7 +11,6 @@ import {
   DeleteSelfButton,
   DuplicateSelfButton,
   InsertSiblingButton,
-  insertChild
 } from '@cfEditableComponents/hoverEditActions'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
@@ -35,11 +34,11 @@ type ConnectedProps = {
 }
 type OwnProps = {
   throughParentId?: number
-  show_horizontal?: boolean
+  showHorizontal?: boolean
 } & EditableComponentWithSortingProps
 
 type StateProps = {
-  show_horizontal_links: boolean
+  showHorizontalLinks: boolean
 } & EditableComponentWithSortingState
 
 type PropsType = ConnectedProps & OwnProps
@@ -51,7 +50,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
   PropsType,
   StateProps
 > {
-  private children_block: React.RefObject<HTMLOListElement>
+  private childrenBlock: React.RefObject<HTMLOListElement>
   private manager: BetterSelectionManager
 
   constructor(props: PropsType) {
@@ -64,20 +63,20 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     // {
     //   this.objectType = this.objectType.OUTCOME
     // }
-    this.children_block = React.createRef()
+    this.childrenBlock = React.createRef()
   }
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    if (this.props.show_horizontal) {
+    if (this.props.showHorizontal) {
       this.makeDragAndDrop()
     }
   }
 
   componentDidUpdate() {
-    if (this.props.show_horizontal) {
+    if (this.props.showHorizontal) {
       this.makeDragAndDrop()
     }
   }
@@ -87,7 +86,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
    *******************************************************/
   makeDragAndDrop() {
     this.makeSortableNode(
-      $(this.children_block.current)
+      $(this.childrenBlock.current)
         .children('.outcome-outcome')
         .not('ui-draggable'),
       this.props.objectId,
@@ -103,24 +102,24 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     }
   }
 
-  sortableMovedFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedFunction(id, newPosition, type, newParent, childId) {
     this.context.editableMethods.microUpdate(
-      ActionCreator.moveOutcomeOutcome(id, new_position, new_parent, child_id)
+      ActionCreator.moveOutcomeOutcome(id, newPosition, newParent, childId)
     )
     insertedAt(
       this.context.selectionManager,
-      child_id,
+      childId,
       'outcome',
-      new_parent,
+      newParent,
       'outcome',
-      new_position,
+      newPosition,
       'outcomeoutcome'
     )
   }
 
   stopSortFunction() {}
 
-  sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedOutFunction(id, newPosition, type, newParent, childId) {
     if (
       confirm(
         _t(
@@ -132,17 +131,17 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
         this.context,
         null,
         'outcome',
-        new_parent,
+        newParent,
         'outcome',
-        new_position,
+        newPosition,
         'outcomeoutcome'
       )
       insertedAtInstant(
-        child_id,
+        childId,
         'outcome',
-        new_parent,
+        newParent,
         'outcome',
-        new_position,
+        newPosition,
         'outcomeoutcome'
       )
     }
@@ -155,40 +154,40 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
       // @ts-ignore // @todo
       droppable: '.outcome-ghost',
       over: (e, ui) => {
-        const drop_item = $(e.target)
-        const drag_item = ui.draggable
-        const drag_helper = ui.helper
-        const new_index = drop_item.prevAll().length
-        const new_parent_id = parseInt(drop_item.parent().attr('id'))
+        const dropItem = $(e.target)
+        const dragItem = ui.draggable
+        const dragHelper = ui.helper
+        const newIndex = dropItem.prevAll().length
+        const newParentId = parseInt(dropItem.parent().attr('id'))
 
-        if (drag_item.hasClass('outcome')) {
-          drag_helper.addClass('valid-drop')
-          drop_item.addClass('outcome-drop-over')
+        if (dragItem.hasClass('outcome')) {
+          dragHelper.addClass('valid-drop')
+          dropItem.addClass('outcome-drop-over')
           return
         } else {
           return
         }
       },
       out: (e, ui) => {
-        const drag_item = ui.draggable
-        const drag_helper = ui.helper
-        const drop_item = $(e.target)
-        if (drag_item.hasClass('outcome')) {
-          drag_helper.removeClass('valid-drop')
-          drop_item.removeClass('outcome-drop-over')
+        const dragItem = ui.draggable
+        const dragHelper = ui.helper
+        const dropItem = $(e.target)
+        if (dragItem.hasClass('outcome')) {
+          dragHelper.removeClass('valid-drop')
+          dropItem.removeClass('outcome-drop-over')
         }
       },
       drop: (e, ui) => {
         $('.outcome-drop-over').removeClass('outcome-drop-over')
-        const drop_item = $(e.target)
-        const drag_item = ui.draggable
-        if (drag_item.hasClass('outcome')) {
+        const dropItem = $(e.target)
+        const dragItem = ui.draggable
+        if (dragItem.hasClass('outcome')) {
           COURSEFLOW_APP.tinyLoader.startLoad()
           updateOutcomehorizontallinkDegree(
             props.objectId,
             // @todo HACK, this is being used to bypass react and pass information around the DOM
             // @ts-ignore
-            drag_item[0].dataDraggable.outcome,
+            dragItem[0].dataDraggable.outcome,
             1,
             (responseData) => {
               COURSEFLOW_APP.tinyLoader.endLoad()
@@ -240,7 +239,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     const data = this.props.outcome.data
     let children
     let outcomehorizontallinks
-    const side_actions = []
+    const sideActions = []
 
     if (Utility.checkSetHidden(data, this.props.objectSets)) {
       return null
@@ -253,26 +252,26 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           objectId={outcomeoutcome}
           parentId={data.id}
           // renderer={this.context}
-          show_horizontal={this.props.show_horizontal}
-          parent_depth={this.props.outcome.data.depth}
+          showHorizontal={this.props.showHorizontal}
+          parentDepth={this.props.outcome.data.depth}
         />
       ))
     }
 
-    if (this.state.show_horizontal_links) {
+    if (this.state.showHorizontalLinks) {
       outcomehorizontallinks = (
         <div
           className={'outcome-node-container'}
           onMouseLeave={() => {
             this.setState({
-              show_horizontal_links: false
+              showHorizontalLinks: false
             })
           }}
         >
-          {data.outcomeHorizontalLinksUnique.map((horizontal_link) => (
+          {data.outcomeHorizontalLinksUnique.map((horizontalLink) => (
             <OutcomeHorizontalLink
-              key={horizontal_link}
-              objectId={horizontal_link}
+              key={horizontalLink}
+              objectId={horizontalLink}
               // renderer={this.context}
             />
           ))}
@@ -281,16 +280,16 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     }
 
     if (
-      this.props.show_horizontal &&
+      this.props.showHorizontal &&
       data.outcomeHorizontalLinksUnique.length > 0
     ) {
-      side_actions.push(
+      sideActions.push(
         <div className="outcome-node-indicator">
           <div
             className={'outcome-node-indicator-number'}
             onMouseEnter={() => {
               this.setState({
-                show_horizontal_links: true
+                showHorizontalLinks: true
               })
             }}
           >
@@ -385,7 +384,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
                 'children-block children-block-' + this.props.outcome.data.depth
               }
               id={this.props.objectId + '-children-block'}
-              ref={this.children_block}
+              ref={this.childrenBlock}
             >
               {children}
             </ol>
@@ -394,11 +393,12 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           {this.props.workflow.workflowPermissions.write && data.depth < 2 && (
             <div
               className="outcome-create-child"
-              onClick={() =>
-                insertChild({
-                  id: this.props.objectId,
-                  objectType: this.objectType
-                })
+              onClick={() => {}
+              // @todo update this with mutation
+                // insertChild({
+                //   id: this.props.objectId,
+                //   objectType: this.objectType
+                // })
               }
             >
               {_t('+ Add New')}
@@ -410,7 +410,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           </div>
 
           <div className="side-actions">
-            {side_actions}
+            {sideActions}
             <div className="comment-indicator-container" />
           </div>
         </div>

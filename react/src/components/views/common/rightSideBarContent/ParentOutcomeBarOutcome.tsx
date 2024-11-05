@@ -47,9 +47,9 @@ class ParentOutcomeOutcomeUnconnected extends React.Component<ParentOutcomeOutco
 }
 const mapParentOutcomeOutcomeStateToProps = (
   state: AppState,
-  own_props: ParentOutcomeOutcomeOwnProps
+  ownProps: ParentOutcomeOutcomeOwnProps
 ): ParentOutcomeOutcomeConnectedProps => {
-  return getOutcomeOutcomeById(state, own_props.objectId)
+  return getOutcomeOutcomeById(state, ownProps.objectId)
 }
 
 const ParentOutcomeOutcome = connect<
@@ -143,7 +143,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
         <div
           className="children-block"
           id={this.props.objectId + '-children-block'}
-          ref={this.children_block}
+          ref={this.childrenBlock}
         >
           {children}
         </div>
@@ -154,14 +154,14 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
 
 const MapStateToProps = (
   state: AppState,
-  own_props: OwnProps
+  ownProps: OwnProps
 ): ConnectedProps => ({
-  ...getOutcomeByID(state, own_props.objectId),
+  ...getOutcomeByID(state, ownProps.objectId),
   nodes: state.outcomenode
-    .filter((outcomeNode) => outcomeNode.outcome == own_props.objectId)
+    .filter((outcomeNode) => outcomeNode.outcome == ownProps.objectId)
     .map((outcomeNode) => outcomeNode.node),
   horizontaloutcomes: state.outcomehorizontallink
-    .filter((ochl) => ochl.parentOutcome == own_props.objectId)
+    .filter((ochl) => ochl.parentOutcome == ownProps.objectId)
     .map((ochl) => ochl.outcome)
 })
 

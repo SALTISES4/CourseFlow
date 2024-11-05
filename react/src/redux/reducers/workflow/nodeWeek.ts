@@ -19,27 +19,27 @@ interface RefreshStoreDataAction extends AnyAction {
 
 interface ChangeIdNodeWeekAction extends AnyAction {
   type: NodeWeekActions.CHANGE_ID
-  payload: { old_id: number; new_id: number }
+  payload: { oldId: number; newId: number }
 }
 
 interface MovedToNodeWeekAction extends AnyAction {
   type: NodeWeekActions.MOVED_TO
-  payload: { id: number; new_parent: number }
+  payload: { id: number; newParent: number }
 }
 
 interface DeleteSelfNodeAction extends AnyAction {
   type: NodeActions.DELETE_SELF
-  payload: { parent_id: number }
+  payload: { parentId: number }
 }
 
 interface InsertBelowNodeAction extends AnyAction {
   type: NodeActions.INSERT_BELOW
-  payload: { new_through: TNodeweek }
+  payload: { newThrough: TNodeweek }
 }
 
 interface NewNodeAction extends AnyAction {
   type: NodeActions.NEW_NODE
-  payload: { new_through: TNodeweek }
+  payload: { newThrough: TNodeweek }
 }
 
 interface InsertBelowWeekAction extends AnyAction {
@@ -49,7 +49,7 @@ interface InsertBelowWeekAction extends AnyAction {
 
 interface AddStrategyAction extends AnyAction {
   type: StrategyActions.ADD_STRATEGY
-  payload: { nodeweeks_added: TNodeweek[] }
+  payload: { nodeweeksAdded: TNodeweek[] }
 }
 
 // Union type for all actions handled by the reducer
@@ -95,20 +95,20 @@ export default function nodeweekReducer(
 
     case NodeWeekActions.CHANGE_ID:
       return state.map((item) =>
-        item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, noDrag: false }
+        item.id === action.payload.oldId
+          ? { ...item, id: action.payload.newId, noDrag: false }
           : item
       )
 
     case NodeActions.DELETE_SELF:
-      return state.filter((item) => item.id !== action.payload.parent_id)
+      return state.filter((item) => item.id !== action.payload.parentId)
 
     case NodeWeekActions.MOVED_TO: {
       return state.map((item) =>
         item.id === action.payload.id
           ? {
               ...item,
-              week: action.payload.new_parent,
+              week: action.payload.newParent,
               noDrag: true
             }
           : item
@@ -122,12 +122,12 @@ export default function nodeweekReducer(
 
     case NodeActions.INSERT_BELOW:
     case NodeActions.NEW_NODE:
-      return [...state, action.payload.new_through]
+      return [...state, action.payload.newThrough]
 
     case StrategyActions.ADD_STRATEGY:
-      return action.payload.nodeweeks_added.length === 0
+      return action.payload.nodeweeksAdded.length === 0
         ? state
-        : [...state, ...action.payload.nodeweeks_added]
+        : [...state, ...action.payload.nodeweeksAdded]
 
     default:
       return state

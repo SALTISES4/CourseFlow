@@ -34,9 +34,9 @@ export type CreateOutcomeNodeBranchType = {
 // }
 
 // @todo screwed something up in the refactor, wait for typing
-export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
+export function createOutcomeNodeBranch(props, outcomeId, nodecategory) {
   for (let i = 0; i < props.outcome.length; i++) {
-    if (props.outcome[i].id === outcome_id) {
+    if (props.outcome[i].id === outcomeId) {
       let children
 
       if (
@@ -58,16 +58,16 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
 
       for (let ii = 0; ii < nodecategory.length; ii++) {
         const category = nodecategory[ii]
-        const outcomenodes_group = []
+        const outcomenodesGroup = []
         for (let j = 0; j < category.nodes.length; j++) {
           const node = category.nodes[j]
           const outcomenode = getTableOutcomeNodeByID(
             props.outcomenode,
             node,
-            outcome_id
+            outcomeId
           ).data
           if (outcomenode) {
-            outcomenodes_group.push({
+            outcomenodesGroup.push({
               nodeId: node,
               degree: outcomenode.degree
             })
@@ -77,31 +77,31 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           let added = false
           for (let k = 0; k < children.length; k++) {
             if (children[k].outcomenodes[ii][j].degree !== null) {
-              outcomenodes_group.push({ nodeId: node, degree: 0 })
+              outcomenodesGroup.push({ nodeId: node, degree: 0 })
               added = true
               break
             }
           }
           if (!added) {
-            outcomenodes_group.push({ nodeId: node, degree: null })
+            outcomenodesGroup.push({ nodeId: node, degree: null })
           }
         }
         let total = null
         if (children.length > 0) {
           total = 15
-          let all_null = true
+          let allNull = true
           for (let k = 0; k < children.length; k++) {
-            var child_total = children[k].outcomenodes[ii].total
-            if (child_total !== null) {
-              all_null = false
+            var childTotal = children[k].outcomenodes[ii].total
+            if (childTotal !== null) {
+              allNull = false
             }
-            total &= child_total
+            total &= childTotal
           }
-          if (all_null) {
+          if (allNull) {
             total = null
           }
         } else {
-          total = outcomenodes_group.reduce((acc, curr) => {
+          total = outcomenodesGroup.reduce((acc, curr) => {
             if (curr.degree === null) {
               return acc
             }
@@ -112,21 +112,21 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           }, null)
         }
         // @ts-ignore
-        outcomenodes_group.total = total
-        outcomenodes.push(outcomenodes_group)
+        outcomenodesGroup.total = total
+        outcomenodes.push(outcomenodesGroup)
       }
       let total = null
       if (children.length > 0) {
         total = 15
-        let all_null = true
+        let allNull = true
         for (let k = 0; k < children.length; k++) {
-          var child_total = children[k].outcomenodes.total
-          if (child_total !== null) {
-            all_null = false
+          var childTotal = children[k].outcomenodes.total
+          if (childTotal !== null) {
+            allNull = false
           }
-          total &= child_total
+          total &= childTotal
         }
-        if (all_null) {
+        if (allNull) {
           total = null
         }
       } else {
@@ -140,9 +140,8 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
           return acc | curr.total
         }, null)
       }
-      // @ts-ignore
       outcomenodes.total = total
-      return { id: outcome_id, children: children, outcomenodes: outcomenodes }
+      return { id: outcomeId, children: children, outcomenodes: outcomenodes }
     }
   }
   return null
@@ -262,7 +261,7 @@ function calculateTotal(children, outcomenodes) {
 //
 //       for (var ii = 0; ii < nodecategory.length; ii++) {
 //         const category = nodecategory[ii]
-//         const outcomenodes_group = []
+//         const outcomenodesGroup = []
 //         for (var j = 0; j < category.nodes.length; j++) {
 //           const node = category.nodes[j]
 //           const outcomenode = getTableOutcomeNodeByID(
@@ -271,7 +270,7 @@ function calculateTotal(children, outcomenodes) {
 //             outcome_id
 //           ).data
 //           if (outcomenode) {
-//             outcomenodes_group.push({
+//             outcomenodesGroup.push({
 //               nodeId: node,
 //               degree: outcomenode.degree
 //             })
@@ -281,43 +280,43 @@ function calculateTotal(children, outcomenodes) {
 //           let added = false
 //           for (var k = 0; k < children.length; k++) {
 //             if (children[k].outcomenodes[ii][j].degree !== null) {
-//               outcomenodes_group.push({ nodeId: node, degree: 0 })
+//               outcomenodesGroup.push({ nodeId: node, degree: 0 })
 //               added = true
 //               break
 //             }
 //           }
-//           if (!added) outcomenodes_group.push({ nodeId: node, degree: null })
+//           if (!added) outcomenodesGroup.push({ nodeId: node, degree: null })
 //         }
 //         let total = null
 //         if (children.length > 0) {
 //           total = 15
-//           let all_null = true
+//           let allNull = true
 //           for (let k = 0; k < children.length; k++) {
-//             var child_total = children[k].outcomenodes[ii].total
-//             if (child_total !== null) all_null = false
-//             total &= child_total
+//             var childTotal = children[k].outcomenodes[ii].total
+//             if (childTotal !== null) allNull = false
+//             total &= childTotal
 //           }
-//           if (all_null) total = null
+//           if (allNull) total = null
 //         } else {
-//           total = outcomenodes_group.reduce((acc, curr) => {
+//           total = outcomenodesGroup.reduce((acc, curr) => {
 //             if (curr.degree === null) return acc
 //             if (acc === null) return curr.degree
 //             return acc | curr.degree
 //           }, null)
 //         }
-//         outcomenodes_group.total = total
-//         outcomenodes.push(outcomenodes_group)
+//         outcomenodesGroup.total = total
+//         outcomenodes.push(outcomenodesGroup)
 //       }
 //       let total = null
 //       if (children.length > 0) {
 //         total = 15
-//         let all_null = true
+//         let allNull = true
 //         for (let k = 0; k < children.length; k++) {
-//           var child_total = children[k].outcomenodes.total
-//           if (child_total !== null) all_null = false
-//           total &= child_total
+//           var childTotal = children[k].outcomenodes.total
+//           if (childTotal !== null) allNull = false
+//           total &= childTotal
 //         }
-//         if (all_null) total = null
+//         if (allNull) total = null
 //       } else {
 //         total = outcomenodes.reduce((acc, curr) => {
 //           if (curr.total === null) return acc

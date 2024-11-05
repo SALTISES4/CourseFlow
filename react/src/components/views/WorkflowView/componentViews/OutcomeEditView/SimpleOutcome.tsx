@@ -55,7 +55,7 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
   StateProps
 > {
   static contextType = WorkflowConfigContext
-  private children_block: React.RefObject<HTMLDivElement>
+  private childrenBlock: React.RefObject<HTMLDivElement>
   private manager: BetterSelectionManager
 
   constructor(props: PropsType) {
@@ -63,7 +63,7 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
     this.objectType = CfObjectType.OUTCOME
     this.manager = new BetterSelectionManager(this.props.dispatch)
 
-    this.children_block = React.createRef()
+    this.childrenBlock = React.createRef()
     this.state = { isDropped: false } as StateProps
   }
 
@@ -190,7 +190,7 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
             <div
               className="children-block"
               id={this.props.objectId + '-children-block'}
-              ref={this.children_block}
+              ref={this.childrenBlock}
             >
               {children}
             </div>

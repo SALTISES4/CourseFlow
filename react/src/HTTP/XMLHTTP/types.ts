@@ -34,7 +34,7 @@ export type WorkflowParentDataPackage = {
 
 export type WorkflowChildDataPackage = {
   node: ENode[]
-  child_workflow: EWorkflow[]
+  childWorkflow: EWorkflow[]
   outcomeworkflow: EOutcomeWorkflow[]
   outcome: EOutcome[]
   outcomeoutcome: TOutcomeOutcome[]
@@ -59,5 +59,5 @@ export type WorkflowDataPackage = {
   strategy: EStrategy[]
   //
   unreadComments: any[]
-  saltise_strategy: EWorkflow[]
+  saltiseStrategy: EWorkflow[]
 }

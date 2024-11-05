@@ -7,7 +7,7 @@ type ConnectedProps = TGetOutcomeByID
 type OwnProps = {
   objectId: number
   outcomesType: any
-  outcome_tree?: any
+  outcomeTree?: any
 }
 type StateProps = {
   isDropped: boolean
@@ -42,7 +42,7 @@ class MatrixOutcomeUnconnected extends TableOutcomeUnconnected<
         outcomesType={this.props.outcomesType}
         objectId={child.id}
         // @this is weird
-        outcome_tree={child}
+        outcomeTree={child}
         // renderer={this.props.renderer}
       />
     )

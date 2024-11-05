@@ -67,49 +67,49 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
 
     exports.push([
       <input
-        name="export_type"
+        name="exportType"
         type="radio"
         value="outcome"
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'outcome'}
       />,
-      <label htmlFor="export_type">{_t('Outcomes')}</label>
+      <label htmlFor="exportType">{_t('Outcomes')}</label>
     ])
 
     exports.push([
       <input
-        name="export_type"
+        name="exportType"
         type="radio"
         value="node"
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'node'}
       />,
-      <label htmlFor="export_type">{_t('Nodes')}</label>
+      <label htmlFor="exportType">{_t('Nodes')}</label>
     ])
 
     if (type == 'project' || type == 'course') {
       exports.push([
         <input
-          name="export_type"
+          name="exportType"
           type="radio"
           value="framework"
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'framework'}
         />,
-        <label htmlFor="export_type">{_t('Course Framework')}</label>
+        <label htmlFor="exportType">{_t('Course Framework')}</label>
       ])
     }
 
     if (type == 'project' || type == 'program') {
       exports.push([
         <input
-          name="export_type"
+          name="exportType"
           type="radio"
           value="matrix"
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'matrix'}
         />,
-        <label htmlFor="export_type">{_t('Competency Matrix')}</label>
+        <label htmlFor="exportType">{_t('Competency Matrix')}</label>
       ])
     }
 
@@ -117,13 +117,13 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
     if (type == 'project' || type == 'program') {
       exports.push([
         <input
-          name="export_type"
+          name="exportType"
           type="radio"
           value="sobec"
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'sobec'}
         />,
-        <label htmlFor="export_type">{_t('Sobec Validation')}</label>
+        <label htmlFor="exportType">{_t('Sobec Validation')}</label>
       ])
     }
 

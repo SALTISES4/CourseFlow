@@ -44,7 +44,7 @@ class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
     const selectionManager = this.context.selectionManager
     const data = this.props.data
 
-    const data_override = data.representsWorkflow
+    const dataOverride = data.representsWorkflow
       ? { ...data, ...data.linkedWorkflowData, id: data.id }
       : data
     // this was moved from the return function
@@ -52,11 +52,11 @@ class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
     const ponderation = (
       <div className="grid-ponderation">
-        {data_override.ponderationTheory +
+        {dataOverride.ponderationTheory +
           '/' +
-          data_override.ponderationPractical +
+          dataOverride.ponderationPractical +
           '/' +
-          data_override.ponderationIndividual}
+          dataOverride.ponderationIndividual}
       </div>
     )
 
@@ -76,7 +76,7 @@ class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
     )
     const comments = permissions.read ? <this.AddCommenting /> : ''
 
-    //     const portal = this.addEditable(data_override, true)
+    //     const portal = this.addEditable(dataOverride, true)
     return (
       <>
         {/*{portal}*/}

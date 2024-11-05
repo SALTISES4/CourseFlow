@@ -53,22 +53,22 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   // static contextType = WorkflowConfigContext
   // declare context: React.ContextType<typeof WorkflowConfigContext>
 
-  private allowed_tabs: number[]
+  private allowedTabs: number[]
   private objectType: CfObjectType
 
   constructor(props: PropsType) {
     super(props)
     this.objectType = CfObjectType.WORKFLOW
-    this.allowed_tabs = [0, 3]
+    this.allowedTabs = [0, 3]
 
     const querystring = window.location.search
-    const url_params = new URLSearchParams(querystring)
-    const workflows_added = url_params
+    const urlParams = new URLSearchParams(querystring)
+    const workflowsAdded = urlParams
       .getAll('workflows')
       .map((workflowId) => parseInt(workflowId))
 
     this.state = {
-      workflows: workflows_added,
+      workflows: workflowsAdded,
       objectSets: props.projectData.objectSets
     }
   }
@@ -86,9 +86,9 @@ class ComparisonView extends React.Component<PropsType, StateType> {
     })
   }
 
-  componentDidUpdate(prev_props: PropsType) {
+  componentDidUpdate(prevProps: PropsType) {
     this.makeSortable()
-    if (prev_props.viewType != this.props.viewType) {
+    if (prevProps.viewType != this.props.viewType) {
       this.updateTabs()
     }
   }
@@ -113,7 +113,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
 
     // Determine disabled tabs
     const disabledTabs = [0, 1, 2, 3].filter(
-      (tabIndex) => !this.allowed_tabs.includes(tabIndex)
+      (tabIndex) => !this.allowedTabs.includes(tabIndex)
     )
 
     // Initialize sidebar tabs with no disabled tabs
@@ -123,9 +123,9 @@ class ComparisonView extends React.Component<PropsType, StateType> {
     const currentTab = $('#sidebar').tabs('option', 'active')
 
     // Check if the current tab is allowed, and if not, update accordingly
-    if (!this.allowed_tabs.includes(currentTab)) {
+    if (!this.allowedTabs.includes(currentTab)) {
       const newActiveTab =
-        this.allowed_tabs.length === 0 ? false : this.allowed_tabs[0]
+        this.allowedTabs.length === 0 ? false : this.allowedTabs[0]
       $('#sidebar').tabs({ active: newActiveTab })
     }
 

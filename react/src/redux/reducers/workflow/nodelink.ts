@@ -21,12 +21,12 @@ interface CreateLockAction extends AnyAction {
 
 interface ChangeFieldAction extends AnyAction {
   type: NodeLinkActions.CHANGE_FIELD
-  payload: { id: number; json: any; changeFieldID?: number }
+  payload: { id: number; json: any; changeFieldId?: number }
 }
 
 interface NewNodeLinkAction extends AnyAction {
   type: NodeLinkActions.NEW_NODE_LINK
-  payload: { new_model: TNodelink }
+  payload: { newModel: TNodelink }
 }
 
 interface NodeLinkByIdAction extends AnyAction {
@@ -44,7 +44,7 @@ interface InsertBelowWeekAction extends AnyAction {
 
 interface AddStrategyAction extends AnyAction {
   type: StrategyActions.ADD_STRATEGY
-  payload: { nodelinks_added: TNodelink[] }
+  payload: { nodelinksAdded: TNodelink[] }
 }
 
 type NodelinkActionTypes =
@@ -95,9 +95,9 @@ export default function nodelinkReducer(
 
     case NodeLinkActions.CHANGE_FIELD:
       if (
-        action.payload.changeFieldID ===
+        action.payload.changeFieldId ===
         //@ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldID
+        COURSEFLOW_APP.contextData.changeFieldId
       ) {
         return state
       }
@@ -108,7 +108,7 @@ export default function nodelinkReducer(
       )
 
     case NodeLinkActions.NEW_NODE_LINK:
-      return [...state, action.payload.new_model]
+      return [...state, action.payload.newModel]
 
     case NodeLinkActions.DELETE_SELF:
       return state.filter((item) => item.id !== action.payload.id)
@@ -135,9 +135,9 @@ export default function nodelinkReducer(
         : state
 
     case StrategyActions.ADD_STRATEGY:
-      return action.payload.nodelinks_added.length === 0
+      return action.payload.nodelinksAdded.length === 0
         ? state
-        : [...state, ...action.payload.nodelinks_added]
+        : [...state, ...action.payload.nodelinksAdded]
 
     default:
       return state

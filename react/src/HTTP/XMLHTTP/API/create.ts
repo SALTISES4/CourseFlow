@@ -30,17 +30,17 @@ export function newNodeQuery(
  * endpoint: workflow/outcome/new
  *
  * @param workflowPk
- * @param object_set_id
+ * @param object_setId
  * @param callBackFunction
  */
 export function newOutcomeQuery(
   workflowPk: number,
-  object_set_id: number,
+  object_setId: number,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_outcome, {
     workflowPk: workflowPk,
-    objectsetPk: object_set_id
+    objectsetPk: object_setId
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)
   })

@@ -20,13 +20,13 @@ type ConnectedProps = {
 }
 
 type StateType = {
-  dropped_list: any[]
+  droppedList: any[]
 }
 type PropsType = OwnProps & ConnectedProps
 class GridViewUnconnected extends React.Component<PropsType, StateType> {
   constructor(props: PropsType) {
     super(props)
-    this.state = { dropped_list: [] }
+    this.state = { droppedList: [] }
   }
 
   /*******************************************************

@@ -54,17 +54,17 @@ export default function parentWorkflowReducer(
 //       var newState = state.slice()
 //       if (action.payload.parentWorkflow) {
 //         for (let i = 0; i < action.payload.parentWorkflow.length; i++) {
-//           const new_obj = action.payload.parentWorkflow[i]
+//           const newObj = action.payload.parentWorkflow[i]
 //           let added = false
 //           for (let j = 0; j < newState.length; j++) {
-//             if (newState[j].id == new_obj.id) {
-//               newState.splice(j, 1, new_obj)
+//             if (newState[j].id == newObj.id) {
+//               newState.splice(j, 1, newObj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           newState.push(new_obj)
+//           newState.push(newObj)
 //         }
 //       }
 //       return newState

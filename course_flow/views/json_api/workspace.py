@@ -51,7 +51,7 @@ class WorkspaceEndpoint:
     # non-foreign key fields on models
     @staticmethod
     @api_view(["POST"])
-    @user_can_edit(False)
+    # @user_can_edit(False)
     def update_value(request: Request) -> Response:
         body = json.loads(
             request.body
@@ -61,7 +61,7 @@ class WorkspaceEndpoint:
             object_id = body.get("objectID")
             object_type = body.get("object_type")
             data = body.get("data")
-            changeFieldID = body.get("changeFieldID", False)
+            change_field_id = body.get("change_field_id", False)
             objects = DAO.get_model_from_str(object_type).objects
 
             if hasattr(objects, "get_subclass"):
@@ -78,12 +78,12 @@ class WorkspaceEndpoint:
 
         except ValidationError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             workflow = object_to_update.get_workflow()
             WorkflowUpdateEmitter.emit_workflow_update(
                 workflow,
-                WorkflowUpdateEmitter.change_field(object_id, object_type, data, changeFieldID),
+                WorkflowUpdateEmitter.change_field(object_id, object_type, data, change_field_id),
             )
             if object_type == "outcome":
                 WorkflowUpdateEmitter.dispatch_to_parent_wf(
@@ -112,7 +112,7 @@ class WorkspaceEndpoint:
     #   - project
     #########################################################
     @staticmethod
-    @user_can_delete(False)
+    # @user_can_delete(False)
     @api_view(["POST"])
     def delete(request: Request, pk: int) -> Response:
         """
@@ -190,7 +190,7 @@ class WorkspaceEndpoint:
     #   - project
     #########################################################
     @staticmethod
-    # @user_can_delete(False)
+    # #@user_can_delete(False)
     @api_view(["POST"])
     def delete_soft(request: Request, pk: int) -> Response:
         """
@@ -280,7 +280,7 @@ class WorkspaceEndpoint:
         )
 
     @staticmethod
-    # @user_can_delete(False)
+    # #@user_can_delete(False)
     @api_view(["POST"])
     def restore(request: Request, pk: int) -> Response:
         """

@@ -10,7 +10,7 @@ type ConnectedProps = ConnectedType
 type OwnProps = {
   sort: string
   data: any
-  base_outcomes?: any
+  baseOutcomes?: any
 }
 type PropsType = ConnectedProps & OwnProps
 
@@ -30,26 +30,26 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component<PropsTy
       (weekworkflow, index) => {
         const week = weekworkflow.weekworkflow.week
         if (
-          this.props.restriction_set &&
-          this.props.restriction_set.weeks &&
-          this.props.restriction_set.weeks.indexOf(week) == -1
+          this.props.restrictionSet &&
+          this.props.restrictionSet.weeks &&
+          this.props.restrictionSet.weeks.indexOf(week) == -1
         ) {
           return null
         }
-        const week_rank = weekworkflow.rank
+        const weekRank = weekworkflow.rank
 
-        const week_component = (
+        const weekComponent = (
           <AlignmentHorizontalReverseWeek
-            week_rank={week_rank}
+            weekRank={weekRank}
             objectId={week}
             // renderer={this.props.renderer}
-            restriction_set={this.props.restriction_set}
+            restrictionSet={this.props.restrictionSet}
           />
         )
 
         return (
           <div key={index} className="week-workflow">
-            {week_component}
+            {weekComponent}
           </div>
         )
       }
@@ -66,11 +66,11 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component<PropsTy
 
 type ConnectedType = {
   weekworkflows: any
-  restriction_set: {
+  restrictionSet: {
     weeks: number[]
     nodes: number[]
     parentOutcomes: number[]
-    child_outcomes: number[]
+    childOutcomes: number[]
   }
 }
 const mapStateToProps = (
@@ -86,82 +86,82 @@ const mapStateToProps = (
   }))
 
   if (ownProps.sort == 'outcome') {
-    const base_outcome = ownProps.data
-    const allowed_outcome_ids = [base_outcome.id]
+    const baseOutcome = ownProps.data
+    const allowedOutcomeIds = [baseOutcome.id]
 
-    // getDescendantOutcomes(state, base_outcome, allowed_outcome_ids)
+    // getDescendantOutcomes(state, baseOutcome, allowedOutcomeIds)
 
     // @todo not used
     // const allowed_outcomes = state.outcome.filter((outcome) =>
-    //   allowed_outcome_ids.includes(outcome.id)
+    //   allowedOutcomeIds.includes(outcome.id)
     // )
 
-    const allowed_child_outcome_ids_from_outcomes = state.outcomehorizontallink
-      .filter((hl) => allowed_outcome_ids.indexOf(hl.parentOutcome) >= 0)
+    const allowedChildOutcomeIdsFromOutcomes = state.outcomehorizontallink
+      .filter((hl) => allowedOutcomeIds.indexOf(hl.parentOutcome) >= 0)
       .map((hl) => hl.outcome)
 
-    const allowed_child_outcome_ids = state.outcome
+    const allowedChildOutcomeIds = state.outcome
       .filter(
         (outcome) =>
-          allowed_child_outcome_ids_from_outcomes.indexOf(outcome.id) >= 0
+          allowedChildOutcomeIdsFromOutcomes.indexOf(outcome.id) >= 0
       )
       .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectset))
       .map((outcome) => outcome.id)
 
-    const allowed_nodeIds_from_outcomes = state.outcomenode
+    const allowedNodeIdsFromOutcomes = state.outcomenode
       .filter((outcomenode) =>
-        allowed_outcome_ids.includes(outcomenode.outcome)
+        allowedOutcomeIds.includes(outcomenode.outcome)
       )
       .map((outcomenode) => outcomenode.node)
 
-    const allowed_nodeIds = state.node
-      .filter((node) => allowed_nodeIds_from_outcomes.indexOf(node.id) >= 0)
+    const allowedNodeIds = state.node
+      .filter((node) => allowedNodeIdsFromOutcomes.indexOf(node.id) >= 0)
       .filter((node) => !Utility.checkSetHidden(node, state.objectset))
       .map((node) => node.id)
 
     const nodeweeks = state.nodeweek.filter((nodeweek) =>
-      allowed_nodeIds.includes(nodeweek.node)
+      allowedNodeIds.includes(nodeweek.node)
     )
-    const allowed_week_ids = nodeweeks.map((nodeweek) => nodeweek.week)
+    const allowedWeekIds = nodeweeks.map((nodeweek) => nodeweek.week)
 
     return {
       weekworkflows: weekworkflows,
-      restriction_set: {
-        weeks: allowed_week_ids,
-        nodes: allowed_nodeIds,
-        parentOutcomes: allowed_outcome_ids,
-        child_outcomes: allowed_child_outcome_ids
+      restrictionSet: {
+        weeks: allowedWeekIds,
+        nodes: allowedNodeIds,
+        parentOutcomes: allowedOutcomeIds,
+        childOutcomes: allowedChildOutcomeIds
       }
     }
   } else if (ownProps.sort == 'week') {
-    const allowed_outcome_ids = []
+    const allowedOutcomeIds = []
 
-    const allowed_nodeIds = state.node
+    const allowedNodeIds = state.node
       .filter((node) => !Utility.checkSetHidden(node, state.objectset))
       .map((node) => node.id)
 
-    const allowed_child_outcome_ids = state.outcome
+    const allowedChildOutcomeIds = state.outcome
       .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectset))
       .map((outcome) => outcome.id)
 
-    for (let i = 0; i < ownProps.base_outcomes.length; i++) {
-      for (let j = 0; j < ownProps.base_outcomes[i].outcomes.length; j++) {
-        allowed_outcome_ids.push(ownProps.base_outcomes[i].outcomes[j].data.id)
+    for (let i = 0; i < ownProps.baseOutcomes.length; i++) {
+      for (let j = 0; j < ownProps.baseOutcomes[i].outcomes.length; j++) {
+        allowedOutcomeIds.push(ownProps.baseOutcomes[i].outcomes[j].data.id)
         // getDescendantOutcomes(
         //   state,
-        //   ownProps.base_outcomes[i].outcomes[j].data,
-        //   allowed_outcome_ids
+        //   ownProps.baseOutcomes[i].outcomes[j].data,
+        //   allowedOutcomeIds
         // )
       }
     }
 
     return {
       weekworkflows: weekworkflows,
-      restriction_set: {
+      restrictionSet: {
         weeks: [ownProps.data.id],
-        nodes: allowed_nodeIds,
-        parentOutcomes: allowed_outcome_ids,
-        child_outcomes: allowed_child_outcome_ids
+        nodes: allowedNodeIds,
+        parentOutcomes: allowedOutcomeIds,
+        childOutcomes: allowedChildOutcomeIds
       }
     }
   }

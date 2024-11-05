@@ -25,16 +25,16 @@ type ConnectedProps = {
   workflow: TWorkflow
   data: any
   column: TColumn
-  child_outcomes: any
+  childOutcomes: any
   outcomenodes: any
-  all_node_outcomes: any
+  allNodeOutcomes: any
 }
 type OwnProps = {
-  restriction_set: any
+  restrictionSet: any
   objectId: any
 } & EditableComponentProps
 type StateProps = {
-  show_all?: boolean
+  showAll?: boolean
 } & EditableComponentStateType
 type PropsType = ConnectedProps & OwnProps
 
@@ -73,7 +73,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
    *******************************************************/
   ChildOutcomesHeader = () => {
     const data = this.props.data
-    if (this.props.child_outcomes.length > 0) {
+    if (this.props.childOutcomes.length > 0) {
       return (
         <div className="child-outcome child-outcome-header">
           <div className="half-width alignment-column">
@@ -89,7 +89,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     }
 
     if (data.linkedWorkflow) {
-      if (this.props.child_outcomes === -1) {
+      if (this.props.childOutcomes === -1) {
         // TS2339: Property childWorkflowDataNeeded does not exist on type ChildRenderer
         // @ts-ignore
         this.context.childWorkflowDataNeeded(this.props.data.id)
@@ -131,20 +131,20 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
    *******************************************************/
   render() {
     const data = this.props.data
-    let data_override
+    let dataOverride
 
     if (data.representsWorkflow) {
-      data_override = { ...data, ...data.linkedWorkflowData, id: data.id }
+      dataOverride = { ...data, ...data.linkedWorkflowData, id: data.id }
     } else {
-      data_override = { ...data }
+      dataOverride = { ...data }
     }
 
     const selectionManager = this.context.selectionManager
-    // let child_outcomes_header
-    const child_outcomes_header = <this.ChildOutcomesHeader />
+    // let childOutcomesHeader
+    const childOutcomesHeader = <this.ChildOutcomesHeader />
 
-    // if (this.props.child_outcomes.length > 0) {
-    //   child_outcomes_header = (
+    // if (this.props.childOutcomes.length > 0) {
+    //   childOutcomesHeader = (
     //     <div className="child-outcome child-outcome-header">
     //       <div className="half-width alignment-column">
     //         {Utility.capWords(
@@ -161,8 +161,8 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     //   )
     // } else {
     //   if (data.linkedWorkflow) {
-    //     if (this.props.child_outcomes == -1) {
-    //       child_outcomes_header = (
+    //     if (this.props.childOutcomes == -1) {
+    //       childOutcomesHeader = (
     //         <div className="child-outcome child-outcome-header">
     //           {_t('... LOADING')}
     //         </div>
@@ -170,13 +170,13 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     //       this.context.childWorkflowDataNeeded(this.props.data.id)
     //     } else {
     //       if (data.linkedWorkflowData.deleted) {
-    //         child_outcomes_header = (
+    //         childOutcomesHeader = (
     //           <div className="child-outcome child-outcome-header">
     //             {_t('The linked workflow has been deleted.')}
     //           </div>
     //         )
     //       } else {
-    //         child_outcomes_header = (
+    //         childOutcomesHeader = (
     //           <div className="child-outcome child-outcome-header">
     //             {window.gettext(
     //               'No outcomes have been added to the linked workflow. When added, they will appear here.'
@@ -186,7 +186,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     //       }
     //     }
     //   } else {
-    //     child_outcomes_header = (
+    //     childOutcomesHeader = (
     //       <div className="child-outcome child-outcome-header">
     //         {window.gettext(
     //           'No workflow has been linked to this node. If you link a workflow, its outcomes will appear here.'
@@ -196,12 +196,12 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     //   }
     // }
 
-    let child_outcomes
-    if (this.props.child_outcomes != -1) {
-      child_outcomes = this.props.child_outcomes.map((childOutcome, index) => {
+    let childOutcomes
+    if (this.props.childOutcomes != -1) {
+      childOutcomes = this.props.childOutcomes.map((childOutcome, index) => {
         if (
-          !this.state.show_all &&
-          this.props.restriction_set?.child_outcomes?.indexOf(childOutcome) ===
+          !this.state.showAll &&
+          this.props.restrictionSet?.childOutcomes?.indexOf(childOutcome) ===
             -1
         ) {
           return null
@@ -211,23 +211,23 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
           <AlignmentHorizontalReverseChildOutcome
             key={index}
             objectId={childOutcome}
-            node_data={data}
+            nodeData={data}
             // renderer={this.props.renderer}
-            restriction_set={this.props.restriction_set}
+            restrictionSet={this.props.restrictionSet}
           />
         )
       })
     }
-    let show_all
+    let showAll
 
     //if child outcomes are restricted, we need a show all button that expands to show all of them instead. Otherwise we only need to show the outcomes currently attached to the node.
     const outcomenodes = this.props.outcomenodes.map((outcomenode) => (
       <OutcomeNode key={outcomenode.id} objectId={outcomenode.id} />
     ))
 
-    const outcome_restriction =
-      this.props.restriction_set.parentOutcomes.filter(
-        (oc) => this.props.all_node_outcomes.indexOf(oc) === -1
+    const outcomeRestriction =
+      this.props.restrictionSet.parentOutcomes.filter(
+        (oc) => this.props.allNodeOutcomes.indexOf(oc) === -1
       )
 
     let outcomeadder
@@ -235,13 +235,13 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     if (this.props.workflow.workflowPermissions.write) {
       outcomeadder = (
         <OutcomeAdder
-          outcome_set={outcome_restriction}
+          outcomeSet={outcomeRestriction}
           addFunction={updateOutcomenodeDegree.bind(this, this.props.objectId)}
         />
       )
     }
 
-    const outcomes_for_node = (
+    const outcomesForNode = (
       <div>
         <div className="node-outcomes-header">
           {Utility.capWords(_t(this.props.workflow.type + ' outcomes')) +
@@ -252,10 +252,10 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
       </div>
     )
 
-    let add_new_outcome
+    let addNewOutcome
 
     if (this.props.workflow.workflowPermissions.write && data.linkedWorkflow) {
-      add_new_outcome = (
+      addNewOutcome = (
         <div
           id="add-new-outcome"
           className="menu-create hover-shade"
@@ -270,26 +270,26 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
       )
     }
 
-    if (data.linkedWorkflow && this.props.restriction_set?.child_outcomes) {
-      if (this.state.show_all) {
-        show_all = (
+    if (data.linkedWorkflow && this.props.restrictionSet?.childOutcomes) {
+      if (this.state.showAll) {
+        showAll = (
           <div className="alignment-added-outcomes">
-            {add_new_outcome}
-            {outcomes_for_node}
+            {addNewOutcome}
+            {outcomesForNode}
             <div
               className="alignment-show-all"
-              onClick={() => this.setState({ show_all: false })}
+              onClick={() => this.setState({ showAll: false })}
             >
               {'-' + _t('Hide Unused')}
             </div>
           </div>
         )
       } else {
-        show_all = (
+        showAll = (
           <div className="alignment-added-outcomes">
             <div
               className="alignment-show-all"
-              onClick={() => this.setState({ show_all: true })}
+              onClick={() => this.setState({ showAll: true })}
             >
               {'+' + _t('Show All')}
             </div>
@@ -297,10 +297,10 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
         )
       }
     } else {
-      show_all = (
+      showAll = (
         <div className="alignment-added-outcomes">
-          {add_new_outcome}
-          {outcomes_for_node}
+          {addNewOutcome}
+          {outcomesForNode}
         </div>
       )
     }
@@ -339,11 +339,11 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
             <NodeTitle data={data} />
           </div>
           <div className="outcome-block">
-            {child_outcomes_header}
-            {child_outcomes}
+            {childOutcomesHeader}
+            {childOutcomes}
           </div>
-          <div className="node-drop-row">{show_all}</div>
-          {/*          {this.addEditable(data_override, true)}*/}
+          <div className="node-drop-row">{showAll}</div>
+          {/*          {this.addEditable(dataOverride, true)}*/}
           <div className="side-actions">
             <div className="comment-indicator-container"></div>
           </div>
@@ -366,13 +366,13 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
         state.outcomenode,
         node.outcomenodeUniqueSet
       )
-      if (ownProps.restriction_set && ownProps.restriction_set.parentOutcomes) {
+      if (ownProps.restrictionSet && ownProps.restrictionSet.parentOutcomes) {
         outcomenodes = outcomenodes.filter(
           (ocn) =>
-            ownProps.restriction_set.parentOutcomes.indexOf(ocn.outcome) >= 0
+            ownProps.restrictionSet.parentOutcomes.indexOf(ocn.outcome) >= 0
         )
       }
-      const node_outcomes = Utility.filterThenSortByID(
+      const nodeOutcomes = Utility.filterThenSortByID(
         state.outcomenode,
         node.outcomenodeSet
       ).map((ocn) => ocn.outcome)
@@ -382,32 +382,32 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
           workflow: state.workflow,
           data: node,
           column: column,
-          child_outcomes: [],
+          childOutcomes: [],
           outcomenodes: outcomenodes,
-          all_node_outcomes: node_outcomes
+          allNodeOutcomes: nodeOutcomes
         }
       }
 
-      const child_workflow = getChildWorkflowById(state, node.linkedWorkflow)
+      const childWorkflow = getChildWorkflowById(state, node.linkedWorkflow)
 
-      let child_outcomes
+      let childOutcomes
 
-      if (child_workflow != -1) {
-        child_outcomes = Utility.filterThenSortByID(
+      if (childWorkflow != -1) {
+        childOutcomes = Utility.filterThenSortByID(
           state.outcomeworkflow,
-          child_workflow.data.outcomeworkflowSet
+          childWorkflow.data.outcomeworkflowSet
         ).map((outcomeworkflow) => outcomeworkflow.outcome)
       } else {
-        child_outcomes = -1
+        childOutcomes = -1
       }
 
       return {
         workflow: state.workflow,
         data: node,
         column: column,
-        child_outcomes: child_outcomes,
+        childOutcomes: childOutcomes,
         outcomenodes: outcomenodes,
-        all_node_outcomes: node_outcomes
+        allNodeOutcomes: nodeOutcomes
       }
     }
   }

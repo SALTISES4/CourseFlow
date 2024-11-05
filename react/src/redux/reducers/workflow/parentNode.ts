@@ -26,17 +26,17 @@ interface UpdateDegreeAction extends AnyAction {
 
 interface DeleteSelfAction extends AnyAction {
   type: OutcomeActions.DELETE_SELF | OutcomeBaseActions.DELETE_SELF
-  payload: { extra_data: any[] } // Specify
+  payload: { extraData: any[] } // Specify
 }
 
 interface DeleteSelfSoftAction extends AnyAction {
   type: OutcomeActions.DELETE_SELF_SOFT | OutcomeBaseActions.DELETE_SELF_SOFT
-  payload: { extra_data: any[] }
+  payload: { extraData: any[] }
 }
 
 interface RestoreSelfAction extends AnyAction {
   type: OutcomeActions.RESTORE_SELF | OutcomeBaseActions.RESTORE_SELF
-  payload: { extra_data: any[] }
+  payload: { extraData: any[] }
 }
 
 // Union type for all actions handled by the reducer
@@ -109,10 +109,10 @@ export default function parentNodeReducer(
     case OutcomeBaseActions.DELETE_SELF:
     case OutcomeBaseActions.DELETE_SELF_SOFT: {
       return state.map((item, index) =>
-        action.payload.extra_data.find((data) => data.id === item.id)
+        action.payload.extraData.find((data) => data.id === item.id)
           ? {
               ...item,
-              ...action.payload.extra_data.find((data) => data.id === item.id)
+              ...action.payload.extraData.find((data) => data.id === item.id)
             }
           : item
       )
@@ -132,17 +132,17 @@ export default function parentNodeReducer(
 //       var newState = state.slice()
 //       if (action.payload.parentNode) {
 //         for (var i = 0; i < action.payload.parentNode.length; i++) {
-//           const new_obj = action.payload.parentNode[i]
+//           const newObj = action.payload.parentNode[i]
 //           let added = false
 //           for (var j = 0; j < newState.length; j++) {
-//             if (newState[j].id == new_obj.id) {
-//               newState.splice(j, 1, new_obj)
+//             if (newState[j].id == newObj.id) {
+//               newState.splice(j, 1, newObj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           newState.push(new_obj)
+//           newState.push(newObj)
 //         }
 //       }
 //       return newState
@@ -153,9 +153,9 @@ export default function parentNodeReducer(
 //         if (state[i].id == action.payload.dataPackage[0].node) {
 //           var newState = state.slice()
 //           newState[i] = { ...newState[i] }
-//           newState[i].outcomenodeSet = action.payload.new_outcomenodeSet
+//           newState[i].outcomenodeSet = action.payload.newOutcomenodeSet
 //           newState[i].outcomenodeUniqueSet =
-//             action.payload.new_outcomenodeUniqueSet
+//             action.payload.newOutcomenodeUniqueSet
 //           return newState
 //         }
 //       }
@@ -167,11 +167,11 @@ export default function parentNodeReducer(
 //     case 'outcome/restoreSelf':
 //     case 'outcomeBase/restoreSelf':
 //       newState = state.slice()
-//       for (var i = 0; i < action.payload.extra_data.length; i++) {
-//         const new_node_data = action.payload.extra_data[i]
+//       for (var i = 0; i < action.payload.extraData.length; i++) {
+//         const new_nodeData = action.payload.extraData[i]
 //         for (var j = 0; j < newState.length; j++) {
-//           if (new_node_data.id == newState[j].id) {
-//             newState[j] = { ...newState[j], ...new_node_data }
+//           if (new_nodeData.id == newState[j].id) {
+//             newState[j] = { ...newState[j], ...new_nodeData }
 //           }
 //         }
 //       }

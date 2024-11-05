@@ -226,18 +226,18 @@ export function getPublicParentWorkflowInfo(
  *
  * endpoint: workflow/get-possible-linked-workflows
  *
- * @param nodeID
+ * @param nodeId
  * @param updateFunction
  * @param callBackFunction
  */
 export function getLinkedWorkflowMenuQuery(
-  nodeID,
+  nodeId,
   callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
     console.log('success')
 ) {
   const url = apiPaths.json_api.workflow.list__possible_linked
   API_POST(url, {
-    nodePk: nodeID
+    nodePk: nodeId
   }).then((response: LinkedWorkflowMenuQueryResp) => {
     callBackFunction(response)
   })
@@ -246,16 +246,16 @@ export function getLinkedWorkflowMenuQuery(
 /**
  * Get the workflows that can be selected for the project, shaped for a menu
  * @param projectPk
- * @param type_filter
- * @param get_strategies
- * @param self_only
+ * @param typeFilter
+ * @param getStrategies
+ * @param selfOnly
  * @param callBackFunction
  */
 export function getWorkflowSelectMenuQuery(
   projectPk: number,
-  type_filter: CfObjectType,
-  get_strategies: boolean,
-  self_only: boolean,
+  typeFilter: CfObjectType,
+  getStrategies: boolean,
+  selfOnly: boolean,
   callBackFunction: (_data: GetWorkflowSelectQueryResp) => void
   // updateFunction,
   //  receiptFunction
@@ -265,9 +265,9 @@ export function getWorkflowSelectMenuQuery(
     url,
     {
       projectPk: projectPk,
-      type_filter: type_filter,
-      get_strategies: get_strategies,
-      self_only: self_only
+      typeFilter: typeFilter,
+      getStrategies: getStrategies,
+      selfOnly: selfOnly
     }
     // (data) => {
     //   // @TODO call to react render

@@ -209,15 +209,15 @@ export const getLabelForCfObject = function ({
 }
 
 export const getDefaultDropState = (objectId, objectType, depth = 1) => {
-  let default_drop = defaultDropState[objectType]
+  let defaultDrop = defaultDropState[objectType]
   if (objectType === 'outcome') {
-    if (depth < default_drop.length) {
-      default_drop = default_drop[depth]
+    if (depth < defaultDrop.length) {
+      defaultDrop = defaultDrop[depth]
     } else {
-      default_drop = false
+      defaultDrop = false
     }
   }
-  return default_drop
+  return defaultDrop
 }
 
 // Get the colour from a column
@@ -239,9 +239,9 @@ export const objectSetsTypes = {
   'activity node': Utility.capFirst(_t('activity node'))
 }
 
-//missing_translations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
-function missing_translations() {
-  console.log('missing_translations called')
+//missingTranslations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
+function missingTranslations() {
+  console.log('missingTranslations called')
   _t('activity')
   _t('course')
   _t('program')

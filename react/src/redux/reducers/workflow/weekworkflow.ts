@@ -24,22 +24,22 @@ interface MovedToAction extends AnyAction {
 
 interface ChangeIdAction extends AnyAction {
   type: WeekWorkflowActions.CHANGE_ID
-  payload: { old_id: number; new_id: number }
+  payload: { oldId: number; newId: number }
 }
 
 interface DeleteSelfWeekAction extends AnyAction {
   type: WeekActions.DELETE_SELF
-  payload: { parent_id: number }
+  payload: { parentId: number }
 }
 
 interface InsertBelowWeekAction extends AnyAction {
   type: WeekActions.INSERT_BELOW
-  payload: { new_through: TWeekworkflow }
+  payload: { newThrough: TWeekworkflow }
 }
 
 interface AddStrategyAction extends AnyAction {
   type: StrategyActions.ADD_STRATEGY
-  payload: { new_through: TWeekworkflow }
+  payload: { newThrough: TWeekworkflow }
 }
 
 // Union type for all actions handled by the reducer
@@ -95,25 +95,25 @@ export default function weekworkflowReducer(
 
     case WeekWorkflowActions.CHANGE_ID: {
       return state.map((item) =>
-        item.id === action.payload.old_id
-          ? { ...item, id: action.payload.new_id, noDrag: false }
+        item.id === action.payload.oldId
+          ? { ...item, id: action.payload.newId, noDrag: false }
           : item
       )
     }
 
     case WeekActions.DELETE_SELF: {
-      return state.filter((item) => item.id !== action.payload.parent_id)
+      return state.filter((item) => item.id !== action.payload.parentId)
     }
 
     case WeekActions.INSERT_BELOW: {
       const newState = state.slice()
-      newState.push(action.payload.new_through)
+      newState.push(action.payload.newThrough)
       return newState
     }
 
     case StrategyActions.ADD_STRATEGY: {
       const newState = state.slice()
-      newState.push(action.payload.new_through)
+      newState.push(action.payload.newThrough)
       return newState
     }
 

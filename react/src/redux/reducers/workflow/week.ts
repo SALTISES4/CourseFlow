@@ -58,15 +58,15 @@ interface NodeGenericAction extends AnyAction {
 interface InsertBelowAction extends AnyAction {
   type: WeekActions.INSERT_BELOW | StrategyActions.ADD_STRATEGY
   payload: {
-    new_model: TWeek
+    newModel: TWeek
   }
 }
 
 interface NodeWeekChangeIdAction extends AnyAction {
   type: NodeWeekActions.CHANGE_ID
   payload: {
-    old_id: number
-    new_id: number
+    oldId: number
+    newId: number
   }
 }
 
@@ -74,8 +74,8 @@ interface NodeWeekMovedToAction extends AnyAction {
   type: NodeWeekActions.MOVED_TO
   payload: {
     id: number
-    new_parent: number
-    new_index: number
+    newParent: number
+    newIndex: number
   }
 }
 
@@ -128,7 +128,7 @@ export default function weekReducer(
       )
     case WeekActions.INSERT_BELOW:
     case StrategyActions.ADD_STRATEGY:
-      return [...state, action.payload.new_model]
+      return [...state, action.payload.newModel]
 
     case WeekActions.DELETE_SELF:
     case NodeActions.DELETE_SELF:
@@ -154,15 +154,15 @@ export default function weekReducer(
       return state.map((item) => ({
         ...item,
         nodeweekSet: item.nodeweekSet.map((id) =>
-          id === action.payload.old_id ? action.payload.new_id : id
+          id === action.payload.oldId ? action.payload.newId : id
         )
       }))
 
     case NodeWeekActions.MOVED_TO:
       return state.map((item) => {
         const newSet = item.nodeweekSet.filter((id) => id !== action.payload.id)
-        if (item.id === action.payload.new_parent) {
-          newSet.splice(action.payload.new_index, 0, action.payload.id)
+        if (item.id === action.payload.newParent) {
+          newSet.splice(action.payload.newIndex, 0, action.payload.id)
           return { ...item, nodeweekSet: newSet }
         }
         return item
@@ -210,17 +210,17 @@ export default function weekReducer(
 //       var newState = state.slice()
 //       if (action.payload.week) {
 //         for (var i = 0; i < action.payload.week.length; i++) {
-//           const new_obj = action.payload.week[i]
+//           const newObj = action.payload.week[i]
 //           let added = false
 //           for (let j = 0; j < newState.length; j++) {
-//             if (newState[j].id == new_obj.id) {
-//               newState.splice(j, 1, new_obj)
+//             if (newState[j].id == newObj.id) {
+//               newState.splice(j, 1, newObj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           newState.push(new_obj)
+//           newState.push(newObj)
 //         }
 //       }
 //       return newState
@@ -241,7 +241,7 @@ export default function weekReducer(
 //     }
 //     case WeekActions.INSERT_BELOW: {
 //       newState = state.slice()
-//       newState.push(action.payload.new_model)
+//       newState.push(action.payload.newModel)
 //       return newState
 //     }
 //
@@ -285,7 +285,7 @@ export default function weekReducer(
 //     case WeekActions.CHANGE_FIELD: {
 //       if (
 //         // @ts-ignore
-//         action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+//         action.payload.changeFieldId == COURSEFLOW_APP.contextData.changeFieldId
 //       ) {
 //         return state
 //       }
@@ -305,7 +305,7 @@ export default function weekReducer(
 //       for (var i = 0; i < newState.length; i++) {
 //         const obj = newState[i]
 //         if (obj.id == action.payload.id) {
-//           newState[i] = { ...obj, comments: action.payload.comment_data }
+//           newState[i] = { ...obj, comments: action.payload.commentData }
 //           return newState
 //         }
 //       }
@@ -318,29 +318,29 @@ export default function weekReducer(
 //     case NodeWeekActions.CHANGE_ID: {
 //       var newState = state.slice()
 //       for (var i = 0; i < state.length; i++) {
-//         const old_index = state[i].nodeweekSet.indexOf(action.payload.old_id)
-//         if (old_index >= 0) {
+//         const oldIndex = state[i].nodeweekSet.indexOf(action.payload.oldId)
+//         if (oldIndex >= 0) {
 //           newState[i] = { ...newState[i] }
 //           newState[i].nodeweekSet = newState[i].nodeweekSet.slice()
-//           newState[i].nodeweekSet.splice(old_index, 1, action.payload.new_id)
+//           newState[i].nodeweekSet.splice(oldIndex, 1, action.payload.newId)
 //         }
 //       }
 //       return newState
 //     }
 //
 //     case NodeWeekActions.MOVED_TO: {
-//       let old_parent, old_parent_index, new_parent, new_parent_index
+//       let old_parent, old_parent_index, newParent, newParent_index
 //       for (var i = 0; i < state.length; i++) {
 //         if (state[i].nodeweekSet.indexOf(action.payload.id) >= 0) {
 //           old_parent_index = i
 //           old_parent = { ...state[i] }
 //         }
-//         if (state[i].id == action.payload.new_parent) {
-//           new_parent_index = i
-//           new_parent = { ...state[i] }
+//         if (state[i].id == action.payload.newParent) {
+//           newParent_index = i
+//           newParent = { ...state[i] }
 //         }
 //       }
-//       const new_index = action.payload.new_index
+//       const newIndex = action.payload.newIndex
 //
 //       var newState = state.slice()
 //       old_parent.nodeweekSet = old_parent.nodeweekSet.slice()
@@ -348,12 +348,12 @@ export default function weekReducer(
 //         old_parent.nodeweekSet.indexOf(action.payload.id),
 //         1
 //       )
-//       if (old_parent_index == new_parent_index) {
-//         old_parent.nodeweekSet.splice(new_index, 0, action.payload.id)
+//       if (old_parent_index == newParent_index) {
+//         old_parent.nodeweekSet.splice(newIndex, 0, action.payload.id)
 //       } else {
-//         new_parent.nodeweekSet = new_parent.nodeweekSet.slice()
-//         new_parent.nodeweekSet.splice(new_index, 0, action.payload.id)
-//         newState.splice(new_parent_index, 1, new_parent)
+//         newParent.nodeweekSet = newParent.nodeweekSet.slice()
+//         newParent.nodeweekSet.splice(newIndex, 0, action.payload.id)
+//         newState.splice(newParent_index, 1, newParent)
 //       }
 //       newState.splice(old_parent_index, 1, old_parent)
 //       return newState
@@ -365,12 +365,12 @@ export default function weekReducer(
 //     case NodeActions.DELETE_SELF:
 //     case NodeActions.DELETE_SELF_SOFT:
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].nodeweekSet.indexOf(action.payload.parent_id) >= 0) {
+//         if (state[i].nodeweekSet.indexOf(action.payload.parentId) >= 0) {
 //           var newState = state.slice()
 //           newState[i] = { ...newState[i] }
 //           newState[i].nodeweekSet = state[i].nodeweekSet.slice()
 //           newState[i].nodeweekSet.splice(
-//             newState[i].nodeweekSet.indexOf(action.payload.parent_id),
+//             newState[i].nodeweekSet.indexOf(action.payload.parentId),
 //             1
 //           )
 //           return newState
@@ -380,14 +380,14 @@ export default function weekReducer(
 //
 //     case NodeActions.RESTORE_SELF:
 //       for (var i = 0; i < state.length; i++) {
-//         if (state[i].id == action.payload.parent_id) {
+//         if (state[i].id == action.payload.parentId) {
 //           var newState = state.slice()
 //           newState[i] = { ...newState[i] }
 //           newState[i].nodeweekSet = state[i].nodeweekSet.slice()
 //           newState[i].nodeweekSet.splice(
-//             action.payload.throughparent_index,
+//             action.payload.throughparentIndex,
 //             0,
-//             action.payload.throughparent_id
+//             action.payload.throughparentId
 //           )
 //           return newState
 //         }
@@ -401,9 +401,9 @@ export default function weekReducer(
 //           newState[i] = { ...state[i] }
 //           var new_nodeweekSet = state[i].nodeweekSet.slice()
 //           new_nodeweekSet.splice(
-//             action.payload.new_through.rank,
+//             action.payload.newThrough.rank,
 //             0,
-//             action.payload.new_through.id
+//             action.payload.newThrough.id
 //           )
 //           newState[i].nodeweekSet = new_nodeweekSet
 //           return newState
@@ -420,7 +420,7 @@ export default function weekReducer(
 //           new_nodeweekSet.splice(
 //             action.payload.index,
 //             0,
-//             action.payload.new_through.id
+//             action.payload.newThrough.id
 //           )
 //           newState[i].nodeweekSet = new_nodeweekSet
 //           return newState

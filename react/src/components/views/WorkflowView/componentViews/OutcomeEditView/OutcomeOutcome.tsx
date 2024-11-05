@@ -14,8 +14,8 @@ type OwnProps = {
   parentId: number
   objectId: number
   // renderer: any
-  show_horizontal: any
-  parent_depth: any
+  showHorizontal: any
+  parentDepth: any
 }
 type PropsType = OwnProps & ConnectedProps
 class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
@@ -30,16 +30,16 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
    *******************************************************/
   render() {
     const data = this.props.data
-    let my_class = 'outcome-outcome outcome-outcome-' + this.props.parent_depth
+    let myClass = 'outcome-outcome outcome-outcome-' + this.props.parentDepth
     // @ts-ignore
     if (data.noDrag) {
-      my_class += ' no-drag'
+      myClass += ' no-drag'
     }
 
     //Child outcomes. See comment in models/outcome.py for more info.
     return (
       <li
-        className={my_class}
+        className={myClass}
         id={String(data.id)}
         // ref={this.mainDiv} // @todo verify but this was not used
         data-child-id={data.child}
@@ -49,7 +49,7 @@ class OutcomeOutcomeUnconnected extends React.Component<PropsType> {
           parentId={this.props.parentId}
           throughParentId={data.id}
           // renderer={this.props.renderer}
-          show_horizontal={this.props.show_horizontal}
+          showHorizontal={this.props.showHorizontal}
         />
       </li>
     )

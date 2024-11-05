@@ -19,16 +19,16 @@ export default function columnReducer(
     case CommonActions.REFRESH_STOREDATA:
       return action.payload.column
         ? action.payload.column.reduce(
-            (newState, new_obj) => {
-              const index = newState.findIndex((item) => item.id === new_obj.id)
+            (newState, newObj) => {
+              const index = newState.findIndex((item) => item.id === newObj.id)
               if (index !== -1) {
                 return [
                   ...newState.slice(0, index),
-                  new_obj,
+                  newObj,
                   ...newState.slice(index + 1)
                 ]
               }
-              return [...newState, new_obj]
+              return [...newState, newObj]
             },
             [...state]
           )
@@ -61,13 +61,13 @@ export default function columnReducer(
       )
 
     case ColumnActions.INSERT_BELOW:
-      return [...state, action.payload.new_model]
+      return [...state, action.payload.newModel]
 
     case ColumnActions.CHANGE_FIELD:
       if (
-        action.payload.changeFieldID ===
+        action.payload.changeFieldId ===
         // @ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldID
+        COURSEFLOW_APP.contextData.changeFieldId
       ) {
         return state
       }
@@ -80,7 +80,7 @@ export default function columnReducer(
     case ColumnActions.RELOAD_COMMENTS:
       return state.map((item) =>
         item.id === action.payload.id
-          ? { ...item, comments: action.payload.comment_data }
+          ? { ...item, comments: action.payload.commentData }
           : item
       )
 
@@ -90,9 +90,9 @@ export default function columnReducer(
         : [...state, action.payload.column]
 
     case StrategyActions.ADD_STRATEGY:
-      return action.payload.columns_added.length === 0
+      return action.payload.columnsAdded.length === 0
         ? state
-        : [...state, ...action.payload.columns_added]
+        : [...state, ...action.payload.columnsAdded]
 
     default:
       return state
@@ -112,17 +112,17 @@ export default function columnReducer(
 //       const newState = state.slice()
 //       if (action.payload.column) {
 //         for (var i = 0; i < action.payload.column.length; i++) {
-//           const new_obj = action.payload.collumn[i]
+//           const newObj = action.payload.collumn[i]
 //           let added = false
 //           for (let j = 0; j < newState.length; j++) {
-//             if (newState[j].id == new_obj.id) {
-//               newState.splice(j, 1, new_obj)
+//             if (newState[j].id == newObj.id) {
+//               newState.splice(j, 1, newObj)
 //               added = true
 //               break
 //             }
 //           }
 //           if (added) continue
-//           newState.push(new_obj)
+//           newState.push(newObj)
 //         }
 //       }
 //       return newState
@@ -177,12 +177,12 @@ export default function columnReducer(
 //
 //     case ColumnActions.INSERT_BELOW:
 //       newState = state.slice()
-//       newState.push(action.payload.new_model)
+//       newState.push(action.payload.newModel)
 //       return newState
 //
 //     case ColumnActions.CHANGE_FIELD:
 //       if (
-//         action.payload.changeFieldID == COURSEFLOW_APP.contextData.changeFieldID
+//         action.payload.changeFieldId == COURSEFLOW_APP.contextData.changeFieldId
 //       )
 //         return state
 //       for (var i = 0; i < state.length; i++) {
@@ -199,7 +199,7 @@ export default function columnReducer(
 //       for (var i = 0; i < newState.length; i++) {
 //         const obj = newState[i]
 //         if (obj.id == action.payload.id) {
-//           newState[i] = { ...obj, comments: action.payload.comment_data }
+//           newState[i] = { ...obj, comments: action.payload.commentData }
 //           return newState
 //         }
 //       }
@@ -220,9 +220,9 @@ export default function columnReducer(
 //      * STRATEGY
 //      *******************************************************/
 //     case StrategyActions.ADD_STRATEGY:
-//       if (action.payload.columns_added.length == 0) return state
+//       if (action.payload.columnsAdded.length == 0) return state
 //       newState = state.slice()
-//       newState.push(...action.payload.columns_added)
+//       newState.push(...action.payload.columnsAdded)
 //       return newState
 //
 //     default:

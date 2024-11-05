@@ -6,7 +6,7 @@ import React, { ReactNode } from 'react'
 type UserContextType = {
   id: number
   user: EUser
-  changeFieldID: number
+  changeFieldId: number
 }
 
 export const UserContext = React.createContext<UserContextType>(
@@ -30,7 +30,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
       value={{
         id: data.dataPackage.id,
         user: data.dataPackage,
-        changeFieldID: changeFieldId
+        changeFieldId: changeFieldId
       }}
     >
       {children}

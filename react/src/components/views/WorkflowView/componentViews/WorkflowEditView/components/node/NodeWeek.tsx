@@ -1,17 +1,18 @@
 import { CfObjectType } from '@cf/types/enum'
 import { TGetNodeWeekById, getNodeWeekByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import Node from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/Node'
+import Node from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Node'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
 type ConnectedProps = TGetNodeWeekById
+
 type OwnProps = {
   objectId: number
   parentId: number
-  column_order: any
-  // renderer: any
+  columnOrder: any
 }
+
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -39,7 +40,7 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
         objectId={data.node}
         parentId={this.props.parentId}
         throughParentId={data.id}
-        column_order={this.props.column_order}
+        columnOrder={this.props.columnOrder}
       />
     )
   }
@@ -49,14 +50,14 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
    *******************************************************/
   render() {
     const data = this.props.data
-    let my_class = 'node-week'
+    let myClass = 'node-week'
     if (data.noDrag) {
-      my_class += ' no-drag'
+      myClass += ' no-drag'
     }
 
     return (
       <div
-        className={my_class}
+        className={myClass}
         id={data.id}
         data-child-id={data.node}
         data-column-id={this.props.column}

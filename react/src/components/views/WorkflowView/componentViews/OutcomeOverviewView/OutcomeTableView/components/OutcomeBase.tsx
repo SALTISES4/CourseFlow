@@ -32,7 +32,7 @@ const OutcomeBase = ({ type, nodecategory, objectId }: PropsType) => {
         <Outcome
           outcomesType={outcomesType}
           objectId={outcomeTree.id}
-          outcome_tree={outcomeTree}
+          outcomeTree={outcomeTree}
         />
       )
     }
@@ -80,10 +80,10 @@ export default OutcomeBase
 //       return (
 //         <Outcome
 //           outcomesType={this.props.outcomesType}
-//           // objectId={this.outcome_tree.id} @todo these were the original vars, but they don't exist
-//           // outcome_tree={this.outcome_tree}
+//           // objectId={this.outcomeTree.id} @todo these were the original vars, but they don't exist
+//           // outcomeTree={this.outcomeTree}
 //           objectId={outcomeTree.id}
-//           outcome_tree={outcomeTree}
+//           outcomeTree={outcomeTree}
 //           // renderer={this.props.renderer}
 //         />
 //       )
@@ -91,10 +91,10 @@ export default OutcomeBase
 //     return (
 //       <CompetencyMatrixView
 //         outcomesType={this.props.outcomesType}
-//         //objectId={this.outcome_tree.id} @todo these were the original vars, but they don't exist
-//         // outcome_tree={this.outcome_tree}
+//         //objectId={this.outcomeTree.id} @todo these were the original vars, but they don't exist
+//         // outcomeTree={this.outcomeTree}
 //         objectId={outcomeTree.id}
-//         // outcome_tree={outcomeTree} // defined as prop but not used in component
+//         // outcomeTree={outcomeTree} // defined as prop but not used in component
 //         // renderer={this.props.renderer}
 //       />
 //     )
@@ -111,13 +111,13 @@ export default OutcomeBase
 //
 //     // @todo seem to be re-rendering issue, wait for hooks
 //     // avoid further rerenders if possible
-//     const outcome_tree_json = JSON.stringify(outcome_tree)
+//     const outcomeTree_json = JSON.stringify(outcomeTree)
 //
-//     if (this.outcome_tree_json === outcome_tree_json) {
-//       outcome_tree = this.outcome_tree
+//     if (this.outcomeTree_json === outcomeTree_json) {
+//       outcomeTree = this.outcomeTree
 //     } else {
-//       this.outcome_tree = outcome_tree
-//       this.outcome_tree_json = outcome_tree_json
+//       this.outcomeTree = outcomeTree
+//       this.outcomeTree_json = outcomeTree_json
 //     }
 //
 //     return <this.OutcomeView outcomeTree={outcomeTree} />

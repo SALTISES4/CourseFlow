@@ -5,8 +5,8 @@ import * as reactDom from 'react-dom'
 // import $ from 'jquery'
 
 type PropsType = {
-  nodeID: number
-  node_div: React.RefObject<HTMLElement>
+  nodeId: number
+  nodeDiv: React.RefObject<HTMLElement>
 }
 
 /**
@@ -16,13 +16,13 @@ class AutoLink extends React.Component<PropsType> {
   private eventNameSpace: string
   private rerenderEvents: string
   private target: any
-  private sourcePort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
-  private targetPort_handle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  private sourcePortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+  private targetPortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private targetNode: JQuery<HTMLElement>
   private sourceNode: JQuery<HTMLElement>
   constructor(props) {
     super(props)
-    this.eventNameSpace = 'autolink' + this.props.nodeID
+    this.eventNameSpace = 'autolink' + this.props.nodeId
     this.rerenderEvents = 'ports-rendered.' + this.eventNameSpace
   }
 
@@ -42,20 +42,20 @@ class AutoLink extends React.Component<PropsType> {
   findAutoTarget() {
     let target = null
     const ns = this.sourceNode.closest('.node-week')
-    const next_ns = ns
+    const nextNs = ns
       .nextAll('.node-week:not(.ui-sortable-placeholder)')
       .first()
 
-    if (next_ns.length > 0) {
-      target = next_ns.find('.node').attr('id')
+    if (nextNs.length > 0) {
+      target = nextNs.find('.node').attr('id')
     } else {
-      let next_sw = ns.closest('.week-workflow').next()
+      let nextSw = ns.closest('.week-workflow').next()
 
-      while (next_sw.length > 0 && !target) {
-        target = next_sw
+      while (nextSw.length > 0 && !target) {
+        target = nextSw
           .find('.node-week:not(.ui-sortable-placeholder) .node')
           .attr('id')
-        next_sw = next_sw.next()
+        nextSw = nextSw.next()
       }
     }
 
@@ -69,8 +69,8 @@ class AutoLink extends React.Component<PropsType> {
   setTarget(target) {
     if (target) {
       if (this.targetNode && target == this.targetNode.attr('id')) {
-        if (!this.targetPort_handle || this.targetPort_handle.empty()) {
-          this.targetPort_handle = d3.select(
+        if (!this.targetPortHandle || this.targetPortHandle.empty()) {
+          this.targetPortHandle = d3.select(
             'g.port-' +
               target +
               " circle[data-port-type='target'][data-port='n']"
@@ -84,7 +84,7 @@ class AutoLink extends React.Component<PropsType> {
 
       this.targetNode = $('.week #' + target + '.node')
 
-      this.targetPort_handle = d3.select(
+      this.targetPortHandle = d3.select(
         'g.port-' + target + " circle[data-port-type='target'][data-port='n']"
       )
 
@@ -96,7 +96,7 @@ class AutoLink extends React.Component<PropsType> {
       }
 
       this.targetNode = null
-      this.targetPort_handle = null
+      this.targetPortHandle = null
       this.target = null
     }
   }
@@ -105,7 +105,7 @@ class AutoLink extends React.Component<PropsType> {
    * RENDER
    *******************************************************/
   render() {
-    // console.log(this.props.nodeID)
+    // console.log(this.props.nodeId)
     // console.log(this)
     // console.log(this.sourceNode)
     //
@@ -119,18 +119,18 @@ class AutoLink extends React.Component<PropsType> {
     if (
       !this.sourceNode ||
       this.sourceNode?.length == 0 ||
-      !this.sourcePort_handle ||
-      this.sourcePort_handle.empty()
+      !this.sourcePortHandle ||
+      this.sourcePortHandle.empty()
     ) {
-      this.sourceNode = $(this.props.node_div.current)
+      this.sourceNode = $(this.props.nodeDiv.current)
 
-      this.sourcePort_handle = d3.select(
+      this.sourcePortHandle = d3.select(
         'g.port-' +
-          this.props.nodeID +
+          this.props.nodeId +
           " circle[data-port-type='source'][data-port='s']"
       )
-      // console.log('this.sourcePort_handle')
-      // console.log(this.sourcePort_handle)
+      // console.log('this.sourcePortHandle')
+      // console.log(this.sourcePortHandle)
 
       this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
       //      return
@@ -146,34 +146,34 @@ class AutoLink extends React.Component<PropsType> {
       return null
     }
 
-    const source_dims = {
+    const sourceDims = {
       width: this.sourceNode.outerWidth(),
       height: this.sourceNode.outerHeight()
     }
-    const target_dims = {
+    const targetDims = {
       width: this.targetNode.outerWidth(),
       height: this.targetNode.outerHeight()
     }
 
-    const node_selected =
+    const nodeSelected =
       this.sourceNode.attr('data-selected') === 'true' ||
       this.targetNode.attr('data-selected') === 'true'
 
-    const node_hovered =
+    const nodeHovered =
       this.sourceNode.attr('data-hovered') === 'true' ||
       this.targetNode.attr('data-hovered') === 'true'
 
     //  .workflow-canvas is dynamic portal
     const portal = reactDom.createPortal(
       <NodeLinkSVG
-        hovered={node_hovered}
-        node_selected={node_selected}
-        sourcePort_handle={this.sourcePort_handle}
+        hovered={nodeHovered}
+        nodeSelected={nodeSelected}
+        sourcePortHandle={this.sourcePortHandle}
         sourcePort={2}
-        targetPort_handle={this.targetPort_handle}
+        targetPortHandle={this.targetPortHandle}
         targetPort={0}
-        source_dimensions={source_dims}
-        target_dimensions={target_dims}
+        sourceDimensions={sourceDims}
+        targetDimensions={targetDims}
       />,
       $('.workflow-canvas')[0]
     )
