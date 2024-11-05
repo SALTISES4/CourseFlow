@@ -4,8 +4,7 @@ import { SidebarDataType } from './types'
 
 const data: SidebarDataType = {
   edit: {
-    title: 'Edit node',
-    readonly: true
+    title: 'Edit node'
   },
   add: {
     title: 'Add to workflow',

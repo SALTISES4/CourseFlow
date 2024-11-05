@@ -4,9 +4,9 @@ import { AnyAction } from '@reduxjs/toolkit'
 
 export type SidebarState = {
   id: number
-  objectType: CfObjectType
   parentId: number
-} | null
+  objectType: CfObjectType
+}
 
 export interface SetSidebarAction extends AnyAction {
   type: SidebarActions
@@ -17,7 +17,10 @@ export interface SetSidebarAction extends AnyAction {
   }
 }
 
-function sidebarReducer(state: SidebarState = null, action: SetSidebarAction) {
+function sidebarReducer(
+  state: Partial<SidebarState> = {},
+  action: SetSidebarAction
+) {
   switch (action.type) {
     case SidebarActions.SET_SIDEBAR_DATA:
       return action.payload || state

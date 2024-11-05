@@ -1,5 +1,6 @@
 import useWorkflowSidebar from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import { isTabVisible } from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar/permissions'
+import { AppState } from '@cfRedux/types/type'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import EditIcon from '@mui/icons-material/Edit'
@@ -10,6 +11,7 @@ import Paper from '@mui/material/Paper'
 import ToggleButton from '@mui/material/ToggleButton'
 import { produce } from 'immer'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import AddTab from './components/AddTab'
@@ -18,7 +20,7 @@ import OutcomesTab from './components/OutcomesTab'
 import RelatedTab from './components/RelatedTab'
 import RestoreTab from './components/RestoreTab'
 import useEditable from './hooks/useEditable'
-import { EditablePropsType } from './hooks/useEditable/types'
+import { EditablePropsType, EditableType } from './hooks/useEditable/types'
 import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
 import { SidebarDataType } from './types'
 
@@ -63,6 +65,8 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
   const editable = useEditable()
   const location = useLocation()
 
+  const sidebar = useSelector((state: AppState) => state.sidebar)
+
   useEffect(() => {
     setState({
       tab: null,
@@ -71,7 +75,9 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
   }, [location.pathname])
 
   useEffect(() => {
-    if (editable.type) {
+    console.log('----- sidebar.objectType', sidebar.objectType)
+
+    if (sidebar.objectType) {
       onTabClick('edit')
     } else {
       setState({
@@ -80,7 +86,7 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editable.type])
+  }, [sidebar.objectType])
 
   const onToggleClick = useCallback(() => {
     setState({
@@ -117,9 +123,9 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
     }
   }
 
-  const { add, edit, outcomes, restore } = props
+  const { add, outcomes, restore } = props
   const tabContent = getTabContent(state.tab, props, {
-    type: editable.type,
+    type: sidebar.objectType as unknown as EditableType,
     data: editable.data
   })
 
@@ -129,7 +135,7 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
     icon: ReactNode
   }[] = [
     {
-      disabled: edit.readonly && !editable.type,
+      disabled: !sidebar.objectType,
       value: 'edit',
       icon: <EditIcon />
     },
