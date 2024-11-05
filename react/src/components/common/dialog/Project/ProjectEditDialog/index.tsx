@@ -1,7 +1,7 @@
 import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { ObjectSetType } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import ProjectForm from '@cfComponents/dialog/Project/components/ProjectForm'
 import {

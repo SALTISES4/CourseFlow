@@ -4,7 +4,7 @@
  * 2 - CLOSING: The connection is in the process of closing.
  * 3 - CLOSED: The connection is closed or couldn't be opened.
  */
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 
 /*******************************************************
  * keep these in snake case, as they are not being converted by the middleware

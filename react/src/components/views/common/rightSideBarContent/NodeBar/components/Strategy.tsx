@@ -1,5 +1,4 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
 import { TStrategyByID, getStrategyById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'

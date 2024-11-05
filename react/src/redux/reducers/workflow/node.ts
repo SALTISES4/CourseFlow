@@ -1,5 +1,6 @@
 import { CfLock } from '@cf/types/common'
-import { _t } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
 import {
   ColumnActions,
   CommonActions,
@@ -13,8 +14,8 @@ import {
   WeekActions
 } from '@cfRedux/types/enumActions'
 import { TNode } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import { AnyAction } from '@reduxjs/toolkit'
+
 // import $ from 'jquery'
 
 /*******************************************************
@@ -171,7 +172,6 @@ export default function nodeReducer(
 ): TNode[] {
   switch (action.type) {
     case CommonActions.REPLACE_STOREDATA:
-
       if (action.payload.node) {
         return action.payload.node
       }
@@ -215,7 +215,7 @@ export default function nodeReducer(
       })
 
       // @todo need to remove these kind of side effects from...
-      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
 
       return updatedState
     }
@@ -262,14 +262,14 @@ export default function nodeReducer(
     // there is no need to check whether node exists in store here
     case NodeActions.DELETE_SELF: {
       // @todo no
-      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
 
       return state.filter((item) => item.id !== action.payload.id)
     }
 
     case NodeActions.DELETE_SELF_SOFT: {
       // @todo no
-      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
 
       return state.map((item) => {
         if (item.id === action.payload.id) {
@@ -286,7 +286,7 @@ export default function nodeReducer(
 
     case NodeActions.RESTORE_SELF:
       // @todo no
-      Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
 
       return state.map((item) => {
         if (item.id === action.payload.id) {

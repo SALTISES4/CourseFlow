@@ -1,8 +1,8 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { EventUnion } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import { _t } from '@cf/utility/Utility.class'
+import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQueryLegacy } from '@XMLHTTP/API/workspace.rtk'
@@ -109,7 +109,7 @@ export const useMenuActions = () => {
     workflowType: WorkflowType
   ) {
     if (parentId != null) {
-      const utilLoader = new UtilityLoader('body')
+      const utilLoader = new UtilityLoaderClass('body')
 
       duplicateBaseItemQuery(
         workflowId,

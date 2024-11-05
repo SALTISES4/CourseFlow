@@ -1,7 +1,7 @@
 import { NumTuple } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cfUtility'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
 import { LanguageOptions } from '@XMLHTTP/API/user.rtk'
 
 /*
@@ -221,8 +221,10 @@ export const getDefaultDropState = (objectId, objectType, depth = 1) => {
 }
 
 // Get the colour from a column
-export function getColumnColour(data) {
-  if (data.colour == null) {
+export function getColumnColour(data: { columnType: any; colour: number }) {
+  console.log('data')
+  console.log(data)
+  if (data.colour === null && data.columnType) {
     return defaultColumnSettings[data.columnType].colour
   } else {
     return '#' + ('000000' + data.colour?.toString(16)).slice(-6)
@@ -231,14 +233,15 @@ export function getColumnColour(data) {
 
 //get all possible object sets
 export const objectSetsTypes = {
-  'program outcome': Utility.capFirst(_t('program outcome')),
-  'course outcome': Utility.capFirst(_t('course outcome')),
-  'activity outcome': Utility.capFirst(_t('activity outcome')),
-  'program node': Utility.capFirst(_t('program node')),
-  'course node': Utility.capFirst(_t('course node')),
-  'activity node': Utility.capFirst(_t('activity node'))
+  'program outcome': ThemeHelper.capFirst(_t('program outcome')),
+  'course outcome': ThemeHelper.capFirst(_t('course outcome')),
+  'activity outcome': ThemeHelper.capFirst(_t('activity outcome')),
+  'program node': ThemeHelper.capFirst(_t('program node')),
+  'course node': ThemeHelper.capFirst(_t('course node')),
+  'activity node': ThemeHelper.capFirst(_t('activity node'))
 }
 
+// @todo no
 //missingTranslations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
 function missingTranslations() {
   console.log('missingTranslations called')

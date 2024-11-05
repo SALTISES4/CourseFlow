@@ -2,7 +2,7 @@
 import { UserContext } from '@cf/context/userContext'
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import {
   MenuItemType,
   MenuWithOverflow,

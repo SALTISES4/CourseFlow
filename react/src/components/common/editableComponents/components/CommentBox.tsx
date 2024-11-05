@@ -1,7 +1,7 @@
 import * as Constants from '@cf/constants'
 import { apiPaths } from '@cf/router/apiRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import { TUser } from '@cfRedux/types/type'
 import {
   addComment,

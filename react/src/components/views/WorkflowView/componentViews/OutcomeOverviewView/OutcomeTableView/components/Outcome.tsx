@@ -1,6 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts.tsx'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'

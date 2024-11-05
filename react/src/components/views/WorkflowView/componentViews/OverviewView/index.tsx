@@ -1,7 +1,7 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { WorkspaceType } from '@cf/types/enum'
-import { _t, formatDate } from '@cf/utility/utilityFunctions'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import { AppState } from '@cfRedux/types/type'
 import UserList from '@cfViews/common/workspaceOverview/UserList'
 import LinkIcon from '@mui/icons-material/Link'
@@ -62,7 +62,7 @@ const OverviewView = () => {
           <SC.InfoBlock>
             <SC.InfoBlockTitle>Created on</SC.InfoBlockTitle>
             <SC.InfoBlockContent>
-              {formatDate(data.createdOn)}
+              {Utility.formatDate(data.createdOn)}
             </SC.InfoBlockContent>
           </SC.InfoBlock>
         </Grid>

@@ -1,7 +1,9 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import * as Constants from '@cfConstants'
@@ -18,7 +20,6 @@ import { TGetNodeById, getNodeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import { toggleExpand } from '@cfRedux/utility/helpers'
-import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
 import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
@@ -104,7 +105,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
     if (this.props.node.data.isDropped == prevProps.node.data.isDropped) {
       this.updatePorts()
     } else {
-      Utility.triggerHandlerEach($('.node'), 'component-updated')
+      ThemeHelper.triggerHandlerEach($('.node'), 'component-updated')
     }
     this.updateHidden()
   }
@@ -210,7 +211,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
       if (
         !myComponent ||
         !myComponent.mainDiv ||
-        Utility.mouseOutsidePadding(evt, $(myComponent.mainDiv.current), 20)
+        ThemeHelper.mouseOutsidePadding(evt, $(myComponent.mainDiv.current), 20)
       ) {
         $(
           "circle[data-node-id='" +
@@ -447,7 +448,6 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
           ref={this.mainDiv}
           data-selected={this.state.selected}
           data-hovered={this.state.hovered}
-
           onClick={(e) => {
             e.stopPropagation()
             this.manager.updateSidebar(

@@ -1,7 +1,7 @@
 import { OuterContentWrap } from '@cf/mui/helper'
 import { ProjectDetailsType } from '@cf/types/common'
 import { LibraryObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'

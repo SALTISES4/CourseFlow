@@ -1,14 +1,13 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { EObjectSet } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum.js'
-import { _t } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
 import {
   WorkflowContext,
   WorkflowViewType
 } from '@cfPages/Workspace/Workflow/types'
 // import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
 // import { renderMessageBox } from '@cfComponents/__LEGACY/menuLegacy/MenuComponents'
-import * as Utility from '@cfUtility'
 // @components
 import RightSideBar from '@cfViews/common/rightSideBarContent/RightSideBar'
 import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
@@ -16,13 +15,14 @@ import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
-import { EProject } from '@XMLHTTP/types/entity'
+import { EObjectSet, EProject } from '@XMLHTTP/types/entity'
 import {
   GetWorkflowSelectMenuResp,
   GetWorkflowSelectQueryResp
 } from '@XMLHTTP/types/query'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
+
 // import $ from 'jquery'
 
 /**
@@ -245,7 +245,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
       },
       {
         type: WorkflowViewType.OUTCOME_EDIT,
-        name: Utility.capWords(_t('View') + ' outcomes'),
+        name: ThemeHelper.capWords(_t('View') + ' outcomes'),
         disabled: []
       }
     ]

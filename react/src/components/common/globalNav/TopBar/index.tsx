@@ -2,8 +2,7 @@ import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CFRoutes } from '@cf/router/appRoutes'
 import strings from '@cf/utility/strings'
-import { _t } from '@cf/utility/utilityFunctions'
-import { getNameInitials } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { MenuItemType, SimpleMenu, StaticMenu } from '@cfComponents/menu/Menu'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import ReturnLinks from '@cfPages/Workspace/Workflow/WorkflowTabs/components/ReturnLinks'
@@ -179,7 +178,9 @@ const TopBar = () => {
               <ListItemButton component={RouterLink} to={item.url}>
                 {item.unread && <Badge color="primary" variant="dot" />}
                 <ListItemAvatar>
-                  <Avatar alt={item.from}>{getNameInitials(item.from)}</Avatar>
+                  <Avatar alt={item.from}>
+                    {ThemeHelper.getNameInitials(item.from)}
+                  </Avatar>
                 </ListItemAvatar>
                 <ListItemText
                   primary={item.date}

@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { _t } from '@cf/utility/utilityFunctions'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import {
   WorkflowFormType,

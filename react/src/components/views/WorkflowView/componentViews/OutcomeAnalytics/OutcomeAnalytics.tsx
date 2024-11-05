@@ -1,5 +1,6 @@
 import { OutcomeTitle } from '@cf/components/common/UIPrimitives/Titles.ts'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import { WeekTitle } from '@cfComponents/UIPrimitives/Titles'
 import {
   getOutcomeByID,
@@ -7,7 +8,6 @@ import {
   getWeekById
 } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -178,7 +178,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
     outcomes: outcomes,
-    terms: Utility.filterThenSortByID(
+    terms: Utility.filterThenSortById(
       state.weekworkflow,
       state.workflow.weekworkflowSet
       // @ts-ignore

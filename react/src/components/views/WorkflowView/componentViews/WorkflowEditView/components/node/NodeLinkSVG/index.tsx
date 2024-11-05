@@ -1,7 +1,5 @@
-import { ObjectLock } from '@cf/types/common'
-import { NumTuple } from '@cf/types/common'
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cf/utility/utilityFunctions'
+import { NumTuple, ObjectLock } from '@cf/types/common'
+import ThemeHelper from "@cf/utility/ThemeHelper.class";
 import PathGenerator from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG/PathGenerator.class'
 import * as React from 'react'
 
@@ -69,7 +67,6 @@ class NodeLinkSVG extends React.Component<PropsType> {
       targetDims
     )
   }
-
 
   getPath(pathArray: NumTuple[]): string {
     return pathArray.reduce(
@@ -163,7 +160,7 @@ class NodeLinkSVG extends React.Component<PropsType> {
     try {
       //     console.log(this.props)
 
-      const sourceTransform = Utility.getSVGTranslation(
+      const sourceTransform = ThemeHelper.getSVGTranslation(
         this.props.sourcePortHandle
           .select(function () {
             // @todo be careful of the scope of this here
@@ -180,7 +177,7 @@ class NodeLinkSVG extends React.Component<PropsType> {
         })
         .attr('transform')
 
-      const targetTransform = Utility.getSVGTranslation(
+      const targetTransform = ThemeHelper.getSVGTranslation(
         this.props.targetPortHandle
           .select(function () {
             // @todo be careful of the scope of this here

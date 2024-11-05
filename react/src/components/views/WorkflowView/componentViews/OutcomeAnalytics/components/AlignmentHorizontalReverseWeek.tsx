@@ -1,8 +1,8 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts.tsx'
 import EditableComponent, {
   EditableComponentProps,
@@ -112,7 +112,7 @@ const mapStateToProps = (
   for (let i = 0; i < state.week.length; i++) {
     if (state.week[i].id == ownProps.objectId) {
       const week = state.week[i]
-      const nodeweeks = Utility.filterThenSortByID(
+      const nodeweeks = Utility.filterThenSortById(
         state.nodeweek,
         week.nodeweekSet
       )

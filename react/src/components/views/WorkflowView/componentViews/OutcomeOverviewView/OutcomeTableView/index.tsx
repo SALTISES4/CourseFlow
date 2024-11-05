@@ -1,7 +1,7 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
-import * as Utility from '@cf/utility/utilityFunctions'
-import { _t } from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
+import { _t } from '@cf/utility/Utility.class'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import {
@@ -63,12 +63,12 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
   }
 
   getNodecategory() {
-    const weekOrder = Utility.filterThenSortByID<TWeekworkflow>(
+    const weekOrder = Utility.filterThenSortById<TWeekworkflow>(
       this.props.weekworkflow,
       this.props.workflow.weekworkflowSet
     ).map((weekworkflow) => weekworkflow.week)
 
-    const weeksOrdered = Utility.filterThenSortByID<TWeek>(
+    const weeksOrdered = Utility.filterThenSortById<TWeek>(
       this.props.week,
       weekOrder
     )
@@ -76,14 +76,14 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
     const nodeweekOrder = [].concat(
       ...weeksOrdered.map((week) => week.nodeweekSet)
     )
-    let nodeweeksOrdered = Utility.filterThenSortByID<TNodeweek>(
+    let nodeweeksOrdered = Utility.filterThenSortById<TNodeweek>(
       this.props.nodeweek,
       nodeweekOrder
     )
 
     const nodeOrder = nodeweeksOrdered.map((nodeweek) => nodeweek.node)
 
-    const nodesOrdered = Utility.filterThenSortByID<TNode>(
+    const nodesOrdered = Utility.filterThenSortById<TNode>(
       this.props.node,
       nodeOrder
     ).filter((node) => !Utility.checkSetHidden(node, this.props.objectSets))
@@ -108,11 +108,11 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
       }
 
       case 1: {
-        const columnOrder = Utility.filterThenSortByID<TColumnworkflow>(
+        const columnOrder = Utility.filterThenSortById<TColumnworkflow>(
           this.props.columnworkflow,
           this.props.workflow.columnworkflowSet
         ).map((columnworkflow) => columnworkflow.column)
-        const columnsOrdered = Utility.filterThenSortByID<TColumn>(
+        const columnsOrdered = Utility.filterThenSortById<TColumn>(
           this.props.column,
           columnOrder
         )

@@ -1,4 +1,4 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { getWeekById, getWeekWorkflowByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'

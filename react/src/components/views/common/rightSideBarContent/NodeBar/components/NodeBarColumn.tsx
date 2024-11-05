@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/utilityFunctions'
 import * as Constants from '@cfConstants'
 import { TGetColumnByID, getColumnById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'

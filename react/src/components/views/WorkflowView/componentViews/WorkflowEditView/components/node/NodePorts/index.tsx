@@ -1,7 +1,6 @@
 import * as Constants from '@cf/constants'
 import { NodeDom } from '@cf/types/global'
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { Dispatch } from '@reduxjs/toolkit'
 import { newNodeLinkQuery } from '@XMLHTTP/API/create'
 import * as React from 'react'
@@ -94,7 +93,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
       return
     }
     const node = $(this.props.nodeDiv.current)
-    const nodeOffset = Utility.getCanvasOffset(node)
+    const nodeOffset = ThemeHelper.getCanvasOffset(node)
     const nodeDimensions = {
       width: node.outerWidth(),
       height: node.outerHeight()

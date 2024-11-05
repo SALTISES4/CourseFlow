@@ -1,4 +1,4 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import UserLabel from '@cfComponents/dialog/components/UserLabel'
 import * as Constants from '@cfConstants'
 import SearchIcon from '@mui/icons-material/Search'

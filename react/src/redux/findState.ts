@@ -1,6 +1,7 @@
 // @ts-nocheck
-import * as Utility from '@cf/utility/utilityFunctions'
-import { _t } from '@cf/utility/utilityFunctions'
+import ThemeHelper from "@cf/utility/ThemeHelper.class";
+import Utility from '@cf/utility/Utility.class'
+import { _t } from '@cf/utility/Utility.class'
 import {
   AppState,
   TColumn,
@@ -15,6 +16,7 @@ import {
 } from '@cfRedux/types/type'
 
 import * as Constants from '../constants'
+
 /*******************************************************
  *
  *  This file contains selectors to encapsulate accessing the
@@ -109,7 +111,7 @@ export const getTermById = (state: AppState, id: number): TTermByID => {
 
       const nodeweeks = week.nodeweekSet
 
-      const columnOrder = Utility.filterThenSortByID<TWeek['nodeweekSet']>(
+      const columnOrder = Utility.filterThenSortById<TWeek['nodeweekSet']>(
         state.columnworkflow,
         state.workflow.columnworkflowSet
       ).map((columnworkflow) => columnworkflow.column)
@@ -531,11 +533,11 @@ export const getSortedOutcomeNodesFromNodes = (
   for (let i = 0; i < nodes.length; i++) {
     outcomenodeIds = outcomenodeIds.concat(nodes[i].outcomenodeUniqueSet)
   }
-  const outcomenodes = Utility.filterThenSortByID(
+  const outcomenodes = Utility.filterThenSortById(
     state.outcomenode,
     outcomenodeIds
   )
-  const outcomes = Utility.filterThenSortByID(
+  const outcomes = Utility.filterThenSortById(
     state.outcome,
     outcomenodes.map((outcomenode) => outcomenode.outcome)
   ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }))
@@ -544,7 +546,7 @@ export const getSortedOutcomeNodesFromNodes = (
     return outcomes
   }
 
-  const baseTitle = Utility.capWords(_t('outcomes'))
+  const baseTitle = ThemeHelper.capWords(_t('outcomes'))
   const objectSets = state.objectset.filter(
     (objectset) => objectset.term === outcomes[0].type
   )
@@ -591,7 +593,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
   outcomeworkflowSet: number[]
 ): TSortedOutcomes => {
-  const outcomeworkflows = Utility.filterThenSortByID(
+  const outcomeworkflows = Utility.filterThenSortById(
     state.outcomeworkflow,
     outcomeworkflowSet
   )
@@ -601,7 +603,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   )
 
   // @todo clean up
-  const outcomes = Utility.filterThenSortByID<TOutcome>(
+  const outcomes = Utility.filterThenSortById<TOutcome>(
     state.outcome,
     outcomeIds
   )
@@ -617,7 +619,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     throughNoDrag: outcomeworkflows[index].noDrag
   }))
 
-  const baseTitle = Utility.capWords(_t('outcomes'))
+  const baseTitle = ThemeHelper.capWords(_t('outcomes'))
 
   const objectSets = state.objectset.filter(
     (objectset) => objectset.term === updatedOutcomes[0].type
@@ -729,7 +731,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   objectSetsUnfiltered
 ) => {
   // Get sorted outcome workflows based on the provided IDs
-  const outcomeworkflows = Utility.filterThenSortByID(
+  const outcomeworkflows = Utility.filterThenSortById(
     outcomeworkflowsUnsorted,
     outcomeworkflowSet
   )
@@ -740,7 +742,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   )
 
   // Filter and sort the outcomes based on the outcome IDs
-  const outcomes = Utility.filterThenSortByID(outcomesUnsorted, outcomeIds)
+  const outcomes = Utility.filterThenSortById(outcomesUnsorted, outcomeIds)
 
   // Create a new array to avoid mutating the original outcomes
   const updatedOutcomes = outcomes.map((outcome, index) => ({
@@ -755,7 +757,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   }
 
   // Prepare the base title for uncategorized outcomes
-  const baseTitle = Utility.capWords(_t('outcomes'))
+  const baseTitle = ThemeHelper.capWords(_t('outcomes'))
 
   // Filter the objectSets to match the first outcome's type
   const objectSets = objectSetsUnfiltered.filter(

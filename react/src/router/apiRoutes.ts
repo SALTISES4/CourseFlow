@@ -1,4 +1,4 @@
-import { addPrefixToLeafStrings } from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
 
 const apiPathBase = '/course-flow/json-api/v1'
 export const apiPathRoutes = {
@@ -89,7 +89,7 @@ export const apiPathRoutes = {
   }
 }
 
-const apiPathsReplaced = addPrefixToLeafStrings<typeof apiPathRoutes>(
+const apiPathsReplaced = Utility.addPrefixToLeafStrings<typeof apiPathRoutes>(
   apiPathRoutes,
   apiPathBase
 )

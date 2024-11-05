@@ -1,11 +1,11 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
 import {
   TSortedOutcomes,
   getSortedOutcomesFromOutcomeWorkflowSet
 } from '@cfFindState'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { AppState } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -79,7 +79,7 @@ class OutcomeBarUnconnected extends React.Component<PropsType, any> {
       ? outcomeBarOutcomes
       : outcomeBarOutcomes
 
-    const edittext = Utility.capWords(
+    const edittext = ThemeHelper.capWords(
       _t('Edit') + ' ' + _t(this.props.workflowType + ' outcomes')
     )
 

@@ -1,7 +1,7 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
 import {
   EditableComponentWithSortingProps,

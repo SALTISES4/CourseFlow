@@ -1,5 +1,5 @@
 import {CfLock} from "@cf/types/common";
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import {
   ColumnActions,
   CommonActions,

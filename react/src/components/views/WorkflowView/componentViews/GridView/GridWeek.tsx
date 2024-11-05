@@ -1,4 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
+import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import EditableComponent, {
   EditableComponentProps,
@@ -7,7 +8,6 @@ import EditableComponent, {
 import { getNodeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TNodeweek, TWorkflow } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import { connect } from 'react-redux'
 
 import GridNode from './GridNode'
@@ -107,7 +107,7 @@ const mapStateToProps = (
 ): ConnectedProps => {
   const data = ownProps.data
 
-  const nodeWeeks = Utility.filterThenSortByID<TNodeweek>(
+  const nodeWeeks = Utility.filterThenSortById<TNodeweek>(
     state.nodeweek,
     data.nodeweekSet
   )

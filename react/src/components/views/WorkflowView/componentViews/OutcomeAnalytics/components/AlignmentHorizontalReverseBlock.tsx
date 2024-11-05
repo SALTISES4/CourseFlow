@@ -1,4 +1,4 @@
-import * as Utility from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
 import { AppState } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -77,7 +77,7 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedType => {
-  const weekworkflows = Utility.filterThenSortByID(
+  const weekworkflows = Utility.filterThenSortById(
     state.weekworkflow,
     state.workflow.weekworkflowSet
   ).map((weekworkflow) => ({

@@ -2,7 +2,7 @@
 // import { WorkflowTitle } from '@cfComponents/UIPrimitives/Titles'
 
 // import { WorkflowCardProps } from '@cfComponents/cards/WorkflowCard/type'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { WorkflowCardWrapperPropsType } from '@cfComponents/cards/WorkflowCardWrapper'
 import { Component } from 'react'
 

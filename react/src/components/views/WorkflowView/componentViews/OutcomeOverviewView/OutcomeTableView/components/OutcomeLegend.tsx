@@ -1,6 +1,6 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
 import Slider from '@cfComponents/UIPrimitives/Slider'
 import { AppState } from '@cfRedux/types/type'

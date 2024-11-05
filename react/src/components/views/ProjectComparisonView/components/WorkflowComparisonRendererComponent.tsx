@@ -1,8 +1,8 @@
 // @ts-nocheck
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import { _t } from '@cf/utility/Utility.class'
+import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import { ProjectComparisonClass } from '@cfPages/Workspace/ProjectComparison'
 import * as React from 'react'
 
@@ -29,7 +29,7 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    const loader = new UtilityLoader('body')
+    const loader = new UtilityLoaderClass('body')
 
     const querystring = window.location.search
     const urlParams = new URLSearchParams(querystring)

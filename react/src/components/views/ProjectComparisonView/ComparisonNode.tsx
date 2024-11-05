@@ -5,7 +5,8 @@ import EditableComponent, {
 import { TitleText } from '@cf/components/common/UIPrimitives/Titles.ts'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import * as Constants from '@cfConstants'
 import {
@@ -16,7 +17,6 @@ import {
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import * as React from 'react'
 import { connect } from 'react-redux'

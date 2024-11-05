@@ -1,4 +1,4 @@
-import * as Utility from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
 import {
   CommonActions,
   NodeActions,

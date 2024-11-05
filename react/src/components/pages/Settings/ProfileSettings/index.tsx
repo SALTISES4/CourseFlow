@@ -145,8 +145,6 @@ const ProfileSettingsPage = () => {
                 name="language"
                 control={control}
                 render={({ field }) => {
-                  console.log('field')
-                  console.log(field)
                   return (
                     <RadioGroup
                       {...field}

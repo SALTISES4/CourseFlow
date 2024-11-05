@@ -1,4 +1,4 @@
-import * as Utility from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
 import { AppState } from '@cfRedux/types/type'
 import Outcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/Outcome'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
@@ -117,17 +117,17 @@ const mapStateToProps = (
   const outcome = findOutcomeById(state.outcome, ownProps.objectId)
 
   if (outcome) {
-    const allowedOutcomenodes = Utility.filterThenSortByID(
+    const allowedOutcomenodes = Utility.filterThenSortById(
       state.outcomenode,
       ownProps.nodeData.outcomenodeSet
     )
 
-    const allowedHorizontalLinks = Utility.filterThenSortByID(
+    const allowedHorizontalLinks = Utility.filterThenSortById(
       state.outcomehorizontallink,
       outcome.outcomeHorizontalLinksUnique
     )
 
-    const horizontalLinkOutcomes = Utility.filterThenSortByID(
+    const horizontalLinkOutcomes = Utility.filterThenSortById(
       state.outcomehorizontallink,
       outcome.outcomeHorizontalLinks
     ).map((hl) => hl.parentOutcome)

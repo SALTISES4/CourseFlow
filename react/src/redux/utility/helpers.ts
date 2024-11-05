@@ -68,7 +68,6 @@ export function toggleDropReduxAction(
     }
   }
 
-  console.log(objectId, objectType, { isDropped: newDropState })
   dispatch(
     ActionCreator.changeField(objectId, objectType, { isDropped: newDropState })
   )

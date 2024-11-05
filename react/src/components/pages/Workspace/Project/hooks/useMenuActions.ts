@@ -1,7 +1,6 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
 import {
   useCreateProjectMutation,
   useDuplicateProjectMutation

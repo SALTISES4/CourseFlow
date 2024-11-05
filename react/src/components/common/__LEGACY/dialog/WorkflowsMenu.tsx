@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { GridWrap } from '@cf/mui/helper'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 // import closeMessageBox from '@cfComponents/__LEGACY/menuLegacy/components/closeMessageBox'
 // import MenuTab from '@cfComponents/__LEGACY/menuLegacy/components/MenuTab'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'

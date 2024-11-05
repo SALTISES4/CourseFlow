@@ -1,7 +1,7 @@
 import * as SCCommon from '@cf/mui/helper'
 import { apiPaths } from '@cf/router/apiRoutes'
 import strings from '@cf/utility/strings'
-import { getNameInitials } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
 import Avatar from '@mui/material/Avatar'
@@ -20,6 +20,7 @@ import { API_POST } from '@XMLHTTP/CallWrapper'
 import { useState } from 'react'
 
 import * as SC from './style'
+
 
 /**
  *
@@ -236,7 +237,7 @@ const NotificationsPage = (): JSX.Element => {
                       <Badge color="primary" variant="dot" />
                     )}
                     <ListItemAvatar>
-                      <Avatar alt={n.from}>{getNameInitials(n.from)}</Avatar>
+                      <Avatar alt={n.from}>{ThemeHelper.getNameInitials(n.from)}</Avatar>
                     </ListItemAvatar>
                     <ListItemText
                       primary={n.date}

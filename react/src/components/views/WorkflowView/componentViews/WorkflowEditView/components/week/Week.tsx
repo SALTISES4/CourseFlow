@@ -1,11 +1,10 @@
 import * as Constants from '@cf/constants'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import * as Utility from '@cf/utility/utilityFunctions'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import ThemeHelper from "@cf/utility/ThemeHelper.class";
+import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
-import {
+import EditableComponentWithSorting, {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
@@ -69,7 +68,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
   componentDidUpdate() {
     this.makeDragAndDrop()
-    Utility.triggerHandlerEach(
+    ThemeHelper.triggerHandlerEach(
       $(this.mainDiv.current).find('.node'),
       'component-updated'
     )
@@ -194,7 +193,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
         const dragItem = ui.draggable
         const newIndex = dropItem.parent().prevAll().length + 1
         if (dragItem.hasClass('new-strategy')) {
-          const loader = new UtilityLoader('body')
+          const loader = new UtilityLoaderClass('body')
           addStrategyQuery(
             this.props.parentId,
             newIndex,
