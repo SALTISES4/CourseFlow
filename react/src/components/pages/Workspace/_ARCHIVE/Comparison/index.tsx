@@ -1,4 +1,5 @@
 import * as Constants from '@cf/utility/constants'
+import Utility from "@cf/utility/Utility.class";
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
@@ -81,7 +82,7 @@ export class Comparison {
         container[0]
       )
     } else {
-      console.log('comparsion view not supported ')
+      Utility.logger('comparsion view not supported ')
     }
   }
 }

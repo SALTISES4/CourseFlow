@@ -2,6 +2,7 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
+import Utility from '@cf/utility/Utility.class'
 import {
   GetWorkflowByIdQueryResp,
   GetWorkflowByIdQueryTransform,
@@ -32,7 +33,8 @@ import { generatePath } from 'react-router-dom'
 //Get the public data from the workflow
 export function getPublicWorkflowDataQuery(
   id,
-  callBackFunction = (_data: GetWorkflowByIdQueryResp) => console.log('success')
+  callBackFunction = (_data: GetWorkflowByIdQueryResp) =>
+    Utility.logger('success')
 ) {
   const base = apiPaths.json_api.workflow.public__detail
   const url = generatePath(base, { id })
@@ -42,7 +44,7 @@ export function getPublicWorkflowDataQuery(
       callBackFunction(response)
     })
   } catch (err) {
-    console.log(err)
+    Utility.logger(err)
   }
 }
 
@@ -62,7 +64,7 @@ export function getWorkflowParentDataQuery(
 export function getWorkflowParentDataQueryLegacy(
   id,
   callBackFunction = (_data: WorkflowParentDataQueryResp) =>
-    console.log('success')
+    Utility.logger('success')
 ) {
   const base = apiPaths.json_api.workflow.public__parent__detail
   const url = generatePath(base, { id })
@@ -71,7 +73,7 @@ export function getWorkflowParentDataQueryLegacy(
       callBackFunction(response)
     })
   } catch (err) {
-    console.log(err)
+    Utility.logger(err)
   }
 }
 
@@ -80,7 +82,7 @@ export function getWorkflowParentDataQueryLegacy(
 export function getPublicWorkflowParentDataQuery(
   id,
   callBackFunction = (_data: WorkflowParentDataQueryResp) =>
-    console.log('success')
+    Utility.logger('success')
 ) {
   const base = apiPaths.json_api.workflow.public__parent__detail
   const url = generatePath(base, { id })
@@ -89,14 +91,14 @@ export function getPublicWorkflowParentDataQuery(
       callBackFunction(response)
     })
   } catch (err) {
-    console.log(err)
+    Utility.logger(err)
   }
 }
 
 export function getWorkflowChildDataQuery(
   nodePk,
   callBackFunction = (_data: WorkflowChildDataQueryResp) =>
-    console.log('success')
+    Utility.logger('success')
 ) {
   const url = apiPaths.json_api.workflow.child__detail
   try {
@@ -106,7 +108,7 @@ export function getWorkflowChildDataQuery(
       callBackFunction(response)
     })
   } catch (err) {
-    console.log(err)
+    Utility.logger(err)
   }
 }
 
@@ -115,7 +117,7 @@ export function getWorkflowChildDataQuery(
 export function getPublicWorkflowChildDataQuery(
   nodeId: number,
   callBackFunction = (_data: WorkflowChildDataQueryResp) =>
-    console.log('success')
+    Utility.logger('success')
 ) {
   try {
     const base = apiPaths.json_api.workflow.public__child__detail
@@ -125,7 +127,7 @@ export function getPublicWorkflowChildDataQuery(
       callBackFunction(response)
     })
   } catch (err) {
-    console.log(err)
+    Utility.logger(err)
   }
 }
 
@@ -136,7 +138,8 @@ export function getPublicWorkflowChildDataQuery(
  */
 export function getTargetProjectMenuQuery<T>(
   workflowPk: number,
-  callBackFunction = (_data: TargetProjectQueryResp) => console.log('success')
+  callBackFunction = (_data: TargetProjectQueryResp) =>
+    Utility.logger('success')
 ) {
   const url = apiPaths.json_api.project.list__by_current_user
   API_POST(url, {
@@ -153,7 +156,7 @@ export function getTargetProjectMenuQuery<T>(
 export function getTemplates<T>(
   workflowType,
   callBackFunction = (_data: ProjectsForCreateQueryResp) =>
-    console.log('success')
+    Utility.logger('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.get_templates, {
     workflowType: workflowType
@@ -166,7 +169,7 @@ export function getTemplates<T>(
 export function getPublicParentWorkflowInfo(
   workflowPk,
   callBackFunction = (_data: ParentWorkflowInfoQueryResp) =>
-    console.log('success')
+    Utility.logger('success')
 ) {
   try {
     $.get(
@@ -178,7 +181,7 @@ export function getPublicParentWorkflowInfo(
       callBackFunction(response)
     })
   } catch (err) {
-    console.log(err)
+    Utility.logger(err)
   }
 }
 
@@ -210,7 +213,7 @@ export function getPublicParentWorkflowInfo(
 // export function getWorkflowsForProjectQuery(
 //   projectPk,
 //   callBackFunction = (_data: WorkflowsForProjectQueryResp) =>
-//     console.log('success')
+//     Utility.logger('success')
 // ) {
 //   const url = apiPaths.json_api.project.workflows__list
 //   API_POST(url, {
@@ -233,7 +236,7 @@ export function getPublicParentWorkflowInfo(
 export function getLinkedWorkflowMenuQuery(
   nodeId,
   callBackFunction = (_data?: LinkedWorkflowMenuQueryResp) =>
-    console.log('success')
+    Utility.logger('success')
 ) {
   const url = apiPaths.json_api.workflow.list__possible_linked
   API_POST(url, {

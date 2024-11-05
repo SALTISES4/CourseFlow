@@ -1,7 +1,7 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
-import ThemeHelper from "@cf/utility/ThemeHelper.class";
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import EditableComponentWithSorting, {
@@ -282,6 +282,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       : undefined
     const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
 
+  // there's a helper function for this
     const style: React.CSSProperties = {
       border: data.lock ? '2px solid ' + data.lock.userColour : undefined
     }
@@ -326,7 +327,16 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
           <div
             className="week-drop-row hover-shade"
-            onClick={this.toggleDrop.bind(this)}
+            onClick={(evt) => {
+              evt.stopPropagation()
+              this.manager.toggleDropReduxAction({
+                objectId: this.props.objectId,
+                objectType: Constants.objectDictionary[
+                  this.objectType
+                ] as CfObjectType,
+                newDropState: !this.props.data?.isDropped
+              })
+            }}
           >
             <div className="node-drop-side node-drop-left" />
             <div className="node-drop-middle">

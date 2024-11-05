@@ -111,18 +111,6 @@ class EditableComponent<
     )
   }
 
-  getBorderStyle() {
-    const data = this.props.data
-    if (!data) {
-      return
-    }
-
-    const border = data.lock ? '2px solid ' + data.lock.userColour : undefined
-    return {
-      border
-    }
-  }
-
   toggleDrop = (evt: React.MouseEvent) => {
     evt.stopPropagation()
 

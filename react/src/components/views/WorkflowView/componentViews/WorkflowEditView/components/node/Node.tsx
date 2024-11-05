@@ -19,7 +19,6 @@ import {
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import { toggleExpand } from '@cfRedux/utility/helpers'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
 import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
@@ -480,15 +479,15 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
           <div
             className="node-drop-row hover-shade"
-            onClick={() =>
-              toggleExpand({
+            onClick={(evt) => {
+              evt.stopPropagation()
+              this.manager.toggleDropReduxAction({
                 objectId: this.props.objectId,
                 objectType: this.objectType,
-                isDropped: this.props.node.data.isDropped,
-                dispatch: this.props.dispatch,
+                newDropState: this.props.data?.isDropped,
                 depth: this.props.data?.depth
               })
-            }
+            }}
           >
             <div className="node-drop-side node-drop-left">{dropText}</div>
             <div className="node-drop-middle">

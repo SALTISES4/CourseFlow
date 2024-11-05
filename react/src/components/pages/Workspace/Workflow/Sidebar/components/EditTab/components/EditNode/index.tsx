@@ -1,3 +1,4 @@
+import Utility from "@cf/utility/Utility.class";
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -45,7 +46,7 @@ const EditNode = (props: NodeForm) => {
       produce((draft) => {
         const key = e.target.name as 'taskType' | 'contextType' | 'unitType'
         draft[key] = Number(e.target.value)
-        console.log(e.target.name, 'changed to', e.target.value)
+        Utility.logger(e.target.name, 'changed to', e.target.value)
       })
     )
   }, [])
@@ -65,7 +66,7 @@ const EditNode = (props: NodeForm) => {
   )
 
   const onLinkWorfklowClick = useCallback(() => {
-    console.log('trigger link workflow dialog')
+    Utility.logger('trigger link workflow dialog')
   }, [])
 
   const removeLinkedWorkflow = useCallback(() => {
@@ -202,7 +203,7 @@ const EditNode = (props: NodeForm) => {
             multiple
             size="small"
             options={optionsData.objectSets}
-            onChange={(_, v) => console.log('changed to', v)}
+            onChange={(_, v) => Utility.logger('changed to', v)}
             isOptionEqualToValue={(option, value) =>
               option.value === value.value
             }

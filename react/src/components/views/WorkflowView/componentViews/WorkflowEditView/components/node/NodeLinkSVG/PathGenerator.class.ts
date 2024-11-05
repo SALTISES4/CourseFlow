@@ -45,7 +45,7 @@ class PathGenerator {
     try {
       this.findNextPoint()
     } catch (err) {
-      console.log('error calculating path')
+      Utility.logger('error calculating path')
     }
     this.fullArray = this.joinArrays()
     return this.fullArray

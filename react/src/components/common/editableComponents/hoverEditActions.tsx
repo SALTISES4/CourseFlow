@@ -1,7 +1,7 @@
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
-import { _t } from '@cf/utility/Utility.class'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -70,7 +70,7 @@ export function deleteObject({ id, objectType }: ActionItemArgs): void {
       Constants.objectDictionary[objectType],
       true, //why
       (responseData) => {
-        console.log('end loaded')
+        Utility.logger('end loaded')
         COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
@@ -108,7 +108,7 @@ export function duplicateSelf({
 }
 
 // export function insertChild({ id, objectType }: ActionItemArgs): void {
-//   console.log('inserting child')
+//   Utility.logger('inserting child')
 //
 //   //   const type = this.object_type
 //   COURSEFLOW_APP.tinyLoader.startLoad()

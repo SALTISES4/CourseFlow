@@ -104,12 +104,12 @@ class AutoLink extends React.Component<PropsType> {
    * RENDER
    *******************************************************/
   render() {
-    // console.log(this.props.nodeId)
-    // console.log(this)
-    // console.log(this.sourceNode)
+    // Utility.logger(this.props.nodeId)
+    // Utility.logger(this)
+    // Utility.logger(this.sourceNode)
     //
-    // console.log(Object.keys(this))
-    // console.log(JSON.parse(Utility.stringifyMaxDepth(this, 2)))
+    // Utility.logger(Object.keys(this))
+    // Utility.logger(JSON.parse(Utility.stringifyMaxDepth(this, 2)))
 
     // this is some race condition hack BS
     // node is not drawn? so sourcePort doesn't exist?
@@ -128,8 +128,8 @@ class AutoLink extends React.Component<PropsType> {
           this.props.nodeId +
           " circle[data-port-type='source'][data-port='s']"
       )
-      // console.log('this.sourcePortHandle')
-      // console.log(this.sourcePortHandle)
+      // Utility.logger('this.sourcePortHandle')
+      // Utility.logger(this.sourcePortHandle)
 
       this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
       //      return

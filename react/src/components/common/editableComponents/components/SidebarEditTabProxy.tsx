@@ -1,3 +1,4 @@
+import Utility from "@cf/utility/Utility.class";
 import useEditable from '@cfPages/Workspace/Workflow/Sidebar/hooks/useEditable'
 import {
   EditableDataType,
@@ -11,7 +12,7 @@ type PropsType = {
 
 // TODO: figure out the endpoint from which the data will be coming in
 const getNodeData = (id: PropsType['id']) => {
-  console.log('TODO: fetch data for node id', id)
+  Utility.logger('TODO: fetch data for node id', id)
 
   // figure out the node type
   const type = EditableType.PART

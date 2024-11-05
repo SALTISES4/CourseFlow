@@ -1,6 +1,7 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts.tsx'
@@ -56,11 +57,7 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
     const defaultText = data.weekTypeDisplay + ' ' + (this.props.weekRank + 1)
 
     const nodeweeks = this.props.nodeweeks.map((nodeweek, index) => {
-      if (
-        this.props.restrictionSet &&
-        this.props.restrictionSet.nodes &&
-        this.props.restrictionSet.nodes.indexOf(nodeweek.node) == -1
-      ) {
+      if (this.props.restrictionSet.nodes.indexOf(nodeweek.node) == -1) {
         return null
       }
       return (
@@ -83,7 +80,10 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
       <div
         className="week"
         ref={this.mainDiv}
-        style={this.getBorderStyle()}
+        style={ThemeHelper.getBorderStyle({
+          isLocked: this.props.data.lock,
+          colour: this.props.data.lock.userColour
+        })}
         onClick={(e) => {
           e.stopPropagation()
           this.manager.updateSidebar(

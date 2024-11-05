@@ -125,7 +125,6 @@ export class NodePorts extends React.Component<PropsType, StateType> {
   render() {
     const ports = []
     let nodeDimensions
-    console.log(this.state)
 
     if (this.state.nodeDimensions) {
       nodeDimensions = this.state.nodeDimensions

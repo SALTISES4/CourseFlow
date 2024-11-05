@@ -1,5 +1,6 @@
 import { NumTuple, ObjectLock } from '@cf/types/common'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import Utility from "@cf/utility/Utility.class";
 import PathGenerator from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG/PathGenerator.class'
 import * as React from 'react'
 
@@ -244,8 +245,8 @@ class NodeLinkSVG extends React.Component<PropsType, State> {
         </g>
       )
     } catch (err) {
-      console.log('could not draw a node link')
-      // console.log(err)
+      Utility.logger('could not draw a node link')
+      // Utility.logger(err)
       return null
     }
   }

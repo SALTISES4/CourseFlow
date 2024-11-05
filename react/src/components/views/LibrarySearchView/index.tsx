@@ -130,7 +130,7 @@ const LibrarySearchView = ({
 
     const args = LibraryHelper.reduceStateToSearchArgs(searchFilterState)
 
-    //     console.log(args)
+    //     Utility.logger(args)
 
     /*******************************************************
      *    These are the formatted search args, reduced to only active filters, and formatted in a flat list for the API call

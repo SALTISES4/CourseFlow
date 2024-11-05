@@ -1,4 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import EditableComponent, {
@@ -70,7 +71,11 @@ class GridWeekUnconnected extends EditableComponent<
       <div
         className="week"
         ref={this.mainDiv}
-        style={this.getBorderStyle()}
+        // @todo figure out where the lock and color are
+        style={ThemeHelper.getBorderStyle({
+          isLocked: !!this.props,
+          color: ''
+        })}
         onClick={(e) => {
           e.stopPropagation()
           this.manager.updateSidebar(
@@ -159,25 +164,19 @@ const mapStateToProps = (
     return previousValue
   }, 0)
 
-  const totalPractical = overrideData.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationPractical) {
-        return previousValue + currentValue.ponderationPractical
-      }
-      return previousValue
-    },
-    0
-  )
+  const totalPractical = overrideData.reduce((previousValue, currentValue) => {
+    if (currentValue && currentValue.ponderationPractical) {
+      return previousValue + currentValue.ponderationPractical
+    }
+    return previousValue
+  }, 0)
 
-  const totalIndividual = overrideData.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationIndividual) {
-        return previousValue + currentValue.ponderationIndividual
-      }
-      return previousValue
-    },
-    0
-  )
+  const totalIndividual = overrideData.reduce((previousValue, currentValue) => {
+    if (currentValue && currentValue.ponderationIndividual) {
+      return previousValue + currentValue.ponderationIndividual
+    }
+    return previousValue
+  }, 0)
 
   const totalTime = totalTheory + totalPractical + totalIndividual
 

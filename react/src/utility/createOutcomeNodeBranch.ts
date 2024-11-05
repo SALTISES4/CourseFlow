@@ -12,11 +12,11 @@ export type CreateOutcomeNodeBranchType = {
 //   outcomeId: number,
 //   nodeCategories
 // ): CreateOutcomeNodeBranchType {
-//   console.log('createOutcomeNodeBranch props')
-//   console.log(props)
+//   Utility.logger('createOutcomeNodeBranch props')
+//   Utility.logger(props)
 //
-//   console.log('createOutcomeNodeBranch  nodeCategories')
-//   console.log(nodeCategories)
+//   Utility.logger('createOutcomeNodeBranch  nodeCategories')
+//   Utility.logger(nodeCategories)
 //
 //   const outcome = props.outcome.find((o) => o.id === outcomeId)
 //   if (!outcome) return null

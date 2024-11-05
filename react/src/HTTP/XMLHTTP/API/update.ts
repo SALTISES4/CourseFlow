@@ -1,4 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import Utility from '@cf/utility/Utility.class'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -18,7 +19,9 @@ export function updateValueQuery(
   objectType: any,
   json: any,
   changeField = false,
-  callBackFunction = (data: EmptyPostResp) => console.log('success')
+  callBackFunction = (data: EmptyPostResp) => {
+    return Utility.logger('success')
+  }
 ) {
   const postObject = {
     objectId: objectId,
@@ -37,7 +40,7 @@ export function updateValueInstantQuery(
   objectId: number,
   objectType: any,
   json: any,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.workspace.field__update
   API_POST(url, {
@@ -52,7 +55,7 @@ export function updateValueInstantQuery(
 //When the drag is complete, this is called to update the back-end
 export function dragAction(
   actionData,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
@@ -74,7 +77,7 @@ export function insertedAtInstant(
   parentType,
   newPosition,
   throughType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   console.log(parentType)
   COURSEFLOW_APP.tinyLoader.startLoad()
@@ -103,7 +106,7 @@ export function updateOutcomenodeDegree(
   nodeId: number,
   outcomeID: number,
   value,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(
     COURSEFLOW_APP.globalContextData.path.post_paths.update_outcomenode_degree,
@@ -122,7 +125,7 @@ export function updateOutcomehorizontallinkDegree(
   outcomePk,
   outcome2Pk,
   degree,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(
     COURSEFLOW_APP.globalContextData.path.post_paths
@@ -142,7 +145,7 @@ export function updateOutcomehorizontallinkDegree(
 export function setLinkedWorkflow(
   nodeId,
   workflowId,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.workflow.link
   API_POST(url, {
@@ -163,7 +166,7 @@ export function setLinkedWorkflow(
 export function toggleStrategyQuery(
   weekPk: number,
   isStrategy: boolean,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.workflow.strategy__toggle
   API_POST(url, {
@@ -179,7 +182,7 @@ export function updateObjectSet(
   objectType,
   objectsetPk,
   add,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.update_object_set, {
     objectId: objectId,

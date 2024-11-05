@@ -125,9 +125,9 @@ function ProjectExportDialog(data: EProject) {
       postData
     )
       .then((resp) => {
-        console.log('response', resp)
+        Utility.logger('response', resp)
       })
-      .catch((error) => console.log('errors', error))
+      .catch((error) => Utility.logger('errors', error))
   }
 
   function onDialogClose() {

@@ -1,5 +1,6 @@
 //Removes the specified comment from the object
 import { apiPaths } from '@cf/router/apiRoutes'
+import Utility from '@cf/utility/Utility.class'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { CommentsForObjectQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 
@@ -8,7 +9,7 @@ export function getCommentsForObjectQuery(
   objectId: number,
   objectType: any,
   callBackFunction = (_data: CommentsForObjectQueryResp) =>
-    console.log('success')
+    Utility.logger('success')
 ) {
   const url = apiPaths.json_api.comment.list_by_object
   API_POST(url, {
@@ -23,7 +24,7 @@ export function addComment(
   objectId,
   objectType,
   text,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.comment.create
   API_POST(url, {
@@ -39,7 +40,7 @@ export function removeComment(
   objectId,
   objectType,
   commentPk,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.comment.delete
   API_POST(url, {
@@ -55,7 +56,7 @@ export function removeComment(
 export function removeAllComments(
   objectId,
   objectType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.comment.delete_all
   API_POST(url, {

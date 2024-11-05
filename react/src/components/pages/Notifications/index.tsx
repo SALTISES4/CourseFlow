@@ -2,6 +2,7 @@ import * as SCCommon from '@cf/mui/helper'
 import { apiPaths } from '@cf/router/apiRoutes'
 import strings from '@cf/utility/strings'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import Utility from '@cf/utility/Utility.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import DotsIcon from '@mui/icons-material/MoreHoriz'
 import Avatar from '@mui/material/Avatar'
@@ -20,7 +21,6 @@ import { API_POST } from '@XMLHTTP/CallWrapper'
 import { useState } from 'react'
 
 import * as SC from './style'
-
 
 /**
  *
@@ -113,7 +113,7 @@ const NotificationsPage = (): JSX.Element => {
           notifications: updated
         })
       })
-      .catch((err) => console.log('error -', err))
+      .catch((err) => Utility.logger('error -', err))
       .finally(() => {
         handleMenuClose()
       })
@@ -140,7 +140,7 @@ const NotificationsPage = (): JSX.Element => {
           notifications: updated
         })
       })
-      .catch((err) => console.log('error -', err))
+      .catch((err) => Utility.logger('error -', err))
       .finally(() => {
         handleMenuClose()
       })
@@ -160,7 +160,7 @@ const NotificationsPage = (): JSX.Element => {
           allRead: true
         })
       })
-      .catch((err) => console.log('error -', err))
+      .catch((err) => Utility.logger('error -', err))
   }
 
   function onPaginationChange(e, page) {
@@ -237,7 +237,9 @@ const NotificationsPage = (): JSX.Element => {
                       <Badge color="primary" variant="dot" />
                     )}
                     <ListItemAvatar>
-                      <Avatar alt={n.from}>{ThemeHelper.getNameInitials(n.from)}</Avatar>
+                      <Avatar alt={n.from}>
+                        {ThemeHelper.getNameInitials(n.from)}
+                      </Avatar>
                     </ListItemAvatar>
                     <ListItemText
                       primary={n.date}

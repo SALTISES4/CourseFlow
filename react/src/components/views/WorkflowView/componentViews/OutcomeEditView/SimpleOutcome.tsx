@@ -1,6 +1,7 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
@@ -156,7 +157,10 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
         {/*{editPortal}*/}
         <div
           className={cssClass}
-          style={this.getBorderStyle()}
+          style={ThemeHelper.getBorderStyle({
+            isLocked: this.props.data.lock,
+            colour: this.props.data.lock.userColour
+          })}
           ref={this.mainDiv}
           onClick={(e) => {
             e.stopPropagation()

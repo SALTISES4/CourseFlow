@@ -32,7 +32,7 @@ export class SelectionManager {
     this.mouseClicked = false
     this.readOnly = readOnly
     this.setupEventListeners()
-    // this.lastSidebarTab = this.getActiveTab()
+    this.state = {}
   }
 
   private setupEventListeners(): void {
@@ -79,7 +79,7 @@ export class SelectionManager {
   // }
 
   private deselectCurrentSelection(): void {
-    this.currentSelection.setState({ selected: false })
+    // this.currentSelection.setState({ selected: false })
     if (!this.readOnly) {
       this.unlockCurrentSelection()
     }
@@ -163,7 +163,7 @@ export class SelectionManager {
     >
     payload?: any
   }): void {
-    // console.log('SelectionManager.changeSelection', { newSelection }, { evt })
+    // Utility.logger('SelectionManager.changeSelection', { newSelection }, { evt })
 
     if (evt) {
       evt.stopPropagation()

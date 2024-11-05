@@ -87,7 +87,6 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
         objectId={item}
         parentId={Number(data.id)}
         readOnly={this.props.readOnly}
-        // renderer={this.props.renderer}
       />
     ))
 

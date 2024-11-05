@@ -1,5 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
@@ -11,7 +12,7 @@ import {
 import {
   DeleteSelfButton,
   DuplicateSelfButton,
-  InsertSiblingButton,
+  InsertSiblingButton
 } from '@cfEditableComponents/hoverEditActions'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
@@ -368,7 +369,17 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           </div>
 
           {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
-            <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+            <div
+              className="outcome-drop"
+              onClick={(evt) => {
+                evt.stopPropagation()
+                this.manager.toggleDropReduxAction({
+                  objectId: this.props.objectId,
+                  objectType: Constants.objectDictionary[this.objectType] as CfObjectType,
+                  newDropState: !this.props.data?.isDropped
+                })
+              }}
+            >
               <div className="outcome-drop-img">
                 <img
                   src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
@@ -393,8 +404,9 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
           {this.props.workflow.workflowPermissions.write && data.depth < 2 && (
             <div
               className="outcome-create-child"
-              onClick={() => {}
-              // @todo update this with mutation
+              onClick={
+                () => {}
+                // @todo update this with mutation
                 // insertChild({
                 //   id: this.props.objectId,
                 //   objectType: this.objectType

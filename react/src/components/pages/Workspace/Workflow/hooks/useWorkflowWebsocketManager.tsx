@@ -5,6 +5,7 @@ import WebSocketServiceConnectedUserManager, {
 import { EUser } from '@cf/HTTP/XMLHTTP/types/entity'
 import { CfLock } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
+import Utility from "@cf/utility/Utility.class";
 import ActionCreator from '@cfRedux/ActionCreator'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
@@ -241,7 +242,7 @@ export const useWorkflowWebsocketManager = ({
 
     // @todo need to insert type guards here
 
-    console.log(data)
+    Utility.logger(data)
 
     // here we will insert the publisher filter logic
     // it might not stay here
@@ -270,7 +271,7 @@ export const useWorkflowWebsocketManager = ({
         onChildWorkflowUpdateReceived(data.childWorkflowId)
         break
       default:
-        console.log('socket message not handled')
+        Utility.logger('socket message not handled')
         break
     }
   }

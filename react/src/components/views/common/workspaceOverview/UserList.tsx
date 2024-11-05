@@ -52,8 +52,8 @@ const UserList = ({
       }
     })
 
-  // console.log({ workspaceType })
-  // console.log({ data })
+  // Utility.logger({ workspaceType })
+  // Utility.logger({ data })
 
   const [mutate, { isError: isMutateError, error: mutateError, isSuccess }] =
     useWorkspaceUserUpdateMutation()

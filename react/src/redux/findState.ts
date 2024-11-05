@@ -47,7 +47,7 @@ export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
       }
     }
   }
-  console.log('no column found with id', id)
+  Utility.logger('no column found with id', id)
 }
 
 /*******************************************************
@@ -85,7 +85,7 @@ export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
       }
     }
   }
-  console.log('no week found with id', id)
+  Utility.logger('no week found with id', id)
 }
 
 /*******************************************************
@@ -142,7 +142,7 @@ export const getTermById = (state: AppState, id: number): TTermByID => {
 //     const workflow = state.parentWorkflow[i]
 //     if (workflow.id == id) return { data: workflow }
 //   }
-//   console.log('failed to find parent workflow')
+//   Utility.logger('failed to find parent workflow')
 // }
 
 /*******************************************************
@@ -167,7 +167,7 @@ export const getNodeByID = (state: AppState, id: number): TGetNodeById => {
       }
     }
   }
-  console.log('failed to find node')
+  Utility.logger('failed to find node')
 }
 
 /*******************************************************
@@ -263,7 +263,7 @@ export const getOutcomeByID = (
     }
   }
 
-  console.log('Outcome not found for ID:', id)
+  Utility.logger('Outcome not found for ID:', id)
 }
 
 /*******************************************************
@@ -317,7 +317,7 @@ export const getOutcomeWorkflowByID = (
       }
     }
   }
-  console.log('no outcomeworkflow found with id', id)
+  Utility.logger('no outcomeworkflow found with id', id)
 }
 
 /*******************************************************
@@ -342,7 +342,7 @@ export const getColumnWorkflowByID = (
     }
   }
 
-  console.log('no columnWorkflow found with id', id)
+  Utility.logger('no columnWorkflow found with id', id)
 
   return {
     data: undefined,
@@ -373,7 +373,7 @@ export const getNodeWeekByID = (
       }
     }
   }
-  console.log('no nodeweek found with id', id)
+  Utility.logger('no nodeweek found with id', id)
 }
 
 /*******************************************************
@@ -392,7 +392,7 @@ export const getNodeLinkByID = (
       return { data: nodelink }
     }
   }
-  console.log('no nodelink found with id', id)
+  Utility.logger('no nodelink found with id', id)
 }
 
 /**
@@ -456,7 +456,7 @@ export const getChildWorkflowById = (state: AppState, id: number) => {
       return { data: workflow }
     }
   }
-  console.log('failed to find child workflow')
+  Utility.logger('failed to find child workflow')
   return -1
 }
 
@@ -477,7 +477,7 @@ export const getOutcomeOutcomeById = (
       }
     }
   }
-  console.log('failed to find outcomeoutcome')
+  Utility.logger('failed to find outcomeoutcome')
 }
 
 export type TOutcomeNodeByID = {
@@ -494,7 +494,7 @@ export const getOutcomeNodeByID = (
       data: outcomeNode
     }
   }
-  console.log('Failed to find outcomenode with ID:', id)
+  Utility.logger('Failed to find outcomenode with ID:', id)
 }
 
 export type TOutcomeHorizontalLinkByID = {
@@ -513,7 +513,7 @@ export const getOutcomeHorizontalLinkByID = (
       }
     }
   }
-  console.log('failed to find outcomehorizontallink')
+  Utility.logger('failed to find outcomehorizontallink')
 }
 
 export type TOutcomeWithDegree = TOutcome & { degree: number }
@@ -572,8 +572,8 @@ export const getSortedOutcomeNodesFromNodes = (
         )
       }))
   ]
-  console.log('returm from getSortedOutcomeNodesFromNodes')
-  console.log(categories)
+  Utility.logger('returm from getSortedOutcomeNodesFromNodes')
+  Utility.logger(categories)
   return categories
 }
 
@@ -660,8 +660,8 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
       }))
   ]
 
-  console.log('categories')
-  console.log(categories)
+  Utility.logger('categories')
+  Utility.logger(categories)
 
   return categories
 }
@@ -797,8 +797,8 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
       }))
   ]
 
-  console.log('getSortedOutcomeIDFromOutcomeWorkflowSet categories')
-  console.log(categories)
+  Utility.logger('getSortedOutcomeIDFromOutcomeWorkflowSet categories')
+  Utility.logger(categories)
 
   // Return the final categories
   return categories

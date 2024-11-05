@@ -1,3 +1,4 @@
+import Utility from '@cf/utility/Utility.class'
 import { useEffect, useRef } from 'react'
 
 function useMount() {
@@ -5,10 +6,10 @@ function useMount() {
   renderCount.current++
 
   useEffect(() => {
-    console.log('Component mounted')
+    Utility.logger('Component mounted')
 
     return () => {
-      console.log('Component will unmount')
+      Utility.logger('Component will unmount')
     }
   }, []) // The empty dependency array ensures this effect runs only once.
 }

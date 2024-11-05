@@ -1,5 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import Utility from '@cf/utility/Utility.class'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { AddTerminologyQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
@@ -10,7 +11,7 @@ export function newNodeQuery(
   position = -1,
   column = -1,
   columnType = -1,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.node.create
   API_POST(url, {
@@ -37,7 +38,7 @@ export function newNodeQuery(
 export function newOutcomeQuery(
   workflowPk: number,
   object_setId: number,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_outcome, {
     workflowPk: workflowPk,
@@ -52,7 +53,7 @@ export function addStrategyQuery(
   workflowPk: number,
   position = -1,
   strategyPk = -1,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.workflow.strategy__add_to_workflow
   API_POST(url, {
@@ -70,7 +71,7 @@ export function newNodeLinkQuery(
   targetNodeId: number,
   sourcePort: number,
   targetPort: number,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.node.link__create
   API_POST(url, {
@@ -98,7 +99,8 @@ export function addObjectSetQuery(
   term: any,
   title: any,
   translationPlural: any,
-  callBackFunction = (_data: AddTerminologyQueryResp) => console.log('success')
+  callBackFunction = (_data: AddTerminologyQueryResp) =>
+    Utility.logger('success')
 ) {
   const base = apiPaths.json_api.project.object_set__create
   const url = generatePath(base, { id })

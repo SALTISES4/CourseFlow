@@ -2,40 +2,28 @@ import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
-import Utility from '@cf/utility/Utility.class'
 // import $ from 'jquery'
 import { _t } from '@cf/utility/Utility.class'
-import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
-import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
-import CommentBox from '@cfEditableComponents/components/CommentBox'
-import QuillDiv from '@cfEditableComponents/components/QuillDiv'
-import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { toggleDropReduxAction } from '@cfRedux/utility/helpers'
 import AddCommentIcon from '@mui/icons-material/AddComment'
-import Button from '@mui/material/Button'
 import { Dispatch } from '@reduxjs/toolkit'
 import { getCommentsForObjectQuery } from '@XMLHTTP/API/comment'
-import { toggleStrategyQuery } from '@XMLHTTP/API/update'
-import { updateObjectSet } from '@XMLHTTP/API/update'
 import { ReactElement, ReactPortal } from 'react'
 import * as React from 'react'
 import { Action } from 'redux'
 
 import SidebarEditTabProxy from './components/SidebarEditTabProxy'
 
-const choices = COURSEFLOW_APP.globalContextData.workflowChoices
-
-const LinkedWorkflowButton = (id: any) => {
-  const { dispatch } = useDialog()
-
-  return (
-    <Button onClick={() => dispatch(DialogMode.LINK_WORKFLOW)}>
-      {_t('Change')}
-    </Button>
-  )
-}
+// const LinkedWorkflowButton = (id: any) => {
+//   const { dispatch } = useDialog()
+//
+//   return (
+//     <Button onClick={() => dispatch(DialogMode.LINK_WORKFLOW)}>
+//       {_t('Change')}
+//     </Button>
+//   )
+// }
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -75,39 +63,6 @@ class EditableComponent<
     this.mainDiv = React.createRef()
     this.state = {} as S
   }
-
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-
-  // this should go somewhere else
-  getBorderStyle() {
-    const data = this.props.data
-    if (!data) {
-      return
-    }
-
-    const border = data.lock ? '2px solid ' + data.lock.userColour : undefined
-    return {
-      border
-    }
-  }
-
-  toggleDrop = (evt: React.MouseEvent) => {
-    evt.stopPropagation()
-
-    toggleDropReduxAction(
-      this.props.objectId,
-      Constants.objectDictionary[this.objectType],
-      // isDropped --
-      //  local state, but it's also saved in the DB.
-      // isDropped more or less seems to be is the drawer expanded on the UI element
-      !this.props.data?.isDropped,
-      this.props.dispatch,
-      this.props.data?.depth
-    )
-  }
-
 
   /*******************************************************
    * EDITABLE 'COMMENT' CLASS

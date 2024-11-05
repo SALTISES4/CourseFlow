@@ -69,7 +69,7 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
     const data = this.props.data
     const style: React.CSSProperties = {}
 
-    console.log('rendering nodelink')
+
     if (
       !this.sourceNode ||
       !this.sourceNode.outerWidth() ||
@@ -92,8 +92,8 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
         `[data-port='${Constants.portKeys[data.sourcePort]}']`
       ].join('')
 
-      // console.log('cssSourcePortSelector')
-      // console.log(cssSourcePortSelector)
+      // Utility.logger('cssSourcePortSelector')
+      // Utility.logger(cssSourcePortSelector)
 
       // this css selector defines the circle attached to each node
       // to which the line is connected

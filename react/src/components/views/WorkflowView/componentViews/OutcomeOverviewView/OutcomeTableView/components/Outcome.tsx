@@ -3,6 +3,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts.tsx'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState } from '@cfRedux/types/type'
 import { toggleExpand } from '@cfRedux/utility/helpers'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
@@ -186,11 +187,13 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
 > {
   objectType: CfObjectType
   mainDiv: React.RefObject<HTMLDivElement>
+  protected manager: BetterSelectionManager
 
   constructor(props: P) {
     super(props)
     this.mainDiv = React.createRef()
     this.objectType = CfObjectType.OUTCOME
+    this.manager = new BetterSelectionManager(this.props.dispatch)
   }
 
   componentDidMount() {
@@ -256,16 +259,15 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
           {data.childOutcomeLinks.length > 0 && (
             <div
               className="outcome-drop"
-              onClick={() =>
-                toggleExpand({
+              onClick={(evt) => {
+                evt.stopPropagation()
+                this.manager.toggleDropReduxAction({
                   objectId: this.props.objectId,
                   objectType: this.objectType,
-                  isDropped: this.props.data.isDropped,
-                  // @ts-ignore
-                  dispatch: this.props?.dispatch, // @todo where is dispatch
+                  newDropState: !this.props.data?.isDropped,
                   depth: this.props.data?.depth
                 })
-              }
+              }}
             >
               <div className="outcome-drop-img">
                 <img

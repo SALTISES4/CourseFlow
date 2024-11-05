@@ -122,14 +122,14 @@ export const nodeTypeKeys = {
 
 // @todo this is redundant now
 export const objectDictionary = {
-  nodelink: 'nodelink',
-  node: 'node',
-  week: 'week',
-  column: 'column',
-  outcome: 'outcome',
-  outcomeBase: 'outcome',
-  workflow: 'workflow',
-  outcomenode: 'outcomenode'
+  nodelink: CfObjectType.NODELINK,
+  node: CfObjectType.NODE,
+  week: CfObjectType.WEEK,
+  column: CfObjectType.COLUMN,
+  outcome: CfObjectType.OUTCOME,
+  outcomeBase: CfObjectType.OUTCOME,
+  workflow: CfObjectType.WORKFLOW,
+  outcomenode: CfObjectType.OUTCOMENODE
 }
 
 export const parentDictionary = {
@@ -252,7 +252,7 @@ export const objectSetsTypes = {
 // @todo no
 //missingTranslations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
 // function missingTranslations() {
-//   console.log('missingTranslations called')
+//   Utility.logger('missingTranslations called')
 //   _t('activity')
 //   _t('course')
 //   _t('program')

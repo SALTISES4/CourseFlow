@@ -11,6 +11,21 @@ class ThemeHelper {
     return `${split[0][0]}${split[split.length - 1][0]}`
   }
 
+  static getBorderStyle({
+    isLocked,
+    colour
+  }: {
+    isLocked?: boolean
+    colour?: string
+  }) {
+    if (!isLocked || !colour) {
+      return {}
+    }
+    return {
+      border: `2px solid ' + ${colour}`
+    }
+  }
+
   /**
    * capitalize first letter of each word in a string
    * @param str

@@ -20,29 +20,9 @@ type PropsType = ConnectedProps & OwnProps
  * this should not exist...
  */
 class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
-  private objectType: string
-  private objectClass: string
-  // private mainDiv: React.LegacyRef<HTMLDivElement> | undefined;
 
   constructor(props) {
     super(props)
-    this.objectType = CfObjectType.NODEWEEK
-    this.objectClass = '.node-week'
-  }
-
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  NodeWrapper = () => {
-    const data = this.props.data
-    return (
-      <Node
-        objectId={data.node}
-        parentId={this.props.parentId}
-        throughParentId={data.id}
-        columnOrder={this.props.columnOrder}
-      />
-    )
   }
 
   /*******************************************************
@@ -61,9 +41,13 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
         id={data.id}
         data-child-id={data.node}
         data-column-id={this.props.column}
-        // ref={this.mainDiv} // @todo this is not defined
       >
-        <this.NodeWrapper />
+        <Node
+          objectId={data.node}
+          parentId={this.props.parentId}
+          throughParentId={data.id}
+          columnOrder={this.props.columnOrder}
+        />
       </div>
     )
   }

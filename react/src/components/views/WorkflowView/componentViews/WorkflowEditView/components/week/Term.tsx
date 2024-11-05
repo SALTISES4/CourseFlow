@@ -1,4 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import {
   DeleteSelfButton,
@@ -183,7 +185,16 @@ class Term extends WeekUnconnected<PropsType> {
           </div>
           <div
             className="week-drop-row hover-shade"
-            onClick={this.toggleDrop.bind(this)}
+            onClick={(evt) => {
+              evt.stopPropagation()
+              this.manager.toggleDropReduxAction({
+                objectId: this.props.objectId,
+                objectType: Constants.objectDictionary[
+                  this.objectType
+                ] as CfObjectType,
+                newDropState: !this.props.data?.isDropped
+              })
+            }}
           >
             <div className="node-drop-side node-drop-left"></div>
             <div className="node-drop-middle">
