@@ -1,21 +1,20 @@
 import * as Constants from '@cf/constants'
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
+import { NodeDom } from '@cf/types/global'
 import { _t } from '@cf/utility/utilityFunctions'
 import * as Utility from '@cf/utility/utilityFunctions'
-import { newNodeLink } from '@XMLHTTP/API/create'
+import { Dispatch } from '@reduxjs/toolkit'
+import { newNodeLinkQuery } from '@XMLHTTP/API/create'
 import * as React from 'react'
+import { Action } from 'redux'
 // import $ from 'jquery'
 
 //The ports used to connect links for the nodes
 type PropsType = {
-  dispatch: any
-  nodeDiv: any
-  nodeId: any
+  nodeId: number
+  dispatch: Dispatch<Action>
+  nodeDiv: React.RefObject<HTMLDivElement>
 }
-type StateType = {
-  nodeOffset: any
-  nodeDimensions: any
-}
+type StateType = NodeDom
 
 export class NodePorts extends React.Component<PropsType, StateType> {
   private positioned: boolean
@@ -113,7 +112,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
       return
     }
 
-    newNodeLink(
+    newNodeLinkQuery(
       props.nodeId,
       target,
       Constants.portKeys.indexOf(sourcePort),
@@ -127,6 +126,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
   render() {
     const ports = []
     let nodeDimensions
+    console.log(this.state)
 
     if (this.state.nodeDimensions) {
       nodeDimensions = this.state.nodeDimensions
@@ -145,9 +145,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
             r="6"
             key={portType + port}
             cx={Constants.nodePorts[portType][port][0] * nodeDimensions.width}
-            cy={
-              Constants.nodePorts[portType][port][1] * nodeDimensions.height
-            }
+            cy={Constants.nodePorts[portType][port][1] * nodeDimensions.height}
           />
         )
       }

@@ -190,3 +190,14 @@ interface TinyLoader {
 interface Identifier {
   _reactListeningarkdylqyv1: boolean
 }
+
+export type NodeDom = {
+  nodeOffset: {
+    top: number
+    left: number
+  }
+  nodeDimensions: {
+    height: number
+    width: number
+  }
+}

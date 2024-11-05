@@ -1,11 +1,12 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import { CfObjectType } from '@cf/types/enum'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { AddTerminologyQueryResp, EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
 //Add a new node to a week
 export function newNodeQuery(
-  weekPk,
+  weekId: number,
   position = -1,
   column = -1,
   columnType = -1,
@@ -13,7 +14,7 @@ export function newNodeQuery(
 ) {
   const url = apiPaths.json_api.node.create
   API_POST(url, {
-    weekPk: weekPk,
+    weekPk: weekId,
     position: position,
     columnPk: column,
     columnType: columnType
@@ -64,18 +65,18 @@ export function addStrategyQuery(
   })
 }
 
-export function newNodeLink(
-  sourceNode,
-  targetNode,
-  sourcePort,
-  targetPort,
+export function newNodeLinkQuery(
+  sourceNodeId: number,
+  targetNodeId: number,
+  sourcePort: number,
+  targetPort: number,
   callBackFunction = (_data: EmptyPostResp) => console.log('success')
 ) {
   const url = apiPaths.json_api.node.link__create
   API_POST(url, {
-    nodePk: sourceNode,
-    objectId: targetNode,
-    objectType: 'node',
+    nodePk: sourceNodeId,
+    objectId: targetNodeId,
+    objectType: CfObjectType.NODE,
     sourcePort: sourcePort,
     targetPort: targetPort
   }).then((response: EmptyPostResp) => {
