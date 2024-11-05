@@ -111,10 +111,7 @@ class EditableComponentWithSorting<
       },
       start: (e, ui) => {
         const dragItem = $(e.target)
-        if (
-          dragItem.hasClass('placeholder') ||
-          dragItem.hasClass('no-drag')
-        ) {
+        if (dragItem.hasClass('placeholder') || dragItem.hasClass('no-drag')) {
           e.preventDefault()
           return false
         }
@@ -147,9 +144,7 @@ class EditableComponentWithSorting<
         // console.log(ui.helper)
         // console.log(ui.helper.offset())
         if (draggableType == 'nodeweek') {
-          const newTarget = $(
-            '#' + $(e.target).attr('id') + draggableSelector
-          )
+          const newTarget = $('#' + $(e.target).attr('id') + draggableSelector)
           // console.log("is nodeweek",
           //   handle,
           //   e.target,
@@ -212,19 +207,18 @@ class EditableComponentWithSorting<
         const dragHelper = ui.helper
         const newIndex = dropItem.prevAll().length
         const newParentId = parseInt(dropItem.parent().attr('id'))
+
         if (draggableType == 'nodeweek' && dragItem.hasClass('new-node')) {
           dragHelper.addClass('valid-drop')
           dropItem.addClass('new-node-drop-over')
         } else if (dragItem.is(draggableSelector)) {
           const oldParentId = parseInt(dragItem.attr('data-old-parent-id'))
           const oldIndex = parseInt(dragItem.attr('data-old-index'))
+
           if (oldParentId != newParentId || oldIndex != newIndex) {
             const childId = parseInt(dragItem.attr('data-child-id'))
 
-            if (
-              restrictTo &&
-              dragItem.attr('data-restrict-to') != restrictTo
-            ) {
+            if (restrictTo && dragItem.attr('data-restrict-to') != restrictTo) {
               this.sortableMovedOutFunction(
                 parseInt(dragItem.attr('id')),
                 newIndex,

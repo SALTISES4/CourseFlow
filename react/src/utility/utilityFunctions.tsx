@@ -164,7 +164,10 @@ export function getUserDisplay(user) {
  * Get the offset from the canvas of a specific jquery object
  * @param nodeDom
  */
-export function getCanvasOffset(nodeDom) {
+export function getCanvasOffset(nodeDom): {
+  top: number
+  left: number
+} {
   const nodeOffset = nodeDom.offset()
   const canvasElement = document.querySelector('.workflow-canvas')
   const canvasOffset = getElementOffset(canvasElement)

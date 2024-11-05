@@ -10,6 +10,7 @@ import {
   OutcomeWorkflowActions,
   WeekWorkflowActions
 } from '@cfRedux/types/enumActions'
+import { AppState } from '@cfRedux/types/type'
 
 /**
  *  local action creators
@@ -100,9 +101,9 @@ class ActionCreator {
     }
   }
 
-  static refreshStoreData = (dataPackage) => {
-    console.log('what is  refreshStoreData = (dataPackage) => {')
-    console.log(dataPackage)
+  static refreshStoreData = (
+    dataPackage: AppState
+  ): { type: CommonActions; payload: AppState } => {
     return {
       type: CommonActions.REFRESH_STOREDATA,
       payload: dataPackage
