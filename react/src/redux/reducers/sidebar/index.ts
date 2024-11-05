@@ -1,21 +1,27 @@
-import { WorkflowSidebarActions } from '@cfRedux/types/enumActions'
 import { createReducer } from '@reduxjs/toolkit'
 
-import { SET_EDIT } from './actions'
+import { SidebarChangeTab, SidebarCollapse, SidebarEdit } from './actions'
 import { SidebarState } from './types'
 
-const initialState: Partial<SidebarState> = {
+const initialState: SidebarState = {
   collapsed: true,
+  tab: null,
   edit: {}
 }
 
 const sidebarReducer = createReducer(initialState, (builder) => {
-  builder.addCase(SET_EDIT, (state, action) => {
+  builder.addCase(SidebarCollapse, (state) => {
+    state.tab = null
+    state.collapsed = true
+  })
+
+  builder.addCase(SidebarEdit, (state, action) => {
     state.edit = action.payload
   })
 
-  builder.addCase(WorkflowSidebarActions.TOGGLE, (state) => {
-    state.collapsed = !state.collapsed
+  builder.addCase(SidebarChangeTab, (state, action) => {
+    state.tab = action.payload.tab
+    state.collapsed = action.payload.collapsed
   })
 })
 

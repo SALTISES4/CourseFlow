@@ -8,11 +8,6 @@ import { PartForm } from '../../components/EditTab/components/EditPart/types'
 import { TermForm } from '../../components/EditTab/components/EditTerm/types'
 import { WeekForm } from '../../components/EditTab/components/EditWeek/types'
 
-export type EditablePropsType = {
-  type: EditableType | null
-  data: EditableDataType<EditableType> | null
-}
-
 export enum EditableType {
   TERM = 'editable_term',
   WEEK = CfObjectType.WEEK,

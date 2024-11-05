@@ -126,7 +126,8 @@ export enum OutcomeHorizontalLinkActions {
   UPDATE_DEGREE = 'outcomehorizontallink/updateDegree'
 }
 
-export enum WorkflowSidebarActions {
-  SET_EDIT = 'sidebar/set/edit',
-  TOGGLE = 'sidebar/toggle'
+export enum SidebarActions {
+  COLLAPSE = 'sidebar/collapse',
+  EDIT = 'sidebar/edit',
+  CHANGE_TAB = 'sidebar/changeTab'
 }

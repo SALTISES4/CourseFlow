@@ -1,5 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
-import { SET_EDIT } from '@cfRedux/reducers/sidebar/actions'
+import { SidebarEdit } from '@cfRedux/reducers/sidebar/actions'
 import store from '@cfRedux/store'
 
 // thin wrapper around ActionCreator.sidebarUpdate
@@ -13,7 +13,7 @@ import store from '@cfRedux/store'
 
 class BetterSelectionManager {
   updateSidebar(id: number, objectType: CfObjectType, parentId?: number) {
-    store.dispatch(SET_EDIT({ id, objectType, parentId }))
+    store.dispatch(SidebarEdit({ id, parentId, objectType }))
   }
 }
 

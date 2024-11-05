@@ -5,7 +5,9 @@ import { produce } from 'immer'
 import { Fragment, useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import data from './data'
 import { StyledRestorableBlock } from './styles'
+import { RestorableBlock, RestoreTabType } from './types'
 import {
   GroupWrap,
   SidebarActions,
@@ -13,7 +15,6 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '../../styles'
-import { RestorableBlock, SidebarDataType } from '../../types'
 
 type RestorableBlockType = {
   group: number
@@ -21,7 +22,7 @@ type RestorableBlockType = {
 }
 
 function getRestoreItems(
-  data: SidebarDataType['restore']['groups'],
+  data: RestoreTabType['groups'],
   items: RestorableBlockType[]
 ) {
   const found: RestorableBlock[] = []
@@ -35,7 +36,8 @@ function getRestoreItems(
   return found
 }
 
-const RestoreTab = ({ title, groups }: SidebarDataType['restore']) => {
+const RestoreTab = () => {
+  const { title, groups } = data
   const [restoreGroups, setRestoreGroups] = useState(groups ?? [])
   const [selected, setSelected] = useState<RestorableBlockType[]>([])
 
