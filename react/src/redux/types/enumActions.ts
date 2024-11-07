@@ -134,4 +134,10 @@ export enum ReduxSlice {
   WEEK = 'week',
   COLUMN = 'column',
   WORKFLOW = 'workflow'
+  }
+
+export enum SidebarActions {
+  COLLAPSE = 'sidebar/collapse',
+  EDIT = 'sidebar/edit',
+  CHANGE_TAB = 'sidebar/changeTab'
 }

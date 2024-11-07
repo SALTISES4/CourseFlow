@@ -1,42 +1,69 @@
 import Alert from '@cfComponents/UIPrimitives/Alert'
 
 import EditNode from './components/EditNode'
-import { NodeForm } from './components/EditNode/types'
 import EditNodeCategory from './components/EditNodeCategory'
-import { NodeCategoryForm } from './components/EditNodeCategory/types'
 import EditNodeLink from './components/EditNodeLink'
-import { NodeLinkForm } from './components/EditNodeLink/types'
 import EditOutcome from './components/EditOutcome'
-import { OutcomeForm } from './components/EditOutcome/types'
 import EditPart from './components/EditPart'
-import { PartForm } from './components/EditPart/types'
 import EditTerm from './components/EditTerm'
-import { TermForm } from './components/EditTerm/types'
 import EditWeek from './components/EditWeek'
-import { WeekForm } from './components/EditWeek/types'
-import { EditablePropsType, EditableType } from '../../hooks/useEditable/types'
+import { EditableType } from '../../hooks/useEditable/types'
 
-const EditTab = ({ type, data }: EditablePropsType) => {
+const EditTab = ({ type }: { type: EditableType }) => {
   if (!type) {
     return null
   }
 
   switch (type) {
     case EditableType.TERM:
-      // note this should be a generic or typeguard
-      return <EditTerm {...(data as TermForm)} />
+      return (
+        <div>
+          <h2>EditableType.TERM</h2>
+        </div>
+      )
+    // return <EditTerm {...(data as TermForm)} />
     case EditableType.WEEK:
-      return <EditWeek {...(data as WeekForm)} />
+      return (
+        <div>
+          <h2>EditableType.WEEK</h2>
+        </div>
+      )
+    // return <EditWeek {...(data as WeekForm)} />
     case EditableType.PART:
-      return <EditPart {...(data as PartForm)} />
+      return (
+        <div>
+          <h2>EditableType.PART</h2>
+        </div>
+      )
+    // return <EditPart {...(data as PartForm)} />
     case EditableType.OUTCOME:
-      return <EditOutcome {...(data as OutcomeForm)} />
+      return (
+        <div>
+          <h2>EditableType.OUTCOME</h2>
+        </div>
+      )
+    // return <EditOutcome {...(data as OutcomeForm)} />
     case EditableType.NODE_LINK:
-      return <EditNodeLink {...(data as NodeLinkForm)} />
+      return (
+        <div>
+          <h2>EditableType.NODE_LINK</h2>
+        </div>
+      )
+    // return <EditNodeLink {...(data as NodeLinkForm)} />
     case EditableType.NODE_CATEGORY:
-      return <EditNodeCategory {...(data as NodeCategoryForm)} />
+      return (
+        <div>
+          <h2>EditableType.NODE_CATEGORY</h2>
+        </div>
+      )
+    // return <EditNodeCategory {...(data as NodeCategoryForm)} />
     case EditableType.NODE:
-      return <EditNode {...(data as NodeForm)} />
+      return (
+        <div>
+          <h2>EditableType.NODE</h2>
+        </div>
+      )
+    // return <EditNode {...(data as NodeForm)} />
     default:
       return (
         <Alert

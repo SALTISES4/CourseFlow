@@ -1,9 +1,12 @@
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import ActionCreator from '@cfRedux/ActionCreator'
-import sidebarSlice, { SidebarState } from '@cfRedux/reducers/sidebar/sidebar'
+import { SidebarEdit } from '@cfRedux/reducers/sidebar/actions'
+import store from '@cfRedux/store'
 import { AnyAction } from '@reduxjs/toolkit'
-import { Action, Dispatch } from 'redux'
+import { Dispatch } from 'redux'
+
+
 
 // thin wrapper around dipachtchers
 // this started as the successor to selection manager
@@ -16,8 +19,6 @@ import { Action, Dispatch } from 'redux'
 // we can decide if it needs to take on more responsibility later but
 // most likely it will be replaced by hooks and composition
 
-type SetSidebarAction = ReturnType<typeof sidebarSlice.actions.set>
-
 class BetterSelectionManager {
   dispatch: Dispatch<AnyAction>
 
@@ -26,13 +27,7 @@ class BetterSelectionManager {
   }
 
   updateSidebar(id: number, objectType: CfObjectType, parentId?: number) {
-    const payload: SidebarState = {
-      id,
-      objectType,
-      parentId: parentId || null
-    }
-    const action = sidebarSlice.actions.set(payload)
-    this.dispatch(action)
+    store.dispatch(SidebarEdit({ id, parentId, objectType }))
   }
 
   toggleDropReduxAction({

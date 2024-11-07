@@ -12,6 +12,22 @@ import {
 } from '../../../../styles'
 import SaveAsTemplate from '../SaveAsTemplate'
 
+// const getNodeData = () => {
+//   // figure out the node type
+//   const type = EditableType.WEEK
+
+//   // return the correct form shape for the corresponding node
+//   const data: EditableDataType<typeof type> = {
+//     title: 'hello',
+//     strategy: 1
+//   }
+
+//   return {
+//     type,
+//     data
+//   }
+// }
+
 const EditWeek = ({ title }: WeekForm) => {
   const [state, setState] = useState({
     title,

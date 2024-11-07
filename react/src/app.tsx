@@ -2,10 +2,7 @@
 import createCache from '@emotion/cache'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
-import { configureStore } from '@reduxjs/toolkit'
-import { cfApi } from '@XMLHTTP/API/api'
 import { SnackbarProvider } from 'notistack'
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { RouterProvider } from 'react-router-dom'
@@ -16,11 +13,11 @@ import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
 import UserProvider from '@cf/context/userContext'
-import { rootSidebarReducers, rootWorkflowReducers } from '@cfRedux/Reducers'
 import { SidebarRootStyles } from '@cfComponents/globalNav/Sidebar/styles'
 import { CacheProvider } from '@emotion/react'
 
 import theme from './mui/theme'
+import store from './redux/store'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -64,20 +61,6 @@ const cache = createCache({
 
 const rootElement = document.getElementById('root')
 const root = ReactDOM.createRoot(rootElement)
-const store = configureStore({
-  reducer: {
-    // workflow: Reducers.rootWorkflowReducer,
-    // outcome: Reducers.rootOutcomeReducer,
-    ...rootWorkflowReducers,
-    ...rootSidebarReducers,
-    [cfApi.reducerPath]: cfApi.reducer
-  },
-  devTools: process.env.NODE_ENV !== 'production', // Enable Redux DevTools only in non-production environments
-  // Adding the api middleware enables caching, invalidation, polling,
-  // and other useful features of `rtk-query`.
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(cfApi.middleware)
-})
 
 root.render(
   <Provider store={store}>

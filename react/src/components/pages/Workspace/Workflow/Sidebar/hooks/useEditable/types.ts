@@ -1,3 +1,5 @@
+import { CfObjectType } from '@cf/types/enum'
+
 import { NodeForm } from '../../components/EditTab/components/EditNode/types'
 import { NodeCategoryForm } from '../../components/EditTab/components/EditNodeCategory/types'
 import { NodeLinkForm } from '../../components/EditTab/components/EditNodeLink/types'
@@ -6,18 +8,13 @@ import { PartForm } from '../../components/EditTab/components/EditPart/types'
 import { TermForm } from '../../components/EditTab/components/EditTerm/types'
 import { WeekForm } from '../../components/EditTab/components/EditWeek/types'
 
-export type EditablePropsType = {
-  type: EditableType | null
-  data: EditableDataType<EditableType> | null
-}
-
 export enum EditableType {
   TERM = 'editable_term',
-  WEEK = 'editable_week',
+  WEEK = CfObjectType.WEEK,
   PART = 'editable_part',
-  OUTCOME = 'editable_outcome',
-  NODE = 'editable_node',
-  NODE_LINK = 'editable_node_link',
+  OUTCOME = CfObjectType.OUTCOME,
+  NODE = CfObjectType.NODE,
+  NODE_LINK = CfObjectType.NODELINK,
   NODE_CATEGORY = 'editable_node_category'
 }
 
