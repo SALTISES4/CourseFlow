@@ -1,8 +1,5 @@
 @import './utility/variables';
 
-#site {
-  background: $color-body-bg;
-}
 
 button,
 input[type="submit"] {
@@ -274,29 +271,7 @@ input[type="submit"] {
   border-radius: 5px;
 }
 
-.column-line div {
-  display: inline-block;
-  vertical-align: middle;
-  width: calc(100% - 32px);
-  padding: 2px;
-  box-sizing: border-box;
-  white-space: normal;
-}
 
-.column-line img {
-  display: inline-block;
-  width: 32px;
-  vertical-align: middle;
-  padding: 2px;
-  box-sizing: border-box;
-}
-
-
-
-.column-line {
-  min-height: 32px;
-  white-space: nowrap;
-}
 
 .column-row {
   padding-left: 40px;

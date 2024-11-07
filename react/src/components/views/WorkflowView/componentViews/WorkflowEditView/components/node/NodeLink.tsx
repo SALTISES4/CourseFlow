@@ -15,7 +15,7 @@ import { Action } from 'redux'
 type ConnectedProps = TGetNodeLinkById
 type OwnProps = {
   objectId: number
-  parentId: number
+//  parentId: number @todo no sure ?
   nodeDiv: React.RefObject<HTMLDivElement>
 } & { dispatch?: Dispatch<Action> }
 type StateProps = {}

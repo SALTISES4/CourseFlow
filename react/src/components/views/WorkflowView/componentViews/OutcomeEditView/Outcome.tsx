@@ -14,7 +14,7 @@ import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { Dispatch } from '@reduxjs/toolkit'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
@@ -351,7 +351,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
               }}
             >
               <div className="outcome-drop-img">
-                <ArrowDropDownCircleIcon />
+                <ArrowDropDownIcon />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
             </div>

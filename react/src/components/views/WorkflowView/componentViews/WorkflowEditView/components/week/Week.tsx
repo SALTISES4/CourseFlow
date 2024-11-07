@@ -14,7 +14,8 @@ import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWeek'
-import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import { Dispatch } from '@reduxjs/toolkit'
 import { addStrategyQuery } from '@XMLHTTP/API/create'
 import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
@@ -253,7 +254,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     const defaultText = !this.props.workflow.isStrategy
       ? data.weekTypeDisplay + ' ' + (this.props.rank + 1)
       : undefined
-    const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
 
     // there's a helper function for this
     const style: React.CSSProperties = {
@@ -262,13 +262,13 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
     // @todo this will go when the new sidebar is done
     // const portal = this.addEditable(data)
-
+    const dropIcon = data.isDropped ? (
+      <ArrowDropDownIcon />
+    ) : (
+      <ArrowDropUpIcon />
+    )
     return (
       <>
-        {/*{*/}
-        {/*  // @todo this will go when the new sidebar is done*/}
-        {/*  portal*/}
-        {/*}*/}
         <div
           style={style}
           className={cssClasses}
@@ -318,17 +318,17 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
               })
             }}
           >
-            <div className="node-drop-side node-drop-left" />
-            <div className="node-drop-middle">
-              <ArrowDropDownCircleIcon />
+            <div
+              style={{
+                textAlign: 'center',
+                width: '100%',
+                height: '100%'
+              }}
+            >
+              {dropIcon}
             </div>
-            <div className="node-drop-side node-drop-right" />
           </div>
-          {
-            // @ts-ignore
-            // this.addEditable(data)
-          }
-          {/*// @todo verify this*/}
+
           {data.strategyClassification > 0 && (
             <div className="strategy-tab">
               <div className="strategy-tab-triangle" />

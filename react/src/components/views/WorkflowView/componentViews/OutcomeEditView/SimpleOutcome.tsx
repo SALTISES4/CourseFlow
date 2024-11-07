@@ -8,7 +8,8 @@ import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { Dispatch } from '@reduxjs/toolkit'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -178,7 +179,7 @@ export class SimpleOutcomeUnconnected extends React.Component<
           {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
-                 <ArrowDropDownCircleIcon />
+                 <ArrowDropDownIcon />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
             </div>

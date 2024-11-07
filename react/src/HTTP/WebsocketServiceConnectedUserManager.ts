@@ -64,7 +64,7 @@ class WebSocketServiceConnectedUserManager {
 
     const payLoad = {
       user: this.currenUser,
-      userColour: ThemeHelper.calcColor(this.currenUser.id),
+      userColour: ThemeHelper.generateColorFromIntToHex(this.currenUser.id),
       connected: connected
     }
 

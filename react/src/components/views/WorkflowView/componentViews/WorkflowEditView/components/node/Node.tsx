@@ -20,9 +20,11 @@ import OutcomeNode from '@cfViews/common/OutcomeNode'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
 import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
-import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import { Dispatch } from '@reduxjs/toolkit'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
+import clsx from 'clsx'
 import * as React from 'react'
 import { useState } from 'react'
 import * as reactDom from 'react-dom'
@@ -230,6 +232,107 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
     })
   }
 
+  ContextIcon = () => {
+    const data = this.props.node.data
+    if (data.contextClassification <= 0) {
+      return <></>
+    }
+
+    return (
+      <div className="node-icon">
+        <img
+          title={
+            choices.contextChoices.find(
+              (obj) => obj.type == data.contextClassification
+            ).name
+          }
+          src={
+            apiPaths.external.static_assets.icon +
+            Constants.contextKeys[data.contextClassification] +
+            '.svg'
+          }
+        />
+      </div>
+    )
+  }
+
+  TaskIcon = () => {
+    const data = this.props.node.data
+    if (data.taskClassification <= 0) {
+      return <></>
+    }
+
+    return (
+      <div className="node-icon">
+        <img
+          title={
+            choices.taskChoices.find(
+              (obj) => obj.type === data.taskClassification
+            )?.name
+          }
+          src={
+            apiPaths.external.static_assets.icon +
+            Constants.taskKeys[data.taskClassification] +
+            '.svg'
+          }
+        />
+      </div>
+    )
+  }
+
+  OutcomeNodes = () => {
+    const data = this.props.node.data
+
+    if (!this.state.showOutcomes) {
+      return <></>
+    }
+
+    return (
+      <div
+        className={'outcome-node-container column-' + data.column}
+        onMouseLeave={() => {
+          this.setState({ showOutcomes: false })
+        }}
+        style={{
+          borderColor: Constants.getColumnColour({
+            columnType: this.props.node.column.columnType,
+            colour: this.props.node.column.colour
+          })
+        }}
+      >
+        {data.outcomenodeUniqueSet.map((outcomenode) => (
+          <OutcomeNode key={outcomenode} objectId={outcomenode} />
+        ))}
+      </div>
+    )
+  }
+
+  SideActions = () => {
+    const data = this.props.node.data
+
+    if (data.outcomenodeUniqueSet.length <= 0) {
+      return <></>
+    }
+    return (
+      <div className="outcome-node-indicator">
+        <div
+          className={'outcome-node-indicator-number column-' + data.column}
+          onMouseEnter={() => {
+            this.setState({ showOutcomes: true })
+          }}
+          style={{
+            borderColor: Constants.getColumnColour({
+              columnType: this.props.node.column.columnType,
+              colour: this.props.node.column.colour
+            })
+          }}
+        >
+          {data.outcomenodeUniqueSet.length}
+        </div>
+        <this.OutcomeNodes />
+      </div>
+    )
+  }
 
   /*******************************************************
    * RENDER
@@ -238,16 +341,29 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
     let nodePorts
     let nodeLinks
     let autoLink
-    let outcomenodes
-    let lefticon
-    let righticon
     let linkIcon
-    const sideActions = []
 
     const data = this.props.node.data
-    const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
+    const dropIcon = data.isDropped ? (
+      <ArrowDropDownIcon />
+    ) : (
+      <ArrowDropUpIcon />
+    )
     let linkText = _t('Visit workflow')
     let linkClass = 'linked-workflow'
+
+    function dropText(dataOverride) {
+      if (
+        dataOverride.description &&
+        dataOverride.description.replace(
+          /(<p>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
+          ''
+        ) != ''
+      ) {
+        return '...'
+      }
+      return ''
+    }
 
     const dataOverride = data.representsWorkflow
       ? { ...data, ...data.linkedWorkflowData, id: data.id }
@@ -272,87 +388,6 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
           <AutoLink nodeId={this.props.objectId} nodeDiv={this.mainDiv} />
         )
       }
-    }
-
-    if (this.state.showOutcomes) {
-      outcomenodes = (
-        <div
-          className={'outcome-node-container column-' + data.column}
-          onMouseLeave={() => {
-            this.setState({ showOutcomes: false })
-          }}
-          style={{
-            borderColor: Constants.getColumnColour({
-              columnType: this.props.node.column.columnType,
-              colour: this.props.node.column.colour
-            })
-          }}
-        >
-          {data.outcomenodeUniqueSet.map((outcomenode) => (
-            <OutcomeNode key={outcomenode} objectId={outcomenode} />
-          ))}
-        </div>
-      )
-    }
-
-    if (data.outcomenodeUniqueSet.length > 0) {
-      sideActions.push(
-        <div className="outcome-node-indicator">
-          <div
-            className={'outcome-node-indicator-number column-' + data.column}
-            onMouseEnter={() => {
-              this.setState({ showOutcomes: true })
-            }}
-            style={{
-              borderColor: Constants.getColumnColour({
-                columnType: this.props.node.column.columnType,
-                colour: this.props.node.column.colour
-              })
-            }}
-          >
-            {data.outcomenodeUniqueSet.length}
-          </div>
-          {outcomenodes}
-        </div>
-      )
-    }
-
-    if (data.contextClassification > 0) {
-      lefticon = (
-        <div className="node-icon">
-          <img
-            title={
-              choices.contextChoices.find(
-                (obj) => obj.type == data.contextClassification
-              ).name
-            }
-            src={
-              apiPaths.external.static_assets.icon +
-              Constants.contextKeys[data.contextClassification] +
-              '.svg'
-            }
-          />
-        </div>
-      )
-    }
-
-    if (data.taskClassification > 0) {
-      righticon = (
-        <div className="node-icon">
-          <img
-            title={
-              choices.taskChoices.find(
-                (obj) => obj.type == data.taskClassification
-              ).name
-            }
-            src={
-              apiPaths.external.static_assets.icon +
-              Constants.taskKeys[data.taskClassification] +
-              '.svg'
-            }
-          />
-        </div>
-      )
     }
 
     let clickfunc = this.doubleClick.bind(this)
@@ -383,23 +418,11 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
       )
     }
 
-    let dropText = ''
-    if (
-      dataOverride.description &&
-      dataOverride.description.replace(
-        /(<p>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
-        ''
-      ) != ''
-    ) {
-      dropText = '...'
-    }
-    const titleText = <NodeTitle node={data} />
-
     const style: React.CSSProperties = {
       left:
         Constants.columnwidth * this.props.columnOrder.indexOf(data.column) +
         'px',
-      backgroundColor: Constants.getColumnColour({
+      backgroundColor: ThemeHelper.getColumnColour({
         columnType: this.props.node.column.columnType,
         colour: this.props.node.column.colour
       })
@@ -413,19 +436,20 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
       style.display = 'none'
     }
 
-    const cssClass = [
-      'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],
-      data.isDropped ? 'dropped' : '',
-      data.lock ? 'locked locked-' + data.lock.userId : ''
-    ].join(' ')
-
     return (
       <>
-        {/*{this.addEditable(dataOverride)}*/}
         <div
           id={String(data.id)}
           style={style}
-          className={`${cssClass} wtf`}
+          className={clsx(
+            'node',
+            `column-${data.column}`,
+            Constants.nodeKeys[data.nodeType],
+            {
+              dropped: data.isDropped,
+              [`locked locked-${data.lock?.userId}`]: data.lock
+            }
+          )}
           ref={this.mainDiv}
           // @todo we probably this shuld go through redux also
           // that way we select a UI item 'remotely'
@@ -441,9 +465,9 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
           }}
         >
           <div className="node-top-row">
-            {lefticon}
-            {titleText}
-            {righticon}
+            <this.ContextIcon />
+            <NodeTitle node={data} />
+            <this.TaskIcon />
           </div>
           {linkIcon}
 
@@ -466,10 +490,12 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
               })
             }}
           >
-            <div className="node-drop-side node-drop-left">{dropText}</div>
-            <div className="node-drop-middle">
-             <ArrowDropDownCircleIcon />
+            <div className="node-drop-side node-drop-left">
+              {dropText(dataOverride)}
             </div>
+
+            <div className="node-drop-middle">{dropIcon}</div>
+
             <div className="node-drop-side node-drop-right">
               <div className="node-drop-time">
                 {dataOverride.timeRequired &&
@@ -492,7 +518,7 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
           {nodeLinks}
           {autoLink}
           <div className="side-actions">
-            {sideActions}
+            <this.SideActions />
             <div className="comment-indicator-container"></div>
             <div className="assignment-indicator-container"></div>
           </div>

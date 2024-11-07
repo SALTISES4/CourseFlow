@@ -1,7 +1,7 @@
-import { CfObjectType } from '@cf/types/enum'
 import { TGetNodeWeekById, getNodeWeekByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import Node from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Node'
+import clsx from 'clsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -20,7 +20,6 @@ type PropsType = ConnectedProps & OwnProps
  * this should not exist...
  */
 class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
-
   constructor(props) {
     super(props)
   }
@@ -30,14 +29,12 @@ class NodeWeekUnconnected<P extends PropsType> extends React.Component<P> {
    *******************************************************/
   render() {
     const data = this.props.data
-    let myClass = 'node-week'
-    if (data.noDrag) {
-      myClass += ' no-drag'
-    }
 
     return (
       <div
-        className={myClass}
+        className={clsx('node-week', {
+          'no-drag': data.noDrag
+        })}
         id={data.id}
         data-child-id={data.node}
         data-column-id={this.props.column}

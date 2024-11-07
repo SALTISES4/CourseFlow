@@ -1,8 +1,7 @@
+import { defaultColumnSettings } from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 
 class ThemeHelper {
-  static calcColor = (id: number) =>
-    'hsl(' + (((id * 5) % 360) + 1) + ', 50%, 50%)'
   /*******************************************************
    * STRINGS
    *******************************************************/
@@ -58,8 +57,8 @@ class ThemeHelper {
     return `${fName}${lName}`
   }
 
-  static capFirst(str) {
-    return str[0].toUpperCase() + str.substr(1)
+  static capFirst(str: string) {
+    return str[0].toUpperCase() + str.slice(1)
   }
 
   /**
@@ -93,7 +92,7 @@ class ThemeHelper {
       .split(',')
   }
 
-  static getElementOffset(element) {
+  static getElementOffset(element: HTMLElement): { top: number; left: number } {
     const rect = element.getBoundingClientRect()
     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop
@@ -160,6 +159,62 @@ class ThemeHelper {
     nodeOffset.top -= canvasOffset.top
 
     return nodeOffset
+  }
+
+  /*******************************************************
+   * COLOUR FORMATS, VALUES AND CONVERSIONS
+   *******************************************************/
+
+  /*******************************************************
+   * this method randomly creates a colour based on the user ID
+   * it probably shouldn't be in the frontemd
+   *******************************************************/
+
+  /**
+   * Get the colour from a column
+   **/
+  static getColumnColour({
+    columnType,
+    colour
+  }: {
+    columnType: number
+    colour?: number
+  }): string {
+    if (colour) {
+      return ThemeHelper.decimalToHex(colour)
+    }
+
+    return defaultColumnSettings[columnType].colour
+  }
+
+  static generateColorFromIntToHex(id: number) {
+    // Use a large prime here to avoid having modulo 0
+    const hue = (id * 41) % 360
+
+    // Set saturation and lightness to fixed values
+    const saturation = 50
+    const lightness = 50
+
+    return this.hslToHex(hue, saturation, lightness)
+  }
+
+  static hexToDecimal() {}
+
+  static decimalToHex(val: number): string {
+    return '#' + ('000000' + val?.toString(16)).slice(-6)
+  }
+
+  static hslToHex(h, s, l) {
+    l /= 100
+    const a = (s * Math.min(l, 1 - l)) / 100
+    const f = (n) => {
+      const k = (n + h / 30) % 12
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+      return Math.round(255 * color)
+        .toString(16)
+        .padStart(2, '0') // convert to Hex and prefix "0" if needed
+    }
+    return `#${f(0)}${f(8)}${f(4)}`
   }
 }
 

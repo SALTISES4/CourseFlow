@@ -761,7 +761,7 @@ class EditableComponent<
           buttonIcon={<AddCommentIcon />}
           buttonClass="comment-button"
           titleText={_t('Comments')}
-          handleClick={this.commentClick.bind(this)}
+          onClickHandler={this.commentClick.bind(this)}
         />
         {/*
 

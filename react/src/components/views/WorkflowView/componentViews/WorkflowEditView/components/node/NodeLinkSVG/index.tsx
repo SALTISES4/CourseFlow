@@ -104,7 +104,7 @@ class NodeLinkSVG extends React.Component<PropsType, State> {
       return {
         ...this.props.style,
         // current user's color
-        stroke: ThemeHelper.calcColor(10), // maybe get the user id here, we'll see...
+        stroke: ThemeHelper.generateColorFromIntToHex(10), // maybe get the user id here, we'll see...
         opacity: 0.4
       }
     }
@@ -112,7 +112,7 @@ class NodeLinkSVG extends React.Component<PropsType, State> {
     if (this.props.selected) {
       return {
         ...this.props.style,
-        stroke: ThemeHelper.calcColor(10),// maybe get the user id here, we'll see...
+        stroke: ThemeHelper.generateColorFromIntToHex(10),// maybe get the user id here, we'll see...
         opacity: 1
       }
     }

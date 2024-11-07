@@ -10,7 +10,7 @@ import {
   WeekUnconnected,
   WeekUnconnectedPropsType
 } from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/Week'
-import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle'
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -168,7 +168,7 @@ class Term extends WeekUnconnected<PropsType> {
           >
             <div className="node-drop-side node-drop-left"></div>
             <div className="node-drop-middle">
-              <ArrowDropDownCircleIcon />
+              <ArrowDropDownIcon />
             </div>
             <div className="node-drop-side node-drop-right"></div>
           </div>

@@ -11,6 +11,35 @@ class Utility {
   /*******************************************************
    * ARRAYS / OBJECTS
    *******************************************************/
+
+  /**
+   * @replaceEmptyStringsWithNull
+   **/
+  static replaceEmptyStringsWithNull(obj: any): any {
+    // Check if the object is an array
+    if (Array.isArray(obj)) {
+      return obj.map(Utility.replaceEmptyStringsWithNull)
+    }
+
+    // Check if the object is not null and is an object
+    if (obj !== null && typeof obj === 'object') {
+      return Object.keys(obj).reduce(
+        (acc, key) => {
+          const value = obj[key]
+
+          // Recursively apply for nested objects or arrays
+          acc[key] = Utility.replaceEmptyStringsWithNull(value)
+
+          return acc
+        },
+        {} as { [key: string]: any }
+      )
+    }
+
+    // Replace empty string with null
+    return obj === '' ? null : obj
+  }
+  
   /**
    * take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
    * @param objectList
@@ -202,34 +231,6 @@ class Utility {
         break
     }
     return CFRoutes.HOME
-  }
-
-  /**
-   * @replaceEmptyStringsWithNull
-   **/
-  static replaceEmptyStringsWithNull(obj: any): any {
-    // Check if the object is an array
-    if (Array.isArray(obj)) {
-      return obj.map(Utility.replaceEmptyStringsWithNull)
-    }
-
-    // Check if the object is not null and is an object
-    if (obj !== null && typeof obj === 'object') {
-      return Object.keys(obj).reduce(
-        (acc, key) => {
-          const value = obj[key]
-
-          // Recursively apply for nested objects or arrays
-          acc[key] = Utility.replaceEmptyStringsWithNull(value)
-
-          return acc
-        },
-        {} as { [key: string]: any }
-      )
-    }
-
-    // Replace empty string with null
-    return obj === '' ? null : obj
   }
 
   static logger(...data: any[]) {

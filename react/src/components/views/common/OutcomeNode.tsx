@@ -119,7 +119,7 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
         buttonIcon={<DeleteIcon />}
         buttonClass="delete-self-button"
         titleText={_t('Delete')}
-        handleClick={this.deleteSelf.bind(this, data)}
+        onClickHandler={this.deleteSelf.bind(this, data)}
       />
     )
   }
