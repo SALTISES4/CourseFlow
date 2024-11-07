@@ -38,8 +38,8 @@ export type CfLock = {
   userId: number
   objectId: number
   expires: number
-  userColour: string
-  lock: boolean
+  userColour?: string
+  lock?: boolean
   objectType: CfObjectType
 }
 

@@ -1,5 +1,6 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import EditableComponent, {
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
@@ -107,15 +108,17 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
   render() {
     const data = this.props.data
 
-    const style: React.CSSProperties = {
-      border: data.lock ? '2px solid ' + data.lock.userColour : undefined // @todo not sure what the best default state is for this
-    }
-
     //     const portal = this.addEditable(data, true)
     return (
       <>
         {/*        {portal}*/}
-        <div className="workflow-header" style={style}>
+        <div
+          className="workflow-header"
+          style={ThemeHelper.getBorderStyle({
+            isLocked: data.lock?.lock,
+            colour: data.lock.userColour
+          })}
+        >
           {/*<WorkflowCard*/}
           {/*  workflowData={data}*/}
           {/*  selectAction={this.openEdit.bind(this, null)}*/}

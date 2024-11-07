@@ -12,14 +12,23 @@ type PropsType = {
   nodeId: number
   dispatch: Dispatch<Action>
   nodeDiv: React.RefObject<HTMLDivElement>
+  show: boolean
 }
 type StateType = NodeDom
 
 export class NodePorts extends React.Component<PropsType, StateType> {
-  private positioned: boolean
   constructor(props: PropsType) {
     super(props)
-    this.state = {} as StateType
+    this.state = {
+      nodeOffset: {
+        top: 0,
+        left: 0
+      },
+      nodeDimensions: {
+        height: 0,
+        width: 0
+      }
+    }
   }
 
   componentDidUpdate() {
@@ -149,26 +158,11 @@ export class NodePorts extends React.Component<PropsType, StateType> {
       }
     }
 
-    const style = {}
-    if ($(this.props.nodeDiv.current).css('display') == 'none') {
-      style['display'] = 'none'
-    }
-
-    let transform
-    if (this.state.nodeOffset) {
-      transform =
-        'translate(' +
-        this.state.nodeOffset.left +
-        ',' +
-        this.state.nodeOffset.top +
-        ')'
-    } else {
-      transform = 'translate(0,0)'
-    }
+    const transform = `translate(${this.state.nodeOffset.left}, ${this.state.nodeOffset.top})`
 
     return (
       <g
-        style={style}
+        style={{ visibility: this.props.show ? 'visible' : 'hidden' }}
         className={'node-ports port-' + this.props.nodeId}
         stroke="black"
         strokeWidth="2"

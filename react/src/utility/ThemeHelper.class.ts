@@ -92,7 +92,7 @@ class ThemeHelper {
       .split(',')
   }
 
-  static getElementOffset(element: HTMLElement): { top: number; left: number } {
+  static getElementOffset(element: HTMLElement | Element): { top: number; left: number } {
     const rect = element.getBoundingClientRect()
     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop

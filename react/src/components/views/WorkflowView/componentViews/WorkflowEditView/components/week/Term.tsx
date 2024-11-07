@@ -1,6 +1,7 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import { TTermByID, getTermById } from '@cfFindState'
@@ -107,18 +108,15 @@ class Term extends WeekUnconnected<PropsType> {
     // if (data.lock) cssClass += ' locked locked-' + data.lock.userId
     //    if (data.isDropped) cssClass += ' dropped'
 
-    const style = {
-      border: data.lock ? '2px solid ' + data.lock.userColour : undefined
-    }
-
-    const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
-
     return (
       <>
         {/*{this.addEditable(data)}*/}
 
         <div
-          style={style}
+          style={ThemeHelper.getBorderStyle({
+            isLocked: data.lock.lock,
+            colour: data.lock.userColour
+          })}
           className={cssClasses}
           ref={this.mainDiv}
           onClick={(e) => {

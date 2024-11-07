@@ -255,13 +255,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       ? data.weekTypeDisplay + ' ' + (this.props.rank + 1)
       : undefined
 
-    // there's a helper function for this
-    const style: React.CSSProperties = {
-      border: data.lock ? '2px solid ' + data.lock.userColour : undefined
-    }
-
-    // @todo this will go when the new sidebar is done
-    // const portal = this.addEditable(data)
     const dropIcon = data.isDropped ? (
       <ArrowDropDownIcon />
     ) : (
@@ -270,7 +263,10 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     return (
       <>
         <div
-          style={style}
+          style={ThemeHelper.getBorderStyle({
+            isLocked: data.lock?.lock,
+            colour: data.lock?.userColour
+          })}
           className={cssClasses}
           ref={this.mainDiv}
           onClick={(e) => {

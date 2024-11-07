@@ -1725,11 +1725,11 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
 }
 
 .workflow-canvas circle {
-  visibility: hidden;
+  // visibility: hidden;
 }
 
 circle.mouseover {
-  visibility: visible;
+ // visibility: visible;
 }
 
 .workflow-canvas.dragging-weekworkflow {

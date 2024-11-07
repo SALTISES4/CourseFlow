@@ -5,14 +5,7 @@ import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import CommentBox from '@cfEditableComponents/components/CommentBox'
-import {
-  AddCommentingButton,
-  DeleteSelfButton,
-  DuplicateSelfButton,
-  HoverMenu,
-  InsertSiblingButton
-} from '@cfEditableComponents/hoverEditActions'
+import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
@@ -26,7 +19,6 @@ import { Dispatch } from '@reduxjs/toolkit'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import clsx from 'clsx'
 import * as React from 'react'
-import { useState } from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
 import { Action } from 'redux'
@@ -73,7 +65,8 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
 
     this.state = {
       initialRender: true,
-      showOutcomes: false
+      showOutcomes: false,
+      hovered: false
     } as StateProps
   }
 
@@ -90,7 +83,11 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
     this.makeDroppable()
     this.updateHidden()
 
-    this.mainDiv.current.addEventListener('mouseenter', this.mouseIn.bind(this))
+    const component = this.mainDiv.current
+    if (component) {
+      component.addEventListener('mouseenter', this.mouseIn.bind(this))
+      component.addEventListener('mouseleave', this.mouseLeave.bind(this))
+    }
     this.mainDiv.current.addEventListener(
       'dblclick',
       this.doubleClick.bind(this)
@@ -98,10 +95,12 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
   }
 
   componentWillUnmount() {
-    this.mainDiv.current.removeEventListener(
-      'mouseenter',
-      this.mouseIn.bind(this)
-    )
+    const component = this.mainDiv.current
+    if (component) {
+      // Unbind with native event type
+      component.removeEventListener('mouseenter', this.mouseIn.bind(this))
+      component.removeEventListener('mouseleave', this.mouseLeave.bind(this))
+    }
     this.mainDiv.current.removeEventListener(
       'dblclick',
       this.doubleClick.bind(this)
@@ -120,6 +119,7 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
+
   //WHY?: Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
   updateHidden() {
     if ($(this.mainDiv.current).css('display') == 'none') {
@@ -133,20 +133,36 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
   }
 
   updatePorts() {
-    $(this.mainDiv.current).triggerHandler('component-updated')
+    $(this.mainDiv.current).triggerHandler('component-updated') // what is for ...
   }
 
   doubleClick(evt) {
     evt.stopPropagation()
-    if (this.props.node.data.linkedWorkflow) {
-      window.open(this.props.node.data.linkedWorkflowData.url)
+    console.log('navigate to workflow')
+    // some kind of code to navigate to the referended workflow
+  }
+
+  /*******************************************************
+   * FUNCTIONS: HANDLERS
+   *******************************************************/
+
+  /*******************************************************
+   * MOUSE HOVER
+   *******************************************************/
+  mouseIn(_evt: MouseEvent): void {
+    if (!this.props.workflow.workflowPermissions.write) {
+      return
     }
+    this.setState({ hovered: true })
+  }
+
+  mouseLeave(_evt: MouseEvent): void {
+    this.setState({ hovered: false })
   }
 
   makeDroppable() {
     $(this.mainDiv.current).droppable({
       tolerance: 'pointer',
-      // @ts-ignore // droppable does not exist in type DroppableOptions
       droppable: '.outcome-ghost',
       over: (e, ui) => {
         const dropItem = $(e.target)
@@ -193,45 +209,22 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
     })
   }
 
-  mouseIn(_evt) {
-    const myComponent = this
-
-    if ($('.workflow-canvas').hasClass('creating-node-link')) {
-      return
+  dropText(dataOverride) {
+    if (
+      dataOverride.description &&
+      dataOverride.description.replace(
+        /(<p>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
+        ''
+      ) != ''
+    ) {
+      return '...'
     }
-    if (this.props.workflow.workflowPermissions.write) {
-      $(
-        "circle[data-node-id='" +
-          this.props.objectId +
-          "'][data-port-type='source']"
-      ).addClass('mouseover')
-    }
-
-    // @ts-ignore // not sure whether to import d3 directly yet
-    d3.selectAll('.node-ports').raise()
-    this.setState({
-      hovered: true
-    })
-
-    $(document).on('mousemove', function (evt) {
-      if (
-        !myComponent ||
-        !myComponent.mainDiv ||
-        ThemeHelper.mouseOutsidePadding(evt, $(myComponent.mainDiv.current), 20)
-      ) {
-        $(
-          "circle[data-node-id='" +
-            myComponent.props.objectId +
-            "'][data-port-type='source']"
-        ).removeClass('mouseover')
-        $(document).off(evt)
-        myComponent.setState({
-          hovered: false
-        })
-      }
-    })
+    return ''
   }
 
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
   ContextIcon = () => {
     const data = this.props.node.data
     if (data.contextClassification <= 0) {
@@ -294,7 +287,7 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
           this.setState({ showOutcomes: false })
         }}
         style={{
-          borderColor: Constants.getColumnColour({
+          borderColor: ThemeHelper.getColumnColour({
             columnType: this.props.node.column.columnType,
             colour: this.props.node.column.colour
           })
@@ -321,7 +314,7 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
             this.setState({ showOutcomes: true })
           }}
           style={{
-            borderColor: Constants.getColumnColour({
+            borderColor: ThemeHelper.getColumnColour({
               columnType: this.props.node.column.columnType,
               colour: this.props.node.column.colour
             })
@@ -334,61 +327,13 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
     )
   }
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    let nodePorts
-    let nodeLinks
-    let autoLink
-    let linkIcon
+  LinkIcon = ({ data }: { data: any }) => {
+    if (!data.linkedWorkflow) {
+      return <></>
+    }
 
-    const data = this.props.node.data
-    const dropIcon = data.isDropped ? (
-      <ArrowDropDownIcon />
-    ) : (
-      <ArrowDropUpIcon />
-    )
     let linkText = _t('Visit workflow')
     let linkClass = 'linked-workflow'
-
-    function dropText(dataOverride) {
-      if (
-        dataOverride.description &&
-        dataOverride.description.replace(
-          /(<p>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
-          ''
-        ) != ''
-      ) {
-        return '...'
-      }
-      return ''
-    }
-
-    const dataOverride = data.representsWorkflow
-      ? { ...data, ...data.linkedWorkflowData, id: data.id }
-      : { ...data }
-
-    if (!this.state.initialRender) {
-      // this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
-      nodePorts = reactDom.createPortal(
-        <NodePorts
-          // renderer={renderer}
-          nodeId={this.props.objectId}
-          nodeDiv={this.mainDiv}
-          dispatch={this.props.dispatch}
-        />,
-        $('.workflow-canvas')[0]
-      )
-      nodeLinks = data.outgoingLinks.map((link) => (
-        <NodeLink key={link} objectId={link} nodeDiv={this.mainDiv} />
-      ))
-      if (data.hasAutolink) {
-        autoLink = (
-          <AutoLink nodeId={this.props.objectId} nodeDiv={this.mainDiv} />
-        )
-      }
-    }
 
     let clickfunc = this.doubleClick.bind(this)
 
@@ -409,13 +354,59 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
       }
     }
 
-    if (data.linkedWorkflow) {
-      linkIcon = (
-        <div className={linkClass} onClick={clickfunc}>
-          <img src={apiPaths.external.static_assets.icon + 'wflink.svg'} />
-          <div>{linkText}</div>
-        </div>
+    return (
+      <div className={linkClass} onClick={clickfunc}>
+        <img src={apiPaths.external.static_assets.icon + 'wflink.svg'} />
+        <div>{linkText}</div>
+      </div>
+    )
+  }
+
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    let nodeLinks
+    let autoLink
+
+    const data = this.props.node.data
+    const dataOverride = data.representsWorkflow
+      ? { ...data, ...data.linkedWorkflowData, id: data.id }
+      : { ...data }
+
+    const dropIcon = data.isDropped ? (
+      <ArrowDropDownIcon />
+    ) : (
+      <ArrowDropUpIcon />
+    )
+
+    let nodePorts
+    if (!this.state.initialRender) {
+      // this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
+
+      /*******************************************************
+       *   can't figure out how to break this out of portal yet
+       *   node ports are caclucated from the beginning of the canvas  and get lost
+       *   might not be worth it to figure it out since the underlying d3 / canvas system will go at some point
+       *******************************************************/
+      nodePorts = reactDom.createPortal(
+        <NodePorts
+          show={this.state.hovered}
+          nodeId={this.props.objectId}
+          nodeDiv={this.mainDiv}
+          dispatch={this.props.dispatch}
+        />,
+        $('.workflow-canvas')[0]
       )
+
+      nodeLinks = data.outgoingLinks.map((link) => (
+        <NodeLink key={link} objectId={link} nodeDiv={this.mainDiv} />
+      ))
+      if (data.hasAutolink) {
+        autoLink = (
+          <AutoLink nodeId={this.props.objectId} nodeDiv={this.mainDiv} />
+        )
+      }
     }
 
     const style: React.CSSProperties = {
@@ -454,6 +445,7 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
           // @todo we probably this shuld go through redux also
           // that way we select a UI item 'remotely'
           // data-selected={this.state.selected}
+          //          data-hovered={this.state.hovered}
           data-hovered={this.state.hovered}
           onClick={(e) => {
             e.stopPropagation()
@@ -469,7 +461,8 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
             <NodeTitle node={data} />
             <this.TaskIcon />
           </div>
-          {linkIcon}
+
+          <this.LinkIcon data={dataOverride} />
 
           <div className="node-details">
             <TitleText
@@ -491,7 +484,7 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
             }}
           >
             <div className="node-drop-side node-drop-left">
-              {dropText(dataOverride)}
+              {this.dropText(dataOverride)}
             </div>
 
             <div className="node-drop-middle">{dropIcon}</div>
@@ -517,6 +510,7 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
           {nodePorts}
           {nodeLinks}
           {autoLink}
+
           <div className="side-actions">
             <this.SideActions />
             <div className="comment-indicator-container"></div>
