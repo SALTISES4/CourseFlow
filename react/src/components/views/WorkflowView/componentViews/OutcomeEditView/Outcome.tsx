@@ -9,20 +9,19 @@ import {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
-import {
-  DeleteSelfButton,
-  DuplicateSelfButton,
-  InsertSiblingButton
-} from '@cfEditableComponents/hoverEditActions'
+import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
+import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle'
+import { Dispatch } from '@reduxjs/toolkit'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 import OutcomeHorizontalLink from './OutcomeHorizontalLink'
 import OutcomeOutcome from './OutcomeOutcome'
@@ -36,7 +35,7 @@ type ConnectedProps = {
 type OwnProps = {
   throughParentId?: number
   showHorizontal?: boolean
-} & EditableComponentWithSortingProps
+} & EditableComponentWithSortingProps & { dispatch?: Dispatch<Action> }
 
 type StateProps = {
   showHorizontalLinks: boolean
@@ -53,6 +52,8 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
 > {
   private childrenBlock: React.RefObject<HTMLOListElement>
   private manager: BetterSelectionManager
+  private objectType: CfObjectType
+  private mainDiv: React.RefObject<HTMLDivElement>
 
   constructor(props: PropsType) {
     super(props)
@@ -65,6 +66,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     //   this.objectType = this.objectType.OUTCOME
     // }
     this.childrenBlock = React.createRef()
+    this.mainDiv = React.createRef()
   }
 
   /*******************************************************
@@ -200,40 +202,6 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
   }
 
   /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  HoverMenu = () => {
-    const mouseoverActions = []
-    if (this.props.workflow.workflowPermissions.write) {
-      mouseoverActions.push(
-        <InsertSiblingButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DuplicateSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DeleteSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-        />
-      )
-    }
-
-    if (this.props.workflow.workflowPermissions.addComments) {
-      mouseoverActions.push(<this.AddCommenting />)
-    }
-    return mouseoverActions
-  }
-
-  /*******************************************************
    * RENDER
    *******************************************************/
   render() {
@@ -242,7 +210,7 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
     let outcomehorizontallinks
     const sideActions = []
 
-    if (Utility.checkSetHidden(data, this.props.objectSets)) {
+    if (Utility.checkSetHidden(data, this.props.outcome.objectSets)) {
       return null
     }
     //Child outcomes. See comment in models/outcome.py for more info.
@@ -375,15 +343,15 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
                 evt.stopPropagation()
                 this.manager.toggleDropReduxAction({
                   objectId: this.props.objectId,
-                  objectType: Constants.objectDictionary[this.objectType] as CfObjectType,
-                  newDropState: !this.props.data?.isDropped
+                  objectType: Constants.objectDictionary[
+                    this.objectType
+                  ] as CfObjectType,
+                  newDropState: !this.props.outcome.data?.isDropped
                 })
               }}
             >
               <div className="outcome-drop-img">
-                <img
-                  src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
-                />
+                <ArrowDropDownCircleIcon />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
             </div>
@@ -417,9 +385,13 @@ class OutcomeUnconnected extends EditableComponentWithSorting<
             </div>
           )}
 
-          <div className="mouseover-actions">
-            <this.HoverMenu />
-          </div>
+          <HoverMenu
+            canWrite={this.props.workflow.workflowPermissions.write}
+            canComment={this.props.workflow.workflowPermissions.addComments}
+            objectId={this.props.objectId}
+            parentId={this.props.parentId}
+            objectType={this.objectType}
+          />
 
           <div className="side-actions">
             {sideActions}

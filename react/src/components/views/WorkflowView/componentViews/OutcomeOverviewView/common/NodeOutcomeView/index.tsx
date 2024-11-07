@@ -1,7 +1,7 @@
 import * as Constants from '@cf/utility/constants'
-import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
+import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
 import * as React from 'react'
 import { useRef } from 'react'
 import { useSelector } from 'react-redux'
@@ -10,22 +10,22 @@ type PropsType = {
   objectId?: number
 }
 
-// first off, another naming mistake
-// django calls this an outcomenode
-// second, react representations of the join tables should not exist at all
-// while this does reference 'node' data via getNodeByID
-// it doesn't render a node
-// and w/ is the difference between this and outcomenode?
+// 1. naming mistake: django calls this an outcomenode
+// 2. React representations of the join tables should not exist at all
+//    while this does reference 'node' data via getNodeByID
+//    it doesn't render a node
+//    and w/ is the difference between this and outcomenode?
 const NodeOutcomeView = ({ objectId }: PropsType) => {
-  //  const objectType = CfObjectType.NODE
-
   const mainDiv = useRef<HTMLDivElement>(null)
   const node = useSelector<AppState, TGetNodeById>((state: AppState) =>
     getNodeByID(state, objectId)
   )
 
   const style: React.CSSProperties = {
-    backgroundColor: Constants.getColumnColour(node.data.column)
+    backgroundColor: Constants.getColumnColour({
+      columnType: node.data.column,
+      colour: 1
+    })
   }
 
   const cssClasses = [
@@ -41,7 +41,7 @@ const NodeOutcomeView = ({ objectId }: PropsType) => {
     <div ref={mainDiv} className="table-cell nodewrapper">
       <div className={cssClasses} style={style} id={String(node.data.id)}>
         <div className="node-top-row">
-          <NodeTitle data={node.data} />
+          <NodeTitle node={node.data} />
         </div>
       </div>
 

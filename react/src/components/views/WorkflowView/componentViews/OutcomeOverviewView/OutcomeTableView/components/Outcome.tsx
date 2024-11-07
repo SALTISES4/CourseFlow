@@ -6,6 +6,7 @@ import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState } from '@cfRedux/types/type'
 import { toggleExpand } from '@cfRedux/utility/helpers'
+import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -270,9 +271,7 @@ export class OutcomeUnconnected<P extends PropsType, S> extends React.Component<
               }}
             >
               <div className="outcome-drop-img">
-                <img
-                  src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
-                />
+                 <ArrowDropDownCircleIcon />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
             </div>

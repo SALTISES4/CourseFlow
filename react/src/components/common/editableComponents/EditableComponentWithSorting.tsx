@@ -3,21 +3,18 @@ import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import Utility from '@cf/utility/Utility.class'
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cfEditableComponents/EditableComponent'
 import { newNodeQuery } from '@XMLHTTP/API/create'
 import * as React from 'react'
 
 // import $ from 'jquery'
 
 type OwnProps = {
-  objectId?: number
-} & EditableComponentProps
+  objectId: number
+  parentId: number
+}
 export type EditableComponentWithSortingProps = OwnProps
 
-type StateType = EditableComponentStateType
+type StateType = {}
 export type EditableComponentWithSortingState = StateType
 
 /**
@@ -26,12 +23,17 @@ export type EditableComponentWithSortingState = StateType
 class EditableComponentWithSorting<
   P extends OwnProps,
   S extends StateType
-> extends EditableComponent<P, S> {
+> extends React.Component<P, S> {
   static contextType = WorkflowConfigContext
   static userContextType = UserContext
 
   declare context: React.ContextType<typeof WorkflowConfigContext>
   declare userContext: React.ContextType<typeof UserContext>
+
+  constructor(props: P) {
+    super(props)
+    this.state = {} as S
+  }
 
   /*******************************************************
    * PLACHOLDERS
@@ -81,9 +83,10 @@ class EditableComponentWithSorting<
     handle: string | boolean = false, // @todo review this union
     containment = '.workflow-container'
   ) {
-    //   this is because we moved workflow out of context
+    // This is because we moved workflow out of context
     // but we aren't  going to wrap this one yet
     // if (this.context.permissions.workflowPermissions.readOnly) {
+
     if (false) {
       return
     }
@@ -95,6 +98,7 @@ class EditableComponentWithSorting<
     if (draggableType == 'nodeweek') {
       cursorAt = { top: 20, left: 50 }
     }
+
     const props = this.props
     sortableBlock.draggable({
       containment: containment,
@@ -247,7 +251,7 @@ class EditableComponentWithSorting<
                 childId
               )
             }
-            this.lockChild(childId, true, draggableType)
+            this.lockChild(childId, true, draggableType as CfObjectType)
           }
         } else {
           //                    Utility.logger(dragItem);

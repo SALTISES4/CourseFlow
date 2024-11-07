@@ -1,6 +1,5 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
-import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
 import {
@@ -40,10 +39,11 @@ export class OutcomeEditViewUnconnected<
 > extends EditableComponentWithSorting<P, S> {
   static contextType = WorkflowConfigContext
   declare context: React.ContextType<typeof WorkflowConfigContext>
+  private mainDiv: React.RefObject<HTMLDivElement>
 
   constructor(props: P) {
     super(props)
-    this.objectType = CfObjectType.WORKFLOW
+    this.mainDiv = React.createRef()
   }
 
   /*******************************************************

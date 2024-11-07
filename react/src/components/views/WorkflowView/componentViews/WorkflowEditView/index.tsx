@@ -40,7 +40,6 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
 
   constructor(props: PropsType) {
     super(props)
-    this.objectType = CfObjectType.WORKFLOW
     this.state = {} as StateProps
   }
 
@@ -103,9 +102,9 @@ class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
       insertedAt(
         this.context.selectionManager,
         childId,
-        'column',
+        CfObjectType.COLUMN,
         newParent,
-        'workflow',
+        CfObjectType.WORKFLOW,
         newPosition,
         'columnworkflow'
       )

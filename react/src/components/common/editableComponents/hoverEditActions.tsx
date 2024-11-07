@@ -3,6 +3,8 @@ import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
+import CommentBox from '@cfEditableComponents/components/CommentBox'
+import AddCommentIcon from '@mui/icons-material/AddComment'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import DeleteIcon from '@mui/icons-material/Delete'
 import QueueIcon from '@mui/icons-material/Queue'
@@ -15,7 +17,7 @@ import {
   useInsertSiblingMutation
 } from '@XMLHTTP/API/workspace.rtk'
 import * as React from 'react'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 type ActionItemArgs = {
   id: number
@@ -244,5 +246,71 @@ export const DeleteSelfButton = ({
       titleText={_t('Delete')}
       handleClick={clickHandler}
     />
+  )
+}
+
+export const AddCommentingButton = ({
+  setShow,
+  show
+}: {
+  show: boolean
+  setShow: (show: boolean) => void
+}) => {
+  return (
+    <>
+      <ActionButton
+        buttonIcon={<AddCommentIcon />}
+        buttonClass="comment-button"
+        titleText={_t('Comments')}
+        handleClick={() => {
+          setShow(!show)
+        }}
+      />
+    </>
+  )
+}
+
+export const HoverMenu = ({
+  canComment,
+  canWrite,
+  objectId,
+  parentId,
+  objectType
+}: {
+  objectType: CfObjectType
+  canComment: boolean
+  canWrite: boolean
+  objectId: number
+  parentId: number
+}) => {
+  const [show, setShow] = useState<boolean>(false)
+
+  return (
+    <>
+      <div className="mouseover-actions">
+        {canWrite && (
+          <>
+            <InsertSiblingButton
+              id={objectId}
+              objectType={objectType}
+              parentId={parentId}
+            />
+            <DuplicateSelfButton
+              id={objectId}
+              objectType={objectType}
+              parentId={parentId}
+            />
+            <DeleteSelfButton id={objectId} objectType={objectType} />
+          </>
+        )}
+        {canComment && <AddCommentingButton show={show} setShow={setShow} />}
+      </div>
+      <CommentBox
+        id={objectId}
+        show={show}
+        setShow={setShow}
+        objectType={objectType}
+      />
+    </>
   )
 }

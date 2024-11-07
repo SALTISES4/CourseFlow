@@ -1,7 +1,9 @@
+import { SidebarState } from '@cf/redux/reducers/sidebar/sidebar'
 import { CfLock } from '@cf/types/common'
 import { WorkflowPermission } from '@cf/utility/permissions'
 import {
   EColumn,
+  EComment,
   EDate,
   ENode,
   ENodelink,
@@ -20,8 +22,6 @@ import {
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
-import { SideBarState } from '../reducers/sidebar'
-
 export type AppState = {
   workflow: TWorkflow
   columnworkflow: TColumnworkflow[]
@@ -38,7 +38,7 @@ export type AppState = {
   objectset: TObjectSet[]
   strategy: TStrategy[]
   //
-  sidebar: SideBarState
+  sidebar: SidebarState
   parentWorkflow?: TParentWorkflow[]
   parentNode?: TParentNode[]
   parentProject?: TProject
@@ -111,6 +111,7 @@ export type TOutcomeHorizontalLink = any
 export type TParentNode = any
 export type TDate = EDate
 export type TProject = EProject
+export type TComment = EComment
 export type TNotification = ENotification & {
   url: string
 }

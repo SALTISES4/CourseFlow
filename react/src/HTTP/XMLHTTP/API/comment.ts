@@ -20,7 +20,7 @@ export function getCommentsForObjectQuery(
   })
 }
 //add a comment to an object
-export function addComment(
+export function addCommentQuery(
   objectId,
   objectType,
   text,
@@ -36,7 +36,7 @@ export function addComment(
   })
 }
 
-export function removeComment(
+export function removeCommentQuery(
   objectId,
   objectType,
   commentPk,

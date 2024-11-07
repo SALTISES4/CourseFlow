@@ -91,7 +91,7 @@ class ProjectEndpoint:
         try:
             project = Project.objects.get(pk=pk)
         except Project.DoesNotExist:
-            return Response({"detail": "Not found."}, status=404)
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
         current_user = request.user
         serializer = ProjectSerializerShallow(
@@ -281,7 +281,7 @@ def json_api__project__detail__comparison__get(request):
         project = Project.objects.get(pk=project_pk)
 
     except Project.DoesNotExist:
-        return Response({"detail": "Not found."}, status=404)
+        return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
     # moved from template layer
     public_view = False

@@ -29,31 +29,3 @@ export class WeekTitle extends React.Component {
     return <TitleText text={data.title} defaultText={defaultText} />
   }
 }
-
-//Title text for a node
-export class NodeTitle extends React.Component {
-  render() {
-    const data = this.props.data
-    let text
-    if (data.representsWorkflow && data.linkedWorkflowData) {
-      text = data.linkedWorkflowData.title
-      if (data.linkedWorkflowData.code) {
-        text = data.linkedWorkflowData.code + ' - ' + text
-      }
-    } else {
-      text = data.title
-    }
-
-    if (text == null || text == '') {
-      text = _t('Untitled')
-    }
-
-    return (
-      <div
-        className="node-title"
-        title={text}
-        dangerouslySetInnerHTML={{ __html: text }}
-      />
-    )
-  }
-}

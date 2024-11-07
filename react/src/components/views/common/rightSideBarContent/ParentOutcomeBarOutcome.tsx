@@ -8,6 +8,7 @@ import {
   getOutcomeOutcomeById
 } from '@cfFindState'
 import { AppState, TOutcomeOutcome } from '@cfRedux/types/type'
+import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -132,9 +133,7 @@ class ParentOutcomeUnconnected extends OutcomeBarOutcomeUnconnected<PropsType> {
         {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
-              <img
-                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
-              />
+             <ArrowDropDownCircleIcon />
             </div>
             <div className="outcome-drop-text">{droptext}</div>
           </div>

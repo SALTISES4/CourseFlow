@@ -1,46 +1,46 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cfEditableComponents/EditableComponent'
 import { TGetNodeLinkById, getNodeLinkByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState } from '@cfRedux/types/type'
 import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
+import { Dispatch } from '@reduxjs/toolkit'
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 // import $ from 'jquery'
 
 type ConnectedProps = TGetNodeLinkById
 type OwnProps = {
+  objectId: number
+  parentId: number
   nodeDiv: React.RefObject<HTMLDivElement>
-} & EditableComponentProps
-type StateProps = EditableComponentStateType
+} & { dispatch?: Dispatch<Action> }
+type StateProps = {}
 type PropsType = ConnectedProps & OwnProps
 
 /**
  * The arrow manually drawn between two nodes (as opposed to the
  * autolink which is automatically drawn). This can have text added.
  */
-class NodeLink extends EditableComponent<PropsType, StateProps> {
+class NodeLink extends React.Component<PropsType, StateProps> {
   static contextType = WorkflowConfigContext
-
   declare context: React.ContextType<typeof WorkflowConfigContext>
+
   private sourceNode: JQuery
   private targetNode: JQuery
   private targetPortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private sourcePortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private rerenderEvents: string
   private manager: BetterSelectionManager
+  private objectType: CfObjectType
 
   constructor(props: PropsType) {
     super(props)
     this.manager = new BetterSelectionManager(this.props.dispatch)
     this.objectType = CfObjectType.NODELINK
-    this.objectClass = '.node-link'
     this.rerenderEvents = 'ports-rendered.' + this.props.data.id
   }
 
@@ -68,7 +68,6 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
   render() {
     const data = this.props.data
     const style: React.CSSProperties = {}
-
 
     if (
       !this.sourceNode ||
@@ -102,7 +101,6 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
         ` circle[data-port-type='target']`,
         `[data-port='${Constants.portKeys[data.targetPort]}']`
       ].join('')
-
 
       this.sourcePortHandle = d3.select(cssSourcePortSelector)
       this.targetPortHandle = d3.select(cssSourceTargetSelector)
@@ -169,7 +167,7 @@ class NodeLink extends EditableComponent<PropsType, StateProps> {
             this.props.parentId
           )
         }}
-        selected={this.state.selected}
+        // selected={this.state.selected}
         sourceDimensions={sourceDims}
         targetDimensions={targetDims}
       />,

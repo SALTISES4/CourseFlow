@@ -1,19 +1,32 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
-import { TUser } from '@cfRedux/types/type'
+import { TGetWeekByIDType, getWeekById } from '@cfFindState'
+import ActionCreator from '@cfRedux/ActionCreator'
+import { AppState, TComment, TUser, TWorkflow } from '@cfRedux/types/type'
+import AddIcon from '@mui/icons-material/Add'
+import CloseIcon from '@mui/icons-material/Close'
+import DeleteIcon from '@mui/icons-material/Delete'
 import {
-  addComment,
+  addCommentQuery,
+  getCommentsForObjectQuery,
   removeAllComments,
-  removeComment
+  removeCommentQuery
 } from '@XMLHTTP/API/comment'
 import { getUsersForObjectQueryLegacy } from '@XMLHTTP/API/sharing'
 import * as React from 'react'
-import * as reactDom from 'react-dom'
+import { DispatchProp, connect } from 'react-redux'
 
 // @components
 // import $ from 'jquery'
+interface MapStateProps {
+  workflow: TWorkflow
+  unreadComments: TComment[]
+  comments: TComment[]
+}
+type ConnectedProps = MapStateProps & DispatchProp
 
 /*******************************************************
  * @CommentBox
@@ -21,14 +34,17 @@ import * as reactDom from 'react-dom'
  * @todo description
  *******************************************************/
 type OwnProps = {
-  show: any
-  comments: any
-  parent: any
+  id: number
+  show: boolean
+  setShow: (show: boolean) => void
+  objectType: CfObjectType
+  // comments: any
+  //   parent: any
   // renderer: any /  not used
-  workflowId: any
-  unreadComments: any
-  readOnly: boolean
-  addComments: any
+  // workflowId: any
+  // unreadComments: any
+  // readOnly: boolean
+  // addComments: any
 }
 
 type StateType = {
@@ -37,19 +53,27 @@ type StateType = {
   hasRendered?: boolean
 }
 
-type PropsType = OwnProps
-class CommentBox extends React.Component<PropsType, StateType> {
+type PropsType = OwnProps & ConnectedProps
+
+class CommentBoxUnconnected extends React.Component<PropsType, StateType> {
   private input: React.RefObject<HTMLTextAreaElement>
   private submit: React.RefObject<HTMLImageElement>
   private tagPosition: number // @todo this was previously not defined
-  private unreadComments: any
+  //  private unreadComments: any
+  // prevoiusly this was this.context.permissions.workflowPermissions.readOnly
+  private readOnly: boolean
+  // this is also the user permission on the workflow
+  private addComments: boolean
+
   constructor(props: PropsType) {
     super(props)
     this.input = React.createRef()
     this.submit = React.createRef()
     this.state = {}
     this.tagPosition = 0 // @todo this was previously not set
-    this.unreadComments = this.props.unreadComments
+    this.readOnly = false
+    this.addComments = true
+    //     this.unreadComments = this.props.unreadComments
   }
 
   /*******************************************************
@@ -71,7 +95,92 @@ class CommentBox extends React.Component<PropsType, StateType> {
       }
     }
   }
+  /*******************************************************
+   * QUERIES
+   *******************************************************/
+  commentClick(evt) {
+    evt.stopPropagation()
+    if (!this.props.show) {
+      this.reloadComments(true)
+    } else {
+      this.props.setShow(false)
+    }
+  }
 
+  reloadComments(showComments?: boolean) {
+    getCommentsForObjectQuery(
+      this.props.id,
+      Constants.objectDictionary[this.props.objectType],
+      (responseData) => {
+        this.props.dispatch(
+          ActionCreator.reloadCommentsAction(
+            this.props.id,
+            Constants.objectDictionary[this.props.objectType],
+            responseData.dataPackage
+          )
+        )
+
+        if (showComments) {
+          this.props.setShow(true)
+        }
+        // this.setState({
+        //   showComments: true,
+        //   commentData: responseData.dataPackage
+        // })
+      }
+    )
+  }
+
+  removeComment(id: number) {
+    if (
+      window.confirm(
+        _t('Are you sure you want to permanently clear this comment?')
+      )
+    ) {
+      removeCommentQuery(
+        this.props.id,
+        Constants.objectDictionary[this.props.objectType],
+        id,
+        // no
+        this.reloadComments
+      )
+    }
+  }
+
+  removeAllComments() {
+    if (
+      window.confirm(
+        _t(
+          'Are you sure you want to permanently clear all comments from this object?'
+        )
+      )
+    ) {
+      removeAllComments(
+        this.props.id,
+        Constants.objectDictionary[this.props.objectType],
+
+        // no
+        this.reloadComments
+      )
+    }
+  }
+
+  appendComment() {
+    const text = $(this.input.current)[0].value
+    if (!text) {
+      return
+    }
+
+    $(this.input.current)[0].value = ''
+    $(this.submit.current).addClass('hidden')
+
+    addCommentQuery(
+      this.props.id,
+      Constants.objectDictionary[this.props.objectType],
+      text,
+      this.reloadComments
+    )
+  }
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
@@ -113,8 +222,9 @@ class CommentBox extends React.Component<PropsType, StateType> {
       this.tagPosition = this.input.current.selectionStart - 1
       const loader = COURSEFLOW_APP.tinyLoader
       loader.startLoad()
+
       getUsersForObjectQueryLegacy(
-        this.props.workflowId,
+        this.props.workflow.id,
         'workflow',
         (response) => {
           loader.endLoad()
@@ -129,65 +239,159 @@ class CommentBox extends React.Component<PropsType, StateType> {
     }
   }
 
-  removeComment(id: number) {
-    const parent = this.props.parent
-    const props = parent.props
-    if (
-      window.confirm(
-        _t('Are you sure you want to permanently clear this comment?')
-      )
-    ) {
-      removeComment(
-        props.objectId,
-        Constants.objectDictionary[parent.objectType],
-        id,
-        parent.reloadComments.bind(parent)
-      )
-    }
-  }
-
-  removeAllComments() {
-    const parent = this.props.parent
-    const props = parent.props
-    if (
-      window.confirm(
-        _t(
-          'Are you sure you want to permanently clear all comments from this object?'
-        )
-      )
-    ) {
-      removeAllComments(
-        props.objectId,
-        Constants.objectDictionary[parent.objectType],
-        parent.reloadComments.bind(parent)
-      )
-    }
-  }
-
-  appendComment() {
-    const text = $(this.input.current)[0].value
-    if (!text) {
-      return
-    }
-    const parent = this.props.parent
-    const props = parent.props
-    $(this.input.current)[0].value = ''
-    $(this.submit.current).addClass('hidden')
-    addComment(
-      props.objectId,
-      Constants.objectDictionary[parent.objectType],
-      text,
-      parent.reloadComments.bind(parent)
-    )
-  }
-
   commentsSeen() {
-    const unreadComments = this.unreadComments.slice()
+    const unreadComments = this.props.unreadComments.slice()
 
     const comments = this.props.comments.map((comment) => comment.id)
 
-    this.unreadComments = unreadComments.filter(
-      (comment) => comments.indexOf(comment) < 0
+    //  this won;t work, if we need this, it could be a state
+    // this.props.unreadComments = unreadComments.filter(
+    //   (comment) => comments.indexOf(comment) < 0
+    // )
+  }
+
+  TagBox = () => {
+    if (!this.state.tagging) {
+      return <></>
+    }
+    return (
+      <div className="comment-tag-box">
+        {this.state.userList.map((user, index) => (
+          <div
+            key={index}
+            className="user-name hover-shade"
+            onClick={this.addUserTag.bind(this, user)}
+          >
+            {Utility.getUserDisplay(user)}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  Comments = () => {
+    if (!this.props.comments) {
+      return <></>
+    }
+
+    return this.props.comments.map((comment, index) => {
+      const isUnread = this.props.unreadComments.indexOf(comment.id) >= 0
+
+      let commentClass = 'comment'
+
+      if (isUnread) {
+        commentClass += ' unread'
+      }
+
+      const text = comment.text.replace(
+        /@\w[@a-zA-Z0-9_.]{1,}/g,
+        (val) => '<b>' + val + '</b>'
+      )
+
+      return (
+        <div className={commentClass} key={index}>
+          <div className="comment-by">
+            <div className="comment-user">
+              {Utility.getUserDisplay(comment.user)}
+            </div>
+            <div className="comment-on">{comment.createdOn}</div>
+          </div>
+          <div
+            className="comment-text"
+            dangerouslySetInnerHTML={{ __html: text }}
+          />
+          {!this.readOnly && (
+            <div className="mouseover-actions">
+              <div
+                className="action-button"
+                title={_t('Delete Comment')}
+                onClick={this.removeComment.bind(this, comment.id)}
+              >
+                <DeleteIcon />
+              </div>
+            </div>
+          )}
+        </div>
+      )
+    })
+  }
+
+  TopComments = () => {
+    const topContents = []
+
+    topContents.push(
+      <div
+        className="hover-shade"
+        title={_t('Close')}
+        onClick={this.commentClick.bind(this)}
+      >
+        <CloseIcon />
+      </div>
+    )
+
+    if (!this.readOnly && this.props.comments.length > 1) {
+      topContents.push(
+        <div
+          className="hover-shade"
+          title={_t('Clear All Comments')}
+          onClick={this.removeAllComments.bind(this)}
+        >
+          <DeleteIcon />
+        </div>
+      )
+    }
+
+    return topContents
+  }
+
+  CommentIndicator = () => {
+    const hasComments = false
+    // show an icon if there are comments
+    // how it even if the main comments dialog is closed
+
+    //    return <MarkChatUnreadIcon />
+    return <></>
+  }
+
+  CommentDialog = () => {
+    let inputDefault = _t('Add a comment')
+
+    if (this.props.comments && this.props.comments.length > 0) {
+      inputDefault = _t('Reply')
+    }
+    return (
+      <div
+        key="comment-box"
+        className="comment-box"
+        onClick={(evt) => evt.stopPropagation()}
+        onMouseDown={(evt) => evt.stopPropagation()}
+      >
+        <div className="comment-top-row">
+          <this.TopComments />
+        </div>
+        <hr />
+        <div className="comment-block">
+          <this.Comments />
+        </div>
+        {this.addComments && (
+          <div className="comment-input-line">
+            <textarea
+              ref={this.input}
+              className="comment-input"
+              placeholder={inputDefault}
+              contentEditable="true"
+              onInput={this.textChange.bind(this)}
+            />
+            <div
+              ref={this.submit}
+              className="add-comment-button hidden hover-shade"
+              onClick={this.appendComment.bind(this)}
+            >
+              <AddIcon />
+            </div>
+          </div>
+        )}
+      </div>
     )
   }
 
@@ -195,171 +399,27 @@ class CommentBox extends React.Component<PropsType, StateType> {
    * RENDER
    *******************************************************/
   render() {
-    let has_comments = false
-
-    const has_unread =
-      this.props.comments.filter((value) => {
-        // @todo unreadComments is undefined
-        return this.unreadComments?.includes(value)
-      }).length > 0
-
-    if (this.state.hasRendered) {
-      has_comments = this.props.comments.length > 0
-    }
-
-    let render_div
-    const sideActions = $(this.props.parent?.mainDiv?.current)
-      .children('.side-actions')
-      .children('.comment-indicator-container')
-    if (sideActions.length > 0) {
-      render_div = sideActions[0]
-    } else {
-      render_div = this.props.parent?.mainDiv?.current
-    }
-    let comment_indicator = null
-    if (has_comments) {
-      let indicator_class = 'comment-indicator hover-shade'
-      if (has_unread) {
-        indicator_class += ' unread'
-      }
-      comment_indicator = reactDom.createPortal(
-        <div
-          className={indicator_class}
-          onClick={this.props.parent.commentClick.bind(this.props.parent)}
-        >
-          <img src={apiPaths.external.static_assets.icon + 'comment_new.svg'} />
-        </div>,
-        render_div
-      )
-    }
-
-    if (!this.props.show) {
-      return comment_indicator
-    }
-
-    let comments
-    if (this.props.comments) {
-      comments = this.props.comments.map((comment, index) => {
-        const is_unread = this.unreadComments.indexOf(comment.id) >= 0
-        let comment_class = 'comment'
-        if (is_unread) {
-          comment_class += ' unread'
-        }
-        const text = comment.text.replace(
-          /@\w[@a-zA-Z0-9_.]{1,}/g,
-          (val) => '<b>' + val + '</b>'
-        )
-
-        return (
-          <div className={comment_class} key={index}>
-            <div className="comment-by">
-              <div className="comment-user">
-                {Utility.getUserDisplay(comment.user)}
-              </div>
-              <div className="comment-on">{comment.createdOn}</div>
-            </div>
-            <div
-              className="comment-text"
-              dangerouslySetInnerHTML={{ __html: text }}
-            />
-            {!this.props.readOnly && (
-              <div className="mouseover-actions">
-                <div
-                  className="action-button"
-                  title={_t('Delete Comment')}
-                  onClick={this.removeComment.bind(this, comment.id)}
-                >
-                  <img
-                    src={apiPaths.external.static_assets.icon + 'rubbish.svg'}
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        )
-      })
-    }
-
-    const top_contents = []
-    top_contents.push(
-      <div
-        className="hover-shade"
-        title={_t('Close')}
-        onClick={this.props.parent.commentClick.bind(this.props.parent)}
-      >
-        <img src={apiPaths.external.static_assets.icon + 'close.svg'} />
-      </div>
-    )
-    if (!this.props.readOnly && comments.length > 1) {
-      top_contents.push(
-        <div
-          className="hover-shade"
-          title={_t('Clear All Comments')}
-          onClick={this.removeAllComments.bind(this)}
-        >
-          <img src={apiPaths.external.static_assets.icon + 'rubbish.svg'} />
-        </div>
-      )
-    }
-
-    let input_default = _t('Add a comment')
-    if (this.props.comments && this.props.comments.length > 0) {
-      input_default = _t('Reply')
-    }
-
-    let tag_box
-    if (this.state.tagging) {
-      tag_box = (
-        <div className="comment-tag-box">
-          {this.state.userList.map((user, index) => (
-            <div
-              key={index}
-              className="user-name hover-shade"
-              onClick={this.addUserTag.bind(this, user)}
-            >
-              {Utility.getUserDisplay(user)}
-            </div>
-          ))}
-        </div>
-      )
-    }
-
-    return reactDom.createPortal(
-      [
-        <div
-          key="comment-box"
-          className="comment-box"
-          onClick={(evt) => evt.stopPropagation()}
-          onMouseDown={(evt) => evt.stopPropagation()}
-        >
-          <div className="comment-top-row">{top_contents}</div>
-          <hr />
-          <div className="comment-block">{comments}</div>
-          {this.props.addComments && (
-            <div className="comment-input-line">
-              <textarea
-                ref={this.input}
-                className="comment-input"
-                placeholder={input_default}
-                contentEditable="true"
-                onInput={this.textChange.bind(this)}
-              />
-              <img
-                ref={this.submit}
-                src={apiPaths.external.static_assets.icon + 'add_new.svg'}
-                className="add-comment-button hidden hover-shade"
-                onClick={this.appendComment.bind(this)}
-                title={_t('Submit')}
-              />
-            </div>
-          )}
-        </div>,
-        tag_box,
-        comment_indicator
-      ],
-      render_div
+    return (
+      <>
+        {this.props.show && <this.CommentDialog />}
+        <this.TagBox />
+        <this.CommentIndicator />
+      </>
     )
   }
 }
+
+const mapStateToProps = (state: AppState): MapStateProps => {
+  return {
+    workflow: state.workflow,
+    unreadComments: [],
+    comments: []
+  }
+}
+
+const CommentBox = connect<MapStateProps, object, OwnProps, AppState>(
+  mapStateToProps,
+  null
+)(CommentBoxUnconnected)
 
 export default CommentBox

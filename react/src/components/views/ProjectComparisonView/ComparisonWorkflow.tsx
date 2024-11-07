@@ -19,6 +19,7 @@ type ConnectedProps = {
 }
 type OwnProps = {
   objectId: number
+  parentId: number
 }
 type StateProps = EditableComponentWithSortingState
 type PropsType = ConnectedProps & OwnProps
@@ -29,9 +30,9 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
   StateProps
 > {
   static contextType = WorkflowConfigContext
+
   constructor(props: PropsType) {
     super(props)
-    this.objectType = CfObjectType.WORKFLOW
   }
 
   /*******************************************************
