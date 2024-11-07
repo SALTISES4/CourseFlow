@@ -35,11 +35,11 @@ export type FieldChoice = {
 }
 
 export type CfLock = {
-  expires: number
   userId: number
+  objectId: number
+  expires: number
   userColour: string
   lock: boolean
-  objectId: number
   objectType: CfObjectType
 }
 

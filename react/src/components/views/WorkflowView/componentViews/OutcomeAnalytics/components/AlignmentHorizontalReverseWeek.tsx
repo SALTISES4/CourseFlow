@@ -1,47 +1,49 @@
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cf/utility/utilityFunctions'
-import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts.tsx'
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cfEditableComponents/EditableComponent'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
+import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { AppState, TNodeweek, TWorkflow } from '@cfRedux/types/type'
+import { AppState, TNodeweek, TWeek, TWorkflow } from '@cfRedux/types/type'
+import { Dispatch } from '@reduxjs/toolkit'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 import AlignmentHorizontalReverseNode from './AlignmentHorizontalReverseNode'
 
 type ConnectedProps = {
-  data: any
+  week: TWeek
   workflow: TWorkflow
   nodeweeks: TNodeweek[]
 }
 type OwnProps = {
+  parentId: number
   objectId: number
   weekRank: number
   restrictionSet: any
-} & EditableComponentProps
-type StateProps = EditableComponentStateType
+} & { dispatch?: Dispatch<Action> }
+
+type StateProps = {}
 type PropsType = ConnectedProps & OwnProps
 
 /**
  * The representation of a week in the alignment view.
  */
-class AlignmentHorizontalReverseWeek extends EditableComponent<
+class AlignmentHorizontalReverseWeek extends React.Component<
   PropsType,
   StateProps
 > {
-  static contextType = WorkflowConfigContext
   private manager: BetterSelectionManager
+  private objectType: CfObjectType
+  private mainDiv: React.RefObject<HTMLDivElement>
 
-  declare context: React.ContextType<typeof WorkflowConfigContext>
   constructor(props: PropsType) {
     super(props)
     this.manager = new BetterSelectionManager(this.props.dispatch)
+
+    this.mainDiv = React.createRef()
 
     this.objectType = CfObjectType.WEEK
     this.state = {} as StateProps
@@ -51,21 +53,18 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const week = this.props.week
 
-    const defaultText = data.weekTypeDisplay + ' ' + (this.props.weekRank + 1)
+    const defaultText = week.weekTypeDisplay + ' ' + (this.props.weekRank + 1)
 
     const nodeweeks = this.props.nodeweeks.map((nodeweek, index) => {
-      if (
-        this.props.restrictionSet &&
-        this.props.restrictionSet.nodes &&
-        this.props.restrictionSet.nodes.indexOf(nodeweek.node) == -1
-      ) {
+      if (this.props.restrictionSet.nodes.indexOf(nodeweek.node) == -1) {
         return null
       }
       return (
         <AlignmentHorizontalReverseNode
           key={index}
+          parentId={week.id}
           objectId={nodeweek.node}
           restrictionSet={this.props.restrictionSet}
         />
@@ -76,24 +75,28 @@ class AlignmentHorizontalReverseWeek extends EditableComponent<
       this.props.workflow.userPermissions
     )
 
-    const comments = permissions.read ? <this.AddCommenting /> : null
+    //    const comments = permissions.read ? <this.AddCommenting /> : null
+    const comments = permissions.read ? <> add commentbox placeholder</> : null
 
     //      {this.addEditable(data, true)}
     return (
       <div
         className="week"
         ref={this.mainDiv}
-        style={this.getBorderStyle()}
+        style={ThemeHelper.getBorderStyle({
+          isLocked: week.lock.lock,
+          colour: week.lock.userColour
+        })}
         onClick={(e) => {
           e.stopPropagation()
           this.manager.updateSidebar(
-            data.id,
+            week.id,
             this.objectType,
             this.props.parentId
           )
         }}
       >
-        <TitleText text={data.title} defaultText={defaultText} />
+        <TitleText text={week.title} defaultText={defaultText} />
         <div className="node-block">{nodeweeks}</div>
 
         <div className="side-actions">
@@ -112,13 +115,13 @@ const mapStateToProps = (
   for (let i = 0; i < state.week.length; i++) {
     if (state.week[i].id == ownProps.objectId) {
       const week = state.week[i]
-      const nodeweeks = Utility.filterThenSortByID(
+      const nodeweeks = Utility.filterThenSortById(
         state.nodeweek,
         week.nodeweekSet
       )
       return {
         workflow: state.workflow,
-        data: week,
+        week: week,
         nodeweeks: nodeweeks
       }
     }

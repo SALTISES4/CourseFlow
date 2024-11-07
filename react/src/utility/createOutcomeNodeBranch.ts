@@ -1,5 +1,4 @@
-import { filterThenSortByID } from '@cf/utility/utilityFunctions'
-import { _t } from '@cf/utility/utilityFunctions'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import { getTableOutcomeNodeByID } from '@cfFindState'
 
 export type CreateOutcomeNodeBranchType = {
@@ -13,11 +12,11 @@ export type CreateOutcomeNodeBranchType = {
 //   outcomeId: number,
 //   nodeCategories
 // ): CreateOutcomeNodeBranchType {
-//   console.log('createOutcomeNodeBranch props')
-//   console.log(props)
+//   Utility.logger('createOutcomeNodeBranch props')
+//   Utility.logger(props)
 //
-//   console.log('createOutcomeNodeBranch  nodeCategories')
-//   console.log(nodeCategories)
+//   Utility.logger('createOutcomeNodeBranch  nodeCategories')
+//   Utility.logger(nodeCategories)
 //
 //   const outcome = props.outcome.find((o) => o.id === outcomeId)
 //   if (!outcome) return null
@@ -45,7 +44,7 @@ export function createOutcomeNodeBranch(props, outcomeId, nodecategory) {
       ) {
         children = []
       } else {
-        children = filterThenSortByID(
+        children = Utility.filterThenSortById(
           props.outcomeoutcome,
           props.outcome[i].childOutcomeLinks
         ).map((outcomeoutcome) =>

@@ -1,31 +1,33 @@
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
-import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
+import * as Constants from '@cf/utility/constants'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import * as Constants from '@cfConstants'
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cfEditableComponents/EditableComponent'
+import CommentBox from '@cfEditableComponents/components/CommentBox'
 import {
+  AddCommentingButton,
   DeleteSelfButton,
   DuplicateSelfButton,
+  HoverMenu,
   InsertSiblingButton
 } from '@cfEditableComponents/hoverEditActions'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import { toggleExpand } from '@cfRedux/utility/helpers'
-import * as Utility from '@cfUtility'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
 import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
+import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
+import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
+import { Dispatch } from '@reduxjs/toolkit'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
+import { useState } from 'react'
 import * as reactDom from 'react-dom'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 import NodePorts from 'components/views/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
 
@@ -35,14 +37,17 @@ type ConnectedProps = {
 }
 
 type OwnProps = {
+  objectId: number
+  parentId: number
   columnOrder: any
-} & EditableComponentProps
+  objectSets?: any // where is this coming from
+} & { dispatch?: Dispatch<Action> }
 
 type StateProps = {
   initialRender: boolean
   showOutcomes: boolean
   hovered: boolean
-} & EditableComponentStateType
+}
 
 type PropsType = ConnectedProps & OwnProps
 
@@ -51,16 +56,19 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 /**
  * Represents the node in the workflow view
  */
-class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
-  static contextType = WorkflowConfigContext
-  declare context: React.ContextType<typeof WorkflowConfigContext>
-
+class NodeUnconnected extends React.Component<PropsType, StateProps> {
   private manager: BetterSelectionManager
+  private mainDiv: React.RefObject<HTMLDivElement>
+  private objectType: CfObjectType
 
   constructor(props: PropsType) {
     super(props)
+
+    this.mainDiv = React.createRef()
+
     this.manager = new BetterSelectionManager(props.dispatch)
     this.objectType = CfObjectType.NODE
+
     this.state = {
       initialRender: true,
       showOutcomes: false
@@ -80,8 +88,6 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
     this.makeDroppable()
     this.updateHidden()
 
-    // $(this.mainDiv.current).on('mouseenter', this.mouseIn.bind(this))
-    // $(this.mainDiv.current).on('dblclick', this.doubleClick.bind(this))
     this.mainDiv.current.addEventListener('mouseenter', this.mouseIn.bind(this))
     this.mainDiv.current.addEventListener(
       'dblclick',
@@ -104,7 +110,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
     if (this.props.node.data.isDropped == prevProps.node.data.isDropped) {
       this.updatePorts()
     } else {
-      Utility.triggerHandlerEach($('.node'), 'component-updated')
+      ThemeHelper.triggerHandlerEach($('.node'), 'component-updated')
     }
     this.updateHidden()
   }
@@ -112,7 +118,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
+  //WHY?: Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
   updateHidden() {
     if ($(this.mainDiv.current).css('display') == 'none') {
       const week = $(this.mainDiv.current).parent('.node-week').parent()
@@ -130,13 +136,12 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
   doubleClick(evt) {
     evt.stopPropagation()
-    if (this.props.data.linkedWorkflow) {
-      window.open(this.props.data.linkedWorkflowData.url)
+    if (this.props.node.data.linkedWorkflow) {
+      window.open(this.props.node.data.linkedWorkflowData.url)
     }
   }
 
   makeDroppable() {
-    // @ts-ignore
     $(this.mainDiv.current).droppable({
       tolerance: 'pointer',
       // @ts-ignore // droppable does not exist in type DroppableOptions
@@ -210,7 +215,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
       if (
         !myComponent ||
         !myComponent.mainDiv ||
-        Utility.mouseOutsidePadding(evt, $(myComponent.mainDiv.current), 20)
+        ThemeHelper.mouseOutsidePadding(evt, $(myComponent.mainDiv.current), 20)
       ) {
         $(
           "circle[data-node-id='" +
@@ -225,39 +230,6 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
     })
   }
 
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  HoverMenu = () => {
-    const mouseoverActions = []
-    if (this.props.workflow.workflowPermissions.write) {
-      mouseoverActions.push(
-        <InsertSiblingButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DuplicateSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DeleteSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-        />
-      )
-    }
-
-    if (this.props.workflow.workflowPermissions.addComments) {
-      mouseoverActions.push(<this.AddCommenting />)
-    }
-    return mouseoverActions
-  }
 
   /*******************************************************
    * RENDER
@@ -274,7 +246,7 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
     const data = this.props.node.data
     const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
-    let linktext = _t('Visit workflow')
+    let linkText = _t('Visit workflow')
     let linkClass = 'linked-workflow'
 
     const dataOverride = data.representsWorkflow
@@ -310,7 +282,10 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
             this.setState({ showOutcomes: false })
           }}
           style={{
-            borderColor: Constants.getColumnColour(this.props.node.column)
+            borderColor: Constants.getColumnColour({
+              columnType: this.props.node.column.columnType,
+              colour: this.props.node.column.colour
+            })
           }}
         >
           {data.outcomenodeUniqueSet.map((outcomenode) => (
@@ -329,7 +304,10 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
               this.setState({ showOutcomes: true })
             }}
             style={{
-              borderColor: Constants.getColumnColour(this.props.node.column)
+              borderColor: Constants.getColumnColour({
+                columnType: this.props.node.column.columnType,
+                colour: this.props.node.column.colour
+              })
             }}
           >
             {data.outcomenodeUniqueSet.length}
@@ -384,11 +362,11 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
         data.linkedWorkflowData.url == 'noaccess' ||
         data.linkedWorkflowData.url == 'nouser'
       ) {
-        linktext = _t('<Inaccessible>')
+        linkText = _t('<Inaccessible>')
         clickfunc = null
         linkClass += ' link-noaccess'
       } else if (data.linkedWorkflowData.deleted) {
-        linktext = _t('<Deleted>')
+        linkText = _t('<Deleted>')
         clickfunc = null
         linkClass += ' link-noaccess'
       } else {
@@ -400,10 +378,11 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
       linkIcon = (
         <div className={linkClass} onClick={clickfunc}>
           <img src={apiPaths.external.static_assets.icon + 'wflink.svg'} />
-          <div>{linktext}</div>
+          <div>{linkText}</div>
         </div>
       )
     }
+
     let dropText = ''
     if (
       dataOverride.description &&
@@ -414,13 +393,16 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
     ) {
       dropText = '...'
     }
-    const titleText = <NodeTitle data={data} />
+    const titleText = <NodeTitle node={data} />
 
     const style: React.CSSProperties = {
       left:
         Constants.columnwidth * this.props.columnOrder.indexOf(data.column) +
         'px',
-      backgroundColor: Constants.getColumnColour(this.props.node.column)
+      backgroundColor: Constants.getColumnColour({
+        columnType: this.props.node.column.columnType,
+        colour: this.props.node.column.colour
+      })
     }
 
     if (data.lock) {
@@ -445,9 +427,10 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
           style={style}
           className={`${cssClass} wtf`}
           ref={this.mainDiv}
-          data-selected={this.state.selected}
+          // @todo we probably this shuld go through redux also
+          // that way we select a UI item 'remotely'
+          // data-selected={this.state.selected}
           data-hovered={this.state.hovered}
-
           onClick={(e) => {
             e.stopPropagation()
             this.manager.updateSidebar(
@@ -473,21 +456,19 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
 
           <div
             className="node-drop-row hover-shade"
-            onClick={() =>
-              toggleExpand({
+            onClick={(evt) => {
+              evt.stopPropagation()
+              this.manager.toggleDropReduxAction({
                 objectId: this.props.objectId,
                 objectType: this.objectType,
-                isDropped: this.props.node.data.isDropped,
-                dispatch: this.props.dispatch,
-                depth: this.props.data?.depth
+                newDropState: this.props.node.data?.isDropped,
+                depth: this.props.node.data?.depth // where is depth defined?
               })
-            }
+            }}
           >
             <div className="node-drop-side node-drop-left">{dropText}</div>
             <div className="node-drop-middle">
-              <img
-                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
-              />
+             <ArrowDropDownCircleIcon />
             </div>
             <div className="node-drop-side node-drop-right">
               <div className="node-drop-time">
@@ -499,9 +480,14 @@ class NodeUnconnected extends EditableComponent<PropsType, StateProps> {
             </div>
           </div>
 
-          <div className="mouseover-actions">
-            <this.HoverMenu />
-          </div>
+          <HoverMenu
+            canWrite={this.props.workflow.workflowPermissions.write}
+            canComment={this.props.workflow.workflowPermissions.viewComments}
+            objectId={this.props.objectId}
+            parentId={this.props.parentId}
+            objectType={this.objectType}
+          />
+
           {nodePorts}
           {nodeLinks}
           {autoLink}

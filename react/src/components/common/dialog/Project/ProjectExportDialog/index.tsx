@@ -1,6 +1,6 @@
 import { StyledBox, StyledDialog } from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -125,9 +125,9 @@ function ProjectExportDialog(data: EProject) {
       postData
     )
       .then((resp) => {
-        console.log('response', resp)
+        Utility.logger('response', resp)
       })
-      .catch((error) => console.log('errors', error))
+      .catch((error) => Utility.logger('errors', error))
   }
 
   function onDialogClose() {

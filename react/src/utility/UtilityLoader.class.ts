@@ -1,7 +1,7 @@
 /**
  *  this has been refactored to remove jquery
  */
-export class UtilityLoader {
+export class UtilityLoaderClass {
   private loadScreen: HTMLDivElement
   constructor(identifier) {
     // Create a new div element

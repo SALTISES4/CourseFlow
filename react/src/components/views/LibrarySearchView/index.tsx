@@ -1,7 +1,7 @@
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { GridWrap, OuterContentWrap } from '@cf/mui/helper'
 import { formatLibraryObjects } from '@cf/utility/marshalling/libraryCards'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import FilterButton from '@cfComponents/filters/FilterButton'
 import FilterMultiselect from '@cfComponents/filters/FilterMultiselect'
@@ -130,7 +130,7 @@ const LibrarySearchView = ({
 
     const args = LibraryHelper.reduceStateToSearchArgs(searchFilterState)
 
-    //     console.log(args)
+    //     Utility.logger(args)
 
     /*******************************************************
      *    These are the formatted search args, reduced to only active filters, and formatted in a flat list for the API call

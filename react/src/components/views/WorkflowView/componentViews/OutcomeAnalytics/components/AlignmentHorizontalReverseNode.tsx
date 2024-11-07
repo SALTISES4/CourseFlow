@@ -1,41 +1,43 @@
-import * as Constants from '@cf/constants'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cf/utility/utilityFunctions'
-import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cfEditableComponents/EditableComponent'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import { getChildWorkflowById } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
+import { AppState, TColumn, TNode, TWorkflow } from '@cfRedux/types/type'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
+import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
+import { Dispatch } from '@reduxjs/toolkit'
 import { newOutcomeQuery } from '@XMLHTTP/API/create'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 import AlignmentHorizontalReverseChildOutcome from './AlignmentHorizontalReverseChildOutcome'
 import OutcomeAdder from './OutcomeAdder'
 
 type ConnectedProps = {
   workflow: TWorkflow
-  data: any
+  node: TNode
   column: TColumn
   childOutcomes: any
   outcomenodes: any
   allNodeOutcomes: any
 }
+
 type OwnProps = {
   restrictionSet: any
-  objectId: any
-} & EditableComponentProps
+  objectId: number
+  parentId: number
+} & { dispatch?: Dispatch<Action> }
+
 type StateProps = {
   showAll?: boolean
-} & EditableComponentStateType
+}
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -43,18 +45,20 @@ type PropsType = ConnectedProps & OwnProps
  * the outcomes that the child workflow has that have the required parent outcomes
  * tagged to them
  */
-class AlignmentHorizontalReverseNode extends EditableComponent<
+class AlignmentHorizontalReverseNode extends React.Component<
   PropsType,
   StateProps
 > {
   private manager: BetterSelectionManager
+  private objectType: CfObjectType
+  private mainDiv: React.RefObject<HTMLDivElement>
 
   constructor(props: PropsType) {
     super(props)
     this.manager = new BetterSelectionManager(this.props.dispatch)
-
+    this.mainDiv = React.createRef()
     this.objectType = CfObjectType.NODE
-    this.state = {} as EditableComponentStateType
+    this.state = {}
   }
 
   /*******************************************************
@@ -65,30 +69,32 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
    * Adds a new outcome to the linked workflow
    */
   addNewChildOutcome() {
-    newOutcomeQuery(this.props.data.linkedWorkflow, null)
+    newOutcomeQuery(this.props.node.linkedWorkflow, null)
   }
 
   /*******************************************************
    * COMPONENTS
    *******************************************************/
   ChildOutcomesHeader = () => {
-    const data = this.props.data
+    const node = this.props.node
     if (this.props.childOutcomes.length > 0) {
       return (
         <div className="child-outcome child-outcome-header">
           <div className="half-width alignment-column">
-            {Utility.capWords(_t(`${data.linkedWorkflowData.type} outcomes`))}{' '}
+            {ThemeHelper.capWords(
+              _t(`${node.linkedWorkflowData.type} outcomes`)
+            )}{' '}
             {_t('From Linked Workflow')}
           </div>
           <div className="half-width alignment-column">
             {_t('Associated ')}
-            {Utility.capWords(_t(`${this.props.workflow.type} outcomes`))}
+            {ThemeHelper.capWords(_t(`${this.props.workflow.type} outcomes`))}
           </div>
         </div>
       )
     }
 
-    if (data.linkedWorkflow) {
+    if (node.linkedWorkflow) {
       if (this.props.childOutcomes === -1) {
         // TS2339: Property childWorkflowDataNeeded does not exist on type ChildRenderer
         // @ts-ignore
@@ -100,7 +106,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
         )
       }
 
-      if (data.linkedWorkflowData.deleted) {
+      if (node.linkedWorkflowData.deleted) {
         return (
           <div className="child-outcome child-outcome-header">
             {_t('The linked workflow has been deleted.')}
@@ -130,7 +136,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const data = this.props.node
     let dataOverride
 
     if (data.representsWorkflow) {
@@ -139,7 +145,6 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
       dataOverride = { ...data }
     }
 
-    const selectionManager = this.context.selectionManager
     // let childOutcomesHeader
     const childOutcomesHeader = <this.ChildOutcomesHeader />
 
@@ -201,8 +206,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
       childOutcomes = this.props.childOutcomes.map((childOutcome, index) => {
         if (
           !this.state.showAll &&
-          this.props.restrictionSet?.childOutcomes?.indexOf(childOutcome) ===
-            -1
+          this.props.restrictionSet?.childOutcomes?.indexOf(childOutcome) === -1
         ) {
           return null
         }
@@ -225,10 +229,9 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
       <OutcomeNode key={outcomenode.id} objectId={outcomenode.id} />
     ))
 
-    const outcomeRestriction =
-      this.props.restrictionSet.parentOutcomes.filter(
-        (oc) => this.props.allNodeOutcomes.indexOf(oc) === -1
-      )
+    const outcomeRestriction = this.props.restrictionSet.parentOutcomes.filter(
+      (oc) => this.props.allNodeOutcomes.indexOf(oc) === -1
+    )
 
     let outcomeadder
 
@@ -244,7 +247,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     const outcomesForNode = (
       <div>
         <div className="node-outcomes-header">
-          {Utility.capWords(_t(this.props.workflow.type + ' outcomes')) +
+          {ThemeHelper.capWords(_t(this.props.workflow.type + ' outcomes')) +
             _t(' for node:')}
         </div>
         {outcomenodes}
@@ -306,7 +309,10 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     }
 
     const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour(this.props.column)
+      backgroundColor: Constants.getColumnColour({
+        columnType: this.props.column.columnType,
+        colour: this.props.column.colour
+      })
     }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.userColour
@@ -315,7 +321,8 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
     const permissions = calcWorkflowPermissions(
       this.props.workflow.userPermissions
     )
-    const comments = permissions.read ? <this.AddCommenting /> : ''
+    //    const comments = permissions.read ? <AddCommenting /> : ''
+    const comments = permissions.read ? <> comment box placeholdr </> : ''
 
     return (
       <div className="node-week">
@@ -336,7 +343,7 @@ class AlignmentHorizontalReverseNode extends EditableComponent<
           ref={this.mainDiv}
         >
           <div className="node-top-row">
-            <NodeTitle data={data} />
+            <NodeTitle node={data} />
           </div>
           <div className="outcome-block">
             {childOutcomesHeader}
@@ -362,7 +369,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
     if (state.node[i].id == ownProps.objectId) {
       const node = state.node[i]
       const column = state.column.find((column) => column.id == node.column)
-      let outcomenodes = Utility.filterThenSortByID(
+      let outcomenodes = Utility.filterThenSortById(
         state.outcomenode,
         node.outcomenodeUniqueSet
       )
@@ -372,7 +379,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
             ownProps.restrictionSet.parentOutcomes.indexOf(ocn.outcome) >= 0
         )
       }
-      const nodeOutcomes = Utility.filterThenSortByID(
+      const nodeOutcomes = Utility.filterThenSortById(
         state.outcomenode,
         node.outcomenodeSet
       ).map((ocn) => ocn.outcome)
@@ -380,7 +387,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
       if (!node.linkedWorkflow || node.linkedWorkflowData.deleted) {
         return {
           workflow: state.workflow,
-          data: node,
+          node: node,
           column: column,
           childOutcomes: [],
           outcomenodes: outcomenodes,
@@ -393,7 +400,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
       let childOutcomes
 
       if (childWorkflow != -1) {
-        childOutcomes = Utility.filterThenSortByID(
+        childOutcomes = Utility.filterThenSortById(
           state.outcomeworkflow,
           childWorkflow.data.outcomeworkflowSet
         ).map((outcomeworkflow) => outcomeworkflow.outcome)
@@ -403,7 +410,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (
 
       return {
         workflow: state.workflow,
-        data: node,
+        node: node,
         column: column,
         childOutcomes: childOutcomes,
         outcomenodes: outcomenodes,

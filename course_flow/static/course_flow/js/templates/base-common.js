@@ -4,10 +4,6 @@
 // TODO: All of these functions should be eventually transferred
 // into a corresponding React component that's rendering the UI
 
-const makeActiveSidebar = function (id) {
-  $(id)
-    .addClass("active")
-}
 
 /*******************************************************
  * makeDropdown

@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/utilityFunctions'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
 import { useState } from 'react'

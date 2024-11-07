@@ -1,14 +1,20 @@
 import { CfObjectType } from '@cf/types/enum'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cfEditableComponents/EditableComponent'
 import { getNodeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { AppState, TNodeweek, TWorkflow } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
+import {
+  AppState,
+  TNode,
+  TNodeweek,
+  TWeek,
+  TWorkflow
+} from '@cfRedux/types/type'
+import { Dispatch } from '@reduxjs/toolkit'
+import React from 'react'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 import GridNode from './GridNode'
 
@@ -16,13 +22,15 @@ import GridNode from './GridNode'
  * A block representing a term in the grid view
  */
 type OwnProps = {
+  objectId: number
+  parentId: number
   rank: number
-  data: any
-} & EditableComponentProps
+  week: TWeek
+} & { dispatch?: Dispatch<Action> }
 
 type ConnectedProps = {
   workflow: TWorkflow
-  nodes: any
+  nodes: TNode[]
   generalEducation: number
   specificEducation: number
   totalTheory: number
@@ -34,32 +42,33 @@ type ConnectedProps = {
 
 type PropsType = OwnProps & ConnectedProps
 
-class GridWeekUnconnected extends EditableComponent<
-  PropsType,
-  EditableComponentStateType
-> {
+class GridWeekUnconnected extends React.Component<PropsType> {
   private manager: BetterSelectionManager
+  private objectType: CfObjectType
+  private mainDiv: React.RefObject<HTMLDivElement>
 
   constructor(props: PropsType) {
     super(props)
     this.manager = new BetterSelectionManager(this.props.dispatch)
-
-    // viewComments
-    // selectionManager
-    this.objectType = CfObjectType.WEEK // @todo check addEditable
+    this.mainDiv = React.createRef()
+    this.objectType = CfObjectType.WEEK
   }
 
   /*******************************************************
    * RENDER
    *******************************************************/
+
   render() {
-    const data = this.props.data
+    const data = this.props.week
 
     const defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)
-    const nodes = this.props.nodes.map((node) => <GridNode data={node} />)
+    const nodes = this.props.nodes.map((node) => (
+      <GridNode node={node} parentId={this.props.objectId} />
+    ))
 
     const comments = this.props.workflow.workflowPermissions.viewComments ? (
-      <this.AddCommenting />
+      /* <AddCommenting />*/
+      <></>
     ) : (
       <></>
     )
@@ -70,7 +79,11 @@ class GridWeekUnconnected extends EditableComponent<
       <div
         className="week"
         ref={this.mainDiv}
-        style={this.getBorderStyle()}
+        // @todo figure out where the lock and color are
+        style={ThemeHelper.getBorderStyle({
+          isLocked: !!this.props,
+          colour: ''
+        })}
         onClick={(e) => {
           e.stopPropagation()
           this.manager.updateSidebar(
@@ -105,9 +118,9 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => {
-  const data = ownProps.data
+  const data = ownProps.week
 
-  const nodeWeeks = Utility.filterThenSortByID<TNodeweek>(
+  const nodeWeeks = Utility.filterThenSortById<TNodeweek>(
     state.nodeweek,
     data.nodeweekSet
   )
@@ -120,11 +133,9 @@ const mapStateToProps = (
   // which does not contain representsWorkflow property
   // so this will always be false, verify and remove check
   const overrideData = nodesData.map((node) => {
-    // @ts-ignore
     if (node.representsWorkflow) {
       return {
         ...node,
-        // @ts-ignore
         ...node.linkedWorkflowData
       }
     } else {
@@ -159,25 +170,19 @@ const mapStateToProps = (
     return previousValue
   }, 0)
 
-  const totalPractical = overrideData.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationPractical) {
-        return previousValue + currentValue.ponderationPractical
-      }
-      return previousValue
-    },
-    0
-  )
+  const totalPractical = overrideData.reduce((previousValue, currentValue) => {
+    if (currentValue && currentValue.ponderationPractical) {
+      return previousValue + currentValue.ponderationPractical
+    }
+    return previousValue
+  }, 0)
 
-  const totalIndividual = overrideData.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationIndividual) {
-        return previousValue + currentValue.ponderationIndividual
-      }
-      return previousValue
-    },
-    0
-  )
+  const totalIndividual = overrideData.reduce((previousValue, currentValue) => {
+    if (currentValue && currentValue.ponderationIndividual) {
+      return previousValue + currentValue.ponderationIndividual
+    }
+    return previousValue
+  }, 0)
 
   const totalTime = totalTheory + totalPractical + totalIndividual
 

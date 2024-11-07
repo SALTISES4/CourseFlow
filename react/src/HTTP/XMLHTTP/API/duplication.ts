@@ -21,9 +21,9 @@ export function duplicateBaseItemQuery(
   objectType: string,
   projectID: number,
   callBackFunction = (_data: DuplicateBaseItemQueryResp) =>
-    console.log('success')
+    Utility.logger('success')
 ) {
-  console.log('duplicating base item')
+  Utility.logger('duplicating base item')
   const sendPostRequest = (url, data) => {
     API_POST(url, data).then((response: DuplicateBaseItemQueryResp) => {
       callBackFunction(response)

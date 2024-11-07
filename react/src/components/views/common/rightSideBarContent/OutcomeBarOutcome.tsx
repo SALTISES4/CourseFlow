@@ -1,7 +1,8 @@
 import { OutcomeTitle } from '@cf/components/common/UIPrimitives/Titles.ts'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import {
   TGetOutcomeByID,
   TOutcomeOutcomeByID,
@@ -9,7 +10,6 @@ import {
   getOutcomeOutcomeById
 } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import * as React from 'react'
 import { ChangeEvent } from 'react'
 import { connect } from 'react-redux'
@@ -282,9 +282,7 @@ export class OutcomeBarOutcomeUnconnected<
         {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
-              <img
-                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
-              />
+             <ArrowDropDownCircleIcon />
             </div>
             <div className="outcome-drop-text">{droptext}</div>
           </div>

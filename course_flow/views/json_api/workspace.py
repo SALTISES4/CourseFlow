@@ -4,7 +4,6 @@ from enum import Enum
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.db.models import ProtectedError, Q
-from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -46,6 +45,12 @@ class ObjectType(Enum):
 
 
 class WorkspaceEndpoint:
+    # @todo no...
+    # 1. needs to go away
+    # 2. filtering should happen on the server
+    # but then we would have to change a bunch of stuff including the room group names
+    # so clean up by user ID (publishing_user_id) and continue to filter on client for now
+    #
     # Updates an object's information using its serializer. This is
     # the most frequently used view, used to change almost any
     # non-foreign key fields on models
@@ -53,27 +58,28 @@ class WorkspaceEndpoint:
     @api_view(["POST"])
     # @user_can_edit(False)
     def update_value(request: Request) -> Response:
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
+        body = request.data
+        current_user_id = request.user.id
 
         try:
-            object_id = body.get("objectID")
+            object_id = body.get("object_id")
             object_type = body.get("object_type")
             data = body.get("data")
-            change_field_id = body.get("change_field_id", False)
+
             objects = DAO.get_model_from_str(object_type).objects
 
             if hasattr(objects, "get_subclass"):
                 object_to_update = objects.get_subclass(pk=object_id)
             else:
                 object_to_update = objects.get(pk=object_id)
+
             serializer = serializer_lookups_shallow[object_type](
                 object_to_update,
                 data=data,
                 partial=True,
                 context={"user": request.user},
             )
+
             Utility.save_serializer(serializer)
 
         except ValidationError as e:
@@ -83,12 +89,21 @@ class WorkspaceEndpoint:
             workflow = object_to_update.get_workflow()
             WorkflowUpdateEmitter.emit_workflow_update(
                 workflow,
-                WorkflowUpdateEmitter.change_field(object_id, object_type, data, change_field_id),
+                WorkflowUpdateEmitter.prepare_change_field_payload(
+                    object_id=object_id,
+                    object_type=object_type,
+                    json=data,
+                    publishing_user_id=current_user_id,
+                ),
             )
             if object_type == "outcome":
                 WorkflowUpdateEmitter.dispatch_to_parent_wf(
                     workflow,
-                    WorkflowUpdateEmitter.change_field(object_id, object_type, data),
+                    WorkflowUpdateEmitter.prepare_change_field_payload(
+                        object_id=object_id,
+                        object_type=object_type,
+                        json=data,
+                    ),
                 )
 
         except AttributeError as e:

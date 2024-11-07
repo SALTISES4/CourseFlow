@@ -1,5 +1,5 @@
-import * as Constants from '@cf/constants'
 import { NumTuple } from '@cf/types/common'
+import * as Constants from '@cf/utility/constants'
 import * as math from 'mathjs'
 
 // eslint-disable-next-line no-undef
@@ -45,7 +45,7 @@ class PathGenerator {
     try {
       this.findNextPoint()
     } catch (err) {
-      console.log('error calculating path')
+      Utility.logger('error calculating path')
     }
     this.fullArray = this.joinArrays()
     return this.fullArray

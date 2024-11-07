@@ -1,5 +1,5 @@
 import { ObjectSetType, ProjectDetailsType } from '@cf/types/common'
-import { formatDate } from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
 import { EProject } from '@XMLHTTP/types/entity'
 
 export function formatProjectEntity(project: EProject): ProjectDetailsType {
@@ -25,7 +25,7 @@ export function formatProjectEntity(project: EProject): ProjectDetailsType {
     description: project.description,
     isFavourite: project.favourite,
     isDeleted: project.deleted,
-    created: formatDate(project.createdOn),
+    created: Utility.formatDate(project.createdOn),
     disciplines: formattedDisciplines,
     objectSets: formattedObjectSets,
     permissionGroup: project.userPermissions,

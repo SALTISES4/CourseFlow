@@ -39,7 +39,7 @@ const FilterButton = ({
   }
 
   useEffect(() => {
-    //    console.log('rendering')
+    //    Utility.logger('rendering')
   }, [onChange, enabled, el])
 
   const onOptionClick = (option: SearchFilterOption) => {

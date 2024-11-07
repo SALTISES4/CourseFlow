@@ -1,5 +1,9 @@
-import { _t } from '@cf/utility/utilityFunctions'
-import { getWeekById, getWeekWorkflowByID } from '@cfFindState'
+import { _t } from '@cf/utility/Utility.class'
+import {
+  TGetWeekByIDType,
+  getWeekById,
+  getWeekWorkflowByID
+} from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import * as React from 'react'
 import { connect } from 'react-redux'
@@ -16,7 +20,7 @@ type OwnProps = NonNullable<unknown>
 
 type ConnectedProps = {
   workflow: TWorkflow
-  weeks: any[]
+  weeks: TGetWeekByIDType[]
 }
 
 type StateType = {
@@ -36,12 +40,7 @@ class GridViewUnconnected extends React.Component<PropsType, StateType> {
     // const data = this.props.workflow
 
     const weeks = this.props.weeks.map((week, index) => (
-      <GridWeek
-        key={index}
-        // renderer={this.props.renderer}
-        data={week.data}
-        rank={index}
-      />
+      <GridWeek key={index} data={week.data} rank={index} />
     ))
 
     return (

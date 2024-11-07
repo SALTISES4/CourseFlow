@@ -1,5 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType, LibraryObjectType, WorkspaceType } from '@cf/types/enum'
+import Utility from "@cf/utility/Utility.class";
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
@@ -150,7 +151,7 @@ export function deleteSelfQueryLegacy(
   objectId: number,
   objectType: CfObjectType,
   soft = false,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const urlHard = apiPaths.json_api.workspace.delete
   const urlSoft = apiPaths.json_api.workspace.delete_soft
@@ -170,7 +171,7 @@ export function deleteSelfQueryLegacy(
 export function restoreSelfQueryLegacy(
   objectId: number,
   objectType: CfObjectType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const base = apiPaths.json_api.workspace.restore
   const url = generatePath(base, { id: objectId })
@@ -188,7 +189,7 @@ export function restoreSelfQueryLegacy(
 // export function insertChildQuery(
 //   objectId: number,
 //   objectType: CfObjectType,
-//   callBackFunction = (_data: EmptyPostResp) => console.log('success')
+//   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 // ) {
 //   API_POST(apiPaths.json_api.workflow.object__insert_child, {
 //     objectId: objectId,
@@ -207,7 +208,7 @@ export function restoreSelfQueryLegacy(
 //   parentId: number,
 //   parentType: CfObjectType,
 //   throughType: CfObjectType,
-//   callBackFunction = (_data: EmptyPostResp) => console.log('success')
+//   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 // ) {
 //   API_POST(apiPaths.json_api.workflow.object__insert_sibling, {
 //     objectId,
@@ -220,7 +221,7 @@ export function restoreSelfQueryLegacy(
 //       callBackFunction(response)
 //     })
 //     .catch((e) => {
-//       console.log(e)
+//       Utility.logger(e)
 //     })
 // }
 
@@ -231,7 +232,7 @@ export function duplicateSelfQuery(
   parentId: number,
   parentType: CfObjectType,
   throughType: CfObjectType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.duplicate_self, {
     parentId: parentId,

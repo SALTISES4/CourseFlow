@@ -1,6 +1,6 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import * as Constants from '@cf/utility/constants'
+import { _t } from '@cf/utility/Utility.class'
 import UserLabel from '@cfComponents/dialog/components/UserLabel'
-import * as Constants from '@cfConstants'
 import SearchIcon from '@mui/icons-material/Search'
 import { getUserListQuery } from '@XMLHTTP/API/user'
 import * as React from 'react'

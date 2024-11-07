@@ -1,6 +1,6 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { Utility } from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import { FormField } from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
 import {

@@ -94,17 +94,22 @@ class WorkflowEndpoint:
         try:
             workflow = Workflow.objects.get(pk=pk)
         except Workflow.DoesNotExist:
-            return Response({"detail": "Workflow not found"}, status=404)
+            return Response({"message": "Workflow not found"}, status=status.HTTP_404_NOT_FOUND)
 
         try:
             data_package = WorkflowService.get_workflow_full(workflow.get_subclass(), current_user)
         except AttributeError as e:
             logger.exception("log of the errors ")
-            return Response({"error": "hello error"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "error fetching workflow",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(
             {
-                "message": "success",
+                "message": "Workflow fetched successfully!",
                 "data_package": data_package,
             },
             status=status.HTTP_200_OK,
@@ -116,10 +121,8 @@ class WorkflowEndpoint:
     def fetch_parent_detail(
         request: Request,
     ) -> Response:
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        workflow = Workflow.objects.get(pk=body.get("workflowPk"))
+        body = request.data
+        workflow = Workflow.objects.get(pk=body.get("workflow_pk"))
 
         try:
             data_package = get_parent_outcome_data(workflow.get_subclass(), request.user)
@@ -130,7 +133,7 @@ class WorkflowEndpoint:
 
         return Response(
             {
-                "message": "success",
+                "message": "Workflow fetched successfully!",
                 "data_package": data_package,
             },
             status=status.HTTP_200_OK,
@@ -143,10 +146,8 @@ class WorkflowEndpoint:
     def fetch_child_workflow_data(
         request: Request,
     ) -> Response:
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        node = Node.objects.get(pk=body.get("nodePk"))
+        body = request.data
+        node = Node.objects.get(pk=body.get("node_pk"))
 
         try:
             data_package = get_child_outcome_data(
@@ -155,15 +156,12 @@ class WorkflowEndpoint:
         except AttributeError as e:
             logger.exception("An error occurred")
             return Response(
-                {
-                    "action": "error",
-                },
+                {"message": "Error fetching workflow"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         return Response(
             {
-                "message": "success",
                 "data_package": data_package,
             },
             status=status.HTTP_200_OK,
@@ -186,11 +184,15 @@ class WorkflowEndpoint:
 
         except AttributeError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "Error fetching workflow",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(
             {
-                "message": "success",
                 "parent_workflows": data_package,
             },
             status=status.HTTP_200_OK,
@@ -219,7 +221,7 @@ class WorkflowEndpoint:
         workflow = serializer.save(author=request.user)
 
         return Response(
-            {"message": "success", "data_package": {"id": workflow.id}},
+            {"message": "Workflow created", "data_package": {"id": workflow.id}},
             status=status.HTTP_201_CREATED,
         )
 
@@ -290,7 +292,7 @@ class WorkflowEndpoint:
             logger.exception("An error occurred")
             return Response(
                 {
-                    "error": "you have error",
+                    "message": "Error copying to proj",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -354,16 +356,14 @@ class WorkflowEndpoint:
         @todo what does this do?
         :return:
         """
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
+        body = request.data
         type_filter = body.get("type_filter")
-        get_strategies = body.get("get_strategies", "false")
-        projectPk = body.get("projectPk", False)
-        self_only = body.get("self_only", "false")
+        get_strategies = body.get("get_strategies", False)
+        projectPk = body.get("project_pk", None)
+        self_only = body.get("self_only", False)
 
         if projectPk:
-            project = Project.objects.get(pk=body.get("projectPk"))
+            project = Project.objects.get(pk=body.get("project_pk"))
         else:
             project = None
 
@@ -400,13 +400,10 @@ class WorkflowEndpoint:
             :return:
         """
 
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        # last_time = time.time()
+        body = request.data
         try:
-            node_id = body.get("nodePk")
-            workflow_id = body.get("workflowPk")
+            node_id = body.get("node_pl")
+            workflow_id = body.get("workflow_pk")
             node = Node.objects.get(pk=node_id)
             parent_workflow = node.get_workflow()
             original_workflow = node.linked_workflow
@@ -420,11 +417,14 @@ class WorkflowEndpoint:
                 linked_workflow_data = None
             else:
                 workflow = Workflow.objects.get_subclass(pk=workflow_id)
+
                 if not DAO.check_possible_parent(workflow, parent_workflow, False):
                     raise ValidationError
                 set_linked_workflow(node, workflow)
+
                 if node.linked_workflow is None:
                     raise ValidationError("Project could not be found")
+
                 linked_workflow = node.linked_workflow.id
                 linked_workflow_data = LinkedWorkflowSerializerShallow(
                     node.linked_workflow,
@@ -442,12 +442,15 @@ class WorkflowEndpoint:
         }
         if original_workflow is not None:
             WorkflowUpdateEmitter.emit_parent_updated(original_workflow)
+
         if workflow is not None:
             WorkflowUpdateEmitter.emit_parent_updated(workflow)
+
         WorkflowUpdateEmitter.emit_workflow_update(
             parent_workflow, WorkflowUpdateEmitter.set_linked_workflow_action(response_data)
         )
-        return Response({"message": "success"})
+
+        return Response({"message": "Workflow successfully linked to node"})
 
 
 def set_linked_workflow(node: Node, workflow):

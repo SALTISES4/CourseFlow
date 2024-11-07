@@ -1,5 +1,6 @@
+import * as Constants from '@cf/utility/constants'
+import Utility from "@cf/utility/Utility.class";
 import Loader from '@cfComponents/UIPrimitives/Loader'
-import * as Constants from '@cfConstants'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import ComparisonView from '@cfViews/ProjectComparisonView/ComparisonView'
@@ -27,7 +28,6 @@ export class Comparison {
     this.userPermission = props.userPermission // @todo double check we're getting this from data object
 
     //@todo this a jquery global function and needs to be refactored / removed
-    makeActiveSidebar('#project' + this.projectData.id)
   }
 
   // @todo as with Workflow component, calling this render function from a child component of
@@ -82,7 +82,7 @@ export class Comparison {
         container[0]
       )
     } else {
-      console.log('comparsion view not supported ')
+      Utility.logger('comparsion view not supported ')
     }
   }
 }

@@ -1,7 +1,7 @@
 import { WorkflowContextType } from '@cf/context/workFlowConfigContext'
 import { EWorkflow } from '@cf/HTTP/XMLHTTP/types/entity'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import AlignmentView from '@cfViews/WorkflowView/componentViews/AlignmentView/AlignmentView'
 import GridView from '@cfViews/WorkflowView/componentViews/GridView/GridView'

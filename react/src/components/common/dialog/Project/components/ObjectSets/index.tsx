@@ -1,11 +1,11 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import { objectSetsTypes } from '@cf/utility/constants'
+import { _t } from '@cf/utility/Utility.class'
 import {
   ObjectSetOptions,
   ObjectSetType
 } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { OnUpdateType } from '@cfComponents/dialog/Project/components/ProjectForm'
 import * as SCDialog from '@cfComponents/dialog/styles'
-import { objectSetsTypes } from '@cfConstants'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'

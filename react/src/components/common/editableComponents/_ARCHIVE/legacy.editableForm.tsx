@@ -1,11 +1,11 @@
-import * as Constants from '@cf/constants'
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CfObjectType } from '@cf/types/enum'
-import * as Utility from '@cf/utility/utilityFunctions'
+import * as Constants from '@cf/utility/constants'
+import Utility from '@cf/utility/Utility.class'
 // import $ from 'jquery'
-import { _t } from '@cf/utility/utilityFunctions'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import { _t } from '@cf/utility/Utility.class'
+import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import CommentBox from '@cfEditableComponents/components/CommentBox'
@@ -109,18 +109,6 @@ class EditableComponent<
       field,
       newValue
     )
-  }
-
-  getBorderStyle() {
-    const data = this.props.data
-    if (!data) {
-      return
-    }
-
-    const border = data.lock ? '2px solid ' + data.lock.userColour : undefined
-    return {
-      border
-    }
   }
 
   toggleDrop = (evt: React.MouseEvent) => {
@@ -542,7 +530,7 @@ class EditableComponent<
           disabled={readOnly}
           id="toggle-strategy-editor"
           onClick={() => {
-            const loader = new UtilityLoader('body')
+            const loader = new UtilityLoaderClass('body')
             toggleStrategyQuery(data.id, data.isStrategy, (responseData) => {
               loader.endLoad()
             })

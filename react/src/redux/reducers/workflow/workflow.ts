@@ -105,13 +105,6 @@ function workflowReducer(
     }
 
     case WorkflowActions.CHANGE_FIELD: {
-      if (
-        action.payload.changeFieldId ===
-        // @ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldId
-      ) {
-        return state
-      }
       return {
         ...state,
         ...action.payload.json

@@ -1,3 +1,4 @@
+import Utility from "@cf/utility/Utility.class";
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -70,7 +71,7 @@ const EditOutcome = (props: OutcomeForm) => {
               multiple
               size="small"
               options={objectSetOptions}
-              onChange={(_, v) => console.log('changed to', v)}
+              onChange={(_, v) => Utility.logger('changed to', v)}
               isOptionEqualToValue={(option, value) =>
                 option.value === value.value
               }

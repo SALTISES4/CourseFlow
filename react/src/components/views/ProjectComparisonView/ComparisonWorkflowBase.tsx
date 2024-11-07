@@ -1,7 +1,5 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
-import { _t } from '@cf/utility/utilityFunctions'
-import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
 import EditableComponent, {
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
@@ -9,10 +7,7 @@ import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState } from '@cfRedux/types/type'
-import {
-  getWorkflowParentDataQuery,
-  getWorkflowParentDataQueryLegacy
-} from '@XMLHTTP/API/workflow'
+import { getWorkflowParentDataQueryLegacy } from '@XMLHTTP/API/workflow'
 import * as React from 'react'
 import { DispatchProp, connect } from 'react-redux'
 

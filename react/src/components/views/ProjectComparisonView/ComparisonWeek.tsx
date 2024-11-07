@@ -1,14 +1,14 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
 import { TGetWeekByIDType, getWeekById } from '@cfFindState'
 // @components
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import ComparisonNodeWeek from '@cfViews/ProjectComparisonView/ComparisonNodeWeek'
 import {
   WeekUnconnected,
   WeekUnconnectedPropsType
-} from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/Week'
+} from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/Week'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
@@ -41,7 +41,7 @@ export class WeekComparisonUnconnected extends WeekUnconnected<PropsType> {
 
   componentDidUpdate() {
     this.makeDragAndDrop()
-    Utility.triggerHandlerEach(
+    ThemeHelper.triggerHandlerEach(
       $(this.mainDiv.current).find('.node'),
       'component-updated'
     )

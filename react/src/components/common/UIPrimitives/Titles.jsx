@@ -1,5 +1,5 @@
 import { CFRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import * as React from 'react'
 import { NavLink, generatePath } from 'react-router-dom'
@@ -27,33 +27,5 @@ export class WeekTitle extends React.Component {
     const data = this.props.data
     const defaultText = data.weekTypeDisplay + ' ' + (this.props.rank + 1)
     return <TitleText text={data.title} defaultText={defaultText} />
-  }
-}
-
-//Title text for a node
-export class NodeTitle extends React.Component {
-  render() {
-    const data = this.props.data
-    let text
-    if (data.representsWorkflow && data.linkedWorkflowData) {
-      text = data.linkedWorkflowData.title
-      if (data.linkedWorkflowData.code) {
-        text = data.linkedWorkflowData.code + ' - ' + text
-      }
-    } else {
-      text = data.title
-    }
-
-    if (text == null || text == '') {
-      text = _t('Untitled')
-    }
-
-    return (
-      <div
-        className="node-title"
-        title={text}
-        dangerouslySetInnerHTML={{ __html: text }}
-      />
-    )
   }
 }

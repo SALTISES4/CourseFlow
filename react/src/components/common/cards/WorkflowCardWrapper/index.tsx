@@ -1,6 +1,6 @@
 import useNavigateToLibraryItem from '@cf/hooks/useNavigateToLibraryItem'
 import { LibraryObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
 import { workflowTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import ErrorIcon from '@mui/icons-material/Error'

@@ -1,18 +1,18 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cfEditableComponents/EditableComponent'
 import { TGetOutcomeByID, getOutcomeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
+import ArrowDropDownCircleIcon from "@mui/icons-material/ArrowDropDownCircle";
+import { Dispatch } from '@reduxjs/toolkit'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 import SimpleOutcomeOutcome from './SimpleOutcomeOutcome'
 
@@ -24,6 +24,7 @@ type ConnectedProps = {
   outcome: TGetOutcomeByID
   workflow: TWorkflow
 }
+
 type OwnProps = {
   objectId: number
   parentId: number
@@ -31,18 +32,13 @@ type OwnProps = {
   checkHidden?: () => void
   comments?: boolean
   edit?: boolean
-  // throughParentId: number
-  // legacyRenderer: EditableComponentWithCommentsType['legacyRenderer'] & {
-  //   viewComments: any
-  //   selectionManager: any
-  // }
-} & EditableComponentProps
+} & { dispatch?: Dispatch<Action> }
 
 export type SimpleOutcomeUnconnectedPropsType = OwnProps
 
 type StateProps = {
   isDropped: boolean
-} & EditableComponentStateType
+}
 
 type PropsType = ConnectedProps & OwnProps
 
@@ -50,16 +46,18 @@ type PropsType = ConnectedProps & OwnProps
  * A simple outcome block without any action buttons for displaying
  * outcomes tagged to nodes or other outcomes.
  */
-export class SimpleOutcomeUnconnected extends EditableComponent<
+export class SimpleOutcomeUnconnected extends React.Component<
   PropsType,
   StateProps
 > {
-  static contextType = WorkflowConfigContext
   private childrenBlock: React.RefObject<HTMLDivElement>
   private manager: BetterSelectionManager
+  private objectType: CfObjectType
+  private mainDiv: React.RefObject<HTMLDivElement>
 
   constructor(props: PropsType) {
     super(props)
+    this.mainDiv = React.createRef()
     this.objectType = CfObjectType.OUTCOME
     this.manager = new BetterSelectionManager(this.props.dispatch)
 
@@ -97,11 +95,9 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
       <SimpleOutcomeOutcome
         key={outcomeoutcome}
         objectId={outcomeoutcome}
-        parentId={this.props.data.id}
-        // renderer={this.props.renderer}
+        parentId={this.props.parentId}
         comments={this.props.comments}
         edit={this.props.edit}
-        //  legacyRenderer={this.props.legacyRenderer}
       />
     )
   }
@@ -110,9 +106,9 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const data = this.props.outcome.data
 
-    if (Utility.checkSetHidden(data, this.props.objectSets)) {
+    if (Utility.checkSetHidden(data, this.props.outcome.objectSets)) {
       return null
     }
 
@@ -141,7 +137,8 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
         )
 
     const comments = this.props.workflow.workflowPermissions.viewComments ? (
-      <this.AddCommenting />
+      // <this.AddCommenting />
+      <>add commentbox</>
     ) : null
     //     const editPortal = this.props.edit ? this.addEditable(data, true) : null
 
@@ -156,7 +153,10 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
         {/*{editPortal}*/}
         <div
           className={cssClass}
-          style={this.getBorderStyle()}
+          style={ThemeHelper.getBorderStyle({
+            isLocked: !!this.props.outcome.data.lock,
+            colour: this.props.outcome.data.lock.userColour
+          })}
           ref={this.mainDiv}
           onClick={(e) => {
             e.stopPropagation()
@@ -178,9 +178,7 @@ export class SimpleOutcomeUnconnected extends EditableComponent<
           {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
             <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
               <div className="outcome-drop-img">
-                <img
-                  src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
-                />
+                 <ArrowDropDownCircleIcon />
               </div>
               <div className="outcome-drop-text">{droptext}</div>
             </div>

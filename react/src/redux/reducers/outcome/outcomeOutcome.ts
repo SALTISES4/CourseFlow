@@ -146,7 +146,7 @@ function outcomeOutcomeReducer(
   //     return newState
   //   }
   //
-  //   case 'outcomeoutcome/changeID': {
+  //   case 'outcomeoutcome/changeId': {
   //     for (var i = 0; i < state.length; i++) {
   //       if (state[i].id == action.payload.oldId) {
   //         var newState = state.slice()

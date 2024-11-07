@@ -37,7 +37,7 @@ class WorkflowUpdateEmitter:
         async_to_sync(channel_layer.group_send)(room_group_name, camel_case_message)
 
     @staticmethod
-    def dispatch_to_parent_wf(workflow: Workflow, action):
+    def dispatch_to_parent_wf(workflow: Workflow, action) -> None:
         channel_layer = get_channel_layer()
 
         for parent_node in Node.objects.filter(linked_workflow=workflow):
@@ -60,7 +60,7 @@ class WorkflowUpdateEmitter:
             )
 
     @staticmethod
-    def emit_parent_updated(workflow: Workflow):
+    def emit_parent_updated(workflow: Workflow) -> None:
         channel_layer = get_channel_layer()
 
         message = {
@@ -75,7 +75,7 @@ class WorkflowUpdateEmitter:
         )
 
     @staticmethod
-    def emit_child_updated(workflow: Workflow, child_workflow: Workflow):
+    def emit_child_updated(workflow: Workflow, child_workflow: Workflow) -> None:
         channel_layer = get_channel_layer()
 
         message = {
@@ -91,7 +91,7 @@ class WorkflowUpdateEmitter:
         )
 
     @staticmethod
-    def dispatch_wf_lock(workflow: Workflow, action):
+    def dispatch_wf_lock(workflow: Workflow, action) -> None:
         channel_layer = get_channel_layer()
 
         message = {
@@ -110,7 +110,7 @@ class WorkflowUpdateEmitter:
     # developer has reused the same idea as action creators
     #########################################################
     @staticmethod
-    def unlock(object_id: int, object_type):
+    def unlock(object_id: int, object_type) -> dict:
         return {
             "lock": False,
             "object_id": object_id,
@@ -123,21 +123,21 @@ class WorkflowUpdateEmitter:
     # it's also a problem that there is this tight coupling to the redux
     # event naming
     @staticmethod
-    def change_through_id(through_type, old_id: int, new_id: int, extra_data):
+    def change_through_id(through_type, old_id: int, new_id: int, extra_data) -> dict:
         return {
             "type": through_type + "/changeID",
             "payload": {"old_id": old_id, "new_id": new_id, **extra_data},
         }
 
     @staticmethod
-    def delete_self_action(object_id: int, objectType, parent_id: int, extra_data):
+    def delete_self_action(object_id: int, objectType, parent_id: int, extra_data) -> dict:
         return {
             "type": objectType + "/deleteSelf",
             "payload": {"id": object_id, "parent_id": parent_id, "extra_data": extra_data},
         }
 
     @staticmethod
-    def delete_self_soft_action(object_id: int, objectType, parent_id: int, extra_data):
+    def delete_self_soft_action(object_id: int, objectType, parent_id: int, extra_data) -> dict:
         return {
             "type": objectType + "/deleteSelfSoft",
             "payload": {
@@ -150,7 +150,7 @@ class WorkflowUpdateEmitter:
     @staticmethod
     def restore_self_action(
         object_id: int, objectType, parent_id: int, throughparentId, throughparent_index, extra_data
-    ):
+    ) -> dict:
         return {
             "type": objectType + "/restoreSelf",
             "payload": {
@@ -163,59 +163,64 @@ class WorkflowUpdateEmitter:
         }
 
     @staticmethod
-    def insert_below_action(response_data, object_type):
+    def insert_below_action(response_data, object_type) -> dict:
         return {"type": object_type + "/insertBelow", "payload": response_data}
 
     @staticmethod
-    def insert_child_action(response_data, object_type):
+    def insert_child_action(response_data, object_type) -> dict:
         return {"type": object_type + "/insertChild", "payload": response_data}
 
     @staticmethod
-    def set_linked_workflow_action(response_data):
+    def set_linked_workflow_action(response_data) -> dict:
         return {"type": "node/setLinkedWorkflow", "payload": response_data}
 
     @staticmethod
-    def new_node_action(response_data):
+    def new_node_action(response_data) -> dict:
         return {"type": "node/newNode", "payload": response_data}
 
     @staticmethod
-    def new_outcome_action(response_data):
+    def new_outcome_action(response_data) -> dict:
         return {"type": "outcome/newOutcome", "payload": response_data}
 
     @staticmethod
-    def new_node_link_action(response_data):
+    def new_node_link_action(response_data) -> dict:
         return {"type": "nodelink/newNodeLink", "payload": response_data}
 
     @staticmethod
-    def change_field(object_id: int, object_type: str, json, change_field_id=0):
+    def prepare_change_field_payload(
+        object_id: int, object_type: str, json, publishing_user_id: int = None
+    ) -> dict:
         return {
             "type": object_type + "/changeField",
             "payload": {
                 "id": object_id,
                 "object_type": object_type,
                 "json": json,
-                "change_field_id": change_field_id,
+                "publishing_user_id": publishing_user_id,
             },
         }
 
     @staticmethod
-    def change_field_many(object_ids: [int], object_type, json, change_field_id=0):
+    def change_field_many(object_ids: [int], object_type, json, publishing_user_id) -> dict:
+        """
+        no...
+        """
         return {
             "type": object_type + "/changeFieldMany",
             "payload": {
                 "ids": object_ids,
                 "object_type": object_type,
                 "json": json,
-                "change_field_id": change_field_id,
+                "publishing_user_id": publishing_user_id,
             },
         }
 
     @staticmethod
-    def update_outcomenode_degree_action(response_data):
+    def update_outcomenode_degree_action(response_data) -> dict:
         return {"type": "outcomenode/updateDegree", "payload": response_data}
 
     @staticmethod
-    def update_outcomehorizontallink_degree_action(response_data):
+    def update_outcomehorizontallink_degree_action(response_data) -> dict:
         return {
             "type": "outcomehorizontallink/updateDegree",
             "payload": response_data,

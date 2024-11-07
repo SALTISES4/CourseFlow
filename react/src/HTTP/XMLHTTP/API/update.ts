@@ -1,12 +1,11 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import Utility from '@cf/utility/Utility.class'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
-//
 /**
  * @updateValue
- * Update the value of an object in database. JSON may be partial. Debounced in case the user is typing a lot.
- *
+ * @todo desc: TBD
  * endpoint: workflow/updatevalue/
  *
  * @param objectId
@@ -20,49 +19,20 @@ export function updateValueQuery(
   objectType: any,
   json: any,
   changeField = false,
-  callBackFunction = (data: EmptyPostResp) => console.log('success')
+  callBackFunction = (data: EmptyPostResp) => {
+    return Utility.logger('success')
+  }
 ) {
-  const t = 1000
-  const previousCall = document.lastUpdateCall
-
-  document.lastUpdateCall = {
-    time: Date.now(),
-    id: objectId,
-    type: objectType,
-    field: Object.keys(json)[0]
-  }
-
-  if (previousCall && document.lastUpdateCall.time - previousCall.time <= t) {
-    clearTimeout(document.lastUpdateCallTimer)
-  }
-  if (
-    previousCall &&
-    (previousCall.id !== document.lastUpdateCall.id ||
-      previousCall.type !== document.lastUpdateCall.type ||
-      previousCall.field !== document.lastUpdateCall.field)
-  ) {
-    document.lastUpdateCallFunction()
-  }
   const postObject = {
     objectId: objectId,
     objectType: objectType,
-    data: json,
-    changeFieldId: 0
+    data: json
   }
 
-  if (changeField) {
-    // @ts-ignore
-    postObject.changeFieldId = // @ts-ignore
-      COURSEFLOW_APP.contextData.changeFieldId as number
-  }
-
-  document.lastUpdateCallFunction = () => {
-    const url = apiPaths.json_api.workspace.field__update
-    API_POST(url, postObject).then((response: EmptyPostResp) => {
-      callBackFunction(response)
-    })
-  }
-  document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction, t)
+  const url = apiPaths.json_api.workspace.field__update
+  API_POST(url, postObject).then((response: EmptyPostResp) => {
+    callBackFunction(response)
+  })
 }
 
 //As above, but not debounced
@@ -70,7 +40,7 @@ export function updateValueInstantQuery(
   objectId: number,
   objectType: any,
   json: any,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.workspace.field__update
   API_POST(url, {
@@ -85,7 +55,7 @@ export function updateValueInstantQuery(
 //When the drag is complete, this is called to update the back-end
 export function dragAction(
   actionData,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   COURSEFLOW_APP.tinyLoader.startLoad()
   $('.ui-draggable').draggable('disable')
@@ -107,7 +77,7 @@ export function insertedAtInstant(
   parentType,
   newPosition,
   throughType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   console.log(parentType)
   COURSEFLOW_APP.tinyLoader.startLoad()
@@ -136,7 +106,7 @@ export function updateOutcomenodeDegree(
   nodeId: number,
   outcomeID: number,
   value,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(
     COURSEFLOW_APP.globalContextData.path.post_paths.update_outcomenode_degree,
@@ -155,7 +125,7 @@ export function updateOutcomehorizontallinkDegree(
   outcomePk,
   outcome2Pk,
   degree,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(
     COURSEFLOW_APP.globalContextData.path.post_paths
@@ -175,7 +145,7 @@ export function updateOutcomehorizontallinkDegree(
 export function setLinkedWorkflow(
   nodeId,
   workflowId,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.workflow.link
   API_POST(url, {
@@ -196,7 +166,7 @@ export function setLinkedWorkflow(
 export function toggleStrategyQuery(
   weekPk: number,
   isStrategy: boolean,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.workflow.strategy__toggle
   API_POST(url, {
@@ -212,7 +182,7 @@ export function updateObjectSet(
   objectType,
   objectsetPk,
   add,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.update_object_set, {
     objectId: objectId,

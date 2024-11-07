@@ -22,6 +22,38 @@ import * as Redux from 'redux'
 
 // @todo need to wrap these up
 
+/*******************************************************
+ * Previous developers have implemented user message author filtering
+ *  - on client side (as there are not channels / groups per user)
+ *  - only on SOME actions
+ *  - these action revolve around the 'CHANGE_FIELD' action type for
+ *   different domains/entities
+ *
+ *   OutcomeActions.CHANGE_FIELD:
+ *   OutcomeBaseActions.CHANGE_FIELD:
+ *   OutcomeActions.changeField_MANY:
+ *   OutcomeBaseActions.changeField_MANY:
+ *   ColumnActions.CHANGE_FIELD:
+ *   NodeLinkActions.CHANGE_FIELD
+ *   WorkflowActions.CHANGE_FIELD:
+ *   WorkflowActions.CHANGE_FIELD
+ *   NodeActions.CHANGE_FIELD
+ *
+ *   These actions follow a predictable pattern
+ *   it is moved to filter on user id to make it more standard
+ *   it follows the generic patterns of
+ *     - UI updates
+ *     - UI calls dispatch
+ *     - UI makes REST call
+ *     - Socket server emits similar redux call (i.e. a group update)
+ *     - local client filters on user publisher ID
+ *     - note this filter is now moved out of redux and will happen close to the socket connection
+ *
+ *    TBD: why are these the only websocket calls being filtered?
+ *
+ *
+ *******************************************************/
+
 export const rootWorkflowReducers = {
   workflow: workflowReducer,
   columnworkflow: columnworkflowReducer,

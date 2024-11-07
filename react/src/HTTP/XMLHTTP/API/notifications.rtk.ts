@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import * as Utility from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
 import { TNotification } from '@cfRedux/types/type'
 import { ENotification } from '@XMLHTTP/types/entity'
 

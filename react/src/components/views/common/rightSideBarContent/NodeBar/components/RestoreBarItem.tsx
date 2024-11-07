@@ -1,6 +1,6 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 // import $ from 'jquery'
 import {
   deleteSelfQueryLegacy,

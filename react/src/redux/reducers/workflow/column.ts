@@ -1,5 +1,5 @@
-import {CfLock} from "@cf/types/common";
-import { _t } from '@cf/utility/utilityFunctions'
+import { CfLock } from '@cf/types/common'
+import { _t } from '@cf/utility/Utility.class'
 import {
   ColumnActions,
   CommonActions,
@@ -39,7 +39,7 @@ interface InsertBelowAction extends AnyAction {
 
 interface ChangeFieldAction extends AnyAction {
   type: ColumnActions.CHANGE_FIELD
-  payload: { id: number; json: any; changeFieldId?: number }
+  payload: { id: number; json: any }
 }
 
 interface ReloadCommentsAction extends AnyAction {
@@ -128,12 +128,6 @@ export default function columnReducer(
       return [...state, action.payload.newModel]
 
     case ColumnActions.CHANGE_FIELD:
-      if (
-        action.payload.changeFieldId ===
-        COURSEFLOW_APP.contextData.changeFieldId
-      ) {
-        return state
-      }
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }

@@ -1,6 +1,6 @@
 import { CookieTypes, useCookies } from '@cf/context/cookieContext'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import CloseIcon from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'

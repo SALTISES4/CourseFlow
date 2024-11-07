@@ -3,7 +3,7 @@ import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { PermissionGroup } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
 import { permissionGroupMenuOptions } from '@cf/utility/permissions'
-import { getInitials } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import MenuButton from '@cfComponents/menu/MenuButton'
 import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
@@ -52,8 +52,8 @@ const UserList = ({
       }
     })
 
-  // console.log({ workspaceType })
-  // console.log({ data })
+  // Utility.logger({ workspaceType })
+  // Utility.logger({ data })
 
   const [mutate, { isError: isMutateError, error: mutateError, isSuccess }] =
     useWorkspaceUserUpdateMutation()
@@ -93,7 +93,7 @@ const UserList = ({
         <SC.PermissionThumbnail>
           <ListItemAvatar>
             <Avatar alt={author.firstName}>
-              {getInitials(author.firstName)}
+              {ThemeHelper.getInitials(author.firstName)}
             </Avatar>
           </ListItemAvatar>
           <ListItemText primary={author.firstName} secondary={author.email} />
@@ -104,7 +104,9 @@ const UserList = ({
           return (
             <SC.PermissionThumbnail key={user.id}>
               <ListItemAvatar>
-                <Avatar alt={user.firstName}>{getInitials(user.name)}</Avatar>
+                <Avatar alt={user.firstName}>
+                  {ThemeHelper.getInitials(user.name)}
+                </Avatar>
               </ListItemAvatar>
               <ListItemText primary={user.username} secondary={user.email} />
               <MenuButton

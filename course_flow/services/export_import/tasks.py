@@ -101,7 +101,9 @@ def async_import_file_data(pk, object_type, task_type, file_json, user_id):
     if object_type == "workflow":
         WorkflowUpdateEmitter.emit_workflow_update(
             model_object,
-            WorkflowUpdateEmitter.change_field(pk, "workflow", {"importing": True}, False),
+            WorkflowUpdateEmitter.prepare_change_field_payload(
+                object_id=pk, object_type="workflow", json={"importing": True}
+            ),
         )
 
     cache.set(object_type + str(pk) + "importing", True, 300)
@@ -123,5 +125,9 @@ def async_import_file_data(pk, object_type, task_type, file_json, user_id):
     if object_type == "workflow":
         WorkflowUpdateEmitter.emit_workflow_update(
             model_object,
-            WorkflowUpdateEmitter.change_field(pk, "workflow", {"importing": False}, False),
+            WorkflowUpdateEmitter.prepare_change_field_payload(
+                object_id=pk,
+                object_type="workflow",
+                json={"importing": False},
+            ),
         )

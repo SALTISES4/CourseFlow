@@ -1,56 +1,48 @@
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
-import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
-import * as Constants from '@cfConstants'
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cfEditableComponents/EditableComponent'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
+import { AppState, TColumn, TNode, TWorkflow } from '@cfRedux/types/type'
+import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
+import { Dispatch } from '@reduxjs/toolkit'
+import clsx from 'clsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 type OwnProps = {
-  // renderer: any
-  data: any
-} & EditableComponentProps
+  node: TNode
+  parentId: number
+} & { dispatch?: Dispatch<Action> }
+
 type ConnectedProps = {
   column: TColumn
   workflow: TWorkflow
 }
 type PropsType = OwnProps & ConnectedProps
-type StateProps = EditableComponentStateType
+type StateProps = {}
 /**
  * A node in the grid view
  */
-class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
-  static contextType = WorkflowConfigContext
-  declare context: React.ContextType<typeof WorkflowConfigContext>
+class GridNodeUnconnected extends React.Component<PropsType, StateProps> {
   private manager: BetterSelectionManager
+  private objectType: CfObjectType
+  private mainDiv: React.RefObject<HTMLDivElement>
 
   constructor(props: PropsType) {
     super(props)
     this.manager = new BetterSelectionManager(this.props.dispatch)
-
+    this.mainDiv = React.createRef()
     this.objectType = CfObjectType.NODE
   }
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const selectionManager = this.context.selectionManager
-    const data = this.props.data
+  Ponderation = () => {
+    const node = this.props.node
+    const dataOverride = node.representsWorkflow
+      ? { ...node, ...node.linkedWorkflowData, id: node.id }
+      : node
 
-    const dataOverride = data.representsWorkflow
-      ? { ...data, ...data.linkedWorkflowData, id: data.id }
-      : data
-    // this was moved from the return function
-    // because this is not a returned element
-
-    const ponderation = (
+    return (
       <div className="grid-ponderation">
         {dataOverride.ponderationTheory +
           '/' +
@@ -59,44 +51,54 @@ class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
           dataOverride.ponderationIndividual}
       </div>
     )
+  }
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+  render() {
+    const node = this.props.node
 
     const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour(this.props.column),
-      outline: data.lock ? '2px solid ' + data.lock.userColour : undefined
+      backgroundColor: Constants.getColumnColour({
+        columnType: this.props.column.columnType,
+        colour: this.props.column.colour
+      }),
+      outline: node.lock ? '2px solid ' + node.lock.userColour : undefined
     }
-
-    const cssClass = [
-      'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],
-      data.isDropped ? 'dropped' : '',
-      data.lock ? 'locked locked-' + data.lock.userId : ''
-    ].join(' ')
 
     const permissions = calcWorkflowPermissions(
       this.props.workflow.userPermissions
     )
-    const comments = permissions.read ? <this.AddCommenting /> : ''
+    //    const comments = permissions.read ? <AddCommenting /> : ''
+    const comments = permissions.read ? <>commentbox placeholder</> : ''
 
     //     const portal = this.addEditable(dataOverride, true)
+
     return (
       <>
         {/*{portal}*/}
         <div
+          id={String(node.id)}
+          className={clsx(
+            `node column-${node.column}`,
+            Constants.nodeKeys[node.nodeType],
+            node.isDropped && 'dropped',
+            node.lock && `locked locked-${node.lock.userId}`
+          )}
           style={style}
-          id={data.id}
           ref={this.mainDiv}
           onClick={(e) => {
             e.stopPropagation()
             this.manager.updateSidebar(
-              data.id,
+              node.id,
               this.objectType,
-              this.props.parentId
+              this.props.node.id
             )
           }}
-          className={cssClass}
         >
           <div className="node-top-row">
-            <NodeTitle data={data} />
-            {ponderation}
+            <NodeTitle node={node} />
+            <this.Ponderation />
           </div>
           <div className="mouseover-actions">{comments}</div>
           <div className="side-actions">
@@ -112,7 +114,7 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => ({
-  column: state.column.find((column) => column.id == ownProps.data.column),
+  column: state.column.find((column) => column.id == ownProps.objectId),
   workflow: state.workflow
 })
 const GridNode = connect<ConnectedProps, object, OwnProps, AppState>(

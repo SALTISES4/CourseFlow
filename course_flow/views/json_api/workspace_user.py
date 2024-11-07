@@ -101,7 +101,7 @@ class WorkspaceUserEndpoint:
         except ContentType.DoesNotExist:
             return Response({"error": "Invalid object type"}, status=400)
         except DAO.get_model_from_str(object_type).DoesNotExist:
-            return Response({"error": "Object not found"}, status=404)
+            return Response({"error": "Object not found"}, status=status.HTTP_404_NOT_FOUND)
         except SystemError as e:
             logger.exception("An unexpected error occurred")
             return Response({"error": "An error occurred"}, status=500)
@@ -146,7 +146,7 @@ class WorkspaceUserEndpoint:
         except ContentType.DoesNotExist:
             return Response({"error": "Invalid object type"}, status=400)
         except DAO.get_model_from_str(object_type).DoesNotExist:
-            return Response({"error": "Object not found"}, status=404)
+            return Response({"error": "Object not found"}, status=status.HTTP_404_NOT_FOUND)
         except SystemError as e:
             logger.exception("An unexpected error occurred")
             return Response({"error": "An error occurred"}, status=500)

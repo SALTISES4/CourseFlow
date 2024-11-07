@@ -1,4 +1,4 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import {
   ColumnActions,
   CommonActions,
@@ -64,13 +64,7 @@ export default function columnReducer(
       return [...state, action.payload.newModel]
 
     case ColumnActions.CHANGE_FIELD:
-      if (
-        action.payload.changeFieldId ===
-        // @ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldId
-      ) {
-        return state
-      }
+
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }

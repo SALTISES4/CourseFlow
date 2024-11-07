@@ -9,7 +9,7 @@ export function setUserPermission(
   objectId,
   objectType,
   permissionType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const base = apiPaths.json_api.workspaceUser.update
   const url = generatePath(base, { id: objectId })
@@ -22,24 +22,6 @@ export function setUserPermission(
     callBackFunction(response)
   })
 }
-
-// export function getUsersForObjectQuery(
-//   objectId: number,
-//   objectType: string
-// ): Promise<UsersForObjectQueryResp> {
-//   //@todo fix this
-//   if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
-//     objectType = 'workflow'
-//   }
-//
-//   return API_POST<UsersForObjectQueryResp>(
-//     COURSEFLOW_APP.globalContextData.path.post_paths.get_users_for_object,
-//     {
-//       objectId: objectId,
-//       objectType: objectType
-//     }
-//   )
-// }
 
 // to remove
 /**
@@ -55,7 +37,7 @@ export function setUserPermission(
 export function getUsersForObjectQueryLegacy(
   objectId: number,
   objectType: string,
-  callBackFunction = (_data: UsersForObjectQueryResp) => console.log('success')
+  callBackFunction = (_data: UsersForObjectQueryResp) => Utility.logger('success')
 ) {
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
     objectType = 'workflow'

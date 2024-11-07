@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import {
   WorkflowContext,
   WorkflowViewType

@@ -1,5 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { AppState } from '@cfRedux/types/type'
 import RestoreBarItem from '@cfViews/common/rightSideBarContent/NodeBar/components/RestoreBarItem'
 import {

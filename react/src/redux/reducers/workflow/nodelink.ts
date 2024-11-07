@@ -1,5 +1,5 @@
 import { CfLock } from '@cf/types/common'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import {
   CommonActions,
   NodeLinkActions,
@@ -21,7 +21,7 @@ interface CreateLockAction extends AnyAction {
 
 interface ChangeFieldAction extends AnyAction {
   type: NodeLinkActions.CHANGE_FIELD
-  payload: { id: number; json: any; changeFieldId?: number }
+  payload: { id: number; json: any }
 }
 
 interface NewNodeLinkAction extends AnyAction {
@@ -94,13 +94,6 @@ export default function nodelinkReducer(
       )
 
     case NodeLinkActions.CHANGE_FIELD:
-      if (
-        action.payload.changeFieldId ===
-        //@ts-ignore
-        COURSEFLOW_APP.contextData.changeFieldId
-      ) {
-        return state
-      }
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }

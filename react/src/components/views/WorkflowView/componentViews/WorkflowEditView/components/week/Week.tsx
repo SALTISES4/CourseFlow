@@ -1,28 +1,26 @@
-import * as Constants from '@cf/constants'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import * as Utility from '@cf/utility/utilityFunctions'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import * as Constants from '@cf/utility/constants'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
-import {
+import EditableComponentWithSorting, {
   EditableComponentWithSortingProps,
   EditableComponentWithSortingState
 } from '@cfEditableComponents/EditableComponentWithSorting'
-import {
-  DeleteSelfButton,
-  DuplicateSelfButton,
-  InsertSiblingButton
-} from '@cfEditableComponents/hoverEditActions'
+import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import { TGetWeekByIDType, getWeekById } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWeek'
+import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle'
+import { Dispatch } from '@reduxjs/toolkit'
 import { addStrategyQuery } from '@XMLHTTP/API/create'
 import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
@@ -32,11 +30,16 @@ type ConnectedProps = {
   week: TGetWeekByIDType
   workflow: TWorkflow
 }
+
 type OwnProps = {
+  objectId: number
+  parentId: number
+  throughParentId: number
   rank?: number
   columnOrder?: any // @todo i think this is delivered by redux
   nodesByColumn?: any
-} & EditableComponentWithSortingProps
+} & EditableComponentWithSortingProps & { dispatch?: Dispatch<Action> }
+
 export type WeekUnconnectedPropsType = OwnProps
 
 type PropsType = OwnProps & ConnectedProps
@@ -51,13 +54,16 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 > {
   protected nodeBlock: React.RefObject<HTMLDivElement>
   protected manager: BetterSelectionManager
+  private mainDiv: React.RefObject<HTMLDivElement>
+  private objectType: CfObjectType
 
   constructor(props: P) {
     super(props)
+
     this.manager = new BetterSelectionManager(this.props.dispatch)
     this.objectType = CfObjectType.WEEK
-    this.objectClass = '.week'
     this.nodeBlock = React.createRef()
+    this.mainDiv = React.createRef()
   }
 
   /*******************************************************
@@ -69,7 +75,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
   componentDidUpdate() {
     this.makeDragAndDrop()
-    Utility.triggerHandlerEach(
+    ThemeHelper.triggerHandlerEach(
       $(this.mainDiv.current).find('.node'),
       'component-updated'
     )
@@ -127,7 +133,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       lastCall: Date.now()
     }
 
-    this.lockChild(id, true, 'nodeweek')
+    this.lockChild(id, true, CfObjectType.NODEWEEK)
 
     // assign the node to a new column within the week
     this.context.editableMethods.microUpdate(
@@ -142,7 +148,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       for (const col in this.props.nodesByColumn) {
         if (this.props.nodesByColumn[col].indexOf(id) >= 0) {
           const previous = this.props.nodesByColumn[col][newPosition]
-          newPosition = this.props.data.nodeweekSet.indexOf(previous)
+          newPosition = this.props.week.data.nodeweekSet.indexOf(previous)
         }
       }
     }
@@ -194,7 +200,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
         const dragItem = ui.draggable
         const newIndex = dropItem.parent().prevAll().length + 1
         if (dragItem.hasClass('new-strategy')) {
-          const loader = new UtilityLoader('body')
+          const loader = new UtilityLoaderClass('body')
           addStrategyQuery(
             this.props.parentId,
             newIndex,
@@ -231,40 +237,6 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     ))
   }
 
-  HoverMenu = () => {
-    const mouseoverActions = []
-    if (
-      this.props.workflow.workflowPermissions.write &&
-      !this.props.workflow.isStrategy
-    ) {
-      mouseoverActions.push(
-        <InsertSiblingButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DuplicateSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DeleteSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-        />
-      )
-    }
-
-    if (this.props.workflow.workflowPermissions.viewComments) {
-      mouseoverActions.push(<this.AddCommenting />)
-    }
-    return mouseoverActions
-  }
-
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -283,6 +255,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
       : undefined
     const dropIcon = data.isDropped ? 'droptriangleup' : 'droptriangledown'
 
+    // there's a helper function for this
     const style: React.CSSProperties = {
       border: data.lock ? '2px solid ' + data.lock.userColour : undefined
     }
@@ -310,9 +283,16 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
           }}
         >
           <div className="mouseover-container-bypass">
-            <div className="mouseover-actions">
-              <this.HoverMenu />
-            </div>
+            <HoverMenu
+              canWrite={
+                this.props.workflow.workflowPermissions.write &&
+                !this.props.workflow.isStrategy
+              }
+              canComment={this.props.workflow.workflowPermissions.viewComments}
+              objectId={this.props.objectId}
+              parentId={this.props.parentId}
+              objectType={this.objectType}
+            />
           </div>
 
           <TitleText text={data.title} defaultText={defaultText} />
@@ -327,13 +307,20 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
 
           <div
             className="week-drop-row hover-shade"
-            onClick={this.toggleDrop.bind(this)}
+            onClick={(evt) => {
+              evt.stopPropagation()
+              this.manager.toggleDropReduxAction({
+                objectId: this.props.objectId,
+                objectType: Constants.objectDictionary[
+                  this.objectType
+                ] as CfObjectType,
+                newDropState: !this.props.week.data?.isDropped
+              })
+            }}
           >
             <div className="node-drop-side node-drop-left" />
             <div className="node-drop-middle">
-              <img
-                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
-              />
+              <ArrowDropDownCircleIcon />
             </div>
             <div className="node-drop-side node-drop-right" />
           </div>
@@ -368,6 +355,7 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
     )
   }
 }
+
 const mapWeekStateToProps = (
   state: AppState,
   ownProps: OwnProps

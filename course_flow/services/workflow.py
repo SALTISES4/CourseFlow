@@ -133,6 +133,14 @@ class WorkflowService:
 
     @staticmethod
     def get_workflow_info_boxes(user, workflow_type, **kwargs):
+        """
+        what is meant by this
+
+        :param user:
+        :param workflow_type:
+        :param kwargs:
+        :return:
+        """
         project = kwargs.get("project", None)
         this_project = kwargs.get("this_project", True)
         get_strategies = kwargs.get("get_strategies", False)
@@ -416,20 +424,21 @@ class WorkflowService:
             WorkflowService.add_workflow_outcomes(data, workflow, user)
             # Add strategies based on the workflow type
             WorkflowService.add_strategies(data, workflow, user)
-            WorkflowService.add_project(data, workflow, user)
+            data["parent_project"] = WorkflowService.get_project(workflow, user)
 
         # Add unread comments if the user is authenticated
-        if user and user.pk:
-            data["unread_comments"] = WorkflowService.add_unread_comments(data, workflow, user)
+        # this should not go here
+        #        data["unread_comments"] = WorkflowService.get_unread_comments(workflow, user)
+        data["unread_comments"] = WorkflowService.get_unread_comments(workflow, user)
 
         return data
 
     @staticmethod
-    def add_project(data, workflow, user):
+    def get_project(workflow, user):
         project = WorkflowProject.objects.get(workflow=workflow).project
         parent_project = ProjectSerializerShallow(project, context={"user": user}).data
 
-        data["parent_project"] = parent_project
+        return parent_project
 
     @staticmethod
     def add_workflow_outcomes(data, workflow, user):
@@ -455,8 +464,45 @@ class WorkflowService:
             }
         )
 
+    # @staticmethod
+    # def add_strategies(data, workflow, user):
+    #     """
+    #     Add strategies for "course" and "activity" types
+    #     :param data:
+    #     :param workflow:
+    #     :param user:
+    #     :return:
+    #     """
+    #     if not user or not user.is_authenticated:
+    #         return
+    #
+    #     if workflow.type == "course" or workflow.type == "activity":
+    #         data["strategy"] = WorkflowSerializerShallow(
+    #             Workflow.objects.filter(author=user, is_strategy=True, deleted=False),
+    #             many=True,
+    #             context={"user": user},
+    #         ).data
+    #
+    #         data["saltise_strategy"] = WorkflowSerializerShallow(
+    #             Workflow.objects.filter(
+    #                 from_saltise=True,
+    #                 is_strategy=True,
+    #                 published=True,
+    #                 deleted=False,
+    #             ),
+    #             many=True,
+    #             context={"user": user},
+    #         ).data
+
     @staticmethod
     def add_strategies(data, workflow, user):
+        """
+        this condition should be merged together once we fix the model inheritance
+        :param data:
+        :param workflow:
+        :param user:
+        :return:
+        """
         # Add strategies for "course" and "activity" types
         if user and user.is_authenticated:
             if workflow.type == "course":
@@ -493,7 +539,7 @@ class WorkflowService:
                 ).data
 
     @staticmethod
-    def add_unread_comments(data, workflow, user):
+    def get_unread_comments(workflow: Workflow, user):
         # Get unread comments for the user on the specific workflow
         comments = [
             x.comment.id
@@ -504,4 +550,4 @@ class WorkflowService:
                 is_unread=True,
             ).exclude(comment=None)
         ]
-        data["unread_comments"] = comments
+        return comments

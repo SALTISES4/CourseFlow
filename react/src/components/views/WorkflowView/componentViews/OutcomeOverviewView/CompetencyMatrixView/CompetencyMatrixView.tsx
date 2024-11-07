@@ -1,7 +1,7 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { AppState } from '@cfRedux/types/type'
@@ -98,12 +98,12 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
   }
 
   getNodecategory() {
-    const weekOrder = Utility.filterThenSortByID(
+    const weekOrder = Utility.filterThenSortById(
       this.props.weekworkflows,
       this.props.weekworkflowOrder
     ).map((weekworkflow) => weekworkflow.week)
 
-    const weeksOrdered = Utility.filterThenSortByID(
+    const weeksOrdered = Utility.filterThenSortById(
       this.props.weeks,
       weekOrder
     )
@@ -112,13 +112,13 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
       ...weeksOrdered.map((week) => week.nodeweekSet)
     )
 
-    let nodeweeksOrdered = Utility.filterThenSortByID(
+    let nodeweeksOrdered = Utility.filterThenSortById(
       this.props.nodeweeks,
       nodeweekOrder
     )
 
     const nodeOrder = nodeweeksOrdered.map((nodeweek) => nodeweek.node)
-    const nodesOrdered = Utility.filterThenSortByID(
+    const nodesOrdered = Utility.filterThenSortById(
       this.props.nodes,
       nodeOrder
     ).filter((node) => !Utility.checkSetHidden(node, this.props.objectSets))

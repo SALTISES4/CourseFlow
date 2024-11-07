@@ -1,18 +1,12 @@
 import { CfObjectType } from '@cf/types/enum'
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cfEditableComponents/EditableComponent'
-import {
-  DeleteSelfButton,
-  DuplicateSelfButton,
-  InsertSiblingButton
-} from '@cfEditableComponents/hoverEditActions'
+import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import { TGetColumnByID, getColumnById } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
+import { Dispatch } from '@reduxjs/toolkit'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 type ConnectedProps = {
   column: TGetColumnByID
@@ -20,22 +14,28 @@ type ConnectedProps = {
 }
 
 type OwnProps = {
+  objectId: number
+  parentId: number
   throughParentId?: number
-} & EditableComponentProps
+} & { dispatch?: Dispatch<Action> }
 
-type StateProps = EditableComponentStateType
+type StateProps = {}
 type PropsType = ConnectedProps & OwnProps
 
 /**
  * The column in a workflow.
  */
-class Column extends EditableComponent<PropsType, StateProps> {
+class Column extends React.Component<PropsType, StateProps> {
   private manager: BetterSelectionManager
+  private objectType: CfObjectType
+  private mainDiv: React.RefObject<HTMLDivElement>
+
   constructor(props: PropsType) {
     super(props)
     this.manager = new BetterSelectionManager(this.props.dispatch)
+    this.mainDiv = React.createRef()
+
     this.objectType = CfObjectType.COLUMN
-    this.objectClass = '.column'
   }
 
   colorChooser = (color: string, type: number): string => {
@@ -51,40 +51,6 @@ class Column extends EditableComponent<PropsType, StateProps> {
       3: 'orange'
     }
     return colors[type]
-  }
-
-  /*******************************************************
-   * COMPONENTS
-   *******************************************************/
-  HoverMenu = () => {
-    const mouseoverActions = []
-    if (this.props.workflow.workflowPermissions.write) {
-      mouseoverActions.push(
-        <InsertSiblingButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DuplicateSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DeleteSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-        />
-      )
-    }
-
-    if (this.props.workflow.workflowPermissions.addComments) {
-      mouseoverActions.push(<this.AddCommenting />)
-    }
-    return mouseoverActions
   }
 
   /*******************************************************
@@ -126,9 +92,13 @@ class Column extends EditableComponent<PropsType, StateProps> {
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
         {/*{this.addEditable(data)}*/}
-        <div className="mouseover-actions">
-          <this.HoverMenu />
-        </div>
+        <HoverMenu
+          canWrite={this.props.workflow.workflowPermissions.write}
+          canComment={this.props.workflow.workflowPermissions.viewComments}
+          objectId={this.props.objectId}
+          parentId={this.props.parentId}
+          objectType={this.objectType}
+        />
       </div>
     )
   }

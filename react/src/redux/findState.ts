@@ -1,6 +1,7 @@
-// @ts-nocheck
-import * as Utility from '@cf/utility/utilityFunctions'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as Constants from '@cf/utility/constants'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import Utility from '@cf/utility/Utility.class'
+import { _t } from '@cf/utility/Utility.class'
 import {
   AppState,
   TColumn,
@@ -14,7 +15,6 @@ import {
   TWeekworkflow
 } from '@cfRedux/types/type'
 
-import * as Constants from '../constants'
 /*******************************************************
  *
  *  This file contains selectors to encapsulate accessing the
@@ -47,7 +47,7 @@ export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
       }
     }
   }
-  console.log('no column found with id', id)
+  Utility.logger('no column found with id', id)
 }
 
 /*******************************************************
@@ -85,7 +85,7 @@ export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
       }
     }
   }
-  console.log('no week found with id', id)
+  Utility.logger('no week found with id', id)
 }
 
 /*******************************************************
@@ -109,7 +109,7 @@ export const getTermById = (state: AppState, id: number): TTermByID => {
 
       const nodeweeks = week.nodeweekSet
 
-      const columnOrder = Utility.filterThenSortByID<TWeek['nodeweekSet']>(
+      const columnOrder = Utility.filterThenSortById<TWeek['nodeweekSet']>(
         state.columnworkflow,
         state.workflow.columnworkflowSet
       ).map((columnworkflow) => columnworkflow.column)
@@ -142,7 +142,7 @@ export const getTermById = (state: AppState, id: number): TTermByID => {
 //     const workflow = state.parentWorkflow[i]
 //     if (workflow.id == id) return { data: workflow }
 //   }
-//   console.log('failed to find parent workflow')
+//   Utility.logger('failed to find parent workflow')
 // }
 
 /*******************************************************
@@ -167,7 +167,7 @@ export const getNodeByID = (state: AppState, id: number): TGetNodeById => {
       }
     }
   }
-  console.log('failed to find node')
+  Utility.logger('failed to find node')
 }
 
 /*******************************************************
@@ -263,7 +263,7 @@ export const getOutcomeByID = (
     }
   }
 
-  console.log('Outcome not found for ID:', id)
+  Utility.logger('Outcome not found for ID:', id)
 }
 
 /*******************************************************
@@ -317,7 +317,7 @@ export const getOutcomeWorkflowByID = (
       }
     }
   }
-  console.log('no outcomeworkflow found with id', id)
+  Utility.logger('no outcomeworkflow found with id', id)
 }
 
 /*******************************************************
@@ -342,7 +342,7 @@ export const getColumnWorkflowByID = (
     }
   }
 
-  console.log('no columnWorkflow found with id', id)
+  Utility.logger('no columnWorkflow found with id', id)
 
   return {
     data: undefined,
@@ -373,7 +373,7 @@ export const getNodeWeekByID = (
       }
     }
   }
-  console.log('no nodeweek found with id', id)
+  Utility.logger('no nodeweek found with id', id)
 }
 
 /*******************************************************
@@ -392,7 +392,7 @@ export const getNodeLinkByID = (
       return { data: nodelink }
     }
   }
-  console.log('no nodelink found with id', id)
+  Utility.logger('no nodelink found with id', id)
 }
 
 /**
@@ -456,7 +456,7 @@ export const getChildWorkflowById = (state: AppState, id: number) => {
       return { data: workflow }
     }
   }
-  console.log('failed to find child workflow')
+  Utility.logger('failed to find child workflow')
   return -1
 }
 
@@ -477,7 +477,7 @@ export const getOutcomeOutcomeById = (
       }
     }
   }
-  console.log('failed to find outcomeoutcome')
+  Utility.logger('failed to find outcomeoutcome')
 }
 
 export type TOutcomeNodeByID = {
@@ -494,7 +494,7 @@ export const getOutcomeNodeByID = (
       data: outcomeNode
     }
   }
-  console.log('Failed to find outcomenode with ID:', id)
+  Utility.logger('Failed to find outcomenode with ID:', id)
 }
 
 export type TOutcomeHorizontalLinkByID = {
@@ -513,7 +513,7 @@ export const getOutcomeHorizontalLinkByID = (
       }
     }
   }
-  console.log('failed to find outcomehorizontallink')
+  Utility.logger('failed to find outcomehorizontallink')
 }
 
 export type TOutcomeWithDegree = TOutcome & { degree: number }
@@ -531,11 +531,11 @@ export const getSortedOutcomeNodesFromNodes = (
   for (let i = 0; i < nodes.length; i++) {
     outcomenodeIds = outcomenodeIds.concat(nodes[i].outcomenodeUniqueSet)
   }
-  const outcomenodes = Utility.filterThenSortByID(
+  const outcomenodes = Utility.filterThenSortById(
     state.outcomenode,
     outcomenodeIds
   )
-  const outcomes = Utility.filterThenSortByID(
+  const outcomes = Utility.filterThenSortById(
     state.outcome,
     outcomenodes.map((outcomenode) => outcomenode.outcome)
   ).map((outcome, i) => ({ ...outcome, degree: outcomenodes[i].degree }))
@@ -544,7 +544,7 @@ export const getSortedOutcomeNodesFromNodes = (
     return outcomes
   }
 
-  const baseTitle = Utility.capWords(_t('outcomes'))
+  const baseTitle = ThemeHelper.capWords(_t('outcomes'))
   const objectSets = state.objectset.filter(
     (objectset) => objectset.term === outcomes[0].type
   )
@@ -572,8 +572,8 @@ export const getSortedOutcomeNodesFromNodes = (
         )
       }))
   ]
-  console.log('returm from getSortedOutcomeNodesFromNodes')
-  console.log(categories)
+  Utility.logger('returm from getSortedOutcomeNodesFromNodes')
+  Utility.logger(categories)
   return categories
 }
 
@@ -591,7 +591,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   state: AppState,
   outcomeworkflowSet: number[]
 ): TSortedOutcomes => {
-  const outcomeworkflows = Utility.filterThenSortByID(
+  const outcomeworkflows = Utility.filterThenSortById(
     state.outcomeworkflow,
     outcomeworkflowSet
   )
@@ -601,7 +601,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
   )
 
   // @todo clean up
-  const outcomes = Utility.filterThenSortByID<TOutcome>(
+  const outcomes = Utility.filterThenSortById<TOutcome>(
     state.outcome,
     outcomeIds
   )
@@ -617,7 +617,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
     throughNoDrag: outcomeworkflows[index].noDrag
   }))
 
-  const baseTitle = Utility.capWords(_t('outcomes'))
+  const baseTitle = ThemeHelper.capWords(_t('outcomes'))
 
   const objectSets = state.objectset.filter(
     (objectset) => objectset.term === updatedOutcomes[0].type
@@ -660,8 +660,8 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
       }))
   ]
 
-  console.log('categories')
-  console.log(categories)
+  Utility.logger('categories')
+  Utility.logger(categories)
 
   return categories
 }
@@ -685,11 +685,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (
  *******************************************************/
 
 const getDropped = (objectId: number, objectType, depth = 1) => {
-  const defaultDrop = Constants.getDefaultDropState(
-    objectId,
-    objectType,
-    depth
-  )
+  const defaultDrop = Constants.getDefaultDropState(objectId, objectType, depth)
   try {
     const storedDrop = JSON.parse(
       window.localStorage.getItem(objectType + objectId)
@@ -729,7 +725,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   objectSetsUnfiltered
 ) => {
   // Get sorted outcome workflows based on the provided IDs
-  const outcomeworkflows = Utility.filterThenSortByID(
+  const outcomeworkflows = Utility.filterThenSortById(
     outcomeworkflowsUnsorted,
     outcomeworkflowSet
   )
@@ -740,7 +736,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   )
 
   // Filter and sort the outcomes based on the outcome IDs
-  const outcomes = Utility.filterThenSortByID(outcomesUnsorted, outcomeIds)
+  const outcomes = Utility.filterThenSortById(outcomesUnsorted, outcomeIds)
 
   // Create a new array to avoid mutating the original outcomes
   const updatedOutcomes = outcomes.map((outcome, index) => ({
@@ -755,7 +751,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
   }
 
   // Prepare the base title for uncategorized outcomes
-  const baseTitle = Utility.capWords(_t('outcomes'))
+  const baseTitle = ThemeHelper.capWords(_t('outcomes'))
 
   // Filter the objectSets to match the first outcome's type
   const objectSets = objectSetsUnfiltered.filter(
@@ -801,8 +797,8 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
       }))
   ]
 
-  console.log('getSortedOutcomeIDFromOutcomeWorkflowSet categories')
-  console.log(categories)
+  Utility.logger('getSortedOutcomeIDFromOutcomeWorkflowSet categories')
+  Utility.logger(categories)
 
   // Return the final categories
   return categories

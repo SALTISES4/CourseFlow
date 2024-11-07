@@ -1,7 +1,7 @@
 import { NumTuple } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cfUtility'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
 import { LanguageOptions } from '@XMLHTTP/API/user.rtk'
 
 /*
@@ -122,14 +122,14 @@ export const nodeTypeKeys = {
 
 // @todo this is redundant now
 export const objectDictionary = {
-  nodelink: 'nodelink',
-  node: 'node',
-  week: 'week',
-  column: 'column',
-  outcome: 'outcome',
-  outcomeBase: 'outcome',
-  workflow: 'workflow',
-  outcomenode: 'outcomenode'
+  nodelink: CfObjectType.NODELINK,
+  node: CfObjectType.NODE,
+  week: CfObjectType.WEEK,
+  column: CfObjectType.COLUMN,
+  outcome: CfObjectType.OUTCOME,
+  outcomeBase: CfObjectType.OUTCOME,
+  workflow: CfObjectType.WORKFLOW,
+  outcomenode: CfObjectType.OUTCOMENODE
 }
 
 export const parentDictionary = {
@@ -220,33 +220,44 @@ export const getDefaultDropState = (objectId, objectType, depth = 1) => {
   return defaultDrop
 }
 
-// Get the colour from a column
-export function getColumnColour(data) {
-  if (data.colour == null) {
-    return defaultColumnSettings[data.columnType].colour
+/**
+ * Get the colour from a column
+ **/
+export function getColumnColour({
+  columnType,
+  colour
+}: {
+  columnType: number
+  colour: number
+}): string {
+  if (colour === null && columnType) {
+    return defaultColumnSettings[columnType].colour
   } else {
-    return '#' + ('000000' + data.colour?.toString(16)).slice(-6)
+    return '#' + ('000000' + colour?.toString(16)).slice(-6)
   }
 }
 
-//get all possible object sets
+/**
+ * get all possible object sets
+ **/
 export const objectSetsTypes = {
-  'program outcome': Utility.capFirst(_t('program outcome')),
-  'course outcome': Utility.capFirst(_t('course outcome')),
-  'activity outcome': Utility.capFirst(_t('activity outcome')),
-  'program node': Utility.capFirst(_t('program node')),
-  'course node': Utility.capFirst(_t('course node')),
-  'activity node': Utility.capFirst(_t('activity node'))
+  'program outcome': ThemeHelper.capFirst(_t('program outcome')),
+  'course outcome': ThemeHelper.capFirst(_t('course outcome')),
+  'activity outcome': ThemeHelper.capFirst(_t('activity outcome')),
+  'program node': ThemeHelper.capFirst(_t('program node')),
+  'course node': ThemeHelper.capFirst(_t('course node')),
+  'activity node': ThemeHelper.capFirst(_t('activity node'))
 }
 
+// @todo no
 //missingTranslations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
-function missingTranslations() {
-  console.log('missingTranslations called')
-  _t('activity')
-  _t('course')
-  _t('program')
-  _t('project')
-}
+// function missingTranslations() {
+//   Utility.logger('missingTranslations called')
+//   _t('activity')
+//   _t('course')
+//   _t('program')
+//   _t('project')
+// }
 
 export const languageOptions = [
   {

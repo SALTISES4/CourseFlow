@@ -69,7 +69,7 @@ class ActionCreator {
     }
   }
 
-  static changeField = (id: number, objectType: CfObjectType, json) => {
+  static changeField = <T>(id: number, objectType: CfObjectType, json: T) => {
     console.log(
       'what is  static changeField = (id: number, objectType: CfObjectType, json) => {'
     )

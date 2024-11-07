@@ -1,4 +1,4 @@
-import { wrapLeafStrings } from '@cf/utility/utilityFunctions'
+import Utility from "@cf/utility/Utility.class";
 
 const stringsRoot = {
   confirmEmailUpdates:
@@ -48,4 +48,4 @@ const stringsRoot = {
   languagePreferences: 'Language Preferences'
 }
 
-export default wrapLeafStrings<typeof stringsRoot>(stringsRoot)
+export default Utility.wrapLeafStrings<typeof stringsRoot>(stringsRoot)

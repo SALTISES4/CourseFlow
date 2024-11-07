@@ -74,9 +74,6 @@
       "@cfUtility": [
         "./utility/utilityFunctions.jsx"
       ],
-      "@cfConstants": [
-        "./constants.js"
-      ],
       "@XMLHTTP/*": [
         "./HTTP/XMLHTTP/*"
       ],

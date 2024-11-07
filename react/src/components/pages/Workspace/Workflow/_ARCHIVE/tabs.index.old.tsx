@@ -1,5 +1,5 @@
 // @ts-nocheck
-import * as Constants from '@cf/constants'
+import * as Constants from '@cf/utility/constants'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import EditableComponent, {
@@ -120,8 +120,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
     this.context = context
 
-    // console.log('this.context')
-    // console.log(this.context)
+    // Utility.logger('this.context')
+    // Utility.logger(this.context)
 
     this.data = this.props.data
     this.project = this.context.workflow.project
@@ -202,8 +202,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   // @todo swap back to real function after hook conversion
   // importOutcomes = () => dispatch(DIALOG_TYPE.IMPORT_OUTCOMES)
   // importNodes = () => dispatch(DIALOG_TYPE.IMPORT_NODES)
-  importOutcomes = () => console.log('importOutcomes')
-  importNodes = () => console.log('importNodes')
+  importOutcomes = () => Utility.logger('importOutcomes')
+  importNodes = () => Utility.logger('importNodes')
 
   deleteWorkflow() {
     if (
@@ -380,7 +380,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   updateFunction(newData) {
     if (newData.liveproject) {
-      console.log('liveproject updated')
+      Utility.logger('liveproject updated')
     } else {
       this.setState({
         ...this.state,

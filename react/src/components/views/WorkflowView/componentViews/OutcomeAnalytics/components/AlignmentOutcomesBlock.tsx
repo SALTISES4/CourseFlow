@@ -1,8 +1,8 @@
-import { _t } from '@cf/utility/utilityFunctions'
-import * as Utility from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
 import * as React from 'react'
 
-import Outcome from '../../OutcomeEditView/Outcome' // @todo if weird error , check this outcome
+import Outcome from '../../OutcomeEditView/Outcome'
 
 type PropsType = {
   data: any
@@ -14,7 +14,7 @@ type PropsType = {
  */
 const AlignmentOutcomesBlock = (props: PropsType) => {
   const data = props.data
-  const titlestr = Utility.capWords(_t(props.workflowType + ' outcome'))
+  const titlestr = ThemeHelper.capWords(_t(props.workflowType + ' outcome'))
   /*******************************************************
    * RENDER
    *******************************************************/

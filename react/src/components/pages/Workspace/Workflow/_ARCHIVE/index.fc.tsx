@@ -4,6 +4,7 @@ import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
+import Utility from "@cf/utility/Utility.class";
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
@@ -107,7 +108,7 @@ const Workflow: React.FC<PropsType> = () => {
 
   const handleSocketClose = useCallback(() => {
     setState((prevState) => ({ ...prevState, wsConnected: false }))
-    console.log('socket disconnected')
+    Utility.logger('socket disconnected')
   }, [])
 
   const onMessageReceived = useCallback(
@@ -169,7 +170,7 @@ const Workflow: React.FC<PropsType> = () => {
           onChildWorkflowUpdateReceived(data.childWorkflowId)
           break
         default:
-          console.log('socket message not handled')
+          Utility.logger('socket message not handled')
           break
       }
     },
@@ -234,7 +235,7 @@ const Workflow: React.FC<PropsType> = () => {
 
   const microUpdate = useCallback(
     (obj: any) => {
-      console.log('i am a microupdate')
+      Utility.logger('i am a microupdate')
       if (wsService) {
         wsService.send(
           JSON.stringify({

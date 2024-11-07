@@ -1,5 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
-import * as Utility from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
 import { getWeekById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import React from 'react'
@@ -75,11 +75,11 @@ const mapStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   const data = getWeekById(state, ownProps.objectId).data
-  const nodeWeeks = Utility.filterThenSortByID(
+  const nodeWeeks = Utility.filterThenSortById(
     state.nodeweek,
     data.nodeweekSet
   )
-  const nodesData = Utility.filterThenSortByID(
+  const nodesData = Utility.filterThenSortById(
     state.node,
     nodeWeeks.map((nodeWeek) => nodeWeek.node)
   ).filter((node) => !Utility.checkSetHidden(node, state.objectset))

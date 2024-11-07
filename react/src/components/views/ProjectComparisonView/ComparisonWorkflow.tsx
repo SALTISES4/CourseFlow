@@ -1,14 +1,16 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
-import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
-import { EditableComponentWithSortingState } from '@cfEditableComponents/EditableComponentWithSorting'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import EditableComponentWithSorting, {
+  EditableComponentWithSortingState
+} from '@cfEditableComponents/EditableComponentWithSorting'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import WeekWorkflowComparison from '@cfViews/ProjectComparisonView/WeekWorkflowComparison'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -17,6 +19,7 @@ type ConnectedProps = {
 }
 type OwnProps = {
   objectId: number
+  parentId: number
 }
 type StateProps = EditableComponentWithSortingState
 type PropsType = ConnectedProps & OwnProps
@@ -27,9 +30,9 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
   StateProps
 > {
   static contextType = WorkflowConfigContext
+
   constructor(props: PropsType) {
     super(props)
-    this.objectType = CfObjectType.WORKFLOW
   }
 
   /*******************************************************
@@ -61,7 +64,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
   }
 
   stopSortFunction() {
-    Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+    ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
   }
 
   sortableMovedFunction(id, newPosition, type, newParent, childId) {

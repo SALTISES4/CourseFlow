@@ -1,7 +1,7 @@
 // import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { LibraryObjectType } from '@cf/types/enum'
-import { _t, convertEnum } from '@cf/utility/utilityFunctions'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
@@ -57,7 +57,7 @@ const Header = () => {
         <Favourite
           id={workflow.id}
           isFavourite={workflow.favourite}
-          type={convertEnum<LibraryObjectType>(
+          type={Utility.convertEnum<LibraryObjectType>(
             workflow.type,
             LibraryObjectType,
             LibraryObjectType.ACTIVITY

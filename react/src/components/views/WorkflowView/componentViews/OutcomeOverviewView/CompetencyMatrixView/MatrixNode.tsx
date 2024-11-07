@@ -1,4 +1,4 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { getNodeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import React from 'react'

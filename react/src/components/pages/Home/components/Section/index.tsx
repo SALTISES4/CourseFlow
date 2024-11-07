@@ -1,4 +1,4 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import { styled } from '@mui/material/styles'

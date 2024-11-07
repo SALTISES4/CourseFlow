@@ -1,10 +1,8 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import {
-  DeleteSelfButton,
-  DuplicateSelfButton,
-  InsertSiblingButton
-} from '@cfEditableComponents/hoverEditActions'
+import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import { TTermByID, getTermById } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWeek'
@@ -12,6 +10,7 @@ import {
   WeekUnconnected,
   WeekUnconnectedPropsType
 } from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/Week'
+import ArrowDropDownCircleIcon from '@mui/icons-material/ArrowDropDownCircle'
 import * as React from 'react'
 import { connect } from 'react-redux'
 
@@ -54,45 +53,11 @@ class Term extends WeekUnconnected<PropsType> {
     )
   }
 
-  HoverMenu = () => {
-    const mouseoverActions = []
-    if (
-      this.props.workflow.workflowPermissions.write &&
-      !this.props.workflow.isStrategy
-    ) {
-      mouseoverActions.push(
-        <InsertSiblingButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DuplicateSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DeleteSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-        />
-      )
-    }
-
-    if (this.props.workflow.workflowPermissions.viewComments) {
-      mouseoverActions.push(<this.AddCommenting />)
-    }
-    return mouseoverActions
-  }
-
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    const data = this.props.data
+    const data = this.props.term.data
     const nodeBlocks = []
 
     for (let i = 0; i < this.props.columnOrder.length; i++) {
@@ -166,9 +131,16 @@ class Term extends WeekUnconnected<PropsType> {
           }}
         >
           <div className="mouseover-container-bypass">
-            <div className="mouseover-actions">
-              <this.HoverMenu />
-            </div>
+            <HoverMenu
+              canWrite={
+                this.props.workflow.workflowPermissions.write &&
+                !this.props.workflow.isStrategy
+              }
+              canComment={this.props.workflow.workflowPermissions.viewComments}
+              objectId={this.props.objectId}
+              parentId={this.props.parentId}
+              objectType={this.objectType}
+            />
           </div>
           <TitleText
             text={data.title}
@@ -183,13 +155,20 @@ class Term extends WeekUnconnected<PropsType> {
           </div>
           <div
             className="week-drop-row hover-shade"
-            onClick={this.toggleDrop.bind(this)}
+            onClick={(evt) => {
+              evt.stopPropagation()
+              this.manager.toggleDropReduxAction({
+                objectId: this.props.objectId,
+                objectType: Constants.objectDictionary[
+                  this.objectType
+                ] as CfObjectType,
+                newDropState: !this.props.term.data?.isDropped
+              })
+            }}
           >
             <div className="node-drop-side node-drop-left"></div>
             <div className="node-drop-middle">
-              <img
-                src={apiPaths.external.static_assets.icon + dropIcon + '.svg'}
-              />
+              <ArrowDropDownCircleIcon />
             </div>
             <div className="node-drop-side node-drop-right"></div>
           </div>
