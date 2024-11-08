@@ -15,7 +15,6 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * first pass on FV conversion is done
  *******************************************************/
 const WorkflowLegend = () => {
-  const workFlowConfigContext = React.useContext(WorkflowConfigContext)
 
   const [showLegend, setShowLegend] = useState<boolean>(() => {
     return JSON.parse(localStorage.getItem('show_legend'))

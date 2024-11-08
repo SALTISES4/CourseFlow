@@ -1,6 +1,12 @@
+import { CfObjectType } from '@cf/types/enum'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
 import { getWeekWorkflowByID } from '@cfFindState'
+import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
-import React, { useRef } from 'react'
+import { insertedAt } from '@XMLHTTP/postTemp'
+import clsx from 'clsx'
+import React, { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 import Term from './Term'
@@ -12,13 +18,81 @@ type PropsType = {
   parentId: number
 }
 
-// this component should not exist...
+class WeekWorkflowDragAndDropManager extends SortableDragAndDropManager {
+  stopSortFunction() {
+    ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+  }
+
+  /**
+   * Overrides the sortableMovedFunction method from DragAndDropManager
+   */
+  sortableMovedFunction(
+    id: number,
+    newPosition: number,
+    type: string,
+    newParent: number,
+    childId: number
+  ) {
+    this.context.editableMethods.microUpdate(
+      ActionCreator.moveColumnWorkflow(id, newPosition, newParent, childId)
+    )
+    insertedAt(
+      this.context.selectionManager,
+      childId,
+      CfObjectType.COLUMN,
+      newParent,
+      CfObjectType.WORKFLOW,
+      newPosition,
+      CfObjectType.COLUMNWORKFLOW
+    )
+  }
+}
+
+/**
+ * this component should not exist...roll it into week
+ * and disambiguate parentId: week is not a 'child' of weekworkflow
+ **/
 const WeekWorkflow = ({ condensed, objectId, parentId }: PropsType) => {
+  const mainDiv = useRef<HTMLDivElement>(null)
+  /*******************************************************
+   * HOOKS
+   *******************************************************/
   const weekWorkflow = useSelector((state: AppState) =>
     getWeekWorkflowByID(state, objectId)
   )
-  const mainDiv = useRef<HTMLDivElement>(null)
 
+  useEffect(() => {
+    const classIdentifiers = {
+      objectClass: '.week-workflow',
+      handle: '.week',
+      container: '.week-block'
+    }
+
+    const weekWorkflowDragAndDropManager = new WeekWorkflowDragAndDropManager({
+      objectId,
+      parentId
+    })
+
+    const jQuerySortableBlockTarget = $('.week-block')
+      .children('.week-workflow')
+      .not('.ui-draggable')
+
+    weekWorkflowDragAndDropManager.makeSortableNode(
+      jQuerySortableBlockTarget,
+      objectId,
+      CfObjectType.WEEKWORKFLOW,
+      classIdentifiers.objectClass,
+      'y',
+      false,
+      null,
+      classIdentifiers.handle,
+      classIdentifiers.container
+    )
+  }, [objectId, parentId])
+
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
   const WeekWrapper = () => {
     if (condensed) {
       return (
@@ -40,15 +114,16 @@ const WeekWorkflow = ({ condensed, objectId, parentId }: PropsType) => {
     )
   }
 
-  const cssClasses = [
-    'week-workflow',
-    weekWorkflow.data.noDrag ? 'no-drag' : '',
-    $(mainDiv.current).hasClass('dragging') ? 'dragging' : ''
-  ].join(' ')
+  /*******************************************************
+   * RENDER
+   *******************************************************/
 
   return (
     <div
-      className={cssClasses}
+      className={clsx('week-workflow', {
+        'no-drag': weekWorkflow.data.noDrag,
+        dragging: mainDiv.current?.classList.contains('dragging')
+      })}
       id={String(weekWorkflow.data.id)}
       ref={mainDiv}
       data-child-id={weekWorkflow.data.week}

@@ -77,7 +77,7 @@ export const apiPathRoutes = {
       link__create: '/node-link/create'
     },
     comment: {
-      list_by_object: '/comment/list',
+      list_by_object: '/comment/list-by-object',
       create: '/comment/create',
       delete: '/comment/delete',
       delete_all: '/comment/delete-all'

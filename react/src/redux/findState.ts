@@ -1,11 +1,12 @@
+import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import Utility from '@cf/utility/Utility.class'
-import { _t } from '@cf/utility/Utility.class'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import {
   AppState,
   TColumn,
   TColumnworkflow,
+  TComment,
   TNode,
   TNodelink,
   TObjectSet,
@@ -47,6 +48,25 @@ export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
       }
     }
   }
+  Utility.logger('no column found with id', id)
+}
+
+export type TGetComments = TComment[]
+
+export const getComments = ({
+  objectId,
+  objectType,
+  state
+}: {
+  objectId: number
+  objectType: CfObjectType
+  state: AppState
+}): TGetComments => {
+  if (objectType === CfObjectType.NODE) {
+    return state.node.find((item) => item.id === objectId).comments
+  }
+
+  return []
   Utility.logger('no column found with id', id)
 }
 

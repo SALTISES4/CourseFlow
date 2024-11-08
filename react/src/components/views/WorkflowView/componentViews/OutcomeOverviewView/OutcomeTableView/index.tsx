@@ -182,15 +182,6 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
   render() {
     const nodecategory = this.getNodecategory()
 
-    // @todo looks like trying to cache?
-    // const nodecategory_json = JSON.stringify(nodecategory)
-    // if (this.nodecategory_json === nodecategory_json)
-    //   nodecategory = this.nodecategory
-    // else {
-    //   this.nodecategory = nodecategory
-    //   this.nodecategory_json = nodecategory_json
-    // }
-
     const outcomesSorted = this.getOutcomesSorted()
 
     let hasNodes = false
@@ -229,17 +220,13 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
 
       const outcomes = outcomesSorted.map((category) => (
         <div>
-          {
-            // @todo  should objectSets be set?
-            // @ts-ignore
-            this.props?.objectSets?.length > 0 && (
-              <div className="outcome-row outcome-category">
-                <div className="outcome-head">
-                  <h4>{category.objectset.title}</h4>
-                </div>
+          {this.props?.objectSets?.length > 0 && (
+            <div className="outcome-row outcome-category">
+              <div className="outcome-head">
+                <h4>{category.objectset.title}</h4>
               </div>
-            )
-          }
+            </div>
+          )}
           {category.outcomes.map((outcome) => (
             <OutcomeBase
               key={outcome}

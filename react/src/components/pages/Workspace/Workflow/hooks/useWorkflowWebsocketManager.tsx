@@ -5,7 +5,7 @@ import WebSocketServiceConnectedUserManager, {
 import { EUser } from '@cf/HTTP/XMLHTTP/types/entity'
 import { CfLock } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
-import Utility from "@cf/utility/Utility.class";
+import Utility from '@cf/utility/Utility.class'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
@@ -132,11 +132,23 @@ export const useWorkflowWebsocketManager = ({
   }
 
   /**
-   *
+   *  for receiving the WS message and updating local store
    */
-  const onLockUpdateReceived = (data: any) => {
-    const { objectType, objectId } = data
-
+  const onLockUpdateReceived = ({
+    objectType,
+    objectId,
+    lock,
+    userId,
+    userColour,
+    expires
+  }: {
+    objectType: CfObjectType
+    objectId: number
+    lock: boolean
+    userId: number
+    userColour: string
+    expires: number
+  }) => {
     if (!locks[objectType]) {
       locks[objectType] = {}
     }
@@ -149,16 +161,16 @@ export const useWorkflowWebsocketManager = ({
       ActionCreator.createLockAction(
         objectId,
         objectType,
-        data.lock,
-        data.userId,
-        data.userColour
+        lock,
+        userId,
+        userColour
       )
     )
 
-    if (data.lock) {
+    if (lock) {
       locks[objectType][objectId] = setTimeout(() => {
         dispatch(ActionCreator.createLockAction(objectId, objectType, false))
-      }, data.expires - Date.now())
+      }, expires - Date.now())
     } else {
       locks[objectType][objectId] = null
     }
@@ -305,11 +317,21 @@ export const useWorkflowWebsocketManager = ({
       },
       [dispatch]
     ),
+    // lock update is for transmitting the WS message
     lockUpdate: useCallback(
-      (obj: any, time: number, lock: boolean) => {
+      (
+        obj: { objectId: number; objectType: CfObjectType },
+        time: number,
+        lock: boolean
+      ) => {
         const payload: { type: WS_EVENT_TYPE; lock: CfLock } = {
           type: WS_EVENT_TYPE.LOCK_UPDATE,
-          lock: { ...obj, expires: Date.now() + time, user, lock }
+          lock: {
+            ...obj,
+            expires: Date.now() + time,
+            userId: user.id,
+            lock
+          }
         }
 
         if (wsService) {

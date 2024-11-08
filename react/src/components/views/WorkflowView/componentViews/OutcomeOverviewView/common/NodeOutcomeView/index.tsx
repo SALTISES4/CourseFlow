@@ -1,7 +1,9 @@
 import * as Constants from '@cf/utility/constants'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TGetNodeById, getNodeByID } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
+import clsx from 'clsx'
 import * as React from 'react'
 import { useRef } from 'react'
 import { useSelector } from 'react-redux'
@@ -22,24 +24,27 @@ const NodeOutcomeView = ({ objectId }: PropsType) => {
   )
 
   const style: React.CSSProperties = {
-    backgroundColor: Constants.getColumnColour({
+    backgroundColor: ThemeHelper.getColumnColour({
       columnType: node.data.column,
       colour: 1
     })
   }
 
-  const cssClasses = [
-    'node column-' +
-      node.data.column +
-      ' ' +
-      Constants.nodeKeys[node.data.nodeType],
-    node.data.isDropped ? 'dropped' : '',
-    node.data.lock ? 'locked locked-' + node.data.lock.userId : ''
-  ].join(' ')
-
   return (
     <div ref={mainDiv} className="table-cell nodewrapper">
-      <div className={cssClasses} style={style} id={String(node.data.id)}>
+      <div
+        className={clsx(
+          'node',
+          `column-${node.data.column}`,
+          `${Constants.nodeKeys[node.data.nodeType]}`,
+          {
+            dropped: node.data.isDropped,
+            [`locked locked-${node.data.lock.userId}`]: node.data.lock
+          }
+        )}
+        style={style}
+        id={String(node.data.id)}
+      >
         <div className="node-top-row">
           <NodeTitle node={node.data} />
         </div>

@@ -3,7 +3,7 @@ import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
-import { TGetWeekByIDType, getWeekById } from '@cfFindState'
+import { TGetWeekByIDType, getComments, getWeekById } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState, TComment, TUser, TWorkflow } from '@cfRedux/types/type'
 import AddIcon from '@mui/icons-material/Add'
@@ -110,7 +110,7 @@ class CommentBoxUnconnected extends React.Component<PropsType, StateType> {
   reloadComments(showComments?: boolean) {
     getCommentsForObjectQuery(
       this.props.id,
-      Constants.objectDictionary[this.props.objectType],
+      this.props.objectType,
       (responseData) => {
         this.props.dispatch(
           ActionCreator.reloadCommentsAction(
@@ -142,7 +142,7 @@ class CommentBoxUnconnected extends React.Component<PropsType, StateType> {
         Constants.objectDictionary[this.props.objectType],
         id,
         // no
-        this.reloadComments
+        this.reloadComments.bind(this)
       )
     }
   }
@@ -160,7 +160,7 @@ class CommentBoxUnconnected extends React.Component<PropsType, StateType> {
         Constants.objectDictionary[this.props.objectType],
 
         // no
-        this.reloadComments
+        this.reloadComments.bind(this)
       )
     }
   }
@@ -178,7 +178,7 @@ class CommentBoxUnconnected extends React.Component<PropsType, StateType> {
       this.props.id,
       Constants.objectDictionary[this.props.objectType],
       text,
-      this.reloadComments
+      this.reloadComments.bind(this)
     )
   }
   /*******************************************************
@@ -273,6 +273,7 @@ class CommentBoxUnconnected extends React.Component<PropsType, StateType> {
     if (!this.props.comments) {
       return <></>
     }
+    console.log(this.props)
 
     return this.props.comments.map((comment, index) => {
       const isUnread = this.props.unreadComments.indexOf(comment.id) >= 0
@@ -282,6 +283,7 @@ class CommentBoxUnconnected extends React.Component<PropsType, StateType> {
       if (isUnread) {
         commentClass += ' unread'
       }
+
 
       const text = comment.text.replace(
         /@\w[@a-zA-Z0-9_.]{1,}/g,
@@ -370,9 +372,11 @@ class CommentBoxUnconnected extends React.Component<PropsType, StateType> {
           <this.TopComments />
         </div>
         <hr />
+
         <div className="comment-block">
           <this.Comments />
         </div>
+
         {this.addComments && (
           <div className="comment-input-line">
             <textarea
@@ -409,11 +413,18 @@ class CommentBoxUnconnected extends React.Component<PropsType, StateType> {
   }
 }
 
-const mapStateToProps = (state: AppState): MapStateProps => {
+const mapStateToProps = (
+  state: AppState,
+  ownProps: OwnProps
+): MapStateProps => {
   return {
     workflow: state.workflow,
     unreadComments: [],
-    comments: []
+    comments: getComments({
+      objectId: ownProps.id,
+      objectType: ownProps.objectType,
+      state
+    })
   }
 }
 

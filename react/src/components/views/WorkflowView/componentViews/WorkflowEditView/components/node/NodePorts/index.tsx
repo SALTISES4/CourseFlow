@@ -90,6 +90,8 @@ export class NodePorts extends React.Component<PropsType, StateType> {
 
     this.updatePorts()
 
+    // this is basically waiting for an even sent through from other components
+    // to redraw the node ports
     $(this.props.nodeDiv.current).on(
       'component-updated',
       this.updatePorts.bind(this)

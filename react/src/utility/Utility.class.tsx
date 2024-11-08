@@ -1,12 +1,15 @@
 import { CFRoutes } from '@cf/router/appRoutes'
 import { WorkspaceType } from '@cf/types/enum'
 import { MaybeWithId, hasId } from '@cf/types/typeGuards'
+import he from 'he'
 import { generatePath } from 'react-router-dom'
 
 type GenericObject = {
   [key: string]: string | GenericObject
 }
 
+// @todo this is a 'transition' class during global project restructure
+// it should be broken apart into domain specific areas and converted to modules
 class Utility {
   /*******************************************************
    * ARRAYS / OBJECTS
@@ -39,7 +42,7 @@ class Utility {
     // Replace empty string with null
     return obj === '' ? null : obj
   }
-  
+
   /**
    * take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
    * @param objectList
@@ -57,7 +60,8 @@ class Utility {
   }
 
   /**
-   *
+   * Add a string wrapper around a nested object of strings
+   *  used to format API routes mainly
    * @param obj
    * @param prefix
    */
@@ -83,14 +87,14 @@ class Utility {
   }
 
   /**
-   *
+   * Add a string wrapper around a nested object of strings
+   * used to format API routes mainly
    * @param obj
    */
   static wrapLeafStrings<T>(obj: GenericObject): T {
     const traverse = (currentObj: GenericObject): GenericObject => {
       Object.keys(currentObj).forEach((key) => {
         if (typeof currentObj[key] === 'string') {
-          // Wrap the string with _t()
           currentObj[key] = _t(currentObj[key] as string)
         } else if (
           typeof currentObj[key] === 'object' &&
@@ -107,14 +111,11 @@ class Utility {
   }
 
   /**
-   * Do a bit of cleaning to unescape certain characters and display them correctly
+   * Unescape characters
    * @param string
    */
-  static unescapeCharacters(string) {
-    return string
-      .replace(/&amp;/g, '&')
-      .replace(/&gt;/g, '>')
-      .replace(/&lt;/g, '<')
+  static unescapeCharacters = (str: string): string => {
+    return he.decode(str)
   }
 
   static getUserDisplay(user) {
@@ -134,24 +135,6 @@ class Utility {
   /*******************************************************
    *  Type Related
    *******************************************************/
-  /**
-   * use the enum proxy stopgap
-   * @param baseEnum
-   * @constructor
-   */
-  static enum(baseEnum) {
-    return new Proxy(baseEnum, {
-      get(target, name) {
-        if (!baseEnum.hasOwnProperty(name)) {
-          throw new Error(`"${String(name)}" value does not exist in the enum`)
-        }
-        return baseEnum[name]
-      },
-      set(target, name, value) {
-        throw new Error('Cannot add a new value to the enum')
-      }
-    })
-  }
 
   static convertEnum<T>(
     value: string,
@@ -199,7 +182,7 @@ class Utility {
   }
 
   /**
-   *
+   * this function probably should not exist
    **/
   static pushOrCreate(obj, index, value) {
     if (obj[index]) {
@@ -210,7 +193,11 @@ class Utility {
   }
 
   /**
-   * Find and return the best way to display a user's name, username, or email (if that's all we have)
+   * implements the cantor pairing algo
+   * @todo
+   * why though?...Needs a closer look but the usecase in outcomes looks like a mis-analysis
+   * adding unneeded complexity
+   *
    * @param k1
    * @param k2
    */
@@ -219,7 +206,7 @@ class Utility {
   }
 
   /**
-   *
+   * // @todo this is a mistake to include a react helper  here, this means it should be a hook probably
    **/
   static getPathByObject(id: number, object: WorkspaceType): string {
     switch (object) {
@@ -233,38 +220,17 @@ class Utility {
     return CFRoutes.HOME
   }
 
+  /*******************************************************
+   *  thin wrap console log, just to make it easier to track intention of
+   *  temp console logs for debugging
+   *  versus permanent logger functions
+   *******************************************************/
   static logger(...data: any[]) {
     const stack = new Error().stack
     const caller = stack?.split('\n')[2]?.trim() // Get the second item in the stack trace, which is the caller
 
     console.log(`[Caller: ${caller}]`, ...data)
   }
-
-  /**
-   * @stringifyMaxDepth
-   * never used
-   **/
-  // static stringifyMaxDepth(obj, depth = 1) {
-  //   if (!obj || typeof obj !== 'object') {
-  //     return JSON.stringify(obj)
-  //   }
-  //
-  //   let curDepthResult = '"<?>"' // too deep
-  //   if (depth > 0) {
-  //     curDepthResult = Object.keys(obj)
-  //       .map((key) => {
-  //         let val = Utility.stringifyMaxDepth(obj[key], depth - 1)
-  //         if (val === undefined) {
-  //           val = 'null'
-  //         }
-  //         return `"${key}": ${val}`
-  //       })
-  //       .join(', ')
-  //     curDepthResult = `{${curDepthResult}}`
-  //   }
-  //
-  //   return JSON.stringify(JSON.parse(curDepthResult))
-  // }
 }
 
 export default Utility

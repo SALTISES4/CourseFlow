@@ -478,7 +478,7 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
               this.manager.toggleDropReduxAction({
                 objectId: this.props.objectId,
                 objectType: this.objectType,
-                newDropState: this.props.node.data?.isDropped,
+                newDropState: !this.props.node.data?.isDropped,
                 depth: this.props.node.data?.depth // where is depth defined?
               })
             }}

@@ -14,7 +14,6 @@ type PropsType = {
 class AutoLink extends React.Component<PropsType> {
   private eventNameSpace: string
   private rerenderEvents: string
-  private target: any
   private sourcePortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private targetPortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
   private targetNode: JQuery<HTMLElement>
@@ -88,7 +87,6 @@ class AutoLink extends React.Component<PropsType> {
       )
 
       this.targetNode.on(this.rerenderEvents, this.rerender.bind(this))
-      this.target = target
     } else {
       if (this.targetNode) {
         this.targetNode.off(this.rerenderEvents)
@@ -96,7 +94,6 @@ class AutoLink extends React.Component<PropsType> {
 
       this.targetNode = null
       this.targetPortHandle = null
-      this.target = null
     }
   }
 

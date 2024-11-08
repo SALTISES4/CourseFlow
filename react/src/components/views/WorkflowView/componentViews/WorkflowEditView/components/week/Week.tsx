@@ -1,31 +1,18 @@
-import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import EditableComponentWithSorting, {
-  EditableComponentWithSortingProps,
-  EditableComponentWithSortingState
-} from '@cfEditableComponents/EditableComponentWithSorting'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import { TGetWeekByIDType, getWeekById } from '@cfFindState'
-import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWeek'
+import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
-import { Dispatch } from '@reduxjs/toolkit'
-import { addStrategyQuery } from '@XMLHTTP/API/create'
-import { columnChanged, insertedAt } from '@XMLHTTP/postTemp.js'
+import clsx from 'clsx'
 import * as React from 'react'
-import { connect } from 'react-redux'
-import { Action } from 'redux'
-
-const choices = COURSEFLOW_APP.globalContextData.workflowChoices
-
-// import $ from 'jquery'
+import { useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 type ConnectedProps = {
   week: TGetWeekByIDType
@@ -39,188 +26,65 @@ type OwnProps = {
   rank?: number
   columnOrder?: any // @todo i think this is delivered by redux
   nodesByColumn?: any
-} & EditableComponentWithSortingProps & { dispatch?: Dispatch<Action> }
+} & ConnectedProps
 
 export type WeekUnconnectedPropsType = OwnProps
 
-type PropsType = OwnProps & ConnectedProps
-
 /**
- * Renders a standard 'week-style' block of nodes, wherein the
- * nodes appear one above the other, never side by side
- */
-class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
-  P,
-  EditableComponentWithSortingState
-> {
-  protected nodeBlock: React.RefObject<HTMLDivElement>
-  protected manager: BetterSelectionManager
-  private mainDiv: React.RefObject<HTMLDivElement>
-  private objectType: CfObjectType
+ *
+ **/
+const Week = ({ objectId, parentId, rank, columnOrder, nodesByColumn }) => {
+  /*******************************************************
+   * REDUX
+   *******************************************************/
+  const dispatch = useDispatch()
+  const week = useSelector((state: AppState) => getWeekById(state, objectId))
+  const workflow = useSelector((state: AppState) => state.workflow)
 
-  constructor(props: P) {
-    super(props)
-
-    this.manager = new BetterSelectionManager(this.props.dispatch)
-    this.objectType = CfObjectType.WEEK
-    this.nodeBlock = React.createRef()
-    this.mainDiv = React.createRef()
-  }
+  /*******************************************************
+   * REFS
+   *******************************************************/
+  const nodeBlock = useRef(null)
+  const mainDiv = useRef(null)
+  const manager = useRef(new BetterSelectionManager(dispatch))
+  const dragAndDropManager = useRef(null)
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
-  componentDidMount() {
-    this.makeDragAndDrop()
-  }
-
-  componentDidUpdate() {
-    this.makeDragAndDrop()
-    ThemeHelper.triggerHandlerEach(
-      $(this.mainDiv.current).find('.node'),
-      'component-updated'
-    )
-  }
-
-  /*******************************************************
-   * FUNCTIONS
-   *******************************************************/
-
-  makeDragAndDrop() {
-    //Makes the nodeweeks in the node block draggable
-    this.makeSortableNode(
-      $(this.nodeBlock.current).children('.node-week').not('.ui-draggable'),
-      this.props.objectId,
-      'nodeweek',
-      '.node-week',
-      false,
-      // @ts-ignore
-      [200, 1],
-      null,
-      '.node',
-      '.week-block'
-    )
-    this.makeDroppable()
-  }
-
-  sortableColumnChangedFunction(id, deltaX, oldColumn) {
-    const columns = this.props.columnOrder
-    const oldColumnIndex = columns.indexOf(oldColumn)
-    const newColumnIndex = oldColumnIndex + deltaX
-    if (newColumnIndex < 0 || newColumnIndex >= columns.length) {
-      return
-    }
-    const newColumn = columns[newColumnIndex]
-
-    //legacy: hack debouncer
-    // @todo ...
-    // @ts-ignore
-    if (this.recentlySentColumnChange) {
-      if (
-        // @ts-ignore
-        this.recentlySentColumnChange.column === newColumn &&
-        // @ts-ignore
-        Date.now() - this.recentlySentColumnChange.lastCall <= 500
-      ) {
-        // @ts-ignore
-        this.recentlySentColumnChange.lastCall = Date.now()
-        return
-      }
-    }
-
-    // @ts-ignore
-    this.recentlySentColumnChange = {
-      column: newColumn,
-      lastCall: Date.now()
-    }
-
-    this.lockChild(id, true, CfObjectType.NODEWEEK)
-
-    // assign the node to a new column within the week
-    this.context.editableMethods.microUpdate(
-      ActionCreator.columnChangeNode(id, newColumn)
-    )
-    columnChanged(this.context, id, newColumn) // @todo drag action needs to be designed and is not on renderer (context) anymore
-  }
-
-  sortableMovedFunction(id, newPosition, type, newParent, childId) {
-    //Correction for if we are in a term
-    if (this.props.nodesByColumn) {
-      for (const col in this.props.nodesByColumn) {
-        if (this.props.nodesByColumn[col].indexOf(id) >= 0) {
-          const previous = this.props.nodesByColumn[col][newPosition]
-          newPosition = this.props.week.data.nodeweekSet.indexOf(previous)
-        }
-      }
-    }
-
-    this.context.editableMethods.microUpdate(
-      ActionCreator.moveNodeWeek(id, newPosition, newParent, childId)
-    )
-    insertedAt(
-      this.context.selectionManager,
-      childId,
-      'node',
-      newParent,
-      'week',
-      newPosition,
-      'nodeweek'
-    )
-  }
-
-  makeDroppable() {
-    const props = this.props
-    $(this.mainDiv?.current).droppable({
-      tolerance: 'pointer',
-      // @ts-ignore
-      droppable: '.strategy-ghost',
-      over: (e, ui) => {
-        const dropItem = $(e.target)
-        const dragItem = ui.draggable
-        const dragHelper = ui.helper
-
-        if (dragItem.hasClass('new-strategy')) {
-          dragHelper.addClass('valid-drop')
-          dropItem.addClass('new-strategy-drop-over')
-        } else {
-          return
-        }
-      },
-      out: (e, ui) => {
-        const dragItem = ui.draggable
-        const dragHelper = ui.helper
-        const dropItem = $(e.target)
-        if (dragItem.hasClass('new-strategy')) {
-          dragHelper.removeClass('valid-drop')
-          dropItem.removeClass('new-strategy-drop-over')
-        }
-      },
-      drop: (e, ui) => {
-        $('.new-strategy-drop-over').removeClass('new-strategy-drop-over')
-        const dropItem = $(e.target)
-        const dragItem = ui.draggable
-        const newIndex = dropItem.parent().prevAll().length + 1
-        if (dragItem.hasClass('new-strategy')) {
-          const loader = new UtilityLoaderClass('body')
-          addStrategyQuery(
-            this.props.parentId,
-            newIndex,
-            // @todo HACK, this is being used to bypass react and pass information around the DOM
-            // @ts-ignore
-            dragItem[0].dataDraggable.strategy,
-            (responseData) => {
-              loader.endLoad()
-            }
-          )
-        }
-      }
+  useEffect(() => {
+    dragAndDropManager.current = new WeekDragAndDropManager({
+      objectId,
+      parentId
     })
-  }
+
+    const classIdentifiers = {
+      objectClass: '.node-week',
+      handle: '.node',
+      container: '.week-block'
+    }
+
+    const jQuerySortableBlockTarget = $(nodeBlock.current)
+      .children('.node-week')
+      .not('.ui-draggable')
+
+    dragAndDropManager.current.makeSortableNode(
+      //       nodeBlock.current,
+      jQuerySortableBlockTarget,
+      objectId,
+      classIdentifiers
+    )
+
+    dragAndDropManager.current.makeDroppable(mainDiv.current)
+    return () => {
+      // Cleanup if necessary
+    }
+  }, [objectId, parentId]) // You might need more dependencies based on your context
 
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  Nodes = ({ nodeweekSet }: { nodeweekSet: any }) => {
+  const Nodes = ({ nodeweekSet }) => {
     if (!nodeweekSet?.length) {
       return (
         <div className="node-week placeholder" style={{ height: '100%' }}>
@@ -228,144 +92,324 @@ class WeekUnconnected<P extends PropsType> extends EditableComponentWithSorting<
         </div>
       )
     }
-    return this.props.week.data.nodeweekSet.map((nodeId) => (
+    return nodeweekSet.map((nodeId) => (
       <NodeWeek
         key={nodeId}
         objectId={nodeId}
-        parentId={this.props.week.data.id}
-        columnOrder={this.props.week.columnOrder}
+        parentId={week.data.id}
+        columnOrder={week.columnOrder}
       />
     ))
   }
 
+  const StrategyTab = () => {
+    const { strategyClassification } = week.data
+    if (strategyClassification <= 0) {
+      return null
+    }
+    return (
+      <div className="strategy-tab">
+        <div className="strategy-tab-triangle" />
+        <div className="strategy-tab-square">
+          <div className="strategy-tab-circle">
+            {/* Add your image and tooltip handling logic here */}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const defaultText = !workflow.isStrategy
+    ? `${week.data.weekTypeDisplay} ${rank + 1}`
+    : undefined
+  const dropIcon = week.data.isDropped ? (
+    <ArrowDropDownIcon />
+  ) : (
+    <ArrowDropUpIcon />
+  )
+
   /*******************************************************
    * RENDER
    *******************************************************/
-  render() {
-    const data = this.props.week.data
-
-    const cssClasses = [
-      'week',
-      data.isStrategy ? 'strategy' : '',
-      data.lock ? 'locked locked-' + data.lock.userId : '',
-      data.isDropped ? ' dropped' : ''
-    ].join(' ')
-
-    const defaultText = !this.props.workflow.isStrategy
-      ? data.weekTypeDisplay + ' ' + (this.props.rank + 1)
-      : undefined
-
-    const dropIcon = data.isDropped ? (
-      <ArrowDropDownIcon />
-    ) : (
-      <ArrowDropUpIcon />
-    )
-    return (
-      <>
-        <div
-          style={ThemeHelper.getBorderStyle({
-            isLocked: data.lock?.lock,
-            colour: data.lock?.userColour
-          })}
-          className={cssClasses}
-          ref={this.mainDiv}
-          onClick={(e) => {
-            e.stopPropagation()
-            this.manager.updateSidebar(
-              data.id,
-              this.objectType,
-              this.props.parentId
-            )
-          }}
-        >
-          <div className="mouseover-container-bypass">
-            <HoverMenu
-              canWrite={
-                this.props.workflow.workflowPermissions.write &&
-                !this.props.workflow.isStrategy
-              }
-              canComment={this.props.workflow.workflowPermissions.viewComments}
-              objectId={this.props.objectId}
-              parentId={this.props.parentId}
-              objectType={this.objectType}
-            />
-          </div>
-
-          <TitleText text={data.title} defaultText={defaultText} />
-
-          <div
-            className="node-block"
-            id={this.props.objectId + '-node-block'}
-            ref={this.nodeBlock}
-          >
-            <this.Nodes nodeweekSet={this.props.week.data.nodeweekSet} />
-          </div>
-
-          <div
-            className="week-drop-row hover-shade"
-            onClick={(evt) => {
-              evt.stopPropagation()
-              this.manager.toggleDropReduxAction({
-                objectId: this.props.objectId,
-                objectType: Constants.objectDictionary[
-                  this.objectType
-                ] as CfObjectType,
-                newDropState: !this.props.week.data?.isDropped
-              })
-            }}
-          >
-            <div
-              style={{
-                textAlign: 'center',
-                width: '100%',
-                height: '100%'
-              }}
-            >
-              {dropIcon}
-            </div>
-          </div>
-
-          {data.strategyClassification > 0 && (
-            <div className="strategy-tab">
-              <div className="strategy-tab-triangle" />
-              <div className="strategy-tab-square">
-                <div className="strategy-tab-circle">
-                  <img
-                    title={
-                      choices.strategyClassificationChoices?.find(
-                        (obj) => obj.type === data.strategyClassification
-                      ).name
-                    }
-                    src={
-                      apiPaths.external.static_assets.icon +
-                      Constants.strategyKeys[data.strategyClassification] +
-                      '.svg'
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          )}
+  return (
+    <div
+      style={ThemeHelper.getBorderStyle({
+        isLocked: week.data?.lock?.lock,
+        colour: week.data?.lock?.userColour
+      })}
+      className={clsx('week', {
+        strategy: week.data.isStrategy,
+        dropped: week.data.isDropped,
+        [`locked`]: week.data?.lock,
+        [`locked-${week.data.lock?.userId}`]: week.data.lock
+      })}
+      ref={mainDiv}
+      onClick={(e) => {
+        e.stopPropagation()
+        manager.current.updateSidebar(week.data.id, objectId, parentId)
+      }}
+    >
+      <div className="mouseover-container-bypass">
+        <HoverMenu
+          canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}
+          canComment={workflow.workflowPermissions.viewComments}
+          objectId={objectId}
+          parentId={parentId}
+          objectType={CfObjectType.WEEK}
+        />
+      </div>
+      <TitleText text={week.data.title} defaultText={defaultText} />
+      <div className="node-block" id={`${objectId}-node-block`} ref={nodeBlock}>
+        <Nodes nodeweekSet={week.data.nodeweekSet} />
+      </div>
+      <div
+        className="week-drop-row hover-shade"
+        onClick={(evt) => {
+          evt.stopPropagation()
+          manager.current.toggleDropReduxAction({
+            objectId,
+            objectType: CfObjectType.WEEK,
+            newDropState: !week.data?.isDropped
+          })
+        }}
+      >
+        <div style={{ textAlign: 'center', width: '100%', height: '100%' }}>
+          {dropIcon}
         </div>
-      </>
-    )
-  }
+      </div>
+      <StrategyTab />
+    </div>
+  )
 }
-
-const mapWeekStateToProps = (
-  state: AppState,
-  ownProps: OwnProps
-): ConnectedProps => {
-  return {
-    week: getWeekById(state, ownProps.objectId),
-    workflow: state.workflow
-  }
-}
-
-const Week = connect<ConnectedProps, object, OwnProps, AppState>(
-  mapWeekStateToProps,
-  null
-)(WeekUnconnected)
 
 export default Week
-export { WeekUnconnected }
+
+// /**
+//  * Renders a standard 'week-style' block of nodes, wherein the
+//  * nodes appear one above the other, never side by side
+//  */
+// class WeekUnconnected extends React.Component<WeekUnconnectedPropsType> {
+//   protected nodeBlock: React.RefObject<HTMLDivElement>
+//   protected manager: BetterSelectionManager
+//   private mainDiv: React.RefObject<HTMLDivElement>
+//   private objectType: CfObjectType
+//   private dragAndDropManager: WeekDragAndDropManager // Add this line
+//
+//   constructor(props: WeekUnconnectedPropsType) {
+//     super(props)
+//
+//     this.manager = new BetterSelectionManager(this.props.dispatch)
+//     this.objectType = CfObjectType.WEEK
+//     this.nodeBlock = React.createRef()
+//     this.mainDiv = React.createRef()
+//     // Initialize the drag and drop manager
+//     this.dragAndDropManager = new WeekDragAndDropManager({
+//       // Assuming that WeekDragAndDropManager expects some props for initialization
+//       objectId: this.props.objectId,
+//       parentId: this.props.parentId
+//     })
+//   }
+//
+//   /*******************************************************
+//    * LIFECYCLE
+//    *******************************************************/
+//   componentDidMount() {
+//     this.makeDragAndDrop()
+//   }
+//
+//   componentDidUpdate() {
+//     this.makeDragAndDrop()
+//     ThemeHelper.triggerHandlerEach(
+//       $(this.mainDiv.current).find('.node'),
+//       'component-updated'
+//     )
+//   }
+//
+//   /*******************************************************
+//    * FUNCTIONS
+//    *******************************************************/
+//   makeDragAndDrop() {
+//     const classIdentifiers = {
+//       objectClass: '.node-week',
+//       handle: '.node',
+//       container: '.week-block'
+//     }
+//
+//     const jQuerySortableBlockTarget = $(this.nodeBlock.current)
+//       .children('.node-week')
+//       .not('.ui-draggable')
+//
+//     this.dragAndDropManager.makeSortableNode(
+//       jQuerySortableBlockTarget,
+//       this.props.objectId,
+//       CfObjectType.NODEWEEK,
+//       classIdentifiers.objectClass,
+//       null,
+//       [200, 1],
+//       null,
+//       classIdentifiers.handle,
+//       classIdentifiers.container
+//     )
+//
+//     this.dragAndDropManager.makeDroppable(this.mainDiv?.current)
+//   }
+//
+//   /*******************************************************
+//    * COMPONENTS
+//    *******************************************************/
+//   Nodes = ({ nodeweekSet }: { nodeweekSet: any }) => {
+//     if (!nodeweekSet?.length) {
+//       return (
+//         <div className="node-week placeholder" style={{ height: '100%' }}>
+//           Drag and drop nodes from the sidebar to add.
+//         </div>
+//       )
+//     }
+//     return this.props.week.data.nodeweekSet.map((nodeId) => (
+//       <NodeWeek
+//         key={nodeId}
+//         objectId={nodeId}
+//         parentId={this.props.week.data.id}
+//         columnOrder={this.props.week.columnOrder}
+//       />
+//     ))
+//   }
+//
+//   StrategyTab = () => {
+//     const data = this.props.week.data
+//
+//     if (data.strategyClassification <= 0) {
+//       return <></>
+//     }
+//     return (
+//       <div className="strategy-tab">
+//         <div className="strategy-tab-triangle" />
+//         <div className="strategy-tab-square">
+//           <div className="strategy-tab-circle">
+//             <img
+//               title={
+//                 choices.strategyClassificationChoices?.find(
+//                   (obj) => obj.type === data.strategyClassification
+//                 ).name
+//               }
+//               src={
+//                 apiPaths.external.static_assets.icon +
+//                 Constants.strategyKeys[data.strategyClassification] +
+//                 '.svg'
+//               }
+//             />
+//           </div>
+//         </div>
+//       </div>
+//     )
+//   }
+//
+//   /*******************************************************
+//    * RENDER
+//    *******************************************************/
+//   render() {
+//     const data = this.props.week.data
+//
+//     const cssClasses = [
+//       'week',
+//       data.isStrategy ? 'strategy' : '',
+//       data.lock ? 'locked locked-' + data.lock.userId : '',
+//       data.isDropped ? ' dropped' : ''
+//     ].join(' ')
+//
+//     const defaultText = !this.props.workflow.isStrategy
+//       ? data.weekTypeDisplay + ' ' + (this.props.rank + 1)
+//       : undefined
+//
+//     const dropIcon = data.isDropped ? (
+//       <ArrowDropDownIcon />
+//     ) : (
+//       <ArrowDropUpIcon />
+//     )
+//     return (
+//       <>
+//         <div
+//           style={ThemeHelper.getBorderStyle({
+//             isLocked: data.lock?.lock,
+//             colour: data.lock?.userColour
+//           })}
+//           className={cssClasses}
+//           ref={this.mainDiv}
+//           onClick={(e) => {
+//             e.stopPropagation()
+//             this.manager.updateSidebar(
+//               data.id,
+//               this.objectType,
+//               this.props.parentId
+//             )
+//           }}
+//         >
+//           <div className="mouseover-container-bypass">
+//             <HoverMenu
+//               canWrite={
+//                 this.props.workflow.workflowPermissions.write &&
+//                 !this.props.workflow.isStrategy
+//               }
+//               canComment={this.props.workflow.workflowPermissions.viewComments}
+//               objectId={this.props.objectId}
+//               parentId={this.props.parentId}
+//               objectType={this.objectType}
+//             />
+//           </div>
+//
+//           <TitleText text={data.title} defaultText={defaultText} />
+//
+//           <div
+//             className="node-block"
+//             id={this.props.objectId + '-node-block'}
+//             ref={this.nodeBlock}
+//           >
+//             <this.Nodes nodeweekSet={this.props.week.data.nodeweekSet} />
+//           </div>
+//
+//           <div
+//             className="week-drop-row hover-shade"
+//             onClick={(evt) => {
+//               evt.stopPropagation()
+//               this.manager.toggleDropReduxAction({
+//                 objectId: this.props.objectId,
+//                 objectType: this.objectType,
+//                 newDropState: !this.props.week.data?.isDropped
+//               })
+//             }}
+//           >
+//             <div
+//               style={{
+//                 textAlign: 'center',
+//                 width: '100%',
+//                 height: '100%'
+//               }}
+//             >
+//               {dropIcon}
+//             </div>
+//           </div>
+//
+//           <this.StrategyTab />
+//         </div>
+//       </>
+//     )
+//   }
+// }
+//
+// const mapWeekStateToProps = (
+//   state: AppState,
+//   ownProps: OwnProps
+// ): ConnectedProps => {
+//   return {
+//     week: getWeekById(state, ownProps.objectId),
+//     workflow: state.workflow
+//   }
+// }
+//
+// const Week = connect<ConnectedProps, object, OwnProps, AppState>(
+//   mapWeekStateToProps,
+//   null
+// )(WeekUnconnected)
+//
+// export default Week
+// export { WeekUnconnected }
