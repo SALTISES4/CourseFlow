@@ -34,14 +34,9 @@ const Term = ({
   const nodeBlock = useRef<HTMLDivElement>(null)
 
   const makeDragAndDrop = () => {
-    // Makes the nodeweeks in the node block draggable
     const nodeWeeks = Array.from(
       nodeBlock.current?.querySelectorAll('.node-week') || []
     ).filter((el) => !el.classList.contains('ui-draggable'))
-
-    // Call the makeSortableNode function
-    // Replace with the appropriate drag-and-drop manager setup
-    // Assuming makeSortableNode is a utility function or hook you can use here
   }
 
   useEffect(() => {
@@ -55,6 +50,11 @@ const Term = ({
       handle: '.node',
       container: '.week-block'
     }
+
+    // which selector
+    //     const nodeWeeks = Array.from(
+    //   nodeBlock.current?.querySelectorAll('.node-week') || []
+    // ).filter((el) => !el.classList.contains('ui-draggable'))
 
     const jQueryNodeBlock = $(this.nodeBlock.current)
       .children()
@@ -117,8 +117,7 @@ const Term = ({
       ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
-        // Assuming manager is a utility hook or function for updating the sidebar
-        // Replace with appropriate function call
+        // selection manager goes here
       }}
     >
       <div className="mouseover-container-bypass">
@@ -141,8 +140,7 @@ const Term = ({
         className="week-drop-row hover-shade"
         onClick={(evt) => {
           evt.stopPropagation()
-          // Assuming toggleDropReduxAction is a utility function or hook
-          // Replace with appropriate function call
+          //  toggleDropReduxAction goes here
         }}
       >
         <div className="node-drop-side node-drop-left"></div>

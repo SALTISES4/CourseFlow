@@ -13,7 +13,7 @@ type Args = {
 }
 
 /**
- * Extends the React component to add a few features that are used in a large number of components
+ * SortableDragAndDropManager
  */
 class SortableDragAndDropManager {
   static contextType = WorkflowConfigContext
@@ -29,7 +29,9 @@ class SortableDragAndDropManager {
   }
 
   /*******************************************************
-   * PLACHOLDERS
+   * PLACEHOLDERS
+   * - this class is not going to stay for long, so we'll leave the half implemented polymorphism alone for now (note the violation of Sub )
+   * - methods defined as 'stubs', then implemented in child
    *******************************************************/
 
   sortableColumnChangedFunction(_id, _deltaX, _oldColumn) {

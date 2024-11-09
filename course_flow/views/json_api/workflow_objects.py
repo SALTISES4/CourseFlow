@@ -89,14 +89,13 @@ class WorkflowObjectEndpoint:
         :param request:
         :return:
         """
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        object_id = body.get("objectID")
+        body = request.data
+        object_id = body.get("object_id")
         object_type = body.get("object_type")
-        parent_id = body.get("parentId")
-        parent_type = body.get("parentType")
-        through_type = body.get("throughType")
+        parent_id = body.get("parent_id")
+        parent_type = body.get("parent_type")
+        through_type = body.get("through_type")
+
         node_updates = []
 
         try:

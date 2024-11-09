@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from course_flow.models import Activity, Course, Notification
 from course_flow.models.objectset import ObjectSet
 from course_flow.models.relations import NodeLink, NodeWeek
@@ -403,11 +405,25 @@ class WorkflowService:
         weeks = workflow.weeks.all()
         nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
         nodes = Node.objects.filter(week__workflow=workflow).prefetch_related(
-            "outcomenode_set", "liveassignment_set"
+            "outcomenode_set", "comments"  # adding comments to the prefetch
         )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
 
-        # Initialize data
+        # this is not well constructed
+        # during phase of model rework, go back to a combined query
+        # i.e.
+        #       workflow = Workflow.objects.filter(id=workflow_id).prefetch_related(
+        #     'columnworkflow_set',
+        #     'weekworkflow_set',
+        #     'columns',
+        #     'weeks',
+        #     'weeks__nodeweeks',
+        #     'weeks__nodes__outcomenode_set',
+        #       ...
+        #     'weeks__nodes__nodelinks',
+        # ).select_related().first()
+        # etc
+        # now, we could keep the model lookup distributed like this IF we tried to implement lazy/async querying
         data = {
             "workflow": SerializerClass(workflow, context={"user": user}).data,
             "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflows, many=True).data,

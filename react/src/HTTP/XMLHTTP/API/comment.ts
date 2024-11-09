@@ -1,3 +1,4 @@
+/*
 //Removes the specified comment from the object
 import { apiPaths } from '@cf/router/apiRoutes'
 import Utility from '@cf/utility/Utility.class'
@@ -66,3 +67,4 @@ export function removeAllComments(
     callBackFunction(response)
   })
 }
+*/

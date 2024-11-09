@@ -305,12 +305,10 @@ export const HoverMenu = ({
         )}
         {canComment && <AddCommentingButton show={show} setShow={setShow} />}
       </div>
-      <CommentBox
-        id={objectId}
-        show={show}
-        setShow={setShow}
-        objectType={objectType}
-      />
+
+      {show && (
+        <CommentBox id={objectId} setShow={setShow} objectType={objectType} />
+      )}
     </>
   )
 }

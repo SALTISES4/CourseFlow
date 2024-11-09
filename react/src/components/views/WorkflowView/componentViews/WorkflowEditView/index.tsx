@@ -32,7 +32,7 @@ const WorkflowEditView = () => {
 
   const weekworkflows = workflow.weekworkflowSet?.map((weekworkflow) => (
     <WeekWorkflow
-      condensed={workflow.condensed}
+      condensed={workflow.condensed} // this makes not sense that it would switch on condensed
       key={`weekworkflow-${weekworkflow}`}
       objectId={weekworkflow}
       parentId={workflow.id}

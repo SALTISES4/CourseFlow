@@ -80,6 +80,8 @@ export type TGetWeekByIDType = {
   nodeweeks: any
   workflowId?: number
 }
+export const selectWeekById = (state: AppState, id: number) => state.week[id];
+
 
 // @todo why are weeks and terms handled differently
 export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
@@ -346,6 +348,29 @@ export const getOutcomeWorkflowByID = (
 export type TColumnWorkflowById = {
   data?: TColumnworkflow
   order?: number[]
+}
+
+export const getColumnWorkflowByID2 = (
+  columnworkflow: AppState['columnworkflow'],
+  workflow,
+  id: number
+): TColumnWorkflowById => {
+  for (const i in columnworkflow) {
+    const columnWorkflow = columnworkflow[i]
+    if (columnWorkflow.id === id) {
+      return {
+        data: columnWorkflow,
+        order: workflow.columnworkflowSet
+      }
+    }
+  }
+
+  Utility.logger('no columnWorkflow found with id', id)
+
+  return {
+    data: undefined,
+    order: undefined
+  }
 }
 
 export const getColumnWorkflowByID = (

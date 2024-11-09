@@ -1,8 +1,13 @@
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
-import { TGetWeekByIDType, getWeekById } from '@cfFindState'
+import {
+  TGetWeekByIDType,
+  getColumnWorkflowByID,
+  getColumnWorkflowByID2
+} from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWeek'
@@ -13,6 +18,7 @@ import clsx from 'clsx'
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { createSelector } from 'reselect'
 
 type ConnectedProps = {
   week: TGetWeekByIDType
@@ -29,6 +35,51 @@ type OwnProps = {
 } & ConnectedProps
 
 export type WeekUnconnectedPropsType = OwnProps
+/**
+ * Reselect selector that gets the workflow from state only when needed.
+ */
+
+const selectWeeks = (state: AppState) => state.week
+const selectWorkflow = (state: AppState) => state.workflow
+const selectNodeWeeks = (state: AppState) => state.nodeweek
+const selectColumnWorkflow = (state: AppState) => state.columnworkflow
+
+// @todo why are weeks and terms handled differently
+export const getWeekById = createSelector(
+  [
+    selectWeeks,
+    selectWorkflow,
+    selectNodeWeeks,
+    selectColumnWorkflow,
+    (state: AppState, id: number) => id
+  ],
+  (weeks, workflow, nodeweeks, columnworkflow, id) => {
+    const week = weeks.find((w) => w.id === id)
+
+    if (!week) {
+      Utility.logger('No week found with id', id)
+      return undefined
+    }
+
+    // Ensure immutability and derive additional properties
+    //  const isDropped = week.isDropped ?? getDropped(id, 'week')
+    const isDropped = true
+    return {
+      data: { ...week, isDropped },
+      columnOrder: workflow.columnworkflowSet.map((columnId) => {
+        const columnWorkflow = getColumnWorkflowByID2(
+          columnworkflow,
+          workflow,
+          columnId
+        )
+        return columnWorkflow?.data?.column
+      }),
+      siblingCount: workflow.weekworkflowSet.length,
+      nodeweeks,
+      workflowId: workflow.id
+    }
+  }
+)
 
 /**
  *
@@ -38,8 +89,9 @@ const Week = ({ objectId, parentId, rank, columnOrder, nodesByColumn }) => {
    * REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const week = useSelector((state: AppState) => getWeekById(state, objectId))
+  const week = useSelector((state) => getWeekById(state, objectId));
   const workflow = useSelector((state: AppState) => state.workflow)
+
 
   /*******************************************************
    * REFS
@@ -76,15 +128,13 @@ const Week = ({ objectId, parentId, rank, columnOrder, nodesByColumn }) => {
     )
 
     dragAndDropManager.current.makeDroppable(mainDiv.current)
-    return () => {
-      // Cleanup if necessary
-    }
-  }, [objectId, parentId]) // You might need more dependencies based on your context
+    return () => {}
+  }, [objectId, parentId])
 
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const Nodes = ({ nodeweekSet }) => {
+  const Nodes = ({ nodeweekSet }: {nodeweekSet: number[]}) => {
     if (!nodeweekSet?.length) {
       return (
         <div className="node-week placeholder" style={{ height: '100%' }}>
@@ -112,7 +162,7 @@ const Week = ({ objectId, parentId, rank, columnOrder, nodesByColumn }) => {
         <div className="strategy-tab-triangle" />
         <div className="strategy-tab-square">
           <div className="strategy-tab-circle">
-            {/* Add your image and tooltip handling logic here */}
+            // check class for what goese here
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import {CfObjectType} from "@cf/types/enum";
 import {
   EComment,
   ELibraryObject,
@@ -55,6 +56,11 @@ export type PageHomeQueryResp = {
 export type CommentsForObjectQueryResp = {
   message: string
   dataPackage: EComment[]
+}
+
+export type CommentsForObjectQueryArgs = {
+  objectId: number
+  objectType: CfObjectType
 }
 
 /*******************************************************

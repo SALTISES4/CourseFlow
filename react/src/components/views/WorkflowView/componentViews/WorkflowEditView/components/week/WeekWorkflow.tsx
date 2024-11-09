@@ -94,6 +94,7 @@ const WeekWorkflow = ({ condensed, objectId, parentId }: PropsType) => {
    * COMPONENTS
    *******************************************************/
   const WeekWrapper = () => {
+    // investigate this switch it doesn't make sense why is term (label for program week) being used for the UI dropped view (as in drop down drawer)
     if (condensed) {
       return (
         <Term

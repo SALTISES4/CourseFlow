@@ -1,97 +1,75 @@
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
-import { apiPaths } from '@cf/router/apiRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
-import Slider from '@cfComponents/UIPrimitives/Slider'
 import { AppState } from '@cfRedux/types/type'
-import React, { useContext, useEffect, useState } from 'react'
+import Legend from '@cfViews/common/Legend'
 import { useSelector } from 'react-redux'
 
-const OutcomeLegend: React.FC = () => {
-  const workflowConfigContext = useContext(WorkflowConfigContext)
+const OutcomeLegend = () => {
   const outcomesType = useSelector(
     (state: AppState) => state.workflow.outcomesType
   )
 
-  const [showLegend, setShowLegend] = useState<boolean>(() => {
-    return JSON.parse(localStorage.getItem('show_legend') || 'false')
-  })
-  const [showSlider, setShowSlider] = useState<boolean>(false)
-
-  useEffect(() => {
-    setShowSlider(true)
-  }, [])
-
-  const toggleLegend = () => {
-    const newShowLegend = !showLegend
-    localStorage.setItem('show_legend', JSON.stringify(newShowLegend))
-    setShowLegend(newShowLegend)
-  }
-
-  const renderSlider = showSlider && (
-    <>
-      <div>{_t('Legend')}</div>
-      <Slider checked={showLegend} toggleAction={toggleLegend} />
-    </>
-  )
-
-  if (!showLegend) {
-    return null
-  }
-
-  return (
-    <div className="workflow-legend">
-      <h4>Legend</h4>
-      {renderSlider}
-      <div className="legend-section">
-        <hr />
-        <h5>Outcomes:</h5>
-        <LegendLine icon="solid_check" text="Complete" />
-        <LegendLine icon="check" text="Completed (Auto-Calculated)" />
-        <LegendLine icon="nocheck" text="Partially Complete" />
-      </div>
-      {outcomesType === 1 && (
-        <div className="legend-section">
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
+  const LegendContent = () => {
+    return (
+      <>
+        <div>
           <hr />
-          <h5>Advanced Outcomes:</h5>
-          <LegendLine
-            div="I"
-            divclass="outcome-introduced self-completed"
-            text="Introduced"
-          />
-          <LegendLine
-            div="D"
-            divclass="outcome-developed self-completed"
-            text="Developed"
-          />
-          <LegendLine
-            div="A"
-            divclass="outcome-advanced self-completed"
-            text="Advanced"
-          />
-          <LegendLine
-            div="I"
-            divclass="outcome-introduced"
-            text="Introduced (Auto-Calculated)"
-          />
-          <LegendLine
-            div="D"
-            divclass="outcome-developed"
-            text="Developed (Auto-Calculated)"
-          />
-          <LegendLine
-            div="A"
-            divclass="outcome-advanced"
-            text="Advanced (Auto-Calculated)"
-          />
+          <h5>Outcomes:</h5>
+          <LegendLine icon="solid_check" text="Complete" />
+          <LegendLine icon="check" text="Completed (Auto-Calculated)" />
+          <LegendLine icon="nocheck" text="Partially Complete" />
         </div>
-      )}
-      <div className="window-close-button" onClick={toggleLegend}>
-        <img
-          src={`${apiPaths.external.static_assets.icon}close.svg`}
-          alt="Close"
-        />
-      </div>
+        {outcomesType === 1 && (
+          <>
+            <hr />
+            <h5>Advanced Outcomes:</h5>
+            <LegendLine
+              div="I"
+              divClass="outcome-introduced self-completed"
+              text="Introduced"
+            />
+            <LegendLine
+              div="D"
+              divClass="outcome-developed self-completed"
+              text="Developed"
+            />
+            <LegendLine
+              div="A"
+              divClass="outcome-advanced self-completed"
+              text="Advanced"
+            />
+            <LegendLine
+              div="I"
+              divClass="outcome-introduced"
+              text="Introduced (Auto-Calculated)"
+            />
+            <LegendLine
+              div="D"
+              divClass="outcome-developed"
+              text="Developed (Auto-Calculated)"
+            />
+            <LegendLine
+              div="A"
+              divClass="outcome-advanced"
+              text="Advanced (Auto-Calculated)"
+            />
+          </>
+        )}
+      </>
+    )
+  }
+
+  /*******************************************************
+   * RETURN
+   *******************************************************/
+  return (
+    <div>
+      <Legend>
+        <LegendContent />
+      </Legend>
     </div>
   )
 }

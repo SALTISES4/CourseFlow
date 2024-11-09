@@ -153,7 +153,9 @@ class NodeUnconnected extends React.Component<PropsType, StateProps> {
     if (!this.props.workflow.workflowPermissions.write) {
       return
     }
-    this.setState({ hovered: true })
+    if (!this.state.hovered) {
+      this.setState({ hovered: true })
+    }
   }
 
   mouseLeave(_evt: MouseEvent): void {

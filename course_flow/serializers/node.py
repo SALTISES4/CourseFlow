@@ -11,6 +11,7 @@ from course_flow.serializers.mixin import (
     TimeRequiredSerializerMixin,
     TitleSerializerMixin,
 )
+from course_flow.serializers.workflow_objects import CommentSerializer
 from course_flow.services import DAO, Utility
 
 
@@ -70,6 +71,10 @@ class NodeLinkSerializerShallow(serializers.ModelSerializer, TitleSerializerMixi
         return instance
 
 
+#########################################################
+# This, like many others are called shallow
+# but they don't actually supply non shallow versions
+#########################################################
 class NodeSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
@@ -82,6 +87,15 @@ class NodeSerializerShallow(
     columnworkflow = serializers.SerializerMethodField()
     column = serializers.SerializerMethodField()
     linked_workflow_data = serializers.SerializerMethodField()
+    # adding full comments object here, this is a step backwards in some ways
+    # the DB model has many unneeded relations, and so in most queries the
+    # full related object is not loaded to reduce query load
+    # this kind of optimization really has no purpose until the DB model is fixed
+    # especially as it's applied inconsistently,
+    # (review the get workflow endpoint)
+
+    # it's also creating a mess in the frontend
+    comments = CommentSerializer(many=True, read_only=True)
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -140,6 +154,8 @@ class NodeSerializerShallow(
         else:
             return instance.column.columnworkflow_set.get(column=instance.column).id
 
+    ## this is another pseudo 1toM method
+    # model needs fixing
     def get_column(self, instance):
         if instance.column is None:
             instance.column = (

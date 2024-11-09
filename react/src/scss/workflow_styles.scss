@@ -2207,38 +2207,6 @@ circle.mouseover {
   position: absolute;
 }
 
-.workflow-legend {
-  cursor: move;
-  position: fixed;
-  background: $color-white;
-  z-index: 5;
-  padding: 20px;
-  border: 2px solid $color-primary-green;
-  left: calc(100% - 460px);
-  box-shadow: 0px 2px 2px 0px rgba($color-black, 0.3);
-}
-
-.workflow-legend .legend-section {
-}
-
-.workflow-legend .legend-line {
-  width: 100%;
-  padding: 2px;
-}
-
-.workflow-legend .legend-line img {
-  display: inline-block;
-  vertical-align: middle;
-  width: 24px;
-}
-
-.workflow-legend .legend-line div {
-  display: inline-block;
-  vertical-align: middle;
-  margin-left: 8px;
-  font-weight: 600;
-  font-size: 12px;
-}
 
 /*ComparisonView stuff*/
 
@@ -2329,11 +2297,7 @@ circle.mouseover {
   z-index: 2;
 }
 
-/*
-.workflow-legend *:is(h4, h5), .right-panel-container *:is(h3, h4, h5){
-    color: $color-primary-green;
-}
-*/
+
 .selectable {
   user-select: unset;
 }
