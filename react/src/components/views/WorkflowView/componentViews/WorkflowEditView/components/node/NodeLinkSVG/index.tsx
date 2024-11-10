@@ -1,6 +1,6 @@
 import { NumTuple, ObjectLock } from '@cf/types/common'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import Utility from "@cf/utility/Utility.class";
+import Utility from '@cf/utility/Utility.class'
 import PathGenerator from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG/PathGenerator.class'
 import * as React from 'react'
 
@@ -91,7 +91,6 @@ class NodeLinkSVG extends React.Component<PropsType, State> {
   // }
 
   getStyle() {
-
     if (this.props.hovered || this.state.hovered) {
       return {
         ...this.props.style,
@@ -112,7 +111,7 @@ class NodeLinkSVG extends React.Component<PropsType, State> {
     if (this.props.selected) {
       return {
         ...this.props.style,
-        stroke: ThemeHelper.generateColorFromIntToHex(10),// maybe get the user id here, we'll see...
+        stroke: ThemeHelper.generateColorFromIntToHex(10), // maybe get the user id here, we'll see...
         opacity: 1
       }
     }
@@ -163,7 +162,6 @@ class NodeLinkSVG extends React.Component<PropsType, State> {
 
   render() {
     try {
-
       const sourceTransform = ThemeHelper.getSVGTranslation(
         this.props.sourcePortHandle
           .select(function () {

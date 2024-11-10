@@ -253,8 +253,7 @@ export const useWorkflowWebsocketManager = ({
     const data = JSON.parse(e.data)
 
     // @todo need to insert type guards here
-
-    Utility.logger(data)
+    // Utility.logger(data)
 
     // here we will insert the publisher filter logic
     // it might not stay here

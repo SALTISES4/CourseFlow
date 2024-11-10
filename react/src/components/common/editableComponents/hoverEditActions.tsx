@@ -17,7 +17,7 @@ import {
   useInsertSiblingMutation
 } from '@XMLHTTP/API/workspace.rtk'
 import * as React from 'react'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 type ActionItemArgs = {
   id: number
@@ -285,6 +285,12 @@ export const HoverMenu = ({
 }) => {
   const [show, setShow] = useState<boolean>(false)
 
+  const memoizedCommentBox = useMemo(
+    () =>
+        <CommentBox id={objectId} setShow={setShow} objectType={objectType} />,
+    [objectId, objectType]
+  )
+
   return (
     <>
       <div className="mouseover-actions">
@@ -306,9 +312,11 @@ export const HoverMenu = ({
         {canComment && <AddCommentingButton show={show} setShow={setShow} />}
       </div>
 
-      {show && (
-        <CommentBox id={objectId} setShow={setShow} objectType={objectType} />
-      )}
+
+      {/*{show && (*/}
+      {/*  <CommentBox id={objectId} setShow={setShow} objectType={objectType} />*/}
+      {/*)}*/}
+      {show && memoizedCommentBox}
     </>
   )
 }

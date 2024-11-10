@@ -29,7 +29,7 @@ type StateType = {
   userList: TUser[]
 }
 
-const CommentBox = ({ id, show, setShow, objectType }: PropsType) => {
+const CommentBox = ({ id, setShow, objectType }: PropsType) => {
   const dispatch = useDispatch()
 
   /*******************************************************
@@ -70,13 +70,10 @@ const CommentBox = ({ id, show, setShow, objectType }: PropsType) => {
   /**
    * get comments
    **/
-  const { data, refetch, isError, error } = useFetchByObjectQuery(
-    {
-      objectId: id,
-      objectType
-    },
-    { skip: !show }
-  )
+  const { data, refetch, isError, error } = useFetchByObjectQuery({
+    objectId: id,
+    objectType
+  })
   const [deleteOneMutation] = useDeleteCommentMutation()
   const [deleteAllMutation] = useDeleteAllByObjectMutation()
   const [createMutation] = useCreateCommentMutation()
@@ -301,8 +298,6 @@ const CommentBox = ({ id, show, setShow, objectType }: PropsType) => {
       )}
     </div>
   )
-
-  console.log(show, ' ', id)
 
   return (
     <>

@@ -32,11 +32,7 @@ export const StyledDivLine = styled('div')<{ colour?: string }>(
 /**
  * The column in a workflow.
  */
-const Column: React.FC<PropsType> = ({
-  objectId,
-  parentId,
-  throughParentId
-}) => {
+const Column = ({ objectId, parentId, throughParentId }: PropsType) => {
   /*******************************************************
    * CONST
    *******************************************************/

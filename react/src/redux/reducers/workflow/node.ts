@@ -166,6 +166,8 @@ type NodeActionsUnion =
   | CreateOutcomeAction
   | CreateNodeLinkAction
 
+import { changedColumn } from '../rtk/node.rtk'
+
 export default function nodeReducer(
   state: TNode[] = [],
   action: NodeActionsUnion
@@ -229,12 +231,7 @@ export default function nodeReducer(
     // UPDATE_NODE is probably fine
     // this seems convoluted
     case NodeActions.CHANGED_COLUMN:
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return { ...item, column: action.payload.newColumn }
-        }
-        return item
-      })
+      return changedColumn(state, action)
 
     // candidate for UPDATE_NODE
     case NodeActions.CREATE_LOCK:
@@ -246,7 +243,6 @@ export default function nodeReducer(
       })
 
     case NodeActions.CHANGE_FIELD:
-
       return state.map((item) =>
         item.id === action.payload.id
           ? // no
