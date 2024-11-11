@@ -3,7 +3,6 @@ import { OuterContentWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/utilityFunctions'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import WorkspaceSidebar from '@cfPages/Workspace/Workflow/Sidebar'
-import workspaceSidebarData from '@cfPages/Workspace/Workflow/Sidebar/data'
 import { useWorkflowSidebar } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
@@ -141,7 +140,7 @@ const WorkflowTabs = () => {
             </div>
           </div>
 
-          <WorkspaceSidebar {...workspaceSidebarData} />
+          <WorkspaceSidebar />
 
           {/*<RightSideBar*/}
           {/*  wfcontext={WFContext.WORKFLOW}*/}

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-import { RestoreTabType } from './types'
+import { RestoreTabType } from '../../types'
 
 const data: RestoreTabType = {
   title: 'Restore items',

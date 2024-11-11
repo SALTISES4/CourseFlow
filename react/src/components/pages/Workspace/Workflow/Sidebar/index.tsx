@@ -38,28 +38,13 @@ function getTabContent(
     case 'edit':
       return <EditTab type={edit.objectType as unknown as EditableType} />
     case 'add':
-      return (
-        <div>
-          <h1>Add tab</h1>
-        </div>
-      )
-    // return <AddTab />
+      return <AddTab />
     case 'restore':
       return <RestoreTab />
     case 'outcomes':
-      return (
-        <div>
-          <h1>Outcomes tab</h1>
-        </div>
-      )
-    // return <OutcomesTab />
+      return <OutcomesTab />
     case 'related':
-      return (
-        <div>
-          <h1>Related tab</h1>
-        </div>
-      )
-    // return <RelatedTab />
+      return <RelatedTab />
     default:
       return <>{tab} tab not implemented yet</>
   }
