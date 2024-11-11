@@ -1,4 +1,4 @@
-import { getNodeWeekByID } from '@cfFindState'
+import { getNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
 import Node from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Node'
 import clsx from 'clsx'
@@ -8,37 +8,37 @@ import { useSelector } from 'react-redux'
 type PropsType = {
   objectId: number
   parentId: number
-  columnOrder: any
+  columnOrder: number[]
 }
 
-const NodeWeek = ({ objectId, parentId, columnOrder }: PropsType) => {
-  const data = useSelector((state: AppState) =>
-    getNodeWeekByID(state, objectId)
-  )
+/**
+ * NodeWrapper:
+ * only purpose now is (maybe) as a  wrapper for drag and drop
+ * (although make droppable is still in Node right now)
+ * this is why we just call getNodeById in both NodeWrapper and child
+ * TBD...
+ **/
 
-  const newData = data?.data
-  if (!newData) {
+const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
+  const data = useSelector((state: AppState) => getNodeById(state, objectId))
+
+  if (!data) {
     return null
   }
 
   return (
     <div
-      className={clsx('node-week', { 'no-drag': newData.noDrag })}
-      id={String(newData.id)}
-      data-child-id={String(newData.node)}
+      className={clsx('node-week', { 'no-drag': data.noDrag })} // where does nodrag come from
+      id={String(objectId)}
+      data-child-id={String(objectId)}
       data-column-id={String(data.column)}
     >
-      <Node
-        objectId={newData.node}
-        parentId={parentId}
-        throughParentId={newData.id}
-        columnOrder={columnOrder}
-      />
+      <Node objectId={objectId} parentId={parentId} columnOrder={columnOrder} />
     </div>
   )
 }
 
-export default NodeWeek
+export default NodeWrapper
 
 // import { TGetNodeWeekById, getNodeWeekByID } from '@cfFindState'
 // import { AppState } from '@cfRedux/types/type'

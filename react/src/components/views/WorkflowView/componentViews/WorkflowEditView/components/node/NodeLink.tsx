@@ -1,25 +1,25 @@
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
-import { getNodeLinkByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import { getNodeLinkById } from '@cfRedux/selectors/nodelink.selector'
 import { AppState } from '@cfRedux/types/type'
 import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
-type OwnProps = {
+type PropsType = {
   objectId: number
   nodeDiv: React.RefObject<HTMLDivElement>
 }
 
-const NodeLink: React.FC<OwnProps> = ({ objectId, nodeDiv }) => {
+const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
   /*******************************************************
    * REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const data = useSelector(
-    (state: AppState) => getNodeLinkByID(state, objectId)?.data
+  const nodeLink = useSelector((state: AppState) =>
+    getNodeLinkById(state, objectId)
   )
 
   /*******************************************************
@@ -27,7 +27,7 @@ const NodeLink: React.FC<OwnProps> = ({ objectId, nodeDiv }) => {
    *******************************************************/
   const manager = new BetterSelectionManager(dispatch)
   const objectType = CfObjectType.NODELINK
-  const rerenderEvents = `ports-rendered.${data?.id}`
+  const rerenderEvents = `ports-rendered.${objectId}`
 
   /*******************************************************
    * STATE
@@ -44,12 +44,12 @@ const NodeLink: React.FC<OwnProps> = ({ objectId, nodeDiv }) => {
    *******************************************************/
   // Effect to handle node updates and event listeners
   useEffect(() => {
-    if (!data) {
+    if (!nodeLink) {
       return
     }
 
     const srcNode = $(nodeDiv.current)
-    const tgtNode = $(`#${data.targetNode}.node`)
+    const tgtNode = $(`#${nodeLink.targetNode}.node`)
 
     setSourceNode(srcNode)
     setTargetNode(tgtNode)
@@ -60,17 +60,17 @@ const NodeLink: React.FC<OwnProps> = ({ objectId, nodeDiv }) => {
     // this css selector defines the circle attached to each node
     // from which the line is connected
     const sourcePortSelector = [
-      `g.port-${data.sourceNode}`,
+      `g.port-${nodeLink.sourceNode}`,
       ` circle[data-port-type='source']`,
-      `[data-port='${Constants.portKeys[data.sourcePort]}']`
+      `[data-port='${Constants.portKeys[nodeLink.sourcePort]}']`
     ].join('')
 
     // this css selector defines the circle attached to each node
     // to which the line is connected
     const targetPortSelector = [
-      `g.port-${data.targetNode}`,
+      `g.port-${nodeLink.targetNode}`,
       ` circle[data-port-type='target']`,
-      `[data-port='${Constants.portKeys[data.targetPort]}']`
+      `[data-port='${Constants.portKeys[nodeLink.targetPort]}']`
     ].join('')
 
     setSourcePortHandle(d3.select(sourcePortSelector))
@@ -80,7 +80,7 @@ const NodeLink: React.FC<OwnProps> = ({ objectId, nodeDiv }) => {
       srcNode.off(rerenderEvents)
       tgtNode.off(rerenderEvents)
     }
-  }, [data, nodeDiv])
+  }, [nodeLink, nodeDiv])
 
   /**
    * FUNCTIONS
@@ -90,7 +90,7 @@ const NodeLink: React.FC<OwnProps> = ({ objectId, nodeDiv }) => {
    **/
   const rerender = () => {
     setSourceNode($(nodeDiv.current))
-    setTargetNode($(`#${data.targetNode}.node`))
+    setTargetNode($(`#${nodeLink.targetNode}.node`))
   }
 
   /**
@@ -116,7 +116,7 @@ const NodeLink: React.FC<OwnProps> = ({ objectId, nodeDiv }) => {
    * React Style
    **/
   const style: React.CSSProperties = {}
-  if (data.dashed) {
+  if (nodeLink.dashed) {
     style.strokeDasharray = '5,5'
   }
 
@@ -146,16 +146,16 @@ const NodeLink: React.FC<OwnProps> = ({ objectId, nodeDiv }) => {
       style={style}
       hovered={nodeHovered}
       nodeSelected={nodeSelected}
-      lock={data.lock}
-      title={data.title}
-      textPosition={data.textPosition}
+      lock={nodeLink?.lock}
+      title={nodeLink.title}
+      textPosition={nodeLink.textPosition}
       sourcePortHandle={sourcePortHandle}
-      sourcePort={data.sourcePort}
+      sourcePort={nodeLink.sourcePort}
       targetPortHandle={targetPortHandle}
-      targetPort={data.targetPort}
+      targetPort={nodeLink.targetPort}
       clickFunction={(e) => {
         e.stopPropagation()
-        manager.updateSidebar(data.id, objectType)
+        manager.updateSidebar(nodeLink.id, objectType)
       }}
       sourceDimensions={sourceDims}
       targetDimensions={targetDims}
@@ -211,7 +211,7 @@ export default NodeLink
 //     super(props)
 //     this.manager = new BetterSelectionManager(this.props.dispatch)
 //     this.objectType = CfObjectType.NODELINK
-//     this.rerenderEvents = 'ports-rendered.' + this.props.data.id
+//     this.rerenderEvents = 'ports-rendered.' + this.props.nodeLink.id
 //   }
 //
 //   /*******************************************************
@@ -248,7 +248,7 @@ export default NodeLink
 //       this.targetPortHandle.empty()
 //     ) {
 //       this.sourceNode = $(this.props.nodeDiv.current)
-//       this.targetNode = $('#' + data.targetNode + '.node')
+//       this.targetNode = $('#' + nodeLink.targetNode + '.node')
 //
 //       this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
 //       this.targetNode.on(this.rerenderEvents, this.rerender.bind(this))
@@ -256,9 +256,9 @@ export default NodeLink
 //       // this css selector defines the circle attached to each node
 //       // from which the line is connected
 //       const cssSourcePortSelector = [
-//         `g.port-${data.sourceNode}`,
+//         `g.port-${nodeLink.sourceNode}`,
 //         ` circle[data-port-type='source']`,
-//         `[data-port='${Constants.portKeys[data.sourcePort]}']`
+//         `[data-port='${Constants.portKeys[nodeLink.sourcePort]}']`
 //       ].join('')
 //
 //       // Utility.logger('cssSourcePortSelector')
@@ -267,9 +267,9 @@ export default NodeLink
 //       // this css selector defines the circle attached to each node
 //       // to which the line is connected
 //       const cssSourceTargetSelector = [
-//         `g.port-${data.targetNode} `,
+//         `g.port-${nodeLink.targetNode} `,
 //         ` circle[data-port-type='target']`,
-//         `[data-port='${Constants.portKeys[data.targetPort]}']`
+//         `[data-port='${Constants.portKeys[nodeLink.targetPort]}']`
 //       ].join('')
 //
 //       this.sourcePortHandle = d3.select(cssSourcePortSelector)
@@ -283,7 +283,7 @@ export default NodeLink
 //       this.sourceNode.attr('data-hovered') === 'true' ||
 //       this.targetNode.attr('data-hovered') === 'true'
 //
-//     if (data.dashed) {
+//     if (nodeLink.dashed) {
 //       style.strokeDasharray = '5,5'
 //     }
 //
@@ -322,17 +322,17 @@ export default NodeLink
 //         style={style}
 //         hovered={nodeHovered}
 //         nodeSelected={nodeSelected}
-//         lock={data.lock} // @todo where is lock defined?
-//         title={data.title}
-//         textPosition={data.textPosition}
+//         lock={nodeLink.lock} // @todo where is lock defined?
+//         title={nodeLink.title}
+//         textPosition={nodeLink.textPosition}
 //         sourcePortHandle={this.sourcePortHandle}
-//         sourcePort={data.sourcePort}
+//         sourcePort={nodeLink.sourcePort}
 //         targetPortHandle={this.targetPortHandle}
-//         targetPort={data.targetPort}
+//         targetPort={nodeLink.targetPort}
 //         clickFunction={(e) => {
 //           e.stopPropagation()
 //           this.manager.updateSidebar(
-//             data.id,
+//             nodeLink.id,
 //             this.objectType,
 //             this.props.parentId
 //           )

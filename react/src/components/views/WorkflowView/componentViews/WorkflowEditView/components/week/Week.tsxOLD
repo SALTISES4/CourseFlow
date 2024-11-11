@@ -1,11 +1,16 @@
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
+import {
+  TGetWeekByIDType,
+  getColumnWorkflowByID,
+  getColumnWorkflowByID2
+} from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { getWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
+import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWeek'
 import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
@@ -13,31 +18,80 @@ import clsx from 'clsx'
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { createSelector } from 'reselect'
 
-// type ConnectedProps = {
-//   week: TGetWeekByIDType
-//   workflow: TWorkflow
-// }
+type ConnectedProps = {
+  week: TGetWeekByIDType
+  workflow: TWorkflow
+}
 
 type OwnProps = {
   objectId: number
   parentId: number
-}
+  throughParentId: number
+  rank?: number
+  columnOrder?: any // @todo i think this is delivered by redux
+  nodesByColumn?: any
+} & ConnectedProps
 
 export type WeekUnconnectedPropsType = OwnProps
+/**
+ * Reselect selector that gets the workflow from state only when needed.
+ */
+
+const selectWeeks = (state: AppState) => state.week
+const selectWorkflow = (state: AppState) => state.workflow
+const selectNodeWeeks = (state: AppState) => state.nodeweek
+const selectColumnWorkflow = (state: AppState) => state.columnworkflow
+
+// @todo why are weeks and terms handled differently
+export const getWeekById = createSelector(
+  [
+    selectWeeks,
+    selectWorkflow,
+    selectNodeWeeks,
+    selectColumnWorkflow,
+    (state: AppState, id: number) => id
+  ],
+  (weeks, workflow, nodeweeks, columnworkflow, id) => {
+    const week = weeks.find((w) => w.id === id)
+
+    if (!week) {
+      Utility.logger('No week found with id', id)
+      return undefined
+    }
+
+    // Ensure immutability and derive additional properties
+    //  const isDropped = week.isDropped ?? getDropped(id, 'week')
+    const isDropped = true
+    return {
+      data: { ...week, isDropped },
+      columnOrder: workflow.columnworkflowSet.map((columnId) => {
+        const columnWorkflow = getColumnWorkflowByID2(
+          columnworkflow,
+          workflow,
+          columnId
+        )
+        return columnWorkflow?.data?.column
+      }),
+      siblingCount: workflow.weekworkflowSet.length,
+      nodeweeks,
+      workflowId: workflow.id
+    }
+  }
+)
 
 /**
  *
  **/
-const Week = ({ objectId, parentId }) => {
+const Week = ({ objectId, parentId, rank, columnOrder, nodesByColumn }) => {
   /*******************************************************
    * REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const weekData = useSelector((state: AppState) =>
-    getWeekById(state, objectId)
-  )
+  const week = useSelector((state) => getWeekById(state, objectId));
   const workflow = useSelector((state: AppState) => state.workflow)
+
 
   /*******************************************************
    * REFS
@@ -67,6 +121,7 @@ const Week = ({ objectId, parentId }) => {
       .not('.ui-draggable')
 
     dragAndDropManager.current.makeSortableNode(
+      //       nodeBlock.current,
       jQuerySortableBlockTarget,
       objectId,
       classIdentifiers
@@ -79,26 +134,26 @@ const Week = ({ objectId, parentId }) => {
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const Nodes = ({ nodes }: { nodes: number[] }) => {
-    if (!nodes?.length) {
+  const Nodes = ({ nodeweekSet }: {nodeweekSet: number[]}) => {
+    if (!nodeweekSet?.length) {
       return (
         <div className="node-week placeholder" style={{ height: '100%' }}>
           Drag and drop nodes from the sidebar to add.
         </div>
       )
     }
-    return nodes.map((nodeId) => (
-      <NodeWrapper
+    return nodeweekSet.map((nodeId) => (
+      <NodeWeek
         key={nodeId}
         objectId={nodeId}
-        parentId={weekData.week.id}
-        columnOrder={weekData.columns} // not sure if i should be props drilling this
+        parentId={week.data.id}
+        columnOrder={week.columnOrder}
       />
     ))
   }
 
   const StrategyTab = () => {
-    const { strategyClassification } = weekData.week
+    const { strategyClassification } = week.data
     if (strategyClassification <= 0) {
       return null
     }
@@ -115,9 +170,9 @@ const Week = ({ objectId, parentId }) => {
   }
 
   const defaultText = !workflow.isStrategy
-    ? `${weekData.week.weekTypeDisplay} ${weekData.week.order + 1}`
+    ? `${week.data.weekTypeDisplay} ${rank + 1}`
     : undefined
-  const dropIcon = weekData.week.isDropped ? (
+  const dropIcon = week.data.isDropped ? (
     <ArrowDropDownIcon />
   ) : (
     <ArrowDropUpIcon />
@@ -129,19 +184,19 @@ const Week = ({ objectId, parentId }) => {
   return (
     <div
       style={ThemeHelper.getBorderStyle({
-        isLocked: weekData.week?.lock?.lock,
-        colour: weekData.week?.lock?.userColour
+        isLocked: week.data?.lock?.lock,
+        colour: week.data?.lock?.userColour
       })}
       className={clsx('week', {
-        strategy: weekData.week.isStrategy,
-        dropped: weekData.week.isDropped,
-        [`locked`]: weekData.week?.lock,
-        [`locked-${weekData.week.lock?.userId}`]: weekData.week.lock
+        strategy: week.data.isStrategy,
+        dropped: week.data.isDropped,
+        [`locked`]: week.data?.lock,
+        [`locked-${week.data.lock?.userId}`]: week.data.lock
       })}
       ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
-        manager.current.updateSidebar(weekData.week.id, objectId, parentId)
+        manager.current.updateSidebar(week.data.id, objectId, parentId)
       }}
     >
       <div className="mouseover-container-bypass">
@@ -153,12 +208,10 @@ const Week = ({ objectId, parentId }) => {
           objectType={CfObjectType.WEEK}
         />
       </div>
-      <TitleText text={weekData.week.title} defaultText={defaultText} />
-
+      <TitleText text={week.data.title} defaultText={defaultText} />
       <div className="node-block" id={`${objectId}-node-block`} ref={nodeBlock}>
-        <Nodes nodes={weekData.week.nodes} />
+        <Nodes nodeweekSet={week.data.nodeweekSet} />
       </div>
-
       <div
         className="week-drop-row hover-shade"
         onClick={(evt) => {
@@ -166,7 +219,7 @@ const Week = ({ objectId, parentId }) => {
           manager.current.toggleDropReduxAction({
             objectId,
             objectType: CfObjectType.WEEK,
-            newDropState: !weekData.week?.isDropped
+            newDropState: !week.data?.isDropped
           })
         }}
       >

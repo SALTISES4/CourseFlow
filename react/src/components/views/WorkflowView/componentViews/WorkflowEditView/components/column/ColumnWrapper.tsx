@@ -1,8 +1,8 @@
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
-import { TColumnWorkflowById, getColumnWorkflowByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
+import { getColumnById } from '@cfRedux/selectors/column.selector'
 import { AppState } from '@cfRedux/types/type'
 import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
@@ -52,13 +52,13 @@ class ColumnWorkflowDragAndDropManager extends SortableDragAndDropManager {
  * this component should not exist...roll it column
  * and disambiguate parentId: column is not a 'child' of columnkflow
  **/
-const ColumnWorkflow = ({ objectId, parentId }: OwnProps) => {
+const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
   const mainDivRef = useRef<HTMLDivElement>(null)
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const data = useSelector((state: AppState) =>
-    getColumnWorkflowByID(state, objectId)
+  const columnData = useSelector((state: AppState) =>
+    getColumnById(state, objectId)
   )
 
   useEffect(() => {
@@ -91,33 +91,28 @@ const ColumnWorkflow = ({ objectId, parentId }: OwnProps) => {
   // Ref for the main div
 
   // Render
-  if (!data) {
+  if (!columnData) {
     return null // Handle case where data is not available
   }
 
-  const columnWorkflow = data.data
   /*******************************************************
    * RENDER
    *******************************************************/
   return (
     <div
-      className={clsx(`column-workflow`, `column-${columnWorkflow.id}`, {
-        'no-drag': columnWorkflow.noDrag
+      className={clsx(`column-workflow`, `column-${objectId}`, {
+        'no-drag': columnData.column?.noDrag
       })}
       ref={mainDivRef}
-      id={String(columnWorkflow.id)}
-      data-child-id={columnWorkflow.column}
+      id={String(objectId)}
+      data-child-id={objectId}
     >
-      <Column
-        objectId={columnWorkflow.column}
-        parentId={parentId}
-        throughParentId={columnWorkflow.id}
-      />
+      <Column objectId={objectId} parentId={parentId} />
     </div>
   )
 }
 
-export default ColumnWorkflow
+export default ColumnWrapper
 
 // import { CfObjectType } from '@cf/types/enum'
 // import { TColumnWorkflowById, getColumnWorkflowByID } from '@cfFindState'

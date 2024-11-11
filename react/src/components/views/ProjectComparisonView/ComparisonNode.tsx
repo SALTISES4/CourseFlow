@@ -2,11 +2,13 @@ import { TitleText } from '@cf/components/common/UIPrimitives/Titles.ts'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
+import ThemeHelper from "@cf/utility/ThemeHelper.class";
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
-import { TGetNodeById, getNodeByID } from '@cfFindState'
+import { TGetNodeById  } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import {getNodeById} from "@cfRedux/selectors/node.selector";
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
@@ -71,7 +73,7 @@ class ComparisonNodeUnconnected extends React.Component<PropsType, StateProps> {
     }
 
     const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour({
+      backgroundColor: ThemeHelper.getColumnColour({
         columnType: this.props.node.column.columnType,
         colour: this.props.node.column.colour
       })
@@ -94,7 +96,7 @@ class ComparisonNodeUnconnected extends React.Component<PropsType, StateProps> {
             })
           }}
           style={{
-            borderColor: Constants.getColumnColour({
+            borderColor: ThemeHelper.getColumnColour({
               columnType: this.props.node.column.columnType,
               colour: this.props.node.column.colour
             })
@@ -116,7 +118,7 @@ class ComparisonNodeUnconnected extends React.Component<PropsType, StateProps> {
               this.setState({ showOutcomes: true })
             }}
             style={{
-              borderColor: Constants.getColumnColour({
+              borderColor: ThemeHelper.getColumnColour({
                 columnType: this.props.node.column.columnType,
                 colour: this.props.node.column.colour
               })
@@ -224,7 +226,7 @@ const mapStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   return {
-    node: getNodeByID(state, ownProps.objectId),
+    node: getNodeById(state, ownProps.objectId),
     workflow: state.workflow
   }
 }

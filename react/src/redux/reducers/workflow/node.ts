@@ -1,6 +1,10 @@
 import { CfLock } from '@cf/types/common'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
+import nodeSlice, {
+  changeField, changedColumn,
+  createLock
+} from '@cfRedux/slices/node.slice'
 import {
   ColumnActions,
   CommonActions,
@@ -52,8 +56,8 @@ interface DeleteSoftNodeAction extends AnyAction {
 }
 
 interface CreateLockNodeAction extends AnyAction {
-  type:
-    | NodeActions.CREATE_LOCK
+  type: //
+  | NodeActions.CREATE_LOCK
     | NodeActions.RESTORE_SELF
     | NodeActions.NEW_NODE
     | NodeActions.INSERT_BELOW
@@ -166,8 +170,6 @@ type NodeActionsUnion =
   | CreateOutcomeAction
   | CreateNodeLinkAction
 
-import { changedColumn } from '../rtk/node.rtk'
-
 export default function nodeReducer(
   state: TNode[] = [],
   action: NodeActionsUnion
@@ -198,57 +200,18 @@ export default function nodeReducer(
     }
 
     /*******************************************************
-     * COLUMN
-     *******************************************************/
-    case ColumnActions.DELETE_SELF:
-    case ColumnActions.DELETE_SELF_SOFT:
-    case ColumnActions.RESTORE_SELF: {
-      const isDeleteAction =
-        action.type === ColumnActions.DELETE_SELF ||
-        action.type === ColumnActions.DELETE_SELF_SOFT
-      const newColumn = isDeleteAction
-        ? action.payload.extraData
-        : action.payload.id
-      const updatedState = state.map((item) => {
-        const shouldUpdateColumn = isDeleteAction
-          ? item.column === action.payload.id
-          : action.payload.extraData.includes(item.id)
-        return shouldUpdateColumn ? { ...item, column: newColumn } : item
-      })
-
-      // @todo need to remove these kind of side effects from...
-      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
-
-      return updatedState
-    }
-
-    /*******************************************************
      * NODE
      *******************************************************/
 
-    // there is no need to check whether node exists in store here
-    // @todo is there really any point of each of these being an individual case?
     // UPDATE_NODE is probably fine
-    // this seems convoluted
     case NodeActions.CHANGED_COLUMN:
-      return changedColumn(state, action)
+      return nodeSlice.reducer(state, changedColumn(action.payload))
 
-    // candidate for UPDATE_NODE
     case NodeActions.CREATE_LOCK:
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return { ...item, lock: action.payload.lock }
-        }
-        return item
-      })
+      return nodeSlice.reducer(state, createLock(action.payload))
 
     case NodeActions.CHANGE_FIELD:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? // no
-            { ...item, ...action.payload.json }
-          : item
-      )
+      return nodeSlice.reducer(state, changeField(action.payload))
 
     // there is no need to check whether node exists in store here
     case NodeActions.DELETE_SELF: {
@@ -408,6 +371,31 @@ export default function nodeReducer(
             }
           : item
       })
+
+    /*******************************************************
+     * COLUMN
+     *******************************************************/
+    case ColumnActions.DELETE_SELF:
+    case ColumnActions.DELETE_SELF_SOFT:
+    case ColumnActions.RESTORE_SELF: {
+      const isDeleteAction =
+        action.type === ColumnActions.DELETE_SELF ||
+        action.type === ColumnActions.DELETE_SELF_SOFT
+      const newColumn = isDeleteAction
+        ? action.payload.extraData
+        : action.payload.id
+      const updatedState = state.map((item) => {
+        const shouldUpdateColumn = isDeleteAction
+          ? item.column === action.payload.id
+          : action.payload.extraData.includes(item.id)
+        return shouldUpdateColumn ? { ...item, column: newColumn } : item
+      })
+
+      // @todo need to remove these kind of side effects from...
+      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+
+      return updatedState
+    }
 
     /*******************************************************
      * WEEK

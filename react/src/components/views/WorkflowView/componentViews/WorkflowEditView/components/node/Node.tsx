@@ -26,7 +26,7 @@ import NodePorts from 'components/views/WorkflowView/componentViews/WorkflowEdit
 type OwnProps = {
   objectId: number
   parentId: number
-  columnOrder: any
+  columnOrder: number[]
   objectSets?: any
 }
 
@@ -84,7 +84,9 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    * HOOKS: REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const node = useSelector((state: AppState) => getNodeById(state, objectId))
+  const nodeData = useSelector((state: AppState) =>
+    getNodeById(state, objectId)
+  )
   const workflow = useSelector((state: AppState) => state.workflow)
 
   /*******************************************************
@@ -131,7 +133,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   useEffect(() => {
     updatePorts()
     updateHidden()
-  }, [node])
+  }, [nodeData])
 
   useEffect(() => {
     renderNodePorts()
@@ -173,11 +175,23 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
     setHovered(false)
   }
 
+  function dropText(dataOverride) {
+    if (
+      dataOverride.description &&
+      dataOverride.description.replace(
+        /(<p>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
+        ''
+      ) != ''
+    ) {
+      return '...'
+    }
+    return ''
+  }
   /*******************************************************
    * COMPONENTS
    *******************************************************/
   const ContextIcon = () => {
-    const data = node.data
+    const data = nodeData.node
     if (data.contextClassification <= 0) {
       return null
     }
@@ -197,7 +211,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   }
 
   const TaskIcon = () => {
-    const data = node.data
+    const data = nodeData.node
     if (data.taskClassification <= 0) {
       return null
     }
@@ -217,7 +231,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   }
 
   const OutcomeNodes = () => {
-    const data = node.data
+    const node = nodeData.node
 
     if (!showOutcomes) {
       return <></>
@@ -225,7 +239,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
 
     return (
       <div
-        className={'outcome-node-container column-' + data.column}
+        className={'outcome-node-container column-' + node.column}
         onMouseLeave={() => {
           setShowOutcomes(false)
         }}
@@ -236,7 +250,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
           })
         }}
       >
-        {data.outcomenodeUniqueSet.map((outcomenode) => (
+        {node.outcomenodeUniqueSet.map((outcomenode) => (
           <OutcomeNode key={outcomenode} objectId={outcomenode} />
         ))}
       </div>
@@ -244,15 +258,15 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   }
 
   const SideActions = () => {
-    const data = node.data
+    const node = nodeData.node
 
-    if (data.outcomenodeUniqueSet.length <= 0) {
+    if (node.outcomenodeUniqueSet.length <= 0) {
       return <></>
     }
     return (
       <div className="outcome-node-indicator">
         <div
-          className={'outcome-node-indicator-number column-' + data.column}
+          className={'outcome-node-indicator-number column-' + node.column}
           onMouseEnter={() => {
             setShowOutcomes(true)
           }}
@@ -263,7 +277,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
             })
           }}
         >
-          {data.outcomenodeUniqueSet.length}
+          {node.outcomenodeUniqueSet.length}
         </div>
         <OutcomeNodes />
       </div>
@@ -330,7 +344,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   let autoLink
   const renderNodePorts = () => {
     if (!initialRender) {
-      console.log('render node ports agina!')
+      console.log('render node ports again!')
       // this is dynamic see: react/src/components/views/WorkflowView/WorkflowView.tsx
 
       /*******************************************************
@@ -348,10 +362,10 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
         $('.workflow-canvas')[0]
       )
 
-      nodeLinks = data.outgoingLinks.map((link) => (
+      nodeLinks = node.outgoingLinks.map((link) => (
         <NodeLink key={link} objectId={link} nodeDiv={mainDiv} />
       ))
-      if (data.hasAutolink) {
+      if (node.hasAutolink) {
         autoLink = <AutoLink nodeId={objectId} nodeDiv={mainDiv} />
       }
     }
@@ -361,57 +375,46 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    * RENDER
    *******************************************************/
   const style: React.CSSProperties = {
-    left: `${Constants.columnwidth * columnOrder.indexOf(node.data.column)}px`,
-    backgroundColor: ThemeHelper.getColumnColour(node.column),
-    display: Utility.checkSetHidden(node.data, objectSets) ? 'none' : undefined,
-    outline: node.data.lock
-      ? `2px solid ${node.data.lock.userColour}`
+    left: `${Constants.columnwidth * columnOrder.indexOf(nodeData.node.column)}px`,
+    backgroundColor: ThemeHelper.getColumnColour(nodeData .column),
+    display: Utility.checkSetHidden(nodeData.node, objectSets)
+      ? 'none'
+      : undefined,
+    outline: nodeData.node.lock
+      ? `2px solid ${nodeData.node.lock.userColour}`
       : undefined
   }
-  const data = node.data
-  const dataOverride = data.representsWorkflow
-    ? { ...data, ...data.linkedWorkflowData, id: data.id }
-    : { ...data }
+  const node = nodeData.node
+  const dataOverride = node.representsWorkflow
+    ? { ...node, ...node.linkedWorkflowData, id: node.id }
+    : { ...node }
 
-  const dropIcon = data.isDropped ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />
-
-  function dropText(dataOverride) {
-    if (
-      dataOverride.description &&
-      dataOverride.description.replace(
-        /(<p>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,
-        ''
-      ) != ''
-    ) {
-      return '...'
-    }
-    return ''
-  }
+  const dropIcon = node.isDropped ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />
 
   return (
     <>
       <div
-        id={String(node.data.id)}
+        id={String(nodeData.node.id)}
         style={style}
         className={clsx(
           'node',
-          `column-${node.data.column}`,
-          Constants.nodeKeys[node.data.nodeType],
+          `column-${nodeData.node.column}`,
+          Constants.nodeKeys[nodeData.node.nodeType],
           {
-            dropped: node.data.isDropped,
-            [`locked locked-${node.data.lock?.userId}`]: node.data.lock
+            dropped: nodeData.node.isDropped,
+            [`locked locked-${nodeData.node.lock?.userId}`]: nodeData.node.lock
           }
         )}
         data-hovered={hovered}
         ref={mainDiv}
         onClick={(e) => {
           e.stopPropagation()
-          manager.updateSidebar(node.data.id, CfObjectType.NODE, parentId)
+          manager.updateSidebar(nodeData.node.id, CfObjectType.NODE, parentId)
         }}
       >
         <div className="node-top-row">
           <ContextIcon />
-          <NodeTitle node={node.data} />
+          <NodeTitle node={nodeData.node} />
           <TaskIcon />
         </div>
 
@@ -431,8 +434,8 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
             manager.toggleDropReduxAction({
               objectId,
               objectType: CfObjectType.NODE,
-              newDropState: !node.data?.isDropped,
-              depth: node.data?.depth // where is depth defined?
+              newDropState: !nodeData.node?.isDropped,
+              depth: nodeData.node?.depth // where is depth defined?
             })
           }}
         >
@@ -586,7 +589,7 @@ export default Node
 //   }
 //
 //   componentDidUpdate(prevProps, prevState) {
-//     if (this.props.node.data.isDropped == prevProps.node.data.isDropped) {
+//     if (this.props.nodeData.node.isDropped == prevProps.nodeData.node.isDropped) {
 //       this.updatePorts()
 //     } else {
 //       ThemeHelper.triggerHandlerEach($('.node'), 'component-updated')
@@ -706,7 +709,7 @@ export default Node
 //    * COMPONENTS
 //    *******************************************************/
 //   ContextIcon = () => {
-//     const data = this.props.node.data
+//     const data = this.props.nodeData.node
 //     if (data.contextClassification <= 0) {
 //       return <></>
 //     }
@@ -730,7 +733,7 @@ export default Node
 //   }
 //
 //   TaskIcon = () => {
-//     const data = this.props.node.data
+//     const data = this.props.nodeData.node
 //     if (data.taskClassification <= 0) {
 //       return <></>
 //     }
@@ -754,7 +757,7 @@ export default Node
 //   }
 //
 //   OutcomeNodes = () => {
-//     const data = this.props.node.data
+//     const data = this.props.nodeData.node
 //
 //     if (!this.state.showOutcomes) {
 //       return <></>
@@ -781,7 +784,7 @@ export default Node
 //   }
 //
 //   SideActions = () => {
-//     const data = this.props.node.data
+//     const data = this.props.nodeData.node
 //
 //     if (data.outcomenodeUniqueSet.length <= 0) {
 //       return <></>
@@ -849,7 +852,7 @@ export default Node
 //     let nodeLinks
 //     let autoLink
 //
-//     const data = this.props.node.data
+//     const data = this.props.nodeData.node
 //     const dataOverride = data.representsWorkflow
 //       ? { ...data, ...data.linkedWorkflowData, id: data.id }
 //       : { ...data }
@@ -958,8 +961,8 @@ export default Node
 //               this.manager.toggleDropReduxAction({
 //                 objectId: this.props.objectId,
 //                 objectType: this.objectType,
-//                 newDropState: !this.props.node.data?.isDropped,
-//                 depth: this.props.node.data?.depth // where is depth defined?
+//                 newDropState: !this.props.nodeData.node?.isDropped,
+//                 depth: this.props.nodeData.node?.depth // where is depth defined?
 //               })
 //             }}
 //           >

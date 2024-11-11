@@ -2,8 +2,8 @@ import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
-import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '@cfFindState'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
+import {getSortedOutcomeIdFromOutcomeWorkflowSet} from "@cfRedux/selectors/helpers";
 import { AppState } from '@cfRedux/types/type'
 import NodeOutcomeView from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/common/NodeOutcomeView'
 import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/OutcomeTableView/components/OutcomeBase'
@@ -89,7 +89,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
    * FUNCTIONS
    *******************************************************/
   getOutcomesSorted() {
-    return getSortedOutcomeIDFromOutcomeWorkflowSet(
+    return getSortedOutcomeIdFromOutcomeWorkflowSet(
       this.props.outcomes,
       this.props.outcomeworkflows,
       this.props.outcomeworkflowOrder,

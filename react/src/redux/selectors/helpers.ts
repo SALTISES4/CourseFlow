@@ -2,9 +2,10 @@
  * HELPER FUNCTIONS FOR FOR STATE QUERIES
  *******************************************************/
 import * as Constants from '@cf/utility/constants'
-import ThemeHelper from "@cf/utility/ThemeHelper.class";
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
 
+// this means is UI expanded (i.e. DROP down) not drag and dropped
 export const getDropped = (objectId: number, objectType, depth = 1) => {
   const defaultDrop = Constants.getDefaultDropState(objectId, objectType, depth)
   try {
@@ -21,7 +22,7 @@ export const getDropped = (objectId: number, objectType, depth = 1) => {
 }
 
 // @todo doesn't really belong here (not a state selector)
-export const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
+export const getTableOutcomeNodeById = (outcomeNodes, nodeId, outcomeId) => {
   for (const i in outcomeNodes) {
     const outcomeNode = outcomeNodes[i]
     if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId) {
@@ -39,7 +40,7 @@ export const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
  * @param outcomeworkflowSet
  * @param objectSetsUnfiltered
  */
-export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
+export const getSortedOutcomeIdFromOutcomeWorkflowSet = (
   outcomesUnsorted,
   outcomeworkflowsUnsorted,
   outcomeworkflowSet,
@@ -118,7 +119,7 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
       }))
   ]
 
-  Utility.logger('getSortedOutcomeIDFromOutcomeWorkflowSet categories')
+  Utility.logger('getSortedOutcomeIdFromOutcomeWorkflowSet categories')
   Utility.logger(categories)
 
   // Return the final categories

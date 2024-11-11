@@ -1,8 +1,8 @@
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
-import { getColumnById } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import { getColumnById } from '@cfRedux/selectors/column.selector'
 import { AppState } from '@cfRedux/types/type'
 import { styled } from '@mui/material/styles'
 import clsx from 'clsx'
@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux'
 type OwnProps = {
   objectId: number
   parentId: number
-  throughParentId?: number
 }
 
 type PropsType = OwnProps
@@ -32,7 +31,7 @@ export const StyledDivLine = styled('div')<{ colour?: string }>(
 /**
  * The column in a workflow.
  */
-const Column = ({ objectId, parentId, throughParentId }: PropsType) => {
+const Column = ({ objectId, parentId }: PropsType) => {
   /*******************************************************
    * CONST
    *******************************************************/
@@ -44,7 +43,7 @@ const Column = ({ objectId, parentId, throughParentId }: PropsType) => {
    * HOOKS: REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const column = useSelector((state: AppState) =>
+  const columnData = useSelector((state: AppState) =>
     getColumnById(state, objectId)
   )
   const workflow = useSelector((state: AppState) => state.workflow)
@@ -64,27 +63,27 @@ const Column = ({ objectId, parentId, throughParentId }: PropsType) => {
    **/
   const onClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation()
-    if (column?.data) {
-      manager.updateSidebar(column.data.id, objectType, parentId)
+    if (columnData?.column) {
+      manager.updateSidebar(columnData.column.id, objectType, parentId)
     }
   }
 
   const columnColourHex = useMemo(() => {
     return ThemeHelper.getColumnColour({
-      columnType: column.data.columnType,
-      colour: column.data.colour
+      columnType: columnData.column.columnType,
+      colour: columnData.column.colour
     })
-  }, [column.data.colour, column.data.columnType])
+  }, [columnData.column.colour, columnData.column.columnType])
 
   /*******************************************************
    * RENDER
    *******************************************************/
 
-  if (!column || !workflow) {
+  if (!columnData || !workflow) {
     return null
   }
 
-  const data = column.data
+  const data = columnData.column
   const title = data.title ?? data.columnTypeDisplay
 
   return (

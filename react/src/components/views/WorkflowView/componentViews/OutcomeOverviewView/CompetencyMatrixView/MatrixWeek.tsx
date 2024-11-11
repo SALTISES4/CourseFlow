@@ -1,6 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
-import { getWeekById } from '@cfFindState'
+import {getWeekById} from "@cfRedux/selectors/week.selector";
 import { AppState } from '@cfRedux/types/type'
 import React from 'react'
 import { connect } from 'react-redux'

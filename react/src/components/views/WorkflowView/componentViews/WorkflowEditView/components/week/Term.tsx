@@ -2,9 +2,9 @@ import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
-import { getTermById } from '@cfFindState'
+import { getWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
-import NodeWeek from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWeek'
+import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import clsx from 'clsx'
@@ -26,7 +26,7 @@ const Term = ({
   columnOrder,
   nodesByColumn
 }: OwnProps) => {
-  const term = useSelector((state: AppState) => getTermById(state, objectId))
+  const term = useSelector((state: AppState) => getWeekById(state, objectId))
   const workflow = useSelector((state: AppState) => state.workflow)
   const dragAndDropManager = useRef(null)
 
@@ -77,7 +77,7 @@ const Term = ({
   const data = term.data
   const nodeBlocks = columnOrder.map((col) => {
     const nodeweeks = nodesByColumn[col]?.map((nodeweek) => (
-      <NodeWeek
+      <NodeWrapper
         key={nodeweek}
         objectId={nodeweek}
         parentId={data.id}

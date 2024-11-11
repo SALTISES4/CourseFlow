@@ -1,8 +1,8 @@
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
-import { getWeekWorkflowByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
+import { getWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
 import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
@@ -52,13 +52,13 @@ class WeekWorkflowDragAndDropManager extends SortableDragAndDropManager {
  * this component should not exist...roll it into week
  * and disambiguate parentId: week is not a 'child' of weekworkflow
  **/
-const WeekWorkflow = ({ condensed, objectId, parentId }: PropsType) => {
+const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
   const mainDiv = useRef<HTMLDivElement>(null)
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const weekWorkflow = useSelector((state: AppState) =>
-    getWeekWorkflowByID(state, objectId)
+  const weekData = useSelector((state: AppState) =>
+    getWeekById(state, objectId)
   )
 
   useEffect(() => {
@@ -93,26 +93,23 @@ const WeekWorkflow = ({ condensed, objectId, parentId }: PropsType) => {
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const WeekWrapper = () => {
-    // investigate this switch it doesn't make sense why is term (label for program week) being used for the UI dropped view (as in drop down drawer)
+
+  /*******************************************************
+   * Choose between standard Week and term (for workflow type program)
+   * @todo investigate this switch
+   * it doesn't make sense why is term (label for program week) being used for the UI dropped view (as in drop down drawer)
+   *******************************************************/
+  const WeekChooser = () => {
     if (condensed) {
       return (
         <Term
-          objectId={weekWorkflow.data.week}
-          rank={weekWorkflow.order.indexOf(weekWorkflow.data.id)}
+          objectId={objectId}
+          //  rank={weekData.order.indexOf(weekData.week.id)}
           parentId={parentId}
-          throughParentId={weekWorkflow.data.id}
         />
       )
     }
-    return (
-      <Week
-        objectId={weekWorkflow.data.week}
-        rank={weekWorkflow.order.indexOf(weekWorkflow.data.id)}
-        parentId={parentId}
-        throughParentId={weekWorkflow.data.id}
-      />
-    )
+    return <Week objectId={objectId} parentId={parentId} />
   }
 
   /*******************************************************
@@ -122,19 +119,20 @@ const WeekWorkflow = ({ condensed, objectId, parentId }: PropsType) => {
   return (
     <div
       className={clsx('week-workflow', {
-        'no-drag': weekWorkflow.data.noDrag,
+        // legacy name of through model, still being used for jquery drag and drop i think
+        'no-drag': weekData.week?.noDrag, // find out about noDrag
         dragging: mainDiv.current?.classList.contains('dragging')
       })}
-      id={String(weekWorkflow.data.id)}
+      id={String(objectId)}
       ref={mainDiv}
-      data-child-id={weekWorkflow.data.week}
+      data-child-id={objectId}
     >
-      <WeekWrapper />
+      <WeekChooser />
     </div>
   )
 }
 
-export default WeekWorkflow
+export default WeekWrapper
 
 // import { CfObjectType } from '@cf/types/enum'
 // import { TGetWeekWorkflowById, getWeekWorkflowByID } from '@cfFindState'

@@ -15,6 +15,9 @@ User = get_user_model()
 
 
 class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    url = serializers.SerializerMethodField()
+
     class Meta:
         model = Workflow
         fields = [
@@ -36,9 +39,6 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
             "url",
         ]
 
-    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
-    url = serializers.SerializerMethodField()
-
     def get_url(self, instance):
         user = self.context.get("user", None)
         return DAO.user_workflow_url(instance, user)
@@ -57,6 +57,7 @@ class NodeWeekSerializerShallow(serializers.ModelSerializer):
 
 class ColumnSerializerShallow(serializers.ModelSerializer, TitleSerializerMixin):
     column_type_display = serializers.CharField(source="get_column_type_display")
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
     class Meta:
         model = Column
@@ -72,8 +73,6 @@ class ColumnSerializerShallow(serializers.ModelSerializer, TitleSerializerMixin)
             "visible",
             "comments",
         ]
-
-    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
     def create(self, validated_data):
         return Column.objects.create(
@@ -93,9 +92,10 @@ class WeekSerializerShallow(
     TitleSerializerMixin,
     DescriptionSerializerMixin,
 ):
-    nodeweek_set = serializers.SerializerMethodField()
-
+    nodes = serializers.SerializerMethodField()
     week_type_display = serializers.CharField(source="get_week_type_display")
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    order = serializers.SerializerMethodField()
 
     class Meta:
         model = Week
@@ -106,21 +106,30 @@ class WeekSerializerShallow(
             "title",
             "description",
             "default",
-            "nodeweek_set",
+            "nodes",
             "week_type",
             "week_type_display",
             "is_strategy",
             "strategy_classification",
             "comments",
-            # "is_dropped",
+            "order",
+            "is_dropped",
         ]
 
-    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
+    # @todo 11/24
+    # this is temporary until we fix the model (convert the n2M relationships)
+    def get_order(self, obj):
+        if obj.weekworkflow_set.exists():
+            # this is the 'workaround' treating the first returned item as the only one
+            weekworkflow = obj.weekworkflow_set.first()
+            return weekworkflow.rank
+        return None
 
+    # @todo find out what this is for...
     @staticmethod
-    def get_nodeweek_set(instance):
-        links = instance.nodeweek_set.filter(node__deleted=False).order_by("rank")
-        return list(map(Utility.linkIDMap, links))
+    def get_nodes(instance):
+        nodeweeks = instance.nodeweek_set.filter(node__deleted=False).order_by("rank")
+        return list(map(lambda item: item.node_id, nodeweeks))
 
     def create(self, validated_data):
         return Week.objects.create(

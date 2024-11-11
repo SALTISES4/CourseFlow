@@ -1,13 +1,13 @@
 import { AppState } from '@cfRedux/types/type'
-import ColumnWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWorkflow'
-import WeekWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWorkflow'
+import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
+import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
 import clsx from 'clsx'
 import React from 'react'
 import { useSelector } from 'react-redux'
 
 const WorkflowEditView = () => {
   /*******************************************************
-   *
+   * HOOKS: REDUX
    *******************************************************/
   const { workflow, objectset, week, node, outcome } = useSelector(
     (state: AppState) => ({
@@ -22,19 +22,19 @@ const WorkflowEditView = () => {
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const columnworkflows = workflow.columnworkflowSet?.map((columnworkflow) => (
-    <ColumnWorkflow
-      key={`columnworkflow-${columnworkflow}`}
-      objectId={columnworkflow}
+  const columns = workflow.columns?.map((columnId) => (
+    <ColumnWrapper
+      key={`columnworkflow-${columnId}`}
+      objectId={columnId}
       parentId={workflow.id}
     />
   ))
 
-  const weekworkflows = workflow.weekworkflowSet?.map((weekworkflow) => (
-    <WeekWorkflow
-      condensed={workflow.condensed} // this makes not sense that it would switch on condensed
-      key={`weekworkflow-${weekworkflow}`}
-      objectId={weekworkflow}
+  const weeks = workflow.weeks?.map((weekId) => (
+    <WeekWrapper
+      condensed={workflow.condensed} // this makes no sense that it would switch on condensed
+      key={`weekworkflow-${weekId}`}
+      objectId={weekId}
       parentId={workflow.id}
     />
   ))
@@ -42,7 +42,8 @@ const WorkflowEditView = () => {
   const CanvasPlaceholder = () => {
     /*
       .workflow-canvas is used for all kinds of targeting
-      nodes and nodelinks are added to the canvas
+      nodes and nodelinks (drawn line connections between nodes) are added/rendered to the canvas and they seem to float on top of react
+      it doesn't look like comments, nodes, weeks etc are part of the 3js stuff
       */
     return (
       <svg className="workflow-canvas" width="100%" height="100%">
@@ -73,17 +74,17 @@ const WorkflowEditView = () => {
       })}
     >
       {/*
-      .column-row is used as a UX target
+      .column-row is used as a UX/jquery target
     */}
       <div className="column-row" id={workflow.id + '-column-block'}>
-        {columnworkflows}
+        {columns}
       </div>
 
       {/*
-      .week-block is used as a UX target
+      .week-block is used as a UX/jquery target
     */}
       <div className="week-block" id={workflow.id + '-week-block'}>
-        {weekworkflows}
+        {weeks}
       </div>
 
       <CanvasPlaceholder />

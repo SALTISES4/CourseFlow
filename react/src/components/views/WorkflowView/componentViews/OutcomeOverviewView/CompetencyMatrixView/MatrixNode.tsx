@@ -1,5 +1,5 @@
 import { _t } from '@cf/utility/Utility.class'
-import { getNodeByID } from '@cfFindState'
+import {getNodeById} from "@cfRedux/selectors/node.selector";
 import { AppState } from '@cfRedux/types/type'
 import React from 'react'
 import { useSelector } from 'react-redux'
@@ -12,7 +12,7 @@ type OwnProps = {
  * The nodes (specifically the time data) in the matrix view
  */
 const MatrixNode = ({ objectId }: OwnProps) => {
-  const node = useSelector((state: AppState) => getNodeByID(state, objectId))
+  const node = useSelector((state: AppState) => getNodeById(state, objectId))
 
   // @todo params here still a mess
   // data is any
