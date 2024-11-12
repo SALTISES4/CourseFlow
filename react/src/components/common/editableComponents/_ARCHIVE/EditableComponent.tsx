@@ -25,6 +25,17 @@ import SidebarEditTabProxy from './components/SidebarEditTabProxy'
 //     </Button>
 //   )
 // }
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
+
+const LinkedWorkflowButton = (id: any) => {
+  const { dispatch } = useDialog()
+
+  return (
+    <Button onClick={() => dispatch(DialogMode.LINK_WORKFLOW)}>
+      {_t('Change')}
+    </Button>
+  )
+}
 
 //Extends the React component to add a few features that are used in a large number of components
 
@@ -78,10 +89,6 @@ class EditableComponent<
     //   <this.EditForm data={data} noDelete={noDelete} />,
     //   document.getElementById('edit-menu')
     // ) as unknown as ReactPortal
-
-    // TODO: figure out where the id/hash is coming from
-    // to uniquely identify a clicked element
-    return <SidebarEditTabProxy id={3} />
   }
 }
 

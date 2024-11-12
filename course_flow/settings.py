@@ -22,6 +22,9 @@ from .apps import logger
 #########################################################
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_URLCONF = "course_flow.routes.aggregated_urls"
+# LOCAL_IP = os.getenv("LOCAL_IP")
+# LOCAL_IP = "192.168.1.37"
+LOCAL_IP = "localhost"
 
 #########################################################
 # Quick-start development settings - unsuitable for production
@@ -174,14 +177,18 @@ CSP_INCLUDE_NONCE_IN = [
     "style-src",
 ]
 
+
 # @todo when CSP_CONNECT_SRC is specific for ws://localhost:3000,other things break
 CSP_DEFAULT_SRC = [
+    LOCAL_IP,
     "'self'",
     "*.mydalite.org",
-    "ws://localhost:3000",
+    "ws://localhost:3001",
+    #    "ws://192.168.1.37:3000",
 ]
 CSP_SCRIPT_SRC = [
-    "localhost:3000",
+    LOCAL_IP,
+    "localhost:3001",
     "'self'",
     "*.mydalite.org",
     "d3js.org",
@@ -191,8 +198,9 @@ CSP_SCRIPT_SRC = [
 ]
 
 CSP_STYLE_SRC = [
+    LOCAL_IP,
     "'unsafe-inline'",
-    "localhost:3000",
+    "localhost:3001",
     "'self'",
     "*.mydalite.org",
     "ajax.googleapis.com",
@@ -201,6 +209,7 @@ CSP_STYLE_SRC = [
 ]
 
 CSP_FONT_SRC = [
+    LOCAL_IP,
     "'self'",
     "*.mydalite.org",
     "fonts.gstatic.com",

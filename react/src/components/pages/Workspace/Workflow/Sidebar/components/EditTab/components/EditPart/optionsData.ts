@@ -1,4 +1,4 @@
-const strategies = [
+export const strategiesOptions = [
   {
     value: 0,
     label: 'None'
@@ -48,5 +48,3 @@ const strategies = [
     label: 'Other'
   }
 ]
-
-export default strategies

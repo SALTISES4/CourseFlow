@@ -19,6 +19,11 @@ from course_flow.services.config import ConfigService
 from course_flow.services.notifications import get_app_update_notifications
 from course_flow.services.workflow import WorkflowService
 
+# LOCAL_IP = os.getenv("LOCAL_IP")
+# LOCAL_IP = "192.168.1.37"
+LOCAL_IP = "localhost"
+PORT = 3001
+
 
 def add_global_context(request: HttpRequest):
     """
@@ -28,6 +33,8 @@ def add_global_context(request: HttpRequest):
     """
     if "course_flow" in request.resolver_match.namespace:
         return {
+            "host": LOCAL_IP,
+            "port": PORT,
             "globalContextData": JSONRenderer()
             .render(
                 {
@@ -37,7 +44,7 @@ def add_global_context(request: HttpRequest):
                     "disciplines": ConfigService.get_app_disciplines(),
                 }
             )
-            .decode("utf-8")
+            .decode("utf-8"),
         }
 
     return {}

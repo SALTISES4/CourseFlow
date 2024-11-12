@@ -1,42 +1,34 @@
 import Alert from '@cfComponents/UIPrimitives/Alert'
 
 import EditNode from './components/EditNode'
-import { NodeForm } from './components/EditNode/types'
 import EditNodeCategory from './components/EditNodeCategory'
-import { NodeCategoryForm } from './components/EditNodeCategory/types'
 import EditNodeLink from './components/EditNodeLink'
-import { NodeLinkForm } from './components/EditNodeLink/types'
 import EditOutcome from './components/EditOutcome'
-import { OutcomeForm } from './components/EditOutcome/types'
 import EditPart from './components/EditPart'
-import { PartForm } from './components/EditPart/types'
 import EditTerm from './components/EditTerm'
-import { TermForm } from './components/EditTerm/types'
 import EditWeek from './components/EditWeek'
-import { WeekForm } from './components/EditWeek/types'
-import { EditablePropsType, EditableType } from '../../hooks/useEditable/types'
+import { EditableType } from './types'
 
-const EditTab = ({ type, data }: EditablePropsType) => {
+const EditTab = ({ type }: { type: EditableType }) => {
   if (!type) {
     return null
   }
 
   switch (type) {
     case EditableType.TERM:
-      // note this should be a generic or typeguard
-      return <EditTerm {...(data as TermForm)} />
+      return <EditTerm />
     case EditableType.WEEK:
-      return <EditWeek {...(data as WeekForm)} />
+      return <EditWeek />
     case EditableType.PART:
-      return <EditPart {...(data as PartForm)} />
+      return <EditPart />
     case EditableType.OUTCOME:
-      return <EditOutcome {...(data as OutcomeForm)} />
+      return <EditOutcome />
     case EditableType.NODE_LINK:
-      return <EditNodeLink {...(data as NodeLinkForm)} />
+      return <EditNodeLink />
     case EditableType.NODE_CATEGORY:
-      return <EditNodeCategory {...(data as NodeCategoryForm)} />
+      return <EditNodeCategory />
     case EditableType.NODE:
-      return <EditNode {...(data as NodeForm)} />
+      return <EditNode />
     default:
       return (
         <Alert

@@ -17,13 +17,13 @@ export type RestorableBlock = {
   label: string
 }
 
-type AddGroup = {
+export type OutcomeGroup = {
   title: string
   type: string
   blocks: DraggableBlock[]
 }
 
-export type OutcomeGroup = {
+type AddGroup = {
   title: string
   type: string
   blocks: DraggableBlock[]
@@ -34,18 +34,9 @@ export type RestoreGroup = {
   blocks: RestorableBlock[]
 }
 
-type EditTabType = GroupType<any>
-type AddTabType = GroupType<AddGroup>
-type RelatedTabType = GroupType<OutcomeGroup> & {
+export type AddTabType = GroupType<AddGroup>
+export type OutcomesTabType = GroupType<OutcomeGroup>
+export type RestoreTabType = GroupType<RestoreGroup>
+export type RelatedTabType = GroupType<OutcomeGroup> & {
   alert?: boolean
-}
-type OutcomesTabType = GroupType<OutcomeGroup>
-type RestoreTabType = GroupType<RestoreGroup>
-
-export type SidebarDataType = {
-  edit: EditTabType
-  add: AddTabType
-  outcomes: OutcomesTabType
-  restore: RestoreTabType
-  related: RelatedTabType
 }
