@@ -258,7 +258,6 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
                   '#public-page-code .copy-link-icon .material-symbols-rounded'
                 ).text()
 
-
                 const copy_description_text = $(
                   '#public-page-code .copy-link-text'
                 ).text()

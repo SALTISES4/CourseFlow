@@ -97,8 +97,6 @@ class EditableComponentWithSorting<
       cursorAt = { top: 20, left: 50 }
     }
 
-
-
     sortableBlock.draggable({
       containment: containment,
       // @ts-ignore

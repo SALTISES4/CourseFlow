@@ -226,6 +226,7 @@ class Utility {
    *  versus permanent logger functions
    *******************************************************/
   static logger(...data: any[]) {
+    return
     const stack = new Error().stack
     const caller = stack?.split('\n')[2]?.trim() // Get the second item in the stack trace, which is the caller
 

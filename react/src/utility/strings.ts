@@ -1,4 +1,4 @@
-import Utility from "@cf/utility/Utility.class";
+import Utility from '@cf/utility/Utility.class'
 
 const stringsRoot = {
   confirmEmailUpdates:

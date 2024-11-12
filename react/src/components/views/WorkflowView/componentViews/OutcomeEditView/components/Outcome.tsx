@@ -5,14 +5,14 @@ import Utility from '@cf/utility/Utility.class'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
-import { getOutcomeByID } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import { selectOutcomeById } from '@cfRedux/selectors/outcome.selector'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
-import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+import { insertedAt } from '@XMLHTTP/postTemp.js'
 import clsx from 'clsx'
 import * as React from 'react'
 import { useEffect, useRef, useState } from 'react'
@@ -22,7 +22,7 @@ import OutcomeHorizontalLink from './OutcomeHorizontalLink'
 import OutcomeOutcome from './OutcomeOutcome'
 
 class OutcomeDragAndDropManager extends SortableDragAndDropManager {
-  sortableMovedFunction(id, newPosition, type, newParent, childId) {
+  onMovedIn(id, newPosition, type, newParent, childId) {
     this.context.editableMethods.microUpdate(
       ActionCreator.moveOutcomeOutcome(id, newPosition, newParent, childId)
     )
@@ -37,7 +37,7 @@ class OutcomeDragAndDropManager extends SortableDragAndDropManager {
     )
   }
 
-  sortableMovedOutFunction(id, newPosition, type, newParent, childId) {
+  onMovedOut(id, newPosition, type, newParent, childId) {
     if (
       confirm(
         _t(
@@ -145,7 +145,7 @@ const Outcome: React.FC<PropsType> = ({
    *******************************************************/
   const dispatch = useDispatch()
   const outcome = useSelector((state: AppState) =>
-    getOutcomeByID(state, objectId)
+    selectOutcomeById(state, objectId)
   )
   const workflow = useSelector((state: AppState) => state.workflow)
 
@@ -177,10 +177,8 @@ const Outcome: React.FC<PropsType> = ({
       container: '.week-block'
     }
 
-    outcomeDragAndDropManager.current.makeSortableNode(
-      Array.from(childrenBlock.current?.children || []).filter(
-        (el) => !el.classList.contains('ui-draggable')
-      ),
+    outcomeDragAndDropManager.current.makeSortableElement(
+      $(childrenBlock.current).children('.outcome-outcome').not('ui-draggable'),
       objectId,
       CfObjectType.OUTCOMEOUTCOME,
       `.outcome-outcome-${data.depth}`,
@@ -191,7 +189,8 @@ const Outcome: React.FC<PropsType> = ({
     )
 
     if (data.depth === 0) {
-      outcomeDragAndDropManager.current.makeDroppable()
+      // outcomeDragAndDropManager.current.makeDroppable()
+      // logic to implement the redux toggle drop action  (or just the state action)
     }
   }, [showHorizontal])
 
@@ -273,7 +272,7 @@ const Outcome: React.FC<PropsType> = ({
       style={style}
       className={clsx(`outcome outcome-${data.id}`, {
         dropped: data.isDropped,
-        [`locked locked-${data.lock.userId}`]: data.lock
+        [`locked locked-${data.lock?.userId}`]: data.lock
       })}
       ref={mainDiv}
       onClick={(e) => {

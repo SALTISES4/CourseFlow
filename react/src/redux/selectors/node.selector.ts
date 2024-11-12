@@ -8,8 +8,9 @@ const selectId = (_: AppState, id: number) => id
 const selectNodeState = (state: AppState) => state.node
 const selectColumnState = (state: AppState) => state.column
 const selectObjectSets = (state: AppState) => state.objectset
+
 /**
- * Memoized selector to find a node by ID.
+ * Node by ID
  */
 export const getNodeById = createSelector(
   [selectId, selectNodeState, selectColumnState, selectObjectSets],
@@ -17,14 +18,18 @@ export const getNodeById = createSelector(
     const node = nodes.find((n) => n.id === id)
 
     if (node) {
-      const nodeCopy = { ...node } // Shallow copy to avoid mutation
+      const nodeCopy = { ...node }
       if (nodeCopy.isDropped === undefined) {
         nodeCopy.isDropped = getDropped(id, CfObjectType.NODE) // @todo this needs work
       }
-
+      const index = columns.findIndex((column) => column.id === nodeCopy.column)
       return {
         node: nodeCopy,
-        column: columns.find((column) => column.id === nodeCopy.column),
+        // we're getting a bit sloppy now, decide and unify the way entity order is passed around
+        column: {
+          ...columns.find((column, index) => column.id === nodeCopy.column),
+          order: index
+        },
         objectSets
       }
     }

@@ -1,5 +1,5 @@
 // @local
-import {getNodeWeekById} from "@cfRedux/selectors/nodeweek.selector";
+import { getNodeWeekById } from '@cfRedux/selectors/nodeweek.selector'
 import { AppState } from '@cfRedux/types/type'
 import ComparisonNode from '@cfViews/ProjectComparisonView/ComparisonNode'
 import { NodeWeekUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'

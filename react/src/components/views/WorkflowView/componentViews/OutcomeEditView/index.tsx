@@ -2,8 +2,8 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
-import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import ActionCreator from '@cfRedux/ActionCreator'
+import { selectOutcomesFromWorkflows } from '@cfRedux/selectors/outcomesFromWorkflow.selector'
 import { AppState } from '@cfRedux/types/type'
 import { newOutcomeQuery } from '@XMLHTTP/API/create'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
@@ -11,10 +11,10 @@ import * as React from 'react'
 import { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
-import Outcome from './Outcome'
+import Outcome from './components/Outcome'
 
 class OutcomeDragAndDropManager extends SortableDragAndDropManager {
-  sortableMovedFunction(id, newPosition, type, newParent, childId) {
+  onMovedIn(id, newPosition, type, newParent, childId) {
     this.context.editableMethods.microUpdate(
       ActionCreator.moveOutcomeWorkflow(
         id,
@@ -52,10 +52,7 @@ const OutcomeEditView: React.FC<PropsType> = ({ objectId, parentId }) => {
    * HOOKS
    *******************************************************/
   const data = useSelector((state: AppState) =>
-    getSortedOutcomesFromOutcomeWorkflowSet(
-      state,
-      state.workflow.outcomeworkflowSet
-    )
+    selectOutcomesFromWorkflows(state, state.workflow.outcomes)
   )
   const workflow = useSelector((state: AppState) => state.workflow)
 
@@ -65,17 +62,18 @@ const OutcomeEditView: React.FC<PropsType> = ({ objectId, parentId }) => {
   )
 
   useEffect(() => {
-    outcomeDragAndDropManager.current.makeSortableNode(
-      Array.from(
-        mainDiv.current?.querySelectorAll('.outcome-workflow') || []
-      ).filter((el) => !el.classList.contains('ui-draggable')),
+    outcomeDragAndDropManager.current.makeSortableElement(
+      $(mainDiv.current).find('.outcome-workflow').not('ui-draggable'),
       objectId,
       'outcomeworkflow',
       '.outcome-workflow'
     )
 
-    if (data.depth === 0) {
-      outcomeDragAndDropManager.current.makeDroppable()
+    if (data?.depth === 0) {
+      // some kind of logic to make this a dropdown
+      // makedroppable has been move to
+      // toggledropredux action
+      // not sure if that fits here
     }
   }, [data])
 

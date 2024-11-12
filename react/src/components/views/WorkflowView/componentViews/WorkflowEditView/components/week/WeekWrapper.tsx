@@ -26,7 +26,7 @@ class WeekWorkflowDragAndDropManager extends SortableDragAndDropManager {
   /**
    * Overrides the sortableMovedFunction method from DragAndDropManager
    */
-  sortableMovedFunction(
+  onMovedIn(
     id: number,
     newPosition: number,
     type: string,
@@ -77,7 +77,7 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
       .children('.week-workflow')
       .not('.ui-draggable')
 
-    weekWorkflowDragAndDropManager.makeSortableNode(
+    weekWorkflowDragAndDropManager.makeSortableElement(
       jQuerySortableBlockTarget,
       objectId,
       CfObjectType.WEEKWORKFLOW,

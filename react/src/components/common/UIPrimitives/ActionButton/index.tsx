@@ -14,10 +14,7 @@ const ActionButton = ({
   buttonIcon,
   onClickHandler
 }: ActionButtonProps) => {
-
-  const clickHandler = (
-    evt: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
+  const clickHandler = (evt: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     onClickHandler(evt)
     evt.stopPropagation()
   }

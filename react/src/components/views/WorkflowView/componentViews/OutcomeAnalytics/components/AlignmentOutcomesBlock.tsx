@@ -2,7 +2,7 @@ import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import * as React from 'react'
 
-import Outcome from '../../OutcomeEditView/Outcome'
+import Outcome from '../../OutcomeEditView/components/Outcome'
 
 type PropsType = {
   data: any

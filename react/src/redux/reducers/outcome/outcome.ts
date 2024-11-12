@@ -373,7 +373,6 @@ export default function outcomeReducer(
 
     case OutcomeActions.CHANGE_FIELD:
     case OutcomeBaseActions.CHANGE_FIELD:
-
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }
@@ -382,7 +381,6 @@ export default function outcomeReducer(
 
     case OutcomeActions.CHANGE_FIELD_MANY:
     case OutcomeBaseActions.CHANGE_FIELD_MANY:
-
       return state.map((item) =>
         action.payload.ids.includes(item.id)
           ? { ...item, ...action.payload.json }

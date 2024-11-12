@@ -1,6 +1,6 @@
 import { LibraryObjectType } from '@cf/types/enum'
-import ThemeHelper from "@cf/utility/ThemeHelper.class";
-import Utility, {_t} from '@cf/utility/Utility.class'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import {
   ChipOptions,
   WorkflowCardChipType

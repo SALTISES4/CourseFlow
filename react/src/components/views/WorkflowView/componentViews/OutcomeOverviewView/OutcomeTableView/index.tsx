@@ -3,7 +3,7 @@ import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import {getSortedOutcomeIdFromOutcomeWorkflowSet} from "@cfRedux/selectors/helpers";
+import { getOutcomeIdFromWorkflow } from '@cfRedux/selectors/helpers'
 import {
   AppState,
   TColumn,
@@ -54,7 +54,7 @@ class OutcomeTableViewUnconnected extends React.Component<PropsType> {
    * FUNCTIONS
    *******************************************************/
   getOutcomesSorted() {
-    return getSortedOutcomeIdFromOutcomeWorkflowSet(
+    return getOutcomeIdFromWorkflow(
       this.props.outcome,
       this.props.outcomeworkflow,
       this.props.workflow.outcomeworkflowSet,

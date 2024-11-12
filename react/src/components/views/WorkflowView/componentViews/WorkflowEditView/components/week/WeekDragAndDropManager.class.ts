@@ -7,7 +7,7 @@ import { addStrategyQuery } from '@XMLHTTP/API/create'
 import { columnChanged, insertedAt } from '@XMLHTTP/postTemp'
 
 class WeekDragAndDropManager extends SortableDragAndDropManager {
-  sortableColumnChangedFunction(id, deltaX, oldColumn) {
+  onColumnChanged(id, deltaX, oldColumn) {
     const columns = this.props.columnOrder
     const oldColumnIndex = columns.indexOf(oldColumn)
     const newColumnIndex = oldColumnIndex + deltaX
@@ -40,7 +40,7 @@ class WeekDragAndDropManager extends SortableDragAndDropManager {
     columnChanged(this.context, id, newColumn) // @todo drag action needs to be designed and is not on renderer (context) anymore
   }
 
-  sortableMovedFunction(id, newPosition, type, newParent, childId) {
+  onMovedIn(id, newPosition, type, newParent, childId) {
     //Correction for if we are in a term
     // if (this.props.nodesByColumn) {
     //   for (const col in this.props.nodesByColumn) {

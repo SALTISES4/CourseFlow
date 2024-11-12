@@ -27,6 +27,13 @@ export const getColumnWorkflowByID = () => {
   // to go...
 }
 
+/**
+ * Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+ * @param state
+ * @param outcomeworkflowSet
+ */
+export const getSortedOutcomesFromOutcomeWorkflowSet = () => {}
+
 /*******************************************************
  * DELETE ME
  *******************************************************/
@@ -211,60 +218,6 @@ export const getOutcomeWorkflowByID = (
   Utility.logger('no outcomeworkflow found with id', id)
 }
 
-/**
- * @todo normalize the arguments order
- * Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids.
- * These can later be pieced together in an iteration over the outcomes to create a list of ranks.
- *
- * @param id
- * @param rank
- * @param state
- * @returns {*|{rank: *, id: *}}
- */
-function findRootOutcome(
-  state: string | any[],
-  id: number,
-  rank: { parent: any; through: any }[]
-): any | { rank: any; id: any } {
-  for (let i = 0; i < state.length; i++) {
-    if (state[i].child === id) {
-      rank.unshift({ parent: state[i].parent, through: state[i].id })
-      return findRootOutcome(state, state[i].parent, rank)
-    }
-  }
-  return { id: id, rank: rank }
-}
-
-function findTopRank(state: AppState, outcome) {
-  for (let j = 0; j < state.outcomeworkflow.length; j++) {
-    if (state.outcomeworkflow[j].outcome === outcome.id) {
-      if (state.outcomeworkflow[j].workflow === state.workflow.id) {
-        return (
-          state.workflow.outcomeworkflowSet.indexOf(
-            state.outcomeworkflow[j].id
-          ) + 1
-        )
-      }
-      for (let k = 0; k < state.childWorkflow.length; k++) {
-        const index = state.childWorkflow[k].outcomeworkflowSet.indexOf(
-          state.outcomeworkflow[j].id
-        )
-        if (index >= 0) {
-          return index + 1
-        }
-      }
-      for (let k = 0; k < state.parentWorkflow.length; k++) {
-        const index = state.parentWorkflow[k].outcomeworkflowSet.indexOf(
-          state.outcomeworkflow[j].id
-        )
-        if (index >= 0) {
-          return index + 1
-        }
-      }
-    }
-  }
-}
-
 export const getChildWorkflowById = (state: AppState, id: number) => {
   for (const i in state.childWorkflow) {
     const workflow = state.childWorkflow[i]
@@ -397,87 +350,3 @@ export type TSortedOutcomes = {
   objectset: TObjectSet
   outcomes: TOutcome[]
 }[]
-
-/**
- * Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
- * @param state
- * @param outcomeworkflowSet
- */
-export const getSortedOutcomesFromOutcomeWorkflowSet = (
-  state: AppState,
-  outcomeworkflowSet: number[]
-): TSortedOutcomes => {
-  const outcomeworkflows = Utility.filterThenSortById(
-    state.outcomeworkflow,
-    outcomeworkflowSet
-  )
-
-  const outcomeIds = outcomeworkflows.map(
-    (outcomeworkflow) => outcomeworkflow.outcome
-  )
-
-  // @todo clean up
-  const outcomes = Utility.filterThenSortById<TOutcome>(
-    state.outcome,
-    outcomeIds
-  )
-
-  if (outcomes.length === 0) {
-    return outcomes
-  }
-
-  // Create a new array of outcomes to avoid mutating the state
-  const updatedOutcomes = outcomes.map((outcome, index) => ({
-    ...outcome, // Shallow copy of each outcome
-    outcomeworkflow: outcomeworkflows[index].id,
-    throughNoDrag: outcomeworkflows[index].noDrag
-  }))
-
-  const baseTitle = ThemeHelper.capWords(_t('outcomes'))
-
-  const objectSets = state.objectset.filter(
-    (objectset) => objectset.term === updatedOutcomes[0].type
-  )
-
-  if (objectSets.length === 0) {
-    return [
-      {
-        objectset: {
-          title: baseTitle
-        },
-        outcomes: updatedOutcomes
-      }
-    ]
-  }
-
-  const uncategorized = updatedOutcomes.filter(
-    (outcome) => outcome.sets.length === 0
-  )
-
-  let categories = []
-  if (uncategorized.length > 0) {
-    categories = [
-      {
-        objectset: { title: _t('Uncategorized') },
-        outcomes: uncategorized
-      }
-    ]
-  }
-
-  categories = [
-    ...categories,
-    ...objectSets
-      .filter((objectset) => !objectset.hidden)
-      .map((objectset) => ({
-        objectset: objectset,
-        outcomes: updatedOutcomes.filter(
-          (outcome) => outcome.sets.indexOf(objectset.id) >= 0
-        )
-      }))
-  ]
-
-  Utility.logger('categories')
-  Utility.logger(categories)
-
-  return categories
-}

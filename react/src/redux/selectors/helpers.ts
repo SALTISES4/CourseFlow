@@ -4,6 +4,7 @@
 import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
+import { AppState } from '@cfRedux/types/type'
 
 // this means is UI expanded (i.e. DROP down) not drag and dropped
 export const getDropped = (objectId: number, objectType, depth = 1) => {
@@ -40,7 +41,7 @@ export const getTableOutcomeNodeById = (outcomeNodes, nodeId, outcomeId) => {
  * @param outcomeworkflowSet
  * @param objectSetsUnfiltered
  */
-export const getSortedOutcomeIdFromOutcomeWorkflowSet = (
+export const getOutcomeIdFromWorkflow = (
   outcomesUnsorted,
   outcomeworkflowsUnsorted,
   outcomeworkflowSet,
@@ -124,4 +125,54 @@ export const getSortedOutcomeIdFromOutcomeWorkflowSet = (
 
   // Return the final categories
   return categories
+}
+
+/**
+ * @todo normalize the arguments order
+ * Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids.
+ * These can later be pieced together in an iteration over the outcomes to create a list of ranks.
+ *
+ * @param id
+ * @param rank
+ * @param state
+ * @returns {*|{rank: *, id: *}}
+ */
+export function findRootOutcome(
+  state: string | any[],
+  id: number,
+  rank: { parent: any; through: any }[]
+): any | { rank: any; id: any } {
+  for (let i = 0; i < state.length; i++) {
+    if (state[i].child === id) {
+      rank.unshift({ parent: state[i].parent, through: state[i].id })
+      return findRootOutcome(state, state[i].parent, rank)
+    }
+  }
+  return { id: id, rank: rank }
+}
+
+export function findTopRank(state: AppState, outcome) {
+  for (let j = 0; j < state.outcomeworkflow.length; j++) {
+    if (state.outcomeworkflow[j].outcome === outcome.id) {
+      if (state.outcomeworkflow[j].workflow === state.workflow.id) {
+        return state.workflow.outcomes.indexOf(state.outcomeworkflow[j].id) + 1
+      }
+      for (let k = 0; k < state.childWorkflow.length; k++) {
+        const index = state.childWorkflow[k].outcomeworkflowSet.indexOf(
+          state.outcomeworkflow[j].id
+        )
+        if (index >= 0) {
+          return index + 1
+        }
+      }
+      for (let k = 0; k < state.parentWorkflow.length; k++) {
+        const index = state.parentWorkflow[k].outcomeworkflowSet.indexOf(
+          state.outcomeworkflow[j].id
+        )
+        if (index >= 0) {
+          return index + 1
+        }
+      }
+    }
+  }
 }

@@ -4,8 +4,9 @@ import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { getWeekById } from '@cfRedux/selectors/week.selector'
-import { AppState, TWorkflow } from '@cfRedux/types/type'
+import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
+import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
 import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
@@ -13,11 +14,6 @@ import clsx from 'clsx'
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-
-// type ConnectedProps = {
-//   week: TGetWeekByIDType
-//   workflow: TWorkflow
-// }
 
 type OwnProps = {
   objectId: number
@@ -97,23 +93,6 @@ const Week = ({ objectId, parentId }) => {
     ))
   }
 
-  const StrategyTab = () => {
-    const { strategyClassification } = weekData.week
-    if (strategyClassification <= 0) {
-      return null
-    }
-    return (
-      <div className="strategy-tab">
-        <div className="strategy-tab-triangle" />
-        <div className="strategy-tab-square">
-          <div className="strategy-tab-circle">
-            // check class for what goese here
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   const defaultText = !workflow.isStrategy
     ? `${weekData.week.weekTypeDisplay} ${weekData.week.order + 1}`
     : undefined
@@ -174,7 +153,9 @@ const Week = ({ objectId, parentId }) => {
           {dropIcon}
         </div>
       </div>
-      <StrategyTab />
+      <StrategyTabIcon
+        strategyClassification={weekData.week.strategyClassification}
+      />
     </div>
   )
 }

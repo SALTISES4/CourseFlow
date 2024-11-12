@@ -37,7 +37,8 @@ export function setUserPermission(
 export function getUsersForObjectQueryLegacy(
   objectId: number,
   objectType: string,
-  callBackFunction = (_data: UsersForObjectQueryResp) => Utility.logger('success')
+  callBackFunction = (_data: UsersForObjectQueryResp) =>
+    Utility.logger('success')
 ) {
   if (['program', 'course', 'activity'].indexOf(objectType) >= 0) {
     objectType = 'workflow'

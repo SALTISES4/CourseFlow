@@ -3,7 +3,7 @@ import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import {getNodeById} from "@cfRedux/selectors/node.selector";
+import { getNodeById } from '@cfRedux/selectors/node.selector'
 import {
   AppState,
   TNode,

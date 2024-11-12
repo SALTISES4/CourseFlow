@@ -1,5 +1,5 @@
 import Utility, { _t } from '@cf/utility/Utility.class'
-import {getTableOutcomeNodeById} from "@cfRedux/selectors/helpers";
+import { getTableOutcomeNodeById } from '@cfRedux/selectors/helpers'
 
 export type CreateOutcomeNodeBranchType = {
   id: any

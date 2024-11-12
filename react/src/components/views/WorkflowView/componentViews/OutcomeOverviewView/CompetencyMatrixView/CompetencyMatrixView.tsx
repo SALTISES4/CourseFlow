@@ -3,7 +3,7 @@ import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import {getSortedOutcomeIdFromOutcomeWorkflowSet} from "@cfRedux/selectors/helpers";
+import { getOutcomeIdFromWorkflow } from '@cfRedux/selectors/helpers'
 import { AppState } from '@cfRedux/types/type'
 import NodeOutcomeView from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/common/NodeOutcomeView'
 import OutcomeBase from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/OutcomeTableView/components/OutcomeBase'
@@ -89,7 +89,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
    * FUNCTIONS
    *******************************************************/
   getOutcomesSorted() {
-    return getSortedOutcomeIdFromOutcomeWorkflowSet(
+    return getOutcomeIdFromWorkflow(
       this.props.outcomes,
       this.props.outcomeworkflows,
       this.props.outcomeworkflowOrder,
@@ -103,10 +103,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
       this.props.weekworkflowOrder
     ).map((weekworkflow) => weekworkflow.week)
 
-    const weeksOrdered = Utility.filterThenSortById(
-      this.props.weeks,
-      weekOrder
-    )
+    const weeksOrdered = Utility.filterThenSortById(this.props.weeks, weekOrder)
 
     const nodeweekOrder = [].concat(
       ...weeksOrdered.map((week) => week.nodeweekSet)
@@ -186,15 +183,12 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
       0
     )
 
-    const totalTheory = linkedWfData.reduce(
-      (previousValue, currentValue) => {
-        if (currentValue && currentValue.ponderationTheory) {
-          return previousValue + currentValue.ponderationTheory
-        }
-        return previousValue
-      },
-      0
-    )
+    const totalTheory = linkedWfData.reduce((previousValue, currentValue) => {
+      if (currentValue && currentValue.ponderationTheory) {
+        return previousValue + currentValue.ponderationTheory
+      }
+      return previousValue
+    }, 0)
 
     const totalPractical = linkedWfData.reduce(
       (previousValue, currentValue) => {
@@ -217,15 +211,12 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     )
 
     const totalTime = totalTheory + totalPractical + totalIndividual
-    const totalRequired = linkedWfData.reduce(
-      (previousValue, currentValue) => {
-        if (currentValue && currentValue.timeRequired) {
-          return previousValue + parseFloat(currentValue.timeRequired)
-        }
-        return previousValue
-      },
-      0
-    )
+    const totalRequired = linkedWfData.reduce((previousValue, currentValue) => {
+      if (currentValue && currentValue.timeRequired) {
+        return previousValue + parseFloat(currentValue.timeRequired)
+      }
+      return previousValue
+    }, 0)
 
     return {
       totalTheory: totalTheory,

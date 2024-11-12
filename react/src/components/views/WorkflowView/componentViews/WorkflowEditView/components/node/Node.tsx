@@ -375,8 +375,8 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    * RENDER
    *******************************************************/
   const style: React.CSSProperties = {
-    left: `${Constants.columnwidth * columnOrder.indexOf(nodeData.node.column)}px`,
-    backgroundColor: ThemeHelper.getColumnColour(nodeData .column),
+    left: `${Constants.columnwidth * (nodeData.column.order + 1)}px`,
+    backgroundColor: ThemeHelper.getColumnColour(nodeData.column),
     display: Utility.checkSetHidden(nodeData.node, objectSets)
       ? 'none'
       : undefined,

@@ -32,10 +32,10 @@ const WorkflowEditView = () => {
 
   const weeks = workflow.weeks?.map((weekId) => (
     <WeekWrapper
-      condensed={workflow.condensed} // this makes no sense that it would switch on condensed
       key={`weekworkflow-${weekId}`}
       objectId={weekId}
       parentId={workflow.id}
+      condensed={workflow.condensed} // this makes no sense that it would switch on condensed
     />
   ))
 

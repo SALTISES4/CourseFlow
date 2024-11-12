@@ -1,5 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import Utility from "@cf/utility/Utility.class";
+import Utility from '@cf/utility/Utility.class'
 import { UserListResp } from '@XMLHTTP/API/workspaceUser.rtk'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 

@@ -1,4 +1,4 @@
-import {CfObjectType} from "@cf/types/enum";
+import { CfObjectType } from '@cf/types/enum'
 import {
   EComment,
   ELibraryObject,

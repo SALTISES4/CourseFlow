@@ -25,7 +25,7 @@ class ColumnWorkflowDragAndDropManager extends SortableDragAndDropManager {
   /**
    * Overrides the sortableMovedFunction method from DragAndDropManager
    */
-  sortableMovedFunction(
+  onMovedIn(
     id: number,
     newPosition: number,
     type: string,
@@ -75,7 +75,7 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
       .children(classIdentifiers.objectClass)
       .not('.ui-draggable')
 
-    columnWorkflowDragAndDropManager.makeSortableNode(
+    columnWorkflowDragAndDropManager.makeSortableElement(
       jQuerySortableBlockTarget,
       objectId,
       CfObjectType.COLUMNWORKFLOW,
@@ -88,16 +88,13 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
     )
   }, [objectId, parentId])
 
-  // Ref for the main div
-
-  // Render
-  if (!columnData) {
-    return null // Handle case where data is not available
-  }
-
   /*******************************************************
    * RENDER
    *******************************************************/
+  if (!columnData) {
+    return <></>
+  }
+
   return (
     <div
       className={clsx(`column-workflow`, `column-${objectId}`, {

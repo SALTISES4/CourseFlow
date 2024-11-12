@@ -1,5 +1,5 @@
 import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
-import ThemeHelper from "@cf/utility/ThemeHelper.class";
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { EUser } from '@XMLHTTP/types/entity'
 
 export type ConnectedUser = {
@@ -8,8 +8,6 @@ export type ConnectedUser = {
   connected: boolean
   timeout: NodeJS.Timeout
 }
-
-
 
 type UpdateStateCallback = (users: ConnectedUser[]) => void
 

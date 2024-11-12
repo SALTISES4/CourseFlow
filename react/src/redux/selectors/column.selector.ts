@@ -1,27 +1,20 @@
 import Utility from '@cf/utility/Utility.class'
-import { createSelector } from '@reduxjs/toolkit' // or import from 'reselect' if not using Redux Toolkit
-
-import { AppState } from '../types/type'
+import { AppState } from '@cfRedux/types/type'
+import { createSelector } from '@reduxjs/toolkit'
 
 const selectId = (_: AppState, id: number) => id
-const getColumns = (state: AppState) => state.workflow.columns
 const getColumnMap = (state: AppState) => state.column
-// const getColumnWorkflowById = (state: AppState, id: number) =>
-//   getColumnWorkflowByID(state, id).data.column
+const getColumns = (state: AppState) => state.workflow.columns
 
-// Main selector using createSelector
 export const getColumnById = createSelector(
   [selectId, getColumnMap, getColumns],
   (id, columnMap, columns) => {
-    const column = columnMap[id]
+    const column = columnMap.find((item) => item.id === id)
     if (column) {
       return {
         column: column,
         siblingCount: columns.length,
-        columns: columns,
-        // columnOrder: columns.map((columnWorkflowId) =>
-        //   getColumnWorkflowById(columnWorkflowId)
-        // )
+        columns: columns
       }
     }
     Utility.logger('no column found with id', id)

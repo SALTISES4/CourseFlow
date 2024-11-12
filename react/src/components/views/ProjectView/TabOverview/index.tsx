@@ -12,7 +12,6 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useParams } from 'react-router-dom'
 
-
 import { ObjectSetThumbnail } from './styles'
 
 const OverviewTab = ({

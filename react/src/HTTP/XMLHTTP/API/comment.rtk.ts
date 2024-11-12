@@ -29,7 +29,7 @@ const extendedApi = cfApi.injectEndpoints({
           url: apiPaths.json_api.comment.list_by_object,
           body: args
         }
-      },
+      }
     }),
     createComment: builder.mutation<
       EmptyPostResp,

@@ -220,8 +220,6 @@ export const getDefaultDropState = (objectId, objectType, depth = 1) => {
   return defaultDrop
 }
 
-
-
 /**
  * get all possible object sets
  **/

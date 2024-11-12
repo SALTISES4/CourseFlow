@@ -286,8 +286,9 @@ export const HoverMenu = ({
   const [show, setShow] = useState<boolean>(false)
 
   const memoizedCommentBox = useMemo(
-    () =>
-        <CommentBox id={objectId} setShow={setShow} objectType={objectType} />,
+    () => (
+      <CommentBox id={objectId} setShow={setShow} objectType={objectType} />
+    ),
     [objectId, objectType]
   )
 
@@ -311,7 +312,6 @@ export const HoverMenu = ({
         )}
         {canComment && <AddCommentingButton show={show} setShow={setShow} />}
       </div>
-
 
       {/*{show && (*/}
       {/*  <CommentBox id={objectId} setShow={setShow} objectType={objectType} />*/}

@@ -1,5 +1,5 @@
 import { _t } from '@cf/utility/Utility.class'
-import {getNodeById} from "@cfRedux/selectors/node.selector";
+import { getNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
 import React from 'react'
 import { useSelector } from 'react-redux'

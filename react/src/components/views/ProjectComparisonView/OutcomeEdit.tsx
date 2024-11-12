@@ -6,7 +6,7 @@ import {
   OutcomeEditViewProps,
   OutcomeEditViewState,
   OutcomeEditViewUnconnected
-} from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeEditView'
+} from '@cfViews/WorkflowView/componentViews/OutcomeEditView'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'

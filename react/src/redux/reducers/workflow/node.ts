@@ -2,7 +2,8 @@ import { CfLock } from '@cf/types/common'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import nodeSlice, {
-  changeField, changedColumn,
+  changeField,
+  changedColumn,
   createLock
 } from '@cfRedux/slices/node.slice'
 import {

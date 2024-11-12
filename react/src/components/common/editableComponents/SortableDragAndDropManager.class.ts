@@ -34,11 +34,11 @@ class SortableDragAndDropManager {
    * - methods defined as 'stubs', then implemented in child
    *******************************************************/
 
-  sortableColumnChangedFunction(_id, _deltaX, _oldColumn) {
+  onColumnChanged(_id, _deltaX, _oldColumn) {
     Utility.logger('column change not sent')
   }
 
-  sortableMovedFunction(
+  onMovedIn(
     _dragItemId: number,
     _newIndex: number,
     _draggableType: any,
@@ -50,7 +50,7 @@ class SortableDragAndDropManager {
     )
   }
 
-  sortableMovedOutFunction(
+  onMovedOut(
     _dragItemId: number,
     _newIndex: number,
     _draggableType: any,
@@ -62,7 +62,7 @@ class SortableDragAndDropManager {
     )
   }
 
-  makeSortableNode(
+  makeSortableElement(
     sortableBlock: JQuery<HTMLElement>,
     parentId:
       | string
@@ -70,7 +70,7 @@ class SortableDragAndDropManager {
       | ((this: any, index: number, attr: string) => string | number | void),
     draggableType: string,
     draggableSelector: string,
-    axis: string,
+    axis: string = null,
     grid: boolean | number[] = false, // @todo grid is not used
     restrictTo = null,
     handle: string | boolean = false, // @todo review this union
@@ -132,7 +132,7 @@ class SortableDragAndDropManager {
 
             // @todo sortableColumnChangedFunction is only defined in week.tsx?
 
-            this.sortableColumnChangedFunction(
+            this.onColumnChanged(
               childId,
               deltaX,
               parseInt(newTarget.attr('data-column-id'))
@@ -172,7 +172,7 @@ class SortableDragAndDropManager {
             const childId = parseInt(dragItem.attr('data-child-id'))
 
             if (restrictTo && dragItem.attr('data-restrict-to') != restrictTo) {
-              this.sortableMovedOutFunction(
+              this.onMovedOut(
                 parseInt(dragItem.attr('id')),
                 newIndex,
                 draggableType,
@@ -183,7 +183,7 @@ class SortableDragAndDropManager {
               dragItem.attr('data-old-parent-id', newParentId)
               dragItem.attr('data-old-index', newIndex)
 
-              this.sortableMovedFunction(
+              this.onMovedIn(
                 parseInt(dragItem.attr('id')),
                 newIndex,
                 draggableType,
