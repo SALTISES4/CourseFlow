@@ -23,8 +23,6 @@ export type OutcomeGroup = {
   blocks: DraggableBlock[]
 }
 
-type EditTabType = GroupType<any>
-
 type AddGroup = {
   title: string
   type: string

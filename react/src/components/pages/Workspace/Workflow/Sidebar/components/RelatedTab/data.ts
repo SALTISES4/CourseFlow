@@ -1,4 +1,4 @@
-import { RelatedTabType } from './types'
+import { RelatedTabType } from '../../types'
 
 const data: RelatedTabType = {
   title: 'Outcomes from parent workflows',
