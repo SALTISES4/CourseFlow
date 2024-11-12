@@ -3,7 +3,7 @@ import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { getWeekById } from '@cfRedux/selectors/week.selector'
+import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
@@ -31,7 +31,7 @@ const Week = ({ objectId, parentId }) => {
    *******************************************************/
   const dispatch = useDispatch()
   const weekData = useSelector((state: AppState) =>
-    getWeekById(state, objectId)
+    selectWeekById(state, objectId)
   )
   const workflow = useSelector((state: AppState) => state.workflow)
 
@@ -58,14 +58,24 @@ const Week = ({ objectId, parentId }) => {
       container: '.week-block'
     }
 
-    const jQuerySortableBlockTarget = $(nodeBlock.current)
+    // const jQuerySortableBlockTarget = $(nodeBlock.current)
+    //   .children('.node-week')
+    //   .not('.ui-draggable')
+      const jQuerySortableBlockTarget = $('.node-block')
       .children('.node-week')
       .not('.ui-draggable')
 
-    dragAndDropManager.current.makeSortableNode(
+    // targeting the 'nodweek' which is now controlled by nodewrapper
+    dragAndDropManager.current.makeSortableElement(
       jQuerySortableBlockTarget,
       objectId,
-      classIdentifiers
+      CfObjectType.NODEWEEK,
+      classIdentifiers.objectClass,
+      null,
+      [200, 1],
+      null,
+      classIdentifiers.handle,
+      classIdentifiers.container
     )
 
     dragAndDropManager.current.makeDroppable(mainDiv.current)

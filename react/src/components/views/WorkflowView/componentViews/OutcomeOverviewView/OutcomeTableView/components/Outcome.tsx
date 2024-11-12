@@ -2,7 +2,7 @@ import { updateOutcomenodeDegree } from '@cf/HTTP/XMLHTTP/API/update'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum.js'
 import { _t } from '@cf/utility/Utility.class'
-import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts.tsx'
+import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
 import { getOutcomeByID } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState } from '@cfRedux/types/type'
@@ -155,7 +155,7 @@ class TableCell extends React.Component<TableCellPropsType> {
   }
 }
 
-type OwnProps = {
+type PropsType = {
   objectId: number
   parentId?: number
   throughParentId?: number
@@ -171,7 +171,7 @@ type OwnProps = {
   readOnly?: boolean
 }
 
-const Outcome: React.FC<OwnProps> = (props) => {
+const Outcome = (props: PropsType) => {
   const data = useSelector(
     (state: AppState) => getOutcomeByID(state, props.objectId).data
   )

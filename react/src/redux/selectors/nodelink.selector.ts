@@ -5,7 +5,7 @@ import { createSelector } from 'reselect'
 const selectId = (_, id: number) => id
 const getAllNodeLinks = (state: AppState) => state.nodelink
 
-export const getNodeLinkById = createSelector(
+export const selectNodeLinkById = createSelector(
   [selectId, getAllNodeLinks],
   (id, nodelinks) => {
     const nodelink = nodelinks.find((nl) => nl.id === id)

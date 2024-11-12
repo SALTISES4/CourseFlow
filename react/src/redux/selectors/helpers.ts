@@ -3,7 +3,7 @@
  *******************************************************/
 import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import Utility from '@cf/utility/Utility.class'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import { AppState } from '@cfRedux/types/type'
 
 // this means is UI expanded (i.e. DROP down) not drag and dropped
@@ -34,13 +34,15 @@ export const getTableOutcomeNodeById = (outcomeNodes, nodeId, outcomeId) => {
 }
 
 /**
- *  // @todo doesn't really belong here (not a state selector)
- * //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+ *
+ * Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
  * @param outcomesUnsorted
  * @param outcomeworkflowsUnsorted
  * @param outcomeworkflowSet
  * @param objectSetsUnfiltered
  */
+
+// @todo needs typing
 export const getOutcomeIdFromWorkflow = (
   outcomesUnsorted,
   outcomeworkflowsUnsorted,

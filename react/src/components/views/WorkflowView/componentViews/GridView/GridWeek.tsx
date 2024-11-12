@@ -3,7 +3,7 @@ import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { getNodeById } from '@cfRedux/selectors/node.selector'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import {
   AppState,
   TNode,
@@ -39,7 +39,7 @@ const GridWeek: React.FC<OwnProps> = ({ objectId, parentId, rank, week }) => {
   const nodesData = nodeWeeks
     .map(
       (nodeweek) =>
-        getNodeById(
+        selectNodeById(
           useSelector((state: AppState) => state),
           nodeweek.node
         ).data

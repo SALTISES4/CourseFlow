@@ -2,7 +2,7 @@ import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { getColumnById } from '@cfRedux/selectors/column.selector'
+import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { AppState } from '@cfRedux/types/type'
 import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
@@ -58,7 +58,7 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
    * HOOKS
    *******************************************************/
   const columnData = useSelector((state: AppState) =>
-    getColumnById(state, objectId)
+    selectColumnById(state, objectId)
   )
 
   useEffect(() => {

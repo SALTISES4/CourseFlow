@@ -34,7 +34,7 @@ export const getColumnWorkflowById = (
 }
 
 // @todo why are weeks and terms handled differently
-export const getWeekById = createSelector(
+export const selectWeekById = createSelector(
   [selectId, selectWeeks, selectWorkflow, selectColumnWorkflow],
   (id, weeks, workflow, columnworkflow) => {
     const week = weeks.find((w) => w.id === id)

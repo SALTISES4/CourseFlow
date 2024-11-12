@@ -19,7 +19,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeHorizontalLink from './OutcomeHorizontalLink'
-import OutcomeOutcome from './OutcomeOutcome'
+import OutcomeWrapper from './OutcomeWrapper'
 
 class OutcomeDragAndDropManager extends SortableDragAndDropManager {
   onMovedIn(id, newPosition, type, newParent, childId) {
@@ -144,7 +144,7 @@ const Outcome: React.FC<PropsType> = ({
    * HOOKS: REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const outcome = useSelector((state: AppState) =>
+  const outcomeData = useSelector((state: AppState) =>
     selectOutcomeById(state, objectId)
   )
   const workflow = useSelector((state: AppState) => state.workflow)
@@ -164,7 +164,7 @@ const Outcome: React.FC<PropsType> = ({
    *******************************************************/
   const [showHorizontalLinks, setShowHorizontalLinks] = useState(false)
 
-  const data = outcome.data
+  const data = outcomeData.outcome
 
   useEffect(() => {
     if (!showHorizontal) {
@@ -182,21 +182,18 @@ const Outcome: React.FC<PropsType> = ({
       objectId,
       CfObjectType.OUTCOMEOUTCOME,
       `.outcome-outcome-${data.depth}`,
-      false,
+      null,
       false,
       `#workflow-${workflow.id}`,
       classIdentifiers.handle
     )
 
     if (data.depth === 0) {
-      // outcomeDragAndDropManager.current.makeDroppable()
-      // logic to implement the redux toggle drop action  (or just the state action)
+      outcomeDragAndDropManager.current.makeDroppable($(mainDiv.current))
     }
   }, [showHorizontal])
 
-  const makeDragAndDrop = () => {}
-
-  if (Utility.checkSetHidden(data, outcome.objectSets)) {
+  if (Utility.checkSetHidden(data, outcomeData.objectSets)) {
     return null
   }
 
@@ -204,8 +201,10 @@ const Outcome: React.FC<PropsType> = ({
     if (!data.isDropped) {
       return <></>
     }
+    // this is a tree implementation
+    // i don't think it's worth trying to sort through this
     return data.childOutcomeLinks.map((outcomeoutcome) => (
-      <OutcomeOutcome
+      <OutcomeWrapper
         key={outcomeoutcome}
         objectId={outcomeoutcome}
         parentId={data.id}
@@ -283,8 +282,8 @@ const Outcome: React.FC<PropsType> = ({
       <div className="outcome-title">
         <OutcomeTitle
           title={data.title}
-          prefix={outcome.prefix}
-          hovertext={outcome.hovertext}
+          prefix={outcomeData.prefix}
+          hovertext={outcomeData.hovertext}
         />
       </div>
 
@@ -313,12 +312,25 @@ const Outcome: React.FC<PropsType> = ({
           id={`${objectId}-children-block`}
           ref={childrenBlock}
         >
+          {/*
+        @todo hard to fix this with no children in data
+
+        */}
           <Children />
         </ol>
       )}
 
       {workflow.workflowPermissions.write && data.depth < 2 && (
-        <div className="outcome-create-child" onClick={() => {}}>
+        <div
+          className="outcome-create-child"
+          onClick={() => {
+            //                 // @todo update this with mutation
+            //                 // insertChild({
+            //                 //   id: this.props.objectId,
+            //                 //   objectType: this.objectType
+            //                 // })
+          }}
+        >
           {_t('+ Add New')}
         </div>
       )}

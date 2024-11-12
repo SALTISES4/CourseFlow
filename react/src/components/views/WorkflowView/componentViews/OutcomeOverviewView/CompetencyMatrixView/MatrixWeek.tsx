@@ -1,6 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
-import { getWeekById } from '@cfRedux/selectors/week.selector'
+import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -72,7 +72,7 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => {
-  const data = getWeekById(state, ownProps.objectId).data
+  const data = selectWeekById(state, ownProps.objectId).data
   const nodeWeeks = Utility.filterThenSortById(state.nodeweek, data.nodeweekSet)
   const nodesData = Utility.filterThenSortById(
     state.node,

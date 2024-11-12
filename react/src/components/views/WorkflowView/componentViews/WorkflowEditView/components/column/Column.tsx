@@ -2,7 +2,7 @@ import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { getColumnById } from '@cfRedux/selectors/column.selector'
+import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { AppState } from '@cfRedux/types/type'
 import { styled } from '@mui/material/styles'
 import clsx from 'clsx'
@@ -44,7 +44,7 @@ const Column = ({ objectId, parentId }: PropsType) => {
    *******************************************************/
   const dispatch = useDispatch()
   const columnData = useSelector((state: AppState) =>
-    getColumnById(state, objectId)
+    selectColumnById(state, objectId)
   )
   const workflow = useSelector((state: AppState) => state.workflow)
 

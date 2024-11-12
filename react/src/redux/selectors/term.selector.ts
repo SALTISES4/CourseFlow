@@ -1,6 +1,6 @@
 import Utility from '@cf/utility/Utility.class'
 import { getDropped } from '@cfRedux/selectors/helpers'
-import { getNodeById } from '@cfRedux/selectors/node.selector'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { getNodeWeekById } from '@cfRedux/selectors/nodeweek.selector'
 import { AppState } from '@cfRedux/types/type'
 import { createSelector } from 'reselect'
@@ -52,7 +52,7 @@ export const getTermById = createSelector(
           nodeWeekId
         )?.data
         const node = nodeWeek
-          ? getNodeById({ node: nodeweeks }, nodeWeek.node)?.data
+          ? selectNodeById({ node: nodeweeks }, nodeWeek.node)?.data
           : null
 
         if (node) {

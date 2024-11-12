@@ -6,7 +6,7 @@ const selectId = (_: AppState, id: number) => id
 const getColumnMap = (state: AppState) => state.column
 const getColumns = (state: AppState) => state.workflow.columns
 
-export const getColumnById = createSelector(
+export const selectColumnById = createSelector(
   [selectId, getColumnMap, getColumns],
   (id, columnMap, columns) => {
     const column = columnMap.find((item) => item.id === id)

@@ -70,10 +70,11 @@ const OutcomeEditView: React.FC<PropsType> = ({ objectId, parentId }) => {
     )
 
     if (data?.depth === 0) {
-      // some kind of logic to make this a dropdown
-      // makedroppable has been move to
-      // toggledropredux action
-      // not sure if that fits here
+      //    makeDroppable()
+      // as far as i can tell this is not defined anywhere
+      // but i'm not sure it matters
+      // the current 'tree view' mechanism is broken and should be torn out anyway
+      // don't spend more time recovering this
     }
   }, [data])
 

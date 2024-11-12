@@ -2,7 +2,7 @@ import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
-import { getWeekById } from '@cfRedux/selectors/week.selector'
+import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
@@ -26,7 +26,7 @@ const Term = ({
   columnOrder,
   nodesByColumn
 }: OwnProps) => {
-  const term = useSelector((state: AppState) => getWeekById(state, objectId))
+  const term = useSelector((state: AppState) => selectWeekById(state, objectId))
   const workflow = useSelector((state: AppState) => state.workflow)
   const dragAndDropManager = useRef(null)
 

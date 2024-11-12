@@ -66,12 +66,17 @@ class WeekDragAndDropManager extends SortableDragAndDropManager {
   }
 
   makeDroppable(sortableBlock: JQuery<HTMLElement>) {
-    // this seems to be all about strategies
+    // this seems to be all about strategies ?
 
-    if (!sortableBlock || true) {
+    // @todo not sure this is failing
+    // don't troubleshoot until we finalize DnD strategy
+    if (!sortableBlock.droppable) {
       Utility.logger('no sortable block found ')
       return
     }
+
+    console.log('sortableBlock')
+    console.log(sortableBlock)
 
     sortableBlock.droppable({
       tolerance: 'pointer',

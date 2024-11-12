@@ -1,4 +1,4 @@
-import { getNodeById } from '@cfRedux/selectors/node.selector'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
 import { createSelector } from 'reselect'
 
@@ -21,7 +21,7 @@ export const getNodeWeekById = createSelector(
     const nodeweek = nodeweeks.find((nw) => nw.id === id)
 
     if (nodeweek) {
-      const node = getNodeById(state, nodeweek.node)?.data
+      const node = selectNodeById(state, nodeweek.node)?.data
       return {
         data: nodeweek,
         order: node?.order ?? [],

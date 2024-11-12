@@ -12,7 +12,7 @@ const selectObjectSets = (state: AppState) => state.objectset
 /**
  * Node by ID
  */
-export const getNodeById = createSelector(
+export const selectNodeById = createSelector(
   [selectId, selectNodeState, selectColumnState, selectObjectSets],
   (id, nodes, columns, objectSets) => {
     const node = nodes.find((n) => n.id === id)

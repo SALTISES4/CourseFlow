@@ -572,20 +572,15 @@ ol.children-block {
   list-style-type: lower-roman;
 }
 
-.outcome.dropped > .outcome-create-child {
-  display: block;
-}
-
-.outcome.dropped > .children-block:empty + .outcome-create-child {
-  display: none;
-}
+/*******************************************************
+ * OUTCOME EDIT VIEW
+ *******************************************************/
 
 .outcome-create-child {
   position: relative;
   font-size: 12px;
   color: $color-primary-green;
   margin-left: 40px;
-  display: none;
   cursor: pointer;
 }
 

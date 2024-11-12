@@ -1,7 +1,7 @@
 import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TGetNodeById } from '@cfFindState'
-import { getNodeById } from '@cfRedux/selectors/node.selector'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
 import clsx from 'clsx'
@@ -21,7 +21,7 @@ type PropsType = {
 const NodeOutcomeView = ({ objectId }: PropsType) => {
   const mainDiv = useRef<HTMLDivElement>(null)
   const node = useSelector<AppState, TGetNodeById>((state: AppState) =>
-    getNodeById(state, objectId)
+    selectNodeById(state, objectId)
   )
 
   const style: React.CSSProperties = {

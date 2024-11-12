@@ -92,7 +92,7 @@ export const selectOutcomeById = createSelector(
     const prefix = rank.join('.')
 
     return {
-      data: updatedOutcome,
+      outcome: updatedOutcome,
       hovertext,
       prefix,
       objectSets,

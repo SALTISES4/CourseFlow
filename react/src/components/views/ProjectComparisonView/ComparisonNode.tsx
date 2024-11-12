@@ -8,7 +8,7 @@ import Utility from '@cf/utility/Utility.class'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import { TGetNodeById } from '@cfFindState'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { getNodeById } from '@cfRedux/selectors/node.selector'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
@@ -226,7 +226,7 @@ const mapStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   return {
-    node: getNodeById(state, ownProps.objectId),
+    node: selectNodeById(state, ownProps.objectId),
     workflow: state.workflow
   }
 }

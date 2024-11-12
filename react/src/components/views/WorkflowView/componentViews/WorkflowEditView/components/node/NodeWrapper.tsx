@@ -1,4 +1,4 @@
-import { getNodeById } from '@cfRedux/selectors/node.selector'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
 import Node from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Node'
 import clsx from 'clsx'
@@ -20,7 +20,7 @@ type PropsType = {
  **/
 
 const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
-  const data = useSelector((state: AppState) => getNodeById(state, objectId))
+  const data = useSelector((state: AppState) => selectNodeById(state, objectId))
 
   if (!data) {
     return null

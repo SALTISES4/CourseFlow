@@ -6,7 +6,7 @@ import Utility, { _t } from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { getNodeById } from '@cfRedux/selectors/node.selector'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
@@ -85,7 +85,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    *******************************************************/
   const dispatch = useDispatch()
   const nodeData = useSelector((state: AppState) =>
-    getNodeById(state, objectId)
+    selectNodeById(state, objectId)
   )
   const workflow = useSelector((state: AppState) => state.workflow)
 
