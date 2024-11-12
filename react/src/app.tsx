@@ -90,7 +90,10 @@ root.render(
             <UserProvider>
               <ThemeProvider theme={theme}>
                 <ScopedCssBaseline sx={SidebarRootStyles}>
-                  <RouterProvider router={CfRouter} />
+                  <RouterProvider
+                    router={CfRouter}
+                    future={{ v7_startTransition: true }}
+                  />
                 </ScopedCssBaseline>
               </ThemeProvider>
             </UserProvider>

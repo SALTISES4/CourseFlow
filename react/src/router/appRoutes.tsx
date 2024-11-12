@@ -229,7 +229,15 @@ export const CFRouter = createBrowserRouter([
 
   {
     path: '*',
-    element: <div>in browser router, caught </div>
+    element: <div>in browser router, caught </div>,
+    future: {
+      v7_relativeSplatPath: true,
+      v7_fetcherPersist: true,
+      v7_normalizeFormMethod: true,
+      v7_partialHydration: true,
+      v7_startTransition: true,
+      v7_skipActionStatusRevalidation: true
+    }
   }
 ])
 
