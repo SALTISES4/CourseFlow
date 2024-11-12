@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
+import getNodeLinkData from './getNodeLinkData'
 import { NodeLinkForm } from './types'
 import {
   SidebarContent,
@@ -15,7 +16,8 @@ import {
   SidebarTitle
 } from '../../../../styles'
 
-const EditNodeLink = (data: NodeLinkForm) => {
+const EditNodeLink = () => {
+  const data = getNodeLinkData(1)
   const [state, setState] = useState<NodeLinkForm>(data)
 
   const onTitleChange = useCallback(

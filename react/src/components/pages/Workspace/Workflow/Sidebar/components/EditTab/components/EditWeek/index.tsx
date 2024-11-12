@@ -9,17 +9,11 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '../../../../styles'
-import { EditableDataType, EditableType } from '../../types'
 import SaveAsTemplate from '../SaveAsTemplate'
-
-const getNodeData = (): EditableDataType<EditableType.WEEK> => {
-  return {
-    title: 'hello'
-  }
-}
+import getWeekData from './getWeekData'
 
 const EditWeek = () => {
-  const { title } = getNodeData()
+  const { title } = getWeekData(1)
 
   const [state, setState] = useState({
     title,

@@ -14,8 +14,8 @@ import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import optionsData from './data'
-import { NodeForm } from './types'
+import getNodeData from './getNodeData'
+import optionsData from './optionsData'
 import {
   SidebarActions,
   SidebarContent,
@@ -23,9 +23,10 @@ import {
   SidebarTitle
 } from '../../../../styles'
 
-const EditNode = (props: NodeForm) => {
+const EditNode = () => {
+  const data = getNodeData(1)
   const [linkedWorkflow, setLinkedWorkflow] = useState(false)
-  const [state, setState] = useState(props)
+  const [state, setState] = useState(data)
 
   const onTextFieldChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setState(
