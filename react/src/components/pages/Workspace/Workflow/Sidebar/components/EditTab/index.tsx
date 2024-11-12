@@ -7,7 +7,7 @@ import EditOutcome from './components/EditOutcome'
 import EditPart from './components/EditPart'
 import EditTerm from './components/EditTerm'
 import EditWeek from './components/EditWeek'
-import { EditableType } from '../../hooks/useEditable/types'
+import { EditableType } from './types'
 
 const EditTab = ({ type }: { type: EditableType }) => {
   if (!type) {
@@ -23,12 +23,7 @@ const EditTab = ({ type }: { type: EditableType }) => {
       )
     // return <EditTerm {...(data as TermForm)} />
     case EditableType.WEEK:
-      return (
-        <div>
-          <h2>EditableType.WEEK</h2>
-        </div>
-      )
-    // return <EditWeek {...(data as WeekForm)} />
+      return <EditWeek />
     case EditableType.PART:
       return (
         <div>

@@ -20,10 +20,10 @@ import { useLocation } from 'react-router-dom'
 
 import AddTab from './components/AddTab'
 import EditTab from './components/EditTab'
+import { EditableType } from './components/EditTab/types'
 import OutcomesTab from './components/OutcomesTab'
 import RelatedTab from './components/RelatedTab'
 import RestoreTab from './components/RestoreTab'
-import { EditableType } from './hooks/useEditable/types'
 import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
 
 function getTabContent(
