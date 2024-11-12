@@ -7,7 +7,7 @@ import EditOutcome from './components/EditOutcome'
 import EditPart from './components/EditPart'
 import EditTerm from './components/EditTerm'
 import EditWeek from './components/EditWeek'
-import { EditableType } from '../../hooks/useEditable/types'
+import { EditableType } from './types'
 
 const EditTab = ({ type }: { type: EditableType }) => {
   if (!type) {
@@ -16,54 +16,19 @@ const EditTab = ({ type }: { type: EditableType }) => {
 
   switch (type) {
     case EditableType.TERM:
-      return (
-        <div>
-          <h2>EditableType.TERM</h2>
-        </div>
-      )
-    // return <EditTerm {...(data as TermForm)} />
+      return <EditTerm />
     case EditableType.WEEK:
-      return (
-        <div>
-          <h2>EditableType.WEEK</h2>
-        </div>
-      )
-    // return <EditWeek {...(data as WeekForm)} />
+      return <EditWeek />
     case EditableType.PART:
-      return (
-        <div>
-          <h2>EditableType.PART</h2>
-        </div>
-      )
-    // return <EditPart {...(data as PartForm)} />
+      return <EditPart />
     case EditableType.OUTCOME:
-      return (
-        <div>
-          <h2>EditableType.OUTCOME</h2>
-        </div>
-      )
-    // return <EditOutcome {...(data as OutcomeForm)} />
+      return <EditOutcome />
     case EditableType.NODE_LINK:
-      return (
-        <div>
-          <h2>EditableType.NODE_LINK</h2>
-        </div>
-      )
-    // return <EditNodeLink {...(data as NodeLinkForm)} />
+      return <EditNodeLink />
     case EditableType.NODE_CATEGORY:
-      return (
-        <div>
-          <h2>EditableType.NODE_CATEGORY</h2>
-        </div>
-      )
-    // return <EditNodeCategory {...(data as NodeCategoryForm)} />
+      return <EditNodeCategory />
     case EditableType.NODE:
-      return (
-        <div>
-          <h2>EditableType.NODE</h2>
-        </div>
-      )
-    // return <EditNode {...(data as NodeForm)} />
+      return <EditNode />
     default:
       return (
         <Alert

@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux'
 
 import data from './data'
 import { StyledRestorableBlock } from './styles'
-import { RestorableBlock, RestoreTabType } from './types'
 import {
   GroupWrap,
   SidebarActions,
@@ -15,6 +14,7 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '../../styles'
+import { RestorableBlock, RestoreTabType } from '../../types'
 
 type RestorableBlockType = {
   group: number

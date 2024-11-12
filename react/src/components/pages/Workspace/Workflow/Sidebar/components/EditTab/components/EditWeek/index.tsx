@@ -3,7 +3,6 @@ import TextField from '@mui/material/TextField'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import { WeekForm } from './types'
 import {
   SidebarActions,
   SidebarContent,
@@ -11,24 +10,11 @@ import {
   SidebarTitle
 } from '../../../../styles'
 import SaveAsTemplate from '../SaveAsTemplate'
+import getWeekData from './getWeekData'
 
-// const getNodeData = () => {
-//   // figure out the node type
-//   const type = EditableType.WEEK
+const EditWeek = () => {
+  const { title } = getWeekData(1)
 
-//   // return the correct form shape for the corresponding node
-//   const data: EditableDataType<typeof type> = {
-//     title: 'hello',
-//     strategy: 1
-//   }
-
-//   return {
-//     type,
-//     data
-//   }
-// }
-
-const EditWeek = ({ title }: WeekForm) => {
   const [state, setState] = useState({
     title,
     template: false

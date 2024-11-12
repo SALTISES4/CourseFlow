@@ -20,10 +20,10 @@ import { useLocation } from 'react-router-dom'
 
 import AddTab from './components/AddTab'
 import EditTab from './components/EditTab'
+import { EditableType } from './components/EditTab/types'
 import OutcomesTab from './components/OutcomesTab'
 import RelatedTab from './components/RelatedTab'
 import RestoreTab from './components/RestoreTab'
-import { EditableType } from './hooks/useEditable/types'
 import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
 
 function getTabContent(
@@ -38,28 +38,13 @@ function getTabContent(
     case 'edit':
       return <EditTab type={edit.objectType as unknown as EditableType} />
     case 'add':
-      return (
-        <div>
-          <h1>Add tab</h1>
-        </div>
-      )
-    // return <AddTab />
+      return <AddTab />
     case 'restore':
       return <RestoreTab />
     case 'outcomes':
-      return (
-        <div>
-          <h1>Outcomes tab</h1>
-        </div>
-      )
-    // return <OutcomesTab />
+      return <OutcomesTab />
     case 'related':
-      return (
-        <div>
-          <h1>Related tab</h1>
-        </div>
-      )
-    // return <RelatedTab />
+      return <RelatedTab />
     default:
       return <>{tab} tab not implemented yet</>
   }

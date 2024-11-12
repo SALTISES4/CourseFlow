@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import { NodeCategoryForm } from './types'
+import getNodeCategoryData from './getNodeCategoryData'
 import {
   SidebarActions,
   SidebarContent,
@@ -13,7 +13,8 @@ import {
   SidebarTitle
 } from '../../../../styles'
 
-const EditNodeCategory = ({ title, color }: NodeCategoryForm) => {
+const EditNodeCategory = () => {
+  const { title, color } = getNodeCategoryData(1)
   const [state, setState] = useState({
     title,
     color: color || '#CFD8DC'

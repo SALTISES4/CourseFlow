@@ -1,12 +1,12 @@
 import { CfObjectType } from '@cf/types/enum'
 
-import { NodeForm } from '../../components/EditTab/components/EditNode/types'
-import { NodeCategoryForm } from '../../components/EditTab/components/EditNodeCategory/types'
-import { NodeLinkForm } from '../../components/EditTab/components/EditNodeLink/types'
-import { OutcomeForm } from '../../components/EditTab/components/EditOutcome/types'
-import { PartForm } from '../../components/EditTab/components/EditPart/types'
-import { TermForm } from '../../components/EditTab/components/EditTerm/types'
-import { WeekForm } from '../../components/EditTab/components/EditWeek/types'
+import { NodeForm } from './components/EditNode/types'
+import { NodeCategoryForm } from './components/EditNodeCategory/types'
+import { NodeLinkForm } from './components/EditNodeLink/types'
+import { OutcomeForm } from './components/EditOutcome/types'
+import { PartForm } from './components/EditPart/types'
+import { TermForm } from './components/EditTerm/types'
+import { WeekForm } from './components/EditWeek/types'
 
 export enum EditableType {
   TERM = 'editable_term',
