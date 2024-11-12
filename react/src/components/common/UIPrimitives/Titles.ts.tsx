@@ -95,4 +95,3 @@ export function getOutcomeTitle({
 
   return prefix + ' - ' + finalText
 }
-

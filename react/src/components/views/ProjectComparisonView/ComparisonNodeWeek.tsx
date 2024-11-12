@@ -1,5 +1,5 @@
-import { TGetNodeWeekById, getNodeWeekByID } from '@cfFindState'
 // @local
+import { getNodeWeekById } from '@cfRedux/selectors/nodeweek.selector'
 import { AppState } from '@cfRedux/types/type'
 import ComparisonNode from '@cfViews/ProjectComparisonView/ComparisonNode'
 import { NodeWeekUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
@@ -49,7 +49,7 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): TGetNodeWeekById => {
-  return getNodeWeekByID(state, ownProps.objectId)
+  return getNodeWeekById(state, ownProps.objectId)
 }
 const ComparisonNodeWeek = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,

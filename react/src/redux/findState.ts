@@ -1,21 +1,62 @@
-import * as Constants from '@cf/utility/constants'
+import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import Utility from '@cf/utility/Utility.class'
-import { _t } from '@cf/utility/Utility.class'
+import Utility, { _t } from '@cf/utility/Utility.class'
+import { getDropped } from '@cfRedux/selectors/helpers'
 import {
   AppState,
-  TColumn,
   TColumnworkflow,
-  TNode,
-  TNodelink,
+  TComment,
   TObjectSet,
   TOutcome,
   TOutcomeOutcome,
-  TWeek,
   TWeekworkflow
 } from '@cfRedux/types/type'
 
+// stubs
+export const getWeekById = () => {
+  // must go
+}
+export const getNodeById = () => {
+  // must go
+}
+export const getWeekWorkflowByID = () => {
+  // must go
+}
+
+export const getColumnWorkflowByID = () => {
+  // to go...
+}
+
+/**
+ * Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+ * @param state
+ * @param outcomeworkflowSet
+ */
+export const getSortedOutcomesFromOutcomeWorkflowSet = () => {}
+
 /*******************************************************
+ * DELETE ME
+ *******************************************************/
+export type TColumnWorkflowById = {
+  data?: TColumnworkflow
+  order?: number[]
+}
+
+export type TGetWeekWorkflowById = {
+  data: TWeekworkflow
+  order: number[]
+}
+export type TTermByID = {
+  data: any
+  columnOrder: any
+  nodesByColumn: any
+  nodeweeks: any
+}
+
+/*******************************************************
+ *  @todo these items are largely not useful and need to
+ *  be moved to a proper selector pattern with memoization
+ *
  *
  *  This file contains selectors to encapsulate accessing the
  *  Redux state directly
@@ -25,149 +66,24 @@ import {
 /*******************************************************
  * COLUMN
  *******************************************************/
-export type TGetColumnByID = {
-  data: TColumn
-  siblingCount: number
-  columnworkflows: Pick<AppState['workflow'], 'columnworkflowSet'>
-  columnOrder: Pick<AppState['workflow'], 'columnworkflowSet'>
-}
 
-export const getColumnById = (state: AppState, id: number): TGetColumnByID => {
-  for (const i in state.column) {
-    const column = state.column[i]
-    if (column.id == id) {
-      return {
-        data: column,
-        siblingCount: state.workflow.columnworkflowSet.length,
-        columnworkflows: state.workflow.columnworkflowSet,
-        columnOrder: state.workflow.columnworkflowSet.map(
-          (columnworkflowId) =>
-            getColumnWorkflowByID(state, columnworkflowId).data.column
-        )
-      }
-    }
+export type TGetComments = TComment[]
+
+export const getComments = ({
+  objectId,
+  objectType,
+  state
+}: {
+  objectId: number
+  objectType: CfObjectType
+  state: AppState
+}): TGetComments => {
+  if (objectType === CfObjectType.NODE) {
+    return state.node.find((item) => item.id === objectId).comments
   }
+
+  return []
   Utility.logger('no column found with id', id)
-}
-
-/*******************************************************
- * WEEK
- *******************************************************/
-export type TGetWeekByIDType = {
-  data: TWeek
-  columnOrder: number[]
-  siblingCount?: number
-  nodeweeks: any
-  workflowId?: number
-}
-
-// @todo why are weeks and terms handled differently
-export const getWeekById = (state: AppState, id: number): TGetWeekByIDType => {
-  for (const i in state.week) {
-    const week = { ...state.week[i] } // create a shallow copy to avoid mutations
-    if (week.id === id) {
-      if (week.isDropped === undefined) {
-        // Optionally handle this scenario through dispatching an action instead
-        // consider moving this logic to a reducer
-        week.isDropped = getDropped(id, 'week')
-      }
-
-      // redux should not be marshalling like this
-      return {
-        data: week,
-        columnOrder: state.workflow.columnworkflowSet.map(
-          (columnworkflowId) =>
-            getColumnWorkflowByID(state, columnworkflowId).data.column
-        ),
-        siblingCount: state.workflow.weekworkflowSet.length,
-        nodeweeks: state.nodeweek,
-        workflowId: state.workflow.id
-      }
-    }
-  }
-  Utility.logger('no week found with id', id)
-}
-
-/*******************************************************
- * TERM
- *******************************************************/
-export type TTermByID = {
-  data: any
-  columnOrder: any
-  nodesByColumn: any
-  nodeweeks: any
-}
-
-// @todo why are weeks and terms handled differently
-export const getTermById = (state: AppState, id: number): TTermByID => {
-  for (const i in state.week) {
-    const week = state.week[i]
-    if (week.id == id) {
-      if (week.isDropped === undefined) {
-        week.isDropped = getDropped(id, 'week')
-      }
-
-      const nodeweeks = week.nodeweekSet
-
-      const columnOrder = Utility.filterThenSortById<TWeek['nodeweekSet']>(
-        state.columnworkflow,
-        state.workflow.columnworkflowSet
-      ).map((columnworkflow) => columnworkflow.column)
-
-      const nodesByColumn = {}
-      for (var j = 0; j < columnOrder.length; j++) {
-        nodesByColumn[columnOrder[j]] = []
-      }
-      for (var j = 0; j < nodeweeks.length; j++) {
-        const nodeWeek = getNodeWeekByID(state, nodeweeks[j]).data
-        const node = getNodeByID(state, nodeWeek.node).data
-        if (node.column) {
-          nodesByColumn[node.column].push(nodeweeks[j])
-        } else {
-          nodesByColumn[nodesByColumn.keys()[0]].push(nodeweeks[j])
-        }
-      }
-      return {
-        data: week,
-        columnOrder: columnOrder,
-        nodesByColumn: nodesByColumn,
-        nodeweeks: state.nodeweek
-      }
-    }
-  }
-}
-
-// export const getParentWorkflowByID = (state, id) => {
-//   for (const i in state.parentWorkflow) {
-//     const workflow = state.parentWorkflow[i]
-//     if (workflow.id == id) return { data: workflow }
-//   }
-//   Utility.logger('failed to find parent workflow')
-// }
-
-/*******************************************************
- * NODE
- *******************************************************/
-export type TGetNodeById = {
-  data: TNode
-  column: any
-  objectSets: any
-}
-export const getNodeByID = (state: AppState, id: number): TGetNodeById => {
-  for (const i in state.node) {
-    const node = { ...state.node[i] } // Shallow copy to avoid mutations
-    if (node.id === id) {
-      if (node.isDropped === undefined) {
-        node.isDropped = getDropped(id, 'node') // Consider moving this to a reducer
-      }
-      return {
-        data: node,
-        column: state.column.find((column) => column.id === node.column),
-        objectSets: state.objectset
-      }
-    }
-  }
-  Utility.logger('failed to find node')
 }
 
 /*******************************************************
@@ -181,6 +97,7 @@ export type TGetOutcomeByID = {
   workflowId: number
 }
 
+// lol no
 export const getOutcomeByID = (
   state: AppState,
   id: number
@@ -279,25 +196,6 @@ export const getStrategyById = (state: AppState, id: number): TStrategyByID => {
 }
 
 /*******************************************************
- * WORKFLOW RELATIONS: WEEK-WORKFLOW
- *******************************************************/
-export type TGetWeekWorkflowById = {
-  data: TWeekworkflow
-  order: number[]
-}
-export const getWeekWorkflowByID = (
-  state: AppState,
-  id: number
-): TGetWeekWorkflowById => {
-  for (const i in state.weekworkflow) {
-    const weekworkflow = state.weekworkflow[i]
-    if (weekworkflow.id == id) {
-      return { data: weekworkflow, order: state.workflow.weekworkflowSet }
-    }
-  }
-}
-
-/*******************************************************
  * WORKFLOW RELATIONS: OUTCOME-WORKFLOW
  *******************************************************/
 export type TGetOutcomeWorkflowByID = {
@@ -318,135 +216,6 @@ export const getOutcomeWorkflowByID = (
     }
   }
   Utility.logger('no outcomeworkflow found with id', id)
-}
-
-/*******************************************************
- * WORKFLOW RELATIONS: COLUMN-WORKFLOW
- *******************************************************/
-export type TColumnWorkflowById = {
-  data?: TColumnworkflow
-  order?: number[]
-}
-
-export const getColumnWorkflowByID = (
-  state: AppState,
-  id: number
-): TColumnWorkflowById => {
-  for (const i in state.columnworkflow) {
-    const columnWorkflow = state.columnworkflow[i]
-    if (columnWorkflow.id === id) {
-      return {
-        data: columnWorkflow,
-        order: state.workflow.columnworkflowSet
-      }
-    }
-  }
-
-  Utility.logger('no columnWorkflow found with id', id)
-
-  return {
-    data: undefined,
-    order: undefined
-  }
-}
-
-/*******************************************************
- * NODE RELATIONS: NODE-WEEK
- *******************************************************/
-export type TGetNodeWeekById = {
-  data: any
-  order: any
-  column: any
-}
-export const getNodeWeekByID = (
-  state: AppState,
-  id: number
-): TGetNodeWeekById => {
-  for (const i in state.nodeweek) {
-    const nodeweek = state.nodeweek[i]
-    if (nodeweek.id === id) {
-      const node = getNodeByID(state, nodeweek.node).data
-      return {
-        data: nodeweek,
-        order: getWeekById(state, nodeweek.week).nodeweekSet,
-        column: node.column
-      }
-    }
-  }
-  Utility.logger('no nodeweek found with id', id)
-}
-
-/*******************************************************
- * NODE RELATIONS:  NODE-LINK
- *******************************************************/
-export type TGetNodeLinkById = {
-  data: TNodelink
-}
-export const getNodeLinkByID = (
-  state: AppState,
-  id: number
-): TGetNodeLinkById | void => {
-  for (const i in state.nodelink) {
-    const nodelink = state.nodelink[i]
-    if (nodelink.id === id) {
-      return { data: nodelink }
-    }
-  }
-  Utility.logger('no nodelink found with id', id)
-}
-
-/**
- * @todo normalize the arguments order
- * Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids.
- * These can later be pieced together in an iteration over the outcomes to create a list of ranks.
- *
- * @param id
- * @param rank
- * @param state
- * @returns {*|{rank: *, id: *}}
- */
-function findRootOutcome(
-  state: string | any[],
-  id: number,
-  rank: { parent: any; through: any }[]
-): any | { rank: any; id: any } {
-  for (let i = 0; i < state.length; i++) {
-    if (state[i].child === id) {
-      rank.unshift({ parent: state[i].parent, through: state[i].id })
-      return findRootOutcome(state, state[i].parent, rank)
-    }
-  }
-  return { id: id, rank: rank }
-}
-
-function findTopRank(state: AppState, outcome) {
-  for (let j = 0; j < state.outcomeworkflow.length; j++) {
-    if (state.outcomeworkflow[j].outcome === outcome.id) {
-      if (state.outcomeworkflow[j].workflow === state.workflow.id) {
-        return (
-          state.workflow.outcomeworkflowSet.indexOf(
-            state.outcomeworkflow[j].id
-          ) + 1
-        )
-      }
-      for (let k = 0; k < state.childWorkflow.length; k++) {
-        const index = state.childWorkflow[k].outcomeworkflowSet.indexOf(
-          state.outcomeworkflow[j].id
-        )
-        if (index >= 0) {
-          return index + 1
-        }
-      }
-      for (let k = 0; k < state.parentWorkflow.length; k++) {
-        const index = state.parentWorkflow[k].outcomeworkflowSet.indexOf(
-          state.outcomeworkflow[j].id
-        )
-        if (index >= 0) {
-          return index + 1
-        }
-      }
-    }
-  }
 }
 
 export const getChildWorkflowById = (state: AppState, id: number) => {
@@ -581,225 +350,3 @@ export type TSortedOutcomes = {
   objectset: TObjectSet
   outcomes: TOutcome[]
 }[]
-
-/**
- * Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
- * @param state
- * @param outcomeworkflowSet
- */
-export const getSortedOutcomesFromOutcomeWorkflowSet = (
-  state: AppState,
-  outcomeworkflowSet: number[]
-): TSortedOutcomes => {
-  const outcomeworkflows = Utility.filterThenSortById(
-    state.outcomeworkflow,
-    outcomeworkflowSet
-  )
-
-  const outcomeIds = outcomeworkflows.map(
-    (outcomeworkflow) => outcomeworkflow.outcome
-  )
-
-  // @todo clean up
-  const outcomes = Utility.filterThenSortById<TOutcome>(
-    state.outcome,
-    outcomeIds
-  )
-
-  if (outcomes.length === 0) {
-    return outcomes
-  }
-
-  // Create a new array of outcomes to avoid mutating the state
-  const updatedOutcomes = outcomes.map((outcome, index) => ({
-    ...outcome, // Shallow copy of each outcome
-    outcomeworkflow: outcomeworkflows[index].id,
-    throughNoDrag: outcomeworkflows[index].noDrag
-  }))
-
-  const baseTitle = ThemeHelper.capWords(_t('outcomes'))
-
-  const objectSets = state.objectset.filter(
-    (objectset) => objectset.term === updatedOutcomes[0].type
-  )
-
-  if (objectSets.length === 0) {
-    return [
-      {
-        objectset: {
-          title: baseTitle
-        },
-        outcomes: updatedOutcomes
-      }
-    ]
-  }
-
-  const uncategorized = updatedOutcomes.filter(
-    (outcome) => outcome.sets.length === 0
-  )
-
-  let categories = []
-  if (uncategorized.length > 0) {
-    categories = [
-      {
-        objectset: { title: _t('Uncategorized') },
-        outcomes: uncategorized
-      }
-    ]
-  }
-
-  categories = [
-    ...categories,
-    ...objectSets
-      .filter((objectset) => !objectset.hidden)
-      .map((objectset) => ({
-        objectset: objectset,
-        outcomes: updatedOutcomes.filter(
-          (outcome) => outcome.sets.indexOf(objectset.id) >= 0
-        )
-      }))
-  ]
-
-  Utility.logger('categories')
-  Utility.logger(categories)
-
-  return categories
-}
-
-//Used in the Alignment View
-// returns nothing
-// export const getDescendantOutcomes = (state, outcome, outcomes) => {
-//   if (outcome.depth >= 2) return
-//   const children = outcome.childOutcomeLinks
-//     .map((id) => getOutcomeOutcomeByID(state, id))
-//     .map(
-//       (outcomeoutcome) => getOutcomeByID(state, outcomeoutcome.data.child).data
-//     )
-//   for (let i = 0; i < children.length; i++) {
-//     outcomes.push(children[i].id)
-//     getDescendantOutcomes(state, children[i], outcomes)
-//   }
-// }
-/*******************************************************
- * HELPER FUNCTIONS FOR FOR STATE QUERIES
- *******************************************************/
-
-const getDropped = (objectId: number, objectType, depth = 1) => {
-  const defaultDrop = Constants.getDefaultDropState(objectId, objectType, depth)
-  try {
-    const storedDrop = JSON.parse(
-      window.localStorage.getItem(objectType + objectId)
-    )
-    if (storedDrop === null) {
-      return defaultDrop
-    }
-    return storedDrop
-  } catch (err) {
-    return defaultDrop
-  }
-}
-
-// @todo doesn't really belong here (not a state selector)
-export const getTableOutcomeNodeByID = (outcomeNodes, nodeId, outcomeId) => {
-  for (const i in outcomeNodes) {
-    const outcomeNode = outcomeNodes[i]
-    if (outcomeNode.outcome === outcomeId && outcomeNode.node === nodeId) {
-      return { data: outcomeNode }
-    }
-  }
-  return { data: null }
-}
-
-/**
- *  // @todo doesn't really belong here (not a state selector)
- * //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
- * @param outcomesUnsorted
- * @param outcomeworkflowsUnsorted
- * @param outcomeworkflowSet
- * @param objectSetsUnfiltered
- */
-export const getSortedOutcomeIDFromOutcomeWorkflowSet = (
-  outcomesUnsorted,
-  outcomeworkflowsUnsorted,
-  outcomeworkflowSet,
-  objectSetsUnfiltered
-) => {
-  // Get sorted outcome workflows based on the provided IDs
-  const outcomeworkflows = Utility.filterThenSortById(
-    outcomeworkflowsUnsorted,
-    outcomeworkflowSet
-  )
-
-  // Extract the outcome IDs from the sorted outcome workflows
-  const outcomeIds = outcomeworkflows.map(
-    (outcomeworkflow) => outcomeworkflow.outcome
-  )
-
-  // Filter and sort the outcomes based on the outcome IDs
-  const outcomes = Utility.filterThenSortById(outcomesUnsorted, outcomeIds)
-
-  // Create a new array to avoid mutating the original outcomes
-  const updatedOutcomes = outcomes.map((outcome, index) => ({
-    ...outcome, // Shallow copy of each outcome
-    outcomeworkflow: outcomeworkflows[index].id,
-    throughNoDrag: outcomeworkflows[index].noDrag
-  }))
-
-  // If there are no outcomes, return their IDs
-  if (updatedOutcomes.length === 0) {
-    return updatedOutcomes.map((outcome) => outcome.id)
-  }
-
-  // Prepare the base title for uncategorized outcomes
-  const baseTitle = ThemeHelper.capWords(_t('outcomes'))
-
-  // Filter the objectSets to match the first outcome's type
-  const objectSets = objectSetsUnfiltered.filter(
-    (objectset) => objectset.term === updatedOutcomes[0].type
-  )
-
-  // If no objectSets match, return the outcomes with the base title
-  if (objectSets.length === 0) {
-    return [
-      {
-        objectset: { title: baseTitle },
-        outcomes: updatedOutcomes.map((outcome) => outcome.id)
-      }
-    ]
-  }
-
-  // Separate uncategorized outcomes (those without sets)
-  const uncategorized = updatedOutcomes
-    .filter((outcome) => outcome.sets.length === 0)
-    .map((outcome) => outcome.id)
-
-  // Initialize categories
-  let categories = []
-  if (uncategorized.length > 0) {
-    categories = [
-      {
-        objectset: { title: _t('Uncategorized') },
-        outcomes: uncategorized
-      }
-    ]
-  }
-
-  // Add categorized outcomes
-  categories = [
-    ...categories,
-    ...objectSets
-      .filter((objectset) => !objectset.hidden)
-      .map((objectset) => ({
-        objectset: objectset,
-        outcomes: updatedOutcomes
-          .filter((outcome) => outcome.sets.indexOf(objectset.id) >= 0)
-          .map((outcome) => outcome.id)
-      }))
-  ]
-
-  Utility.logger('getSortedOutcomeIDFromOutcomeWorkflowSet categories')
-  Utility.logger(categories)
-
-  // Return the final categories
-  return categories
-}

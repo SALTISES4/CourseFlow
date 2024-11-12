@@ -5,7 +5,7 @@ import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import CompletionImg from '@cfComponents/UIPrimitives/CompletionIng'
 import { TOutcomeNodeByID, getOutcomeNodeByID } from '@cfFindState'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/SimpleOutcome'
+import SimpleOutcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/components/SimpleOutcome'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
@@ -119,7 +119,7 @@ class OutcomeNodeUnconnected extends React.Component<PropsType> {
         buttonIcon={<DeleteIcon />}
         buttonClass="delete-self-button"
         titleText={_t('Delete')}
-        handleClick={this.deleteSelf.bind(this, data)}
+        onClickHandler={this.deleteSelf.bind(this, data)}
       />
     )
   }

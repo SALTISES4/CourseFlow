@@ -43,7 +43,8 @@ interface CourseflowAppGlobals {
 
   // consumed by the current view (home, profile settings, etc)
   tinyLoader: TinyLoader // @todo this should be deprecated
-  makeDropdown: ( // @todo this should be deprecated
+  makeDropdown: (
+    // @todo this should be deprecated
     item: HTMLElement | HTMLDivElement | jQuery<HTMLDivElement> | string, // @todo ...
     item2?: HTMLElement | HTMLDivElement | jQuery<HTMLDivElement> | string // @todo ...
   ) => void
@@ -55,7 +56,7 @@ interface Path {
   update_path: UpdatePath
   /* SORTED */
   html: HTMLPaths
-//   json_api: JSONAPIPaths
+  //   json_api: JSONAPIPaths
   static_assets: GenericPath
 }
 

@@ -1,7 +1,10 @@
 import * as Constants from '@cf/utility/constants'
-import { TGetNodeById, getNodeByID } from '@cfFindState'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { TGetNodeById } from '@cfFindState'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
+import clsx from 'clsx'
 import * as React from 'react'
 import { useRef } from 'react'
 import { useSelector } from 'react-redux'
@@ -18,28 +21,31 @@ type PropsType = {
 const NodeOutcomeView = ({ objectId }: PropsType) => {
   const mainDiv = useRef<HTMLDivElement>(null)
   const node = useSelector<AppState, TGetNodeById>((state: AppState) =>
-    getNodeByID(state, objectId)
+    selectNodeById(state, objectId)
   )
 
   const style: React.CSSProperties = {
-    backgroundColor: Constants.getColumnColour({
+    backgroundColor: ThemeHelper.getColumnColour({
       columnType: node.data.column,
       colour: 1
     })
   }
 
-  const cssClasses = [
-    'node column-' +
-      node.data.column +
-      ' ' +
-      Constants.nodeKeys[node.data.nodeType],
-    node.data.isDropped ? 'dropped' : '',
-    node.data.lock ? 'locked locked-' + node.data.lock.userId : ''
-  ].join(' ')
-
   return (
     <div ref={mainDiv} className="table-cell nodewrapper">
-      <div className={cssClasses} style={style} id={String(node.data.id)}>
+      <div
+        className={clsx(
+          'node',
+          `column-${node.data.column}`,
+          `${Constants.nodeKeys[node.data.nodeType]}`,
+          {
+            dropped: node.data.isDropped,
+            [`locked locked-${node.data.lock.userId}`]: node.data.lock
+          }
+        )}
+        style={style}
+        id={String(node.data.id)}
+      >
         <div className="node-top-row">
           <NodeTitle node={node.data} />
         </div>
@@ -86,7 +92,7 @@ export default NodeOutcomeView
 //     const data = this.props.data
 //
 //     const style: React.CSSProperties = {
-//       backgroundColor: Constants.getColumnColour(this.props.column)
+//       backgroundColor: ThemeHelper.gerColumnColour(this.props.column)
 //     }
 //     const cssClasses = [
 //       'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],

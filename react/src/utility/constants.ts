@@ -221,23 +221,6 @@ export const getDefaultDropState = (objectId, objectType, depth = 1) => {
 }
 
 /**
- * Get the colour from a column
- **/
-export function getColumnColour({
-  columnType,
-  colour
-}: {
-  columnType: number
-  colour: number
-}): string {
-  if (colour === null && columnType) {
-    return defaultColumnSettings[columnType].colour
-  } else {
-    return '#' + ('000000' + colour?.toString(16)).slice(-6)
-  }
-}
-
-/**
  * get all possible object sets
  **/
 export const objectSetsTypes = {

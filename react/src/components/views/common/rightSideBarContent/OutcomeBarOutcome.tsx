@@ -282,7 +282,7 @@ export class OutcomeBarOutcomeUnconnected<
         {data.depth < 2 && data.childOutcomeLinks.length > 0 && (
           <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
             <div className="outcome-drop-img">
-             <ArrowDropDownCircleIcon />
+              <ArrowDropDownIcon />
             </div>
             <div className="outcome-drop-text">{droptext}</div>
           </div>

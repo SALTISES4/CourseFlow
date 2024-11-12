@@ -17,7 +17,7 @@ import {
   useInsertSiblingMutation
 } from '@XMLHTTP/API/workspace.rtk'
 import * as React from 'react'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 type ActionItemArgs = {
   id: number
@@ -145,7 +145,7 @@ export const DuplicateSelfButton = (data: ActionItemWithParentArgs) => {
       buttonIcon={<ContentCopyIcon />}
       buttonClass="duplicate-self-button"
       titleText={_t('Duplicate')}
-      handleClick={() => duplicateSelf(data)}
+      onClickHandler={() => duplicateSelf(data)}
     />
   )
 }
@@ -158,7 +158,7 @@ export const InsertChildButton = (data: ActionItemArgs) => {
     useInsertChildMutation()
   const { onError, onSuccess } = useGenericMsgHandler()
 
-  const clickHandler = async () => {
+  const onClickHandler = async () => {
     try {
       const resp = await mutate({
         payload: {
@@ -175,7 +175,7 @@ export const InsertChildButton = (data: ActionItemArgs) => {
       buttonIcon={<QueueIcon />}
       buttonClass="insert-child-button"
       titleText={_t('Insert Child')}
-      handleClick={clickHandler}
+      onClickHandler={onClickHandler}
     />
   )
 }
@@ -188,7 +188,7 @@ export const InsertSiblingButton = (data: ActionItemWithParentArgs) => {
     useInsertSiblingMutation()
   const { onError, onSuccess } = useGenericMsgHandler()
 
-  const clickHandler = async () => {
+  const onClickHandler = async () => {
     try {
       const resp = await mutate({
         payload: {
@@ -208,7 +208,7 @@ export const InsertSiblingButton = (data: ActionItemWithParentArgs) => {
       buttonIcon={<QueueIcon />}
       buttonClass="insert-sibling-button"
       titleText={_t('Insert Below')}
-      handleClick={clickHandler}
+      onClickHandler={onClickHandler}
     />
   )
 }
@@ -230,7 +230,7 @@ export const DeleteSelfButton = ({
     useArchiveMutation()
   const { onError, onSuccess } = useGenericMsgHandler()
 
-  const clickHandler = async () => {
+  const onClickHandler = async () => {
     try {
       const resp = await mutate({ id, payload: { objectType } }).unwrap()
       onSuccess(resp)
@@ -244,7 +244,7 @@ export const DeleteSelfButton = ({
       buttonIcon={altIcon || <DeleteIcon />}
       buttonClass="delete-self-button"
       titleText={_t('Delete')}
-      handleClick={clickHandler}
+      onClickHandler={onClickHandler}
     />
   )
 }
@@ -262,7 +262,7 @@ export const AddCommentingButton = ({
         buttonIcon={<AddCommentIcon />}
         buttonClass="comment-button"
         titleText={_t('Comments')}
-        handleClick={() => {
+        onClickHandler={() => {
           setShow(!show)
         }}
       />
@@ -285,6 +285,13 @@ export const HoverMenu = ({
 }) => {
   const [show, setShow] = useState<boolean>(false)
 
+  const memoizedCommentBox = useMemo(
+    () => (
+      <CommentBox id={objectId} setShow={setShow} objectType={objectType} />
+    ),
+    [objectId, objectType]
+  )
+
   return (
     <>
       <div className="mouseover-actions">
@@ -305,12 +312,11 @@ export const HoverMenu = ({
         )}
         {canComment && <AddCommentingButton show={show} setShow={setShow} />}
       </div>
-      <CommentBox
-        id={objectId}
-        show={show}
-        setShow={setShow}
-        objectType={objectType}
-      />
+
+      {/*{show && (*/}
+      {/*  <CommentBox id={objectId} setShow={setShow} objectType={objectType} />*/}
+      {/*)}*/}
+      {show && memoizedCommentBox}
     </>
   )
 }

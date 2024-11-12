@@ -1,6 +1,5 @@
 import { UserContext } from '@cf/context/userContext'
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
-import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import Utility from '@cf/utility/Utility.class'
 import { newNodeQuery } from '@XMLHTTP/API/create'
@@ -8,44 +7,38 @@ import * as React from 'react'
 
 // import $ from 'jquery'
 
-type OwnProps = {
+type Args = {
   objectId: number
   parentId: number
 }
-export type EditableComponentWithSortingProps = OwnProps
-
-type StateType = {}
-export type EditableComponentWithSortingState = StateType
 
 /**
- * Extends the React component to add a few features that are used in a large number of components
+ * SortableDragAndDropManager
  */
-class EditableComponentWithSorting<
-  P extends OwnProps,
-  S extends StateType
-> extends React.Component<P, S> {
+class SortableDragAndDropManager {
   static contextType = WorkflowConfigContext
   static userContextType = UserContext
 
   declare context: React.ContextType<typeof WorkflowConfigContext>
   declare userContext: React.ContextType<typeof UserContext>
 
-  constructor(props: P) {
-    super(props)
-    this.state = {} as S
+  protected args: Args
+
+  constructor(args: Args) {
+    this.args = args
   }
 
   /*******************************************************
-   * PLACHOLDERS
+   * PLACEHOLDERS
+   * - this class is not going to stay for long, so we'll leave the half implemented polymorphism alone for now (note the violation of Sub )
+   * - methods defined as 'stubs', then implemented in child
    *******************************************************/
 
-  // @todo this is an 'abstract like' placholder
-  // this needs to be untangled
-  sortableColumnChangedFunction(_id, _deltaX, _oldColumn) {
+  onColumnChanged(_id, _deltaX, _oldColumn) {
     Utility.logger('column change not sent')
   }
 
-  sortableMovedFunction(
+  onMovedIn(
     _dragItemId: number,
     _newIndex: number,
     _draggableType: any,
@@ -57,7 +50,7 @@ class EditableComponentWithSorting<
     )
   }
 
-  sortableMovedOutFunction(
+  onMovedOut(
     _dragItemId: number,
     _newIndex: number,
     _draggableType: any,
@@ -69,7 +62,7 @@ class EditableComponentWithSorting<
     )
   }
 
-  makeSortableNode(
+  makeSortableElement(
     sortableBlock: JQuery<HTMLElement>,
     parentId:
       | string
@@ -77,20 +70,13 @@ class EditableComponentWithSorting<
       | ((this: any, index: number, attr: string) => string | number | void),
     draggableType: string,
     draggableSelector: string,
-    axis = false,
+    axis: string = null,
     grid: boolean | number[] = false, // @todo grid is not used
     restrictTo = null,
     handle: string | boolean = false, // @todo review this union
     containment = '.workflow-container'
   ) {
-    // This is because we moved workflow out of context
-    // but we aren't  going to wrap this one yet
-    // if (this.context.permissions.workflowPermissions.readOnly) {
-
-    if (false) {
-      return
-    }
-
+    // lift condition into calling statement
     let cursorAt = {}
     if (draggableType == 'weekworkflow') {
       cursorAt = { top: 20 }
@@ -99,10 +85,8 @@ class EditableComponentWithSorting<
       cursorAt = { top: 20, left: 50 }
     }
 
-    const props = this.props
     sortableBlock.draggable({
       containment: containment,
-      // @ts-ignore
       axis: axis,
       cursor: 'move',
       cursorAt: cursorAt,
@@ -124,92 +108,47 @@ class EditableComponentWithSorting<
           return false
         }
 
-        // if (
-        //   dragItem.children('.locked:not(.locked-' + this.userContext.id + ')')
-        //     .length > 0
-        // ) {
-        //   e.preventDefault()
-        //   return false
-        // }
-
         $('.workflow-canvas').addClass('dragging-' + draggableType)
         $(draggableSelector).addClass('dragging')
         dragItem.attr('data-old-parent-id', parentId)
         dragItem.attr('data-restrict-to', restrictTo)
         const oldIndex = dragItem.prevAll().length
         dragItem.attr('data-old-index', oldIndex)
-
-        this.context.selectionManager.changeSelection({
-          evt: null,
-          newSelection: null
-        })
-
-        this.startSortFunction(
-          parseInt(dragItem.attr('data-child-id')),
-          draggableType
-        )
       },
       drag: (e, ui) => {
-        // Utility.logger("in drag")
-        // Utility.logger(ui.helper)
-        // Utility.logger(ui.helper.offset())
         if (draggableType == 'nodeweek') {
           const newTarget = $('#' + $(e.target).attr('id') + draggableSelector)
-          // Utility.logger("is nodeweek",
-          //   handle,
-          //   e.target,
-          //   draggableSelector,
-          //   $('#' + $(e.target).attr('id') + draggableSelector),
-          //   $('#' + $(e.target).attr('id') + draggableSelector)
-          //       // @ts-ignore
-          //       .children(handle),
-          //   $('#' + $(e.target).attr('id') + draggableSelector)
-          //       // @ts-ignore
-          //       .children(handle).first()
-          // )
-          // Utility.logger("here is the handle:",handle,"that was the handle")
-          // Utility.logger("here is the selector:",draggableSelector,"that was the selector")
-          // Utility.logger(
-          //   $('#' + $(e.target).attr('id') + draggableSelector)
-          //       // @ts-ignore
-          //       .children(handle)
-          //       .first()
-          //       .offset()
-          // )
           const deltaX = Math.round(
             (ui.helper.offset().left -
               $('#' + $(e.target).attr('id') + draggableSelector)
-                // @ts-ignore
                 .children(handle)
                 .first()
                 .offset().left) /
               Constants.columnwidth
           )
+
           if (deltaX != 0) {
             const childId = parseInt($(e.target).attr('data-child-id'))
 
             // @todo sortableColumnChangedFunction is only defined in week.tsx?
 
-            this.sortableColumnChangedFunction(
+            this.onColumnChanged(
               childId,
               deltaX,
               parseInt(newTarget.attr('data-column-id'))
             )
           }
         }
-        //$("#"+$(e.target).attr("id")+draggableSelector).addClass("selected");
       },
       stop: (e, ui) => {
         $('.workflow-canvas').removeClass('dragging-' + draggableType)
         $(draggableSelector).removeClass('dragging')
         $(document).triggerHandler(draggableType + '-dropped')
-        //$("#"+$(e.target).attr("id")+draggableSelector).removeClass("selected");
       }
     })
 
     sortableBlock.droppable({
       tolerance: 'pointer',
-      // @ts-ignore
       droppable: '.node-ghost',
       over: (e, ui) => {
         const dropItem = $(e.target)
@@ -218,10 +157,14 @@ class EditableComponentWithSorting<
         const newIndex = dropItem.prevAll().length
         const newParentId = parseInt(dropItem.parent().attr('id'))
 
+        // fix this domain specific targetting
         if (draggableType == 'nodeweek' && dragItem.hasClass('new-node')) {
           dragHelper.addClass('valid-drop')
           dropItem.addClass('new-node-drop-over')
-        } else if (dragItem.is(draggableSelector)) {
+          return
+        }
+
+        if (dragItem.is(draggableSelector)) {
           const oldParentId = parseInt(dragItem.attr('data-old-parent-id'))
           const oldIndex = parseInt(dragItem.attr('data-old-index'))
 
@@ -229,7 +172,7 @@ class EditableComponentWithSorting<
             const childId = parseInt(dragItem.attr('data-child-id'))
 
             if (restrictTo && dragItem.attr('data-restrict-to') != restrictTo) {
-              this.sortableMovedOutFunction(
+              this.onMovedOut(
                 parseInt(dragItem.attr('id')),
                 newIndex,
                 draggableType,
@@ -239,11 +182,8 @@ class EditableComponentWithSorting<
             } else {
               dragItem.attr('data-old-parent-id', newParentId)
               dragItem.attr('data-old-index', newIndex)
-              Utility.logger(
-                "About to call sortablemovedfunction, here's the drag item",
-                dragItem
-              )
-              this.sortableMovedFunction(
+
+              this.onMovedIn(
                 parseInt(dragItem.attr('id')),
                 newIndex,
                 draggableType,
@@ -251,11 +191,10 @@ class EditableComponentWithSorting<
                 childId
               )
             }
-            this.lockChild(childId, true, draggableType as CfObjectType)
           }
-        } else {
-          //                    Utility.logger(dragItem);
+          return
         }
+        Utility.logger(dragItem)
       },
       out: (e, ui) => {
         const dragItem = ui.draggable
@@ -275,11 +214,9 @@ class EditableComponentWithSorting<
         // @todo HACK, this is being used to bypass react and pass information around the DOM
         if (draggableType == 'nodeweek' && dragItem.hasClass('new-node')) {
           newNodeQuery(
-            this.props.objectId,
+            this.args.objectId,
             newIndex,
-            // @ts-ignore
             dragItem[0].dataDraggable.column,
-            // @ts-ignore
             dragItem[0].dataDraggable.columnType,
             (responseData) => {}
           )
@@ -287,41 +224,6 @@ class EditableComponentWithSorting<
       }
     })
   }
-
-  stopSortFunction() {}
-
-  startSortFunction(id, throughType) {
-    this.lockChild(id, true, throughType)
-  }
-
-  lockChild(id: number, lock: boolean, throughType: CfObjectType) {
-    let objectType: CfObjectType
-
-    if (throughType == 'nodeweek') {
-      objectType = CfObjectType.NODE
-    }
-    if (throughType == 'weekworkflow') {
-      objectType = CfObjectType.WEEK
-    }
-    if (throughType == 'columnworkflow') {
-      objectType = CfObjectType.COLUMN
-    }
-    if (throughType == 'outcomeoutcome') {
-      objectType = CfObjectType.OUTCOME
-    }
-    if (throughType == 'outcomeworkflow') {
-      objectType = CfObjectType.OUTCOME
-    }
-
-    this.context.editableMethods.lockUpdate(
-      {
-        objectId: id,
-        objectType: objectType
-      },
-      Constants.lockTimes.move,
-      lock
-    )
-  }
 }
 
-export default EditableComponentWithSorting
+export default SortableDragAndDropManager

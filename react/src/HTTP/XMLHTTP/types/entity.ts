@@ -101,20 +101,18 @@ export type EWorkflow = {
   ponderationTheory: number
 
   timeGeneralHours: number
-  timeRequired: null
+  timeRequired: number | null
   timeSpecificHours: number
   timeUnits: number
 
-  weekworkflowSet: number[]
-  columnworkflowSet: number[]
-  outcomeworkflowSet: any[]
-
   tableType: number
-
   url: string
   editCount?: number
-  defaultColumns: number[]
   defaultCustomColumn: number
+  defaultColumns: number[]
+  weeks: number[]
+  columns: number[]
+  outcomes: number[]
 }
 
 /*******************************************************
@@ -124,15 +122,16 @@ export type EWeek = {
   id: number
   deleted: boolean
   deletedOn: EDate
+  isStrategy: boolean
   title: string | null
   description: string | null
   default: boolean
-  nodeweekSet: number[]
   weekType: number // @todo try to check this
   weekTypeDisplay: string
-  isStrategy: boolean
   strategyClassification: number
-  comments: any[] // @todo
+  order: number
+  comments: number[]
+  nodes: number[]
 }
 
 export type EColumn = {
@@ -144,9 +143,9 @@ export type EColumn = {
   colour: null
   columnType: number
   columnTypeDisplay: string
-  comments: any[]
   icon: string | null
   visible: boolean
+  comments: number[]
 }
 
 export type ENode = {
@@ -159,8 +158,6 @@ export type ENode = {
   columnworkflow: number
   contextClassification: number
   taskClassification: number
-  outcomenodeSet: any[]
-  outcomenodeUniqueSet: any[]
   outgoingLinks: any[]
   nodeType: number
   nodeTypeDisplay: NodeTypeDisplay
@@ -173,12 +170,16 @@ export type ENode = {
   timeGeneralHours: number
   timeSpecificHours: number
   representsWorkflow: boolean
-  linkedWorkflow: any
+  linkedWorkflow: number
   linkedWorkflowData: any
-  comments: any[]
-  sets: any[]
   hasAssignment: boolean
   isDropped?: boolean
+  order: number
+  week: number
+  sets: any[] // ..???
+  outcomenodeSet: number[]
+  outcomenodeUniqueSet: number[]
+  comments: number[]
 }
 
 export type EObjectSet = {
@@ -236,16 +237,18 @@ export type EOutcome = {
   description: string
 
   code: string
+
+  depth: number
+  type: string
+  outcomeworkflow: number
+  isDropped: boolean
+  comments: number[]
+  sets: number[]
   childOutcomeLinks: number[]
   outcomeHorizontalLinks: number[]
   outcomeHorizontalLinksUnique: number[]
-  depth: number
-  type: string
-  comments: any[]
-  sets: number[]
-  outcomeworkflow: number
-  isDropped: boolean
 }
+
 export type EOutcomeWorkflow = {
   id: number
   rank: number

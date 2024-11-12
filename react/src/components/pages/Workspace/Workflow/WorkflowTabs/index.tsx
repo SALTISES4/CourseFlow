@@ -92,7 +92,7 @@ const WorkflowTabs = () => {
 
   const ViewBar = () => (
     <>
-      <JumpToMenu weekWorkflowSet={workflow.weekworkflowSet} />
+      <JumpToMenu weekWorkflowSet={workflow.weeks} />
       <ExpandCollapseMenu />
     </>
   )

@@ -1,4 +1,4 @@
-import Utility from "@cf/utility/Utility.class";
+import Utility from '@cf/utility/Utility.class'
 import useEditable from '@cfPages/Workspace/Workflow/Sidebar/hooks/useEditable'
 import {
   EditableDataType,

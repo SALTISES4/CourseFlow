@@ -9,7 +9,6 @@ import {
 } from '@XMLHTTP/types'
 import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
-import { produce } from 'immer'
 import { generatePath } from 'react-router-dom'
 
 import { Verb, cfApi } from './api'

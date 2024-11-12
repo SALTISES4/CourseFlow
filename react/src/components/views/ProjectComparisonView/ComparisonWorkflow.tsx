@@ -1,9 +1,6 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import EditableComponentWithSorting, {
-  EditableComponentWithSortingState
-} from '@cfEditableComponents/EditableComponentWithSorting'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
 import WeekWorkflowComparison from '@cfViews/ProjectComparisonView/WeekWorkflowComparison'
@@ -21,14 +18,14 @@ type OwnProps = {
   objectId: number
   parentId: number
 }
-type StateProps = EditableComponentWithSortingState
+// type StateProps = EditableComponentWithSortingState
+// type PropsType = ConnectedProps & OwnProps
 type PropsType = ConnectedProps & OwnProps
 
+type StateProps = {}
+
 //Basic component representing the workflow
-class WorkflowUnconnected extends EditableComponentWithSorting<
-  PropsType,
-  StateProps
-> {
+class WorkflowUnconnected extends React.Component<PropsType, StateProps> {
   static contextType = WorkflowConfigContext
 
   constructor(props: PropsType) {

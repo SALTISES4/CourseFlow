@@ -56,35 +56,6 @@ from course_flow.sockets.emitters import WorkflowUpdateEmitter
 
 
 class WorkflowEndpoint:
-    #########################################################
-    # GET DATA
-    #########################################################
-    # @staticmethod
-    # @permission_classes([UserCanViewMixin])
-    # @login_required
-    # @api_view(["GET"])
-    # def fetch_detail(request: Request, pk: int) -> Response:
-    #     current_user = request.user
-    #
-    #     try:
-    #         workflow = Workflow.objects.get(pk=pk)
-    #     except Workflow.DoesNotExist:
-    #         return Response({"detail": "Workflow not found"}, status=404)
-    #
-    #     user_permission = DAO.get_user_permission(workflow, current_user)
-    #
-    #     context = WorkflowService.get_workflow(workflow, current_user)
-    #
-    #     data_package = {
-    #         "user_permission": user_permission,
-    #         "workflow_data_package": context.get("data_package"),
-    #     }
-    #
-    #     return Response(
-    #         {"action": "GET", "data_package": data_package},
-    #         status=status.HTTP_200_OK,
-    #     )
-
     @staticmethod
     @api_view(["GET"])
     # #@user_can_view("pk") # @todo poorly designed
@@ -99,17 +70,17 @@ class WorkflowEndpoint:
         try:
             data_package = WorkflowService.get_workflow_full(workflow.get_subclass(), current_user)
         except AttributeError as e:
-            logger.exception("log of the errors ")
+            logger.exception("log errors:")
             return Response(
                 {
-                    "message": "error fetching workflow",
+                    "message": "Error fetching workflow.",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         return Response(
             {
-                "message": "Workflow fetched successfully!",
+                "message": "Workflow fetched successfully.",
                 "data_package": data_package,
             },
             status=status.HTTP_200_OK,
@@ -128,12 +99,12 @@ class WorkflowEndpoint:
             data_package = get_parent_outcome_data(workflow.get_subclass(), request.user)
 
         except AttributeError as e:
-            logger.exception("An error occurred")
-            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
+            logger.exception("An error occurred,")
+            return Response({"message": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
-                "message": "Workflow fetched successfully!",
+                "message": "Workflow fetched successfully.",
                 "data_package": data_package,
             },
             status=status.HTTP_200_OK,

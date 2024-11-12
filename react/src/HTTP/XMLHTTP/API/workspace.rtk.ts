@@ -1,6 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType, LibraryObjectType, WorkspaceType } from '@cf/types/enum'
-import Utility from "@cf/utility/Utility.class";
+import Utility from '@cf/utility/Utility.class'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'

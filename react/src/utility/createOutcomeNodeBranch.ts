@@ -1,5 +1,5 @@
 import Utility, { _t } from '@cf/utility/Utility.class'
-import { getTableOutcomeNodeByID } from '@cfFindState'
+import { getTableOutcomeNodeById } from '@cfRedux/selectors/helpers'
 
 export type CreateOutcomeNodeBranchType = {
   id: any
@@ -60,7 +60,7 @@ export function createOutcomeNodeBranch(props, outcomeId, nodecategory) {
         const outcomenodesGroup = []
         for (let j = 0; j < category.nodes.length; j++) {
           const node = category.nodes[j]
-          const outcomenode = getTableOutcomeNodeByID(
+          const outcomenode = getTableOutcomeNodeById(
             props.outcomenode,
             node,
             outcomeId
@@ -178,7 +178,7 @@ function createOutcomeNodesGroup(
 }
 
 function getOutcomeNode(props, nodeId, outcomeId) {
-  return getTableOutcomeNodeByID(props.outcomenode, nodeId, outcomeId).data
+  return getTableOutcomeNodeById(props.outcomenode, nodeId, outcomeId).data
 }
 
 function createOutcomeNodeForChildren(nodeId, children, categoryIndex) {

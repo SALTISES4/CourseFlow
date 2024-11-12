@@ -1,4 +1,4 @@
-import Utility from "@cf/utility/Utility.class";
+import Utility from '@cf/utility/Utility.class'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'

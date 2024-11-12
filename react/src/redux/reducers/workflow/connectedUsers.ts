@@ -64,7 +64,6 @@ export default function columnReducer(
       return [...state, action.payload.newModel]
 
     case ColumnActions.CHANGE_FIELD:
-
       return state.map((item) =>
         item.id === action.payload.id
           ? { ...item, ...action.payload.json }

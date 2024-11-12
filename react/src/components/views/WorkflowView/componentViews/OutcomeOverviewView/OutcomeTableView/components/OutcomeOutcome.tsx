@@ -1,12 +1,11 @@
 import { CfObjectType } from '@cf/types/enum.js'
-import { TOutcomeOutcomeByID, getOutcomeOutcomeById } from '@cfFindState'
+import { getOutcomeOutcomeById } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
-import * as React from 'react'
-import { connect } from 'react-redux'
+import React from 'react'
+import { useSelector } from 'react-redux'
 
 import Outcome from './Outcome'
 
-type ConnectedProps = TOutcomeOutcomeByID
 type OwnProps = {
   objectId: number
   parentId: any
@@ -15,55 +14,103 @@ type OwnProps = {
   completionStatusFromParents: any
   outcomesType: any
 }
-type PropsType = ConnectedProps & OwnProps
 
-/**
- * Outcome to child outcome link in the table view.
- * Not currently used
- */
-class TableOutcomeOutcomeUnconnected extends React.Component<PropsType> {
-  private objectType: CfObjectType
-  constructor(props: PropsType) {
-    super(props)
-    this.objectType = CfObjectType.OUTCOMEOUTCOME
-  }
+const TableOutcomeOutcome: React.FC<OwnProps> = ({
+  objectId,
+  parentId,
+  nodecategory,
+  updateParentCompletion,
+  completionStatusFromParents,
+  outcomesType
+}: OwnProps) => {
+  const data = useSelector((state: AppState) =>
+    getOutcomeOutcomeById(state, objectId)
+  )
+  const objectType = CfObjectType.OUTCOMEOUTCOME
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data
-
-    //Child outcomes. See comment in models/outcome.py for more info.
-    return (
-      // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> this.mainDiv is not defined
-      <div className="outcome-outcome" id={String(data.id)}>
-        <Outcome
-          // renderer={this.props.renderer}
-          objectId={data.child}
-          parentId={this.props.parentId}
-          throughParentId={data.id}
-          nodecategory={this.props.nodecategory}
-          updateParentCompletion={this.props.updateParentCompletion}
-          completionStatusFromParents={
-            this.props.completionStatusFromParents
-          }
-          outcomesType={this.props.outcomesType}
-        />
-      </div>
-    )
-  }
+  return (
+    <div className="outcome-outcome" id={String(data.id)}>
+      <Outcome
+        objectId={data.child}
+        parentId={parentId}
+        throughParentId={data.id}
+        nodecategory={nodecategory}
+        updateParentCompletion={updateParentCompletion}
+        completionStatusFromParents={completionStatusFromParents}
+        outcomesType={outcomesType}
+      />
+    </div>
+  )
 }
-const mapStateToProps = (
-  state: AppState,
-  ownProps: OwnProps
-): TOutcomeOutcomeByID => {
-  return getOutcomeOutcomeById(state, ownProps.objectId)
-}
-
-const TableOutcomeOutcome = connect<ConnectedProps, object, OwnProps, AppState>(
-  mapStateToProps,
-  null
-)(TableOutcomeOutcomeUnconnected)
 
 export default TableOutcomeOutcome
+
+// import { CfObjectType } from '@cf/types/enum.js'
+// import { TOutcomeOutcomeByID, getOutcomeOutcomeById } from '@cfFindState'
+// import { AppState } from '@cfRedux/types/type'
+// import * as React from 'react'
+// import { connect } from 'react-redux'
+//
+// import Outcome from './Outcome'
+//
+// type ConnectedProps = TOutcomeOutcomeByID
+// type OwnProps = {
+//   objectId: number
+//   parentId: any
+//   nodecategory: any
+//   updateParentCompletion: any
+//   completionStatusFromParents: any
+//   outcomesType: any
+// }
+// type PropsType = ConnectedProps & OwnProps
+//
+// /**
+//  * Outcome to child outcome link in the table view.
+//  * Not currently used
+//  */
+// class TableOutcomeOutcomeUnconnected extends React.Component<PropsType> {
+//   private objectType: CfObjectType
+//   constructor(props: PropsType) {
+//     super(props)
+//     this.objectType = CfObjectType.OUTCOMEOUTCOME
+//   }
+//
+//   /*******************************************************
+//    * RENDER
+//    *******************************************************/
+//   render() {
+//     const data = this.props.data
+//
+//     //Child outcomes. See comment in models/outcome.py for more info.
+//     return (
+//       // <div className="outcome-outcome" id={data.id} ref={this.mainDiv}> this.mainDiv is not defined
+//       <div className="outcome-outcome" id={String(data.id)}>
+//         <Outcome
+//           // renderer={this.props.renderer}
+//           objectId={data.child}
+//           parentId={this.props.parentId}
+//           throughParentId={data.id}
+//           nodecategory={this.props.nodecategory}
+//           updateParentCompletion={this.props.updateParentCompletion}
+//           completionStatusFromParents={
+//             this.props.completionStatusFromParents
+//           }
+//           outcomesType={this.props.outcomesType}
+//         />
+//       </div>
+//     )
+//   }
+// }
+// const mapStateToProps = (
+//   state: AppState,
+//   ownProps: OwnProps
+// ): TOutcomeOutcomeByID => {
+//   return getOutcomeOutcomeById(state, ownProps.objectId)
+// }
+//
+// const TableOutcomeOutcome = connect<ConnectedProps, object, OwnProps, AppState>(
+//   mapStateToProps,
+//   null
+// )(TableOutcomeOutcomeUnconnected)
+//
+// export default TableOutcomeOutcome

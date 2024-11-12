@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from course_flow.models import Activity, Course, Notification
 from course_flow.models.objectset import ObjectSet
 from course_flow.models.relations import NodeLink, NodeWeek
@@ -397,26 +399,40 @@ class WorkflowService:
         SerializerClass = serializer_lookups_shallow[workflow.type]
 
         # Fetch related objects
-        columnworkflows = workflow.columnworkflow_set.all()
-        weekworkflows = workflow.weekworkflow_set.all()
+        #        columnworkflows = workflow.columnworkflow_set.all()
+        #        weekworkflows = workflow.weekworkflow_set.all()
+        #        nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
         columns = workflow.columns.all()
-        weeks = workflow.weeks.all()
-        nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
+        weeks = workflow.weeks.all().prefetch_related("comments", "weekworkflow_set")
         nodes = Node.objects.filter(week__workflow=workflow).prefetch_related(
-            "outcomenode_set", "liveassignment_set"
+            "outcomenode_set", "comments", "nodeweek_set"
         )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
 
-        # Initialize data
+        # this is not well constructed
+        # during phase of model rework, go back to a combined query
+        # i.e.
+        #       workflow = Workflow.objects.filter(id=workflow_id).prefetch_related(
+        #     'columnworkflow_set',
+        #     'weekworkflow_set',
+        #     'columns',
+        #     'weeks',
+        #     'weeks__nodeweeks',
+        #     'weeks__nodes__outcomenode_set',
+        #       ...
+        #     'weeks__nodes__nodelinks',
+        # ).select_related().first()
+        # etc
+        # now, we could keep the model lookup distributed like this IF we tried to implement lazy/async querying
         data = {
             "workflow": SerializerClass(workflow, context={"user": user}).data,
-            "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflows, many=True).data,
             "column": ColumnSerializerShallow(columns, many=True).data,
-            "weekworkflow": WeekWorkflowSerializerShallow(weekworkflows, many=True).data,
             "week": WeekSerializerShallow(weeks, many=True).data,
-            "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
-            "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
             "node": NodeSerializerShallow(nodes, many=True, context={"user": user}).data,
+            "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
+            #   "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflows, many=True).data,
+            #   "weekworkflow": WeekWorkflowSerializerShallow(weekworkflows, many=True).data,
+            #   "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
         }
 
         # If the workflow is not a strategy, add additional data

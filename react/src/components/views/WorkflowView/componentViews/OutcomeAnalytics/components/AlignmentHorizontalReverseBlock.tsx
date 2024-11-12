@@ -102,16 +102,13 @@ const mapStateToProps = (
 
     const allowedChildOutcomeIds = state.outcome
       .filter(
-        (outcome) =>
-          allowedChildOutcomeIdsFromOutcomes.indexOf(outcome.id) >= 0
+        (outcome) => allowedChildOutcomeIdsFromOutcomes.indexOf(outcome.id) >= 0
       )
       .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectset))
       .map((outcome) => outcome.id)
 
     const allowedNodeIdsFromOutcomes = state.outcomenode
-      .filter((outcomenode) =>
-        allowedOutcomeIds.includes(outcomenode.outcome)
-      )
+      .filter((outcomenode) => allowedOutcomeIds.includes(outcomenode.outcome))
       .map((outcomenode) => outcomenode.node)
 
     const allowedNodeIds = state.node

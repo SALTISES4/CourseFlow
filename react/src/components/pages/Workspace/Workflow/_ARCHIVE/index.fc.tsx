@@ -4,7 +4,7 @@ import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
-import Utility from "@cf/utility/Utility.class";
+import Utility from '@cf/utility/Utility.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'

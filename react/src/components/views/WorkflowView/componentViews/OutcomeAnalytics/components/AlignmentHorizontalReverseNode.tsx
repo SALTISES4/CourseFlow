@@ -309,7 +309,7 @@ class AlignmentHorizontalReverseNode extends React.Component<
     }
 
     const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour({
+      backgroundColor: ThemeHelper.gerColumnColour({
         columnType: this.props.column.columnType,
         colour: this.props.column.colour
       })

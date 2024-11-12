@@ -5,19 +5,17 @@ interface ActionButtonProps {
   buttonIcon: ReactElement
   buttonClass: string
   titleText: string
-  handleClick: (evt: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
+  onClickHandler: (evt: React.MouseEvent<HTMLDivElement, MouseEvent>) => void
 }
 
 const ActionButton = ({
   buttonClass,
   titleText,
   buttonIcon,
-  handleClick
+  onClickHandler
 }: ActionButtonProps) => {
-  const onClickHandler = (
-    evt: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    handleClick(evt)
+  const clickHandler = (evt: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    onClickHandler(evt)
     evt.stopPropagation()
   }
 
@@ -25,7 +23,7 @@ const ActionButton = ({
     <div
       className={`${buttonClass} action-button`}
       title={titleText}
-      onClick={onClickHandler}
+      onClick={clickHandler}
     >
       {buttonIcon}
     </div>

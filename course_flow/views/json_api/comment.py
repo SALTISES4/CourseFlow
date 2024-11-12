@@ -33,15 +33,17 @@ from course_flow.services import DAO
 class CommentEndpoint:
     @staticmethod
     # @user_can_comment(False)
-    @api_view(["GET"])
-    def list_by_object(
-        request: Request,
-    ) -> Response:
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        object_id = body.get("objectID")
+    @api_view(["POST"])
+    def list_by_object(request: Request) -> Response:
+        """
+
+        :param request:
+        :return:
+        """
+        body = request.data
+        object_id = body.get("object_id")
         object_type = body.get("object_type")
+
         try:
             comments = (
                 DAO.get_model_from_str(object_type)
@@ -58,7 +60,7 @@ class CommentEndpoint:
             logger.exception("An error occurred")
             return Response(
                 {
-                    "error": "you have error",
+                    "error": "Error loading comments",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -71,18 +73,23 @@ class CommentEndpoint:
     # @user_can_comment(False)
     @api_view(["POST"])
     def create(request: Request) -> Response:
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        object_id = body.get("objectID")
+        """
+
+        :param request:
+        :return:
+        """
+        body = request.data
+        object_id = body.get("object_id")
         object_type = body.get("object_type")
         text = bleach.clean(body.get("text"))
+
         try:
             obj = DAO.get_model_from_str(object_type).objects.get(id=object_id)
 
-            # check if we are notifying any users
+            # check if we are notifying any users by parsing mentions via '@' in the body
             usernames = re.findall(r"@\w[@a-zA-Z0-9_.]{1,}", text)
             target_users = []
+
             if len(usernames) > 0:
                 content_object = obj.get_workflow()
                 for username in usernames:
@@ -101,6 +108,8 @@ class CommentEndpoint:
 
             # create the comment
             comment = obj.comments.create(text=text, user=request.user)
+
+            # create notifications
             for target_user in target_users:
                 DAO.make_user_notification(
                     source_user=request.user,
@@ -115,11 +124,11 @@ class CommentEndpoint:
             logger.exception("An error occurred")
             return Response(
                 {
-                    "error": "you have error",
+                    "message": "Error creating comment",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-        return Response({"message": "success"})
+        return Response({"message": "Success creating comment!"})
 
     ##########################################################
     # DELETE
@@ -129,11 +138,9 @@ class CommentEndpoint:
     # @user_can_edit(False)
     @api_view(["POST"])
     def delete(request: Request, pk: int) -> Response:
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
+        body = request.data
         object_type = body.get("object_type")
-        comment_id = body.get("commentPk")
+        comment_id = body.get("comment_pk")
 
         try:
             model = DAO.get_model_from_str(object_type).objects.get(id=pk)
@@ -143,7 +150,7 @@ class CommentEndpoint:
         except (ProtectedError, ObjectDoesNotExist):
             return Response(
                 {
-                    "error": "you have error",
+                    "message": "Error deleting comment!",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -154,10 +161,8 @@ class CommentEndpoint:
     # @user_can_edit(False)
     @api_view(["POST"])
     def delete_all(request: Request) -> Response:
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-        object_id = body.get("objectID")
+        body = request.data
+        object_id = body.get("object_id")
         object_type = body.get("object_type")
 
         try:
@@ -167,7 +172,7 @@ class CommentEndpoint:
         except (ProtectedError, ObjectDoesNotExist):
             return Response(
                 {
-                    "error": "you have error",
+                    "message": "Error deleting comments!",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

@@ -1,5 +1,5 @@
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
-import { CfLock } from '@cf/types/common'
+import { CfObjectType } from '@cf/types/enum'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
@@ -12,7 +12,11 @@ export type WorkflowContextType = {
   selectionManager: SelectionManager
 
   editableMethods: {
-    lockUpdate: (obj: CfLock, time: any, lock: boolean) => void
+    lockUpdate: (
+      obj: { objectId: number; objectType: CfObjectType },
+      time: any,
+      lock: boolean
+    ) => void
     microUpdate: (obj: any) => void
     changeField: (id: any, objectType: any, field: any, value: any) => void
   }

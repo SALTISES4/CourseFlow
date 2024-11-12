@@ -5,7 +5,9 @@ import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
-import Utility from "@cf/utility/Utility.class";
+import { CfLock } from '@cf/types/common'
+import { CfObjectType } from '@cf/types/enum'
+import Utility from '@cf/utility/Utility.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
@@ -355,7 +357,11 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
   // lock an object, indicating it should not be selectable
   // by any other users
   // this should not live here, it go in the draggable class
-  lockUpdate(obj: CfLock, time, lock: boolean) {
+  lockUpdate(
+    obj: { objectId: number; objectType: CfObjectType },
+    time,
+    lock: boolean
+  ) {
     if (this.wsService) {
       this.wsService.send(
         JSON.stringify({

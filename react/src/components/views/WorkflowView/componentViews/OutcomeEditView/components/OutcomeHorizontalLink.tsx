@@ -126,7 +126,7 @@ class OutcomeHorizontalLinkUnconnected extends React.Component<PropsType> {
         buttonIcon={<HighlightOffIcon />}
         buttonClass="delete-self-button"
         titleText={_t('Delete')}
-        handleClick={this.deleteSelf.bind(this, data)}
+        onClickHandler={this.deleteSelf.bind(this, data)}
       />
     )
   }

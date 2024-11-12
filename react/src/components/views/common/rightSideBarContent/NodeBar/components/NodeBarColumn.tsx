@@ -78,7 +78,7 @@ const NodeBarColumn: React.FC<OwnProps> = ({
       dangerouslySetInnerHTML={{ __html: title }}
       className={`new-node node-bar-column node-bar-sortable column-${objectId}`}
       ref={mainDiv}
-      style={{ backgroundColor: Constants.getColumnColour(column.data) }}
+      style={{ backgroundColor: ThemeHelper.gerColumnColour(column.data) }}
     />
   )
 }
@@ -167,7 +167,7 @@ export default NodeBarColumn
 //           this.props.objectId
 //         }
 //         ref={this.mainDiv}
-//         style={{ backgroundColor: Constants.getColumnColour(data) }}
+//         style={{ backgroundColor: ThemeHelper.gerColumnColour(data) }}
 //       />
 //     )
 //   }

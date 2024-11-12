@@ -1,6 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
-import { getWeekById } from '@cfFindState'
+import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
 import React from 'react'
 import { connect } from 'react-redux'
@@ -56,9 +56,7 @@ class MatrixWeekUnconnected extends React.Component<PropsType> {
         </div>
         <div className="total-cell table-cell blank"></div>
         <div className="total-cell table-cell">{this.props.totalTheory}</div>
-        <div className="total-cell table-cell">
-          {this.props.totalPractical}
-        </div>
+        <div className="total-cell table-cell">{this.props.totalPractical}</div>
         <div className="total-cell table-cell">
           {this.props.totalIndividual}
         </div>
@@ -74,11 +72,8 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): ConnectedProps => {
-  const data = getWeekById(state, ownProps.objectId).data
-  const nodeWeeks = Utility.filterThenSortById(
-    state.nodeweek,
-    data.nodeweekSet
-  )
+  const data = selectWeekById(state, ownProps.objectId).data
+  const nodeWeeks = Utility.filterThenSortById(state.nodeweek, data.nodeweekSet)
   const nodesData = Utility.filterThenSortById(
     state.node,
     nodeWeeks.map((nodeWeek) => nodeWeek.node)
@@ -113,34 +108,25 @@ const mapStateToProps = (
     }
     return previousValue
   }, 0)
-  const totalPractical = linkedWfData.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationPractical) {
-        return previousValue + currentValue.ponderationPractical
-      }
-      return previousValue
-    },
-    0
-  )
-  const totalIndividual = linkedWfData.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.ponderationIndividual) {
-        return previousValue + currentValue.ponderationIndividual
-      }
-      return previousValue
-    },
-    0
-  )
+  const totalPractical = linkedWfData.reduce((previousValue, currentValue) => {
+    if (currentValue && currentValue.ponderationPractical) {
+      return previousValue + currentValue.ponderationPractical
+    }
+    return previousValue
+  }, 0)
+  const totalIndividual = linkedWfData.reduce((previousValue, currentValue) => {
+    if (currentValue && currentValue.ponderationIndividual) {
+      return previousValue + currentValue.ponderationIndividual
+    }
+    return previousValue
+  }, 0)
   const totalTime = totalTheory + totalPractical + totalIndividual
-  const totalRequired = linkedWfData.reduce(
-    (previousValue, currentValue) => {
-      if (currentValue && currentValue.timeRequired) {
-        return previousValue + parseFloat(currentValue.timeRequired)
-      }
-      return previousValue
-    },
-    0
-  )
+  const totalRequired = linkedWfData.reduce((previousValue, currentValue) => {
+    if (currentValue && currentValue.timeRequired) {
+      return previousValue + parseFloat(currentValue.timeRequired)
+    }
+    return previousValue
+  }, 0)
 
   return {
     data: data,

@@ -1,6 +1,6 @@
 import Utility from '@cf/utility/Utility.class'
 import { AppState } from '@cfRedux/types/type'
-import Outcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/Outcome'
+import Outcome from '@cfViews/WorkflowView/componentViews/OutcomeEditView/components/Outcome'
 import { updateOutcomehorizontallinkDegree } from '@XMLHTTP/API/update'
 import * as React from 'react'
 import { connect } from 'react-redux'

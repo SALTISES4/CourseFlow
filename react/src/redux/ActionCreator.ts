@@ -11,6 +11,7 @@ import {
   WeekWorkflowActions
 } from '@cfRedux/types/enumActions'
 import { AppState } from '@cfRedux/types/type'
+import { EComment } from '@XMLHTTP/types/entity'
 
 /**
  *  local action creators
@@ -54,11 +55,8 @@ class ActionCreator {
   static reloadCommentsAction = (
     id: number,
     objectType: CfObjectType,
-    commentData
+    commentData: EComment[]
   ) => {
-    console.log('what is commentData')
-    console.log(commentData)
-
     return {
       type: objectType + '/reloadComments', // this is a redux antipattern
       payload: {
