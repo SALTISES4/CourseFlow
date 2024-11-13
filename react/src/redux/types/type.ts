@@ -22,7 +22,6 @@ import {
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
-
 export type AppState = {
   workflow: TWorkflow
   columnworkflow: TColumnworkflow[]

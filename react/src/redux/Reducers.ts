@@ -3,7 +3,7 @@ import outcomeHorizontalLinkReducer from '@cfRedux/reducers/outcome/outcomeHoriz
 import outcomeNodeReducer from '@cfRedux/reducers/outcome/outcomeNode'
 import outcomeOutcomeReducer from '@cfRedux/reducers/outcome/outcomeOutcome'
 import outcomeworkflowReducer from '@cfRedux/reducers/outcome/outcomeWorkflow'
-import sidebarReducer from '@cfRedux/reducers/sidebar/sidebar'
+import sidebarReducer from '@cfRedux/reducers/sidebar'
 import childWorkflowReducer from '@cfRedux/reducers/workflow/childWorkflow'
 import columnReducer from '@cfRedux/reducers/workflow/column'
 import columnworkflowReducer from '@cfRedux/reducers/workflow/columnworkflow'
@@ -76,7 +76,7 @@ export const rootWorkflowReducers = {
   objectset: objectSetReducer
 }
 export const rootSidebarReducers = {
-  sidebar: sidebarReducer.reducer
+  sidebar: sidebarReducer
 }
 const rootOutcomeReducers = {
   outcome: outcomeReducer,
