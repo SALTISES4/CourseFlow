@@ -1,6 +1,6 @@
-import { SidebarState } from '@cf/redux/reducers/sidebar/sidebar'
 import { CfLock } from '@cf/types/common'
 import { WorkflowPermission } from '@cf/utility/permissions'
+import { SidebarState } from '@cfRedux/reducers/sidebar/types'
 import {
   EColumn,
   EComment,
