@@ -4,20 +4,13 @@ import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/c
 import clsx from 'clsx'
 import React from 'react'
 import { useSelector } from 'react-redux'
+import { createSelector } from 'reselect'
 
 const WorkflowEditView = () => {
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
-  const { workflow, objectset, week, node, outcome } = useSelector(
-    (state: AppState) => ({
-      workflow: state.workflow,
-      objectset: state.objectset,
-      week: state.week,
-      node: state.node,
-      outcome: state.outcome
-    })
-  )
+  const workflow = useSelector((state: AppState) => state.workflow)
 
   /*******************************************************
    * COMPONENTS
@@ -30,14 +23,16 @@ const WorkflowEditView = () => {
     />
   ))
 
-  const weeks = workflow.weeks?.map((weekId) => (
-    <WeekWrapper
-      key={`weekworkflow-${weekId}`}
-      objectId={weekId}
-      parentId={workflow.id}
-      condensed={workflow.condensed} // this makes no sense that it would switch on condensed
-    />
-  ))
+  const weeks = workflow.weeks?.map((weekId) => {
+    return (
+      <WeekWrapper
+        key={`weekworkflow-${weekId}`}
+        objectId={weekId}
+        parentId={workflow.id}
+        condensed={workflow.condensed} // this makes no sense that it would switch on condensed
+      />
+    )
+  })
 
   const CanvasPlaceholder = () => {
     /*

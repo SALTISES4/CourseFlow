@@ -3,7 +3,6 @@ import outcomeHorizontalLinkReducer from '@cfRedux/reducers/outcome/outcomeHoriz
 import outcomeNodeReducer from '@cfRedux/reducers/outcome/outcomeNode'
 import outcomeOutcomeReducer from '@cfRedux/reducers/outcome/outcomeOutcome'
 import outcomeworkflowReducer from '@cfRedux/reducers/outcome/outcomeWorkflow'
-import sidebarReducer from '@cfRedux/reducers/sidebar'
 import childWorkflowReducer from '@cfRedux/reducers/workflow/childWorkflow'
 import columnReducer from '@cfRedux/reducers/workflow/column'
 import columnworkflowReducer from '@cfRedux/reducers/workflow/columnworkflow'
@@ -15,9 +14,11 @@ import parentNodeReducer from '@cfRedux/reducers/workflow/parentNode'
 import parentProjectReducer from '@cfRedux/reducers/workflow/parentProject'
 import parentWorkflowReducer from '@cfRedux/reducers/workflow/parentWorfkflow'
 import strategyReducer from '@cfRedux/reducers/workflow/strategy'
-import weekReducer from '@cfRedux/reducers/workflow/week'
 import weekworkflowReducer from '@cfRedux/reducers/workflow/weekworkflow'
 import workflowReducer from '@cfRedux/reducers/workflow/workflow'
+import nodeSliceReducer from '@cfRedux/slices/node.slice'
+import sidebarReducer from '@cfRedux/slices/sidebar.slice'
+import weekReducer from '@cfRedux/slices/week.slice'
 import * as Redux from 'redux'
 
 // @todo need to wrap these up
@@ -55,25 +56,33 @@ import * as Redux from 'redux'
  *******************************************************/
 
 export const rootWorkflowReducers = {
-  workflow: workflowReducer,
+  // to remove
+  nodeweek: nodeweekReducer,
   columnworkflow: columnworkflowReducer,
-  column: columnReducer,
   weekworkflow: weekworkflowReducer,
+  outcomeworkflow: outcomeworkflowReducer,
+  outcomenode: outcomeNodeReducer,
+  outcomeoutcome: outcomeOutcomeReducer,
+
+  // keep these flat/normalized first order entities
+  workflow: workflowReducer,
+  column: columnReducer,
   week: weekReducer,
   node: nodeReducer,
+  // note this is not called nodenode, although that's what it is
+  //  a n2M with UI applications
   nodelink: nodelinkReducer,
-  nodeweek: nodeweekReducer,
   outcome: outcomeReducer,
-  outcomenode: outcomeNodeReducer,
-  outcomeworkflow: outcomeworkflowReducer,
-  outcomeoutcome: outcomeOutcomeReducer,
+  // verify
+  objectset: objectSetReducer,
   outcomehorizontallink: outcomeHorizontalLinkReducer,
+  strategy: strategyReducer,
+
+  // @todo sort through these parent / children, why do they need to be in store
   parentWorkflow: parentWorkflowReducer,
   parentNode: parentNodeReducer,
-  childWorkflow: childWorkflowReducer,
   parentProject: parentProjectReducer,
-  strategy: strategyReducer,
-  objectset: objectSetReducer
+  childWorkflow: childWorkflowReducer
 }
 export const rootSidebarReducers = {
   sidebar: sidebarReducer

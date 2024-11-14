@@ -1,10 +1,10 @@
 import useWorkflowSidebar from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import { isTabVisible } from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar/permissions'
+import { SidebarState } from '@cfRedux/slices/sidebar.slice'
 import {
-  SidebarChangeTab,
-  SidebarCollapse
-} from '@cf/redux/reducers/sidebar/actions'
-import { SidebarState } from '@cf/redux/reducers/sidebar/types'
+  sidebarChangeTab,
+  sidebarCollapse
+} from '@cfRedux/slices/sidebar.slice'
 import { AppState } from '@cfRedux/types/type'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
@@ -58,29 +58,29 @@ const WorkspaceSidebar = () => {
   const sidebar = useSelector((state: AppState) => state.sidebar)
 
   useEffect(() => {
-    dispatch(SidebarChangeTab({ tab: null, collapsed: true }))
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
   }, [dispatch, location.pathname])
 
   useEffect(() => {
     if (sidebar.edit.objectType) {
       onTabClick('edit')
     } else {
-      dispatch(SidebarChangeTab({ tab: null, collapsed: true }))
+      dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sidebar.edit.objectType])
 
   const onToggleClick = useCallback(() => {
-    dispatch(SidebarCollapse())
+    dispatch(sidebarCollapse())
   }, [dispatch])
 
   const onTabClick = (tab: SidebarState['tab']) => {
     if (!tab) {
-      dispatch(SidebarCollapse())
+      dispatch(sidebarCollapse())
     }
 
     if (tab) {
-      dispatch(SidebarChangeTab({ tab, collapsed: false }))
+      dispatch(sidebarChangeTab({ tab, collapsed: false }))
     }
   }
 

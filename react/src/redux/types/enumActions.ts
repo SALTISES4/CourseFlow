@@ -1,3 +1,11 @@
+// Slice namespaces
+
+export enum SliceNamespace {
+  NODE = 'node',
+  SIDEBAR = 'sidebar',
+  WEEK = 'week'
+}
+
 // group all actions together which are global
 export enum CommonActions {
   REPLACE_STOREDATA = 'replaceStoreData',
@@ -134,7 +142,7 @@ export enum ReduxSlice {
   WEEK = 'week',
   COLUMN = 'column',
   WORKFLOW = 'workflow'
-  }
+}
 
 export enum SidebarActions {
   COLLAPSE = 'sidebar/collapse',

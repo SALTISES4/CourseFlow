@@ -4,6 +4,7 @@ import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
+import { changeField } from '@cfRedux/slices/week.slice'
 import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
@@ -58,10 +59,11 @@ const Week = ({ objectId, parentId }) => {
       container: '.week-block'
     }
 
+    // @todo why is my ref not working ?
     // const jQuerySortableBlockTarget = $(nodeBlock.current)
     //   .children('.node-week')
     //   .not('.ui-draggable')
-      const jQuerySortableBlockTarget = $('.node-block')
+    const jQuerySortableBlockTarget = $('.node-block')
       .children('.node-week')
       .not('.ui-draggable')
 
@@ -144,6 +146,11 @@ const Week = ({ objectId, parentId }) => {
       </div>
       <TitleText text={weekData.week.title} defaultText={defaultText} />
 
+      {/*
+       .node-block being used
+       as jquery target for drag and drop
+       and css
+      */}
       <div className="node-block" id={`${objectId}-node-block`} ref={nodeBlock}>
         <Nodes nodes={weekData.week.nodes} />
       </div>
@@ -152,11 +159,12 @@ const Week = ({ objectId, parentId }) => {
         className="week-drop-row hover-shade"
         onClick={(evt) => {
           evt.stopPropagation()
-          manager.current.toggleDropReduxAction({
-            objectId,
-            objectType: CfObjectType.WEEK,
-            newDropState: !weekData.week?.isDropped
-          })
+          dispatch(
+            changeField({
+              id: objectId,
+              json: { isDropped: !weekData.week.isDropped }
+            })
+          )
         }}
       >
         <div style={{ textAlign: 'center', width: '100%', height: '100%' }}>

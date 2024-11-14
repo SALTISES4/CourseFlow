@@ -1,12 +1,10 @@
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import ActionCreator from '@cfRedux/ActionCreator'
-import { SidebarEdit } from '@cfRedux/reducers/sidebar/actions'
+import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import store from '@cfRedux/store'
 import { AnyAction } from '@reduxjs/toolkit'
 import { Dispatch } from 'redux'
-
-
 
 // thin wrapper around dipachtchers
 // this started as the successor to selection manager
@@ -27,7 +25,7 @@ class BetterSelectionManager {
   }
 
   updateSidebar(id: number, objectType: CfObjectType, parentId?: number) {
-    store.dispatch(SidebarEdit({ id, parentId, objectType }))
+    store.dispatch(sidebarEdit({ id, parentId, objectType }))
   }
 
   toggleDropReduxAction({
@@ -41,29 +39,8 @@ class BetterSelectionManager {
     newDropState: boolean
     depth?: number
   }) {
-    try {
-      const defaultDrop = Constants.getDefaultDropState(
-        objectId,
-        objectType,
-        depth
-      )
-      if (newDropState !== defaultDrop) {
-        window.localStorage.setItem(objectType + objectId, String(newDropState))
-      } else {
-        window.localStorage.removeItem(objectType + objectId)
-      }
-    } catch (err) {
-      const error = err as Error
-
-      // this suggests an abuse of local storage
-      // to investigate at some point
-      if (
-        error.name === 'QuotaExceededError' ||
-        error.name === 'NS_ERROR_DOM_QUOTA_REACHED' // lol
-      ) {
-        window.localStorage.clear()
-      }
-    }
+    // maybe logic to sync to local storage
+    // but if so we should compose a manager, and sync it with a derived state in redux
 
     this.dispatch(
       ActionCreator.changeField(objectId, objectType, {

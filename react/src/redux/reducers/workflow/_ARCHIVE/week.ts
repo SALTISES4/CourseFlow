@@ -95,90 +95,90 @@ export default function weekReducer(
   action: WeekActionTypes
 ): TWeek[] {
   switch (action.type) {
-    case CommonActions.REPLACE_STOREDATA:
-      return action.payload.week || state
+    // case CommonActions.REPLACE_STOREDATA:
+    //   return action.payload.week || state
 
-    case CommonActions.REFRESH_STOREDATA:
-      return action.payload.week
-        ? action.payload.week.reduce(
-            (acc, newItem) => {
-              const index = acc.findIndex((item) => item.id === newItem.id)
-              if (index > -1) {
-                acc[index] = newItem
-              } else {
-                acc.push(newItem)
-              }
-              return acc
-            },
-            [...state]
-          )
-        : state
+    // case CommonActions.REFRESH_STOREDATA:
+    //   return action.payload.week
+    //     ? action.payload.week.reduce(
+    //         (acc, newItem) => {
+    //           const index = acc.findIndex((item) => item.id === newItem.id)
+    //           if (index > -1) {
+    //             acc[index] = newItem
+    //           } else {
+    //             acc.push(newItem)
+    //           }
+    //           return acc
+    //         },
+    //         [...state]
+    //       )
+    //     : state
 
-    case WeekActions.CREATE_LOCK:
-    case WeekActions.RELOAD_COMMENTS:
-    case StrategyActions.TOGGLE_STRATEGY:
-      return state.map((item) =>
-        item.id === action.payload.id ? { ...item, ...action.payload } : item
-      )
-    case WeekActions.CHANGE_FIELD:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? { ...item, ...action.payload.json }
-          : item
-      )
-    case WeekActions.INSERT_BELOW:
-    case StrategyActions.ADD_STRATEGY:
-      return [...state, action.payload.newModel]
+    //     case WeekActions.CREATE_LOCK:
+    //  case WeekActions.RELOAD_COMMENTS:
+    // case StrategyActions.TOGGLE_STRATEGY:
+    //   return state.map((item) =>
+    //     item.id === action.payload.id ? { ...item, ...action.payload } : item
+    //   )
 
-    case WeekActions.DELETE_SELF:
-    case NodeActions.DELETE_SELF:
-    case NodeActions.DELETE_SELF_SOFT:
-      return state.filter((item) => item.id !== action.payload.id)
+    // case WeekActions.CHANGE_FIELD:
+    //   return state.map((item) =>
+    //     item.id === action.payload.id
+    //       ? { ...item, ...action.payload.json }
+    //       : item
+    //   )
+//    case WeekActions.INSERT_BELOW:
+//     case StrategyActions.ADD_STRATEGY:
+//       return [...state, action.payload.newModel]
 
-    case WeekActions.DELETE_SELF_SOFT:
-    case WeekActions.RESTORE_SELF: {
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return {
-            ...item,
-            deleted: !item.deleted,
-            deletedOn: item.deleted ? undefined : 'This session'
-          }
-        }
+//    case WeekActions.DELETE_SELF:
+//     case NodeActions.DELETE_SELF_SOFT:
+//       return state.filter((item) => item.id !== action.payload.id)
 
-        return item
-      })
-    }
+    // case WeekActions.DELETE_SELF_SOFT:
+    // case WeekActions.RESTORE_SELF: {
+    //   return state.map((item) => {
+    //     if (item.id === action.payload.id) {
+    //       return {
+    //         ...item,
+    //         deleted: !item.deleted,
+    //         deletedOn: item.deleted ? undefined : 'This session'
+    //       }
+    //     }
+    //
+    //     return item
+    //   })
+    // }
 
-    case NodeWeekActions.CHANGE_ID:
-      return state.map((item) => ({
-        ...item,
-        nodeweekSet: item.nodeweekSet.map((id) =>
-          id === action.payload.oldId ? action.payload.newId : id
-        )
-      }))
+    // case NodeWeekActions.CHANGE_ID:
+    //   return state.map((item) => ({
+    //     ...item,
+    //     nodeweekSet: item.nodeweekSet.map((id) =>
+    //       id === action.payload.oldId ? action.payload.newId : id
+    //     )
+    //   }))
 
-    case NodeWeekActions.MOVED_TO:
-      return state.map((item) => {
-        const newSet = item.nodeweekSet.filter((id) => id !== action.payload.id)
-        if (item.id === action.payload.newParent) {
-          newSet.splice(action.payload.newIndex, 0, action.payload.id)
-          return { ...item, nodeweekSet: newSet }
-        }
-        return item
-      })
+    // case NodeWeekActions.MOVED_TO:
+    //   return state.map((item) => {
+    //     const newSet = item.nodeweekSet.filter((id) => id !== action.payload.id)
+    //     if (item.id === action.payload.newParent) {
+    //       newSet.splice(action.payload.newIndex, 0, action.payload.id)
+    //       return { ...item, nodeweekSet: newSet }
+    //     }
+    //     return item
+    //   })
 
-    case NodeActions.RESTORE_SELF:
-    case NodeActions.INSERT_BELOW:
-    case NodeActions.NEW_NODE:
-      return state.map((item) => {
-        if (item.id === action.payload.parentId) {
-          const newSet = [...item.nodeweekSet]
-          newSet.splice(action.payload.index, 0, action.payload.newThrough.id)
-          return { ...item, nodeweekSet: newSet }
-        }
-        return item
-      })
+    // case NodeActions.RESTORE_SELF:
+    // case NodeActions.INSERT_BELOW:
+    // case NodeActions.NEW_NODE:
+    //   return state.map((item) => {
+    //     if (item.id === action.payload.parentId) {
+    //       const newSet = [...item.nodeweekSet]
+    //       newSet.splice(action.payload.index, 0, action.payload.newThrough.id)
+    //       return { ...item, nodeweekSet: newSet }
+    //     }
+    //     return item
+    //   })
 
     default:
       return state

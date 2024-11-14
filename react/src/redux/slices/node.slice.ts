@@ -1,11 +1,12 @@
 import { CfLock } from '@cf/types/common'
+import { SliceNamespace } from '@cfRedux/types/enumActions'
 import { TNode } from '@cfRedux/types/type'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 const initialState: TNode[] = []
 
 const nodeSlice = createSlice({
-  name: 'node',
+  name: SliceNamespace.NODE,
   initialState,
   reducers: {
     changedColumn(
