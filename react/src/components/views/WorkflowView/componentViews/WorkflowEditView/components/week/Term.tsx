@@ -120,15 +120,13 @@ const Term = ({
         // selection manager goes here
       }}
     >
-      <div className="mouseover-container-bypass">
-        <HoverMenu
-          canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}
-          canComment={workflow.workflowPermissions.viewComments}
-          objectId={objectId}
-          parentId={parentId}
-          objectType={CfObjectType.WEEK}
-        />
-      </div>
+      <HoverMenu
+        canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}
+        canComment={workflow.workflowPermissions.viewComments}
+        objectId={objectId}
+        parentId={parentId}
+        objectType={CfObjectType.WEEK}
+      />
       <TitleText
         text={data.title}
         defaultText={`${data.weekTypeDisplay} ${rank + 1}`}

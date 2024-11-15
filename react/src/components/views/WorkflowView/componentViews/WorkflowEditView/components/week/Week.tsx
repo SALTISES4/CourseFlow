@@ -9,6 +9,7 @@ import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
 import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
+import { useSortable } from '@dnd-kit/sortable'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import clsx from 'clsx'
@@ -35,7 +36,6 @@ const Week = ({ objectId, parentId }) => {
     selectWeekById(state, objectId)
   )
   const workflow = useSelector((state: AppState) => state.workflow)
-
   /*******************************************************
    * REFS
    *******************************************************/
@@ -47,6 +47,8 @@ const Week = ({ objectId, parentId }) => {
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
+
+  // I DON'T THINK ANY OF THIS NEEDED ANY MORE
   useEffect(() => {
     dragAndDropManager.current = new WeekDragAndDropManager({
       objectId,
@@ -135,15 +137,13 @@ const Week = ({ objectId, parentId }) => {
         manager.current.updateSidebar(weekData.week.id, objectId, parentId)
       }}
     >
-      <div className="mouseover-container-bypass">
-        <HoverMenu
-          canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}
-          canComment={workflow.workflowPermissions.viewComments}
-          objectId={objectId}
-          parentId={parentId}
-          objectType={CfObjectType.WEEK}
-        />
-      </div>
+      <HoverMenu
+        canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}
+        canComment={workflow.workflowPermissions.viewComments}
+        objectId={objectId}
+        parentId={parentId}
+        objectType={CfObjectType.WEEK}
+      />
       <TitleText text={weekData.week.title} defaultText={defaultText} />
 
       {/*
@@ -151,11 +151,28 @@ const Week = ({ objectId, parentId }) => {
        as jquery target for drag and drop
        and css
       */}
-      <div className="node-block" id={`${objectId}-node-block`} ref={nodeBlock}>
-        <Nodes nodes={weekData.week.nodes} />
-      </div>
+
+      {weekData.week.isDropped && (
+        <div
+          className="node-block"
+          id={`${objectId}-node-block`}
+          ref={nodeBlock}
+        >
+          <Nodes nodes={weekData.week.nodes} />
+        </div>
+      )}
 
       <div
+        style={{
+          position: 'absolute',
+          bottom: '0px',
+          left: '0px',
+          width: '100%',
+          height: '20px',
+          borderRadius: '0 0 5px 5px',
+          overflow: 'hidden',
+          cursor: 'pointer'
+        }}
         className="week-drop-row hover-shade"
         onClick={(evt) => {
           evt.stopPropagation()

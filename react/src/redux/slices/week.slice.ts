@@ -48,16 +48,18 @@ interface RefreshStoreDataPayload {
 
 const initialState: TWeek[] = []
 
-const updateEntity = (
+export const updateEntity = (
   state: AppState['week'],
   action: PayloadAction<{
     id: number
     data: Pick<TWeek>
   }>
 ) => {
-  return state.map((item) =>
-    item.id === action.payload.id ? { ...item, ...action.payload.data } : item
-  )
+  state.forEach((item) => {
+    if (item.id === action.payload.id) {
+      Object.assign(item, action.payload.data)
+    }
+  })
 }
 
 const createEntity = (state, action: PayloadAction<InsertBelowPayload>) => {

@@ -1,6 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
-import '@cfSCSS/base_style.scss'
-import '@cfSCSS/workflow_styles.scss'
+import { legacyWorkflowReducers } from '@cfRedux/Reducers'
 import columnReducer from '@cfRedux/slices/column.slice'
 import nodeReducer from '@cfRedux/slices/node.slice'
 import nodelinkReducer from '@cfRedux/slices/nodelink.slice'
@@ -8,8 +6,11 @@ import sidebarReducer from '@cfRedux/slices/sidebar.slice'
 import strategyReducer from '@cfRedux/slices/strategy.slice'
 import weekReducer from '@cfRedux/slices/week.slice'
 import workflowReducer from '@cfRedux/slices/workflow.slice'
+import { configureStore } from '@reduxjs/toolkit'
 import { cfApi } from '@XMLHTTP/API/api'
-import { legacyWorkflowReducers } from '@cfRedux/Reducers'
+
+import '@cfSCSS/base_style.scss'
+import '@cfSCSS/workflow_styles.scss'
 
 const store = configureStore({
   reducer: {

@@ -1,16 +1,34 @@
 import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
+import { DndContext } from '@dnd-kit/core'
+import { verticalListSortingStrategy } from '@dnd-kit/sortable'
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
 import clsx from 'clsx'
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { createSelector } from 'reselect'
+
+// Utility function to reorder an array
+const reorderArray = (list, startIndex, endIndex) => {
+  const result = Array.from(list)
+  const [removed] = result.splice(startIndex, 1)
+  result.splice(endIndex, 0, removed)
+  return result
+}
 
 const WorkflowEditView = () => {
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
   const workflow = useSelector((state: AppState) => state.workflow)
+  const [weeksDragState, setWeeksDragState] = React.useState(
+    workflow.weeks || []
+  )
 
   /*******************************************************
    * COMPONENTS
@@ -23,9 +41,10 @@ const WorkflowEditView = () => {
     />
   ))
 
-  const weeks = workflow.weeks?.map((weekId) => {
+  const weeks = weeksDragState.map((weekId) => {
     return (
       <WeekWrapper
+        id={weekId}
         key={`weekworkflow-${weekId}`}
         objectId={weekId}
         parentId={workflow.id}
@@ -59,6 +78,26 @@ const WorkflowEditView = () => {
     )
   }
 
+  // Updated handleDragEnd function
+  const handleDragEnd = (event) => {
+    console.log('ended')
+    const { active, over } = event
+    if (!over || active.id === over.id) {
+      return
+    }
+
+    const oldIndex = weeksDragState.indexOf(active.id)
+    const newIndex = weeksDragState.indexOf(over.id)
+
+    // Reorder weeks array
+    const reorderedWeeks = reorderArray(weeksDragState, oldIndex, newIndex)
+    setWeeksDragState(reorderedWeeks)
+  }
+
+  const sayHello = () => {
+    console.log('sayHello')
+  }
+
   /*******************************************************
    * RETURN
    *******************************************************/
@@ -78,9 +117,20 @@ const WorkflowEditView = () => {
       {/*
       .week-block is used as a UX/jquery target
     */}
-      <div className="week-block" id={workflow.id + '-week-block'}>
-        {weeks}
-      </div>
+      {/*<div className="week-block" id={workflow.id + '-week-block'}>*/}
+      {/*  {weeks}*/}
+      {/*</div>*/}
+
+      <DndContext onDragEnd={handleDragEnd} onDragStart={sayHello}>
+        <SortableContext
+          items={weeksDragState}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="week-block" id={`${workflow.id}-week-block`}>
+            {weeks}
+          </div>
+        </SortableContext>
+      </DndContext>
 
       <CanvasPlaceholder />
     </div>

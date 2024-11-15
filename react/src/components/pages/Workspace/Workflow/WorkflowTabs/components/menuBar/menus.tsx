@@ -152,28 +152,28 @@ const ExpandCollapseMenu = () => {
   const menuItems: MenuItemType[] = [
     {
       content: _t('Expand all weeks'),
-      action: expandAll(CfObjectType.WEEK),
+      action: () => expandAll(CfObjectType.WEEK),
       icon: <ZoomOutMapIcon />,
       showIconInList: true,
       show: true
     },
     {
       content: _t('Collapse all weeks'),
-      action: collapseAll(CfObjectType.WEEK),
+      action: () => collapseAll(CfObjectType.WEEK),
       icon: <ZoomInMapIcon />,
       showIconInList: true,
       show: true
     },
     {
       content: _t('Expand all nodes'),
-      action: expandAll(CfObjectType.NODE),
+      action: () => expandAll(CfObjectType.NODE),
       icon: <ZoomInMapIcon />,
       showIconInList: true,
       show: true
     },
     {
       content: _t('Collapse all nodes'),
-      action: expandAll(CfObjectType.NODE),
+      action: () => collapseAll(CfObjectType.NODE),
       icon: <ZoomOutMapIcon />,
       showIconInList: true,
       seperator: true,
@@ -181,14 +181,14 @@ const ExpandCollapseMenu = () => {
     },
     {
       content: _t('Expand all outcomes'),
-      action: expandAll(CfObjectType.OUTCOME),
+      action: () => expandAll(CfObjectType.OUTCOME),
       icon: <ZoomInMapIcon />,
       showIconInList: true,
       show: true
     },
     {
       content: _t('Collapse all outcomes'),
-      action: expandAll(CfObjectType.OUTCOME),
+      action: () => expandAll(CfObjectType.OUTCOME),
       icon: <ZoomOutMapIcon />,
       show: true
     }

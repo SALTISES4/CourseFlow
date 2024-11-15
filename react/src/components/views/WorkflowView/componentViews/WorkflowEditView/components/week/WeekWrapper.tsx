@@ -4,6 +4,9 @@ import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDro
 import ActionCreator from '@cfRedux/ActionCreator'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import DragHandleIcon from '@mui/icons-material/DragHandle'
 import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
 import React, { useEffect, useRef } from 'react'
@@ -18,6 +21,12 @@ type PropsType = {
   parentId: number
 }
 
+/*******************************************************
+ * DEPRECATED
+ * KEEP FOR REFERENCE
+ *  call backs like microUpdate abd  insertedAt not yet migrated
+ *
+ *******************************************************/
 class WeekWorkflowDragAndDropManager extends SortableDragAndDropManager {
   stopSortFunction() {
     ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
@@ -36,6 +45,7 @@ class WeekWorkflowDragAndDropManager extends SortableDragAndDropManager {
     this.context.editableMethods.microUpdate(
       ActionCreator.moveColumnWorkflow(id, newPosition, newParent, childId)
     )
+
     insertedAt(
       this.context.selectionManager,
       childId,
@@ -53,6 +63,9 @@ class WeekWorkflowDragAndDropManager extends SortableDragAndDropManager {
  * and disambiguate parentId: week is not a 'child' of weekworkflow
  **/
 const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: objectId })
+
   const mainDiv = useRef<HTMLDivElement>(null)
   /*******************************************************
    * HOOKS
@@ -61,34 +74,36 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
     selectWeekById(state, objectId)
   )
 
-  useEffect(() => {
-    const classIdentifiers = {
-      objectClass: '.week-workflow',
-      handle: '.week',
-      container: '.week-block'
-    }
-
-    const weekWorkflowDragAndDropManager = new WeekWorkflowDragAndDropManager({
-      objectId,
-      parentId
-    })
-
-    const jQuerySortableBlockTarget = $('.week-block')
-      .children('.week-workflow')
-      .not('.ui-draggable')
-
-    weekWorkflowDragAndDropManager.makeSortableElement(
-      jQuerySortableBlockTarget,
-      objectId,
-      CfObjectType.WEEKWORKFLOW,
-      classIdentifiers.objectClass,
-      'y',
-      false,
-      null,
-      classIdentifiers.handle,
-      classIdentifiers.container
-    )
-  }, [objectId, parentId])
+  //
+  // DEPRECTAED FROM LEGACY DRAG AND DROP SYSREM
+  // useEffect(() => {
+  //   const classIdentifiers = {
+  //     objectClass: '.week-workflow',
+  //     handle: '.week',
+  //     container: '.week-block'
+  //   }
+  //
+  //   // const weekWorkflowDragAndDropManager = new WeekWorkflowDragAndDropManager({
+  //   //   objectId,
+  //   //   parentId
+  //   // })
+  //
+  //   // const jQuerySortableBlockTarget = $('.week-block')
+  //   //   .children('.week-workflow')
+  //   //   .not('.ui-draggable')
+  //   //
+  //   // weekWorkflowDragAndDropManager.makeSortableElement(
+  //   //   jQuerySortableBlockTarget,
+  //   //   objectId,
+  //   //   CfObjectType.WEEKWORKFLOW,
+  //   //   classIdentifiers.objectClass,
+  //   //   'y',
+  //   //   false,
+  //   //   null,
+  //   //   classIdentifiers.handle,
+  //   //   classIdentifiers.container
+  //   // )
+  // }, [objectId, parentId])
 
   /*******************************************************
    * COMPONENTS
@@ -115,20 +130,36 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
   /*******************************************************
    * RENDER
    *******************************************************/
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  }
 
   return (
-    <div
-      className={clsx('week-workflow', {
-        // legacy name of through model, still being used for jquery drag and drop i think
-        'no-drag': weekData.week?.noDrag, // find out about noDrag
-        dragging: mainDiv.current?.classList.contains('dragging')
-      })}
-      id={String(objectId)}
-      ref={mainDiv}
-      data-child-id={objectId}
-    >
-      <WeekChooser />
-    </div>
+    <>
+      <div
+        style={style}
+        {...attributes}
+        className={clsx('week-workflow', {
+          // legacy name of through model, still being used for jquery drag and drop i think
+          //   'no-drag': weekData.week?.noDrag, // find out about noDrag
+          //  dragging: mainDiv.current?.classList.contains('dragging')
+        })}
+        id={String(objectId)}
+        ref={setNodeRef}
+        data-child-id={objectId}
+      >
+        {/*
+      Need to solve this
+      drag n drop sort zone take over whole object and hides inside click event  (hover menu etc)
+
+      */}
+        <div {...listeners}>
+          <DragHandleIcon />
+        </div>
+        <WeekChooser />
+      </div>
+    </>
   )
 }
 

@@ -184,20 +184,20 @@ input[type="submit"] {
   overflow: hidden;
 }
 
-.week-workflow.dragging {
-  height: 50px;
-  overflow: hidden;
-  border-width: 2px;
-  border-radius: 5px;
-}
+//.week-workflow.dragging {
+//  height: 50px;
+//  overflow: hidden;
+//  border-width: 2px;
+//  border-radius: 5px;
+//}
 
-.week-workflow.dragging .week {
-  border: none;
-}
+//.week-workflow.dragging .week {
+//  border: none;
+//}
 
-.week-workflow.dragging .node-block {
-  display: none;
-}
+//.week-workflow.dragging .node-block {
+//  display: none;
+//}
 
 .week-block {
   width: 100%;
@@ -468,25 +468,6 @@ input[type="submit"] {
   cursor: pointer;
 }
 
-.week > .node-block {
-  display: none;
-}
-
-.week.dropped > .node-block {
-  display: block;
-}
-
-.week-drop-row {
-  position: absolute;
-  bottom: 0px;
-  left: 0px;
-  width: 100%;
-  height: 20px;
-  border-radius: 0 0 5px 5px;
-  overflow: hidden;
-  cursor: pointer;
-}
-
 .node-drop-side {
   display: inline-block;
   vertical-align: middle;
@@ -523,8 +504,7 @@ input[type="submit"] {
   height: 100%;
 }
 
-.node-drop-row img,
-.week-drop-row img {
+.node-drop-row img {
   width: 12px;
   vertical-align: middle;
   display: inline-block;
@@ -1449,15 +1429,15 @@ input:checked + .slider::before {
 }
 
 /*This is used to get around the issue that we can't make the week itself relatively positioned (messes up jquery sortable*/
-.mouseover-container-bypass {
-  position: relative;
-  padding: 0;
-  margin: 0;
-  top: 0px;
-  width: 100%;
-  height: 0px;
-  overflow: visible;
-}
+//.mouseover-container-bypass {
+//  position: relative;
+//  padding: 0;
+//  margin: 0;
+//  top: 0px;
+//  width: 100%;
+//  height: 0px;
+//  overflow: visible;
+//}
 
 .action-button {
   width: 20px;
