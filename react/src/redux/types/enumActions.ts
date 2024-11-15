@@ -3,7 +3,12 @@
 export enum SliceNamespace {
   NODE = 'node',
   SIDEBAR = 'sidebar',
-  WEEK = 'week'
+  WEEK = 'week',
+  COLUMN = 'column',
+  STRATEGY = 'strategy',
+  OBJECTSET = 'objectset',
+  NODELINK = 'nodelink',
+  WORKFLOW = 'workflow'
 }
 
 // group all actions together which are global
@@ -120,10 +125,6 @@ export enum NodeLinkActions {
   DELETE_SELF = 'nodelink/deleteSelf',
   DELETE_SELF_SOFT = 'nodelink/deleteSelfSoft',
   NEW_NODE_LINK = 'nodelink/newNodeLink'
-}
-
-export enum GridMenuActions {
-  ITEM_ADDED = 'gridmenu/itemAdded'
 }
 
 export enum ObjectSetActions {

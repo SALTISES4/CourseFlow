@@ -246,10 +246,6 @@ class WorkflowUpdateEmitter:
         return {"type": "outcome/updateHorizontalLinks", "payload": data_package}
 
     # never called
-    # def gridMenuItemAdded(response_data):
-    #     return {"type": "gridmenu/itemAdded", "payload": response_data}
-
-    # never called
     # def replaceStoreData(data_package):
     #     return {"type": "replaceStoreData", "payload": data_package}
 

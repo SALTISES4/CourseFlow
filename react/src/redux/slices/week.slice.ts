@@ -2,11 +2,12 @@ import {
   CommonActions,
   NodeActions,
   NodeWeekActions,
+  OutcomeActions,
   ReduxSlice,
   StrategyActions,
   WeekActions
 } from '@cfRedux/types/enumActions'
-import { TWeek } from '@cfRedux/types/type'
+import { AppState, TNode, TWeek } from '@cfRedux/types/type'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 interface WeekPayload {
@@ -47,11 +48,18 @@ interface RefreshStoreDataPayload {
 
 const initialState: TWeek[] = []
 
-const updateEntity = (state, action: PayloadAction<WeekPayload>) => {
+const updateEntity = (
+  state: AppState['week'],
+  action: PayloadAction<{
+    id: number
+    data: Pick<TWeek>
+  }>
+) => {
   return state.map((item) =>
-    item.id === action.payload.id ? { ...item, ...action.payload } : item
+    item.id === action.payload.id ? { ...item, ...action.payload.data } : item
   )
 }
+
 const createEntity = (state, action: PayloadAction<InsertBelowPayload>) => {
   return state.push(action.payload.newModel)
 }
@@ -84,7 +92,7 @@ const newNode = (state, action: PayloadAction<NodeGenericPayload>) => {
   })
 }
 
-const weekSlice = createSlice({
+const weekSlice = createSlice<AppState['week']>({
   name: ReduxSlice.WEEK,
   initialState,
   reducers: {
@@ -108,13 +116,7 @@ const weekSlice = createSlice({
     // updating single fields
     // this is responsible for:
     //
-    changeField(state, action: PayloadAction<WeekPayload>) {
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? { ...item, ...action.payload.json }
-          : item
-      )
-    },
+    changeField: updateEntity,
     changeId(state, action: PayloadAction<ChangeIdPayload>) {
       return state.map((item) => ({
         ...item,
@@ -125,6 +127,9 @@ const weekSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    /*******************************************************
+     * COMMON
+     *******************************************************/
     builder
       .addCase(
         CommonActions.REPLACE_STOREDATA,
@@ -160,23 +165,27 @@ const weekSlice = createSlice({
        *******************************************************/
       .addCase(StrategyActions.TOGGLE_STRATEGY, updateEntity)
       .addCase(StrategyActions.ADD_STRATEGY, createEntity)
-      /*******************************************************
-       * NODE
-       *******************************************************/
-      // i don;t think this one makes sense
+
+    /*******************************************************
+     * NODE
+     *******************************************************/
+    // i don;t think this one makes sense
+    builder
       .addCase(NodeActions.DELETE_SELF_SOFT, removeEntityById)
-      .addCase(NodeActions.NEW_NODE, newNode)
       .addCase(NodeActions.RESTORE_SELF, newNode)
+      .addCase(NodeActions.NEW_NODE, newNode)
       .addCase(NodeActions.INSERT_BELOW, newNode)
-      /*******************************************************
-       * NODEWEEK
-       *******************************************************/
+    /*******************************************************
+     * NODEWEEK
+     * // @todo needs review
+     *******************************************************/
+    builder
       .addCase(
         NodeWeekActions.CHANGE_ID,
         (state, action: PayloadAction<RefreshStoreDataPayload>) => {
           return state.map((item) => ({
             ...item,
-            nodeweekSet: item.nodeweekSet.map((id) =>
+            nodeweekSet: item.nodes.map((id) =>
               id === action.payload.oldId ? action.payload.newId : id
             )
           }))
@@ -186,9 +195,7 @@ const weekSlice = createSlice({
         NodeWeekActions.MOVED_TO,
         (state, action: PayloadAction<RefreshStoreDataPayload>) => {
           return state.map((item) => {
-            const newSet = item.nodeweekSet.filter(
-              (id) => id !== action.payload.id
-            )
+            const newSet = item.nodes.filter((id) => id !== action.payload.id)
             if (item.id === action.payload.newParent) {
               newSet.splice(action.payload.newIndex, 0, action.payload.id)
               return { ...item, nodeweekSet: newSet }
@@ -201,17 +208,17 @@ const weekSlice = createSlice({
 })
 
 export const {
-  replaceStoreData,
-  refreshStoreData,
-  createLock,
-  reloadComments,
-  changeField,
-  insertBelow,
-  deleteSelf,
-  deleteSelfSoft,
-  restoreSelf,
-  changeId,
-  movedTo
+  replaceStoreData: weekReplaceStoreData,
+  refreshStoreData: weekRefreshStoreData,
+  createLock: weekCreateLock,
+  reloadComments: weekReloadComments,
+  changeField: weekChangeField,
+  insertBelow: weekInsertBelow,
+  deleteSelf: weekDeleteSelf,
+  deleteSelfSoft: weekDeleteSelfSoft,
+  restoreSelf: weekRestoreSelf,
+  changeId: weekChangeId,
+  movedTo: weekMovedTo
 } = weekSlice.actions
 
 export default weekSlice.reducer

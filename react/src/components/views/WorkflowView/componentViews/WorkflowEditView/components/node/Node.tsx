@@ -7,6 +7,7 @@ import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
+import {nodeChangeField} from "@cfRedux/slices/node.slice";
 import { AppState } from '@cfRedux/types/type'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
@@ -431,12 +432,12 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
           className="node-drop-row hover-shade"
           onClick={(evt) => {
             evt.stopPropagation()
-            manager.toggleDropReduxAction({
-              objectId,
-              objectType: CfObjectType.NODE,
-              newDropState: !nodeData.node?.isDropped,
-              depth: nodeData.node?.depth // where is depth defined?
-            })
+            dispatch(
+              nodeChangeField({
+                id: objectId,
+                data: { isDropped: !nodeData.node.isDropped }
+              })
+            )
           }}
         >
           <div className="node-drop-side node-drop-left">
@@ -447,9 +448,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
             <div className="node-drop-side node-drop-right">
               <div className="node-drop-time">
                 {dataOverride.timeRequired &&
-                  dataOverride.timeRequired +
-                    ' ' +
-                    choices.timeChoices[dataOverride.timeUnits].name}
+                  `${dataOverride.timeRequired} ${choices.timeChoices[dataOverride.timeUnits].name}`}
               </div>
             </div>
           </div>

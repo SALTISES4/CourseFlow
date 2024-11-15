@@ -4,7 +4,7 @@ import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
-import { changeField } from '@cfRedux/slices/week.slice'
+import { changeField, weekChangeField } from '@cfRedux/slices/week.slice'
 import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
@@ -160,9 +160,9 @@ const Week = ({ objectId, parentId }) => {
         onClick={(evt) => {
           evt.stopPropagation()
           dispatch(
-            changeField({
+            weekChangeField({
               id: objectId,
-              json: { isDropped: !weekData.week.isDropped }
+              data: { isDropped: !weekData.week.isDropped }
             })
           )
         }}

@@ -1,19 +1,30 @@
-// import './wdyr'
-import { rootSidebarReducers, rootWorkflowReducers } from '@cfRedux/Reducers'
 import { configureStore } from '@reduxjs/toolkit'
-import { cfApi } from '@XMLHTTP/API/api'
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
+import columnReducer from '@cfRedux/slices/column.slice'
+import nodeReducer from '@cfRedux/slices/node.slice'
+import nodelinkReducer from '@cfRedux/slices/nodelink.slice'
+import sidebarReducer from '@cfRedux/slices/sidebar.slice'
+import strategyReducer from '@cfRedux/slices/strategy.slice'
+import weekReducer from '@cfRedux/slices/week.slice'
+import workflowReducer from '@cfRedux/slices/workflow.slice'
+import { cfApi } from '@XMLHTTP/API/api'
+import { legacyWorkflowReducers } from '@cfRedux/Reducers'
 
 const store = configureStore({
   reducer: {
-    // workflow: Reducers.rootWorkflowReducer,
-    // outcome: Reducers.rootOutcomeReducer,
-    ...rootWorkflowReducers,
-    ...rootSidebarReducers,
+    ...legacyWorkflowReducers,
+    sidebar: sidebarReducer,
+    workflow: workflowReducer,
+    column: columnReducer,
+    week: weekReducer,
+    node: nodeReducer,
+    nodelink: nodelinkReducer,
+    strategy: strategyReducer,
+
     [cfApi.reducerPath]: cfApi.reducer
   },
-  devTools: process.env.NODE_ENV !== 'production', // Enable Redux DevTools only in non-production environments
+  devTools: process.env.NODE_ENV !== 'production',
   // Adding the api middleware enables caching, invalidation, polling,
   // and other useful features of `rtk-query`.
   middleware: (getDefaultMiddleware) =>

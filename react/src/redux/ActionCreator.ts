@@ -207,14 +207,7 @@ class ActionCreator {
     }
   }
 
-  static gridMenuItemAdded = (responseData) => {
-    console.log('what is gridMenuItemAdded = (responseData)')
-    console.log(responseData)
-    return {
-      type: GridMenuActions.ITEM_ADDED,
-      payload: responseData
-    }
-  }
+
 
   static toggleObjectSet = (id: number, hidden: boolean) => {
     return {

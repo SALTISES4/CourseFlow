@@ -73,75 +73,75 @@ export default function columnReducer(
   action: ColumnActionTypes
 ): TColumn[] {
   switch (action.type) {
-    case CommonActions.REPLACE_STOREDATA: {
-      return action.payload.column
-    }
+    // case CommonActions.REPLACE_STOREDATA: {
+    //   return action.payload.column
+    // }
+    //
+    // case CommonActions.REFRESH_STOREDATA:
+    //   // @todo why?
+    //   return action.payload.column
+    //     ? action.payload.column.reduce(
+    //         (newState, newObj) => {
+    //           const index = newState.findIndex((item) => item.id === newObj.id)
+    //           if (index !== -1) {
+    //             return [
+    //               ...newState.slice(0, index),
+    //               newObj,
+    //               ...newState.slice(index + 1)
+    //             ]
+    //           }
+    //           return [...newState, newObj]
+    //         },
+    //         [...state]
+    //       )
+    //     : state
 
-    case CommonActions.REFRESH_STOREDATA:
-      // @todo why?
-      return action.payload.column
-        ? action.payload.column.reduce(
-            (newState, newObj) => {
-              const index = newState.findIndex((item) => item.id === newObj.id)
-              if (index !== -1) {
-                return [
-                  ...newState.slice(0, index),
-                  newObj,
-                  ...newState.slice(index + 1)
-                ]
-              }
-              return [...newState, newObj]
-            },
-            [...state]
-          )
-        : state
+    // case ColumnActions.CREATE_LOCK: {
+    //   return state.map((item) => {
+    //     if (item.id === action.payload.id) {
+    //       return { ...item, lock: action.payload.lock }
+    //     }
+    //     return item
+    //   })
+    // }
 
-    case ColumnActions.CREATE_LOCK: {
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return { ...item, lock: action.payload.lock }
-        }
-        return item
-      })
-    }
+    // case ColumnActions.DELETE_SELF:
+    //   return state.filter((item) => item.id !== action.payload.id)
 
-    case ColumnActions.DELETE_SELF:
-      return state.filter((item) => item.id !== action.payload.id)
+    // case ColumnActions.DELETE_SELF_SOFT:
+    //   return state.map((item) =>
+    //     item.id === action.payload.id
+    //       ? {
+    //           ...item,
+    //           deleted: true,
+    //           deletedOn: _t('This session') // ??
+    //         }
+    //       : item
+    //   )
 
-    case ColumnActions.DELETE_SELF_SOFT:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? {
-              ...item,
-              deleted: true,
-              deletedOn: _t('This session') // ??
-            }
-          : item
-      )
+    // case ColumnActions.RESTORE_SELF:
+    //   return state.map((item) =>
+    //     item.id === action.payload.id ? { ...item, deleted: false } : item
+    //   )
 
-    case ColumnActions.RESTORE_SELF:
-      return state.map((item) =>
-        item.id === action.payload.id ? { ...item, deleted: false } : item
-      )
+    // case ColumnActions.INSERT_BELOW:
+    //   return [...state, action.payload.newModel]
 
-    case ColumnActions.INSERT_BELOW:
-      return [...state, action.payload.newModel]
+    // case ColumnActions.CHANGE_FIELD:
+    //   return state.map((item) =>
+    //     item.id === action.payload.id
+    //       ? { ...item, ...action.payload.json }
+    //       : item
+    //   )
 
-    case ColumnActions.CHANGE_FIELD:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? { ...item, ...action.payload.json }
-          : item
-      )
-
-    case ColumnActions.RELOAD_COMMENTS: {
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return { ...item, comments: action.payload.commentData }
-        }
-        return item
-      })
-    }
+    // case ColumnActions.RELOAD_COMMENTS: {
+    //   return state.map((item) => {
+    //     if (item.id === action.payload.id) {
+    //       return { ...item, comments: action.payload.commentData }
+    //     }
+    //     return item
+    //   })
+    // }
 
     case NodeActions.NEW_NODE:
       return state.some((item) => item.id === action.payload.column.id)

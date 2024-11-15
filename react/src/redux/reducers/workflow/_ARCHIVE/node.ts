@@ -1,11 +1,11 @@
 import { CfLock } from '@cf/types/common'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
-import nodeSlice, {
+import nodeSliceOld, {
   changeField,
   changedColumn,
   createLock
-} from '@cfRedux/slices/node.slice'
+} from '@cfRedux/slices/node.slice.old'
 import {
   ColumnActions,
   CommonActions,
@@ -205,73 +205,73 @@ export default function nodeReducer(
      *******************************************************/
 
     // UPDATE_NODE is probably fine
-    case NodeActions.CHANGED_COLUMN:
-      return nodeSlice.reducer(state, changedColumn(action.payload))
+    // case NodeActions.CHANGED_COLUMN:
+    //   return nodeSlice.reducer(state, changedColumn(action.payload))
 
-    case NodeActions.CREATE_LOCK:
-      return nodeSlice.reducer(state, createLock(action.payload))
-
-    case NodeActions.CHANGE_FIELD:
-      return nodeSlice.reducer(state, changeField(action.payload))
+    // case NodeActions.CREATE_LOCK:
+    //   return nodeSlice.reducer(state, createLock(action.payload))
+    //
+    // case NodeActions.CHANGE_FIELD:
+    //   return nodeSlice.reducer(state, changeField(action.payload))
 
     // there is no need to check whether node exists in store here
-    case NodeActions.DELETE_SELF: {
-      // @todo no
-      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+    // case NodeActions.DELETE_SELF: {
+    //   // @todo no
+    //   ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+    //
+    //   return state.filter((item) => item.id !== action.payload.id)
+    // }
 
-      return state.filter((item) => item.id !== action.payload.id)
-    }
+    // case NodeActions.DELETE_SELF_SOFT: {
+    //   // @todo no
+    //   ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+    //
+    //   return state.map((item) => {
+    //     if (item.id === action.payload.id) {
+    //       return {
+    //         ...item,
+    //         deleted: true,
+    //         deletedOn: _t('This session')
+    //       }
+    //     }
+    //
+    //     return item
+    //   })
+    // }
 
-    case NodeActions.DELETE_SELF_SOFT: {
-      // @todo no
-      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+    // case NodeActions.RESTORE_SELF:
+    //   // @todo no
+    //   ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+    //
+    //   return state.map((item) => {
+    //     if (item.id === action.payload.id) {
+    //       return { ...item, deleted: false }
+    //     }
+    //     return item
+    //   })
 
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return {
-            ...item,
-            deleted: true,
-            deletedOn: _t('This session')
-          }
-        }
+    // case NodeActions.INSERT_BELOW:
+    // case NodeActions.NEW_NODE: {
+    //   return [...state, action.payload.newModel]
+    // }
 
-        return item
-      })
-    }
+    // case NodeActions.RELOAD_COMMENTS:
+    //   return state.map((item) =>
+    //     item.id === action.payload.id
+    //       ? { ...item, comments: action.payload.commentData }
+    //       : item
+    //   )
 
-    case NodeActions.RESTORE_SELF:
-      // @todo no
-      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
-
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return { ...item, deleted: false }
-        }
-        return item
-      })
-
-    case NodeActions.INSERT_BELOW:
-    case NodeActions.NEW_NODE: {
-      return [...state, action.payload.newModel]
-    }
-
-    case NodeActions.RELOAD_COMMENTS:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? { ...item, comments: action.payload.commentData }
-          : item
-      )
-
-    case NodeActions.SET_LINKED_WORKFLOW:
-      return state.map((item) =>
-        item.id === action.payload.id
-          ? {
-              ...item,
-              linkedWorkflow: action.payload.linkedWorkflow,
-              linkedWorkflowData: action.payload.linkedWorkflowData
-            }
-          : item
-      )
+    // case NodeActions.SET_LINKED_WORKFLOW:
+    //   return state.map((item) =>
+    //     item.id === action.payload.id
+    //       ? {
+    //           ...item,
+    //           linkedWorkflow: action.payload.linkedWorkflow,
+    //           linkedWorkflowData: action.payload.linkedWorkflowData
+    //         }
+    //       : item
+    //   )
 
     // case NodeActions.RELOAD_ASSIGNMENTS:
     //   return state.map((item) =>
@@ -283,39 +283,39 @@ export default function nodeReducer(
     /*******************************************************
      * NODE LINK
      *******************************************************/
-    case NodeLinkActions.DELETE_SELF:
-    case NodeLinkActions.DELETE_SELF_SOFT:
-      return state.map((item) => {
-        if (item.outgoingLinks.includes(action.payload.id)) {
-          const updatedOutgoingLinks = item.outgoingLinks.filter(
-            (linkId) => linkId !== action.payload.id
-          )
-          return { ...item, outgoingLinks: updatedOutgoingLinks }
-        }
-        return item
-      })
+    // case NodeLinkActions.DELETE_SELF:
+    // case NodeLinkActions.DELETE_SELF_SOFT:
+    //   return state.map((item) => {
+    //     if (item.outgoingLinks.includes(action.payload.id)) {
+    //       const updatedOutgoingLinks = item.outgoingLinks.filter(
+    //         (linkId) => linkId !== action.payload.id
+    //       )
+    //       return { ...item, outgoingLinks: updatedOutgoingLinks }
+    //     }
+    //     return item
+    //   })
 
-    case NodeLinkActions.RESTORE_SELF:
-      return state.map((item) => {
-        if (item.id === action.payload.parentId) {
-          return {
-            ...item,
-            outgoingLinks: [...item.outgoingLinks, action.payload.id]
-          }
-        }
-        return item
-      })
+    // case NodeLinkActions.RESTORE_SELF:
+    //   return state.map((item) => {
+    //     if (item.id === action.payload.parentId) {
+    //       return {
+    //         ...item,
+    //         outgoingLinks: [...item.outgoingLinks, action.payload.id]
+    //       }
+    //     }
+    //     return item
+    //   })
 
-    case NodeLinkActions.NEW_NODE_LINK:
-      return state.map((item) => {
-        if (item.id === action.payload.newModel.sourceNode) {
-          return {
-            ...item,
-            outgoingLinks: [...item.outgoingLinks, action.payload.newModel.id]
-          }
-        }
-        return item
-      })
+    // case NodeLinkActions.NEW_NODE_LINK:
+    //   return state.map((item) => {
+    //     if (item.id === action.payload.newModel.sourceNode) {
+    //       return {
+    //         ...item,
+    //         outgoingLinks: [...item.outgoingLinks, action.payload.newModel.id]
+    //       }
+    //     }
+    //     return item
+    //   })
 
     case StrategyActions.ADD_STRATEGY: {
       if (action.payload.nodesAdded.length == 0) {
@@ -326,77 +326,77 @@ export default function nodeReducer(
     /*******************************************************
      * OUTCOME
      *******************************************************/
-    case OutcomeActions.DELETE_SELF:
-    case OutcomeActions.DELETE_SELF_SOFT:
-    case OutcomeActions.RESTORE_SELF:
-    case OutcomeBaseActions.DELETE_SELF:
-    case OutcomeBaseActions.DELETE_SELF_SOFT:
-    case OutcomeBaseActions.RESTORE_SELF:
-      return state.map((item) => {
-        const update = action.payload.extraData.find(
-          (updateItem) => updateItem.id === item.id
-        )
-        return update ? { ...item, ...update } : item
-      })
+    // case OutcomeActions.DELETE_SELF:
+    // case OutcomeActions.DELETE_SELF_SOFT:
+    // case OutcomeActions.RESTORE_SELF:
+    // case OutcomeBaseActions.DELETE_SELF:
+    // case OutcomeBaseActions.DELETE_SELF_SOFT:
+    // case OutcomeBaseActions.RESTORE_SELF:
+    //   return state.map((item) => {
+    //     const update = action.payload.extraData.find(
+    //       (updateItem) => updateItem.id === item.id
+    //     )
+    //     return update ? { ...item, ...update } : item
+    //   })
 
-    case OutcomeActions.INSERT_CHILD:
-    case OutcomeActions.INSERT_BELOW:
-    case OutcomeBaseActions.INSERT_CHILD:
-    case OutcomeOutcomeActions.CHANGE_ID:
-      if (action.payload.nodeUpdates.length === 0) {
-        return state
-      }
-      return state.map((item) => {
-        const update = action.payload.nodeUpdates.find(
-          (updateItem) => updateItem.id === item.id
-        )
-        return update
-          ? {
-              ...item,
-              outcomenodeSet: update.outcomenodeSet,
-              outcomenodeUniqueSet: update.outcomenodeUniqueSet
-            }
-          : item
-      })
+    // case OutcomeActions.INSERT_CHILD:
+    // case OutcomeActions.INSERT_BELOW:
+    // case OutcomeBaseActions.INSERT_CHILD:
+    // case OutcomeOutcomeActions.CHANGE_ID:
+    //   if (action.payload.nodeUpdates.length === 0) {
+    //     return state
+    //   }
+    //   return state.map((item) => {
+    //     const update = action.payload.nodeUpdates.find(
+    //       (updateItem) => updateItem.id === item.id
+    //     )
+    //     return update
+    //       ? {
+    //           ...item,
+    //           outcomenodeSet: update.outcomenodeSet,
+    //           outcomenodeUniqueSet: update.outcomenodeUniqueSet
+    //         }
+    //       : item
+    //   })
 
-    case OutcomeNodeActions.UPDATE_DEGREE:
-      if (action.payload.outcomenode === -1) {
-        return state
-      }
-      return state.map((item) => {
-        return item.id === action.payload.dataPackage[0].node
-          ? {
-              ...item,
-              outcomenodeSet: action.payload.newOutcomenodeSet,
-              outcomenodeUniqueSet: action.payload.newOutcomenodeUniqueSet
-            }
-          : item
-      })
+    // case OutcomeNodeActions.UPDATE_DEGREE:
+    //   if (action.payload.outcomenode === -1) {
+    //     return state
+    //   }
+    //   return state.map((item) => {
+    //     return item.id === action.payload.dataPackage[0].node
+    //       ? {
+    //           ...item,
+    //           outcomenodeSet: action.payload.newOutcomenodeSet,
+    //           outcomenodeUniqueSet: action.payload.newOutcomenodeUniqueSet
+    //         }
+    //       : item
+    //   })
 
     /*******************************************************
      * COLUMN
      *******************************************************/
-    case ColumnActions.DELETE_SELF:
-    case ColumnActions.DELETE_SELF_SOFT:
-    case ColumnActions.RESTORE_SELF: {
-      const isDeleteAction =
-        action.type === ColumnActions.DELETE_SELF ||
-        action.type === ColumnActions.DELETE_SELF_SOFT
-      const newColumn = isDeleteAction
-        ? action.payload.extraData
-        : action.payload.id
-      const updatedState = state.map((item) => {
-        const shouldUpdateColumn = isDeleteAction
-          ? item.column === action.payload.id
-          : action.payload.extraData.includes(item.id)
-        return shouldUpdateColumn ? { ...item, column: newColumn } : item
-      })
+    // case ColumnActions.DELETE_SELF:
+    // case ColumnActions.DELETE_SELF_SOFT:
+    // case ColumnActions.RESTORE_SELF: {
+    //   const isDeleteAction =
+    //     action.type === ColumnActions.DELETE_SELF ||
+    //     action.type === ColumnActions.DELETE_SELF_SOFT
+    //   const newColumn = isDeleteAction
+    //     ? action.payload.extraData
+    //     : action.payload.id
+    //   const updatedState = state.map((item) => {
+    //     const shouldUpdateColumn = isDeleteAction
+    //       ? item.column === action.payload.id
+    //       : action.payload.extraData.includes(item.id)
+    //     return shouldUpdateColumn ? { ...item, column: newColumn } : item
+    //   })
 
-      // @todo need to remove these kind of side effects from...
-      ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
-
-      return updatedState
-    }
+    //   // @todo need to remove these kind of side effects from...
+    //   ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+    //
+    //   return updatedState
+    // }
 
     /*******************************************************
      * WEEK

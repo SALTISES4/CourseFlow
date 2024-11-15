@@ -1,5 +1,6 @@
 import { SidebarActions, SliceNamespace } from '@cf/redux/types/enumActions'
 import { CfObjectType } from '@cf/types/enum'
+import { AppState } from '@cfRedux/types/type'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 export type SidebarState = {
@@ -20,11 +21,7 @@ const initialState: SidebarState = {
   edit: {}
 }
 
-// note that the useSlice pattern auto constructs (and registers) the action type like this
-// [NAMESPACE]/[REDUCER]
-// i.e. [SliceNamespace.SIDEBAR]/collapse
-
-const sidebarSlice = createSlice({
+const sidebarSlice = createSlice<AppState['sidebar']>({
   name: SliceNamespace.SIDEBAR,
   initialState,
   reducers: {
