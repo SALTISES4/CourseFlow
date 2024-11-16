@@ -138,6 +138,7 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
   return (
     <>
       <div
+        id={'week-block-' + String(objectId)}
         style={style}
         {...attributes}
         className={clsx('week-workflow', {
@@ -145,8 +146,8 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
           //   'no-drag': weekData.week?.noDrag, // find out about noDrag
           //  dragging: mainDiv.current?.classList.contains('dragging')
         })}
-        id={String(objectId)}
         ref={setNodeRef}
+        data-scroll-to-id={'week-block-' + String(objectId)}
         data-child-id={objectId}
       >
         {/*

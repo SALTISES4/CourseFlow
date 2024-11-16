@@ -8,7 +8,7 @@ import {
   SimpleMenu
 } from '@cfComponents/menu/Menu'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import JumpToWeekWorkflow from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeekWorkflow'
+import JumpToWeek from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeek'
 import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
 import { AppState } from '@cfRedux/types/type'
 import EditIcon from '@mui/icons-material/Edit'
@@ -203,28 +203,26 @@ const ExpandCollapseMenu = () => {
   )
 }
 
-const JumpToMenu = ({ weekWorkflowSet }: { weekWorkflowSet: number[] }) => {
+//
+const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   const context = useContext(WorkflowConfigContext)
   const viewType = context.workflowView
 
-  if (viewType !== WorkflowViewType.WORKFLOW || !weekWorkflowSet.length) {
+  if (viewType !== WorkflowViewType.WORKFLOW || !weekIds.length) {
     return null
   }
-  const menuItems: MenuItemType[] = weekWorkflowSet.map(
-    (weekWorkflow, index) => {
-      return {
-        content: (
-          <JumpToWeekWorkflow
-            key={`weekworkflow-${weekWorkflow}`}
-            order={weekWorkflowSet}
-            objectId={weekWorkflow}
-          />
-        ),
-        action: null,
-        show: true
-      }
+  const menuItems: MenuItemType[] = weekIds.map((item, index) => {
+    return {
+      content: (
+        <JumpToWeek
+          key={`weekworkflow-${item}`}
+          objectId={item}
+        />
+      ),
+      action: null,
+      show: true
     }
-  )
+  })
   const header: MenuItemType = {
     content: _t('Jump to'),
     icon: <KeyboardDoubleArrowDownIcon />,

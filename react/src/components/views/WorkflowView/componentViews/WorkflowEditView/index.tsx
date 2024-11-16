@@ -1,17 +1,13 @@
+import { CfObjectType } from '@cf/types/enum'
+import { updateAllEntities } from '@cfRedux/thunks'
 import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
 import { DndContext } from '@dnd-kit/core'
-import { verticalListSortingStrategy } from '@dnd-kit/sortable'
-import {
-  SortableContext,
-  arrayMove,
-  verticalListSortingStrategy
-} from '@dnd-kit/sortable'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import clsx from 'clsx'
 import React from 'react'
-import { useSelector } from 'react-redux'
-import { createSelector } from 'reselect'
+import { useDispatch, useSelector } from 'react-redux'
 
 // Utility function to reorder an array
 const reorderArray = (list, startIndex, endIndex) => {
@@ -22,6 +18,7 @@ const reorderArray = (list, startIndex, endIndex) => {
 }
 
 const WorkflowEditView = () => {
+  const dispatch = useDispatch()
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
@@ -80,7 +77,6 @@ const WorkflowEditView = () => {
 
   // Updated handleDragEnd function
   const handleDragEnd = (event) => {
-    console.log('ended')
     const { active, over } = event
     if (!over || active.id === over.id) {
       return
@@ -91,11 +87,13 @@ const WorkflowEditView = () => {
 
     // Reorder weeks array
     const reorderedWeeks = reorderArray(weeksDragState, oldIndex, newIndex)
+    dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: true })))
+
     setWeeksDragState(reorderedWeeks)
   }
 
-  const sayHello = () => {
-    console.log('sayHello')
+  const handleDragStart = () => {
+    dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
   }
 
   /*******************************************************
@@ -121,7 +119,7 @@ const WorkflowEditView = () => {
       {/*  {weeks}*/}
       {/*</div>*/}
 
-      <DndContext onDragEnd={handleDragEnd} onDragStart={sayHello}>
+      <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
         <SortableContext
           items={weeksDragState}
           strategy={verticalListSortingStrategy}
