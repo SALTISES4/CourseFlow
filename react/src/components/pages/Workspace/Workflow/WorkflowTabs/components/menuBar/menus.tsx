@@ -8,7 +8,7 @@ import {
   SimpleMenu
 } from '@cfComponents/menu/Menu'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import JumpToWeek from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/JumpToWeek'
+import ScrollToWeek from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ScrollToWeek'
 import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
 import { AppState } from '@cfRedux/types/type'
 import EditIcon from '@mui/icons-material/Edit'
@@ -214,7 +214,7 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   const menuItems: MenuItemType[] = weekIds.map((item, index) => {
     return {
       content: (
-        <JumpToWeek
+        <ScrollToWeek
           key={`weekworkflow-${item}`}
           objectId={item}
         />

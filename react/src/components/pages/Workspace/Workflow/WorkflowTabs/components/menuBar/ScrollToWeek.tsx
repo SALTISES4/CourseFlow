@@ -1,63 +1,49 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import { getWeekById } from '@cfFindState'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
-import { AppState, TWorkflow } from '@cfRedux/types/type'
-import $ from 'jquery' // Assuming jQuery is still needed for the DOM manipulation
+import { AppState } from '@cfRedux/types/type'
 import React, { useCallback } from 'react'
 import { useSelector } from 'react-redux'
 
 type PropsType = {
   objectId: number
-  rank: number
-  parentId?: number
-  throughParentId?: number
 }
 
-/**
- * The week representation for the "jump to" menu
- */
-const JumpToWeekView = ({ objectId, rank }: PropsType) => {
+const ScrollToWeek = ({ objectId }: PropsType) => {
   const weekData = useSelector((state: AppState) =>
     selectWeekById(state, objectId)
   )
+  // call in the workflow here because we use it for the
+  // 'week' label which changes based on workflow type
+  // we don't have a good solution for this yet
   const workflow = useSelector((state: AppState) => state.workflow)
 
-  const jumpTo = useCallback(() => {
-    const weekId = week.data.id
-    const week = $(`.week-workflow[data-child-id='${weekId}'] > .week`)
-    if (week.length > 0) {
-      const container = $('#container')
-      $('#container').animate(
-        {
-          scrollTop:
-            week.offset().top +
-            container[0].scrollTop -
-            container.offset().top -
-            200
-        },
-        300
-      )
+  const scrollToHandler = useCallback(() => {
+    const element = document.querySelector(
+      `[data-scroll-to-id='week-block-${objectId}']`
+    )
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
     }
-  }, [weekData.week.id])
-
-  let defaultText = weekData.week.weekTypeDisplay + ' ' + (rank + 1)
-  if (workflow.isStrategy) {
-    defaultText = undefined // Adjust based on whether there's a specific condition for when workflow is a strategy
-  }
-
-  const src =
-    apiPaths.external.static_assets.icon +
-    (weekData.week.isDropped ? 'minus.svg' : 'plus.svg')
+  }, [objectId])
 
   return (
-    <div className="hover-shade" onClick={jumpTo}>
-      <TitleText text={weekData.week.title} defaultText={defaultText} />
+    <div
+      className="hover-shade"
+      onClick={() => {
+        scrollToHandler()
+      }}
+    >
+      <TitleText text={weekData.week.title} defaultText={`Week ${objectId}`} />
     </div>
   )
 }
 
-export default JumpToWeekView
+export default ScrollToWeek
 
 // import { apiPaths } from '@cf/router/apiRoutes'
 // import { CfObjectType } from '@cf/types/enum'
