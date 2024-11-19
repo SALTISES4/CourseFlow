@@ -6,20 +6,21 @@ import outcomeworkflowReducer from '@cfRedux/reducers/outcome/outcomeWorkflow'
 import childWorkflowReducer from '@cfRedux/reducers/workflow/childWorkflow'
 import columnworkflowReducer from '@cfRedux/reducers/workflow/columnworkflow'
 import nodeweekReducer from '@cfRedux/reducers/workflow/nodeWeek'
-import objectSetReducer from '@cfRedux/reducers/workflow/objectSet'
 import parentNodeReducer from '@cfRedux/reducers/workflow/parentNode'
-import parentProjectReducer from '@cfRedux/reducers/workflow/parentProject'
 import parentWorkflowReducer from '@cfRedux/reducers/workflow/parentWorfkflow'
 import weekworkflowReducer from '@cfRedux/reducers/workflow/weekworkflow'
 // slices
 import columnReducer from '@cfRedux/slices/column.slice'
 import nodeReducer from '@cfRedux/slices/node.slice'
 import nodelinkReducer from '@cfRedux/slices/nodelink.slice/workflow/nodelink'
+import objectsetReducer from '@cfRedux/slices/objectset.slice'
+import projectReducer from '@cfRedux/slices/project.slice'
 import sidebarReducer from '@cfRedux/slices/sidebar.slice'
 import strategyReducer from '@cfRedux/slices/strategy.slice'
 import weekReducer from '@cfRedux/slices/week.slice'
 import workflowReducer from '@cfRedux/slices/workflow.slice'
 import * as Redux from 'redux'
+import { combineReducers } from 'redux'
 
 // @todo need to wrap these up
 
@@ -63,7 +64,7 @@ export const legacyWorkflowReducers = {
   outcomeworkflow: outcomeworkflowReducer,
   outcomenode: outcomeNodeReducer,
   outcomeoutcome: outcomeOutcomeReducer,
-
+  objectset: objectsetReducer,
   // keep these flat/normalized first order entities
 
   // note this is not called nodenode, although that's what it is
@@ -71,15 +72,17 @@ export const legacyWorkflowReducers = {
 
   outcome: outcomeReducer,
   // verify
-  objectset: objectSetReducer,
   outcomehorizontallink: outcomeHorizontalLinkReducer,
 
   // @todo sort through these parent / children, why do they need to be in store
   parentWorkflow: parentWorkflowReducer,
   parentNode: parentNodeReducer,
-  parentProject: parentProjectReducer,
   childWorkflow: childWorkflowReducer
 }
+
+export const workspaceReducer = combineReducers({
+  project: projectReducer
+})
 
 const rootOutcomeReducers = {
   outcome: outcomeReducer,

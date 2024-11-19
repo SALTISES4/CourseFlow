@@ -24,7 +24,7 @@ const TabWorkflows = ({ projectId }: PropsType) => {
     keywordFilter: true
   }
 
-  const locked = [{ name: 'parentProject', value: projectId }]
+  const locked = [{ name: 'project', value: projectId }]
 
   const [searchArgs, setSearchArgs] = useState<LibraryObjectsSearchQueryArgs>(
     {}

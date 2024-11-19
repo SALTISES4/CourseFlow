@@ -8,7 +8,8 @@ export enum SliceNamespace {
   STRATEGY = 'strategy',
   OBJECTSET = 'objectset',
   NODELINK = 'nodelink',
-  WORKFLOW = 'workflow'
+  WORKFLOW = 'workflow',
+  PROJECT = 'project'
 }
 
 // group all actions together which are global

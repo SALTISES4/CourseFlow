@@ -1,5 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
 import { updateAllEntities } from '@cfRedux/thunks'
+import {WorkflowActions} from "@cfRedux/types/enumActions";
 import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
@@ -9,8 +10,10 @@ import clsx from 'clsx'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-// Utility function to reorder an array
-const reorderArray = (list, startIndex, endIndex) => {
+/**
+ * Utility function to reorder an array
+ **/
+function reorderArray(list, startIndex, endIndex) {
   const result = Array.from(list)
   const [removed] = result.splice(startIndex, 1)
   result.splice(endIndex, 0, removed)
@@ -85,11 +88,17 @@ const WorkflowEditView = () => {
     const oldIndex = weeksDragState.indexOf(active.id)
     const newIndex = weeksDragState.indexOf(over.id)
 
-    // Reorder weeks array
+    // calculate new order
     const reorderedWeeks = reorderArray(weeksDragState, oldIndex, newIndex)
+
+    // set redux state
     dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: true })))
 
+    // set local state
     setWeeksDragState(reorderedWeeks)
+
+    // commit to DB
+//    WorkflowAction.
   }
 
   const handleDragStart = () => {

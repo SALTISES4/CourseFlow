@@ -17,7 +17,7 @@ export const updateAllEntities =
         const currentNodes = getState().node
 
         if (!Array.isArray(currentNodes)) {
-          console.error('Error: state.week is not an array', currentWeeks)
+          console.error('Error: state.nodes is not an array', currentWeeks)
           return
         }
 
@@ -37,7 +37,6 @@ export const updateAllEntities =
       case CfObjectType.WEEK:
         const currentWeeks = getState().week
 
-        // Ensure currentWeeks is an array before proceeding
         if (!Array.isArray(currentWeeks)) {
           console.error('Error: state.week is not an array', currentWeeks)
           return

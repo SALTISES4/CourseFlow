@@ -152,6 +152,8 @@ export const DuplicateSelfButton = (data: ActionItemWithParentArgs) => {
 
 /*******************************************************
  * Adds a button that inserts a child to them item
+ *
+ * .. insert  child is only outcomes (?)
  *******************************************************/
 export const InsertChildButton = (data: ActionItemArgs) => {
   const [mutate, { isSuccess, isError, data: updateData }] =

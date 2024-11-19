@@ -1,4 +1,4 @@
-import { legacyWorkflowReducers } from '@cfRedux/Reducers'
+import { legacyWorkflowReducers, workspaceReducer } from '@cfRedux/Reducers'
 import columnReducer from '@cfRedux/slices/column.slice'
 import nodeReducer from '@cfRedux/slices/node.slice'
 import nodelinkReducer from '@cfRedux/slices/nodelink.slice'
@@ -15,6 +15,7 @@ import '@cfSCSS/workflow_styles.scss'
 const store = configureStore({
   reducer: {
     ...legacyWorkflowReducers,
+    workspace: workspaceReducer,
     sidebar: sidebarReducer,
     workflow: workflowReducer,
     column: columnReducer,

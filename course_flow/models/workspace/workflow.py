@@ -119,7 +119,7 @@ class Workflow(AbstractWorkspaceModel):
     # what is reasoning for this being n2m? probably a mistake
     weeks = models.ManyToManyField(Week, through="WeekWorkflow", blank=True)
 
-    # what is reasoning for this being n2m
+    # should not be n2m
     columns = models.ManyToManyField(Column, through="ColumnWorkflow", blank=True)
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeWorkflow", blank=True)

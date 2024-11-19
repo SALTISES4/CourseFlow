@@ -23,6 +23,20 @@ export const apiPathRoutes = {
       library__favourites__projects: '/library/favourites',
       library__toggle_favourite__post: '/library/toggle-favourite'
     },
+    workspace: {
+      duplicate: '/workspace/:id/duplicate',
+      delete_soft: '/workspace/:id/delete-soft',
+      delete: '/workspace/:id/delete',
+      restore: '/workspace/:id/restore',
+      field__update: '/workspace/:id/update-field'
+    },
+    workspaceUser: {
+      list: '/workspace-user/id/list',
+      list_available: '/workspace-user/:id/list-available',
+      create: '/workspace-user/:id/create',
+      delete: '/workspace-user/:id/delete',
+      update: '/workspace-user/:id/update'
+    },
     project: {
       create: '/project/create',
       detail: '/project/:id/detail',
@@ -48,7 +62,7 @@ export const apiPathRoutes = {
       create: '/workflow/create',
       duplicate: '/workflow/:id/duplicate-to-project',
       update: '/workflow/:id/update',
-      link: '/workflow/:id/link-to-node',
+      //      link: '/workflow/:id/link-to-node',
       strategy__toggle: '/workflow/:id/strategy/toggle',
       strategy__duplicate: '/workflow/:id/strategy/duplicate',
       strategy__add_to_workflow: '/workflow/:id/strategy/add-to-workflow',
@@ -58,28 +72,31 @@ export const apiPathRoutes = {
       object__insert_child: '/workflow/object/insert-sibling',
       object__order: '/workflow/object/order'
     },
-    workspace: {
-      duplicate: '/workspace/:id/duplicate',
-      delete_soft: '/workspace/:id/delete-soft',
-      delete: '/workspace/:id/delete',
-      restore: '/workspace/:id/restore',
-      field__update: '/workspace/:id/update-field'
-    },
-    workspaceUser: {
-      list: '/workspace-user/:id/list',
-      list_available: '/workspace-user/:id/list-available',
-      create: '/workspace-user/:id/create',
-      delete: '/workspace-user/:id/delete',
-      update: '/workspace-user/:id/update'
-    },
     node: {
       create: '/node/create',
-      link__create: '/node-link/create'
+      delete: '/node/:id/delete',
+      delete_soft: '/node/:id/delete_soft',
+      restore: '/node/:id/restore',
+      duplicate: '/node/:id/duplicate',
+      update_position: '/node/:id/update-position',
+      link__create: '/node/node-link/create',
+      link_to_workflow: '/node/:id/link-to-workflow'
+    },
+    week: {
+      create: '/week/create',
+      duplicate: '/week/:id/duplicate',
+      update_position: '/week/:id/update-position',
+      delete: '/week/:id/delete'
+    },
+    column: {
+      create: '/column/create',
+      update_position: '/column/:id/update-position',
+      delete: '/column/:id/delete'
     },
     comment: {
       list_by_object: '/comment/list-by-object',
       create: '/comment/create',
-      delete: '/comment/delete',
+      delete: '/comment/:id/delete',
       delete_all: '/comment/delete-all'
     },
     exportImport: {

@@ -29,7 +29,7 @@ type StateType = {
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
   const workflow = useSelector((state: AppState) => state.workflow)
-  const project = useSelector((state: AppState) => state.parentProject)
+  const project = useSelector((state: AppState) => state.workspace.project)
 
   const isStrategy = workflow.isStrategy
   const userId = userContext.id

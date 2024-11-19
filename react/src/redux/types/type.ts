@@ -23,6 +23,9 @@ import {
 } from '@XMLHTTP/types/entity'
 
 export type AppState = {
+  workspace: {
+    project?: TProject
+  }
   workflow: TWorkflow
   columnworkflow: TColumnworkflow[]
   column: TColumn[]
@@ -41,7 +44,6 @@ export type AppState = {
   sidebar: SidebarState
   parentWorkflow?: TParentWorkflow[]
   parentNode?: TParentNode[]
-  parentProject?: TProject
   outcomehorizontallink?: TOutcomeHorizontalLink[]
   childWorkflow?: TChildWorkflow[]
 }

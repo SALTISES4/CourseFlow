@@ -16,7 +16,6 @@ from course_flow.apps import logger
 from course_flow.decorators import user_can_edit, user_can_view
 from course_flow.duplication_functions import (
     duplicate_column,
-    duplicate_node,
     fast_duplicate_outcome,
     fast_duplicate_week,
 )
@@ -55,6 +54,7 @@ from course_flow.serializers import (
     serializer_lookups_shallow,
 )
 from course_flow.services import DAO
+from course_flow.services.node import duplicate_node
 from course_flow.sockets.emitters import WorkflowUpdateEmitter
 
 
@@ -106,7 +106,11 @@ class WorkflowObjectEndpoint:
                 if object_type == "week":
                     model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
                     parent = DAO.get_model_from_str(parent_type).objects.get(id=parent_id)
+
+                    # gets the weekworkflow
                     through = WeekWorkflow.objects.get(week=model, workflow=parent)
+
+                    # creates a new week?
                     newmodel = fast_duplicate_week(model, request.user)
                     newthroughmodel = WeekWorkflow.objects.create(
                         workflow=parent, week=newmodel, rank=through.rank + 1
@@ -336,9 +340,11 @@ class WorkflowObjectEndpoint:
                 new_through_kwargs = {"child": new_model, "parent": parent}
             else:
                 new_through_kwargs = {object_type: new_model, parent_type: parent}
+
             new_through_model = DAO.get_model_from_str(through_type).objects.create(
                 **new_through_kwargs, rank=through.rank + 1
             )
+
             new_model_serialized = serializer_lookups_shallow[object_type](new_model).data
             new_through_serialized = serializer_lookups_shallow[through_type](
                 new_through_model
@@ -399,7 +405,6 @@ class WorkflowObjectEndpoint:
                 - re-order weeks
                 - re-order columns
                 ...
-
         :param request:
         :return:
         """

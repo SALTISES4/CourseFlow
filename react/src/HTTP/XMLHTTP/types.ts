@@ -43,7 +43,7 @@ export type WorkflowChildDataPackage = {
 
 export type WorkflowDataPackage = {
   workflow: EWorkflow
-  parentProject: EProject
+  project: EProject
   columnworkflow: EColumnworkflow[]
   column: EColumn[]
   weekworkflow: EWeekworkflow[]

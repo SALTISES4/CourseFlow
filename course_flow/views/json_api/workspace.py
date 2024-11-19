@@ -117,14 +117,17 @@ class WorkspaceEndpoint:
 
     #########################################################
     # @todo this is still a giant catchall for all objects
-    # separate out the worklow objects:
-    #  - columnn
+    #
+    # Separate out the workflow objects:
+    #  - column
     #  - node
     #  - outcome
-    #  - weekl
-    #  from the workspace objects
+    #  - week
+    #
+    #  From the workspace objects
     #   - workflow
     #   - project
+
     #########################################################
     @staticmethod
     # @user_can_delete(False)
@@ -147,7 +150,12 @@ class WorkspaceEndpoint:
         try:
             model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
         except (ProtectedError, ObjectDoesNotExist):
-            return Response({"error": "Object does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "error": "Object does not exist",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Delete the object
         # @todo verify if we need to do this at the end
@@ -164,6 +172,7 @@ class WorkspaceEndpoint:
 
         # Additional data handling based on object type
         extra_data = None
+
         if object_type in ["outcome", "outcome_base"]:
             affected_nodes = [pk] + list(
                 DAO.get_descendant_outcomes(model).values_list("pk", flat=True)
@@ -171,6 +180,7 @@ class WorkspaceEndpoint:
             extra_data = RefreshSerializerNode(
                 Node.objects.filter(pk__in=affected_nodes), many=True
             ).data
+
         elif object_type == "column" and linked_workflows:
             extra_data = (
                 linked_workflows[0]
@@ -334,10 +344,13 @@ class WorkspaceEndpoint:
 
             # Check to see if we have any linked workflows that need to be updated
             linked_workflows = False
+
             if object_type == ObjectType.NODE:
                 linked_workflows = list(Workflow.objects.filter(linked_nodes=model))
+
             elif object_type == ObjectType.WEEK:
                 linked_workflows = list(Workflow.objects.filter(linked_nodes__week=model))
+
             elif object_type in ["workflow", "activity", "course", "program"]:
                 linked_workflows = list(
                     Workflow.objects.filter(linked_nodes__week__workflow__id=model.id)
@@ -345,6 +358,7 @@ class WorkspaceEndpoint:
                 parent_workflows = [
                     node.get_workflow() for node in Node.objects.filter(linked_workflow=model)
                 ]
+
             elif object_type == ObjectType.OUTCOME:
                 linked_workflows = list(
                     Workflow.objects.filter(
@@ -354,6 +368,7 @@ class WorkspaceEndpoint:
                         )
                     )
                 )
+
             if object_type == ObjectType.OUTCOME:
                 outcomes_list = [object_id] + list(
                     DAO.get_descendant_outcomes(model).values_list("pk", flat=True)
@@ -366,6 +381,7 @@ class WorkspaceEndpoint:
                     Outcome.objects.filter(horizontal_outcomes__in=outcomes_list),
                     many=True,
                 ).data
+
             if object_type == ObjectType.WEEK:
                 throughparent = WeekWorkflow.objects.get(week=model)
                 throughparent_id = throughparent.id
@@ -375,6 +391,7 @@ class WorkspaceEndpoint:
                     .filter(rank__lt=throughparent.rank)
                     .count()
                 )
+
             elif object_type == ObjectType.COLUMN:
                 throughparent = ColumnWorkflow.objects.get(column=model)
                 throughparent_id = throughparent.id
@@ -451,9 +468,11 @@ class WorkspaceEndpoint:
                                 {"data": outcomes_to_update}
                             ),
                         )
+
         if object_type != "outcome" and object_type != "outcome_base" and linked_workflows:
             for wf in linked_workflows:
                 WorkflowUpdateEmitter.emit_parent_updated(wf)
+
         if object_type in ["workflow", "activity", "course", "program"]:
             for parent_workflow in parent_workflows:
                 WorkflowUpdateEmitter.emit_child_updated(parent_workflow, model.get_workflow())

@@ -76,6 +76,7 @@ const extendedApi = cfApi.injectEndpoints({
     /*******************************************************
      *  OBJECTS
      *******************************************************/
+     // only outcomes
     insertChild: builder.mutation<
       EmptyPostResp,
       {

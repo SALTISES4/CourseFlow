@@ -40,13 +40,16 @@ class WorkspaceService:
         parent_workflows = []
         if object_type == "node":
             linked_workflows = Workflow.objects.filter(linked_nodes=model)
+
         elif object_type == "week":
             linked_workflows = Workflow.objects.filter(linked_nodes__week=model)
+
         elif object_type in ["workflow", "activity", "course", "program"]:
             linked_workflows = Workflow.objects.filter(linked_nodes__week__workflow__id=model.id)
             parent_workflows = [
                 node.get_workflow() for node in Node.objects.filter(linked_workflow=model)
             ]
+
         elif object_type == "outcome":
             linked_workflows = Workflow.objects.filter(
                 Q(

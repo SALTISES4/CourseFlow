@@ -15,7 +15,7 @@ import { Link, generatePath } from 'react-router-dom'
  */
 const ReturnLinks = () => {
   const canView = true // @todo temp because project is not in store yet
-  const project = useSelector((state: AppState) => state.parentProject)
+  const project = useSelector((state: AppState) => state.workspace.parentProject)
 
   /*******************************************************
    * REDUX

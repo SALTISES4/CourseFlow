@@ -17,7 +17,6 @@ export default function objectSetReducer(
   switch (action.type) {
     case ObjectSetActions.TOGGLE_OBJECT_SET:
       return state.map((item) =>
-        // @ts-ignore
         item.id === action.payload.id
           ? { ...item, hidden: action.payload.hidden }
           : item
