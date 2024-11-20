@@ -1,10 +1,25 @@
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
+import { _t } from '@cf/utility/Utility.class'
+import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
+import CommentBox from '@cfEditableComponents/components/CommentBox'
+import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { AppState } from '@cfRedux/types/type'
+import AddCommentIcon from '@mui/icons-material/AddComment'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import DeleteIcon from '@mui/icons-material/Delete'
+import QueueIcon from '@mui/icons-material/Queue'
+import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
+import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 import { styled } from '@mui/material/styles'
+import {
+  useCreateMutation,
+  useDeleteMutation,
+  useUpdatePositionMutation
+} from '@XMLHTTP/API/workflowObjects/column.rtk'
 import clsx from 'clsx'
 import * as React from 'react'
 import { useMemo } from 'react'
@@ -51,7 +66,6 @@ const Column = ({ objectId, parentId }: PropsType) => {
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-
   const manager = useMemo(
     () => new BetterSelectionManager(dispatch),
     [dispatch]
@@ -103,13 +117,6 @@ const Column = ({ objectId, parentId }: PropsType) => {
         <StyledDivLine colour={columnColourHex} />
         <div dangerouslySetInnerHTML={{ __html: title }}></div>
       </div>
-      <HoverMenu
-        canWrite={workflow.workflowPermissions.write}
-        canComment={workflow.workflowPermissions.viewComments}
-        objectId={objectId}
-        parentId={parentId}
-        objectType={objectType}
-      />
     </div>
   )
 }

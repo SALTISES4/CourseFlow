@@ -3,7 +3,6 @@ import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import Utility from '@cf/utility/Utility.class'
 import { OutcomeTitle } from '@cfComponents/UIPrimitives/Titles.ts'
-import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
 import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
@@ -335,13 +334,13 @@ const Outcome: React.FC<PropsType> = ({
         </div>
       )}
 
-      <HoverMenu
-        canWrite={workflow.workflowPermissions.write}
-        canComment={workflow.workflowPermissions.addComments}
-        objectId={objectId}
-        parentId={parentId}
-        objectType={CfObjectType.OUTCOME}
-      />
+      {/*<HoverMenu*/}
+      {/*  canWrite={workflow.workflowPermissions.write}*/}
+      {/*  canComment={workflow.workflowPermissions.addComments}*/}
+      {/*  objectId={objectId}*/}
+      {/*  parentId={parentId}*/}
+      {/*  objectType={CfObjectType.OUTCOME}*/}
+      {/*/>*/}
 
       <div className="side-actions">
         <SideActions />

@@ -186,6 +186,7 @@ export const InsertChildButton = (data: ActionItemArgs) => {
  * Adds a button that inserts a sibling below the item.
  *******************************************************/
 export const InsertSiblingButton = (data: ActionItemWithParentArgs) => {
+
   const [mutate, { isSuccess, isError, data: updateData }] =
     useInsertSiblingMutation()
   const { onError, onSuccess } = useGenericMsgHandler()
@@ -272,7 +273,7 @@ export const AddCommentingButton = ({
   )
 }
 
-export const HoverMenu = ({
+const HoverMenu = ({
   canComment,
   canWrite,
   objectId,

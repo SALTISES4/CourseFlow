@@ -13,7 +13,7 @@ import RightSideBar from '@cfViews/common/rightSideBarContent/RightSideBar'
 import WorkflowComparisonRendererComponent from '@cfViews/ProjectComparisonView/components/WorkflowComparisonRendererComponent'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflow'
+import { getWorkflowSelectMenuQuery } from '@XMLHTTP/API/workflowObjects/workflow'
 import { openWorkflowSelectMenu } from '@XMLHTTP/postTemp'
 import { EObjectSet, EProject } from '@XMLHTTP/types/entity'
 import {

@@ -11,8 +11,8 @@ import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
   getWorkflowChildDataQuery,
   getWorkflowParentDataQueryLegacy
-} from '@XMLHTTP/API/workflow'
-import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
+} from '@XMLHTTP/API/workflowObjects/workflow'
+import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 

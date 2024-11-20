@@ -1,4 +1,4 @@
-import { apiPaths } from '@cf/router/apiRoutes'
+ import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
 import { API_POST } from '@XMLHTTP/CallWrapper'

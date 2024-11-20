@@ -1,11 +1,25 @@
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
+import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
+import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { AppState } from '@cfRedux/types/type'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DragHandleIcon from '@mui/icons-material/DragHandle'
+import QueueIcon from '@mui/icons-material/Queue'
+import {
+  useCreateColumnMutation,
+  useDeleteColumnMutation
+} from '@XMLHTTP/API/workflowObjects/column.rtk'
 import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
+import mergeRefs from "merge-refs";
 import React, { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -17,35 +31,106 @@ type OwnProps = {
   parentId: number
 }
 
-class ColumnWorkflowDragAndDropManager extends SortableDragAndDropManager {
-  stopSortFunction() {
-    ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+// class ColumnWorkflowDragAndDropManager extends SortableDragAndDropManager {
+//   stopSortFunction() {
+//     ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+//   }
+//
+//   /**
+//    * Overrides the sortableMovedFunction method from DragAndDropManager
+//    */
+//   onMovedIn(
+//     id: number,
+//     newPosition: number,
+//     type: string,
+//     newParent: number,
+//     childId: number
+//   ) {
+//     this.context.editableMethods.microUpdate(
+//       ActionCreator.moveColumnWorkflow(id, newPosition, newParent, childId)
+//     )
+//
+//     insertedAt(
+//       this.context.selectionManager,
+//       childId,
+//       CfObjectType.COLUMN,
+//       newParent,
+//       CfObjectType.WORKFLOW,
+//       newPosition,
+//       CfObjectType.COLUMNWORKFLOW
+//     )
+//   }
+// }
+
+const ColumnHoverMenu = ({
+  objectId,
+  order,
+  show
+}: {
+  objectId: number
+  order: number
+}) => {
+  /*******************************************************
+   * API HOOKS
+   *******************************************************/
+  const { onError, onSuccess } = useGenericMsgHandler()
+
+  const [createMutate] = useCreateColumnMutation()
+
+  const [deleteMutate] = useDeleteColumnMutation()
+
+  const createButtonHandler = async () => {
+    try {
+      const resp = await createMutate({
+        payload: {
+          rank: order + 1
+        }
+      }).unwrap()
+      onSuccess(resp)
+    } catch (e) {
+      onError(e)
+    }
   }
 
-  /**
-   * Overrides the sortableMovedFunction method from DragAndDropManager
-   */
-  onMovedIn(
-    id: number,
-    newPosition: number,
-    type: string,
-    newParent: number,
-    childId: number
-  ) {
-    this.context.editableMethods.microUpdate(
-      ActionCreator.moveColumnWorkflow(id, newPosition, newParent, childId)
-    )
-
-    insertedAt(
-      this.context.selectionManager,
-      childId,
-      CfObjectType.COLUMN,
-      newParent,
-      CfObjectType.WORKFLOW,
-      newPosition,
-      CfObjectType.COLUMNWORKFLOW
-    )
+  const deleteButtonHandler = async () => {
+    try {
+      const resp = await deleteMutate({
+        id: objectId
+      }).unwrap()
+      onSuccess(resp)
+    } catch (e) {
+      onError(e)
+    }
   }
+
+  const menuItems: MenuItemType[] = [
+    {
+      content: _t('Delete'),
+      action: () => deleteButtonHandler(CfObjectType.WEEK),
+      icon: <DeleteIcon />,
+      show: true
+    },
+    {
+      content: _t('Insert New'),
+      action: () => createButtonHandler(CfObjectType.WEEK),
+      icon: <QueueIcon />,
+      show: true
+    }
+  ]
+
+  if (!show) {
+    return <></>
+  }
+
+  return (
+    <>
+      <HoverMenu
+        id="hover-menu"
+        data-test-id="hover-menu"
+        menuItems={menuItems}
+      />
+    </>
+  )
 }
 
 /**
@@ -53,58 +138,75 @@ class ColumnWorkflowDragAndDropManager extends SortableDragAndDropManager {
  * and disambiguate parentId: column is not a 'child' of columnkflow
  **/
 const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
-  const mainDivRef = useRef<HTMLDivElement>(null)
+  //  const mainDivRef = useRef<HTMLDivElement>(null)
   /*******************************************************
    * HOOKS
    *******************************************************/
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: objectId })
   const columnData = useSelector((state: AppState) =>
     selectColumnById(state, objectId)
   )
+  const [ref, isHovered] = useHover()
 
-  useEffect(() => {
-    // do the edit permission check here
-
-    const classIdentifiers = {
-      objectClass: '.column-workflow',
-      handle: '.column',
-      container: '.column-row'
-    }
-    const columnWorkflowDragAndDropManager =
-      new ColumnWorkflowDragAndDropManager({ objectId, parentId })
-    const jQuerySortableBlockTarget = $('.column-row')
-      .children(classIdentifiers.objectClass)
-      .not('.ui-draggable')
-
-    columnWorkflowDragAndDropManager.makeSortableElement(
-      jQuerySortableBlockTarget,
-      objectId,
-      CfObjectType.COLUMNWORKFLOW,
-      classIdentifiers.objectClass,
-      'x',
-      false,
-      null,
-      classIdentifiers.handle,
-      classIdentifiers.container
-    )
-  }, [objectId, parentId])
+  // useEffect(() => {
+  //   // do the edit permission check here
+  //
+  //   const classIdentifiers = {
+  //     objectClass: '.column-workflow',
+  //     handle: '.column',
+  //     container: '.column-row'
+  //   }
+  //   const columnWorkflowDragAndDropManager =
+  //     new ColumnWorkflowDragAndDropManager({ objectId, parentId })
+  //   const jQuerySortableBlockTarget = $('.column-row')
+  //     .children(classIdentifiers.objectClass)
+  //     .not('.ui-draggable')
+  //
+  //   columnWorkflowDragAndDropManager.makeSortableElement(
+  //     jQuerySortableBlockTarget,
+  //     objectId,
+  //     CfObjectType.COLUMNWORKFLOW,
+  //     classIdentifiers.objectClass,
+  //     'x',
+  //     false,
+  //     null,
+  //     classIdentifiers.handle,
+  //     classIdentifiers.container
+  //   )
+  // }, [objectId, parentId])
 
   /*******************************************************
    * RENDER
    *******************************************************/
+  const style = {
+    position: 'relative',
+    transform: CSS.Transform.toString(transform),
+    transition
+  }
+
   if (!columnData) {
     return <></>
   }
 
   return (
     <div
-      className={clsx(`column-workflow`, `column-${objectId}`, {
-        'no-drag': columnData.column?.noDrag
-      })}
-      ref={mainDivRef}
       id={String(objectId)}
+      ref={mergeRefs(setNodeRef, ref)}
+      style={style}
+      {...attributes}
       data-child-id={objectId}
     >
+      <div {...listeners}>
+        <DragHandleIcon />
+      </div>
+
       <Column objectId={objectId} parentId={parentId} />
+      <ColumnHoverMenu
+        objectId={objectId}
+        order={columnData.column.order}
+        show={isHovered}
+      />
     </div>
   )
 }

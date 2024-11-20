@@ -1,14 +1,25 @@
+import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
+import useHover from '@cf/hooks/useHover'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
+import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import DeleteIcon from '@mui/icons-material/Delete'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
+import QueueIcon from '@mui/icons-material/Queue'
+import {
+  useCreateWeekMutation,
+  useDeleteWeekMutation
+} from '@XMLHTTP/API/workflowObjects/week.rtk'
 import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
+import mergeRefs from 'merge-refs'
 import React, { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -25,37 +36,120 @@ type PropsType = {
  * DEPRECATED
  * KEEP FOR REFERENCE
  *  call backs like microUpdate abd  insertedAt not yet migrated
- *
  *******************************************************/
-class WeekWorkflowDragAndDropManager extends SortableDragAndDropManager {
-  stopSortFunction() {
-    ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+// class WeekWorkflowDragAndDropManager extends SortableDragAndDropManager {
+//   stopSortFunction() {
+//     ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
+//   }
+//
+//   /**
+//    * Overrides the sortableMovedFunction method from DragAndDropManager
+//    */
+//   onMovedIn(
+//     id: number,
+//     newPosition: number,
+//     type: string,
+//     newParent: number,
+//     childId: number
+//   ) {
+//     this.context.editableMethods.microUpdate(
+//       ActionCreator.moveColumnWorkflow(id, newPosition, newParent, childId)
+//     )
+//
+//     insertedAt(
+//       this.context.selectionManager,
+//       childId,
+//       CfObjectType.COLUMN,
+//       newParent,
+//       CfObjectType.WORKFLOW,
+//       newPosition,
+//       CfObjectType.COLUMNWORKFLOW
+//     )
+//   }
+// }
+
+/**
+ *
+ **/
+const WeekHoverMenu = ({
+  objectId,
+  order,
+  show
+}: {
+  objectId: number
+  order: number
+  show: boolean
+}) => {
+  /*******************************************************
+   * API HOOKS
+   *******************************************************/
+  const { onError, onSuccess } = useGenericMsgHandler()
+
+  const [
+    createMutate,
+    { isSuccess: createSuccess, isError: createError, data: createData }
+  ] = useCreateWeekMutation()
+
+  const [
+    deleteMutate,
+    { isSuccess: deleteSuccess, isError: deleteError, data: deleteData }
+  ] = useDeleteWeekMutation()
+
+  const createButtonHandler = async () => {
+    try {
+      const resp = await createMutate({
+        payload: {
+          rank: order + 1
+        }
+      }).unwrap()
+      onSuccess(resp)
+    } catch (e) {
+      onError(e)
+    }
   }
 
-  /**
-   * Overrides the sortableMovedFunction method from DragAndDropManager
-   */
-  onMovedIn(
-    id: number,
-    newPosition: number,
-    type: string,
-    newParent: number,
-    childId: number
-  ) {
-    this.context.editableMethods.microUpdate(
-      ActionCreator.moveColumnWorkflow(id, newPosition, newParent, childId)
-    )
-
-    insertedAt(
-      this.context.selectionManager,
-      childId,
-      CfObjectType.COLUMN,
-      newParent,
-      CfObjectType.WORKFLOW,
-      newPosition,
-      CfObjectType.COLUMNWORKFLOW
-    )
+  const deleteButtonHandler = async () => {
+    try {
+      const resp = await deleteMutate({
+        id: objectId
+      }).unwrap()
+      onSuccess(resp)
+    } catch (e) {
+      onError(e)
+    }
   }
+
+  const menuItems: MenuItemType[] = [
+    {
+      content: _t('Delete'),
+      action: () => deleteButtonHandler(CfObjectType.WEEK),
+      icon: <DeleteIcon />,
+      show: true
+    },
+    {
+      content: _t('Insert New'),
+      action: () => createButtonHandler(CfObjectType.WEEK),
+      icon: <QueueIcon />,
+      show: true
+    }
+  ]
+  /*******************************************************
+   * RENDER
+   *******************************************************/
+
+  if (!show) {
+    return <></>
+  }
+
+  return (
+    <>
+      <HoverMenu
+        id="hover-menu"
+        data-test-id="hover-menu"
+        menuItems={menuItems}
+      />
+    </>
+  )
 }
 
 /**
@@ -66,54 +160,23 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
 
-  const mainDiv = useRef<HTMLDivElement>(null)
+  const [ref, isHovered] = useHover()
+
   /*******************************************************
-   * HOOKS
+   * REDUX
    *******************************************************/
   const weekData = useSelector((state: AppState) =>
     selectWeekById(state, objectId)
   )
 
-  //
-  // DEPRECTAED FROM LEGACY DRAG AND DROP SYSREM
-  // useEffect(() => {
-  //   const classIdentifiers = {
-  //     objectClass: '.week-workflow',
-  //     handle: '.week',
-  //     container: '.week-block'
-  //   }
-  //
-  //   // const weekWorkflowDragAndDropManager = new WeekWorkflowDragAndDropManager({
-  //   //   objectId,
-  //   //   parentId
-  //   // })
-  //
-  //   // const jQuerySortableBlockTarget = $('.week-block')
-  //   //   .children('.week-workflow')
-  //   //   .not('.ui-draggable')
-  //   //
-  //   // weekWorkflowDragAndDropManager.makeSortableElement(
-  //   //   jQuerySortableBlockTarget,
-  //   //   objectId,
-  //   //   CfObjectType.WEEKWORKFLOW,
-  //   //   classIdentifiers.objectClass,
-  //   //   'y',
-  //   //   false,
-  //   //   null,
-  //   //   classIdentifiers.handle,
-  //   //   classIdentifiers.container
-  //   // )
-  // }, [objectId, parentId])
-
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-
-  /*******************************************************
+  /**
    * Choose between standard Week and term (for workflow type program)
-   * @todo investigate this switch
-   * it doesn't make sense why is term (label for program week) being used for the UI dropped view (as in drop down drawer)
-   *******************************************************/
+    @todo investigate this switch
+  it doesn't make sense why is term (label for program week) being used for the UI dropped view (as in drop down drawer)
+    **/
   const WeekChooser = () => {
     if (condensed) {
       return (
@@ -131,36 +194,35 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
    * RENDER
    *******************************************************/
   const style = {
+    position: 'relative',
     transform: CSS.Transform.toString(transform),
     transition
   }
 
   return (
-    <>
-      <div
-        id={'week-block-' + String(objectId)}
-        style={style}
-        {...attributes}
-        className={clsx('week-workflow', {
-          // legacy name of through model, still being used for jquery drag and drop i think
-          //   'no-drag': weekData.week?.noDrag, // find out about noDrag
-          //  dragging: mainDiv.current?.classList.contains('dragging')
-        })}
-        ref={setNodeRef}
-        data-scroll-to-id={'week-block-' + String(objectId)}
-        data-child-id={objectId}
-      >
-        {/*
+    <div
+      id={'week-block-' + String(objectId)}
+      style={style}
+      {...attributes}
+      className={clsx('week-workflow', {
+        // legacy name of through model, still being used for jquery drag and drop i think
+        //   'no-drag': weekData.week?.noDrag, // find out about noDrag
+        //  dragging: mainDiv.current?.classList.contains('dragging')
+      })}
+      ref={mergeRefs(setNodeRef, ref)}
+      data-scroll-to-id={'week-block-' + String(objectId)}
+      data-child-id={objectId}
+    >
+      {/*
       Need to solve this
       drag n drop sort zone take over whole object and hides inside click event  (hover menu etc)
-
       */}
-        <div {...listeners}>
-          <DragHandleIcon />
-        </div>
-        <WeekChooser />
+      <div {...listeners}>
+        <DragHandleIcon />
       </div>
-    </>
+      <WeekChooser />
+      <WeekHoverMenu show={isHovered} />
+    </div>
   )
 }
 

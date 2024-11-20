@@ -1,4 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import { Verb, cfApi } from '@XMLHTTP/API/api'
 import {
   LibraryObjectsSearchQueryArgs,
   ToggleFavouriteMutationArgs
@@ -6,7 +7,6 @@ import {
 import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { EmptyPostResp, PageHomeQueryResp } from '@XMLHTTP/types/query'
 
-import { Verb, cfApi } from './api'
 
 /*******************************************************
  * TYPE

@@ -376,8 +376,8 @@ node_endpoints = [
         name="node--update-position",
     ),
     path(
-        "node/<int:pk>/link-to-node",
-        NodeEndpoint.link_to_node,
+        "node/<int:pk>/link-to-workflow",
+        NodeEndpoint.link_to_workflow,
         name="node--link-to-node",
     ),
     path(

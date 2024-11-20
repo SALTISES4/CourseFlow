@@ -1,15 +1,23 @@
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
+// import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { changeField, weekChangeField } from '@cfRedux/slices/week.slice'
 import { AppState } from '@cfRedux/types/type'
+import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
-import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
-import { useSortable } from '@dnd-kit/sortable'
+// import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
+import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
+import { DndContext } from '@dnd-kit/core'
+import {
+  SortableContext,
+  horizontalListSortingStrategy,
+  rectSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import clsx from 'clsx'
@@ -37,74 +45,110 @@ const Week = ({ objectId, parentId }) => {
   )
   const workflow = useSelector((state: AppState) => state.workflow)
   /*******************************************************
+   * HOOKS: STATE
+   *******************************************************/
+  const [nodesDragState, setNodesDragState] = React.useState(
+    weekData.week.nodes || []
+  )
+  /*******************************************************
    * REFS
    *******************************************************/
   const nodeBlock = useRef(null)
   const mainDiv = useRef(null)
   const manager = useRef(new BetterSelectionManager(dispatch))
-  const dragAndDropManager = useRef(null)
+  //  const dragAndDropManager = useRef(null)
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
 
   // I DON'T THINK ANY OF THIS NEEDED ANY MORE
-  useEffect(() => {
-    dragAndDropManager.current = new WeekDragAndDropManager({
-      objectId,
-      parentId
-    })
+  // useEffect(() => {
+  //   dragAndDropManager.current = new WeekDragAndDropManager({
+  //     objectId,
+  //     parentId
+  //   })
+  //
+  //   const classIdentifiers = {
+  //     objectClass: '.node-week',
+  //     handle: '.node',
+  //     container: '.week-block'
+  //   }
+  //
+  //   // @todo why is my ref not working ?
+  //   // const jQuerySortableBlockTarget = $(nodeBlock.current)
+  //   //   .children('.node-week')
+  //   //   .not('.ui-draggable')
+  //   const jQuerySortableBlockTarget = $('.node-block')
+  //     .children('.node-week')
+  //     .not('.ui-draggable')
+  //
+  //   // targeting the 'nodweek' which is now controlled by nodewrapper
+  //   dragAndDropManager.current.makeSortableElement(
+  //     jQuerySortableBlockTarget,
+  //     objectId,
+  //     CfObjectType.NODEWEEK,
+  //     classIdentifiers.objectClass,
+  //     null,
+  //     [200, 1],
+  //     null,
+  //     classIdentifiers.handle,
+  //     classIdentifiers.container
+  //   )
+  //
+  //   dragAndDropManager.current.makeDroppable(mainDiv.current)
+  //   return () => {}
+  // }, [objectId, parentId])
 
-    const classIdentifiers = {
-      objectClass: '.node-week',
-      handle: '.node',
-      container: '.week-block'
+  /*******************************************************
+   * DRAGGABLE NODES
+   *******************************************************/
+  const handleNodeDragEnd = (event) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) {
+      return
     }
 
-    // @todo why is my ref not working ?
-    // const jQuerySortableBlockTarget = $(nodeBlock.current)
-    //   .children('.node-week')
-    //   .not('.ui-draggable')
-    const jQuerySortableBlockTarget = $('.node-block')
-      .children('.node-week')
-      .not('.ui-draggable')
+    const oldIndex = nodesDragState.indexOf(active.id)
+    const newIndex = nodesDragState.indexOf(over.id)
 
-    // targeting the 'nodweek' which is now controlled by nodewrapper
-    dragAndDropManager.current.makeSortableElement(
-      jQuerySortableBlockTarget,
-      objectId,
-      CfObjectType.NODEWEEK,
-      classIdentifiers.objectClass,
-      null,
-      [200, 1],
-      null,
-      classIdentifiers.handle,
-      classIdentifiers.container
+    const reorderedColumns = WorkflowFunctions.reorderArray(
+      nodesDragState,
+      oldIndex,
+      newIndex
     )
+    // set local state
+    setNodesDragState(reorderedColumns)
+    // commit to DB
+    //    WorkflowAction.
+  }
 
-    dragAndDropManager.current.makeDroppable(mainDiv.current)
-    return () => {}
-  }, [objectId, parentId])
+  const handleNodeDragStart = () => {
+    //  dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
+  }
 
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const Nodes = ({ nodes }: { nodes: number[] }) => {
-    if (!nodes?.length) {
+  const Nodes = () => {
+    if (!nodesDragState?.length) {
       return (
         <div className="node-week placeholder" style={{ height: '100%' }}>
           Drag and drop nodes from the sidebar to add.
         </div>
       )
     }
-    return nodes.map((nodeId) => (
-      <NodeWrapper
-        key={nodeId}
-        objectId={nodeId}
-        parentId={weekData.week.id}
-        columnOrder={weekData.columns} // not sure if i should be props drilling this
-      />
-    ))
+
+    return nodesDragState.map((nodeId) => {
+      return (
+        <NodeWrapper
+          key={`node-${nodeId}`}
+          objectId={nodeId}
+          parentId={weekData.week.id}
+          columnOrder={weekData.columns} // not sure if i should be props drilling this
+        />
+      )
+    })
   }
 
   const defaultText = !workflow.isStrategy
@@ -131,19 +175,19 @@ const Week = ({ objectId, parentId }) => {
         [`locked`]: weekData.week?.lock,
         [`locked-${weekData.week.lock?.userId}`]: weekData.week.lock
       })}
-      ref={mainDiv}
+      //      ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
         manager.current.updateSidebar(weekData.week.id, objectId, parentId)
       }}
     >
-      <HoverMenu
-        canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}
-        canComment={workflow.workflowPermissions.viewComments}
-        objectId={objectId}
-        parentId={parentId}
-        objectType={CfObjectType.WEEK}
-      />
+      {/*<HoverMenu*/}
+      {/*  canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}*/}
+      {/*  canComment={workflow.workflowPermissions.viewComments}*/}
+      {/*  objectId={objectId}*/}
+      {/*  parentId={parentId}*/}
+      {/*  objectType={CfObjectType.WEEK}*/}
+      {/*/>*/}
       <TitleText text={weekData.week.title} defaultText={defaultText} />
 
       {/*
@@ -158,7 +202,17 @@ const Week = ({ objectId, parentId }) => {
           id={`${objectId}-node-block`}
           ref={nodeBlock}
         >
-          <Nodes nodes={weekData.week.nodes} />
+          <DndContext
+            onDragEnd={handleNodeDragEnd}
+            onDragStart={handleNodeDragStart}
+          >
+            <SortableContext
+              items={nodesDragState}
+              strategy={rectSortingStrategy}
+            >
+              <Nodes />
+            </SortableContext>
+          </DndContext>
         </div>
       )}
 

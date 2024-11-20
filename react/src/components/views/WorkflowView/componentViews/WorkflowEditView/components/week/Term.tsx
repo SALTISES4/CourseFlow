@@ -1,11 +1,11 @@
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
+// import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
-import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
+// import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import clsx from 'clsx'
 import React, { useEffect, useRef } from 'react'
@@ -40,10 +40,11 @@ const Term = ({
   }
 
   useEffect(() => {
-    dragAndDropManager.current = new WeekDragAndDropManager({
-      objectId,
-      parentId
-    })
+
+    // dragAndDropManager.current = new WeekDragAndDropManager({
+    //   objectId,
+    //   parentId
+    // })
 
     const classIdentifiers = {
       objectClass: '.node-week',
@@ -56,22 +57,23 @@ const Term = ({
     //   nodeBlock.current?.querySelectorAll('.node-week') || []
     // ).filter((el) => !el.classList.contains('ui-draggable'))
 
-    const jQueryNodeBlock = $(this.nodeBlock.current)
-      .children()
-      .children('.node-week')
-      .not('.ui-draggable')
+    // const jQueryNodeBlock = $(this.nodeBlock.current)
+    //   .children()
+    //   .children('.node-week')
+    //   .not('.ui-draggable')
+    //
+    // //Makes the nodeweeks in the node block draggable
+    // dragAndDropManager.current.makeSortableNode(
+    //   nodeBlock,
+    //   objectId,
+    //   CfObjectType.NODEWEEK,
+    //   classIdentifiers.objectClass,
+    //   false,
+    //   [200, 1],
+    //   null,
+    //   classIdentifiers.handle
+    // )
 
-    //Makes the nodeweeks in the node block draggable
-    dragAndDropManager.current.makeSortableNode(
-      nodeBlock,
-      objectId,
-      CfObjectType.NODEWEEK,
-      classIdentifiers.objectClass,
-      false,
-      [200, 1],
-      null,
-      classIdentifiers.handle
-    )
   }, [term, columnOrder])
 
   const data = term.data
@@ -120,13 +122,13 @@ const Term = ({
         // selection manager goes here
       }}
     >
-      <HoverMenu
-        canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}
-        canComment={workflow.workflowPermissions.viewComments}
-        objectId={objectId}
-        parentId={parentId}
-        objectType={CfObjectType.WEEK}
-      />
+      {/*<HoverMenu*/}
+      {/*  canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}*/}
+      {/*  canComment={workflow.workflowPermissions.viewComments}*/}
+      {/*  objectId={objectId}*/}
+      {/*  parentId={parentId}*/}
+      {/*  objectType={CfObjectType.WEEK}*/}
+      {/*/>*/}
       <TitleText
         text={data.title}
         defaultText={`${data.weekTypeDisplay} ${rank + 1}`}

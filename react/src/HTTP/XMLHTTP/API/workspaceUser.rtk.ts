@@ -1,11 +1,11 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { PermissionGroup } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
+import { Verb, cfApi } from '@XMLHTTP/API/api'
 import { EUser, EWorkspaceUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
-import { Verb, cfApi } from './api'
 
 /*******************************************************
  * TYPES

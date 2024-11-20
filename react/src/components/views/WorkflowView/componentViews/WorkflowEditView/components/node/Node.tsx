@@ -1,13 +1,14 @@
+import useHover from '@cf/hooks/useHover'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
+// import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
-import {nodeChangeField} from "@cfRedux/slices/node.slice";
+import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { AppState } from '@cfRedux/types/type'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
@@ -17,6 +18,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import clsx from 'clsx'
+import mergeRefs from 'merge-refs'
 import React, { useEffect, useRef, useState } from 'react'
 import * as reactDom from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -101,7 +103,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    *******************************************************/
   const [initialRender, setInitialRender] = useState(true)
   const [showOutcomes, setShowOutcomes] = useState(false)
-  const [hovered, setHovered] = useState(false)
+  const [ref, isHovered] = useHover()
 
   /*******************************************************
    * HOOKS: LIFECYCLE
@@ -110,22 +112,18 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
     if (initialRender) {
       setInitialRender(false)
     }
-    const dragNdrop = new DragAndDropManager({ objectId })
-    dragNdrop.makeDroppable($(mainDiv.current))
+    // const dragNdrop = new DragAndDropManager({ objectId })
+    // dragNdrop.makeDroppable($(mainDiv.current))
 
     updateHidden()
 
     const component = mainDiv.current
     if (component) {
-      component.addEventListener('mouseenter', mouseIn)
-      component.addEventListener('mouseleave', mouseLeave)
       component.addEventListener('dblclick', doubleClick)
     }
 
     return () => {
       if (component) {
-        component.removeEventListener('mouseenter', mouseIn)
-        component.removeEventListener('mouseleave', mouseLeave)
         component.removeEventListener('dblclick', doubleClick)
       }
     }
@@ -138,7 +136,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
 
   useEffect(() => {
     renderNodePorts()
-  }, [initialRender, hovered, objectId, mainDiv, dispatch])
+  }, [initialRender, isHovered, objectId, mainDiv, dispatch])
 
   /*******************************************************
    * FUNCTIONS
@@ -161,19 +159,6 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   const doubleClick = (evt: MouseEvent) => {
     evt.stopPropagation()
     console.log('navigate to workflow')
-  }
-
-  const mouseIn = () => {
-    if (!workflow.workflowPermissions.write) {
-      return
-    }
-    if (!hovered) {
-      setHovered(true)
-    }
-  }
-
-  const mouseLeave = () => {
-    setHovered(false)
   }
 
   function dropText(dataOverride) {
@@ -355,7 +340,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
        *******************************************************/
       nodePorts = reactDom.createPortal(
         <NodePorts
-          show={hovered}
+          show={isHovered}
           nodeId={objectId}
           nodeDiv={mainDiv}
           dispatch={dispatch}
@@ -406,8 +391,8 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
             [`locked locked-${nodeData.node.lock?.userId}`]: nodeData.node.lock
           }
         )}
-        data-hovered={hovered}
-        ref={mainDiv}
+        data-hovered={isHovered}
+        ref={mergeRefs(mainDiv, ref)}
         onClick={(e) => {
           e.stopPropagation()
           manager.updateSidebar(nodeData.node.id, CfObjectType.NODE, parentId)
@@ -454,13 +439,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
           </div>
         </div>
 
-        <HoverMenu
-          canWrite={workflow.workflowPermissions.write}
-          canComment={workflow.workflowPermissions.viewComments}
-          objectId={objectId}
-          parentId={parentId}
-          objectType={CfObjectType.NODE}
-        />
+
 
         <div className="side-actions">
           <SideActions />

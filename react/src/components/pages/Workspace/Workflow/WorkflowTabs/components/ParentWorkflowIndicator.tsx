@@ -8,7 +8,7 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
-import { useGetParentWorkflowInfoQuery } from '@XMLHTTP/API/workflow.rtk'
+import { useGetParentWorkflowInfoQuery } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 

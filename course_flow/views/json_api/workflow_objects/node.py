@@ -497,7 +497,7 @@ class NodeEndpoint:
     @staticmethod
     # @user_can_edit("nodePk")
     # @user_can_view_or_none("workflowPk")
-    def link_to_node(request: Request) -> Response:
+    def link_to_workflow(request: Request) -> Response:
         """
             @todo ??
          The actual JSON API which sets the linked workflow

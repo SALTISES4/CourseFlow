@@ -1,6 +1,6 @@
 import { UserContext } from '@cf/context/userContext'
 import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
-import legacyWithRouter from '@cf/HOC/legacyWithRouter'
+// import legacyWithRouter from '@cf/HOC/legacyWithRouter'
 import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
@@ -19,7 +19,7 @@ import {
   getWorkflowByIdQuery,
   getWorkflowChildDataQuery,
   getWorkflowParentDataQueryLegacy
-} from '@XMLHTTP/API/workflow'
+} from '@XMLHTTP/API/workflowObjects/workflow'
 import { Component, ContextType } from 'react'
 import { DispatchProp, connect } from 'react-redux'
 import { RouterProps } from 'react-router'

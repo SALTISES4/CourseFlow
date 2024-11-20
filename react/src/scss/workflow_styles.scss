@@ -102,9 +102,6 @@ input[type="submit"] {
 }
 
 
-
-
-
 .title-text ul,
 .title-text ol {
   padding-left: 1.5em;
@@ -141,29 +138,14 @@ input[type="submit"] {
   display: block;
 }
 
-.workflow-details {
-  /*padding:50px;*/
-  width: fit-content;
-}
-/*
-.workflow-details .workflow-for-menu{
-    color: $color-black;
-    margin-left:10px;
-    border-color: $color-black;
-    margin-bottom:30px;
-}
-*/
+
 .workflow-wrapper
-  *:is(.node, .week, .column, .workflow-for-menu, .outcome):not(.selected):not(
+*:is(.node, .week, .column, .workflow-for-menu, .outcome):not(.selected):not(
     .valid-drop
   ):hover {
   border-color: $color-gray;
 }
 
-.workflow-details .workflow-for-menu.selected {
-  background: $color-white;
-  color: $color-black;
-}
 
 .week {
   background: $color-white-gray-light;
@@ -199,16 +181,16 @@ input[type="submit"] {
 //  display: none;
 //}
 
-.week-block {
-  width: 100%;
-  padding-left: 10px;
-  padding-right: 10px;
-  box-sizing: border-box;
-}
-
-.week-block > div:nth-of-type(odd) > .week {
-  background: rgba(224, 224, 224, 0.878);
-}
+//.week-block {
+//  width: 100%;
+//  padding-left: 10px;
+//  padding-right: 10px;
+//  box-sizing: border-box;
+//}
+//
+//.week-block > div:nth-of-type(odd) > .week {
+//  background: rgba(224, 224, 224, 0.878);
+//}
 
 .week.strategy {
   border: $color-black double;
@@ -217,10 +199,6 @@ input[type="submit"] {
 
 
 
-.column-workflow {
-  display: inline-block;
-  vertical-align: top;
-}
 
 .column {
   position: relative;
@@ -235,28 +213,27 @@ input[type="submit"] {
 }
 
 
+//.column-row {
+//  padding-left: 40px;
+//  padding-right: 40px;
+//  background: $color-white;
+//  position: sticky;
+//  top: 0px;
+//  z-index: 2;
+//  font-size: 16px;
+//  border: 2px solid $color-white;
+//  display: flex;
+//}
 
-.column-row {
-  padding-left: 40px;
-  padding-right: 40px;
-  background: $color-white;
-  position: sticky;
-  top: 0px;
-  z-index: 2;
-  font-size: 16px;
-  border: 2px solid $color-white;
-  display: flex;
-}
+//.condensed .column-row {
+//  gap: 60px;
+//  padding-left: 50px;
+//  padding-right: 50px;
+//}
 
-.condensed .column-row {
-  gap: 60px;
-  padding-left: 50px;
-  padding-right: 50px;
-}
-
-.node-week:first-child {
-  padding-top: 5px;
-}
+//.node-week:first-child {
+//  padding-top: 5px;
+//}
 
 .node-week {
   width: 100%;
@@ -402,7 +379,6 @@ input[type="submit"] {
 .assignment-in-node .assignment-timing {
   flex-wrap: wrap;
 }
-
 
 
 .flatpickr-input + input:disabled {
@@ -614,8 +590,7 @@ ol.children-block {
 
 .outcome-drop-img img {
   width: 12px;
-  filter: invert(35%) sepia(85%) saturate(855%) hue-rotate(173deg)
-    brightness(91%) contrast(90%);
+  filter: invert(35%) sepia(85%) saturate(855%) hue-rotate(173deg) brightness(91%) contrast(90%);
 }
 
 .outcome-edit {
@@ -700,6 +675,7 @@ ol.children-block {
   top: 0px;
   right: -22px;
 }
+
 /*
 .competency-matrix .nodewrapper .side-actions{
     top: -202px;
@@ -800,11 +776,11 @@ ol.children-block {
   margin-left: 4px;
 }
 
-.outcome-node-container .mouseover-actions {
-  right: auto;
-  left: 2px;
-  top: 2px;
-}
+//.outcome-node-container .mouseover-actions {
+//  right: auto;
+//  left: 2px;
+//  top: 2px;
+//}
 
 .outcome-node-container .outcome-outcome {
   position: relative;
@@ -937,7 +913,6 @@ ol.children-block {
 .user-table .table-cell input {
   display: block;
 }
-
 
 
 .user-table {
@@ -1416,17 +1391,17 @@ input:checked + .slider::before {
   transform: translateX(40px);
 }
 
-.mouseover-actions {
-  visibility: hidden;
-  position: absolute;
-  top: -1px;
-  right: -1px;
-  border-radius: 5px;
-  border: 0px solid $color-black;
-  padding: 2px;
-  line-height: 0px;
-  background: $color-white;
-}
+//.mouseover-actions {
+//  visibility: hidden;
+//  position: absolute;
+//  top: -1px;
+//  right: -1px;
+//  border-radius: 5px;
+//  border: 0px solid $color-black;
+//  padding: 2px;
+//  line-height: 0px;
+//  background: $color-white;
+// }
 
 /*This is used to get around the issue that we can't make the week itself relatively positioned (messes up jquery sortable*/
 //.mouseover-container-bypass {
@@ -1451,14 +1426,14 @@ input:checked + .slider::before {
   height: 100%;
 }
 
-div:hover > .mouseover-actions,
-div:hover > .mouseover-container-bypass > .mouseover-actions {
-  visibility: visible;
-}
+//div:hover > .mouseover-actions,
+//div:hover > .mouseover-container-bypass > .mouseover-actions {
+//  visibility: visible;
+//}
 
-.dragging .mouseover-actions {
-  visibility: hidden !important;
-}
+//.dragging .mouseover-actions {
+//  visibility: hidden !important;
+//}
 
 .comment-box {
   text-align: left;
@@ -1493,10 +1468,10 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
   box-sizing: border-box;
 }
 
-.comment .mouseover-actions {
-  top: 1px;
-  right: 1px;
-}
+//.comment .mouseover-actions {
+//  top: 1px;
+//  right: 1px;
+//}
 
 .comment .action-button {
   width: 12px;
@@ -1592,8 +1567,7 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
 
 .comment-indicator img {
   width: 20px;
-  filter: brightness(0) saturate(100%) invert(38%) sepia(98%) saturate(461%)
-    hue-rotate(164deg) brightness(87%) contrast(100%);
+  filter: brightness(0) saturate(100%) invert(38%) sepia(98%) saturate(461%) hue-rotate(164deg) brightness(87%) contrast(100%);
 }
 
 .outcome-node-container .comment-indicator img {
@@ -1667,12 +1641,13 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
 }
 
 circle.mouseover {
- // visibility: visible;
+  // visibility: visible;
 }
 
 .workflow-canvas.dragging-weekworkflow {
   opacity: 0;
 }
+
 /*
 .node input{
     width:100px;
@@ -1795,12 +1770,14 @@ circle.mouseover {
   min-height: 140px;
   position: unset;
 }
+
 .ql-snow .ql-tooltip.ql-editing input[type=text] {
-    display: block;
+  display: block;
 }
+
 .ql-snow .ql-tooltip {
-    position: initial;
-    transform: translateY(10px);
+  position: initial;
+  transform: translateY(10px);
 }
 
 .side-bar #title-editor {
@@ -1975,9 +1952,9 @@ circle.mouseover {
 .alignment-block {
 }
 
-.alignment-block > .outcome > .mouseover-actions {
-  display: none !important;
-}
+//.alignment-block > .outcome > .mouseover-actions {
+//  display: none !important;
+//}
 
 .alignment-block .node {
   width: 100%;
@@ -2000,9 +1977,9 @@ circle.mouseover {
   max-width: 600px;
 }
 
-.alignment-block .outcomenode-block .mouseover-actions {
-  display: none !important;
-}
+//.alignment-block .outcomenode-block .mouseover-actions {
+//  display: none !important;
+//}
 
 .alignment-block .node-drop-row {
   height: auto;
@@ -2198,11 +2175,6 @@ circle.mouseover {
   display: flex;
 }
 
-.comparison-view .workflow-details {
-  padding: 5px;
-  box-sizing: border-box;
-  width: 100%;
-}
 
 .comparison-view .workflow-wrapper {
   margin: 0px;

@@ -6,7 +6,7 @@ import {
   GetWorkflowByIdQueryResp,
   WorkflowChildDataQueryResp,
   WorkflowParentDataQueryResp
-} from '@XMLHTTP/API/workflow.rtk'
+} from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import {
   ProjectsForCreateQueryResp,

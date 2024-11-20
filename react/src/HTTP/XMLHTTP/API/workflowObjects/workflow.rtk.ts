@@ -2,6 +2,7 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { TWorkflow } from '@cfRedux/types/type'
+import { Verb, cfApi } from '@XMLHTTP/API/api'
 import {
   WorkflowChildDataPackage,
   WorkflowDataPackage,
@@ -10,8 +11,6 @@ import {
 import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
-
-import { Verb, cfApi } from './api'
 
 /*******************************************************
  * TYPES

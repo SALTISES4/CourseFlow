@@ -1,5 +1,16 @@
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/Utility.class'
 import { StyledMenu } from '@cfComponents/globalNav/TopBar/styles'
+import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
+import CommentBox from '@cfEditableComponents/components/CommentBox'
+import {
+  AddCommentingButton,
+  DeleteSelfButton,
+  DuplicateSelfButton,
+  InsertSiblingButton
+} from '@cfEditableComponents/hoverEditActions'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
+import QueueIcon from '@mui/icons-material/Queue'
 import { Menu } from '@mui/material'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -7,7 +18,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 import * as React from 'react'
 
 const StyledPopover = styled(Popover)({
@@ -16,6 +27,7 @@ const StyledPopover = styled(Popover)({
     width: 500
   }
 })
+
 /*******************************************************
  * This file contains menu 'builders' the accept a config list, as a plain object
  *  and construct some different menu types based around MUI menu
@@ -196,6 +208,7 @@ const MenuWithOverflow = ({
     </>
   )
 }
+
 type StaticMenuProps = {
   id: string
   menuItems?: MenuItemType[] // Optional if you might only have content
@@ -252,4 +265,47 @@ const StaticMenu = ({
   )
 }
 
-export { MenuWithOverflow, SimpleMenu, StaticMenu }
+const HoverMenu = ({ menuItems }: { menuItems: MenuItemType[] }) => {
+  const [show, setShow] = useState<boolean>(false)
+
+  const buttons = menuItems.map((item, el) => {
+    return (
+      <ActionButton
+        key={item.id}
+        buttonIcon={item.icon}
+        buttonClass="insert-sibling-button"
+        titleText={item.title}
+        onClickHandler={item.action}
+      />
+    )
+  })
+
+  return (
+    <div style={{ position: 'absolute', top: 0, right: 0 }}>
+      {buttons}
+      {/*{canWrite && (*/}
+      {/*  <>*/}
+      {/*    <InsertSiblingButton*/}
+      {/*      id={objectId}*/}
+      {/*      objectType={objectType}*/}
+      {/*      parentId={parentId}*/}
+      {/*    />*/}
+      {/*    <DuplicateSelfButton*/}
+      {/*      id={objectId}*/}
+      {/*      objectType={objectType}*/}
+      {/*      parentId={parentId}*/}
+      {/*    />*/}
+      {/*    <DeleteSelfButton id={objectId} objectType={objectType} />*/}
+      {/*  </>*/}
+      {/*)}*/}
+      {/*{canComment && <AddCommentingButton show={show} setShow={setShow} />}*/}
+    </div>
+
+    // {/*{show && (*/}
+    // {/*  <CommentBox id={objectId} setShow={setShow} objectType={objectType} />*/}
+    // {/*)}*/}
+    // {/*{show && memoizedCommentBox}*/}
+  )
+}
+
+export { MenuWithOverflow, SimpleMenu, StaticMenu, HoverMenu }

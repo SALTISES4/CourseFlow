@@ -146,6 +146,7 @@ export type EColumn = {
   icon: string | null
   visible: boolean
   comments: number[]
+  order: number
 }
 
 export type ENode = {

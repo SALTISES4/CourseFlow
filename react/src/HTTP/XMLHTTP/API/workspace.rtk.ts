@@ -1,11 +1,12 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType, LibraryObjectType, WorkspaceType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
+import { Verb, cfApi } from '@XMLHTTP/API/api'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
-import { Verb, cfApi } from './api'
+// import { Verb, cfApi } from '@XMLHTTP/API/api'
 
 /*******************************************************
  * TYPES
@@ -76,7 +77,7 @@ const extendedApi = cfApi.injectEndpoints({
     /*******************************************************
      *  OBJECTS
      *******************************************************/
-     // only outcomes
+    // only outcomes
     insertChild: builder.mutation<
       EmptyPostResp,
       {

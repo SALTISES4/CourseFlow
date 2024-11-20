@@ -1,24 +1,20 @@
+import { OuterContentWrap } from '@cf/mui/helper'
 import { CfObjectType } from '@cf/types/enum'
 import { updateAllEntities } from '@cfRedux/thunks'
-import {WorkflowActions} from "@cfRedux/types/enumActions";
+import { WorkflowActions } from '@cfRedux/types/enumActions'
 import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
+import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
 import { DndContext } from '@dnd-kit/core'
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import {
+  SortableContext,
+  horizontalListSortingStrategy,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
 import clsx from 'clsx'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-
-/**
- * Utility function to reorder an array
- **/
-function reorderArray(list, startIndex, endIndex) {
-  const result = Array.from(list)
-  const [removed] = result.splice(startIndex, 1)
-  result.splice(endIndex, 0, removed)
-  return result
-}
 
 const WorkflowEditView = () => {
   const dispatch = useDispatch()
@@ -26,33 +22,20 @@ const WorkflowEditView = () => {
    * HOOKS: REDUX
    *******************************************************/
   const workflow = useSelector((state: AppState) => state.workflow)
+
+  /*******************************************************
+   * HOOKS: STATE
+   *******************************************************/
   const [weeksDragState, setWeeksDragState] = React.useState(
     workflow.weeks || []
+  )
+  const [columnsDragState, setColumnsDragState] = React.useState(
+    workflow.columns || []
   )
 
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const columns = workflow.columns?.map((columnId) => (
-    <ColumnWrapper
-      key={`columnworkflow-${columnId}`}
-      objectId={columnId}
-      parentId={workflow.id}
-    />
-  ))
-
-  const weeks = weeksDragState.map((weekId) => {
-    return (
-      <WeekWrapper
-        id={weekId}
-        key={`weekworkflow-${weekId}`}
-        objectId={weekId}
-        parentId={workflow.id}
-        condensed={workflow.condensed} // this makes no sense that it would switch on condensed
-      />
-    )
-  })
-
   const CanvasPlaceholder = () => {
     /*
       .workflow-canvas is used for all kinds of targeting
@@ -78,8 +61,45 @@ const WorkflowEditView = () => {
     )
   }
 
-  // Updated handleDragEnd function
-  const handleDragEnd = (event) => {
+  /*******************************************************
+   * DRAGGABLE COLUMNS AREAS
+   *******************************************************/
+  const handleColumnDragEnd = (event) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) {
+      return
+    }
+
+    const oldIndex = columnsDragState.indexOf(active.id)
+    const newIndex = columnsDragState.indexOf(over.id)
+
+    const reorderedColumns = WorkflowFunctions.reorderArray(
+      columnsDragState,
+      oldIndex,
+      newIndex
+    )
+    // set local state
+    setWeeksDragState(reorderedColumns)
+    // commit to DB
+    //    WorkflowAction.
+  }
+
+  const handleColumnDragStart = () => {
+    //  dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
+  }
+
+  const columns = columnsDragState.map((columnId) => (
+    <ColumnWrapper
+      key={`columnworkflow-${columnId}`}
+      objectId={columnId}
+      parentId={workflow.id}
+    />
+  ))
+
+  /*******************************************************
+   * DRAGGABLE WEEKS AREAS
+   *******************************************************/
+  const handleWeekDragEnd = (event) => {
     const { active, over } = event
     if (!over || active.id === over.id) {
       return
@@ -89,7 +109,11 @@ const WorkflowEditView = () => {
     const newIndex = weeksDragState.indexOf(over.id)
 
     // calculate new order
-    const reorderedWeeks = reorderArray(weeksDragState, oldIndex, newIndex)
+    const reorderedWeeks: number[] = WorkflowFunctions.reorderArray(
+      weeksDragState,
+      oldIndex,
+      newIndex
+    )
 
     // set redux state
     dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: true })))
@@ -98,49 +122,59 @@ const WorkflowEditView = () => {
     setWeeksDragState(reorderedWeeks)
 
     // commit to DB
-//    WorkflowAction.
+    //    WorkflowAction.
   }
 
-  const handleDragStart = () => {
+  const handleWeekDragStart = () => {
     dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
   }
+
+  const weeks = weeksDragState.map((weekId) => {
+    return (
+      <WeekWrapper
+        key={`weekworkflow-${weekId}`}
+        objectId={weekId}
+        parentId={workflow.id}
+      />
+    )
+  })
 
   /*******************************************************
    * RETURN
    *******************************************************/
   return (
-    <div
-      className={clsx('workflow-details', {
-        condensed: workflow.condensed
-      })}
-    >
-      {/*
-      .column-row is used as a UX/jquery target
-    */}
-      <div className="column-row" id={workflow.id + '-column-block'}>
-        {columns}
-      </div>
+    <>
+      <OuterContentWrap>
+        <div data-test-id="columns-block" style={{ display: 'flex' }}>
+          <DndContext
+            onDragEnd={handleColumnDragEnd}
+            onDragStart={handleColumnDragStart}
+          >
+            <SortableContext
+              items={columnsDragState}
+              strategy={horizontalListSortingStrategy}
+            >
+              {columns}
+            </SortableContext>
+          </DndContext>
+        </div>
 
-      {/*
-      .week-block is used as a UX/jquery target
-    */}
-      {/*<div className="week-block" id={workflow.id + '-week-block'}>*/}
-      {/*  {weeks}*/}
-      {/*</div>*/}
-
-      <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-        <SortableContext
-          items={weeksDragState}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="week-block" id={`${workflow.id}-week-block`}>
-            {weeks}
-          </div>
-        </SortableContext>
-      </DndContext>
-
+        <div data-test-id="weeks-block">
+          <DndContext
+            onDragEnd={handleWeekDragEnd}
+            onDragStart={handleWeekDragStart}
+          >
+            <SortableContext
+              items={weeksDragState}
+              strategy={verticalListSortingStrategy}
+            >
+              {weeks}
+            </SortableContext>
+          </DndContext>
+        </div>
+      </OuterContentWrap>
       <CanvasPlaceholder />
-    </div>
+    </>
   )
 }
 

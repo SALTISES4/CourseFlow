@@ -8,7 +8,7 @@ import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState } from '@cfRedux/types/type'
-import { getWorkflowParentDataQueryLegacy } from '@XMLHTTP/API/workflow'
+import { getWorkflowParentDataQueryLegacy } from '@XMLHTTP/API/workflowObjects/workflow'
 import * as React from 'react'
 import { DispatchProp, connect } from 'react-redux'
 
