@@ -131,9 +131,7 @@ const nodeSlice = createSlice<AppState['node']>({
     },
     createLock: updateEntity<AppState['node'], TNode>,
     changeField: updateEntity<AppState['node'], TNode>,
-    deleteSelf(state, action: PayloadAction<{ id: number }>) {
-      return removeEntityById(state, action)
-    },
+    deleteSelf: removeEntityById,
     deleteSelfSoft: toggleArchiveEntity,
     insertBelow(state, action: PayloadAction<{ newModel: TNode }>) {
       state.push(action.payload.newModel)
@@ -171,8 +169,6 @@ const nodeSlice = createSlice<AppState['node']>({
 
     // this one had a jquery update side effect
     //  ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
-    deleteSelf: removeEntityById,
-    deleteSelfSoft: toggleArchiveEntity,
     restoreSelf: toggleArchiveEntity,
     newNode(state, action: PayloadAction<{ newModel: TNode }>) {
       state.push(action.payload.newModel)

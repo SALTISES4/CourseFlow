@@ -5,7 +5,6 @@ import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-// import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
@@ -16,6 +15,7 @@ import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/comp
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
+import LinkIcon from '@mui/icons-material/Link'
 import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import clsx from 'clsx'
 import mergeRefs from 'merge-refs'
@@ -37,49 +37,6 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
 
 type Args = {
   objectId: number
-}
-
-class DragAndDropManager {
-  private args: Args
-  constructor(args: Args) {
-    this.args = args
-  }
-
-  makeDroppable = (droppableBlock: JQuery<HTMLElement>) => {
-    droppableBlock.droppable({
-      tolerance: 'pointer',
-      over: (e, ui) => {
-        const dropItem = $(e.target)
-        const dragItem = ui.draggable
-        if (dragItem.hasClass('outcome')) {
-          ui.helper.addClass('valid-drop')
-          dropItem.addClass('outcome-drop-over')
-        }
-      },
-      out: (e, ui) => {
-        const dragItem = ui.draggable
-        const dropItem = $(e.target)
-        if (dragItem.hasClass('outcome')) {
-          ui.helper.removeClass('valid-drop')
-          dropItem.removeClass('outcome-drop-over')
-        }
-      },
-      drop: (e, ui) => {
-        $('.outcome-drop-over').removeClass('outcome-drop-over')
-        if (ui.draggable.hasClass('outcome')) {
-          COURSEFLOW_APP.tinyLoader.startLoad()
-          updateOutcomenodeDegree(
-            this.args.objectId,
-            ui.draggable[0].dataDraggable.outcome,
-            1,
-            () => {
-              COURSEFLOW_APP.tinyLoader.endLoad()
-            }
-          )
-        }
-      }
-    })
-  }
 }
 
 const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
@@ -136,7 +93,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
 
   useEffect(() => {
     renderNodePorts()
-  }, [initialRender, isHovered, objectId, mainDiv, dispatch])
+  }, [initialRender, objectId, mainDiv, dispatch])
 
   /*******************************************************
    * FUNCTIONS
@@ -291,16 +248,12 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
         return
       }
 
-      console.log('navigate to workflow')
-      // navigate to workflow action goes here
+      console.log('navigate to workflow') // navigate to workflow action goes here
     }
 
     function linkText() {
-      // not sure we care about this distinction TBH
-      // but we could rexpand the noaccess check above
       if (noAccess) {
-        //  note these are not components
-        return '<Inaccessible >' //
+        return '<Inaccessible >' // not a component
         //        return '<Deleted>'
       }
 
@@ -315,7 +268,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
         })}
         onClick={clickHandler}
       >
-        <img src={apiPaths.external.static_assets.icon + 'wflink.svg'} />
+        <LinkIcon />
         <div>{linkText()}</div>
       </div>
     )

@@ -31,7 +31,7 @@ export const apiPathRoutes = {
       field__update: '/workspace/:id/update-field'
     },
     workspaceUser: {
-      list: '/workspace-user/id/list',
+      list: '/workspace-user/:id/list',
       list_available: '/workspace-user/:id/list-available',
       create: '/workspace-user/:id/create',
       delete: '/workspace-user/:id/delete',

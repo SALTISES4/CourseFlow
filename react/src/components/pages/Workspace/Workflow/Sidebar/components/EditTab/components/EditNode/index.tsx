@@ -1,4 +1,10 @@
 import Utility from '@cf/utility/Utility.class'
+import {
+  LinkedWorkflowType,
+  NodeForm
+} from '@cfPages/Workspace/Workflow/Sidebar/components/EditTab/components/EditNode/types'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
+import { AppState } from '@cfRedux/types/type'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -13,7 +19,8 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import getNodeData from './getNodeData'
 import optionsData from './optionsData'
@@ -25,22 +32,41 @@ import {
 } from '../../../../styles'
 
 const EditNode = () => {
-  const data = getNodeData(1)
-  const [linkedWorkflow, setLinkedWorkflow] = useState(false)
-  const [state, setState] = useState(data)
+  /*******************************************************
+   * HOOKS
+   *******************************************************/
+  const sidebarData = useSelector((state: AppState) => state.sidebar)
+  const nodeData = useSelector((state: AppState) =>
+    selectNodeById(state, sidebarData.edit.id)
+  )
 
-  const onTextFieldChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setState(
-      produce((draft) => {
-        const key = e.target.name as 'title' | 'description' | 'amount'
-        if (key === 'amount') {
-          draft[key] = Number(e.target.value)
-        } else {
-          draft[key] = e.target.value
-        }
-      })
-    )
-  }, [])
+  const [linkedWorkflow, setLinkedWorkflow] = useState(false)
+  const [state, setState] = useState<{ test: string }>()
+  const hello: number = 'ster'
+
+  /*******************************************************
+   * LIFECYCLE
+   *******************************************************/
+
+  useEffect(() => {
+    if (nodeData) {
+      setState(
+        produce((draft) => {
+          if (draft) {
+            draft.teppp = 'New Title' // Example assignment
+          }
+        })
+      )
+    }
+  }, [nodeData])
+
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  const onTextFieldChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {},
+    []
+  )
 
   const onSelectChange = useCallback((e: SelectChangeEvent) => {
     setState(
@@ -66,7 +92,7 @@ const EditNode = () => {
     []
   )
 
-  const onLinkWorfklowClick = useCallback(() => {
+  const onLinkWorkflowClick = useCallback(() => {
     Utility.logger('trigger link workflow dialog')
   }, [])
 
@@ -79,7 +105,7 @@ const EditNode = () => {
     )
   }, [])
 
-  const toggleUseLinkWorfklowData = useCallback(() => {
+  const toggleUseLinkWorkflowData = useCallback(() => {
     setLinkedWorkflow(!linkedWorkflow)
   }, [linkedWorkflow])
 
@@ -88,12 +114,16 @@ const EditNode = () => {
     ? state.linkedWorkflow?.ponderation
     : state.ponderation
 
+  /*******************************************************
+   * RENDER
+   *******************************************************/
   return (
     <SidebarInnerWrap>
       <SidebarContent>
         <SidebarTitle as="h3" variant="h6">
           Edit node
         </SidebarTitle>
+
         {state.linkedWorkflow && (
           <Stack sx={{ mb: 3 }} gap={2}>
             <div>
@@ -107,13 +137,14 @@ const EditNode = () => {
               control={
                 <Switch
                   checked={linkedWorkflow}
-                  onChange={toggleUseLinkWorfklowData}
+                  onChange={toggleUseLinkWorkflowData}
                   size="small"
                 />
               }
             />
           </Stack>
         )}
+
         <Stack direction="column" spacing={3}>
           {!linkedWorkflow && (
             <>
@@ -284,7 +315,7 @@ const EditNode = () => {
           variant="contained"
           color="secondary"
           onClick={
-            state.linkedWorkflow ? removeLinkedWorkflow : onLinkWorfklowClick
+            state.linkedWorkflow ? removeLinkedWorkflow : onLinkWorkflowClick
           }
         >
           {!state.linkedWorkflow ? 'Link workflow' : 'Remove linked workflow'}

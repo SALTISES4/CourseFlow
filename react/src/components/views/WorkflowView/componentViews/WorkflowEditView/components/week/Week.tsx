@@ -1,7 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
-// import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { changeField, weekChangeField } from '@cfRedux/slices/week.slice'
@@ -9,7 +8,6 @@ import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
-// import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
 import { DndContext } from '@dnd-kit/core'
 import {
@@ -58,49 +56,6 @@ const Week = ({ objectId, parentId }) => {
   const nodeBlock = useRef(null)
   const mainDiv = useRef(null)
   const manager = useRef(new BetterSelectionManager(dispatch))
-  //  const dragAndDropManager = useRef(null)
-
-  /*******************************************************
-   * LIFECYCLE
-   *******************************************************/
-
-  // I DON'T THINK ANY OF THIS NEEDED ANY MORE
-  // useEffect(() => {
-  //   dragAndDropManager.current = new WeekDragAndDropManager({
-  //     objectId,
-  //     parentId
-  //   })
-  //
-  //   const classIdentifiers = {
-  //     objectClass: '.node-week',
-  //     handle: '.node',
-  //     container: '.week-block'
-  //   }
-  //
-  //   // @todo why is my ref not working ?
-  //   // const jQuerySortableBlockTarget = $(nodeBlock.current)
-  //   //   .children('.node-week')
-  //   //   .not('.ui-draggable')
-  //   const jQuerySortableBlockTarget = $('.node-block')
-  //     .children('.node-week')
-  //     .not('.ui-draggable')
-  //
-  //   // targeting the 'nodweek' which is now controlled by nodewrapper
-  //   dragAndDropManager.current.makeSortableElement(
-  //     jQuerySortableBlockTarget,
-  //     objectId,
-  //     CfObjectType.NODEWEEK,
-  //     classIdentifiers.objectClass,
-  //     null,
-  //     [200, 1],
-  //     null,
-  //     classIdentifiers.handle,
-  //     classIdentifiers.container
-  //   )
-  //
-  //   dragAndDropManager.current.makeDroppable(mainDiv.current)
-  //   return () => {}
-  // }, [objectId, parentId])
 
   /*******************************************************
    * DRAGGABLE NODES
@@ -217,13 +172,6 @@ const Week = ({ objectId, parentId }) => {
         manager.current.updateSidebar(weekData.week.id, objectId, parentId)
       }}
     >
-      {/*<HoverMenu*/}
-      {/*  canWrite={workflow.workflowPermissions.write && !workflow.isStrategy}*/}
-      {/*  canComment={workflow.workflowPermissions.viewComments}*/}
-      {/*  objectId={objectId}*/}
-      {/*  parentId={parentId}*/}
-      {/*  objectType={CfObjectType.WEEK}*/}
-      {/*/>*/}
       <TitleText text={weekData.week.title} defaultText={defaultText} />
 
       {/*
