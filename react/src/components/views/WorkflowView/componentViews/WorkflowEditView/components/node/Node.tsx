@@ -361,7 +361,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    * RENDER
    *******************************************************/
   const style: React.CSSProperties = {
-    left: `${Constants.columnwidth * (nodeData.column.order + 1)}px`,
+    //    left: `${Constants.columnwidth * (nodeData.column.order + 1)}px`,
     backgroundColor: ThemeHelper.getColumnColour(nodeData.column),
     display: Utility.checkSetHidden(nodeData.node, objectSets)
       ? 'none'
@@ -438,8 +438,6 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
             </div>
           </div>
         </div>
-
-
 
         <div className="side-actions">
           <SideActions />

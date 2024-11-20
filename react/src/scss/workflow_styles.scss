@@ -139,31 +139,31 @@ input[type="submit"] {
 }
 
 
-.workflow-wrapper
-*:is(.node, .week, .column, .workflow-for-menu, .outcome):not(.selected):not(
-    .valid-drop
-  ):hover {
-  border-color: $color-gray;
-}
+//.workflow-wrapper
+//*:is(.node, .week, .column, .workflow-for-menu, .outcome):not(.selected):not(
+//    .valid-drop
+//  ):hover {
+//  border-color: $color-gray;
+//}
 
 
 .week {
-  background: $color-white-gray-light;
-  min-height: 100px;
-  padding: 10px;
-  padding-bottom: 24px;
-  margin-top: 5px;
-  box-sizing: border-box;
-  border: 2px solid $color-white;
-  border-radius: 5px;
-  position: relative;
+  //background: $color-white-gray-light;
+  //min-height: 100px;
+  //padding: 10px;
+  //padding-bottom: 24px;
+  //margin-top: 5px;
+  //box-sizing: border-box;
+  //border: 2px solid $color-white;
+  //border-radius: 5px;
+  //position: relative;
 }
 
 .week > .title-text {
-  font-weight: 600;
-  font-size: 14px;
-  white-space: normal;
-  overflow: hidden;
+  //font-weight: 600;
+  //font-size: 14px;
+  //white-space: normal;
+  //overflow: hidden;
 }
 
 //.week-workflow.dragging {
@@ -192,10 +192,7 @@ input[type="submit"] {
 //  background: rgba(224, 224, 224, 0.878);
 //}
 
-.week.strategy {
-  border: $color-black double;
-  margin-left: -1px;
-}
+
 
 
 
@@ -319,7 +316,7 @@ input[type="submit"] {
 .node {
   width: 200px;
   border: 1px solid $color-black;
-  position: relative;
+//  position: relative;
   white-space: normal;
   border-radius: 5px;
 }

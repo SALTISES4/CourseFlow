@@ -20,6 +20,8 @@ import {
 } from '@dnd-kit/sortable'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
 import clsx from 'clsx'
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
@@ -139,17 +141,51 @@ const Week = ({ objectId, parentId }) => {
       )
     }
 
-    return nodesDragState.map((nodeId) => {
-      return (
-        <NodeWrapper
-          key={`node-${nodeId}`}
-          objectId={nodeId}
-          parentId={weekData.week.id}
-          columnOrder={weekData.columns} // not sure if i should be props drilling this
-        />
-      )
-    })
+    return (
+      <>
+        {nodesDragState.map((nodeId) => {
+          return (
+            <Box display="flex">
+              <NodeWrapper
+                key={`node-${nodeId}`}
+                objectId={nodeId}
+                parentId={weekData.week.id}
+                columnOrder={weekData.columns} // not sure if i should be props drilling this
+              />
+            </Box>
+          )
+        })}
+      </>
+    )
   }
+
+  const BottomDrawer = () => (
+    <div
+      style={{
+        position: 'absolute',
+        bottom: '0px',
+        left: '0px',
+        width: '100%',
+        height: '20px',
+        borderRadius: '0 0 5px 5px',
+        overflow: 'hidden',
+        cursor: 'pointer'
+      }}
+      onClick={(evt) => {
+        evt.stopPropagation()
+        dispatch(
+          weekChangeField({
+            id: objectId,
+            data: { isDropped: !weekData.week.isDropped }
+          })
+        )
+      }}
+    >
+      <div style={{ textAlign: 'center', width: '100%', height: '100%' }}>
+        {dropIcon}
+      </div>
+    </div>
+  )
 
   const defaultText = !workflow.isStrategy
     ? `${weekData.week.weekTypeDisplay} ${weekData.week.order + 1}`
@@ -216,32 +252,7 @@ const Week = ({ objectId, parentId }) => {
         </div>
       )}
 
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '0px',
-          left: '0px',
-          width: '100%',
-          height: '20px',
-          borderRadius: '0 0 5px 5px',
-          overflow: 'hidden',
-          cursor: 'pointer'
-        }}
-        className="week-drop-row hover-shade"
-        onClick={(evt) => {
-          evt.stopPropagation()
-          dispatch(
-            weekChangeField({
-              id: objectId,
-              data: { isDropped: !weekData.week.isDropped }
-            })
-          )
-        }}
-      >
-        <div style={{ textAlign: 'center', width: '100%', height: '100%' }}>
-          {dropIcon}
-        </div>
-      </div>
+      <BottomDrawer />
       <StrategyTabIcon
         strategyClassification={weekData.week.strategyClassification}
       />

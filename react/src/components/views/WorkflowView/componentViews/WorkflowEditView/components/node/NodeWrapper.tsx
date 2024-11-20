@@ -11,6 +11,10 @@ import { CSS } from '@dnd-kit/utilities'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import QueueIcon from '@mui/icons-material/Queue'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import { styled } from '@mui/material/styles'
 import {
   useCreateNodeMutation,
   useDeleteNodeMutation
@@ -33,6 +37,20 @@ type PropsType = {
  * this is why we just call getNodeById in both NodeWrapper and child
  * TBD...
  **/
+
+// Define a fixed width for each cell
+const cellWidth = 200 // For example, 160px per cell
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  width: `${cellWidth}px`, // Fixed width for each cell
+  height: '100px', // Fixed height for each cell
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  //  margin: theme.spacing(1),
+  textAlign: 'center',
+  flexWrap: 'no-wrap'
+}))
 
 const NodeHoverMenu = ({
   objectId,
@@ -132,7 +150,7 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
     <div
       id={String(objectId)}
       ref={mergeRefs(setNodeRef, ref)}
-      className={clsx('node-week', { 'no-drag': data.noDrag })} // where does nodrag come from
+      className={clsx('node-week')}
       style={style}
       {...attributes}
       data-child-id={String(objectId)}
@@ -147,11 +165,19 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
     </div>
   )
 
-  // return workflow.columns.forEach((colNum) => {
-  //
-  //   return <div>nnn{colNum !== data.node.column && content}</div>
-  // })
-  return  content
+  return (
+    <>
+      {workflow.columns.map((colNum, index) => {
+        return (
+          <StyledPaper key={index} elevation={3}>
+            <div style={{ position: 'absolute' }}>col: {colNum}, order: {data.node.order}</div>
+
+            {colNum === data.node.column && content}
+          </StyledPaper>
+        )
+      })}
+    </>
+  )
 }
 
 export default NodeWrapper
