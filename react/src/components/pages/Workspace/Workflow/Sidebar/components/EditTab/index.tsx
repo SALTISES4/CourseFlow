@@ -28,7 +28,7 @@ const EditTab = ({ type }: { type: EditableType }) => {
     case EditableType.NODE_CATEGORY:
       return <EditNodeCategory />
     case EditableType.NODE:
-      return <EditNode />
+      return <EditNode id={63} />
     default:
       return (
         <Alert

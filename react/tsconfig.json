@@ -82,6 +82,12 @@
       ],
       "@cfSCSS/*": [
         "./scss/*"
+      ],
+      "@cfSidebar": [
+        "./components/pages/Workspace/Workflow/Sidebar/"
+      ],
+      "@cfSidebar/*": [
+          "./components/pages/Workspace/Workflow/Sidebar/*",
       ]
     }
   },

@@ -1,30 +1,25 @@
+import * as SC from '@cfSidebar/styles'
 import Typography from '@mui/material/Typography'
 
 import data from './data'
 import DraggableBlock from '../../Draggable/Block'
-import {
-  GroupWrap,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '../../styles'
 
 const AddTab = () => {
   const { title, subtitle, groups } = data
 
   return (
-    <SidebarInnerWrap>
-      <SidebarContent>
-        <SidebarTitle as="h3" variant="h6">
+    <SC.SidebarInnerWrap>
+      <SC.SidebarContent>
+        <SC.SidebarTitle as="h3" variant="h6">
           {title}
-        </SidebarTitle>
+        </SC.SidebarTitle>
         {subtitle && (
           <Typography variant="body2" sx={{ mb: 3 }}>
             {subtitle}
           </Typography>
         )}
         {groups?.map((group, idx) => (
-          <GroupWrap key={idx}>
+          <SC.GroupWrap key={idx}>
             <Typography component="h6" variant="body2">
               {group.title}
             </Typography>
@@ -42,10 +37,10 @@ const AddTab = () => {
                 ))}
               </ul>
             )}
-          </GroupWrap>
+          </SC.GroupWrap>
         ))}
-      </SidebarContent>
-    </SidebarInnerWrap>
+      </SC.SidebarContent>
+    </SC.SidebarInnerWrap>
   )
 }
 

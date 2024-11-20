@@ -57,7 +57,7 @@ class WorkspaceEndpoint:
     @staticmethod
     @api_view(["POST"])
     # @user_can_edit(False)
-    def update_value(request: Request) -> Response:
+    def update_value(request: Request, pk: int) -> Response:
         body = request.data
         current_user_id = request.user.id
 

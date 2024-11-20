@@ -1,10 +1,12 @@
+import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
-import {
-  LinkedWorkflowType,
-  NodeForm
-} from '@cfPages/Workspace/Workflow/Sidebar/components/EditTab/components/EditNode/types'
+import { NodeForm } from '@cfPages/Workspace/Workflow/Sidebar/components/EditTab/components/EditNode/types'
+import ActionCreator from '@cfRedux/ActionCreator'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
+import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { AppState } from '@cfRedux/types/type'
+import * as SC from '@cfSidebar/styles'
+import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -13,25 +15,19 @@ import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
+import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { produce } from 'immer'
-import { ChangeEvent, useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { updateValueQuery } from '@XMLHTTP/API/update'
+import { useCallback, useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
 
-import getNodeData from './getNodeData'
 import optionsData from './optionsData'
-import {
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '../../../../styles'
 
-const EditNode = () => {
+const EditNode = ({ id }) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -39,295 +35,338 @@ const EditNode = () => {
   const nodeData = useSelector((state: AppState) =>
     selectNodeById(state, sidebarData.edit.id)
   )
+  const dispatch = useDispatch()
 
   const [linkedWorkflow, setLinkedWorkflow] = useState(false)
-  const [state, setState] = useState<{ test: string }>()
-  const hello: number = 'ster'
+
+  const {
+    control,
+    register,
+    setValue,
+    getValues,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors, isDirty }
+  } = useForm<NodeForm>({
+    defaultValues: {
+      title: nodeData.node.title,
+      description: nodeData.node.description,
+      ponderation: {
+        theory: String(nodeData.node.ponderationTheory),
+        practice: String(nodeData.node.ponderationPractical),
+        individual: String(nodeData.node.ponderationIndividual),
+        generalEdu: String(nodeData.node.ponderationGeneralEdu),
+        specificEdu: String(nodeData.node.ponderationSpecificEdu)
+      },
+      contextType: nodeData.node.contextType || '',
+      taskType: nodeData.node.taskType || '',
+      amount: nodeData.node.amount || '',
+      unitType: nodeData.node.unitType || '',
+      objectSets: nodeData.node.objectSets || []
+    }
+  })
+  const watchedFields = watch()
+  const formValues = getValues()
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
-
   useEffect(() => {
-    if (nodeData) {
-      setState(
-        produce((draft) => {
-          if (draft) {
-            draft.teppp = 'New Title' // Example assignment
+    if (nodeData && !isDirty) {
+      reset({
+        title: nodeData.node.title,
+        description: nodeData.node.description,
+        ponderation: {
+          theory: String(nodeData.node.ponderationTheory),
+          practice: String(nodeData.node.ponderationPractical),
+          individual: String(nodeData.node.ponderationIndividual),
+          generalEdu: String(nodeData.node.ponderationGeneralEdu),
+          specificEdu: String(nodeData.node.ponderationSpecificEdu)
+        },
+        contextType: nodeData.node.contextType || '',
+        taskType: nodeData.node.taskType || '',
+        amount: nodeData.node.amount || '',
+        unitType: nodeData.node.unitType || '',
+        objectSets: nodeData.node.objectSets || []
+      })
+    }
+  }, [reset, isDirty, nodeData])
+
+  const debouncedDispatch = useCallback(
+    debounce((data) => {
+      dispatch(
+        nodeChangeField({
+          id: sidebarData.edit.id,
+          data: {
+            title: data.title,
+            description: data.description
           }
         })
       )
+
+      // update the server
+      updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
+
+      reset({}, { keepValues: true })
+    }, 300),
+    [dispatch, sidebarData.edit.id]
+  )
+
+  useEffect(() => {
+    const formValues = getValues()
+
+    if (isDirty) {
+      debouncedDispatch(formValues)
     }
-  }, [nodeData])
+  }, [watchedFields, isDirty, getValues, debouncedDispatch])
 
   /*******************************************************
    * FUNCTIONS
    *******************************************************/
-  const onTextFieldChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {},
-    []
-  )
+  const onSubmit = (data: NodeForm) => {
+    Utility.logger('Form submitted with data:', data)
+  }
 
-  const onSelectChange = useCallback((e: SelectChangeEvent) => {
-    setState(
-      produce((draft) => {
-        const key = e.target.name as 'taskType' | 'contextType' | 'unitType'
-        draft[key] = Number(e.target.value)
-        Utility.logger(e.target.name, 'changed to', e.target.value)
-      })
-    )
-  }, [])
-
-  const onPonderationChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setState(
-        produce((draft) => {
-          if (draft.ponderation) {
-            const key = e.target.name as keyof typeof draft.ponderation
-            draft.ponderation[key] = e.target.value
-          }
-        })
-      )
-    },
-    []
-  )
-
-  const onLinkWorkflowClick = useCallback(() => {
-    Utility.logger('trigger link workflow dialog')
-  }, [])
-
-  const removeLinkedWorkflow = useCallback(() => {
-    setLinkedWorkflow(false)
-    setState(
-      produce((draft) => {
-        draft.linkedWorkflow = undefined
-      })
-    )
-  }, [])
-
-  const toggleUseLinkWorkflowData = useCallback(() => {
+  const toggleUseLinkWorkflowData = () => {
     setLinkedWorkflow(!linkedWorkflow)
-  }, [linkedWorkflow])
+  }
 
-  // read ponderation data from linked workflow or state
-  const ponderation = linkedWorkflow
-    ? state.linkedWorkflow?.ponderation
-    : state.ponderation
+  const removeLinkedWorkflow = () => {
+    setLinkedWorkflow(false)
+    setValue('linkedWorkflow', undefined)
+  }
 
+  const ponderation = watch('linkedWorkflow')
+    ? watch('linkedWorkflow.ponderation')
+    : watch('ponderation')
   /*******************************************************
    * RENDER
    *******************************************************/
-  return (
-    <SidebarInnerWrap>
-      <SidebarContent>
-        <SidebarTitle as="h3" variant="h6">
-          Edit node
-        </SidebarTitle>
 
-        {state.linkedWorkflow && (
-          <Stack sx={{ mb: 3 }} gap={2}>
-            <div>
-              <Chip
-                label={state.linkedWorkflow.title}
-                onDelete={removeLinkedWorkflow}
-              />
-            </div>
-            <FormControlLabel
-              label="Use linked worfklow info"
-              control={
-                <Switch
-                  checked={linkedWorkflow}
-                  onChange={toggleUseLinkWorkflowData}
-                  size="small"
+  const Temp = (
+    <SC.SidebarActions>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={
+          watch('linkedWorkflow')
+            ? removeLinkedWorkflow
+            : toggleUseLinkWorkflowData
+        }
+      >
+        {!watch('linkedWorkflow') ? 'Link workflow' : 'Remove linked workflow'}
+      </Button>
+      <Button variant="contained" color="secondary">
+        Duplicate
+      </Button>
+      <Button variant="contained" color="secondary">
+        Delete
+      </Button>
+    </SC.SidebarActions>
+  )
+
+  if (!nodeData) {
+    return <></>
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <SC.SidebarInnerWrap>
+        <SC.SidebarContent>
+          <SC.SidebarTitle as="h3" variant="h6">
+            Edit node
+          </SC.SidebarTitle>
+
+          {watch('linkedWorkflow') && (
+            <Stack sx={{ mb: 3 }} gap={2}>
+              <div>
+                <Chip
+                  label={watch('linkedWorkflow.title')}
+                  onDelete={removeLinkedWorkflow}
                 />
-              }
+              </div>
+              <FormControlLabel
+                label="Use linked worfklow info"
+                control={
+                  <Switch
+                    checked={linkedWorkflow}
+                    onChange={toggleUseLinkWorkflowData}
+                    size="small"
+                  />
+                }
+              />
+            </Stack>
+          )}
+
+          <Stack direction="column" spacing={3}>
+            {!linkedWorkflow && (
+              <>
+                <TextField
+                  label="Title"
+                  variant="outlined"
+                  size="small"
+                  {...register('title', { required: 'Title is required' })}
+                  error={!!errors.title}
+                  helperText={errors.title?.message}
+                />
+                <TextField
+                  label="Description"
+                  variant="outlined"
+                  size="small"
+                  multiline
+                  maxRows={5}
+                  {...register('description')}
+                />
+              </>
+            )}
+
+            <FormControl fullWidth>
+              <InputLabel id="context-type-select-label">Context</InputLabel>
+              <Controller
+                name="contextType"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label="Context"
+                    labelId="context-type-select-label"
+                  >
+                    {optionsData.contexts.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel id="task-type-select-label">Type of task</InputLabel>
+              <Controller
+                name="taskType"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    label="Type of task"
+                    labelId="task-type-select-label"
+                  >
+                    {optionsData.taskTypes.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                )}
+              />
+            </FormControl>
+
+            <Stack direction="row" gap={2}>
+              <TextField
+                label="Amount"
+                variant="outlined"
+                size="small"
+                {...register('amount')}
+                sx={{ flexBasis: '35%' }}
+              />
+              <FormControl sx={{ flexGrow: 1 }}>
+                <InputLabel id="unit-type-select-label">Unit type</InputLabel>
+                <Controller
+                  name="unitType"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      {...field}
+                      label="Unit type"
+                      labelId="unit-type-select-label"
+                    >
+                      {optionsData.unitTypes.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </FormControl>
+            </Stack>
+
+            <Controller
+              name="objectSets"
+              control={control}
+              render={({ field }) => (
+                <Autocomplete
+                  multiple
+                  options={optionsData.objectSets}
+                  getOptionLabel={(option) => option.label}
+                  isOptionEqualToValue={(option, value) =>
+                    option.value === value.value
+                  }
+                  onChange={(_, value) => field.onChange(value)}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Object sets"
+                    />
+                  )}
+                />
+              )}
             />
           </Stack>
-        )}
 
-        <Stack direction="column" spacing={3}>
-          {!linkedWorkflow && (
+          {!!ponderation && (
             <>
+              <Divider sx={{ mt: 3 }} />
+              <Typography
+                component="h6"
+                variant="body2"
+                sx={{ mt: 1, mb: 3, fontWeight: 600 }}
+              >
+                Ponderation
+              </Typography>
+              <Stack direction="row" gap={2} sx={{ mb: 2 }}>
+                <TextField
+                  label="Hrs. theory"
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.theory')}
+                />
+                <TextField
+                  label="Hrs. practice"
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.practice')}
+                />
+              </Stack>
               <TextField
-                name="title"
-                required
-                label="Title"
+                label="Hrs. individual"
                 variant="outlined"
                 size="small"
-                value={state.title}
-                onChange={onTextFieldChange}
+                {...register('ponderation.individual')}
               />
-              <TextField
-                name="description"
-                label="Description"
-                variant="outlined"
-                size="small"
-                value={state.description}
-                multiline
-                maxRows={5}
-                onChange={onTextFieldChange}
-              />
+              <Divider sx={{ mt: 3, mb: 3 }} />
+              <Stack direction="column" spacing={2}>
+                <TextField
+                  label="General education"
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.generalEdu')}
+                />
+                <TextField
+                  label="Specific education"
+                  variant="outlined"
+                  size="small"
+                  {...register('ponderation.specificEdu')}
+                />
+              </Stack>
             </>
           )}
-          <FormControl fullWidth>
-            <InputLabel id="context-type-select-label">Context</InputLabel>
-            <Select
-              name="context"
-              size="small"
-              label="Context"
-              labelId="context-type-select-label"
-              value={state.contextType.toString()}
-              onChange={onSelectChange}
-            >
-              {optionsData.contexts.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth>
-            <InputLabel id="task-type-select-label">Type of task</InputLabel>
-            <Select
-              name="taskType"
-              size="small"
-              label="Type of task"
-              labelId="task-type-select-label"
-              value={state.taskType.toString()}
-              onChange={onSelectChange}
-            >
-              {optionsData.taskTypes.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Stack direction="row" gap={2}>
-            <TextField
-              name="amount"
-              label="Amount"
-              variant="outlined"
-              size="small"
-              value={state.amount}
-              onChange={onTextFieldChange}
-              sx={{ flexBasis: '35%' }}
-            />
-            <FormControl sx={{ flexGrow: 1 }}>
-              <InputLabel id="unit-type-select-label">Unit type</InputLabel>
-              <Select
-                name="unitType"
-                size="small"
-                label="Unit type"
-                labelId="unit-type-select-label"
-                value={state.unitType.toString()}
-                onChange={onSelectChange}
-              >
-                {optionsData.unitTypes.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Stack>
-          <Autocomplete
-            multiple
-            size="small"
-            options={optionsData.objectSets}
-            onChange={(_, v) => Utility.logger('changed to', v)}
-            isOptionEqualToValue={(option, value) =>
-              option.value === value.value
-            }
-            defaultValue={optionsData.objectSets.filter((o) =>
-              state.objectSets.includes(o.value)
-            )}
-            renderInput={(params) => (
-              <TextField {...params} variant="outlined" label="Object sets" />
-            )}
-          />
-        </Stack>
-        {!!ponderation && (
-          <>
-            <Divider sx={{ mt: 3 }} />
-            <Typography
-              component="h6"
-              variant="body2"
-              sx={{ mt: 1, mb: 3, fontWeight: 600 }}
-            >
-              Ponderation
-            </Typography>
-            <Stack direction="row" gap={2} sx={{ mb: 2 }}>
-              <TextField
-                disabled={!!linkedWorkflow}
-                name="theory"
-                label="Hrs. theory"
-                variant="outlined"
-                size="small"
-                value={ponderation.theory}
-                onChange={onPonderationChange}
-              />
-              <TextField
-                disabled={!!linkedWorkflow}
-                name="practice"
-                label="Hrs. practice"
-                variant="outlined"
-                size="small"
-                value={ponderation.practice}
-                onChange={onPonderationChange}
-              />
-            </Stack>
-            <TextField
-              disabled={!!linkedWorkflow}
-              name="individual"
-              label="Hrs. individual"
-              variant="outlined"
-              size="small"
-              value={ponderation.individual}
-              onChange={onPonderationChange}
-            />
-            <Divider sx={{ mt: 3, mb: 3 }} />
-            <Stack direction="column" spacing={2}>
-              <TextField
-                disabled={!!linkedWorkflow}
-                name="generalEdu"
-                label="General education"
-                variant="outlined"
-                size="small"
-                value={ponderation.generalEdu}
-                onChange={onPonderationChange}
-              />
-              <TextField
-                disabled={!!linkedWorkflow}
-                name="specificEdu"
-                label="Specific education"
-                variant="outlined"
-                size="small"
-                value={ponderation.specificEdu}
-                onChange={onPonderationChange}
-              />
-            </Stack>
-          </>
-        )}
-      </SidebarContent>
-      <SidebarActions>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={
-            state.linkedWorkflow ? removeLinkedWorkflow : onLinkWorkflowClick
-          }
-        >
-          {!state.linkedWorkflow ? 'Link workflow' : 'Remove linked workflow'}
-        </Button>
-        <Button variant="contained" color="secondary">
-          Duplicate
-        </Button>
-        <Button variant="contained" color="secondary">
-          Delete
-        </Button>
-      </SidebarActions>
-    </SidebarInnerWrap>
+        </SC.SidebarContent>
+      </SC.SidebarInnerWrap>
+    </form>
   )
 }
 

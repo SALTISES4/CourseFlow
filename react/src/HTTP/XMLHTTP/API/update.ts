@@ -2,6 +2,7 @@ import { apiPaths } from '@cf/router/apiRoutes'
 import Utility from '@cf/utility/Utility.class'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
+import { generatePath } from 'react-router-dom'
 
 /**
  * @updateValue
@@ -29,7 +30,8 @@ export function updateValueQuery(
     data: json
   }
 
-  const url = apiPaths.json_api.workspace.field__update
+  const base = apiPaths.json_api.workspace.field__update
+  const url = generatePath(base, { id: 10 })
   API_POST(url, postObject).then((response: EmptyPostResp) => {
     callBackFunction(response)
   })

@@ -79,6 +79,9 @@ const WorkspaceSidebar = () => {
       dispatch(sidebarCollapse())
     }
 
+
+
+
     if (tab) {
       dispatch(sidebarChangeTab({ tab, collapsed: false }))
     }

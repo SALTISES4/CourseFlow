@@ -231,7 +231,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    * Icon link to the linked workflow by reference
    **/
   const LinkIcon = ({ data }: { data: any }) => {
-    if (!data.linkedWorkflow) {
+    if (!data.linkedWorkflow || true) {
       return <></>
     }
 

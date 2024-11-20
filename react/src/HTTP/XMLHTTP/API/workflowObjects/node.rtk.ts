@@ -159,6 +159,6 @@ export const {
   useRestoreNodeMutation,
   useDuplicateNodeMutation,
   useUpdatePositionNodeMutation,
-  useLinkToWorkflowNodeMutation,
-  useNodeLinkCreateNodeMutation
+  useLinkToWorkflowMutation,
+  useNodeLinkCreateMutation
 } = extendedApi
