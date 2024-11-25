@@ -11,8 +11,6 @@ import { CSS } from '@dnd-kit/utilities'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import QueueIcon from '@mui/icons-material/Queue'
-import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
 import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
 import {
@@ -21,7 +19,7 @@ import {
 } from '@XMLHTTP/API/workflowObjects/node.rtk'
 import clsx from 'clsx'
 import mergeRefs from 'merge-refs'
-import React from 'react'
+import { CSSProperties, Ref } from 'react'
 import { useSelector } from 'react-redux'
 
 type PropsType = {
@@ -49,16 +47,14 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   alignItems: 'center',
   //  margin: theme.spacing(1),
   textAlign: 'center',
-  flexWrap: 'no-wrap'
+  flexWrap: 'nowrap'
 }))
 
 const NodeHoverMenu = ({
   objectId,
-  order,
   show
 }: {
   objectId: number
-  order: number
   show: boolean
 }) => {
   /*******************************************************
@@ -76,11 +72,12 @@ const NodeHoverMenu = ({
     { isSuccess: deleteSuccess, isError: deleteError, data: deleteData }
   ] = useDeleteNodeMutation()
 
-  const createButtonHandler = async () => {
+  const createButtonHandler = async (type: CfObjectType) => {
     try {
+      console.log('creating type', type)
       const resp = await createMutate({
         payload: {
-          rank: order + 1
+          objectType: type
         }
       }).unwrap()
       onSuccess(resp)
@@ -103,7 +100,7 @@ const NodeHoverMenu = ({
   const menuItems: MenuItemType[] = [
     {
       content: _t('Delete'),
-      action: () => deleteButtonHandler(CfObjectType.WEEK),
+      action: () => deleteButtonHandler(),
       icon: <DeleteIcon />,
       show: true
     },
@@ -118,6 +115,7 @@ const NodeHoverMenu = ({
   if (!show) {
     return <></>
   }
+
   return (
     <>
       <HoverMenu
@@ -136,7 +134,7 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
 
-  const style = {
+  const style: CSSProperties = {
     position: 'relative',
     transform: CSS.Transform.toString(transform),
     transition
@@ -149,7 +147,7 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
   const content = (
     <div
       id={String(objectId)}
-      ref={mergeRefs(setNodeRef, ref)}
+      ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
       className={clsx('node-week')}
       style={style}
       {...attributes}

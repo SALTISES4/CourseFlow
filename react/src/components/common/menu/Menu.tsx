@@ -265,7 +265,7 @@ const StaticMenu = ({
   )
 }
 
-const HoverMenu = ({ menuItems }: { menuItems: MenuItemType[] }) => {
+const HoverMenu = ({ id, menuItems }: { id?: string, menuItems: MenuItemType[] }) => {
   const [show, setShow] = useState<boolean>(false)
 
   const buttons = menuItems.map((item, el) => {
@@ -281,7 +281,7 @@ const HoverMenu = ({ menuItems }: { menuItems: MenuItemType[] }) => {
   })
 
   return (
-    <div style={{ position: 'absolute', top: 0, right: 0 }}>
+    <div id={id} style={{ position: 'absolute', top: 0, right: 0 }}>
       {buttons}
       {/*{canWrite && (*/}
       {/*  <>*/}
