@@ -19,7 +19,7 @@ import {
 } from '@XMLHTTP/API/workflowObjects/node.rtk'
 import clsx from 'clsx'
 import mergeRefs from 'merge-refs'
-import { CSSProperties, Ref } from 'react'
+import { Ref } from 'react'
 import { useSelector } from 'react-redux'
 
 type PropsType = {
@@ -134,12 +134,6 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
 
-  const style: CSSProperties = {
-    position: 'relative',
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
-
   if (!data) {
     return null
   }
@@ -149,7 +143,11 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
       id={String(objectId)}
       ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
       className={clsx('node-week')}
-      style={style}
+      style={{
+        position: 'relative',
+        transform: CSS.Transform.toString(transform),
+        transition
+      }}
       {...attributes}
       data-child-id={String(objectId)}
       data-column-id={String(data.column)}
@@ -163,19 +161,15 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
     </div>
   )
 
-  return (
-    <>
-      {workflow.columns.map((colNum, index) => {
-        return (
-          <StyledPaper key={index} elevation={3}>
-            <div style={{ position: 'absolute' }}>col: {colNum}, order: {data.node.order}</div>
+  return workflow.columns.map((colNum, index) => (
+    <StyledPaper key={index} elevation={3}>
+      <div style={{ position: 'absolute', background: '#faaa' }}>
+        col: {colNum}, order: {data.node.order}
+      </div>
 
-            {colNum === data.node.column && content}
-          </StyledPaper>
-        )
-      })}
-    </>
-  )
+      {colNum === data.node.column && content}
+    </StyledPaper>
+  ))
 }
 
 export default NodeWrapper

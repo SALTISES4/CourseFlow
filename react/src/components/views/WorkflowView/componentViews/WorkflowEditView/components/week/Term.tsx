@@ -1,4 +1,3 @@
-import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 // import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
@@ -8,7 +7,7 @@ import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/c
 // import WeekDragAndDropManager from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekDragAndDropManager.class'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import clsx from 'clsx'
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 type OwnProps = {
@@ -133,7 +132,11 @@ const Term = ({
         text={data.title}
         defaultText={`${data.weekTypeDisplay} ${rank + 1}`}
       />
-      <div className="node-block" id={`${objectId}-node-block`} ref={nodeBlock}>
+      <div
+        id={`${objectId}-node-block`}
+        className="node-block"
+        ref={nodeBlock}
+      >
         {nodeBlocks}
       </div>
       <div

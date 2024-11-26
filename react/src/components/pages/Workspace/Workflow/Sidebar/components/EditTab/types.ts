@@ -15,7 +15,7 @@ export enum EditableType {
   OUTCOME = CfObjectType.OUTCOME,
   NODE = CfObjectType.NODE,
   NODE_LINK = CfObjectType.NODELINK,
-  NODE_CATEGORY = 'editable_node_category'
+  NODE_CATEGORY = CfObjectType.COLUMN
 }
 
 // map out each type to a corresponding form type

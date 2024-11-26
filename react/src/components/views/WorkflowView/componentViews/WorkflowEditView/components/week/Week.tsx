@@ -1,29 +1,21 @@
-import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
-import { changeField, weekChangeField } from '@cfRedux/slices/week.slice'
+import { weekChangeField } from '@cfRedux/slices/week.slice'
 import { AppState } from '@cfRedux/types/type'
-import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
 import { DndContext } from '@dnd-kit/core'
-import {
-  SortableContext,
-  horizontalListSortingStrategy,
-  rectSortingStrategy,
-  useSortable
-} from '@dnd-kit/sortable'
+import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
 import clsx from 'clsx'
-import * as React from 'react'
-import { useEffect, useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { CfObjectType } from '@cf/types/enum'
 
 type OwnProps = {
   objectId: number
@@ -47,7 +39,7 @@ const Week = ({ objectId, parentId }) => {
   /*******************************************************
    * HOOKS: STATE
    *******************************************************/
-  const [nodesDragState, setNodesDragState] = React.useState(
+  const [nodesDragState, setNodesDragState] = useState(
     weekData.week.nodes || []
   )
   /*******************************************************
@@ -96,22 +88,15 @@ const Week = ({ objectId, parentId }) => {
       )
     }
 
-    return (
-      <>
-        {nodesDragState.map((nodeId) => {
-          return (
-            <Box display="flex">
-              <NodeWrapper
-                key={`node-${nodeId}`}
-                objectId={nodeId}
-                parentId={weekData.week.id}
-                columnOrder={weekData.columns} // not sure if i should be props drilling this
-              />
-            </Box>
-          )
-        })}
-      </>
-    )
+    return nodesDragState.map((nodeId) => (
+      <Box display="flex" key={`node-${nodeId}`}>
+        <NodeWrapper
+          objectId={nodeId}
+          parentId={weekData.week.id}
+          columnOrder={weekData.columns} // not sure if i should be props drilling this
+        />
+      </Box>
+    ))
   }
 
   const BottomDrawer = () => (
@@ -169,7 +154,7 @@ const Week = ({ objectId, parentId }) => {
       //      ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
-        manager.current.updateSidebar(weekData.week.id, objectId, parentId)
+        manager.current.updateSidebar(weekData.week.id, CfObjectType.WEEK, parentId)
       }}
     >
       <TitleText text={weekData.week.title} defaultText={defaultText} />
@@ -182,8 +167,8 @@ const Week = ({ objectId, parentId }) => {
 
       {weekData.week.isDropped && (
         <div
-          className="node-block"
           id={`${objectId}-node-block`}
+          className="node-block"
           ref={nodeBlock}
         >
           <DndContext

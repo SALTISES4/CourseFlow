@@ -1,7 +1,6 @@
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
-import { NodeForm } from '@cfPages/Workspace/Workflow/Sidebar/components/EditTab/components/EditNode/types'
-import ActionCreator from '@cfRedux/ActionCreator'
+import { NodeForm } from './types'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { AppState } from '@cfRedux/types/type'
