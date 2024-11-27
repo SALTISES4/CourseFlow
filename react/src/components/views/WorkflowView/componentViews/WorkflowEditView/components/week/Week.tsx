@@ -9,13 +9,14 @@ import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditVi
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
 import { DndContext } from '@dnd-kit/core'
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
+import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
+import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
 import clsx from 'clsx'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CfObjectType } from '@cf/types/enum'
+import * as Styled from './styles'
 
 type OwnProps = {
   objectId: number
@@ -81,11 +82,7 @@ const Week = ({ objectId, parentId }) => {
    *******************************************************/
   const Nodes = () => {
     if (!nodesDragState?.length) {
-      return (
-        <div className="node-week placeholder" style={{ height: '100%' }}>
-          Drag and drop nodes from the sidebar to add.
-        </div>
-      )
+      return <div>Drag and drop nodes from the sidebar to add.</div>
     }
 
     return nodesDragState.map((nodeId) => (
@@ -99,48 +96,25 @@ const Week = ({ objectId, parentId }) => {
     ))
   }
 
-  const BottomDrawer = () => (
-    <div
-      style={{
-        position: 'absolute',
-        bottom: '0px',
-        left: '0px',
-        width: '100%',
-        height: '20px',
-        borderRadius: '0 0 5px 5px',
-        overflow: 'hidden',
-        cursor: 'pointer'
-      }}
-      onClick={(evt) => {
-        evt.stopPropagation()
-        dispatch(
-          weekChangeField({
-            id: objectId,
-            data: { isDropped: !weekData.week.isDropped }
-          })
-        )
-      }}
-    >
-      <div style={{ textAlign: 'center', width: '100%', height: '100%' }}>
-        {dropIcon}
-      </div>
-    </div>
-  )
-
   const defaultText = !workflow.isStrategy
     ? `${weekData.week.weekTypeDisplay} ${weekData.week.order + 1}`
     : undefined
-  const dropIcon = weekData.week.isDropped ? (
-    <ArrowDropDownIcon />
-  ) : (
-    <ArrowDropUpIcon />
-  )
+
+  const toggleCollapse = useCallback((evt) => {
+    evt.stopPropagation()
+    dispatch(
+      weekChangeField({
+        id: objectId,
+        data: { isDropped: !weekData.week.isDropped }
+      })
+    )
+  }, [])
 
   /*******************************************************
    * RENDER
    *******************************************************/
   return (
-    <div
+    <Styled.WeekWrapper
       style={ThemeHelper.getBorderStyle({
         isLocked: weekData.week?.lock?.lock,
         colour: weekData.week?.lock?.userColour
@@ -157,7 +131,14 @@ const Week = ({ objectId, parentId }) => {
         manager.current.updateSidebar(weekData.week.id, CfObjectType.WEEK, parentId)
       }}
     >
-      <TitleText text={weekData.week.title} defaultText={defaultText} />
+      <Styled.WeekHeader expanded={weekData.week.isDropped}>
+        <Styled.WeekTitle variant="subtitle2">
+          <TitleText text={weekData.week.title} defaultText={defaultText} />
+        </Styled.WeekTitle>
+        <IconButton onClick={toggleCollapse}>
+          <KeyboardArrowDown />
+        </IconButton>
+      </Styled.WeekHeader>
 
       {/*
        .node-block being used
@@ -166,7 +147,7 @@ const Week = ({ objectId, parentId }) => {
       */}
 
       {weekData.week.isDropped && (
-        <div
+        <Styled.WeekContent
           id={`${objectId}-node-block`}
           className="node-block"
           ref={nodeBlock}
@@ -182,14 +163,12 @@ const Week = ({ objectId, parentId }) => {
               <Nodes />
             </SortableContext>
           </DndContext>
-        </div>
+        </Styled.WeekContent>
       )}
-
-      <BottomDrawer />
       <StrategyTabIcon
         strategyClassification={weekData.week.strategyClassification}
       />
-    </div>
+    </Styled.WeekWrapper>
   )
 }
 

@@ -20,7 +20,7 @@ import {
 import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
 import mergeRefs from 'merge-refs'
-import React, { useEffect, useRef } from 'react'
+import { Ref } from 'react'
 import { useSelector } from 'react-redux'
 
 import Term from './Term'
@@ -95,7 +95,7 @@ const WeekHoverMenu = ({
     { isSuccess: deleteSuccess, isError: deleteError, data: deleteData }
   ] = useDeleteWeekMutation()
 
-  const createButtonHandler = async () => {
+  const createButtonHandler = async (type: CfObjectType) => {
     try {
       const resp = await createMutate({
         payload: {
@@ -122,7 +122,7 @@ const WeekHoverMenu = ({
   const menuItems: MenuItemType[] = [
     {
       content: _t('Delete'),
-      action: () => deleteButtonHandler(CfObjectType.WEEK),
+      action: () => deleteButtonHandler(),
       icon: <DeleteIcon />,
       show: true
     },
@@ -142,13 +142,11 @@ const WeekHoverMenu = ({
   }
 
   return (
-    <>
-      <HoverMenu
-        id="hover-menu"
-        data-test-id="hover-menu"
-        menuItems={menuItems}
-      />
-    </>
+    <HoverMenu
+      id="hover-menu"
+      data-test-id="hover-menu"
+      menuItems={menuItems}
+    />
   )
 }
 
@@ -187,29 +185,28 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
         />
       )
     }
+
     return <Week objectId={objectId} parentId={parentId} />
   }
 
   /*******************************************************
    * RENDER
    *******************************************************/
-  const style = {
-    position: 'relative',
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
-
   return (
     <div
       id={'week-block-' + String(objectId)}
-      style={style}
+      style={{
+        position: 'relative',
+        transform: CSS.Transform.toString(transform),
+        transition
+      }}
       {...attributes}
       className={clsx('week-workflow', {
         // legacy name of through model, still being used for jquery drag and drop i think
         //   'no-drag': weekData.week?.noDrag, // find out about noDrag
         //  dragging: mainDiv.current?.classList.contains('dragging')
       })}
-      ref={mergeRefs(setNodeRef, ref)}
+      ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
       data-scroll-to-id={'week-block-' + String(objectId)}
       data-child-id={objectId}
     >
@@ -217,11 +214,11 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
       Need to solve this
       drag n drop sort zone take over whole object and hides inside click event  (hover menu etc)
       */}
-      <div {...listeners}>
+      <div {...listeners} className="drag-handle-icon-wrap">
         <DragHandleIcon />
       </div>
       <WeekChooser />
-      <WeekHoverMenu show={isHovered} />
+      <WeekHoverMenu objectId={objectId} show={isHovered} />
     </div>
   )
 }

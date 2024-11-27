@@ -249,17 +249,6 @@ input[type="submit"] {
   position: static;
 }
 
-.node-block {
-  min-height: 100px;
-}
-
-.node-block.term {
-  /*width:160px;*/
-  width: 220px;
-  display: inline-block;
-  vertical-align: top;
-}
-
 .term .node {
   left: 10px !important;
   width: 180px;

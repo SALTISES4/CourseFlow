@@ -1,7 +1,6 @@
 import { OuterContentWrap } from '@cf/mui/helper'
 import { CfObjectType } from '@cf/types/enum'
 import { updateAllEntities } from '@cfRedux/thunks'
-import { WorkflowActions } from '@cfRedux/types/enumActions'
 import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
@@ -12,7 +11,6 @@ import {
   horizontalListSortingStrategy,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import clsx from 'clsx'
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -129,16 +127,6 @@ const WorkflowEditView = () => {
     dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
   }
 
-  const weeks = weeksDragState.map((weekId) => {
-    return (
-      <WeekWrapper
-        key={`weekworkflow-${weekId}`}
-        objectId={weekId}
-        parentId={workflow.id}
-      />
-    )
-  })
-
   /*******************************************************
    * RETURN
    *******************************************************/
@@ -168,7 +156,14 @@ const WorkflowEditView = () => {
               items={weeksDragState}
               strategy={verticalListSortingStrategy}
             >
-              {weeks}
+              {weeksDragState.map((weekId) => (
+                <WeekWrapper
+                  condensed={false} // TODO: where does this come from?
+                  key={`weekworkflow-${weekId}`}
+                  objectId={weekId}
+                  parentId={workflow.id}
+                />
+              ))}
             </SortableContext>
           </DndContext>
         </div>

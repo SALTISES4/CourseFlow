@@ -8,16 +8,15 @@ import { AppState } from '@cfRedux/types/type'
 import Node from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Node'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import Box from '@mui/material/Box'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import QueueIcon from '@mui/icons-material/Queue'
-import Paper from '@mui/material/Paper'
 import { styled } from '@mui/material/styles'
 import {
   useCreateNodeMutation,
   useDeleteNodeMutation
 } from '@XMLHTTP/API/workflowObjects/node.rtk'
-import clsx from 'clsx'
 import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
@@ -39,15 +38,9 @@ type PropsType = {
 // Define a fixed width for each cell
 const cellWidth = 200 // For example, 160px per cell
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
+const StyledCell = styled(Box)(() => ({
+  position: 'relative',
   width: `${cellWidth}px`, // Fixed width for each cell
-  height: '100px', // Fixed height for each cell
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  //  margin: theme.spacing(1),
-  textAlign: 'center',
-  flexWrap: 'nowrap'
 }))
 
 const NodeHoverMenu = ({
@@ -138,37 +131,42 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
     return null
   }
 
-  const content = (
-    <div
-      id={String(objectId)}
-      ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
-      className={clsx('node-week')}
-      style={{
-        position: 'relative',
-        transform: CSS.Transform.toString(transform),
-        transition
-      }}
-      {...attributes}
-      data-child-id={String(objectId)}
-      data-column-id={String(data.column)}
-    >
-      <div {...listeners}>
-        <DragHandleIcon />
-      </div>
-
-      <Node objectId={objectId} parentId={parentId} columnOrder={columnOrder} />
-      <NodeHoverMenu objectId={objectId} show={isHovered} />
-    </div>
-  )
-
   return workflow.columns.map((colNum, index) => (
-    <StyledPaper key={index} elevation={3}>
-      <div style={{ position: 'absolute', background: '#faaa' }}>
+    <StyledCell key={index}>
+      <span style={{
+        position: 'absolute',
+        top: '0.5em',
+        left: '0.5em',
+        fontWeight: 600,
+        fontSize: '12px',
+        opacity: 0.5
+      }}>
         col: {colNum}, order: {data.node.order}
-      </div>
+      </span>
 
-      {colNum === data.node.column && content}
-    </StyledPaper>
+      {colNum === data.node.column && (
+        <div
+          id={String(objectId)}
+          className="node-week"
+          ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
+          style={{
+            position: 'relative',
+            transform: CSS.Transform.toString(transform),
+            transition
+          }}
+          {...attributes}
+          data-child-id={String(objectId)}
+          data-column-id={String(data.column)}
+        >
+          <div {...listeners}>
+            <DragHandleIcon />
+          </div>
+
+          <Node objectId={objectId} parentId={parentId} columnOrder={columnOrder} />
+          <NodeHoverMenu objectId={objectId} show={isHovered} />
+        </div>
+      )}
+    </StyledCell>
   ))
 }
 
