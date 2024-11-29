@@ -5,8 +5,8 @@ import { AppState } from '@cfRedux/types/type'
 import { createSelector } from 'reselect'
 
 const selectId = (_: AppState, id: number) => id
-const selectNodeState = (state: AppState) => state.node
-const selectColumnState = (state: AppState) => state.column
+const selectNodeState = (state: AppState) => state.workspace.node
+const selectColumnState = (state: AppState) => state.workspace.column
 const selectObjectSets = (state: AppState) => state.objectset
 
 /**

@@ -440,7 +440,7 @@ class WorkflowService:
             WorkflowService.add_workflow_outcomes(data, workflow, user)
             # Add strategies based on the workflow type
             WorkflowService.add_strategies(data, workflow, user)
-            data["parent_project"] = WorkflowService.get_project(workflow, user)
+            data["project"] = WorkflowService.get_project(workflow, user)
 
         # Add unread comments if the user is authenticated
         # this should not go here

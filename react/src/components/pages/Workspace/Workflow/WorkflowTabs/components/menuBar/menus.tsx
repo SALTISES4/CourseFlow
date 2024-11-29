@@ -28,7 +28,7 @@ type StateType = {
 
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
   const project = useSelector((state: AppState) => state.workspace.project)
 
   const isStrategy = workflow.isStrategy
@@ -45,8 +45,8 @@ const ActionMenu = () => {
     openEditDialog: false
   })
   const objectSets = useSelector<AppState>((state: AppState) => state.objectset)
-  const week = useSelector<AppState>((state: AppState) => state.week)
-  const node = useSelector<AppState>((state: AppState) => state.node)
+  const week = useSelector<AppState>((state: AppState) => state.workspace.week)
+  const node = useSelector<AppState>((state: AppState) => state.workspace.node)
   const outcome = useSelector<AppState>((state: AppState) => state.outcome)
 
   /*******************************************************
@@ -213,12 +213,7 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   }
   const menuItems: MenuItemType[] = weekIds.map((item, index) => {
     return {
-      content: (
-        <ScrollToWeek
-          key={`weekworkflow-${item}`}
-          objectId={item}
-        />
-      ),
+      content: <ScrollToWeek key={`weekworkflow-${item}`} objectId={item} />,
       action: null,
       show: true
     }

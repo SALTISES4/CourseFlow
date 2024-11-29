@@ -3,7 +3,7 @@ import { AppState } from '@cfRedux/types/type'
 import { createSelector } from 'reselect'
 
 const selectId = (_, id: number) => id
-const getAllNodeLinks = (state: AppState) => state.nodelink
+const getAllNodeLinks = (state: AppState) => state.workspace.nodelink
 
 export const selectNodeLinkById = createSelector(
   [selectId, getAllNodeLinks],

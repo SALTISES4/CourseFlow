@@ -10,8 +10,15 @@ import parentNodeReducer from '@cfRedux/reducers/workflow/parentNode'
 import parentWorkflowReducer from '@cfRedux/reducers/workflow/parentWorfkflow'
 import weekworkflowReducer from '@cfRedux/reducers/workflow/weekworkflow'
 // slices
+import columnReducer from '@cfRedux/slices/column.slice'
+import nodeReducer from '@cfRedux/slices/node.slice'
+import nodelinkReducer from '@cfRedux/slices/nodelink.slice'
 import objectsetReducer from '@cfRedux/slices/objectset.slice'
 import projectReducer from '@cfRedux/slices/project.slice'
+import sidebarReducer from '@cfRedux/slices/sidebar.slice'
+import strategyReducer from '@cfRedux/slices/strategy.slice'
+import weekReducer from '@cfRedux/slices/week.slice'
+import workflowReducer from '@cfRedux/slices/workflow.slice'
 import { combineReducers } from 'redux'
 
 // @todo need to wrap these up
@@ -55,14 +62,12 @@ export const legacyWorkflowReducers = {
   weekworkflow: weekworkflowReducer,
   outcomeworkflow: outcomeworkflowReducer,
   outcomenode: outcomeNodeReducer,
-  outcomeoutcome: outcomeOutcomeReducer,
   objectset: objectsetReducer,
-  // keep these flat/normalized first order entities
 
-  // note this is not called nodenode, although that's what it is
   //  a n2M with UI applications
 
   outcome: outcomeReducer,
+  outcomeoutcome: outcomeOutcomeReducer,
   // verify
   outcomehorizontallink: outcomeHorizontalLinkReducer,
 
@@ -73,7 +78,14 @@ export const legacyWorkflowReducers = {
 }
 
 export const workspaceReducer = combineReducers({
-  project: projectReducer
+  project: projectReducer,
+  workflow: workflowReducer,
+  column: columnReducer,
+  week: weekReducer,
+  node: nodeReducer,
+  // note this is not called nodenode, although that's what it is
+  nodelink: nodelinkReducer,
+  strategy: strategyReducer
 })
 
 const rootOutcomeReducers = {

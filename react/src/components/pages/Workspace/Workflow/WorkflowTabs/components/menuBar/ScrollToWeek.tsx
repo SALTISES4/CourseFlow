@@ -16,7 +16,7 @@ const ScrollToWeek = ({ objectId }: PropsType) => {
   // call in the workflow here because we use it for the
   // 'week' label which changes based on workflow type
   // we don't have a good solution for this yet
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   const scrollToHandler = useCallback(() => {
     const element = document.querySelector(

@@ -5,10 +5,10 @@ import { getNodeWeekById } from '@cfRedux/selectors/nodeweek.selector'
 import { AppState } from '@cfRedux/types/type'
 import { createSelector } from 'reselect'
 
-const selectWeekState = (state: AppState) => state.week
+const selectWeekState = (state: AppState) => state.workspace.week
 const selectTermId = (_: AppState, id: number) => id
 const selectColumnWorkflowState = (state: AppState) => state.columnworkflow
-const selectWorkflowState = (state: AppState) => state.workflow
+const selectWorkflowState = (state: AppState) => state.workspace.workflow
 const selectNodeWeekState = (state: AppState) => state.nodeweek
 
 /**

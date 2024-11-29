@@ -40,7 +40,7 @@ type StateType = {
 // class WorkflowTabsUnconnected extends EditableComponent<PropsType, StateType> {
 const WorkflowTabs = () => {
   const context = useContext(WorkflowConfigContext)
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   useWorkflowSidebar({
     workflowType: workflow.type,

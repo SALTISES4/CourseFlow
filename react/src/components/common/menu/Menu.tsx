@@ -265,7 +265,13 @@ const StaticMenu = ({
   )
 }
 
-const HoverMenu = ({ id, menuItems }: { id?: string, menuItems: MenuItemType[] }) => {
+const HoverMenu = ({
+  id,
+  menuItems
+}: {
+  id?: string
+  menuItems: MenuItemType[]
+}) => {
   const [show, setShow] = useState<boolean>(false)
 
   const buttons = menuItems.map((item, el) => {

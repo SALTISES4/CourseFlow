@@ -10,7 +10,7 @@ import { createSelector } from 'reselect'
 const selectOutcomes = (state: AppState) => state.outcome
 const selectOutcomeOutcome = (state: AppState) => state.outcomeoutcome
 const selectObjectSets = (state: AppState) => state.objectset
-const selectWorkflowId = (state: AppState) => state.workflow.id
+const selectWorkflowId = (state: AppState) => state.workspace.workflow.id
 // temp
 const stateProxy = (state: AppState) => state
 

@@ -9,7 +9,7 @@ import GridWeek from './GridWeek'
 type OwnProps = {}
 
 const GridView: React.FC<OwnProps> = () => {
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   const weeks = workflow.weekworkflowSet
     .map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week)

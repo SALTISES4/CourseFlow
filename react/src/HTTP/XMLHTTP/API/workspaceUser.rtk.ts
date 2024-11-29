@@ -6,7 +6,6 @@ import { EUser, EWorkspaceUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
-
 /*******************************************************
  * TYPES
  *******************************************************/

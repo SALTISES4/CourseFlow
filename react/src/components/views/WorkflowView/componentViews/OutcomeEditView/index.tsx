@@ -54,7 +54,7 @@ const OutcomeEditView: React.FC<PropsType> = ({ objectId, parentId }) => {
   const data = useSelector((state: AppState) =>
     selectOutcomesFromWorkflows(state, state.workflow.outcomes)
   )
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   const mainDiv = useRef<HTMLDivElement>(null)
   const outcomeDragAndDropManager = useRef(

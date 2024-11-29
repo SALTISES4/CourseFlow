@@ -12,6 +12,27 @@ import {
 import { AppState } from '@cfRedux/types/type'
 import { EComment } from '@XMLHTTP/types/entity'
 
+// eventually this will simply be AppState['workspace']
+export type WorkSpaceAppState = Pick<
+  AppState,
+  | 'workflow'
+  | 'column'
+  | 'week'
+  | 'nodelink'
+  | 'node'
+  | 'outcomeworkflow'
+  | 'outcome'
+  | 'outcomenode'
+  | 'outcomeoutcome'
+  | 'objectset'
+  | 'strategy'
+  //   | 'parentWorkflow'
+  //   | 'parentNode'
+  //  | 'outcomehorizontallink'
+  //  | 'childWorkflow'
+> &
+  AppState['workspace']
+
 /**
  *  local action creators
  *  grouped these in a class of static methods for now, provably doesn't make sense long term
@@ -87,8 +108,6 @@ class ActionCreator {
   })
 
   static replaceWorkspaceStoreData = (dataPackage) => {
-    console.log('what is   static replaceStoreData = (dataPackage) => {')
-    console.log(dataPackage)
     return {
       type: CommonActions.REPLACE_STOREDATA,
       payload: dataPackage
@@ -96,30 +115,8 @@ class ActionCreator {
   }
 
   static refreshWorkspaceStoreData = (
-    dataPackage: Pick<
-      AppState,
-      | 'workspace'
-      | 'workflow'
-      | 'columnworkflow'
-      | 'column'
-      | 'weekworkflow'
-      | 'week'
-      | 'nodeweek'
-      | 'nodelink'
-      | 'node'
-      | 'outcomeworkflow'
-      | 'outcome'
-      | 'outcomenode'
-      | 'outcomeoutcome'
-      | 'objectset'
-      | 'strategy'
-      | 'sidebar'
-      | 'parentWorkflow'
-      | 'parentNode'
-      | 'outcomehorizontallink'
-      | 'childWorkflow'
-    >
-  ): { type: CommonActions; payload: AppState } => {
+    dataPackage: WorkSpaceAppState
+  ): { type: CommonActions; payload: WorkSpaceAppState } => {
     return {
       type: CommonActions.REFRESH_STOREDATA,
       payload: dataPackage

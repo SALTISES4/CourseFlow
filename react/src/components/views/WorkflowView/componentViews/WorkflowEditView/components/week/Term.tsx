@@ -26,7 +26,7 @@ const Term = ({
   nodesByColumn
 }: OwnProps) => {
   const term = useSelector((state: AppState) => selectWeekById(state, objectId))
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
   const dragAndDropManager = useRef(null)
 
   const mainDiv = useRef<HTMLDivElement>(null)
@@ -39,7 +39,6 @@ const Term = ({
   }
 
   useEffect(() => {
-
     // dragAndDropManager.current = new WeekDragAndDropManager({
     //   objectId,
     //   parentId
@@ -72,7 +71,6 @@ const Term = ({
     //   null,
     //   classIdentifiers.handle
     // )
-
   }, [term, columnOrder])
 
   const data = term.data
@@ -132,11 +130,7 @@ const Term = ({
         text={data.title}
         defaultText={`${data.weekTypeDisplay} ${rank + 1}`}
       />
-      <div
-        id={`${objectId}-node-block`}
-        className="node-block"
-        ref={nodeBlock}
-      >
+      <div id={`${objectId}-node-block`} className="node-block" ref={nodeBlock}>
         {nodeBlocks}
       </div>
       <div

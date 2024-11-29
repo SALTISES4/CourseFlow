@@ -70,11 +70,7 @@ const workflowSlice = createSlice<AppState['workflow']>({
           const index = state.outcomes.indexOf(action.payload.id)
           if (index >= 0) {
             state.outcomes.splice(index, 1)
-            state.outcomes.splice(
-              action.payload.newIndex,
-              0,
-              action.payload.id
-            )
+            state.outcomes.splice(action.payload.newIndex, 0, action.payload.id)
           }
         }
       )
@@ -96,11 +92,7 @@ const workflowSlice = createSlice<AppState['workflow']>({
           const index = state.columns.indexOf(action.payload.id)
           if (index >= 0) {
             state.columns.splice(index, 1)
-            state.columns.splice(
-              action.payload.newIndex,
-              0,
-              action.payload.id
-            )
+            state.columns.splice(action.payload.newIndex, 0, action.payload.id)
           }
         }
       )
@@ -113,11 +105,7 @@ const workflowSlice = createSlice<AppState['workflow']>({
           const index = state.weeks.indexOf(action.payload.id)
           if (index >= 0) {
             state.weeks.splice(index, 1)
-            state.weeks.splice(
-              action.payload.newIndex,
-              0,
-              action.payload.id
-            )
+            state.weeks.splice(action.payload.newIndex, 0, action.payload.id)
           }
         }
       )

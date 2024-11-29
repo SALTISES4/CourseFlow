@@ -15,13 +15,13 @@ import { Link, generatePath } from 'react-router-dom'
  */
 const ReturnLinks = () => {
   const canView = true // @todo temp because project is not in store yet
-  const project = useSelector((state: AppState) => state.workspace.parentProject)
+  const project = useSelector((state: AppState) => state.workspace.project)
 
   /*******************************************************
    * REDUX
    *******************************************************/
   const publicView = useSelector<AppState>(
-    (state: AppState) => state.workflow?.publicView
+    (state: AppState) => state.workspace.workflow?.publicView
   )
 
   const WorkflowLink = () => {
@@ -74,6 +74,7 @@ const ReturnLinks = () => {
     const path = generatePath(CFRoutes.WORKFLOW, {
       id: String(project.id)
     })
+
     return (
       <Link data-test-id={'link-editable-workflow-return'} to={path}>
         <ArrowBackIosIcon />

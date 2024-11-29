@@ -29,7 +29,7 @@ const GridWeek: React.FC<OwnProps> = ({ objectId, parentId, rank, week }) => {
   const manager = useRef(new BetterSelectionManager(dispatch))
   const objectType = CfObjectType.WEEK
 
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   const nodeWeeks = Utility.filterThenSortById<TNodeweek>(
     useSelector((state: AppState) => state.nodeweek),

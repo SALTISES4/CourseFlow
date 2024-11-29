@@ -6,7 +6,7 @@ export const WeekWrapper = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(2),
   backgroundColor: 'rgb(238, 242, 253)',
-  borderRadius: theme.shape.borderRadius,
+  borderRadius: theme.shape.borderRadius
 }))
 
 export const WeekHeader = styled('header', {

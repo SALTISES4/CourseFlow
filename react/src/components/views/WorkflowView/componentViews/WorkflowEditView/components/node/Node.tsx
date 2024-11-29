@@ -47,7 +47,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   const nodeData = useSelector((state: AppState) =>
     selectNodeById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   /*******************************************************
    * HOOKS: REF

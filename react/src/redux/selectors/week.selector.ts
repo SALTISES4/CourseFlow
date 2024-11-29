@@ -5,8 +5,8 @@ import { EWorkflow } from '@XMLHTTP/types/entity'
 import { createSelector } from 'reselect'
 
 const selectId = (_: AppState, id: number) => id
-const selectWeeks = (state: AppState) => state.week
-const selectWorkflow = (state: AppState) => state.workflow
+const selectWeeks = (state: AppState) => state.workspace.week
+const selectWorkflow = (state: AppState) => state.workspace.workflow
 const selectColumnWorkflow = (state: AppState) => state.columnworkflow
 
 export const getColumnWorkflowById = (

@@ -19,7 +19,7 @@ const GridNode: React.FC<OwnProps> = ({ node, parentId }) => {
   const column = useSelector((state: AppState) =>
     state.column.find((column) => column.id === node.column)
   )
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   const mainDiv = useRef<HTMLDivElement>(null)
   const manager = useRef(new BetterSelectionManager(dispatch))

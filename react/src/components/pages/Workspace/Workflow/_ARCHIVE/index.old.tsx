@@ -130,7 +130,9 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
     getWorkflowByIdQuery(this.workflowId, (response) => {
       // this.unreadComments = response.dataPackage?.unreadComments // @todo do not assign this explicitly here, not seeing this in data package yet
 
-      this.props.dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
+      this.props.dispatch(
+        ActionCreator.refreshWorkspaceStoreData(response.dataPackage)
+      )
 
       this.selectionManager = new SelectionManager(
         response.dataPackage.workflow.workflowPermissions.read
@@ -276,7 +278,9 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
           parentWorkflow: []
         })
       )
-      this.props.dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
+      this.props.dispatch(
+        ActionCreator.refreshWorkspaceStoreData(response.dataPackage)
+      )
       this.clearQueue(0)
     })
   }

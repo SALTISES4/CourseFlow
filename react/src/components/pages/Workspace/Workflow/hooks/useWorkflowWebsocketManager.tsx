@@ -6,20 +6,45 @@ import { EUser } from '@cf/HTTP/XMLHTTP/types/entity'
 import { CfLock } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
-import ActionCreator from '@cfRedux/ActionCreator'
+import ActionCreator, { WorkSpaceAppState } from '@cfRedux/ActionCreator'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
   getWorkflowChildDataQuery,
   getWorkflowParentDataQueryLegacy
 } from '@XMLHTTP/API/workflowObjects/workflow'
-import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
+import {
+  GetWorkflowByIdQueryTransform,
+  useGetWorkflowByIdQuery
+} from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import {TProject} from "@cfRedux/types/type";
 
 type UseWebSocketManagerProps = {
   user: EUser
   workflowId: number
+}
+
+// this function doesn't do much
+// but it highlights that the REST res is being loaded into redux without passing through an appropriate interface
+// and this will likely change
+// i.e. if we're just going to dump REST json into redux, why use redux at all? TBD
+const convertWorkflowRESTResToAppState = (
+  data: GetWorkflowByIdQueryTransform['dataPackage']
+): WorkSpaceAppState => {
+  return {
+    project: data.project,
+    workflow: data.workflow,
+    column: data.column,
+    week: data.week,
+    nodelink: data.nodelink,
+    node: data.node,
+    outcomeworkflow: data.outcomeworkflow,
+    outcome: data.outcome,
+    outcomenode: data.outcomenode,
+    outcomeoutcome: data.outcomeoutcome,
+    objectset: data.objectset,
+    strategy: data.strategy
+  }
 }
 
 export const useWorkflowWebsocketManager = ({
@@ -99,13 +124,8 @@ export const useWorkflowWebsocketManager = ({
 
   useEffect(() => {
     if (data) {
-      dispatch(ActionCreator.refreshWorkspaceStoreData({
-       workspace: {
-    project: data.dataPackage.project
-  },
-  ...data.dataPackage
-
-      }))
+      const payload = convertWorkflowRESTResToAppState(data.dataPackage)
+      dispatch(ActionCreator.refreshWorkspaceStoreData(payload))
       setIsMessagesQueued(false)
     }
   }, [data])

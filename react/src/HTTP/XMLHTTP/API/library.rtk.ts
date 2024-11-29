@@ -7,7 +7,6 @@ import {
 import { ELibraryObject } from '@XMLHTTP/types/entity'
 import { EmptyPostResp, PageHomeQueryResp } from '@XMLHTTP/types/query'
 
-
 /*******************************************************
  * TYPE
  *******************************************************/

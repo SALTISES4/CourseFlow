@@ -19,7 +19,7 @@ import {
 } from '@XMLHTTP/API/workflowObjects/column.rtk'
 import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
-import mergeRefs from "merge-refs";
+import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -68,7 +68,7 @@ const ColumnHoverMenu = ({
   show
 }: {
   objectId: number
-  order: number,
+  order: number
   show: boolean
 }) => {
   /*******************************************************

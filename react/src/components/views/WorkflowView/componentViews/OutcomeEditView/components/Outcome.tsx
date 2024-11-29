@@ -146,7 +146,7 @@ const Outcome: React.FC<PropsType> = ({
   const outcomeData = useSelector((state: AppState) =>
     selectOutcomeById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   /*******************************************************
    * HOOKS: REFS

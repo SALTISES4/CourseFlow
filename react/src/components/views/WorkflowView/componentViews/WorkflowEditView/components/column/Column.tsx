@@ -61,7 +61,7 @@ const Column = ({ objectId, parentId }: PropsType) => {
   const columnData = useSelector((state: AppState) =>
     selectColumnById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   /*******************************************************
    * FUNCTIONS

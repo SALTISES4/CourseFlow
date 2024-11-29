@@ -14,8 +14,8 @@ import * as SC from './styles'
 
 const OverviewView = () => {
   const { dispatch } = useDialog()
-  const data = useSelector((state: AppState) => state.workflow)
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const data = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   // @todo disciplines is missing from workflow data type
   const disciplines = []

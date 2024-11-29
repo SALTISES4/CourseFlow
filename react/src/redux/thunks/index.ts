@@ -14,7 +14,7 @@ export const updateAllEntities =
   (dispatch, getState) => {
     switch (type) {
       case CfObjectType.NODE:
-        const currentNodes = getState().node
+        const currentNodes = getState().workspace.node
 
         if (!Array.isArray(currentNodes)) {
           console.error('Error: state.nodes is not an array', currentWeeks)
@@ -35,7 +35,7 @@ export const updateAllEntities =
         break
 
       case CfObjectType.WEEK:
-        const currentWeeks = getState().week
+        const currentWeeks = getState().workspace.week
 
         if (!Array.isArray(currentWeeks)) {
           console.error('Error: state.week is not an array', currentWeeks)

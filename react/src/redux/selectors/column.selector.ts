@@ -3,8 +3,8 @@ import { AppState } from '@cfRedux/types/type'
 import { createSelector } from '@reduxjs/toolkit'
 
 const selectId = (_: AppState, id: number) => id
-const getColumnMap = (state: AppState) => state.column
-const getColumns = (state: AppState) => state.workflow.columns
+const getColumnMap = (state: AppState) => state.workspace.column
+const getColumns = (state: AppState) => state.workspace.workflow.columns
 
 export const selectColumnById = createSelector(
   [selectId, getColumnMap, getColumns],

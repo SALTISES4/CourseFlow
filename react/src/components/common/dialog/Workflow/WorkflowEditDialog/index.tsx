@@ -80,7 +80,7 @@ const WorkflowEditDialog = () => {
    *******************************************************/
   const { id } = useParams()
 
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   const config = configFields(workflow)
 

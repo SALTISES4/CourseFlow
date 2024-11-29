@@ -18,7 +18,7 @@ const Workflow = () => {
   const { id } = useParams<{ id: string }>()
   const workflowId = Number(id)
 
-  const workflowData = useSelector((state: AppState) => state.workflow)
+  const workflowData = useSelector((state: AppState) => state.workspace.workflow)
   const dispatch = useDispatch()
 
   const { onError } = useGenericMsgHandler()

@@ -11,7 +11,7 @@ import {
   horizontalListSortingStrategy,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import React from 'react'
+import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 const WorkflowEditView = () => {
@@ -19,15 +19,13 @@ const WorkflowEditView = () => {
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   /*******************************************************
    * HOOKS: STATE
    *******************************************************/
-  const [weeksDragState, setWeeksDragState] = React.useState(
-    workflow.weeks || []
-  )
-  const [columnsDragState, setColumnsDragState] = React.useState(
+  const [weeksDragState, setWeeksDragState] = useState(workflow.weeks || [])
+  const [columnsDragState, setColumnsDragState] = useState(
     workflow.columns || []
   )
 

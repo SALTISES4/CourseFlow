@@ -22,7 +22,8 @@ type WorkflowNode = {
 
 const ParentWorkflowIndicator = () => {
   const { id } = useParams()
-  const nodes = useSelector<AppState, TNode[]>((state) => state.node)
+  const nodes = useSelector<AppState, TNode[]>((state) => state.workspace.node)
+
   const childWorkflows = nodes
     .filter((node) => node.linkedWorkflowData)
     .map((node) => ({

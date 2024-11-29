@@ -13,10 +13,10 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  *******************************************************/
 const WorkflowLegend = () => {
   const stateNodes = useSelector<AppState, TNode[]>(
-    (state: AppState) => state.node
+    (state: AppState) => state.workspace.node
   )
   const stateWeeks = useSelector<AppState, TWeek[]>(
-    (state: AppState) => state.week
+    (state: AppState) => state.workspace.week
   )
 
   /*******************************************************

@@ -25,23 +25,26 @@ import {
 export type AppState = {
   workspace: {
     project?: TProject
+    nodelink: TNodelink[]
+    column: TColumn[]
+    week: TWeek[]
+    workflow: TWorkflow
+    node: TNode[]
+    strategy: TStrategy[]
   }
-  workflow: TWorkflow
+  // relations
   columnworkflow: TColumnworkflow[]
-  column: TColumn[]
   weekworkflow: TWeekworkflow[]
-  week: TWeek[]
   nodeweek: TNodeweek[]
-  nodelink: TNodelink[]
-  node: TNode[]
   outcomeworkflow: TColumnworkflow[]
+  // outcomes
   outcome: TOutcome[]
   outcomenode: TOutcomenode[]
   outcomeoutcome: TOutcomeOutcome[]
   objectset: TObjectSet[]
-  strategy: TStrategy[]
   //
   sidebar: SidebarState
+  //
   parentWorkflow?: TParentWorkflow[]
   parentNode?: TParentNode[]
   outcomehorizontallink?: TOutcomeHorizontalLink[]

@@ -37,7 +37,7 @@ const Week = ({ objectId, parentId }) => {
   const weekData = useSelector((state: AppState) =>
     selectWeekById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
   /*******************************************************
    * HOOKS: STATE
    *******************************************************/
@@ -129,7 +129,11 @@ const Week = ({ objectId, parentId }) => {
       //      ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
-        manager.current.updateSidebar(weekData.week.id, CfObjectType.WEEK, parentId)
+        manager.current.updateSidebar(
+          weekData.week.id,
+          CfObjectType.WEEK,
+          parentId
+        )
       }}
     >
       <Styled.WeekHeader expanded={weekData.week.isDropped}>

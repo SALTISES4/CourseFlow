@@ -5,7 +5,6 @@ import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
-import Node from './Node'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -20,6 +19,8 @@ import {
 import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
+
+import Node from './Node'
 
 type PropsType = {
   objectId: number
@@ -40,7 +41,7 @@ const cellWidth = 200 // For example, 160px per cell
 
 const StyledCell = styled(Box)(() => ({
   position: 'relative',
-  width: `${cellWidth}px`, // Fixed width for each cell
+  width: `${cellWidth}px` // Fixed width for each cell
 }))
 
 const NodeHoverMenu = ({
@@ -122,7 +123,7 @@ const NodeHoverMenu = ({
 
 const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
   const data = useSelector((state: AppState) => selectNodeById(state, objectId))
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
   const [ref, isHovered] = useHover()
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
@@ -133,14 +134,16 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
 
   return workflow.columns.map((colNum, index) => (
     <StyledCell key={index}>
-      <span style={{
-        position: 'absolute',
-        top: '0.5em',
-        left: '0.5em',
-        fontWeight: 600,
-        fontSize: '12px',
-        opacity: 0.5
-      }}>
+      <span
+        style={{
+          position: 'absolute',
+          top: '0.5em',
+          left: '0.5em',
+          fontWeight: 600,
+          fontSize: '12px',
+          opacity: 0.5
+        }}
+      >
         col: {colNum}, order: {data.node.order}
       </span>
 
@@ -162,7 +165,11 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
             <DragHandleIcon />
           </div>
 
-          <Node objectId={objectId} parentId={parentId} columnOrder={columnOrder} />
+          <Node
+            objectId={objectId}
+            parentId={parentId}
+            columnOrder={columnOrder}
+          />
           <NodeHoverMenu objectId={objectId} show={isHovered} />
         </div>
       )}

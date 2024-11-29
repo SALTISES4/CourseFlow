@@ -2,7 +2,6 @@ import { NumTuple } from '@cf/types/common'
 import * as Constants from '@cf/utility/constants'
 import * as math from 'mathjs'
 
-// eslint-disable-next-line no-undef
 type Direction = { source: NumTuple; target: NumTuple }
 
 type DirectionArray = { source: number[][]; target: number[][] }

@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux'
 const Header = () => {
   // TODO: add editable name functinality
   // const context = useContext(WorkflowConfigContext)
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: AppState) => state.workspace.workflow)
 
   const typeText = `${_t(workflow.type)} ${
     workflow.isStrategy ? _t('strategy') : ''

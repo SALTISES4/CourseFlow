@@ -25,7 +25,6 @@ const objectSetSlice = createSlice({
 export const { toggleObjectSet } = objectSetSlice.actions
 export default objectSetSlice.reducer
 
-
 // import { ObjectSetActions } from '@cfRedux/types/enumActions'
 // import { TObjectSet } from '@cfRedux/types/type'
 // import { AnyAction } from '@reduxjs/toolkit'
