@@ -1,6 +1,5 @@
 import { _t } from '@cf/utility/Utility.class'
 import { TNode } from '@cfRedux/types/type'
-import * as React from 'react'
 
 export const NodeTitle = ({ node }: { node: TNode }) => {
   function calcTitle(): string {

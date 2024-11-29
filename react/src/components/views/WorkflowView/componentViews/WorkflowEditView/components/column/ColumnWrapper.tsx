@@ -20,7 +20,7 @@ import {
 import { insertedAt } from '@XMLHTTP/postTemp'
 import clsx from 'clsx'
 import mergeRefs from "merge-refs";
-import React, { useEffect, useRef } from 'react'
+import { Ref } from 'react'
 import { useSelector } from 'react-redux'
 
 import Column from './Column'
@@ -68,7 +68,8 @@ const ColumnHoverMenu = ({
   show
 }: {
   objectId: number
-  order: number
+  order: number,
+  show: boolean
 }) => {
   /*******************************************************
    * API HOOKS
@@ -79,7 +80,7 @@ const ColumnHoverMenu = ({
 
   const [deleteMutate] = useDeleteColumnMutation()
 
-  const createButtonHandler = async () => {
+  const createButtonHandler = async (type: CfObjectType) => {
     try {
       const resp = await createMutate({
         payload: {
@@ -106,13 +107,13 @@ const ColumnHoverMenu = ({
   const menuItems: MenuItemType[] = [
     {
       content: _t('Delete'),
-      action: () => deleteButtonHandler(CfObjectType.WEEK),
+      action: () => deleteButtonHandler(),
       icon: <DeleteIcon />,
       show: true
     },
     {
       content: _t('Insert New'),
-      action: () => createButtonHandler(CfObjectType.WEEK),
+      action: () => createButtonHandler(CfObjectType.COLUMN),
       icon: <QueueIcon />,
       show: true
     }
@@ -179,12 +180,6 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
   /*******************************************************
    * RENDER
    *******************************************************/
-  const style = {
-    position: 'relative',
-    transform: CSS.Transform.toString(transform),
-    transition
-  }
-
   if (!columnData) {
     return <></>
   }
@@ -192,8 +187,12 @@ const ColumnWrapper = ({ objectId, parentId }: OwnProps) => {
   return (
     <div
       id={String(objectId)}
-      ref={mergeRefs(setNodeRef, ref)}
-      style={style}
+      ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
+      style={{
+        position: 'relative',
+        transform: CSS.Transform.toString(transform),
+        transition
+      }}
       {...attributes}
       data-child-id={objectId}
     >
