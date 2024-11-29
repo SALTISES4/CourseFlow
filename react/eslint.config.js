@@ -41,6 +41,7 @@ export default [
 
     languageOptions: {
       globals: {
+        ...globals.browser,
         $: true,
         COURSEFLOW_APP: true,
         JSX: true,
