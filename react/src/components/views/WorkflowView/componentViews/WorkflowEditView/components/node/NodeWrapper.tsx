@@ -5,13 +5,12 @@ import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState } from '@cfRedux/types/type'
-import Node from './Node'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import Box from '@mui/material/Box'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import QueueIcon from '@mui/icons-material/Queue'
+import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import {
   useCreateNodeMutation,
@@ -20,6 +19,8 @@ import {
 import mergeRefs from 'merge-refs'
 import { Ref } from 'react'
 import { useSelector } from 'react-redux'
+
+import Node from './Node'
 
 type PropsType = {
   objectId: number
@@ -40,7 +41,7 @@ const cellWidth = 200 // For example, 160px per cell
 
 const StyledCell = styled(Box)(() => ({
   position: 'relative',
-  width: `${cellWidth}px`, // Fixed width for each cell
+  width: `${cellWidth}px` // Fixed width for each cell
 }))
 
 const NodeHoverMenu = ({
@@ -133,14 +134,16 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
 
   return workflow.columns.map((colNum, index) => (
     <StyledCell key={index}>
-      <span style={{
-        position: 'absolute',
-        top: '0.5em',
-        left: '0.5em',
-        fontWeight: 600,
-        fontSize: '12px',
-        opacity: 0.5
-      }}>
+      <span
+        style={{
+          position: 'absolute',
+          top: '0.5em',
+          left: '0.5em',
+          fontWeight: 600,
+          fontSize: '12px',
+          opacity: 0.5
+        }}
+      >
         col: {colNum}, order: {data.node.order}
       </span>
 
@@ -162,7 +165,11 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
             <DragHandleIcon />
           </div>
 
-          <Node objectId={objectId} parentId={parentId} columnOrder={columnOrder} />
+          <Node
+            objectId={objectId}
+            parentId={parentId}
+            columnOrder={columnOrder}
+          />
           <NodeHoverMenu objectId={objectId} show={isHovered} />
         </div>
       )}

@@ -1,3 +1,4 @@
+import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
@@ -10,12 +11,12 @@ import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEdit
 import { DndContext } from '@dnd-kit/core'
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
-import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import clsx from 'clsx'
 import { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { CfObjectType } from '@cf/types/enum'
+
 import * as Styled from './styles'
 
 type OwnProps = {
@@ -128,7 +129,11 @@ const Week = ({ objectId, parentId }) => {
       //      ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
-        manager.current.updateSidebar(weekData.week.id, CfObjectType.WEEK, parentId)
+        manager.current.updateSidebar(
+          weekData.week.id,
+          CfObjectType.WEEK,
+          parentId
+        )
       }}
     >
       <Styled.WeekHeader expanded={weekData.week.isDropped}>
