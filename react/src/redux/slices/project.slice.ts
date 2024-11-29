@@ -1,10 +1,10 @@
 import { CommonActions, SliceNamespace } from '@cfRedux/types/enumActions'
-import { TProject } from '@cfRedux/types/type'
+import { AppState, TProject } from '@cfRedux/types/type'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 const initialState: TProject = {} as TProject
 
-const projectSlice = createSlice({
+const projectSlice = createSlice<AppState['workspace']['project']>({
   name: SliceNamespace.PROJECT,
   initialState,
   extraReducers: (builder) => {
@@ -12,6 +12,7 @@ const projectSlice = createSlice({
       .addCase(
         CommonActions.REPLACE_STOREDATA,
         (state, action: PayloadAction<{ project?: TProject }>) => {
+          console.log(action.payload)
           if (action.payload.project) {
             return action.payload.project
           }
@@ -20,6 +21,7 @@ const projectSlice = createSlice({
       .addCase(
         CommonActions.REFRESH_STOREDATA,
         (state, action: PayloadAction<{ project?: TProject }>) => {
+          console.log(action.payload)
           if (action.payload.project) {
             return action.payload.project
           }

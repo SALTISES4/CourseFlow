@@ -10,16 +10,8 @@ import parentNodeReducer from '@cfRedux/reducers/workflow/parentNode'
 import parentWorkflowReducer from '@cfRedux/reducers/workflow/parentWorfkflow'
 import weekworkflowReducer from '@cfRedux/reducers/workflow/weekworkflow'
 // slices
-import columnReducer from '@cfRedux/slices/column.slice'
-import nodeReducer from '@cfRedux/slices/node.slice'
-import nodelinkReducer from '@cfRedux/slices/nodelink.slice/workflow/nodelink'
 import objectsetReducer from '@cfRedux/slices/objectset.slice'
 import projectReducer from '@cfRedux/slices/project.slice'
-import sidebarReducer from '@cfRedux/slices/sidebar.slice'
-import strategyReducer from '@cfRedux/slices/strategy.slice'
-import weekReducer from '@cfRedux/slices/week.slice'
-import workflowReducer from '@cfRedux/slices/workflow.slice'
-import * as Redux from 'redux'
 import { combineReducers } from 'redux'
 
 // @todo need to wrap these up

@@ -15,6 +15,7 @@ import {
 import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import {TProject} from "@cfRedux/types/type";
 
 type UseWebSocketManagerProps = {
   user: EUser
@@ -98,7 +99,13 @@ export const useWorkflowWebsocketManager = ({
 
   useEffect(() => {
     if (data) {
-      dispatch(ActionCreator.refreshStoreData(data.dataPackage))
+      dispatch(ActionCreator.refreshWorkspaceStoreData({
+       workspace: {
+    project: data.dataPackage.project
+  },
+  ...data.dataPackage
+
+      }))
       setIsMessagesQueued(false)
     }
   }, [data])
@@ -190,12 +197,12 @@ export const useWorkflowWebsocketManager = ({
     setIsMessagesQueued(true)
     getWorkflowParentDataQueryLegacy(Number(id), (response) => {
       dispatch(
-        ActionCreator.replaceStoreData({
+        ActionCreator.replaceWorkspaceStoreData({
           parentNode: [],
           parentWorkflow: []
         })
       )
-      dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
       clearQueue(0)
     })
   }
@@ -206,7 +213,7 @@ export const useWorkflowWebsocketManager = ({
   const onChildWorkflowUpdateReceived = (childWorkflowId: number) => {
     setIsMessagesQueued(true)
     getWorkflowChildDataQuery(childWorkflowId, (response) => {
-      dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
       clearQueue()
     })
   }

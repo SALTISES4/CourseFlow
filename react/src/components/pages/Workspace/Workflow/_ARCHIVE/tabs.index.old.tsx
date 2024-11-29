@@ -152,7 +152,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQuery(this.workflowId, (response) => {
         this.props.dispatch(
-          ActionCreator.refreshStoreData(response.dataPackage)
+          ActionCreator.refreshWorkspaceStoreData(response.dataPackage)
         )
       })
     }

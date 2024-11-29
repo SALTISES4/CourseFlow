@@ -2,7 +2,6 @@ import { CfObjectType } from '@cf/types/enum'
 import {
   ColumnWorkflowActions,
   CommonActions,
-  GridMenuActions,
   NodeActions,
   NodeWeekActions,
   ObjectSetActions,
@@ -29,9 +28,6 @@ class ActionCreator {
     userId?: number,
     userColour?: string
   ) => {
-    console.log('createLockAction')
-    console.log(lock)
-
     if (lock) {
       return {
         type: objectType + '/createLock', // this is a redux antipattern
@@ -90,7 +86,7 @@ class ActionCreator {
     type: CommonActions.CLEAR_WORKFLOW_DATA
   })
 
-  static replaceStoreData = (dataPackage) => {
+  static replaceWorkspaceStoreData = (dataPackage) => {
     console.log('what is   static replaceStoreData = (dataPackage) => {')
     console.log(dataPackage)
     return {
@@ -99,8 +95,30 @@ class ActionCreator {
     }
   }
 
-  static refreshStoreData = (
-    dataPackage: AppState
+  static refreshWorkspaceStoreData = (
+    dataPackage: Pick<
+      AppState,
+      | 'workspace'
+      | 'workflow'
+      | 'columnworkflow'
+      | 'column'
+      | 'weekworkflow'
+      | 'week'
+      | 'nodeweek'
+      | 'nodelink'
+      | 'node'
+      | 'outcomeworkflow'
+      | 'outcome'
+      | 'outcomenode'
+      | 'outcomeoutcome'
+      | 'objectset'
+      | 'strategy'
+      | 'sidebar'
+      | 'parentWorkflow'
+      | 'parentNode'
+      | 'outcomehorizontallink'
+      | 'childWorkflow'
+    >
   ): { type: CommonActions; payload: AppState } => {
     return {
       type: CommonActions.REFRESH_STOREDATA,
@@ -206,8 +224,6 @@ class ActionCreator {
       }
     }
   }
-
-
 
   static toggleObjectSet = (id: number, hidden: boolean) => {
     return {
