@@ -8,10 +8,10 @@ import { AppState } from '@cfRedux/types/type'
 import Node from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Node'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import Box from '@mui/material/Box'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import QueueIcon from '@mui/icons-material/Queue'
+import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import {
   useCreateNodeMutation,

@@ -1,6 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
-import { NodeForm } from './types'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { AppState } from '@cfRedux/types/type'
@@ -25,6 +24,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
 import optionsData from './optionsData'
+import { NodeForm } from './types'
 
 const EditNode = ({ id }) => {
   /*******************************************************
