@@ -20,6 +20,7 @@
   },
   "browserslist": "last 4 versions and >=0.2% in CA and not ie <= 11",
   "devDependencies": {
+    "@eslint/compat": "^1.2.3",
     "eslint": "^9.15.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
