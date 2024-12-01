@@ -1,5 +1,6 @@
 import { OuterContentWrap } from '@cf/mui/helper'
 import { CfObjectType } from '@cf/types/enum'
+import { RootState } from '@cfRedux/store'
 import { updateAllEntities } from '@cfRedux/thunks'
 import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
@@ -19,7 +20,7 @@ const WorkflowEditView = () => {
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   /*******************************************************
    * HOOKS: STATE

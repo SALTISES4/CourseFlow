@@ -1,23 +1,21 @@
 import { CfObjectType } from '@cf/types/enum'
-import { TWeek } from '@cf/types/week'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TNode, TWeek } from '@cfRedux/types/type'
 import { ThunkAction } from '@reduxjs/toolkit'
 import { AnyAction } from 'redux'
 
 export const updateAllEntities =
   (
     type: CfObjectType,
-    updateFn: (item: TWeek) => Partial<TWeek>
+    updateFn: (item: TWeek | TNode) => Partial<TWeek>
   ): ThunkAction<void, AppState, unknown, AnyAction> =>
   (dispatch, getState) => {
     switch (type) {
-      case CfObjectType.NODE:
+      case CfObjectType.NODE: {
         const currentNodes = getState().workspace.node
 
         if (!Array.isArray(currentNodes)) {
-          console.error('Error: state.nodes is not an array', currentWeeks)
           return
         }
 
@@ -33,8 +31,9 @@ export const updateAllEntities =
           }
         })
         break
+      }
 
-      case CfObjectType.WEEK:
+      case CfObjectType.WEEK: {
         const currentWeeks = getState().workspace.week
 
         if (!Array.isArray(currentWeeks)) {
@@ -54,5 +53,6 @@ export const updateAllEntities =
           }
         })
         break
+      }
     }
   }

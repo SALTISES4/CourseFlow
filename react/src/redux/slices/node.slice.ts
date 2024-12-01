@@ -1,10 +1,10 @@
 import { CfLock } from '@cf/types/common'
-import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
+import { weekAdapter } from '@cfRedux/slices/week.slice'
 import {
   ColumnActions,
   CommonActions,
-  NodeLinkActions,
+  NodelinkActions,
   OutcomeActions,
   OutcomeBaseActions,
   OutcomeNodeActions,
@@ -13,15 +13,21 @@ import {
   StrategyActions,
   WeekActions
 } from '@cfRedux/types/enumActions'
-import { AppState, TNode } from '@cfRedux/types/type'
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { TNode, TWeek, WorkspaceAppState } from '@cfRedux/types/type'
+import {
+  PayloadAction,
+  createAction,
+  createEntityAdapter,
+  createSlice
+} from '@reduxjs/toolkit'
 
 interface DeleteColumnAction {
   id: number
   extraData: any
 }
 
-const initialState: TNode[] = []
+export const nodeAdapter = createEntityAdapter<TNode>()
+const initialState = nodeAdapter.getInitialState()
 
 /*******************************************************
  * Reusable Reducer Functions
@@ -39,14 +45,14 @@ const updateEntity = <T, S>(
 }
 
 const removeEntityById = (
-  state: AppState['node'],
+  state: WorkspaceAppState['node'],
   action: PayloadAction<{ id: number }>
 ) => {
   return state.filter((item) => item.id !== action.payload.id)
 }
 
 const toggleArchiveEntity = (
-  state: AppState['node'],
+  state: WorkspaceAppState['node'],
   action: PayloadAction<{ id: number }>
 ) => {
   return state.map((item) => {
@@ -62,7 +68,7 @@ const toggleArchiveEntity = (
 }
 
 const deleteOutgoingLinks = (
-  state: AppState['node'],
+  state: WorkspaceAppState['node'],
   action: PayloadAction<{ id: number }>
 ) => {
   return state.map((item) => {
@@ -79,7 +85,7 @@ const deleteOutgoingLinks = (
 }
 
 const updatingNodeSet = (
-  state: AppState['node'],
+  state: WorkspaceAppState['node'],
   action: PayloadAction<any>
 ) => {
   if (action.payload.nodeUpdates.length === 0) {
@@ -111,9 +117,21 @@ const updateItem = (state, action: PayloadAction<{ extraData: any[] }>) => {
 }
 
 /*******************************************************
- * Node Slice
+ * ACTIONS
  *******************************************************/
-const nodeSlice = createSlice<AppState['node']>({
+// not sure what this is doing yet
+export const replaceStoreData = createAction<{
+  node: WorkspaceAppState['node'] | undefined
+}>(CommonActions.REPLACE_STOREDATA)
+
+export const refreshStoreData = createAction<{
+  node: WorkspaceAppState['node'] | undefined
+}>(CommonActions.REFRESH_STOREDATA)
+
+/*******************************************************
+ * SLICE
+ *******************************************************/
+const nodeSlice = createSlice({
   name: SliceNamespace.NODE,
   initialState,
   reducers: {
@@ -128,8 +146,8 @@ const nodeSlice = createSlice<AppState['node']>({
         return item
       })
     },
-    createLock: updateEntity<AppState['node'], TNode>,
-    changeField: updateEntity<AppState['node'], TNode>,
+    createLock: updateEntity<WorkspaceAppState['node'], TNode>,
+    changeField: updateEntity<WorkspaceAppState['node'], TNode>,
     deleteSelf: removeEntityById,
     deleteSelfSoft: toggleArchiveEntity,
     insertBelow(state, action: PayloadAction<{ newModel: TNode }>) {
@@ -179,36 +197,20 @@ const nodeSlice = createSlice<AppState['node']>({
      *******************************************************/
     builder
       .addCase(
-        CommonActions.REPLACE_STOREDATA,
-        (state, action: PayloadAction<{ node?: TNode[] }>) => {
-          return action.payload.node || state
-        }
+        replaceStoreData,
+        (state, action) => action.payload.node || state
       )
-      .addCase(
-        CommonActions.REFRESH_STOREDATA,
-        (state, action: PayloadAction<{ node?: TNode[] }>) => {
-          const updatedState = [...state]
-          if (action.payload.node) {
-            action.payload.node.forEach((nodeItem) => {
-              const existingIndex = updatedState.findIndex(
-                (item) => item.id === nodeItem.id
-              )
-              if (existingIndex >= 0) {
-                updatedState[existingIndex] = nodeItem
-              } else {
-                updatedState.push(nodeItem)
-              }
-            })
-          }
-          return updatedState
+      .addCase(refreshStoreData, (state, action) => {
+        if (action.payload.node) {
+          weekAdapter.upsertMany(state, action.payload.node)
         }
-      )
+      })
     /*******************************************************
      * NODE LINK
      *******************************************************/
     builder
       .addCase(
-        NodeLinkActions.RESTORE_SELF,
+        NodelinkActions.RESTORE_SELF,
         (state, action: PayloadAction<{ parentId: number; id: number }>) => {
           return state.map((item) =>
             item.id === action.payload.parentId
@@ -222,7 +224,7 @@ const nodeSlice = createSlice<AppState['node']>({
       )
       // @todo needs review
       .addCase(
-        NodeLinkActions.NEW_NODE_LINK,
+        NodelinkActions.NEW_NODE_LINK,
         (state, action: PayloadAction<{ parentId: number; id: number }>) => {
           return state.map((item) => {
             if (item.id === action.payload.newModel.sourceNode) {
@@ -238,8 +240,8 @@ const nodeSlice = createSlice<AppState['node']>({
           })
         }
       )
-      .addCase(NodeLinkActions.DELETE_SELF_SOFT, deleteOutgoingLinks)
-      .addCase(NodeLinkActions.DELETE_SELF, deleteOutgoingLinks)
+      .addCase(NodelinkActions.DELETE_SELF_SOFT, deleteOutgoingLinks)
+      .addCase(NodelinkActions.DELETE_SELF, deleteOutgoingLinks)
 
     /*******************************************************
      * STRATEGY

@@ -1,4 +1,4 @@
-import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
+import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
 import React, { useEffect, useRef, useState } from 'react'
 import * as reactDom from 'react-dom'
 
@@ -152,9 +152,9 @@ const AutoLink = ({ nodeId, nodeDiv }: PropsType) => {
     sourceNode.attr('data-hovered') === 'true' ||
     targetNode.attr('data-hovered') === 'true'
 
-  // Create the portal for NodeLinkSVG
+  // Create the portal for NodelinkSVG
   const portal = reactDom.createPortal(
-    <NodeLinkSVG
+    <NodelinkSVG
       hovered={nodeHovered}
       nodeSelected={nodeSelected}
       sourcePortHandle={sourcePortHandle}
@@ -172,7 +172,7 @@ const AutoLink = ({ nodeId, nodeDiv }: PropsType) => {
 
 export default AutoLink
 
-// import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
+// import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
 // import * as React from 'react'
 // import * as reactDom from 'react-dom'
 // // import $ from 'jquery'
@@ -183,7 +183,7 @@ export default AutoLink
 // }
 //
 // /**
-//  * A NodeLink that is automatically generated based on node setting. Has no direct back-end representation
+//  * A Nodelink that is automatically generated based on node setting. Has no direct back-end representation
 //  */
 // class AutoLink extends React.Component<PropsType> {
 //   private eventNameSpace: string
@@ -335,7 +335,7 @@ export default AutoLink
 //
 //     //  .workflow-canvas is dynamic portal
 //     const portal = reactDom.createPortal(
-//       <NodeLinkSVG
+//       <NodelinkSVG
 //         hovered={nodeHovered}
 //         nodeSelected={nodeSelected}
 //         sourcePortHandle={this.sourcePortHandle}

@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import OutcomeHorizontalLink from './OutcomeHorizontalLink'
 import OutcomeWrapper from './OutcomeWrapper'
+import {RootState} from "@cfRedux/store";
 
 class OutcomeDragAndDropManager extends SortableDragAndDropManager {
   onMovedIn(id, newPosition, type, newParent, childId) {
@@ -143,10 +144,10 @@ const Outcome: React.FC<PropsType> = ({
    * HOOKS: REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const outcomeData = useSelector((state: AppState) =>
+  const outcomeData = useSelector((state: RootState) =>
     selectOutcomeById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   /*******************************************************
    * HOOKS: REFS

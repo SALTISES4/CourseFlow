@@ -129,7 +129,7 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
-    nodeLinkCreate: builder.mutation<
+    nodelinkCreate: builder.mutation<
       EmptyPostResp,
       {
         id: number
@@ -160,5 +160,5 @@ export const {
   useDuplicateNodeMutation,
   useUpdatePositionNodeMutation,
   useLinkToWorkflowMutation,
-  useNodeLinkCreateMutation
+  useNodelinkCreateMutation
 } = extendedApi

@@ -18,6 +18,7 @@ import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 import { useContext, useState } from 'react'
 import { useSelector } from 'react-redux'
+import {RootState} from "@cfRedux/store";
 
 type StateType = {
   openShareDialog: boolean
@@ -28,8 +29,8 @@ type StateType = {
 
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
-  const project = useSelector((state: AppState) => state.workspace.project)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
+  const project = useSelector((state: RootState) => state.workspace.project)
 
   const isStrategy = workflow.isStrategy
   const userId = userContext.id

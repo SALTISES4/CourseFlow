@@ -11,12 +11,13 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 // import { useContext } from 'react'
 import { useSelector } from 'react-redux'
+import {RootState} from "@cfRedux/store";
 
 // @todo not sure this needs its own file
 const Header = () => {
   // TODO: add editable name functinality
   // const context = useContext(WorkflowConfigContext)
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const typeText = `${_t(workflow.type)} ${
     workflow.isStrategy ? _t('strategy') : ''

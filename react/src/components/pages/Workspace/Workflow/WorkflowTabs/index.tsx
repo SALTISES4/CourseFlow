@@ -19,6 +19,7 @@ import Tabs from '@mui/material/Tabs'
 import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
+import {RootState} from "@cfRedux/store";
 
 // & EditableComponentProps
 
@@ -40,7 +41,7 @@ type StateType = {
 // class WorkflowTabsUnconnected extends EditableComponent<PropsType, StateType> {
 const WorkflowTabs = () => {
   const context = useContext(WorkflowConfigContext)
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   useWorkflowSidebar({
     workflowType: workflow.type,

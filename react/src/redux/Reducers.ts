@@ -35,7 +35,7 @@ import { combineReducers } from 'redux'
  *   OutcomeActions.changeField_MANY:
  *   OutcomeBaseActions.changeField_MANY:
  *   ColumnActions.CHANGE_FIELD:
- *   NodeLinkActions.CHANGE_FIELD
+ *   NodelinkActions.CHANGE_FIELD
  *   WorkflowActions.CHANGE_FIELD:
  *   WorkflowActions.CHANGE_FIELD
  *   NodeActions.CHANGE_FIELD

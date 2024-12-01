@@ -2,38 +2,38 @@ import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
 import {
   CommonActions,
-  NodeLinkActions,
+  NodelinkActions,
   StrategyActions,
   WeekActions
 } from '@cfRedux/types/enumActions'
 import { TNodelink } from '@cfRedux/types/type'
 import { AnyAction } from '@reduxjs/toolkit'
 
-interface GenericNodeLinkAction extends AnyAction {
+interface GenericNodelinkAction extends AnyAction {
   type: CommonActions.REPLACE_STOREDATA | CommonActions.REFRESH_STOREDATA
   payload: { nodelink?: TNodelink[] }
 }
 
 interface CreateLockAction extends AnyAction {
-  type: NodeLinkActions.CREATE_LOCK
+  type: NodelinkActions.CREATE_LOCK
   payload: { id: number; lock: CfLock }
 }
 
 interface ChangeFieldAction extends AnyAction {
-  type: NodeLinkActions.CHANGE_FIELD
+  type: NodelinkActions.CHANGE_FIELD
   payload: { id: number; json: any }
 }
 
-interface NewNodeLinkAction extends AnyAction {
-  type: NodeLinkActions.NEW_NODE_LINK
+interface NewNodelinkAction extends AnyAction {
+  type: NodelinkActions.NEW_NODE_LINK
   payload: { newModel: TNodelink }
 }
 
-interface NodeLinkByIdAction extends AnyAction {
+interface NodelinkByIdAction extends AnyAction {
   type:
-    | NodeLinkActions.DELETE_SELF
-    | NodeLinkActions.DELETE_SELF_SOFT
-    | NodeLinkActions.RESTORE_SELF
+    | NodelinkActions.DELETE_SELF
+    | NodelinkActions.DELETE_SELF_SOFT
+    | NodelinkActions.RESTORE_SELF
   payload: { id: number }
 }
 
@@ -48,11 +48,11 @@ interface AddStrategyAction extends AnyAction {
 }
 
 type NodelinkActionTypes =
-  | GenericNodeLinkAction
-  | NodeLinkByIdAction
+  | GenericNodelinkAction
+  | NodelinkByIdAction
   | CreateLockAction
   | ChangeFieldAction
-  | NewNodeLinkAction
+  | NewNodelinkAction
   | InsertBelowWeekAction
   | AddStrategyAction
 
@@ -86,27 +86,27 @@ export default function nodelinkReducer(
     //       )
     //     : state
 
-    // case NodeLinkActions.CREATE_LOCK:
+    // case NodelinkActions.CREATE_LOCK:
     //   return state.map((item) =>
     //     item.id === action.payload.id
     //       ? { ...item, lock: action.payload.lock }
     //       : item
     //   )
 
-    // case NodeLinkActions.CHANGE_FIELD:
+    // case NodelinkActions.CHANGE_FIELD:
     //   return state.map((item) =>
     //     item.id === action.payload.id
     //       ? { ...item, ...action.payload.json }
     //       : item
     //   )
 
-    // case NodeLinkActions.NEW_NODE_LINK:
+    // case NodelinkActions.NEW_NODE_LINK:
     //   return [...state, action.payload.newModel]
 
-    // case NodeLinkActions.DELETE_SELF:
+    // case NodelinkActions.DELETE_SELF:
     //   return state.filter((item) => item.id !== action.payload.id)
 
-    // case NodeLinkActions.DELETE_SELF_SOFT:
+    // case NodelinkActions.DELETE_SELF_SOFT:
     //   return state.map((item) =>
     //     item.id === action.payload.id
     //       ? {
@@ -117,7 +117,7 @@ export default function nodelinkReducer(
     //       : item
     //   )
 
-    // case NodeLinkActions.RESTORE_SELF:
+    // case NodelinkActions.RESTORE_SELF:
     //   return state.map((item) =>
     //     item.id === action.payload.id ? { ...item, deleted: false } : item
     //   )

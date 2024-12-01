@@ -27,6 +27,7 @@ import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
+import {RootState} from "@cfRedux/store";
 
 function configFields(workflow: AppState['workflow']): FormField[] {
   const allFields = [
@@ -80,7 +81,7 @@ const WorkflowEditDialog = () => {
    *******************************************************/
   const { id } = useParams()
 
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const config = configFields(workflow)
 

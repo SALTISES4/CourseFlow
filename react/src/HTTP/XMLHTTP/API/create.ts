@@ -66,7 +66,7 @@ export function addStrategyQuery(
   })
 }
 
-export function newNodeLinkQuery(
+export function newNodelinkQuery(
   sourceNodeId: number,
   targetNodeId: number,
   sourcePort: number,

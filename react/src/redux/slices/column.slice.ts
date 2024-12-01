@@ -1,11 +1,19 @@
 import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
 import { CommonActions, SliceNamespace } from '@cfRedux/types/enumActions'
-import { AppState, TColumn } from '@cfRedux/types/type'
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import {
+  AppState,
+  TColumn,
+  TWeek,
+  WorkspaceAppState
+} from '@cfRedux/types/type'
+import {
+  PayloadAction,
+  createAction,
+  createEntityAdapter,
+  createSlice
+} from '@reduxjs/toolkit'
 
-// Define the initial state for the columns
-const initialState: TColumn[] = []
 const updateEntity = <T, S>(
   state: T,
   action: PayloadAction<{
@@ -18,7 +26,28 @@ const updateEntity = <T, S>(
   )
 }
 
-const columnSlice = createSlice<AppState['column']>({
+// Define the initial state for the columns
+/*******************************************************
+ * ENTITY ADAPTOR
+ *******************************************************/
+export const columnAdapter = createEntityAdapter<TColumn>()
+const initialState = columnAdapter.getInitialState()
+
+/*******************************************************
+ * CREATE ACTIONS
+ *******************************************************/
+export const replaceStoreData = createAction<{
+  column: WorkspaceAppState['column'] | undefined
+}>(CommonActions.REPLACE_STOREDATA)
+
+export const refreshStoreData = createAction<{
+  column: WorkspaceAppState['column'] | undefined
+}>(CommonActions.REFRESH_STOREDATA)
+
+/*******************************************************
+ * SLICE
+ *******************************************************/
+const columnSlice = createSlice({
   name: SliceNamespace.COLUMN,
   initialState,
   reducers: {
@@ -72,48 +101,22 @@ const columnSlice = createSlice<AppState['column']>({
     }
   },
   extraReducers: (builder) => {
-    /*******************************************************
-     * COMMON
-     *******************************************************/
     builder
-      .addCase(
-        CommonActions.REPLACE_STOREDATA,
-        (state, action: PayloadAction<{ column?: TColumn[] }>) => {
-          if (action.payload.column) {
-            return action.payload.column
-          }
+      /*******************************************************
+       * COMMON
+       *******************************************************/
+      .addCase(replaceStoreData, (state, action) => {
+        return action.payload.column || state
+      })
+      .addCase(refreshStoreData, (state, action) => {
+        if (action.payload.column) {
+          columnAdapter.upsertMany(state, action.payload.column)
         }
-      )
-      .addCase(
-        /*******************************************************
-         * COMMON
-         *******************************************************/
-        CommonActions.REFRESH_STOREDATA,
-        (state, action: PayloadAction<{ column: TColumn[] }>) => {
-          if (action.payload.column) {
-            return action.payload.column.reduce(
-              (newState, newObj) => {
-                const index = newState.findIndex(
-                  (item) => item.id === newObj.id
-                )
-                if (index !== -1) {
-                  newState[index] = newObj
-                } else {
-                  newState.push(newObj)
-                }
-                return newState
-              },
-              [...state]
-            )
-          }
-        }
-      )
+      })
   }
 })
 
 export const {
-  replaceStoreData: columnReplaceStoreData,
-  refreshStoreData: columnRefreshStoreData,
   createLock: columnCreateLock,
   deleteSelf: columnDeleteSelf,
   deleteSelfSoft: columnDeleteSelfSoft,

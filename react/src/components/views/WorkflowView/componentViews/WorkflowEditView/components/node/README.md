@@ -6,7 +6,7 @@ they are not workflows, but they can contain references to workflows
 
 PARTS:
 port = little circles that connect workflows
-nodeLink = line between nodes
+nodelink = line between nodes
 autolink = TBD why this is difference from link
 nodelinkSVG = TBD why this is not just node
 nodeweek = the through model from the backend leaked onto the frontend, this should be the same as node

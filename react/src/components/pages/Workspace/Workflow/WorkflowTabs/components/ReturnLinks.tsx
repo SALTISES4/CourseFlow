@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography'
 import * as React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, generatePath } from 'react-router-dom'
+import {RootState} from "@cfRedux/store";
 
 /**
  * @todo did a first pass, but there is work to do still
@@ -15,7 +16,7 @@ import { Link, generatePath } from 'react-router-dom'
  */
 const ReturnLinks = () => {
   const canView = true // @todo temp because project is not in store yet
-  const project = useSelector((state: AppState) => state.workspace.project)
+  const project = useSelector((state: RootState) => state.workspace.project)
 
   /*******************************************************
    * REDUX

@@ -5,11 +5,12 @@ import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import GridWeek from './GridWeek'
+import {RootState} from "@cfRedux/store";
 
 type OwnProps = {}
 
 const GridView: React.FC<OwnProps> = () => {
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const weeks = workflow.weekworkflowSet
     .map((weekworkflow) => getWeekWorkflowByID(state, weekworkflow).data.week)

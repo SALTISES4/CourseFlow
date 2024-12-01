@@ -4,19 +4,20 @@ import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { AppState } from '@cfRedux/types/type'
 import React, { useCallback } from 'react'
 import { useSelector } from 'react-redux'
+import {RootState} from "@cfRedux/store";
 
 type PropsType = {
   objectId: number
 }
 
 const ScrollToWeek = ({ objectId }: PropsType) => {
-  const weekData = useSelector((state: AppState) =>
+  const weekData = useSelector((state: RootState) =>
     selectWeekById(state, objectId)
   )
   // call in the workflow here because we use it for the
   // 'week' label which changes based on workflow type
   // we don't have a good solution for this yet
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const scrollToHandler = useCallback(() => {
     const element = document.querySelector(
@@ -151,7 +152,7 @@ export default ScrollToWeek
 //  * The week representation for the "jump to" menu
 //  */
 // const JumpToWeekView: React.FC<OwnProps> = ({ objectId, rank }) => {
-//   const { week, workflow } = useSelector((state: AppState) => ({
+//   const { week, workflow } = useSelector((state: RootState) => ({
 //     week: getWeekById(state, objectId),
 //     workflow: state.workflow,
 //   }));

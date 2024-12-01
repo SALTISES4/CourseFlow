@@ -175,6 +175,7 @@ class ThemeHelper {
 
   /**
    * Get the colour from a column
+   *  @todo broken
    **/
   static getColumnColour({
     columnType,
@@ -186,8 +187,7 @@ class ThemeHelper {
     if (colour) {
       return ThemeHelper.decimalToHex(colour)
     }
-
-    return defaultColumnSettings[columnType].colour
+    return defaultColumnSettings[columnType]?.colour || ''
   }
 
   static generateColorFromIntToHex(id: number) {

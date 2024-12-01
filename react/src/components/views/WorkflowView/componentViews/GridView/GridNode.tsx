@@ -8,6 +8,7 @@ import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/com
 import clsx from 'clsx'
 import React, { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import {RootState} from "@cfRedux/store";
 
 type OwnProps = {
   node: TNode
@@ -16,10 +17,10 @@ type OwnProps = {
 
 const GridNode: React.FC<OwnProps> = ({ node, parentId }) => {
   const dispatch = useDispatch()
-  const column = useSelector((state: AppState) =>
+  const column = useSelector((state: RootState) =>
     state.column.find((column) => column.id === node.column)
   )
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const mainDiv = useRef<HTMLDivElement>(null)
   const manager = useRef(new BetterSelectionManager(dispatch))

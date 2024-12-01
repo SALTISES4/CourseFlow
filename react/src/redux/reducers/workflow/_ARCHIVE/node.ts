@@ -10,7 +10,7 @@ import {
   ColumnActions,
   CommonActions,
   NodeActions,
-  NodeLinkActions,
+  NodelinkActions,
   OutcomeActions,
   OutcomeBaseActions,
   OutcomeNodeActions,
@@ -102,18 +102,18 @@ interface CreateLockNodeAction extends AnyAction {
 // }
 
 // Node Link Actions
-interface DeleteNodeLinkAction extends AnyAction {
-  type: NodeLinkActions.DELETE_SELF | NodeLinkActions.DELETE_SELF_SOFT
+interface DeleteNodelinkAction extends AnyAction {
+  type: NodelinkActions.DELETE_SELF | NodelinkActions.DELETE_SELF_SOFT
   payload: { id: number }
 }
 
-interface CreateNodeLinkAction extends AnyAction {
-  type: NodeLinkActions.NEW_NODE_LINK
+interface CreateNodelinkAction extends AnyAction {
+  type: NodelinkActions.NEW_NODE_LINK
   payload: { id: number }
 }
 
-interface RestoreNodeLinkAction extends AnyAction {
-  type: NodeLinkActions.RESTORE_SELF
+interface RestoreNodelinkAction extends AnyAction {
+  type: NodelinkActions.RESTORE_SELF
   payload: { parentId: number; id: number }
 }
 
@@ -162,14 +162,14 @@ type NodeActionsUnion =
   | DeleteSoftNodeAction
   | DeleteSoftNodeAction
   | CreateLockNodeAction
-  | DeleteNodeLinkAction
-  | RestoreNodeLinkAction
+  | DeleteNodelinkAction
+  | RestoreNodelinkAction
   | AddStrategyAction
   | DeleteOutcomeAction
   | OutcomeNodeAction
   | CreateWeekAction
   | CreateOutcomeAction
-  | CreateNodeLinkAction
+  | CreateNodelinkAction
 
 export default function nodeReducer(
   state: TNode[] = [],
@@ -283,8 +283,8 @@ export default function nodeReducer(
     /*******************************************************
      * NODE LINK
      *******************************************************/
-    // case NodeLinkActions.DELETE_SELF:
-    // case NodeLinkActions.DELETE_SELF_SOFT:
+    // case NodelinkActions.DELETE_SELF:
+    // case NodelinkActions.DELETE_SELF_SOFT:
     //   return state.map((item) => {
     //     if (item.outgoingLinks.includes(action.payload.id)) {
     //       const updatedOutgoingLinks = item.outgoingLinks.filter(
@@ -295,7 +295,7 @@ export default function nodeReducer(
     //     return item
     //   })
 
-    // case NodeLinkActions.RESTORE_SELF:
+    // case NodelinkActions.RESTORE_SELF:
     //   return state.map((item) => {
     //     if (item.id === action.payload.parentId) {
     //       return {
@@ -306,7 +306,7 @@ export default function nodeReducer(
     //     return item
     //   })
 
-    // case NodeLinkActions.NEW_NODE_LINK:
+    // case NodelinkActions.NEW_NODE_LINK:
     //   return state.map((item) => {
     //     if (item.id === action.payload.newModel.sourceNode) {
     //       return {

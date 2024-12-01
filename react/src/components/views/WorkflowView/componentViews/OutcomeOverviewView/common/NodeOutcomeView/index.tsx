@@ -1,7 +1,7 @@
 import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
-import { TGetNodeById } from '@cfFindState'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
+import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
 import clsx from 'clsx'
@@ -20,7 +20,7 @@ type PropsType = {
 //    and w/ is the difference between this and outcomenode?
 const NodeOutcomeView = ({ objectId }: PropsType) => {
   const mainDiv = useRef<HTMLDivElement>(null)
-  const node = useSelector<AppState, TGetNodeById>((state: AppState) =>
+  const node = useSelector((state: RootState) =>
     selectNodeById(state, objectId)
   )
 

@@ -2,6 +2,13 @@ import { _t } from '@cf/utility/Utility.class'
 import * as SC from '@cfComponents/globalNav/Sidebar/styles'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { workflowUrl } from '@cfComponents/UIPrimitives/Titles'
+import { TGetNodeById } from '@cfFindState'
+import {
+  selectAllNodes,
+  selectNodeById
+} from '@cfRedux/selectors/node.selector'
+import { selectWeekById } from '@cfRedux/selectors/week.selector'
+import { RootState } from '@cfRedux/store'
 import { AppState, TNode } from '@cfRedux/types/type'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
@@ -22,8 +29,8 @@ type WorkflowNode = {
 
 const ParentWorkflowIndicator = () => {
   const { id } = useParams()
-  const nodes = useSelector<AppState, TNode[]>((state) => state.workspace.node)
-
+  //  const nodes = useSelector<AppState, TNode[]>((state) => state.workspace.node)
+  const nodes = useSelector((state: RootState) => selectAllNodes(state))
   const childWorkflows = nodes
     .filter((node) => node.linkedWorkflowData)
     .map((node) => ({

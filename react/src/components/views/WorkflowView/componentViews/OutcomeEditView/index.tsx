@@ -12,6 +12,7 @@ import { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 import Outcome from './components/Outcome'
+import {RootState} from "@cfRedux/store";
 
 class OutcomeDragAndDropManager extends SortableDragAndDropManager {
   onMovedIn(id, newPosition, type, newParent, childId) {
@@ -51,10 +52,10 @@ const OutcomeEditView: React.FC<PropsType> = ({ objectId, parentId }) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const data = useSelector((state: AppState) =>
+  const data = useSelector((state: RootState) =>
     selectOutcomesFromWorkflows(state, state.workflow.outcomes)
   )
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const mainDiv = useRef<HTMLDivElement>(null)
   const outcomeDragAndDropManager = useRef(

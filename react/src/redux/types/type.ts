@@ -22,16 +22,18 @@ import {
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
+export type WorkspaceAppState = {
+  project?: TProject
+  nodelink: TNodelink[]
+  column: TColumn[]
+  week: TWeek[]
+  workflow: TWorkflow
+  node: TNode[]
+  strategy: TStrategy[]
+}
+
 export type AppState = {
-  workspace: {
-    project?: TProject
-    nodelink: TNodelink[]
-    column: TColumn[]
-    week: TWeek[]
-    workflow: TWorkflow
-    node: TNode[]
-    strategy: TStrategy[]
-  }
+  workspace: WorkspaceAppState
   // relations
   columnworkflow: TColumnworkflow[]
   weekworkflow: TWeekworkflow[]

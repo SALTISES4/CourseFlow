@@ -15,6 +15,7 @@ import React, { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import GridNode from './GridNode'
+import {RootState} from "@cfRedux/store";
 
 type OwnProps = {
   objectId: number
@@ -29,10 +30,10 @@ const GridWeek: React.FC<OwnProps> = ({ objectId, parentId, rank, week }) => {
   const manager = useRef(new BetterSelectionManager(dispatch))
   const objectType = CfObjectType.WEEK
 
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const nodeWeeks = Utility.filterThenSortById<TNodeweek>(
-    useSelector((state: AppState) => state.nodeweek),
+    useSelector((state: RootState) => state.nodeweek),
     week.nodeweekSet
   )
 
@@ -40,7 +41,7 @@ const GridWeek: React.FC<OwnProps> = ({ objectId, parentId, rank, week }) => {
     .map(
       (nodeweek) =>
         selectNodeById(
-          useSelector((state: AppState) => state),
+          useSelector((state: RootState) => state),
           nodeweek.node
         ).data
     )
@@ -48,7 +49,7 @@ const GridWeek: React.FC<OwnProps> = ({ objectId, parentId, rank, week }) => {
       (node) =>
         !Utility.checkSetHidden(
           node,
-          useSelector((state: AppState) => state.objectset)
+          useSelector((state: RootState) => state.objectset)
         )
     )
 

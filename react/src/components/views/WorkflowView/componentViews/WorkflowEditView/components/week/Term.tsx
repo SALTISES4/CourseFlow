@@ -9,6 +9,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
+import {RootState} from "@cfRedux/store";
 
 type OwnProps = {
   objectId: number
@@ -25,8 +26,8 @@ const Term = ({
   columnOrder,
   nodesByColumn
 }: OwnProps) => {
-  const term = useSelector((state: AppState) => selectWeekById(state, objectId))
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const term = useSelector((state: RootState) => selectWeekById(state, objectId))
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const dragAndDropManager = useRef(null)
 
   const mainDiv = useRef<HTMLDivElement>(null)

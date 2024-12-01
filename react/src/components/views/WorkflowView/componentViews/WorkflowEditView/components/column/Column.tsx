@@ -7,6 +7,7 @@ import CommentBox from '@cfEditableComponents/components/CommentBox'
 import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
+import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
 import AddCommentIcon from '@mui/icons-material/AddComment'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
@@ -15,11 +16,6 @@ import QueueIcon from '@mui/icons-material/Queue'
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 import { styled } from '@mui/material/styles'
-import {
-  useCreateMutation,
-  useDeleteMutation,
-  useUpdatePositionMutation
-} from '@XMLHTTP/API/workflowObjects/column.rtk'
 import clsx from 'clsx'
 import * as React from 'react'
 import { useMemo } from 'react'
@@ -58,10 +54,10 @@ const Column = ({ objectId, parentId }: PropsType) => {
    * HOOKS: REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const columnData = useSelector((state: AppState) =>
+  const column = useSelector((state: RootState) =>
     selectColumnById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   /*******************************************************
    * FUNCTIONS
@@ -77,39 +73,39 @@ const Column = ({ objectId, parentId }: PropsType) => {
    **/
   const onClickHandler = (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation()
-    if (columnData?.column) {
-      manager.updateSidebar(columnData.column.id, objectType, parentId)
+    if (column) {
+      manager.updateSidebar(column.id, objectType, parentId)
     }
   }
 
   const columnColourHex = useMemo(() => {
     return ThemeHelper.getColumnColour({
-      columnType: columnData.column.columnType,
-      colour: columnData.column.colour
+      columnType: column.columnType,
+      colour: column.colour
     })
-  }, [columnData.column.colour, columnData.column.columnType])
+  }, [column.colour, column.columnType])
 
   /*******************************************************
    * RENDER
    *******************************************************/
 
-  if (!columnData || !workflow) {
+  if (!column || !workflow) {
     return null
   }
 
-  const data = columnData.column
-  const title = data.title ?? data.columnTypeDisplay
+  const title = column.title ?? column.columnTypeDisplay
 
   return (
     <div
       ref={mainDiv}
       style={{
-        border: (data.lock && '2px solid ' + data.lock.userColour) || 'inherit'
+        border:
+          (column.lock && '2px solid ' + column.lock.userColour) || 'inherit'
       }}
       className={clsx(
         'column',
-        data.lock && `locked`,
-        data.lock && `locked-${data.lock.userId}`
+        column.lock && `locked`,
+        column.lock && `locked-${column.lock.userId}`
       )}
       onClick={onClickHandler}
     >

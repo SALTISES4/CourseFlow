@@ -1,6 +1,6 @@
 import { EditableDataType, EditableType } from '../../types'
 
-const getNodeLinkData = (
+const getNodelinkData = (
   id: number
 ): EditableDataType<EditableType.NODE_LINK> => {
   return {
@@ -10,4 +10,4 @@ const getNodeLinkData = (
   }
 }
 
-export default getNodeLinkData
+export default getNodelinkData

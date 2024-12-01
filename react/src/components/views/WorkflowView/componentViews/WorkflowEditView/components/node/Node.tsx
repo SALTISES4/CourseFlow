@@ -6,17 +6,17 @@ import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility, { _t } from '@cf/utility/Utility.class'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
+import { TNode } from '@cfRedux/types/type'
 import OutcomeNode from '@cfViews/common/OutcomeNode'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
-import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
+import Nodelink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Nodelink'
 import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
-import LinkIcon from '@mui/icons-material/Link'
-import { updateOutcomenodeDegree } from '@XMLHTTP/API/update'
 import clsx from 'clsx'
 import mergeRefs from 'merge-refs'
 import React, { useEffect, useRef, useState } from 'react'
@@ -44,10 +44,13 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    * HOOKS: REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const nodeData = useSelector((state: AppState) =>
+  const node = useSelector((state: RootState) =>
     selectNodeById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const column = useSelector((state: RootState) =>
+    selectColumnById(state, node.column)
+  )
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   /*******************************************************
    * HOOKS: REF
@@ -89,7 +92,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   useEffect(() => {
     updatePorts()
     updateHidden()
-  }, [nodeData])
+  }, [node])
 
   useEffect(() => {
     renderNodePorts()
@@ -134,7 +137,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    * COMPONENTS
    *******************************************************/
   const ContextIcon = () => {
-    const data = nodeData.node
+    const data = node
     if (data.contextClassification <= 0) {
       return null
     }
@@ -154,7 +157,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   }
 
   const TaskIcon = () => {
-    const data = nodeData.node
+    const data = node
     if (data.taskClassification <= 0) {
       return null
     }
@@ -174,8 +177,6 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   }
 
   const OutcomeNodes = () => {
-    const node = nodeData.node
-
     if (!showOutcomes) {
       return <></>
     }
@@ -188,8 +189,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
         }}
         style={{
           borderColor: ThemeHelper.getColumnColour({
-            columnType: node.column.columnType,
-            colour: node.column.colour
+            ...column
           })
         }}
       >
@@ -201,8 +201,6 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   }
 
   const SideActions = () => {
-    const node = nodeData.node
-
     if (node.outcomenodeUniqueSet.length <= 0) {
       return <></>
     }
@@ -215,8 +213,8 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
           }}
           style={{
             borderColor: ThemeHelper.getColumnColour({
-              columnType: node.column.columnType,
-              colour: node.column.colour
+              columnType: column.columnType,
+              colour: column.colour
             })
           }}
         >
@@ -230,7 +228,8 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   /**
    * Icon link to the linked workflow by reference
    **/
-  const LinkIcon = ({ data }: { data: any }) => {
+  const LinkIcon = ({ data }: { data: TNode }) => {
+    // @todo
     if (!data.linkedWorkflow || true) {
       return <></>
     }
@@ -279,7 +278,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    * @todo...
    *******************************************************/
   let nodePorts
-  let nodeLinks
+  let nodelinks
   let autoLink
   const renderNodePorts = () => {
     if (!initialRender) {
@@ -301,8 +300,8 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
         $('.workflow-canvas')[0]
       )
 
-      nodeLinks = node.outgoingLinks.map((link) => (
-        <NodeLink key={link} objectId={link} nodeDiv={mainDiv} />
+      nodelinks = node.outgoingLinks.map((link) => (
+        <Nodelink key={link} objectId={link} nodeDiv={mainDiv} />
       ))
       if (node.hasAutolink) {
         autoLink = <AutoLink nodeId={objectId} nodeDiv={mainDiv} />
@@ -314,17 +313,15 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
    * RENDER
    *******************************************************/
   const style: React.CSSProperties = {
-    //    left: `${Constants.columnwidth * (nodeData.column.order + 1)}px`,
-    backgroundColor: ThemeHelper.getColumnColour(nodeData.column),
-    display: Utility.checkSetHidden(nodeData.node, objectSets)
-      ? 'none'
-      : undefined,
-    outline: nodeData.node.lock
-      ? `2px solid ${nodeData.node.lock.userColour}`
-      : undefined
+    //    left: `${Constants.columnwidth * (column.order + 1)}px`,
+    backgroundColor: ThemeHelper.getColumnColour({
+      ...column
+    }),
+    display: Utility.checkSetHidden(node, objectSets) ? 'none' : undefined,
+    outline: node.lock ? `2px solid ${node.lock.userColour}` : undefined
   }
-  const node = nodeData.node
-  const dataOverride = node.representsWorkflow
+  // @todo still bad
+  const dataOverride: TNode = node.representsWorkflow
     ? { ...node, ...node.linkedWorkflowData, id: node.id }
     : { ...node }
 
@@ -333,27 +330,27 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
   return (
     <>
       <div
-        id={String(nodeData.node.id)}
+        id={String(node.id)}
         style={style}
         className={clsx(
           'node',
-          `column-${nodeData.node.column}`,
-          Constants.nodeKeys[nodeData.node.nodeType],
+          `column-${node.column}`,
+          Constants.nodeKeys[node.nodeType],
           {
-            dropped: nodeData.node.isDropped,
-            [`locked locked-${nodeData.node.lock?.userId}`]: nodeData.node.lock
+            dropped: node.isDropped,
+            [`locked locked-${node.lock?.userId}`]: node.lock
           }
         )}
         data-hovered={isHovered}
         ref={mergeRefs(mainDiv, ref)}
         onClick={(e) => {
           e.stopPropagation()
-          manager.updateSidebar(nodeData.node.id, CfObjectType.NODE, parentId)
+          manager.updateSidebar(node.id, CfObjectType.NODE, parentId)
         }}
       >
         <div className="node-top-row">
           <ContextIcon />
-          <NodeTitle node={nodeData.node} />
+          <NodeTitle node={node} />
           <TaskIcon />
         </div>
 
@@ -373,7 +370,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
             dispatch(
               nodeChangeField({
                 id: objectId,
-                data: { isDropped: !nodeData.node.isDropped }
+                data: { isDropped: !node.isDropped }
               })
             )
           }}
@@ -400,7 +397,7 @@ const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
       </div>
       {renderNodePorts()}
       {nodePorts}
-      {nodeLinks}
+      {nodelinks}
       {autoLink}
     </>
   )
@@ -421,7 +418,7 @@ export default Node
 // import { AppState, TWorkflow } from '@cfRedux/types/type'
 // import OutcomeNode from '@cfViews/common/OutcomeNode'
 // import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
-// import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
+// import Nodelink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/Nodelink'
 // import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
 // import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
 // import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp'
@@ -518,7 +515,7 @@ export default Node
 //   }
 //
 //   componentDidUpdate(prevProps, prevState) {
-//     if (this.props.nodeData.node.isDropped == prevProps.nodeData.node.isDropped) {
+//     if (this.props.node.isDropped == prevProps.node.isDropped) {
 //       this.updatePorts()
 //     } else {
 //       ThemeHelper.triggerHandlerEach($('.node'), 'component-updated')
@@ -638,7 +635,7 @@ export default Node
 //    * COMPONENTS
 //    *******************************************************/
 //   ContextIcon = () => {
-//     const data = this.props.nodeData.node
+//     const data = this.props.node
 //     if (data.contextClassification <= 0) {
 //       return <></>
 //     }
@@ -662,7 +659,7 @@ export default Node
 //   }
 //
 //   TaskIcon = () => {
-//     const data = this.props.nodeData.node
+//     const data = this.props.node
 //     if (data.taskClassification <= 0) {
 //       return <></>
 //     }
@@ -686,7 +683,7 @@ export default Node
 //   }
 //
 //   OutcomeNodes = () => {
-//     const data = this.props.nodeData.node
+//     const data = this.props.node
 //
 //     if (!this.state.showOutcomes) {
 //       return <></>
@@ -713,7 +710,7 @@ export default Node
 //   }
 //
 //   SideActions = () => {
-//     const data = this.props.nodeData.node
+//     const data = this.props.node
 //
 //     if (data.outcomenodeUniqueSet.length <= 0) {
 //       return <></>
@@ -778,10 +775,10 @@ export default Node
 //    * RENDER
 //    *******************************************************/
 //   render() {
-//     let nodeLinks
+//     let nodelinks
 //     let autoLink
 //
-//     const data = this.props.nodeData.node
+//     const data = this.props.node
 //     const dataOverride = data.representsWorkflow
 //       ? { ...data, ...data.linkedWorkflowData, id: data.id }
 //       : { ...data }
@@ -811,8 +808,8 @@ export default Node
 //         $('.workflow-canvas')[0]
 //       )
 //
-//       nodeLinks = data.outgoingLinks.map((link) => (
-//         <NodeLink key={link} objectId={link} nodeDiv={this.mainDiv} />
+//       nodelinks = data.outgoingLinks.map((link) => (
+//         <Nodelink key={link} objectId={link} nodeDiv={this.mainDiv} />
 //       ))
 //       if (data.hasAutolink) {
 //         autoLink = (
@@ -890,8 +887,8 @@ export default Node
 //               this.manager.toggleDropReduxAction({
 //                 objectId: this.props.objectId,
 //                 objectType: this.objectType,
-//                 newDropState: !this.props.nodeData.node?.isDropped,
-//                 depth: this.props.nodeData.node?.depth // where is depth defined?
+//                 newDropState: !this.props.node?.isDropped,
+//                 depth: this.props.node?.depth // where is depth defined?
 //               })
 //             }}
 //           >
@@ -920,7 +917,7 @@ export default Node
 //           />
 //
 //           {nodePorts}
-//           {nodeLinks}
+//           {nodelinks}
 //           {autoLink}
 //
 //           <div className="side-actions">

@@ -163,9 +163,9 @@ const WeekWrapper = ({ condensed, objectId, parentId }: PropsType) => {
   /*******************************************************
    * REDUX
    *******************************************************/
-  const weekData = useSelector((state: AppState) =>
-    selectWeekById(state, objectId)
-  )
+  // const weekData = useSelector((state: RootState) =>
+  //   selectWeekById(state, objectId)
+  // )
 
   /*******************************************************
    * COMPONENTS

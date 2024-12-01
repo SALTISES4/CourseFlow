@@ -1,14 +1,26 @@
 import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
+import { weekAdapter } from '@cfRedux/slices/week.slice'
 import {
   CommonActions,
-  NodeLinkActions,
+  NodelinkActions,
   SliceNamespace,
   StrategyActions,
   WeekActions
 } from '@cfRedux/types/enumActions'
-import { AppState, TColumn, TNodelink } from '@cfRedux/types/type'
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import {
+  AppState,
+  TColumn,
+  TNodelink,
+  TWeek,
+  WorkspaceAppState
+} from '@cfRedux/types/type'
+import {
+  PayloadAction,
+  createAction,
+  createEntityAdapter,
+  createSlice
+} from '@reduxjs/toolkit'
 
 interface CreateLockPayload {
   id: number
@@ -20,7 +32,7 @@ interface ChangeFieldPayload {
   json: Pick<TNodelink>
 }
 
-interface NodeLinkByIdPayload {
+interface NodelinkByIdPayload {
   id: number
 }
 
@@ -36,9 +48,24 @@ interface ReplaceStoreDataPayload {
   nodelink?: TNodelink[]
 }
 
-const initialState: TNodelink[] = []
+export const nodelinkAdapter = createEntityAdapter<TNodelink>()
+const initialState = nodelinkAdapter.getInitialState()
 
-const nodelinkSlice = createSlice<AppState['nodelink']>({
+/*******************************************************
+ * CREATE ACTIONS
+ *******************************************************/
+export const replaceStoreData = createAction<{
+  nodelink: WorkspaceAppState['nodelink'] | undefined
+}>(CommonActions.REPLACE_STOREDATA)
+
+export const refreshStoreData = createAction<{
+  nodelink: WorkspaceAppState['nodelink'] | undefined
+}>(CommonActions.REFRESH_STOREDATA)
+
+/*******************************************************
+ * SLICE
+ *******************************************************/
+const nodelinkSlice = createSlice({
   name: SliceNamespace.NODELINK,
   initialState,
   reducers: {
@@ -54,21 +81,21 @@ const nodelinkSlice = createSlice<AppState['nodelink']>({
         Object.assign(item, action.payload.json)
       }
     },
-    newNodeLink(state, action: PayloadAction<TNodelink>) {
+    newNodelink(state, action: PayloadAction<TNodelink>) {
       state.push(action.payload)
     },
-    deleteSelf(state, action: PayloadAction<NodeLinkByIdPayload>) {
+    deleteSelf(state, action: PayloadAction<NodelinkByIdPayload>) {
       // maybe use findIndex and splice
       return state.filter((item) => item.id !== action.payload.id)
     },
-    deleteSelfSoft(state, action: PayloadAction<NodeLinkByIdPayload>) {
+    deleteSelfSoft(state, action: PayloadAction<NodelinkByIdPayload>) {
       const item = state.find((item) => item.id === action.payload.id)
       if (item) {
         item.deleted = true
         item.deletedOn = _t('This session')
       }
     },
-    restoreSelf(state, action: PayloadAction<NodeLinkByIdPayload>) {
+    restoreSelf(state, action: PayloadAction<NodelinkByIdPayload>) {
       const item = state.find((item) => item.id === action.payload.id)
       if (item) {
         item.deleted = false
@@ -80,31 +107,16 @@ const nodelinkSlice = createSlice<AppState['nodelink']>({
      * COMMON
      *******************************************************/
     builder
-      .addCase(
-        CommonActions.REPLACE_STOREDATA,
-        (state, action: PayloadAction<{ nodelink?: TNodelink[] }>) => {
-          if (action.payload.nodelink) {
-            return action.payload.nodelink
-          }
+      .addCase(replaceStoreData, (state, action) => {
+        if (action.payload.nodelink) {
+          return action.payload.nodelink
         }
-      )
-      .addCase(
-        CommonActions.REFRESH_STOREDATA,
-        (state, action: PayloadAction<{ nodelink?: TNodelink[] }>) => {
-          if (action.payload.nodelink) {
-            action.payload.nodelink.forEach((newNodelink) => {
-              const index = state.findIndex(
-                (item) => item.id === newNodelink.id
-              )
-              if (index !== -1) {
-                state[index] = newNodelink
-              } else {
-                state.push(newNodelink)
-              }
-            })
-          }
+      })
+      .addCase(refreshStoreData, (state, action) => {
+        if (action.payload.nodelink) {
+          nodelinkAdapter.upsertMany(state, action.payload.week)
         }
-      )
+      })
       .addCase(
         WeekActions.INSERT_BELOW,
         (
@@ -128,16 +140,14 @@ const nodelinkSlice = createSlice<AppState['nodelink']>({
 })
 
 export const {
-  replaceStoreData: nodelinkReplaceStoreData,
-  refreshStoreData: nodelinkRefreshStoreData,
   createLock: nodelinkCreateLock,
   changeField: nodelinkChangeField,
-  newNodeLink: nodelinkNewNodeLink,
+  newNodelink: nodelinkNewNodelink,
   deleteSelf: nodelinkDeleteSelf,
   deleteSelfSoft: nodelinkDeleteSelfSoft,
-  restoreSelf: nodelinkRestoreSelf,
-  insertBelow: nodelinkInsertBelow,
-  addStrategy: nodelinkAddStrategy
+  restoreSelf: nodelinkRestoreSelf
+  //  insertBelow: nodelinkInsertBelow,
+  //  addStrategy: nodelinkAddStrategy
 } = nodelinkSlice.actions
 
 export default nodelinkSlice.reducer

@@ -25,13 +25,14 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import optionsData from './optionsData'
 import { NodeForm } from './types'
+import {RootState} from "@cfRedux/store";
 
 const EditNode = ({ id }) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
-  const sidebarData = useSelector((state: AppState) => state.sidebar)
-  const nodeData = useSelector((state: AppState) =>
+  const sidebarData = useSelector((state: RootState) => state.sidebar)
+  const nodeData = useSelector((state: RootState) =>
     selectNodeById(state, sidebarData.edit.id)
   )
   const dispatch = useDispatch()

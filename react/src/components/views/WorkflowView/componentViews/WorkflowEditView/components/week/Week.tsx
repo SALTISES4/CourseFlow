@@ -4,6 +4,7 @@ import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
+import { RootState } from '@cfRedux/store'
 import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
@@ -34,16 +35,15 @@ const Week = ({ objectId, parentId }) => {
    * REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const weekData = useSelector((state: AppState) =>
+  const week = useSelector((state: RootState) =>
     selectWeekById(state, objectId)
   )
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
   /*******************************************************
    * HOOKS: STATE
    *******************************************************/
-  const [nodesDragState, setNodesDragState] = useState(
-    weekData.week.nodes || []
-  )
+  const [nodesDragState, setNodesDragState] = useState(week.nodes || [])
+
   /*******************************************************
    * REFS
    *******************************************************/
@@ -90,15 +90,15 @@ const Week = ({ objectId, parentId }) => {
       <Box display="flex" key={`node-${nodeId}`}>
         <NodeWrapper
           objectId={nodeId}
-          parentId={weekData.week.id}
-          columnOrder={weekData.columns} // not sure if i should be props drilling this
+          parentId={week.id}
+          columnOrder={week?.columns} // not sure if i should be props drilling this
         />
       </Box>
     ))
   }
 
   const defaultText = !workflow.isStrategy
-    ? `${weekData.week.weekTypeDisplay} ${weekData.week.order + 1}`
+    ? `${week.weekTypeDisplay} ${week.order + 1}`
     : undefined
 
   const toggleCollapse = useCallback((evt) => {
@@ -106,7 +106,7 @@ const Week = ({ objectId, parentId }) => {
     dispatch(
       weekChangeField({
         id: objectId,
-        data: { isDropped: !weekData.week.isDropped }
+        data: { isDropped: !week.isDropped }
       })
     )
   }, [])
@@ -117,28 +117,28 @@ const Week = ({ objectId, parentId }) => {
   return (
     <Styled.WeekWrapper
       style={ThemeHelper.getBorderStyle({
-        isLocked: weekData.week?.lock?.lock,
-        colour: weekData.week?.lock?.userColour
+        isLocked: week?.lock?.lock,
+        colour: week?.lock?.userColour
       })}
       className={clsx('week', {
-        strategy: weekData.week.isStrategy,
-        dropped: weekData.week.isDropped,
-        [`locked`]: weekData.week?.lock,
-        [`locked-${weekData.week.lock?.userId}`]: weekData.week.lock
+        strategy: week.isStrategy,
+        dropped: week.isDropped,
+        [`locked`]: week?.lock,
+        [`locked-${week.lock?.userId}`]: week.lock
       })}
       //      ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
         manager.current.updateSidebar(
-          weekData.week.id,
+          week.id,
           CfObjectType.WEEK,
           parentId
         )
       }}
     >
-      <Styled.WeekHeader expanded={weekData.week.isDropped}>
+      <Styled.WeekHeader expanded={week.isDropped}>
         <Styled.WeekTitle variant="subtitle2">
-          <TitleText text={weekData.week.title} defaultText={defaultText} />
+          <TitleText text={week.title} defaultText={defaultText} />
         </Styled.WeekTitle>
         <IconButton onClick={toggleCollapse}>
           <KeyboardArrowDown />
@@ -151,7 +151,7 @@ const Week = ({ objectId, parentId }) => {
        and css
       */}
 
-      {weekData.week.isDropped && (
+      {week.isDropped && (
         <Styled.WeekContent
           id={`${objectId}-node-block`}
           className="node-block"
@@ -171,7 +171,7 @@ const Week = ({ objectId, parentId }) => {
         </Styled.WeekContent>
       )}
       <StrategyTabIcon
-        strategyClassification={weekData.week.strategyClassification}
+        strategyClassification={week.strategyClassification}
       />
     </Styled.WeekWrapper>
   )

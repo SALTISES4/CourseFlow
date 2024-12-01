@@ -1,9 +1,9 @@
+import { selectNodelinkById } from '@cf/redux/selectors/nodelink.selector'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
-import { selectNodeLinkById } from '@cfRedux/selectors/nodelink.selector'
-import { AppState } from '@cfRedux/types/type'
-import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
+import { RootState } from '@cfRedux/store'
+import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
 import React, { useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -13,13 +13,13 @@ type PropsType = {
   nodeDiv: React.RefObject<HTMLDivElement>
 }
 
-const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
+const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
   /*******************************************************
    * REDUX
    *******************************************************/
   const dispatch = useDispatch()
-  const nodeLink = useSelector((state: AppState) =>
-    selectNodeLinkById(state, objectId)
+  const nodelink = useSelector((state: RootState) =>
+    selectNodelinkById(state, objectId)
   )
 
   /*******************************************************
@@ -44,12 +44,12 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
    *******************************************************/
   // Effect to handle node updates and event listeners
   useEffect(() => {
-    if (!nodeLink) {
+    if (!nodelink) {
       return
     }
 
     const srcNode = $(nodeDiv.current)
-    const tgtNode = $(`#${nodeLink.targetNode}.node`)
+    const tgtNode = $(`#${nodelink.targetNode}.node`)
 
     setSourceNode(srcNode)
     setTargetNode(tgtNode)
@@ -60,17 +60,17 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
     // this css selector defines the circle attached to each node
     // from which the line is connected
     const sourcePortSelector = [
-      `g.port-${nodeLink.sourceNode}`,
+      `g.port-${nodelink.sourceNode}`,
       ` circle[data-port-type='source']`,
-      `[data-port='${Constants.portKeys[nodeLink.sourcePort]}']`
+      `[data-port='${Constants.portKeys[nodelink.sourcePort]}']`
     ].join('')
 
     // this css selector defines the circle attached to each node
     // to which the line is connected
     const targetPortSelector = [
-      `g.port-${nodeLink.targetNode}`,
+      `g.port-${nodelink.targetNode}`,
       ` circle[data-port-type='target']`,
-      `[data-port='${Constants.portKeys[nodeLink.targetPort]}']`
+      `[data-port='${Constants.portKeys[nodelink.targetPort]}']`
     ].join('')
 
     setSourcePortHandle(d3.select(sourcePortSelector))
@@ -80,17 +80,17 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
       srcNode.off(rerenderEvents)
       tgtNode.off(rerenderEvents)
     }
-  }, [nodeLink, nodeDiv])
+  }, [nodelink, nodeDiv])
 
   /**
    * FUNCTIONS
    **/
   /**
-   * This is outside of react, so we need to redraw the nodeLinks manually
+   * This is outside of react, so we need to redraw the nodelinks manually
    **/
   const rerender = () => {
     setSourceNode($(nodeDiv.current))
-    setTargetNode($(`#${nodeLink.targetNode}.node`))
+    setTargetNode($(`#${nodelink.targetNode}.node`))
   }
 
   /**
@@ -116,7 +116,7 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
    * React Style
    **/
   const style: React.CSSProperties = {}
-  if (nodeLink.dashed) {
+  if (nodelink.dashed) {
     style.strokeDasharray = '5,5'
   }
 
@@ -142,20 +142,20 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
   }
 
   const portal = reactDom.createPortal(
-    <NodeLinkSVG
+    <NodelinkSVG
       style={style}
       hovered={nodeHovered}
       nodeSelected={nodeSelected}
-      lock={nodeLink?.lock}
-      title={nodeLink.title}
-      textPosition={nodeLink.textPosition}
+      lock={nodelink?.lock}
+      title={nodelink.title}
+      textPosition={nodelink.textPosition}
       sourcePortHandle={sourcePortHandle}
-      sourcePort={nodeLink.sourcePort}
+      sourcePort={nodelink.sourcePort}
       targetPortHandle={targetPortHandle}
-      targetPort={nodeLink.targetPort}
+      targetPort={nodelink.targetPort}
       clickFunction={(e) => {
         e.stopPropagation()
-        manager.updateSidebar(nodeLink.id, objectType)
+        manager.updateSidebar(nodelink.id, objectType)
       }}
       sourceDimensions={sourceDims}
       targetDimensions={targetDims}
@@ -166,15 +166,15 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
   return <>{portal}</>
 }
 
-export default NodeLink
+export default Nodelink
 
 // import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 // import { CfObjectType } from '@cf/types/enum'
 // import * as Constants from '@cf/utility/constants'
-// import { TGetNodeLinkById, getNodeLinkByID } from '@cfFindState'
+// import { TGetNodelinkById, getNodelinkByID } from '@cfFindState'
 // import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 // import { AppState } from '@cfRedux/types/type'
-// import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
+// import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
 // import { Dispatch } from '@reduxjs/toolkit'
 // import * as React from 'react'
 // import * as reactDom from 'react-dom'
@@ -182,7 +182,7 @@ export default NodeLink
 // import { Action } from 'redux'
 // // import $ from 'jquery'
 //
-// type ConnectedProps = TGetNodeLinkById
+// type ConnectedProps = TGetNodelinkById
 // type OwnProps = {
 //   objectId: number
 // //  parentId: number @todo no sure ?
@@ -195,7 +195,7 @@ export default NodeLink
 //  * The arrow manually drawn between two nodes (as opposed to the
 //  * autolink which is automatically drawn). This can have text added.
 //  */
-// class NodeLink extends React.Component<PropsType, StateProps> {
+// class Nodelink extends React.Component<PropsType, StateProps> {
 //   static contextType = WorkflowConfigContext
 //   declare context: React.ContextType<typeof WorkflowConfigContext>
 //
@@ -211,7 +211,7 @@ export default NodeLink
 //     super(props)
 //     this.manager = new BetterSelectionManager(this.props.dispatch)
 //     this.objectType = CfObjectType.NODELINK
-//     this.rerenderEvents = 'ports-rendered.' + this.props.nodeLink.id
+//     this.rerenderEvents = 'ports-rendered.' + this.props.nodelink.id
 //   }
 //
 //   /*******************************************************
@@ -248,7 +248,7 @@ export default NodeLink
 //       this.targetPortHandle.empty()
 //     ) {
 //       this.sourceNode = $(this.props.nodeDiv.current)
-//       this.targetNode = $('#' + nodeLink.targetNode + '.node')
+//       this.targetNode = $('#' + nodelink.targetNode + '.node')
 //
 //       this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
 //       this.targetNode.on(this.rerenderEvents, this.rerender.bind(this))
@@ -256,9 +256,9 @@ export default NodeLink
 //       // this css selector defines the circle attached to each node
 //       // from which the line is connected
 //       const cssSourcePortSelector = [
-//         `g.port-${nodeLink.sourceNode}`,
+//         `g.port-${nodelink.sourceNode}`,
 //         ` circle[data-port-type='source']`,
-//         `[data-port='${Constants.portKeys[nodeLink.sourcePort]}']`
+//         `[data-port='${Constants.portKeys[nodelink.sourcePort]}']`
 //       ].join('')
 //
 //       // Utility.logger('cssSourcePortSelector')
@@ -267,9 +267,9 @@ export default NodeLink
 //       // this css selector defines the circle attached to each node
 //       // to which the line is connected
 //       const cssSourceTargetSelector = [
-//         `g.port-${nodeLink.targetNode} `,
+//         `g.port-${nodelink.targetNode} `,
 //         ` circle[data-port-type='target']`,
-//         `[data-port='${Constants.portKeys[nodeLink.targetPort]}']`
+//         `[data-port='${Constants.portKeys[nodelink.targetPort]}']`
 //       ].join('')
 //
 //       this.sourcePortHandle = d3.select(cssSourcePortSelector)
@@ -283,7 +283,7 @@ export default NodeLink
 //       this.sourceNode.attr('data-hovered') === 'true' ||
 //       this.targetNode.attr('data-hovered') === 'true'
 //
-//     if (nodeLink.dashed) {
+//     if (nodelink.dashed) {
 //       style.strokeDasharray = '5,5'
 //     }
 //
@@ -318,21 +318,21 @@ export default NodeLink
 //      *    for where this target is attached to the page
 //      **/
 //     const portal = reactDom.createPortal(
-//       <NodeLinkSVG
+//       <NodelinkSVG
 //         style={style}
 //         hovered={nodeHovered}
 //         nodeSelected={nodeSelected}
-//         lock={nodeLink.lock} // @todo where is lock defined?
-//         title={nodeLink.title}
-//         textPosition={nodeLink.textPosition}
+//         lock={nodelink.lock} // @todo where is lock defined?
+//         title={nodelink.title}
+//         textPosition={nodelink.textPosition}
 //         sourcePortHandle={this.sourcePortHandle}
-//         sourcePort={nodeLink.sourcePort}
+//         sourcePort={nodelink.sourcePort}
 //         targetPortHandle={this.targetPortHandle}
-//         targetPort={nodeLink.targetPort}
+//         targetPort={nodelink.targetPort}
 //         clickFunction={(e) => {
 //           e.stopPropagation()
 //           this.manager.updateSidebar(
-//             nodeLink.id,
+//             nodelink.id,
 //             this.objectType,
 //             this.props.parentId
 //           )
@@ -356,10 +356,10 @@ export default NodeLink
 // const mapStateToProps = (
 //   state: AppState,
 //   ownProps: OwnProps
-// ): TGetNodeLinkById => {
-//   return getNodeLinkByID(state, ownProps.objectId) || { data: undefined }
+// ): TGetNodelinkById => {
+//   return getNodelinkByID(state, ownProps.objectId) || { data: undefined }
 // }
 // export default connect<ConnectedProps, object, OwnProps, AppState>(
 //   mapStateToProps,
 //   null
-// )(NodeLink)
+// )(Nodelink)

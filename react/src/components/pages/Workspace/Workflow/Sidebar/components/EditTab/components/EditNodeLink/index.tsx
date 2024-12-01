@@ -8,17 +8,17 @@ import Typography from '@mui/material/Typography'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import getNodeLinkData from './getNodeLinkData'
-import { NodeLinkForm } from './types'
+import getNodelinkData from './getNodelinkData'
+import { NodelinkForm } from './types'
 import {
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
 } from '../../../../styles'
 
-const EditNodeLink = () => {
-  const data = getNodeLinkData(1)
-  const [state, setState] = useState<NodeLinkForm>(data)
+const EditNodelink = () => {
+  const data = getNodelinkData(1)
+  const [state, setState] = useState<NodelinkForm>(data)
 
   const onTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => [
@@ -95,4 +95,4 @@ const EditNodeLink = () => {
   )
 }
 
-export default EditNodeLink
+export default EditNodelink

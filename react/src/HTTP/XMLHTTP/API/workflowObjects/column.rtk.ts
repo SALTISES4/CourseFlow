@@ -1,8 +1,6 @@
 import { apiPaths } from '@cf/router/apiRoutes'
-import { CfObjectType, LibraryObjectType, WorkspaceType } from '@cf/types/enum'
-import Utility from '@cf/utility/Utility.class'
+import { CfObjectType } from '@cf/types/enum'
 import { Verb, cfApi } from '@XMLHTTP/API/api'
-import { API_POST } from '@XMLHTTP/CallWrapper'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 import { generatePath } from 'react-router-dom'
 
@@ -18,7 +16,7 @@ const extendedApi = cfApi.injectEndpoints({
     /*******************************************************
      * MUTATION
      *******************************************************/
-    createColumn: builder.mutation<
+    create: builder.mutation<
       EmptyPostResp,
       {
         payload: {
@@ -35,7 +33,7 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
-    updatePositionColumn: builder.mutation<
+    updatePosition: builder.mutation<
       EmptyPostResp,
       {
         id: number
@@ -53,7 +51,7 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
-    deleteColumn: builder.mutation<
+    delete: builder.mutation<
       EmptyPostResp,
       {
         id: number
@@ -73,7 +71,7 @@ const extendedApi = cfApi.injectEndpoints({
 })
 
 export const {
-  useCreateColumnMutation,
-  useUpdatePositionColumnMutation,
-  useDeleteColumnMutation
+  useCreateMutation: useCreateColumnMutation,
+  useUpdatePositionMutation: useUpdatePositionColumnMutation,
+  useDeleteMutation: useDeleteColumnMutation
 } = extendedApi

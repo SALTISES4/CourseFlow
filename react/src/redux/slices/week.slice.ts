@@ -1,14 +1,16 @@
 import {
   CommonActions,
   NodeActions,
-  NodeWeekActions,
-  OutcomeActions,
   ReduxSlice,
-  StrategyActions,
-  WeekActions
+  StrategyActions
 } from '@cfRedux/types/enumActions'
-import { AppState, TNode, TWeek } from '@cfRedux/types/type'
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { AppState, TWeek, WorkspaceAppState } from '@cfRedux/types/type'
+import {
+  PayloadAction,
+  createAction,
+  createEntityAdapter,
+  createSlice
+} from '@reduxjs/toolkit'
 
 interface WeekPayload {
   id: number
@@ -38,18 +40,12 @@ interface NodeGenericPayload {
   newThrough: { id: number }
 }
 
-interface ReplaceStoreDataPayload {
-  week?: TWeek[]
-}
-
-interface RefreshStoreDataPayload {
-  week: TWeek[]
-}
-
-const initialState: TWeek[] = []
+// const initialState: WorkspaceAppState['week'] = []
+export const weekAdapter = createEntityAdapter<TWeek>()
+const initialState = weekAdapter.getInitialState()
 
 export const updateEntity = (
-  state: AppState['week'],
+  state: WorkspaceAppState['week'],
   action: PayloadAction<{
     id: number
     data: Pick<TWeek>
@@ -94,7 +90,21 @@ const newNode = (state, action: PayloadAction<NodeGenericPayload>) => {
   })
 }
 
-const weekSlice = createSlice<AppState['week']>({
+/*******************************************************
+ * CREATE ACTIONS
+ *******************************************************/
+export const replaceStoreData = createAction<{
+  week: WorkspaceAppState['week'] | undefined
+}>(CommonActions.REPLACE_STOREDATA)
+
+export const refreshStoreData = createAction<{
+  week: WorkspaceAppState['week'] | undefined
+}>(CommonActions.REFRESH_STOREDATA)
+
+/*******************************************************
+ * SLICE
+ *******************************************************/
+const weekSlice = createSlice({
   name: ReduxSlice.WEEK,
   initialState,
   reducers: {
@@ -119,6 +129,7 @@ const weekSlice = createSlice<AppState['week']>({
     // this is responsible for:
     //
     changeField: updateEntity,
+    // this action makes no sense
     changeId(state, action: PayloadAction<ChangeIdPayload>) {
       return state.map((item) => ({
         ...item,
@@ -129,39 +140,18 @@ const weekSlice = createSlice<AppState['week']>({
     }
   },
   extraReducers: (builder) => {
-    /*******************************************************
-     * COMMON
-     *******************************************************/
     builder
-      .addCase(
-        CommonActions.REPLACE_STOREDATA,
-        (state, action: PayloadAction<ReplaceStoreDataPayload>) => {
-          return action.payload.week || state
+      /*******************************************************
+       * COMMON
+       *******************************************************/
+      .addCase(replaceStoreData, (state, action) => {
+        return action.payload.week || state
+      })
+      .addCase(refreshStoreData, (state, action) => {
+        if (action.payload.week) {
+          weekAdapter.upsertMany(state, action.payload.week)
         }
-      )
-      .addCase(
-        /*******************************************************
-         * COMMON
-         *******************************************************/
-        CommonActions.REFRESH_STOREDATA,
-        (state, action: PayloadAction<RefreshStoreDataPayload>) => {
-          if (action.payload.week) {
-            return action.payload.week.reduce(
-              (acc, newItem) => {
-                const index = acc.findIndex((item) => item.id === newItem.id)
-                if (index > -1) {
-                  acc[index] = newItem
-                } else {
-                  acc.push(newItem)
-                }
-                return acc
-              },
-              [...state]
-            )
-          }
-          return state
-        }
-      )
+      })
       /*******************************************************
        * STRATEGY
        *******************************************************/
@@ -181,37 +171,35 @@ const weekSlice = createSlice<AppState['week']>({
      * NODEWEEK
      * // @todo needs review
      *******************************************************/
-    builder
-      .addCase(
-        NodeWeekActions.CHANGE_ID,
-        (state, action: PayloadAction<RefreshStoreDataPayload>) => {
-          return state.map((item) => ({
-            ...item,
-            nodeweekSet: item.nodes.map((id) =>
-              id === action.payload.oldId ? action.payload.newId : id
-            )
-          }))
-        }
-      )
-      .addCase(
-        NodeWeekActions.MOVED_TO,
-        (state, action: PayloadAction<RefreshStoreDataPayload>) => {
-          return state.map((item) => {
-            const newSet = item.nodes.filter((id) => id !== action.payload.id)
-            if (item.id === action.payload.newParent) {
-              newSet.splice(action.payload.newIndex, 0, action.payload.id)
-              return { ...item, nodeweekSet: newSet }
-            }
-            return item
-          })
-        }
-      )
+    // builder
+    //   .addCase(
+    //     NodeWeekActions.CHANGE_ID,
+    //     (state, action: PayloadAction<RefreshStoreDataPayload>) => {
+    //       return state.map((item) => ({
+    //         ...item,
+    //         nodeweekSet: item.nodes.map((id) =>
+    //           id === action.payload.oldId ? action.payload.newId : id
+    //         )
+    //       }))
+    //     }
+    //   )
+    //   .addCase(
+    //     NodeWeekActions.MOVED_TO,
+    //     (state, action: PayloadAction<RefreshStoreDataPayload>) => {
+    //       return state.map((item) => {
+    //         const newSet = item.nodes.filter((id) => id !== action.payload.id)
+    //         if (item.id === action.payload.newParent) {
+    //           newSet.splice(action.payload.newIndex, 0, action.payload.id)
+    //           return { ...item, nodeweekSet: newSet }
+    //         }
+    //         return item
+    //       })
+    //     }
+    //   )
   }
 })
 
 export const {
-  replaceStoreData: weekReplaceStoreData,
-  refreshStoreData: weekRefreshStoreData,
   createLock: weekCreateLock,
   reloadComments: weekReloadComments,
   changeField: weekChangeField,

@@ -35,9 +35,9 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
-  //  const workflow = useSelector((state: AppState) => state.workflow)
+  //  const workflow = useSelector((state: RootState) => state.workflow)
   // currently comments in redux are an array of ids/
-  //   const commentsState = useSelector((state: AppState) => state)
+  //   const commentsState = useSelector((state: RootState) => state)
   // const comments = getComments({
   //   objectId: id,
   //   objectType,

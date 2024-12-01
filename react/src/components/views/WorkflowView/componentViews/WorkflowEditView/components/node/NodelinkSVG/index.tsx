@@ -1,12 +1,12 @@
 import { NumTuple, ObjectLock } from '@cf/types/common'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
-import PathGenerator from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG/PathGenerator.class'
+import PathGenerator from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG/PathGenerator.class'
 import * as React from 'react'
 
 /**
  * Creates paths between two ports
- *  SVG portion of a NodeLink
+ *  SVG portion of a Nodelink
  */
 
 export type OwnProps = {
@@ -38,7 +38,7 @@ type State = {
   hovered: boolean
 }
 
-class NodeLinkSVG extends React.Component<PropsType, State> {
+class NodelinkSVG extends React.Component<PropsType, State> {
   mainDiv: React.RefObject<SVGGElement>
 
   constructor(props: PropsType) {
@@ -250,4 +250,4 @@ class NodeLinkSVG extends React.Component<PropsType, State> {
   }
 }
 
-export default NodeLinkSVG
+export default NodelinkSVG

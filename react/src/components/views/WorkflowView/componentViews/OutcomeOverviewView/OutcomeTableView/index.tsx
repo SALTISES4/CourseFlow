@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux'
 
 import OutcomeBase from './components/OutcomeBase'
 import OutcomeLegend from './components/OutcomeLegend'
+import {RootState} from "@cfRedux/store";
 
 type OwnProps = {}
 
@@ -36,7 +37,7 @@ const OutcomeTableView: React.FC<OwnProps> = () => {
     column,
     outcomeworkflow,
     outcome
-  } = useSelector((state: AppState) => ({
+  } = useSelector((state: RootState) => ({
     workflow: state.workflow,
     weekworkflow: state.weekworkflow,
     week: state.week,

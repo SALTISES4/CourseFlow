@@ -2,7 +2,7 @@ import { NodeDom } from '@cf/types/global'
 import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { Dispatch } from '@reduxjs/toolkit'
-import { newNodeLinkQuery } from '@XMLHTTP/API/create'
+import { newNodelinkQuery } from '@XMLHTTP/API/create'
 import * as React from 'react'
 import { Action } from 'redux'
 // import $ from 'jquery'
@@ -76,7 +76,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
             const target = d3.select(d3.event.sourceEvent.target)
 
             if (target.attr('data-port-type') == 'target') {
-              thisComponent.nodeLinkAdded(
+              thisComponent.nodelinkAdded(
                 target.attr('data-node-id'),
                 d3.select(this).attr('data-port'),
                 target.attr('data-port')
@@ -116,13 +116,13 @@ export class NodePorts extends React.Component<PropsType, StateType> {
     })
   }
 
-  nodeLinkAdded(target, sourcePort, targetPort) {
+  nodelinkAdded(target, sourcePort, targetPort) {
     const props = this.props
     if (target == this.props.nodeId) {
       return
     }
 
-    newNodeLinkQuery(
+    newNodelinkQuery(
       props.nodeId,
       target,
       Constants.portKeys.indexOf(sourcePort),

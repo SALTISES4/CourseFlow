@@ -12,13 +12,14 @@ import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflowObjects/workflow.r
 import { useContext, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import {RootState} from "@cfRedux/store";
 
 const Workflow = () => {
   const userContext = useContext(UserContext)
   const { id } = useParams<{ id: string }>()
   const workflowId = Number(id)
 
-  const workflowData = useSelector((state: AppState) => state.workspace.workflow)
+  const workflowData = useSelector((state: RootState) => state.workspace.workflow)
   const dispatch = useDispatch()
 
   const { onError } = useGenericMsgHandler()

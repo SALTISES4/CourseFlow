@@ -9,15 +9,28 @@ import {
   SliceNamespace,
   StrategyActions,
   WeekActions,
-  WeekWorkflowActions,
-  WorkflowActions
+  WeekWorkflowActions
 } from '@cfRedux/types/enumActions'
-import { AppState, TWorkflow } from '@cfRedux/types/type'
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { TWorkflow, WorkspaceAppState } from '@cfRedux/types/type'
+import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
 
 const initialState: TWorkflow = {} as TWorkflow
 
-const workflowSlice = createSlice<AppState['workflow']>({
+/*******************************************************
+ * CREATE ACTIONS
+ *******************************************************/
+export const replaceStoreData = createAction<{
+  workflow: WorkspaceAppState['workflow'] | undefined
+}>(CommonActions.REPLACE_STOREDATA)
+
+export const refreshStoreData = createAction<{
+  workflow: WorkspaceAppState['workflow'] | undefined
+}>(CommonActions.REFRESH_STOREDATA)
+
+/*******************************************************
+ * SLICE
+ *******************************************************/
+const workflowSlice = createSlice({
   name: SliceNamespace.WORKFLOW,
   initialState,
   reducers: {
@@ -39,18 +52,12 @@ const workflowSlice = createSlice<AppState['workflow']>({
   extraReducers: (builder) => {
     // Common Actions
     builder
-      .addCase(
-        CommonActions.REPLACE_STOREDATA,
-        (state, action: PayloadAction<{ workflow?: TWorkflow }>) => {
-          return action.payload.workflow || state
-        }
-      )
-      .addCase(
-        CommonActions.REFRESH_STOREDATA,
-        (state, action: PayloadAction<{ workflow: TWorkflow }>) => {
-          return action.payload.workflow || state
-        }
-      )
+      .addCase(replaceStoreData, (state, action) => {
+        return action.payload.workflow || state
+      })
+      .addCase(refreshStoreData, (state, action) => {
+        return action.payload.workflow || state
+      })
       .addCase(CommonActions.CLEAR_WORKFLOW_DATA, () => null)
 
     // Outcome Workflow Actions

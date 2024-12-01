@@ -1,4 +1,4 @@
-export type NodeLinkForm = {
+export type NodelinkForm = {
   title: string
   textPosition: number
   dashed: boolean

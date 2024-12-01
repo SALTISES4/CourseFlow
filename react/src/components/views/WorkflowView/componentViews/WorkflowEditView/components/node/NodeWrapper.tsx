@@ -4,7 +4,7 @@ import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -122,13 +122,16 @@ const NodeHoverMenu = ({
 }
 
 const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
-  const data = useSelector((state: AppState) => selectNodeById(state, objectId))
-  const workflow = useSelector((state: AppState) => state.workspace.workflow)
+  const node = useSelector((state: RootState) =>
+    selectNodeById(state, objectId)
+  )
+
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const [ref, isHovered] = useHover()
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: objectId })
 
-  if (!data) {
+  if (!node) {
     return null
   }
 
@@ -144,10 +147,10 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
           opacity: 0.5
         }}
       >
-        col: {colNum}, order: {data.node.order}
+        col: {colNum}, order: {node.order}
       </span>
 
-      {colNum === data.node.column && (
+      {colNum === node.column && (
         <div
           id={String(objectId)}
           className="node-week"
@@ -159,7 +162,7 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
           }}
           {...attributes}
           data-child-id={String(objectId)}
-          data-column-id={String(data.column)}
+          data-column-id={String(node.column)}
         >
           <div {...listeners}>
             <DragHandleIcon />
