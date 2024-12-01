@@ -59,7 +59,6 @@ const workflowSlice = createSlice({
         return action.payload.workflow || state
       })
       .addCase(CommonActions.CLEAR_WORKFLOW_DATA, () => null)
-
     // Outcome Workflow Actions
     builder
       .addCase(

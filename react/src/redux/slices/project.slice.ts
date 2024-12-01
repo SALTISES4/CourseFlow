@@ -1,38 +1,42 @@
 import { CommonActions, SliceNamespace } from '@cfRedux/types/enumActions'
-import { AppState, TProject } from '@cfRedux/types/type'
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { TProject, WorkspaceAppState } from '@cfRedux/types/type'
+import { createAction, createSlice } from '@reduxjs/toolkit'
 
 const initialState: TProject = {} as TProject
+/*******************************************************
+ * CREATE ACTIONS
+ *******************************************************/
+export const replaceStoreData = createAction<{
+  project: WorkspaceAppState['project'] | undefined
+}>(CommonActions.REPLACE_STOREDATA)
 
-const projectSlice = createSlice<AppState['workspace']['project']>({
+export const refreshStoreData = createAction<{
+  project: WorkspaceAppState['project'] | undefined
+}>(CommonActions.REFRESH_STOREDATA)
+
+/*******************************************************
+ * SLICES
+ *******************************************************/
+const projectSlice = createSlice({
   name: SliceNamespace.PROJECT,
   initialState,
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(
-        CommonActions.REPLACE_STOREDATA,
-        (state, action: PayloadAction<{ project?: TProject }>) => {
-          console.log(action.payload)
-          if (action.payload.project) {
-            return action.payload.project
-          }
+      .addCase(replaceStoreData, (state, action) => {
+        if (action.payload.project) {
+          return action.payload.project || state
         }
-      )
-      .addCase(
-        CommonActions.REFRESH_STOREDATA,
-        (state, action: PayloadAction<{ project?: TProject }>) => {
-          console.log(action.payload)
-          if (action.payload.project) {
-            return action.payload.project
-          }
+      })
+      .addCase(refreshStoreData, (state, action) => {
+        if (action.payload.project) {
+          return action.payload.project
         }
-      )
+      })
       .addCase(CommonActions.CLEAR_WORKFLOW_DATA, () => null)
   }
 })
 
-export const { replaceStoreData, refreshStoreData, clearWorkflowData } =
-  projectSlice.actions
 export default projectSlice.reducer
 
 // import { CommonActions } from '@cfRedux/types/enumActions'

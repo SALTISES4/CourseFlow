@@ -1,7 +1,7 @@
-import { selectNodelinkById } from '@cf/redux/selectors/nodelink.selector'
 import { CfObjectType } from '@cf/types/enum'
 import * as Constants from '@cf/utility/constants'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import { selectNodelinkById } from '@cfRedux/selectors/nodelink.selector'
 import { RootState } from '@cfRedux/store'
 import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
 import React, { useEffect, useState } from 'react'
@@ -21,6 +21,9 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
   const nodelink = useSelector((state: RootState) =>
     selectNodelinkById(state, objectId)
   )
+
+  console.log('nodelink')
+  console.log(nodelink)
 
   /*******************************************************
    * CONSTANTS

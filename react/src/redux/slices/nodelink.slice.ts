@@ -1,20 +1,12 @@
 import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
-import { weekAdapter } from '@cfRedux/slices/week.slice'
 import {
   CommonActions,
-  NodelinkActions,
   SliceNamespace,
   StrategyActions,
   WeekActions
 } from '@cfRedux/types/enumActions'
-import {
-  AppState,
-  TColumn,
-  TNodelink,
-  TWeek,
-  WorkspaceAppState
-} from '@cfRedux/types/type'
+import { TNodelink, WorkspaceAppState } from '@cfRedux/types/type'
 import {
   PayloadAction,
   createAction,
@@ -108,14 +100,10 @@ const nodelinkSlice = createSlice({
      *******************************************************/
     builder
       .addCase(replaceStoreData, (state, action) => {
-        if (action.payload.nodelink) {
-          return action.payload.nodelink
-        }
+        return action.payload.nodelink || state
       })
       .addCase(refreshStoreData, (state, action) => {
-        if (action.payload.nodelink) {
-          nodelinkAdapter.upsertMany(state, action.payload.week)
-        }
+        nodelinkAdapter.upsertMany(state, action.payload.nodelink)
       })
       .addCase(
         WeekActions.INSERT_BELOW,
