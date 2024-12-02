@@ -1,29 +1,16 @@
-import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { CfObjectType } from '@cf/types/enum'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
-import { HoverMenu, MenuItemType } from '@cfComponents/menu/Menu'
-import CommentBox from '@cfEditableComponents/components/CommentBox'
-import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
+import { HoverMenu } from '@cfComponents/menu/Menu'
 import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { AppState } from '@cfRedux/types/type'
-import AddCommentIcon from '@mui/icons-material/AddComment'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import DeleteIcon from '@mui/icons-material/Delete'
-import QueueIcon from '@mui/icons-material/Queue'
-import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
-import { styled } from '@mui/material/styles'
-import {
-  useCreateMutation,
-  useDeleteMutation,
-  useUpdatePositionMutation
-} from '@XMLHTTP/API/workflowObjects/column.rtk'
 import clsx from 'clsx'
 import * as React from 'react'
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+
+import * as Styled from './styles'
 
 type OwnProps = {
   objectId: number
@@ -31,17 +18,6 @@ type OwnProps = {
 }
 
 type PropsType = OwnProps
-
-export const StyledDivLine = styled('div')<{ colour?: string }>(
-  ({ theme, colour }) => ({
-    height: '10px',
-    background: colour,
-    borderRadius: '4px',
-    flex: 'none',
-    order: 0,
-    flexGrow: 0
-  })
-)
 
 /**
  * The column in a workflow.
@@ -101,23 +77,20 @@ const Column = ({ objectId, parentId }: PropsType) => {
   const title = data.title ?? data.columnTypeDisplay
 
   return (
-    <div
+    <Styled.Column
       ref={mainDiv}
-      style={{
-        border: (data.lock && '2px solid ' + data.lock.userColour) || 'inherit'
-      }}
+      border={data.lock && `2px solid ${data.lock.userColour}`}
       className={clsx(
-        'column',
-        data.lock && `locked`,
+        data.lock && 'locked',
         data.lock && `locked-${data.lock.userId}`
       )}
       onClick={onClickHandler}
     >
-      <div>
-        <StyledDivLine colour={columnColourHex} />
-        <div dangerouslySetInnerHTML={{ __html: title }}></div>
-      </div>
-    </div>
+      <Styled.Border color={columnColourHex} />
+      <Styled.Title variant="body2">
+        <span dangerouslySetInnerHTML={{ __html: title }}></span>
+      </Styled.Title>
+    </Styled.Column>
   )
 }
 

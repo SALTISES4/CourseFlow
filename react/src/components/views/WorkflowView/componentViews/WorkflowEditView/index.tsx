@@ -14,6 +14,8 @@ import {
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import * as Styled from './styles'
+
 const WorkflowEditView = () => {
   const dispatch = useDispatch()
   /*******************************************************
@@ -114,7 +116,7 @@ const WorkflowEditView = () => {
     )
 
     // set redux state
-    dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: true })))
+    // dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: true })))
 
     // set local state
     setWeeksDragState(reorderedWeeks)
@@ -124,7 +126,7 @@ const WorkflowEditView = () => {
   }
 
   const handleWeekDragStart = () => {
-    dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
+    // dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
   }
 
   /*******************************************************
@@ -133,7 +135,7 @@ const WorkflowEditView = () => {
   return (
     <>
       <OuterContentWrap>
-        <div data-test-id="columns-block" style={{ display: 'flex' }}>
+        <Styled.CellRow data-test-id="columns-block">
           <DndContext
             onDragEnd={handleColumnDragEnd}
             onDragStart={handleColumnDragStart}
@@ -145,7 +147,7 @@ const WorkflowEditView = () => {
               {columns}
             </SortableContext>
           </DndContext>
-        </div>
+        </Styled.CellRow>
 
         <div data-test-id="weeks-block">
           <DndContext

@@ -10,8 +10,6 @@ import { CSS } from '@dnd-kit/utilities'
 import DeleteIcon from '@mui/icons-material/Delete'
 import DragHandleIcon from '@mui/icons-material/DragHandle'
 import QueueIcon from '@mui/icons-material/Queue'
-import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
 import {
   useCreateNodeMutation,
   useDeleteNodeMutation
@@ -21,6 +19,7 @@ import { Ref } from 'react'
 import { useSelector } from 'react-redux'
 
 import Node from './Node'
+import * as Styled from '../../styles'
 
 type PropsType = {
   objectId: number
@@ -35,14 +34,6 @@ type PropsType = {
  * this is why we just call getNodeById in both NodeWrapper and child
  * TBD...
  **/
-
-// Define a fixed width for each cell
-const cellWidth = 200 // For example, 160px per cell
-
-const StyledCell = styled(Box)(() => ({
-  position: 'relative',
-  width: `${cellWidth}px` // Fixed width for each cell
-}))
 
 const NodeHoverMenu = ({
   objectId,
@@ -133,19 +124,10 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
   }
 
   return workflow.columns.map((colNum, index) => (
-    <StyledCell key={index}>
-      <span
-        style={{
-          position: 'absolute',
-          top: '0.5em',
-          left: '0.5em',
-          fontWeight: 600,
-          fontSize: '12px',
-          opacity: 0.5
-        }}
-      >
-        col: {colNum}, order: {data.node.order}
-      </span>
+    <Styled.Cell key={index}>
+      <Styled.DebugCellInfo>
+        row: {data.node.order}, col: {colNum}
+      </Styled.DebugCellInfo>
 
       {colNum === data.node.column && (
         <div
@@ -170,10 +152,11 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
             parentId={parentId}
             columnOrder={columnOrder}
           />
+
           <NodeHoverMenu objectId={objectId} show={isHovered} />
         </div>
       )}
-    </StyledCell>
+    </Styled.Cell>
   ))
 }
 

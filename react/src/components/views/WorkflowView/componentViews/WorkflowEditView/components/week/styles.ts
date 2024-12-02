@@ -32,6 +32,9 @@ export const WeekTitle = styled(Typography)(() => ({
   fontWeight: 600
 }))
 
-export const WeekContent = styled(Box)(({ theme }) => ({
-  padding: `14px ${theme.spacing(2)} 2em`
+export const EmptyText = styled(Typography)(({ theme }) => ({
+  position: 'absolute',
+  left: 0,
+  width: '100%',
+  padding: theme.spacing(2)
 }))

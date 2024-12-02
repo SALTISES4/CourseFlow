@@ -11,13 +11,13 @@ import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEdit
 import { DndContext } from '@dnd-kit/core'
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
-import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import clsx from 'clsx'
 import { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from './styles'
+import { Cell, CellRow, DebugCellInfo } from '../../styles'
 
 type OwnProps = {
   objectId: number
@@ -83,17 +83,31 @@ const Week = ({ objectId, parentId }) => {
    *******************************************************/
   const Nodes = () => {
     if (!nodesDragState?.length) {
-      return <div>Drag and drop nodes from the sidebar to add.</div>
+      const cols = Array(weekData.columns.length).fill('')
+
+      return (
+        <CellRow sx={{ position: 'relative' }}>
+          <Styled.EmptyText>
+            Drag and drop nodes from the sidebar to add.
+          </Styled.EmptyText>
+
+          {cols.map((_, index) => (
+            <Cell key={index} sx={{ height: 64 }}>
+              <DebugCellInfo>row: 0, col: {index}</DebugCellInfo>
+            </Cell>
+          ))}
+        </CellRow>
+      )
     }
 
     return nodesDragState.map((nodeId) => (
-      <Box display="flex" key={`node-${nodeId}`}>
+      <CellRow key={`node-${nodeId}`}>
         <NodeWrapper
           objectId={nodeId}
           parentId={weekData.week.id}
           columnOrder={weekData.columns} // not sure if i should be props drilling this
         />
-      </Box>
+      </CellRow>
     ))
   }
 
@@ -152,7 +166,7 @@ const Week = ({ objectId, parentId }) => {
       */}
 
       {weekData.week.isDropped && (
-        <Styled.WeekContent
+        <div
           id={`${objectId}-node-block`}
           className="node-block"
           ref={nodeBlock}
@@ -168,7 +182,7 @@ const Week = ({ objectId, parentId }) => {
               <Nodes />
             </SortableContext>
           </DndContext>
-        </Styled.WeekContent>
+        </div>
       )}
       <StrategyTabIcon
         strategyClassification={weekData.week.strategyClassification}
