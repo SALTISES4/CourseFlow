@@ -25,7 +25,6 @@ import Node from './Node'
 type PropsType = {
   objectId: number
   parentId: number
-  columnOrder: number[]
 }
 
 /**
@@ -121,7 +120,7 @@ const NodeHoverMenu = ({
   )
 }
 
-const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
+const NodeWrapper = ({ objectId, parentId }: PropsType) => {
   const node = useSelector((state: RootState) =>
     selectNodeById(state, objectId)
   )
@@ -168,11 +167,7 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
             <DragHandleIcon />
           </div>
 
-          <Node
-            objectId={objectId}
-            parentId={parentId}
-            columnOrder={columnOrder}
-          />
+          <Node objectId={objectId} parentId={parentId} />
           <NodeHoverMenu objectId={objectId} show={isHovered} />
         </div>
       )}

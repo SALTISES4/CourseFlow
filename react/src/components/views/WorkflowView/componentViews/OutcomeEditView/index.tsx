@@ -4,7 +4,7 @@ import { _t } from '@cf/utility/Utility.class'
 import SortableDragAndDropManager from '@cfEditableComponents/SortableDragAndDropManager.class'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { selectOutcomesFromWorkflows } from '@cfRedux/selectors/outcomesFromWorkflow.selector'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import { newOutcomeQuery } from '@XMLHTTP/API/create'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
@@ -12,7 +12,6 @@ import { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 
 import Outcome from './components/Outcome'
-import {RootState} from "@cfRedux/store";
 
 class OutcomeDragAndDropManager extends SortableDragAndDropManager {
   onMovedIn(id, newPosition, type, newParent, childId) {

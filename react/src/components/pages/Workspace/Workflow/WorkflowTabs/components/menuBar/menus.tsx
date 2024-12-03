@@ -10,50 +10,23 @@ import {
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ScrollToWeek from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ScrollToWeek'
 import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import EditIcon from '@mui/icons-material/Edit'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { useSelector } from 'react-redux'
-import {RootState} from "@cfRedux/store";
-
-type StateType = {
-  openShareDialog: boolean
-  openExportDialog: boolean
-  openImportDialog: boolean
-  openEditDialog: boolean
-}
 
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
   const project = useSelector((state: RootState) => state.workspace.project)
 
-  const isStrategy = workflow.isStrategy
-  const userId = userContext.id
-  const workflowId = workflow.id
-  const projectId = project.id
-  const workflowType = workflow.type
-  const publicView = workflow.publicView
-
-  const [state, setState] = useState<StateType>({
-    openShareDialog: false,
-    openExportDialog: false,
-    openImportDialog: false,
-    openEditDialog: false
-  })
-  const objectSets = useSelector<AppState>((state: AppState) => state.objectset)
-  const week = useSelector<AppState>((state: AppState) => state.workspace.week)
-  const node = useSelector<AppState>((state: AppState) => state.workspace.node)
-  const outcome = useSelector<AppState>((state: AppState) => state.outcome)
-
   /*******************************************************
    * MODALS
    *******************************************************/
-
   const {
     openEditMenu,
     openShareDialog,
@@ -65,6 +38,17 @@ const ActionMenu = () => {
     restoreWorkflow,
     deleteWorkflowHard
   } = useMenuActions()
+
+  if (!workflow || !project) {
+    return <></>
+  }
+
+  const isStrategy = workflow.isStrategy
+  const userId = userContext.id
+  const workflowId = workflow.id
+  const projectId = project.id
+  const workflowType = workflow.type
+  const publicView = workflow.publicView
 
   const menuItems: MenuItemType[] = [
     {

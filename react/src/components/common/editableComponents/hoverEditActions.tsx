@@ -66,27 +66,22 @@ export function deleteObject({ id, objectType }: ActionItemArgs): void {
         '?'
     )
   ) {
-    COURSEFLOW_APP.tinyLoader.startLoad()
     deleteSelfQueryLegacy(
       id,
       Constants.objectDictionary[objectType],
       true, //why
       (responseData) => {
         Utility.logger('end loaded')
-        COURSEFLOW_APP.tinyLoader.endLoad()
       }
     )
   }
 }
 
 export function restoreSelf({ id, objectType }: ActionItemArgs): void {
-  COURSEFLOW_APP.tinyLoader.startLoad()
   restoreSelfQueryLegacy(
     id,
     Constants.objectDictionary[objectType],
-    (responseData) => {
-      COURSEFLOW_APP.tinyLoader.endLoad
-    }
+    (responseData) => {}
   )
 }
 
@@ -96,16 +91,13 @@ export function duplicateSelf({
   parentId
 }: ActionItemWithParentArgs): void {
   //  const type = this.object_type
-  COURSEFLOW_APP.tinyLoader.startLoad()
   duplicateSelfQuery(
     id,
     objectType,
     parentId,
     Constants.parentDictionary[objectType], // if we can look it up here, it doesn't make sense that it's dome in frontend
     Constants.throughParentDictionary[objectType], // if we can look it up here, it doesn't make sense that it's dome in frontend
-    (responseData) => {
-      COURSEFLOW_APP.tinyLoader.endLoad()
-    }
+    (responseData) => {}
   )
 }
 
@@ -113,9 +105,9 @@ export function duplicateSelf({
 //   Utility.logger('inserting child')
 //
 //   //   const type = this.object_type
-//   COURSEFLOW_APP.tinyLoader.startLoad()
+//
 //   insertChildQuery(id, objectType, (responseData) => {
-//     COURSEFLOW_APP.tinyLoader.endLoad()
+//
 //   })
 // }
 
@@ -125,7 +117,7 @@ export function duplicateSelf({
 //   parentId
 // }: ActionItemWithParentArgs): void {
 //   //  const type = this.object_type
-//   COURSEFLOW_APP.tinyLoader.startLoad()
+//
 //
 //   insertSiblingQuery(
 //     id,

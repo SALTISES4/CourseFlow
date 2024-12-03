@@ -198,11 +198,8 @@ const CommentBox = ({ id, setShow, objectType }: PropsType) => {
 
     if (evt.nativeEvent?.data === '@') {
       setTagPosition(inputRef.current?.selectionStart || 0)
-      const loader = COURSEFLOW_APP.tinyLoader
-      loader.startLoad()
 
       getUsersForObjectQueryLegacy(workflow.id, 'workflow', (response) => {
-        loader.endLoad()
         setUserList(response.dataPackage)
         setTagging(true)
       })
@@ -531,8 +528,6 @@ export default CommentBox
 //     }
 //     if (evt.nativeEvent && evt.nativeEvent.data === '@') {
 //       this.tagPosition = this.input.current.selectionStart - 1
-//       const loader = COURSEFLOW_APP.tinyLoader
-//       loader.startLoad()
 //
 //       getUsersForObjectQueryLegacy(
 //         this.props.workflow.id,

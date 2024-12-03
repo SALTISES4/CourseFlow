@@ -9,7 +9,7 @@ import {
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
-} from '../../../../styles'
+} from '@cfSidebar/styles'
 
 const EditTerm = () => {
   const { title } = getTermData(1)

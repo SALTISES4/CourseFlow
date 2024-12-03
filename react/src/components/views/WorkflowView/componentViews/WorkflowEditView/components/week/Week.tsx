@@ -5,7 +5,6 @@ import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectWeekById } from '@cfRedux/selectors/week.selector'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
 import { RootState } from '@cfRedux/store'
-import { AppState } from '@cfRedux/types/type'
 import NodeWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeWrapper'
 import StrategyTabIcon from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/components/StrategyTabIcon'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
@@ -20,17 +19,17 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from './styles'
 
-type OwnProps = {
+type PropsType = {
   objectId: number
   parentId: number
 }
 
-export type WeekUnconnectedPropsType = OwnProps
+export type WeekUnconnectedPropsType = PropsType
 
 /**
  *
  **/
-const Week = ({ objectId, parentId }) => {
+const Week = ({ objectId, parentId }: PropsType) => {
   /*******************************************************
    * REDUX
    *******************************************************/
@@ -48,7 +47,6 @@ const Week = ({ objectId, parentId }) => {
    * REFS
    *******************************************************/
   const nodeBlock = useRef(null)
-  const mainDiv = useRef(null)
   const manager = useRef(new BetterSelectionManager(dispatch))
 
   /*******************************************************
@@ -88,11 +86,7 @@ const Week = ({ objectId, parentId }) => {
 
     return nodesDragState.map((nodeId) => (
       <Box display="flex" key={`node-${nodeId}`}>
-        <NodeWrapper
-          objectId={nodeId}
-          parentId={week.id}
-          columnOrder={week?.columns} // not sure if i should be props drilling this
-        />
+        <NodeWrapper objectId={nodeId} parentId={week.id} />
       </Box>
     ))
   }
@@ -122,18 +116,13 @@ const Week = ({ objectId, parentId }) => {
       })}
       className={clsx('week', {
         strategy: week.isStrategy,
-        dropped: week.isDropped,
         [`locked`]: week?.lock,
         [`locked-${week.lock?.userId}`]: week.lock
       })}
       //      ref={mainDiv}
       onClick={(e) => {
         e.stopPropagation()
-        manager.current.updateSidebar(
-          week.id,
-          CfObjectType.WEEK,
-          parentId
-        )
+        manager.current.updateSidebar(week.id, CfObjectType.WEEK, parentId)
       }}
     >
       <Styled.WeekHeader expanded={week.isDropped}>
@@ -170,9 +159,7 @@ const Week = ({ objectId, parentId }) => {
           </DndContext>
         </Styled.WeekContent>
       )}
-      <StrategyTabIcon
-        strategyClassification={week.strategyClassification}
-      />
+      <StrategyTabIcon strategyClassification={week.strategyClassification} />
     </Styled.WeekWrapper>
   )
 }

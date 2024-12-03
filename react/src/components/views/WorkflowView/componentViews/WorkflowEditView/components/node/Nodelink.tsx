@@ -4,13 +4,13 @@ import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectNodelinkById } from '@cfRedux/selectors/nodelink.selector'
 import { RootState } from '@cfRedux/store'
 import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
-import React, { useEffect, useState } from 'react'
+import { RefObject, useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 type PropsType = {
   objectId: number
-  nodeDiv: React.RefObject<HTMLDivElement>
+  nodeDiv: RefObject<HTMLDivElement>
 }
 
 const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
@@ -21,9 +21,6 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
   const nodelink = useSelector((state: RootState) =>
     selectNodelinkById(state, objectId)
   )
-
-  console.log('nodelink')
-  console.log(nodelink)
 
   /*******************************************************
    * CONSTANTS
@@ -149,19 +146,20 @@ const Nodelink = ({ objectId, nodeDiv }: PropsType) => {
       style={style}
       hovered={nodeHovered}
       nodeSelected={nodeSelected}
-      lock={nodelink?.lock}
-      title={nodelink.title}
-      textPosition={nodelink.textPosition}
       sourcePortHandle={sourcePortHandle}
-      sourcePort={nodelink.sourcePort}
       targetPortHandle={targetPortHandle}
-      targetPort={nodelink.targetPort}
+      sourceDimensions={sourceDims}
+      targetDimensions={targetDims}
+      // lock={nodelink?.lock}
+      // textPosition={nodelink.textPosition}
+      // title={nodelink.title}
+      // sourcePort={nodelink.sourcePort}
+      // targetPort={nodelink.targetPort}
+      nodelink={nodelink}
       clickFunction={(e) => {
         e.stopPropagation()
         manager.updateSidebar(nodelink.id, objectType)
       }}
-      sourceDimensions={sourceDims}
-      targetDimensions={targetDims}
     />,
     $('.workflow-canvas')[0]
   )

@@ -24,13 +24,13 @@ class AlignmentHorizontalReverseParentOutcome extends React.Component<PropsType>
           objectId={data.id}
           // renderer={this.props.renderer}
           deleteSelfOverride={() => {
-            COURSEFLOW_APP.tinyLoader.startLoad()
+
             updateOutcomehorizontallinkDegree(
               props.childOutcome,
               data.outcome,
               0,
               (responseData) => {
-                COURSEFLOW_APP.tinyLoader.endLoad()
+
               }
             )
           }}

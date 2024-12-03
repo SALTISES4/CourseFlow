@@ -1,3 +1,4 @@
+import store from '@cfRedux/store'
 import {
   CommonActions,
   NodeActions,
@@ -40,54 +41,96 @@ interface NodeGenericPayload {
   newThrough: { id: number }
 }
 
-// const initialState: WorkspaceAppState['week'] = []
 export const weekAdapter = createEntityAdapter<TWeek>()
+type WeekState = ReturnType<typeof weekAdapter.getInitialState>
 const initialState = weekAdapter.getInitialState()
 
 export const updateEntity = (
-  state: WorkspaceAppState['week'],
-  action: PayloadAction<{
-    id: number
-    data: Pick<TWeek>
-  }>
+  state: WeekState,
+  action: PayloadAction<{ id: number; data: Partial<TWeek> }>
 ) => {
-  state.forEach((item) => {
-    if (item.id === action.payload.id) {
-      Object.assign(item, action.payload.data)
-    }
+  weekAdapter.updateOne(state, {
+    id: action.payload.id,
+    changes: action.payload.data
   })
 }
 
-const createEntity = (state, action: PayloadAction<InsertBelowPayload>) => {
-  return state.push(action.payload.newModel)
+const createEntity = (
+  state: WeekState,
+  action: PayloadAction<InsertBelowPayload>
+) => {
+  weekAdapter.addOne(state, action.payload.newModel)
 }
 
-const removeEntityById = (state, action: PayloadAction<WeekPayload>) => {
-  return state.filter((item) => item.id !== action.payload.id)
+const removeEntityById = (
+  state: WeekState,
+  action: PayloadAction<WeekPayload>
+) => {
+  weekAdapter.removeOne(state, action.payload.id)
 }
 
-const toggleArchiveEntity = (state, action: PayloadAction<{ id: number }>) => {
-  return state.map((item) => {
-    if (item.id === action.payload.id) {
-      return {
-        ...item,
-        deleted: !item.deleted,
-        deletedOn: item.deleted ? undefined : 'This session'
+const toggleArchiveEntity = (
+  state: WeekState,
+  action: PayloadAction<{ id: number }>
+) => {
+  const entity = state.entities[action.payload.id]
+  if (entity) {
+    weekAdapter.updateOne(state, {
+      id: action.payload.id,
+      changes: {
+        deleted: !entity.deleted,
+        deletedOn: entity.deleted ? undefined : 'This session'
       }
-    }
-    return item
-  })
+    })
+  }
 }
 
-const newNode = (state, action: PayloadAction<NodeGenericPayload>) => {
-  return state.map((item) => {
-    if (item.id === action.payload.parentId) {
-      const newSet = [...item.nodeweekSet]
-      newSet.splice(action.payload.index, 0, action.payload.newThrough.id)
-      return { ...item, nodeweekSet: newSet }
+const newNode = (
+  state: ReturnType<typeof weekAdapter.getInitialState>,
+  action: PayloadAction<NodeGenericPayload>
+) => {
+  const { parentId, index, newThrough } = action.payload
+
+  // Find the parent entity and update its nodeweekSet
+  const parentEntity = state.entities[parentId]
+  if (parentEntity) {
+    const updatedSet = [...parentEntity.nodeweekSet]
+    updatedSet.splice(index, 0, newThrough.id) // Insert the new node at the specified index
+
+    weekAdapter.updateOne(state, {
+      id: parentId,
+      changes: { nodeweekSet: updatedSet }
+    })
+  }
+}
+
+const movedTo = (
+  state: ReturnType<typeof weekAdapter.getInitialState>,
+  action: PayloadAction<MovedToPayload>
+) => {
+  const { id, newParent, newIndex } = action.payload
+
+  // Find and update the entity to remove the `id` from its `nodeweekSet`
+  Object.values(state.entities).forEach((entity) => {
+    if (entity && entity.nodeweekSet.includes(id)) {
+      const updatedSet = entity.nodeweekSet.filter((nodeId) => nodeId !== id)
+      weekAdapter.updateOne(state, {
+        id: entity.id,
+        changes: { nodeweekSet: updatedSet }
+      })
     }
-    return item
   })
+
+  // Add the `id` to the new parent's `nodeweekSet` at the specified index
+  const newParentEntity = state.entities[newParent]
+  if (newParentEntity) {
+    const updatedSet = [...newParentEntity.nodeweekSet]
+    updatedSet.splice(newIndex, 0, id)
+    weekAdapter.updateOne(state, {
+      id: newParent,
+      changes: { nodeweekSet: updatedSet }
+    })
+  }
 }
 
 /*******************************************************
@@ -107,6 +150,7 @@ export const refreshStoreData = createAction<{
 const weekSlice = createSlice({
   name: ReduxSlice.WEEK,
   initialState,
+
   reducers: {
     insertBelow: createEntity,
     reloadComments: updateEntity,
@@ -145,7 +189,9 @@ const weekSlice = createSlice({
        * COMMON
        *******************************************************/
       .addCase(replaceStoreData, (state, action) => {
-        return action.payload.week || state
+        if (action.payload.week) {
+          weekAdapter.setAll(state, action.payload.week)
+        }
       })
       .addCase(refreshStoreData, (state, action) => {
         if (action.payload.week) {

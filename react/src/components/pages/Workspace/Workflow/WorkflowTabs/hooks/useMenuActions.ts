@@ -2,7 +2,6 @@ import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { EventUnion } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
-import { UtilityLoaderClass } from '@cf/utility/UtilityLoader.class'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
 import { weekChangeField } from '@cfRedux/slices/week.slice'
 import { updateAllEntities } from '@cfRedux/thunks'
@@ -94,14 +93,12 @@ export const useMenuActions = () => {
     workflowType: WorkflowType
   ) {
     if (parentId != null) {
-      const utilLoader = new UtilityLoaderClass('body')
 
       duplicateBaseItemQuery(
         workflowId,
         workflowType,
         parentId,
         (responseData) => {
-          utilLoader.endLoad()
           window.location.href = 'new iten path '
         }
       )

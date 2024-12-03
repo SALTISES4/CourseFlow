@@ -22,6 +22,11 @@ import {
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
+// so lock is not persisted
+// but instead it's broadcast via emitter
+// obviously that won't, but keep the lockable interface for now
+//
+
 export type WorkspaceAppState = {
   project?: TProject
   nodelink: TNodelink[]
@@ -56,30 +61,30 @@ export type AppState = {
 export type RootOutcomeStateType = Pick<AppState, 'outcomeoutcome' | 'outcome'>
 
 /*******************************************************
- * INDIVIDUALL REDUCER TYPES
+ * INDIVIDUAL REDUCER TYPES
  *******************************************************/
-export type TOutcomenode = EOutcomenode
-
-export type TOutcomeOutcome = EOutcomeOutcome
-
-// @todo look into where lock comes from
-export type TOutcome = EOutcome & {
-  lock?: CfLock
-}
-
-// @todo look into where lock comes from
-export type TColumn = EColumn & {
-  lock?: CfLock
-}
-
-// @todo look into where lock comes from
-export type TNode = ENode & {
-  lock?: CfLock
-}
 export type TUser = EUser & {
   userColour?: string
 }
 
+type LockableItem = {
+  lock?: CfLock
+}
+
+type ExpandableItem = {
+  isDropped?: boolean
+}
+
+export type TOutcome = EOutcome & LockableItem
+export type TColumn = EColumn & LockableItem
+export type TNode = ENode & LockableItem & ExpandableItem
+export type TWeek = EWeek & LockableItem & ExpandableItem
+
+/*******************************************************
+ * MORE RELAIONS
+ *******************************************************/
+export type TOutcomenode = EOutcomenode
+export type TOutcomeOutcome = EOutcomeOutcome
 export type TColumnworkflow = EOutcomeWorkflow & {
   outcome?: number
   noDrag?: boolean
@@ -87,11 +92,6 @@ export type TColumnworkflow = EOutcomeWorkflow & {
 }
 
 export type TNodeweek = ENodeweek
-
-export type TWeek = EWeek & {
-  isDropped?: boolean
-  lock?: CfLock
-}
 
 export type TWeekworkflow = EWeekworkflow & {
   noDrag?: boolean
@@ -101,10 +101,12 @@ export type TOutcomeWorkflow = EOutcomeWorkflow
 
 export type TWorkflow = EWorkflow & {
   workflowPermissions: WorkflowPermission
-  lock?: boolean
+  lock?: CfLock
 }
 
-export type TNodelink = ENodelink
+export type TNodelink = ENodelink & {
+  lock?: CfLock
+}
 
 // @todo i think this is missing attributes
 export type TObjectSet = EObjectSet & {

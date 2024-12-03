@@ -280,16 +280,19 @@ export const useWorkflowWebsocketManager = ({
   const parseAndRouteMessage = (e: MessageEvent) => {
     const data = JSON.parse(e.data)
 
-    // @todo need to insert type guards here
-    // Utility.logger(data)
+    // check if the publishing user is the current user
+    // if so we don't want to act on this message as it originated locally
+    // this system is flawed
+    // but leave as is for now (dec '24)
+    // until a real pub sub system is evaluated
+    try {
+      const userId = data.action.payload.publishingUserId
 
-    // here we will insert the publisher filter logic
-    // it might not stay here
-    if (
-      data.hasOwnProperty('publishingUserId') &&
-      data.user.id === data?.publishingUserId
-    ) {
-      // drop message
+      // @todo need to insert type guards here and correct the try catch
+      if (userId === user.id) {
+        return
+      }
+    } catch (e) {
       return
     }
 

@@ -13,7 +13,6 @@ import { useState } from 'react'
 //    projectId: number,
 //    workflowType: WorkflowType
 //  ) {
-//    const loader = COURSEFLOW_APP.tinyLoader
 //    loader.startLoad()
 //    duplicateBaseItemQuery(
 //      workflowId,

@@ -1,32 +1,97 @@
+import { selectWeekById } from '@cf/redux/selectors/week.selector'
+import { CfObjectType } from '@cf/types/enum'
+import Utility from '@cf/utility/Utility.class'
+import { nodeChangeField } from '@cfRedux/slices/node.slice'
+import { weekChangeField } from '@cfRedux/slices/week.slice'
+import { RootState } from '@cfRedux/store'
+import { NodeForm } from '@cfSidebar/components/EditTab/components/EditNode/types'
+import * as SC from '@cfSidebar/styles'
+import { debounce } from '@mui/material'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
+import { updateValueQuery } from '@XMLHTTP/API/update'
 import { produce } from 'immer'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import {useDispatch, useSelector } from 'react-redux'
 
-import {
-  SidebarActions,
-  SidebarContent,
-  SidebarInnerWrap,
-  SidebarTitle
-} from '../../../../styles'
 import SaveAsTemplate from '../SaveAsTemplate'
-import getWeekData from './getWeekData'
 
 const EditWeek = () => {
-  const { title } = getWeekData(1)
-
+  /*******************************************************
+   * REDUX
+   *******************************************************/
+  const sidebarData = useSelector((state: RootState) => state.sidebar)
+  const week = useSelector((state: RootState) =>
+    selectWeekById(state, sidebarData.edit.id)
+  )
+  const dispatch = useDispatch()
+  /*******************************************************
+   * STATE
+   *******************************************************/
   const [state, setState] = useState({
-    title,
     template: false
   })
 
-  const onLabelChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setState(
-      produce((draft) => {
-        draft.title = e.target.value
+  /*******************************************************
+   * RHF
+   *******************************************************/
+  const {
+    register,
+    getValues,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors, isDirty }
+  } = useForm<NodeForm>({
+    defaultValues: {
+      title: week.title
+    }
+  })
+  const watchedFields = watch()
+  /*******************************************************
+   * RHF
+   *******************************************************/
+  useEffect(() => {
+    if (week && !isDirty) {
+      reset({
+        title: week.title
       })
-    )
-  }, [])
+    }
+  }, [reset, isDirty, week])
+
+  const debouncedDispatch = useCallback(
+    debounce((data) => {
+      dispatch(
+        weekChangeField({
+          id: sidebarData.edit.id,
+          data: {
+            title: data.title
+          }
+        })
+      )
+
+      updateValueQuery(sidebarData.edit.id, CfObjectType.WEEK, data, true)
+
+      reset({}, { keepValues: true })
+    }, 300),
+    [dispatch, sidebarData.edit.id]
+  )
+
+  useEffect(() => {
+    const formValues = getValues()
+
+    if (isDirty) {
+      debouncedDispatch(formValues)
+    }
+  }, [watchedFields, isDirty, getValues, debouncedDispatch])
+
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  const onSubmit = (data: NodeForm) => {
+    Utility.logger('Form submitted with data:', data)
+  }
 
   const toggleTemplateForm = useCallback(() => {
     setState(
@@ -36,6 +101,7 @@ const EditWeek = () => {
     )
   }, [])
 
+  // @todo not connected to backend
   const onSaveTemplateClick = useCallback(
     (label: string) => {
       console.log('saving template with label:', label)
@@ -53,35 +119,38 @@ const EditWeek = () => {
       onCancel={toggleTemplateForm}
     />
   ) : (
-    <SidebarInnerWrap>
-      <SidebarContent>
-        <SidebarTitle as="h3" variant="h6">
-          Edit week
-        </SidebarTitle>
-        <TextField
-          variant="outlined"
-          label="Week label"
-          size="small"
-          value={state.title}
-          onChange={onLabelChange}
-        />
-      </SidebarContent>
-      <SidebarActions>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={toggleTemplateForm}
-        >
-          Save as personal template
-        </Button>
-        <Button variant="contained" color="secondary">
-          Duplicate
-        </Button>
-        <Button variant="contained" color="secondary">
-          Delete
-        </Button>
-      </SidebarActions>
-    </SidebarInnerWrap>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <SC.SidebarInnerWrap>
+        <SC.SidebarContent>
+          <SC.SidebarTitle as="h3" variant="h6">
+            Edit week
+          </SC.SidebarTitle>
+          <TextField
+            label="Week label"
+            variant="outlined"
+            size="small"
+            {...register('title')}
+            error={!!errors.title}
+            helperText={errors.title?.message}
+          />
+        </SC.SidebarContent>
+        <SC.SidebarActions>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={toggleTemplateForm}
+          >
+            Save as personal template
+          </Button>
+          <Button variant="contained" color="secondary">
+            Duplicate
+          </Button>
+          <Button variant="contained" color="secondary">
+            Delete
+          </Button>
+        </SC.SidebarActions>
+      </SC.SidebarInnerWrap>
+    </form>
   )
 }
 

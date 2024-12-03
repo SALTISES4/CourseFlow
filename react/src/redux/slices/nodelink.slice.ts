@@ -28,18 +28,6 @@ interface NodelinkByIdPayload {
   id: number
 }
 
-interface InsertBelowWeekPayload {
-  children?: { nodelink: TNodelink[] }
-}
-
-interface AddStrategyPayload {
-  nodelinksAdded: TNodelink[]
-}
-
-interface ReplaceStoreDataPayload {
-  nodelink?: TNodelink[]
-}
-
 export const nodelinkAdapter = createEntityAdapter<TNodelink>()
 const initialState = nodelinkAdapter.getInitialState()
 
@@ -61,37 +49,38 @@ const nodelinkSlice = createSlice({
   name: SliceNamespace.NODELINK,
   initialState,
   reducers: {
-    createLock(state, action: PayloadAction<CreateLockPayload>) {
-      const item = state.find((item) => item.id === action.payload.id)
-      if (item) {
-        item.lock = action.payload.lock
-      }
-    },
     changeField(state, action: PayloadAction<ChangeFieldPayload>) {
-      const item = state.find((item) => item.id === action.payload.id)
-      if (item) {
-        Object.assign(item, action.payload.json)
-      }
+      nodelinkAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: action.payload.json
+      })
+    },
+    createLock(state, action: PayloadAction<CreateLockPayload>) {
+      nodelinkAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: { lock: action.payload.lock }
+      })
     },
     newNodelink(state, action: PayloadAction<TNodelink>) {
-      state.push(action.payload)
+      nodelinkAdapter.addOne(state, action.payload)
     },
     deleteSelf(state, action: PayloadAction<NodelinkByIdPayload>) {
-      // maybe use findIndex and splice
-      return state.filter((item) => item.id !== action.payload.id)
+      nodelinkAdapter.removeOne(state, action.payload.id)
     },
     deleteSelfSoft(state, action: PayloadAction<NodelinkByIdPayload>) {
-      const item = state.find((item) => item.id === action.payload.id)
-      if (item) {
-        item.deleted = true
-        item.deletedOn = _t('This session')
-      }
+      nodelinkAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: {
+          deleted: true,
+          deletedOn: _t('This session')
+        }
+      })
     },
     restoreSelf(state, action: PayloadAction<NodelinkByIdPayload>) {
-      const item = state.find((item) => item.id === action.payload.id)
-      if (item) {
-        item.deleted = false
-      }
+      nodelinkAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: { deleted: false }
+      })
     }
   },
   extraReducers: (builder) => {
@@ -100,7 +89,11 @@ const nodelinkSlice = createSlice({
      *******************************************************/
     builder
       .addCase(replaceStoreData, (state, action) => {
-        return action.payload.nodelink || state
+        if (action.payload.nodelink) {
+          nodelinkAdapter.setAll(state, action.payload.nodelink)
+        } else {
+          nodelinkAdapter.removeAll(state)
+        }
       })
       .addCase(refreshStoreData, (state, action) => {
         nodelinkAdapter.upsertMany(state, action.payload.nodelink)

@@ -41,6 +41,7 @@ class Project(AbstractWorkspaceModel):
     # @todo this is wrong, no reason for this to be n2m
     workflows = models.ManyToManyField("Workflow", through="WorkflowProject", blank=True)
 
+    # @todo this is wrong, no reason for this to be n2m
     object_sets = models.ManyToManyField("ObjectSet", blank=True)
 
     #########################################################

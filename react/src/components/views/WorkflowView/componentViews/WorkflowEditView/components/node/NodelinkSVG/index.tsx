@@ -1,6 +1,7 @@
-import { NumTuple, ObjectLock } from '@cf/types/common'
+import { NumTuple } from '@cf/types/common'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
+import { TNodelink } from '@cfRedux/types/type'
 import PathGenerator from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG/PathGenerator.class'
 import * as React from 'react'
 
@@ -13,17 +14,13 @@ export type OwnProps = {
   hovered: boolean
   nodeSelected: boolean
   sourcePortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
-  sourcePort: number
   targetPortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
-  targetPort: number
   sourceDimensions: Dimensions
   targetDimensions: Dimensions
-  textPosition?: number
   style?: Style
   clickFunction?: (evt: React.MouseEvent) => void
-  title?: string | null
   selected?: boolean
-  lock?: ObjectLock
+  nodelink: TNodelink
 }
 
 type Dimensions = {
@@ -116,10 +113,10 @@ class NodelinkSVG extends React.Component<PropsType, State> {
       }
     }
 
-    if (this.props.lock) {
+    if (this.props.nodelink.lock) {
       return {
         ...this.props.style,
-        stroke: this.props.lock?.userColour ?? '',
+        stroke: this.props.nodelink.lock?.userColour ?? '',
         opacity: 1
       }
     }
@@ -135,9 +132,9 @@ class NodelinkSVG extends React.Component<PropsType, State> {
    * COMPONENTS
    *******************************************************/
   Title = ({ pathArray }) => {
-    if (this.props.title && this.props.title !== '') {
+    if (this.props.nodelink.title && this.props.nodelink.title !== '') {
       const textPosition = pathArray.getFractionalPoint(
-        this.props.textPosition / 100.0
+        this.props.nodelink.textPosition / 100.0
       )
 
       return (
@@ -150,7 +147,7 @@ class NodelinkSVG extends React.Component<PropsType, State> {
           <div className="nodelinkwrapper">
             <div
               className="nodelinktext"
-              dangerouslySetInnerHTML={{ __html: this.props.title }}
+              dangerouslySetInnerHTML={{ __html: this.props.nodelink.title }}
               onClick={this.props.clickFunction}
             />
           </div>
@@ -205,9 +202,9 @@ class NodelinkSVG extends React.Component<PropsType, State> {
 
       const pathArray = this.getPathArray(
         sourcePoint,
-        this.props.sourcePort,
+        this.props.nodelink.sourcePort,
         targetPoint,
-        this.props.targetPort
+        this.props.nodelink.targetPort
       )
 
       const path = this.getPath(pathArray.findPath())

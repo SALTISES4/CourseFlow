@@ -59,7 +59,7 @@ export function dragAction(
   actionData,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
-  COURSEFLOW_APP.tinyLoader.startLoad()
+
   $('.ui-draggable').draggable('disable')
 
   // COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at
@@ -67,7 +67,7 @@ export function dragAction(
   API_POST(url, actionData).then((response: EmptyPostResp) => {
     callBackFunction(response)
     $('.ui-draggable').draggable('enable')
-    COURSEFLOW_APP.tinyLoader.endLoad()
+
   })
 }
 
@@ -82,7 +82,7 @@ export function insertedAtInstant(
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   console.log(parentType)
-  COURSEFLOW_APP.tinyLoader.startLoad()
+
   $('.ui-draggable').draggable('disable')
 
   //   COURSEFLOW_APP.globalContextData.path.post_paths.inserted_at
@@ -99,7 +99,7 @@ export function insertedAtInstant(
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)
     $('.ui-draggable').draggable('enable')
-    COURSEFLOW_APP.tinyLoader.endLoad()
+
   })
 }
 

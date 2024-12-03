@@ -159,7 +159,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
   }
 
   loadWorkflow() {
-    COURSEFLOW_APP.tinyLoader.startLoad()
+
     getWorkflowSelectMenuQuery(
       this.props.projectData.id,
       CfObjectType.WORKFLOW,
@@ -170,7 +170,7 @@ class ComparisonView extends React.Component<PropsType, StateType> {
         openWorkflowSelectMenu(data, (dataResp: GetWorkflowSelectMenuResp) =>
           this.updateFunction(dataResp)
         )
-        COURSEFLOW_APP.tinyLoader.endLoad()
+
       }
     )
   }

@@ -6,6 +6,7 @@ import Alert from '@cfComponents/UIPrimitives/Alert'
 import HtmlReactParser from 'html-react-parser'
 import { ReactNode } from 'react'
 import * as React from 'react'
+import NetworkActivityProvider from "@cf/HTTP/NetworkActivityProvider";
 
 type PropsType = {
   showNotifications?: boolean
@@ -51,6 +52,7 @@ const Base = ({ showNotifications, children }: PropsType) => {
           </div>
         </div>
       </div>
+      <NetworkActivityProvider />
     </>
   )
 }

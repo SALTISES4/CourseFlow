@@ -103,14 +103,14 @@ class OutcomeDragAndDropManager extends SortableDragAndDropManager {
         const dropItem = $(e.target)
         const dragItem = ui.draggable
         if (dragItem.hasClass('outcome')) {
-          COURSEFLOW_APP.tinyLoader.startLoad()
+
           updateOutcomehorizontallinkDegree(
             this.args.objectId,
             // @todo HACK, this is being used to bypass react and pass information around the DOM
             dragItem[0].dataDraggable.outcome,
             1,
             (responseData) => {
-              COURSEFLOW_APP.tinyLoader.endLoad()
+
             }
           )
         }

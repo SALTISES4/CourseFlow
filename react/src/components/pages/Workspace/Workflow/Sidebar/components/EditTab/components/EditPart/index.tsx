@@ -13,7 +13,7 @@ import {
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
-} from '../../../../styles'
+} from '@cfSidebar/styles'
 import SaveAsTemplate from '../SaveAsTemplate'
 import getPartData from './getPartData'
 import { strategiesOptions } from './optionsData'

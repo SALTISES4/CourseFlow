@@ -29,7 +29,6 @@ import NodePorts from 'components/views/WorkflowView/componentViews/WorkflowEdit
 type OwnProps = {
   objectId: number
   parentId: number
-  columnOrder: number[]
   objectSets?: any
 }
 
@@ -39,7 +38,7 @@ type Args = {
   objectId: number
 }
 
-const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
+const Node = ({ objectId, parentId, objectSets }: OwnProps) => {
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
@@ -601,7 +600,7 @@ export default Node
 //         $('.outcome-drop-over').removeClass('outcome-drop-over')
 //         const dragItem = ui.draggable
 //         if (dragItem.hasClass('outcome')) {
-//           COURSEFLOW_APP.tinyLoader.startLoad()
+//
 //
 //           // @todo HACK, this is being used to bypass react and pass information around the DOM
 //           updateOutcomenodeDegree(
@@ -610,7 +609,7 @@ export default Node
 //             dragItem[0].dataDraggable.outcome,
 //             1,
 //             (responseData) => {
-//               COURSEFLOW_APP.tinyLoader.endLoad()
+//
 //             }
 //           )
 //         }

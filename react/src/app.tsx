@@ -9,7 +9,6 @@ import { RouterProvider } from 'react-router-dom'
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 import CfRouter from '@cf/router/appRoutes'
-import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
 import UserProvider from '@cf/context/userContext'
@@ -43,15 +42,6 @@ console.error = (message, ...args) => {
 /*******************************************************
  * // HACK
  *******************************************************/
-
-// @todo:
-// legacy, to remove it
-// see note in mouseCursorLoader.js
-// we don't want t a mouse loader at all, but the placeholder calls are useful currently
-
-const tinyLoader = new MouseCursorLoader($('body')[0])
-// @ts-ignore
-COURSEFLOW_APP.tinyLoader = tinyLoader
 
 // create the emotion cache
 const cache = createCache({

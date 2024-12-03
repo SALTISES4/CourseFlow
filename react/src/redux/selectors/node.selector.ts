@@ -43,5 +43,4 @@ export const {
   selectAll: selectAllNodes,
   selectById: selectNodeById,
   selectIds: selectNodeIds
-  // ... other selectors if needed
 } = nodeAdapter.getSelectors<RootState>((state) => state.workspace.node)

@@ -22,11 +22,6 @@ export type Discipline = {
   title: string
 }
 
-export type ObjectLock = {
-  userId: number
-  userColour: string
-}
-
 export type NumTuple = [number, number]
 
 export type FieldChoice = {

@@ -2,7 +2,7 @@ import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import * as SC from '@cfSidebar/styles'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
@@ -25,14 +25,13 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import optionsData from './optionsData'
 import { NodeForm } from './types'
-import {RootState} from "@cfRedux/store";
 
 const EditNode = ({ id }) => {
   /*******************************************************
    * HOOKS
    *******************************************************/
   const sidebarData = useSelector((state: RootState) => state.sidebar)
-  const nodeData = useSelector((state: RootState) =>
+  const node = useSelector((state: RootState) =>
     selectNodeById(state, sidebarData.edit.id)
   )
   const dispatch = useDispatch()
@@ -49,49 +48,49 @@ const EditNode = ({ id }) => {
     reset,
     formState: { errors, isDirty }
   } = useForm<NodeForm>({
+    // @todo do i need to set the defaults here?
     defaultValues: {
-      title: nodeData.node.title,
-      description: nodeData.node.description,
+      title: node.title,
+      description: node.description,
       ponderation: {
-        theory: String(nodeData.node.ponderationTheory),
-        practice: String(nodeData.node.ponderationPractical),
-        individual: String(nodeData.node.ponderationIndividual),
-        generalEdu: String(nodeData.node.ponderationGeneralEdu),
-        specificEdu: String(nodeData.node.ponderationSpecificEdu)
+        theory: String(node.ponderationTheory),
+        practice: String(node.ponderationPractical),
+        individual: String(node.ponderationIndividual),
+        generalEdu: String(node.ponderationGeneralEdu),
+        specificEdu: String(node.ponderationSpecificEdu)
       },
-      contextType: nodeData.node.contextType || '',
-      taskType: nodeData.node.taskType || '',
-      amount: nodeData.node.amount || '',
-      unitType: nodeData.node.unitType || '',
-      objectSets: nodeData.node.objectSets || []
+      contextType: node.contextType || '',
+      taskType: node.taskType || '',
+      amount: node.amount || '',
+      unitType: node.unitType || '',
+      objectSets: node.objectSets || []
     }
   })
   const watchedFields = watch()
-  const formValues = getValues()
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
   useEffect(() => {
-    if (nodeData && !isDirty) {
+    if (node && !isDirty) {
       reset({
-        title: nodeData.node.title,
-        description: nodeData.node.description,
+        title: node.title,
+        description: node.description,
         ponderation: {
-          theory: String(nodeData.node.ponderationTheory),
-          practice: String(nodeData.node.ponderationPractical),
-          individual: String(nodeData.node.ponderationIndividual),
-          generalEdu: String(nodeData.node.ponderationGeneralEdu),
-          specificEdu: String(nodeData.node.ponderationSpecificEdu)
+          theory: String(node.ponderationTheory),
+          practice: String(node.ponderationPractical),
+          individual: String(node.ponderationIndividual),
+          generalEdu: String(node.ponderationIndividual),
+          specificEdu: String(node.ponderationIndividual)
         },
-        contextType: nodeData.node.contextType || '',
-        taskType: nodeData.node.taskType || '',
-        amount: nodeData.node.amount || '',
-        unitType: nodeData.node.unitType || '',
-        objectSets: nodeData.node.objectSets || []
+        contextType: Number(node.contextClassification) || 0, // context_classification
+        taskType: Number(node.taskClassification) || 0, // task_classification
+        amount: node.timeRequired || '', // time_required
+        unitType: node.timeUnits || 0, // time units
+        objectSets: node.objectSets || [] // node_sets
       })
     }
-  }, [reset, isDirty, nodeData])
+  }, [reset, isDirty, node])
 
   const debouncedDispatch = useCallback(
     debounce((data) => {
@@ -166,7 +165,7 @@ const EditNode = ({ id }) => {
     </SC.SidebarActions>
   )
 
-  if (!nodeData) {
+  if (!node) {
     return <></>
   }
 

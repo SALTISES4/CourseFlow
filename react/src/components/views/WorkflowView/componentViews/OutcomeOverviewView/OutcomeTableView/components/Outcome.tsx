@@ -33,26 +33,26 @@ class TableCell extends React.Component<TableCellPropsType> {
     } else {
       value = 1
     }
-    COURSEFLOW_APP.tinyLoader.startLoad()
+
     updateOutcomenodeDegree(
       this.props.nodeId,
       this.props.outcomeID,
       value,
       (responseData) => {
-        COURSEFLOW_APP.tinyLoader.endLoad()
+
       }
     )
   }
 
   changeFunction(evt) {
     const value = evt.target.value
-    COURSEFLOW_APP.tinyLoader.startLoad()
+
     updateOutcomenodeDegree(
       this.props.nodeId,
       this.props.outcomeID,
       value,
       (responseData) => {
-        COURSEFLOW_APP.tinyLoader.endLoad()
+
         $(':focus').blur()
       }
     )

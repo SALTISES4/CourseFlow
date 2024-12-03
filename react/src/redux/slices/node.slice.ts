@@ -1,4 +1,3 @@
-import { CfLock } from '@cf/types/common'
 import { _t } from '@cf/utility/Utility.class'
 import { weekAdapter } from '@cfRedux/slices/week.slice'
 import {
@@ -13,7 +12,7 @@ import {
   StrategyActions,
   WeekActions
 } from '@cfRedux/types/enumActions'
-import { TNode, TWeek, WorkspaceAppState } from '@cfRedux/types/type'
+import { TNode, WorkspaceAppState } from '@cfRedux/types/type'
 import {
   PayloadAction,
   createAction,
@@ -27,84 +26,93 @@ interface DeleteColumnAction {
 }
 
 export const nodeAdapter = createEntityAdapter<TNode>()
+type NodeState = ReturnType<typeof nodeAdapter.getInitialState>
 const initialState = nodeAdapter.getInitialState()
 
 /*******************************************************
  * Reusable Reducer Functions
  *******************************************************/
-const updateEntity = <T, S>(
-  state: T,
-  action: PayloadAction<{
-    id: number
-    data: Pick<S>
-  }>
+export const updateEntity = (
+  state: NodeState,
+  action: PayloadAction<{ id: number; data: Partial<TNode> }>
 ) => {
-  return state.map((item) =>
-    item.id === action.payload.id ? { ...item, ...action.payload.data } : item
-  )
+  nodeAdapter.updateOne(state, {
+    id: action.payload.id,
+    changes: action.payload.data
+  })
 }
 
 const removeEntityById = (
-  state: WorkspaceAppState['node'],
+  state: NodeState,
   action: PayloadAction<{ id: number }>
 ) => {
-  return state.filter((item) => item.id !== action.payload.id)
+  nodeAdapter.removeOne(state, action.payload.id)
 }
 
 const toggleArchiveEntity = (
-  state: WorkspaceAppState['node'],
+  state: NodeState,
   action: PayloadAction<{ id: number }>
 ) => {
-  return state.map((item) => {
-    if (item.id === action.payload.id) {
-      return {
-        ...item,
-        deleted: !item.deleted,
-        deletedOn: item.deleted ? undefined : _t('This session')
+  const entity = state.entities[action.payload.id]
+  if (entity) {
+    nodeAdapter.updateOne(state, {
+      id: action.payload.id,
+      changes: {
+        deleted: !entity.deleted,
+        deletedOn: entity.deleted ? undefined : _t('This session')
       }
-    }
-    return item
-  })
+    })
+  }
 }
 
 const deleteOutgoingLinks = (
-  state: WorkspaceAppState['node'],
+  state: NodeState,
   action: PayloadAction<{ id: number }>
 ) => {
-  return state.map((item) => {
-    if (item.outgoingLinks.includes(action.payload.id)) {
-      return {
-        ...item,
-        outgoingLinks: item.outgoingLinks.filter(
-          (linkId) => linkId !== action.payload.id
-        )
-      }
+  const entitiesToUpdate = Object.values(state.entities).filter((entity) =>
+    entity?.outgoingLinks.includes(action.payload.id)
+  )
+
+  const updates = entitiesToUpdate.map((entity) => ({
+    id: entity.id,
+    changes: {
+      outgoingLinks: entity.outgoingLinks.filter(
+        (linkId) => linkId !== action.payload.id
+      )
     }
-    return item
-  })
+  }))
+
+  nodeAdapter.updateMany(state, updates)
 }
 
 const updatingNodeSet = (
-  state: WorkspaceAppState['node'],
-  action: PayloadAction<any>
+  state: NodeState,
+  action: PayloadAction<{
+    nodeUpdates: {
+      id: number
+      outcomenodeSet: any[]
+      outcomenodeUniqueSet: any[]
+    }[]
+  }>
 ) => {
   if (action.payload.nodeUpdates.length === 0) {
-    return state
+    return
   }
 
-  return state.map((item) => {
-    const update = action.payload.nodeUpdates.find(
-      (updateItem) => updateItem.id === item.id
-    )
-    return update
-      ? {
-          ...item,
-          outcomenodeSet: update.outcomenodeSet,
-          outcomenodeUniqueSet: update.outcomenodeUniqueSet
-        }
-      : item
-  })
+  const updates = action.payload.nodeUpdates.map((update) => ({
+    id: update.id,
+    changes: {
+      outcomenodeSet: update.outcomenodeSet,
+      outcomenodeUniqueSet: update.outcomenodeUniqueSet
+    }
+  }))
+
+  nodeAdapter.updateMany(state, updates)
 }
+
+/*******************************************************
+ * TO DO
+ *******************************************************/
 
 // @todo needs review
 const updateItem = (state, action: PayloadAction<{ extraData: any[] }>) => {
@@ -135,33 +143,21 @@ const nodeSlice = createSlice({
   name: SliceNamespace.NODE,
   initialState,
   reducers: {
-    changedColumn(
-      state,
-      action: PayloadAction<{ id: number; newColumn: number }>
-    ) {
-      state = state.map((item) => {
-        if (item.id === action.payload.id) {
-          return { ...item, column: action.payload.newColumn }
-        }
-        return item
-      })
-    },
-    createLock: updateEntity<WorkspaceAppState['node'], TNode>,
-    changeField: updateEntity<WorkspaceAppState['node'], TNode>,
+    changedColumn: updateEntity,
+    createLock: updateEntity,
+    changeField: updateEntity,
     deleteSelf: removeEntityById,
     deleteSelfSoft: toggleArchiveEntity,
     insertBelow(state, action: PayloadAction<{ newModel: TNode }>) {
-      state.push(action.payload.newModel)
+      nodeAdapter.addOne(state, action.payload.newModel)
     },
     reloadComments(
       state,
       action: PayloadAction<{ id: number; commentData: any }>
     ) {
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return { ...item, comments: action.payload.commentData }
-        }
-        return item
+      nodeAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: { comments: action.payload.commentData }
       })
     },
     setLinkedWorkflow(
@@ -172,15 +168,12 @@ const nodeSlice = createSlice({
         linkedWorkflowData: any
       }>
     ) {
-      return state.map((item) => {
-        if (item.id === action.payload.id) {
-          return {
-            ...item,
-            linkedWorkflow: action.payload.linkedWorkflow,
-            linkedWorkflowData: action.payload.linkedWorkflowData
-          }
+      nodeAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: {
+          linkedWorkflow: action.payload.linkedWorkflow,
+          linkedWorkflowData: action.payload.linkedWorkflowData
         }
-        return item
       })
     },
 
@@ -188,7 +181,7 @@ const nodeSlice = createSlice({
     //  ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
     restoreSelf: toggleArchiveEntity,
     newNode(state, action: PayloadAction<{ newModel: TNode }>) {
-      state.push(action.payload.newModel)
+      nodeAdapter.addOne(state, action.payload.newModel)
     }
   },
   extraReducers: (builder) => {
@@ -196,13 +189,14 @@ const nodeSlice = createSlice({
      * COMMON
      *******************************************************/
     builder
-      .addCase(
-        replaceStoreData,
-        (state, action) => action.payload.node || state
-      )
+      .addCase(replaceStoreData, (state, action) => {
+        if (action.payload.node) {
+          nodeAdapter.setAll(state, action.payload.node)
+        }
+      })
       .addCase(refreshStoreData, (state, action) => {
         if (action.payload.node) {
-          weekAdapter.upsertMany(state, action.payload.node)
+          nodeAdapter.upsertMany(state, action.payload.node)
         }
       })
     /*******************************************************

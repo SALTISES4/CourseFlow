@@ -180,14 +180,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   }
 
   copyToProject = () => {
-    const loader = COURSEFLOW_APP.tinyLoader
-    loader.startLoad()
     duplicateBaseItemQuery(
       this.data.id,
       this.data.type,
       this.project.id,
       (responseData) => {
-        loader.endLoad()
         // @ts-ignore
         window.location =
           COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
@@ -266,13 +263,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   duplicateItem(responseData) {
     if (responseData.parentId != null) {
-      const utilLoader = new UtilityLoader('body')
       duplicateBaseItemQuery(
         this.data.id,
         this.data.type,
         responseData.parentId,
         (responseData) => {
-          utilLoader.endLoad()
           // @ts-ignore
           window.location =
             COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(

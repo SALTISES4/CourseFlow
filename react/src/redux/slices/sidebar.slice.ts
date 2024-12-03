@@ -1,6 +1,5 @@
-import { SidebarActions, SliceNamespace } from '@cf/redux/types/enumActions'
+import { SliceNamespace } from '@cf/redux/types/enumActions'
 import { CfObjectType } from '@cf/types/enum'
-import { AppState } from '@cfRedux/types/type'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 export type SidebarState = {
@@ -21,7 +20,7 @@ const initialState: SidebarState = {
   edit: {}
 }
 
-const sidebarSlice = createSlice<AppState['sidebar']>({
+const sidebarSlice = createSlice({
   name: SliceNamespace.SIDEBAR,
   initialState,
   reducers: {
