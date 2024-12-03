@@ -29,7 +29,6 @@ import NodePorts from 'components/views/WorkflowView/componentViews/WorkflowEdit
 type OwnProps = {
   objectId: number
   parentId: number
-  columnOrder: number[]
   objectSets?: any
 }
 
@@ -39,7 +38,7 @@ type Args = {
   objectId: number
 }
 
-const Node = ({ objectId, parentId, columnOrder, objectSets }: OwnProps) => {
+const Node = ({ objectId, parentId, objectSets }: OwnProps) => {
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/

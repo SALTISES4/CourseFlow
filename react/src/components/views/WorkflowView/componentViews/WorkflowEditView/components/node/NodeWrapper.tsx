@@ -20,11 +20,12 @@ import { useSelector } from 'react-redux'
 
 import Node from './Node'
 import * as Styled from '../../styles'
+import DroppableCell from '../DroppableCell'
 
 type PropsType = {
   objectId: number
   parentId: number
-  columnOrder: number[]
+  row: number
 }
 
 /**
@@ -112,7 +113,7 @@ const NodeHoverMenu = ({
   )
 }
 
-const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
+const NodeWrapper = ({ objectId, parentId, row }: PropsType) => {
   const data = useSelector((state: AppState) => selectNodeById(state, objectId))
   const workflow = useSelector((state: AppState) => state.workflow)
   const [ref, isHovered] = useHover()
@@ -123,40 +124,45 @@ const NodeWrapper = ({ objectId, parentId, columnOrder }: PropsType) => {
     return null
   }
 
-  return workflow.columns.map((colNum, index) => (
-    <Styled.Cell key={index}>
-      <Styled.DebugCellInfo>
-        row: {data.node.order}, col: {colNum}
-      </Styled.DebugCellInfo>
+  return workflow.columns.map((column) => (
+    <DroppableCell
+      key={column}
+      groupId={parentId}
+      coords={{
+        row,
+        column
+      }}
+    >
+      <Styled.Cell>
+        <Styled.DebugCellInfo>
+          row: {row}, col: {column}
+        </Styled.DebugCellInfo>
 
-      {colNum === data.node.column && (
-        <div
-          id={String(objectId)}
-          className="node-week"
-          ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
-          style={{
-            position: 'relative',
-            transform: CSS.Transform.toString(transform),
-            transition
-          }}
-          {...attributes}
-          data-child-id={String(objectId)}
-          data-column-id={String(data.column)}
-        >
-          <div {...listeners}>
-            <DragHandleIcon />
+        {column === data.node.column && (
+          <div
+            id={String(objectId)}
+            className="node-week"
+            ref={mergeRefs(setNodeRef as Ref<HTMLDivElement>, ref)}
+            style={{
+              position: 'relative',
+              transform: CSS.Transform.toString(transform),
+              transition
+            }}
+            {...attributes}
+            data-child-id={String(objectId)}
+            data-column-id={String(data.column)}
+          >
+            <div {...listeners}>
+              <DragHandleIcon />
+            </div>
+
+            <Node objectId={objectId} parentId={parentId} />
+
+            <NodeHoverMenu objectId={objectId} show={isHovered} />
           </div>
-
-          <Node
-            objectId={objectId}
-            parentId={parentId}
-            columnOrder={columnOrder}
-          />
-
-          <NodeHoverMenu objectId={objectId} show={isHovered} />
-        </div>
-      )}
-    </Styled.Cell>
+        )}
+      </Styled.Cell>
+    </DroppableCell>
   ))
 }
 

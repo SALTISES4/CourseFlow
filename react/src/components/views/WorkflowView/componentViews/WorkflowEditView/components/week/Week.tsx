@@ -16,6 +16,7 @@ import clsx from 'clsx'
 import { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import DroppableCell from '../DroppableCell'
 import * as Styled from './styles'
 import { Cell, CellRow, DebugCellInfo } from '../../styles'
 
@@ -83,30 +84,33 @@ const Week = ({ objectId, parentId }) => {
    *******************************************************/
   const Nodes = () => {
     if (!nodesDragState?.length) {
-      const cols = Array(weekData.columns.length).fill('')
-
       return (
         <CellRow sx={{ position: 'relative' }}>
-          <Styled.EmptyText>
+          {/* <Styled.EmptyText>
             Drag and drop nodes from the sidebar to add.
-          </Styled.EmptyText>
+          </Styled.EmptyText> */}
 
-          {cols.map((_, index) => (
-            <Cell key={index} sx={{ height: 64 }}>
-              <DebugCellInfo>row: 0, col: {index}</DebugCellInfo>
-            </Cell>
+          {workflow.columns.map((colNum) => (
+            <DroppableCell
+              key={colNum}
+              groupId={weekData.week.id}
+              coords={{
+                row: 0,
+                column: colNum
+              }}
+            >
+              <Cell sx={{ height: 64 }}>
+                <DebugCellInfo>row: 0, col: {colNum}</DebugCellInfo>
+              </Cell>
+            </DroppableCell>
           ))}
         </CellRow>
       )
     }
 
-    return nodesDragState.map((nodeId) => (
+    return nodesDragState.map((nodeId, row) => (
       <CellRow key={`node-${nodeId}`}>
-        <NodeWrapper
-          objectId={nodeId}
-          parentId={weekData.week.id}
-          columnOrder={weekData.columns} // not sure if i should be props drilling this
-        />
+        <NodeWrapper objectId={nodeId} parentId={weekData.week.id} row={row} />
       </CellRow>
     ))
   }

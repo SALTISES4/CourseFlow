@@ -2,6 +2,8 @@ import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import WorkspaceSidebar from '@cfPages/Workspace/Workflow/Sidebar'
+import { Placeholder } from '@cfPages/Workspace/Workflow/Sidebar/Draggable/Block/styles'
+import { DraggableType } from '@cfPages/Workspace/Workflow/Sidebar/Draggable/Block/types'
 import { useWorkflowSidebar } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
@@ -12,12 +14,20 @@ import {
 } from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/menus'
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
+import { sidebarDragTarget } from '@cfRedux/slices/sidebar.slice'
 import { AppState } from '@cfRedux/types/type'
 import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent
+} from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Tabs from '@mui/material/Tabs'
+import Typography from '@mui/material/Typography'
 import { useContext, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
 
 // & EditableComponentProps
@@ -41,6 +51,8 @@ type StateType = {
 const WorkflowTabs = () => {
   const context = useContext(WorkflowConfigContext)
   const workflow = useSelector((state: AppState) => state.workflow)
+  const dispatch = useDispatch()
+  const dragging = useSelector((state: AppState) => state.sidebar.dragging)
 
   useWorkflowSidebar({
     workflowType: workflow.type,
@@ -83,6 +95,20 @@ const WorkflowTabs = () => {
     }
   }, [])
 
+  function handleDragStart(event: DragStartEvent) {
+    dispatch(sidebarDragTarget(event.active.data.current as DraggableType))
+  }
+
+  function handleDragEnd() {
+    console.log(
+      'stopped dragging',
+      dragging.target,
+      'at coords',
+      dragging.coords
+    )
+    dispatch(sidebarDragTarget(null))
+  }
+
   // Utility.logger({ context })
 
   /*******************************************************
@@ -100,7 +126,7 @@ const WorkflowTabs = () => {
    * RENDER
    *******************************************************/
   return (
-    <>
+    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       {
         // @todo leave as reference, this 'invokes' the right sidebar into a portal
         // it's trying to set up the right side bar context from current workflow data
@@ -149,7 +175,15 @@ const WorkflowTabs = () => {
         </div>
       </div>
       <WorkflowDialogs />
-    </>
+
+      <DragOverlay>
+        {!!dragging.target && (
+          <Placeholder>
+            <Typography variant="body2">{dragging.target.label}</Typography>
+          </Placeholder>
+        )}
+      </DragOverlay>
+    </DndContext>
   )
 }
 
