@@ -5,10 +5,15 @@ import { EProject } from '@XMLHTTP/types/entity'
 export function formatProjectEntity(project: EProject): ProjectDetailsType {
   const allDisciplines = COURSEFLOW_APP.globalContextData.disciplines
 
+  console.log(allDisciplines)
+  console.log(project)
+  console.log(project)
+
   const formattedDisciplines: string[] = project.disciplines.map((projDisc) => {
     return allDisciplines.find((item) => item.id === projDisc).title
   })
 
+  console.log('sdfg')
   const formattedObjectSets: ObjectSetType[] = project.objectSets.map(
     (item) => {
       return {

@@ -1,6 +1,7 @@
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
+import { selectAllObjectSets } from '@cfRedux/selectors/objectSet.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { RootState } from '@cfRedux/store'
 import * as SC from '@cfSidebar/styles'
@@ -34,6 +35,10 @@ const EditNode = ({ id }) => {
   const node = useSelector((state: RootState) =>
     selectNodeById(state, sidebarData.edit.id)
   )
+  // these are created and attached to the parent project, they are like 'all available tags'
+  const objectSets = useSelector((state: RootState) =>
+    selectAllObjectSets(state)
+  )
   const dispatch = useDispatch()
 
   const [linkedWorkflow, setLinkedWorkflow] = useState(false)
@@ -56,14 +61,14 @@ const EditNode = ({ id }) => {
         theory: String(node.ponderationTheory),
         practice: String(node.ponderationPractical),
         individual: String(node.ponderationIndividual),
-        generalEdu: String(node.ponderationGeneralEdu),
-        specificEdu: String(node.ponderationSpecificEdu)
+        generalEdu: String(node.ponderationIndividual),
+        specificEdu: String(node.ponderationIndividual)
       },
-      contextType: node.contextType || '',
-      taskType: node.taskType || '',
-      amount: node.amount || '',
-      unitType: node.unitType || '',
-      objectSets: node.objectSets || []
+      contextType: Number(node.contextClassification) || 0, // context_classification
+      taskType: Number(node.taskClassification) || 0, // task_classification
+      amount: node.timeRequired || '', // time_required
+      unitType: node.timeUnits || 0, // time units
+      objectSets: node.sets || []
     }
   })
   const watchedFields = watch()
@@ -87,7 +92,7 @@ const EditNode = ({ id }) => {
         taskType: Number(node.taskClassification) || 0, // task_classification
         amount: node.timeRequired || '', // time_required
         unitType: node.timeUnits || 0, // time units
-        objectSets: node.objectSets || [] // node_sets
+        objectSets: node.sets || [] // node_sets
       })
     }
   }, [reset, isDirty, node])
@@ -298,10 +303,10 @@ const EditNode = ({ id }) => {
               render={({ field }) => (
                 <Autocomplete
                   multiple
-                  options={optionsData.objectSets}
-                  getOptionLabel={(option) => option.label}
+                  options={objectSets}
+                  getOptionLabel={(option) => option.title}
                   isOptionEqualToValue={(option, value) =>
-                    option.value === value.value
+                    option.id === value.id
                   }
                   onChange={(_, value) => field.onChange(value)}
                   renderInput={(params) => (

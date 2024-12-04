@@ -1,13 +1,15 @@
+import { nodeAdapter } from '@cfRedux/slices/node.slice'
 import store from '@cfRedux/store'
 import {
   CommonActions,
   NodeActions,
-  ReduxSlice,
+  SliceNamespace,
   StrategyActions
 } from '@cfRedux/types/enumActions'
-import { AppState, TWeek, WorkspaceAppState } from '@cfRedux/types/type'
+import {AppState, TNode, TWeek, WorkspaceAppState} from '@cfRedux/types/type'
 import {
   PayloadAction,
+  Update,
   createAction,
   createEntityAdapter,
   createSlice
@@ -148,10 +150,13 @@ export const refreshStoreData = createAction<{
  * SLICE
  *******************************************************/
 const weekSlice = createSlice({
-  name: ReduxSlice.WEEK,
+  name: SliceNamespace.WEEK,
   initialState,
 
   reducers: {
+    updateMany(state, action: PayloadAction<Update<TWeek, number>[]>) {
+      weekAdapter.updateMany(state, action.payload)
+    },
     insertBelow: createEntity,
     reloadComments: updateEntity,
     deleteSelf: removeEntityById,
@@ -246,6 +251,7 @@ const weekSlice = createSlice({
 })
 
 export const {
+  updateMany: updateManyWeeks,
   createLock: weekCreateLock,
   reloadComments: weekReloadComments,
   changeField: weekChangeField,

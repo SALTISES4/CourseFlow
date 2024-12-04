@@ -1,5 +1,4 @@
 import { _t } from '@cf/utility/Utility.class'
-import { weekAdapter } from '@cfRedux/slices/week.slice'
 import {
   ColumnActions,
   CommonActions,
@@ -15,6 +14,7 @@ import {
 import { TNode, WorkspaceAppState } from '@cfRedux/types/type'
 import {
   PayloadAction,
+  Update,
   createAction,
   createEntityAdapter,
   createSlice
@@ -143,6 +143,9 @@ const nodeSlice = createSlice({
   name: SliceNamespace.NODE,
   initialState,
   reducers: {
+    updateMany(state, action: PayloadAction<Update<TNode, number>[]>) {
+      nodeAdapter.updateMany(state, action.payload)
+    },
     changedColumn: updateEntity,
     createLock: updateEntity,
     changeField: updateEntity,
@@ -338,6 +341,7 @@ const nodeSlice = createSlice({
 })
 
 export const {
+  updateMany: updateManyNodes,
   changedColumn: nodeChangedColumn,
   createLock: nodeCreateLock,
   changeField: nodeChangeField,

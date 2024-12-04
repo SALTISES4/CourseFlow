@@ -52,29 +52,6 @@ const taskTypes = [
   }
 ]
 
-const objectSets = [
-  {
-    value: 1,
-    label: 'Object set 1'
-  },
-  {
-    value: 2,
-    label: 'Object set 2'
-  },
-  {
-    value: 3,
-    label: 'Object set 3'
-  },
-  {
-    value: 4,
-    label: 'Object set 4'
-  },
-  {
-    value: 5,
-    label: 'Object set 5'
-  }
-]
-
 const unitTypes = [
   {
     value: 1,
@@ -97,6 +74,5 @@ const unitTypes = [
 export default {
   contexts,
   taskTypes,
-  objectSets,
   unitTypes
 }

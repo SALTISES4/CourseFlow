@@ -6,10 +6,11 @@ export enum SliceNamespace {
   WEEK = 'week',
   COLUMN = 'column',
   STRATEGY = 'strategy',
-  OBJECTSET = 'objectset',
+  OBJECTSET = 'objectSet',
   NODELINK = 'nodelink',
   WORKFLOW = 'workflow',
-  PROJECT = 'project'
+  PROJECT = 'project',
+  VIEWSETTINGS = 'viewsettings'
 }
 
 // group all actions together which are global
@@ -129,21 +130,11 @@ export enum NodelinkActions {
 }
 
 export enum ObjectSetActions {
-  TOGGLE_OBJECT_SET = 'objectset/toggleObjectSet'
+  TOGGLE_OBJECT_SET = 'objectSet/toggleObjectSet'
 }
 
 export enum OutcomeHorizontalLinkActions {
   UPDATE_DEGREE = 'outcomehorizontallink/updateDegree'
-}
-
-export enum ReduxSlice {
-  SIDEBAR = 'sidebar',
-  NODE = 'node',
-  NODELINK = 'nodelink',
-  NODEWEEK = 'nodeweek',
-  WEEK = 'week',
-  COLUMN = 'column',
-  WORKFLOW = 'workflow'
 }
 
 export enum SidebarActions {

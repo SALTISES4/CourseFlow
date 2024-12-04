@@ -7,27 +7,20 @@ import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import {
   ActionMenu,
-  ExpandCollapseMenu,
-  JumpToMenu
+  JumpToMenu,
+  ViewSettingsMenu
 } from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/menus'
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
 import Box from '@mui/material/Box'
 import Tabs from '@mui/material/Tabs'
 import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
-import {RootState} from "@cfRedux/store";
 
-// & EditableComponentProps
 
-// type PropsType = DispatchProp & ConnectedProps & OwnProps
-type StateType = {
-  users: any
-  data?: any
-} // & EditableComponentStateType
 
 /**
  * The base component of our workflow view. This renders the menu bar
@@ -93,7 +86,7 @@ const WorkflowTabs = () => {
   const ViewBar = () => (
     <>
       <JumpToMenu weekIds={workflow.weeks} />
-      <ExpandCollapseMenu />
+      <ViewSettingsMenu />
     </>
   )
 
@@ -120,8 +113,8 @@ const WorkflowTabs = () => {
           leftSection={<ActionMenu />}
           viewbar={<ViewBar />}
           userbar={<ConnectionBar show={!workflow.publicView} />}
-          legendbar={<WorkflowLegend />}
         />
+        <WorkflowLegend />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">

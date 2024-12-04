@@ -182,14 +182,14 @@ export function toggleStrategyQuery(
 export function updateObjectSet(
   objectId,
   objectType,
-  objectsetPk,
+  objectSetPk,
   add,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.update_object_set, {
     objectId: objectId,
     objectType: objectType,
-    objectsetPk: objectsetPk,
+    objectSetPk: objectSetPk,
     add: add
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)

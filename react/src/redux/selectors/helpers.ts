@@ -80,14 +80,14 @@ export const getOutcomeIdFromWorkflow = (
 
   // Filter the objectSets to match the first outcome's type
   const objectSets = objectSetsUnfiltered.filter(
-    (objectset) => objectset.term === updatedOutcomes[0].type
+    (objectSet) => objectSet.term === updatedOutcomes[0].type
   )
 
   // If no objectSets match, return the outcomes with the base title
   if (objectSets.length === 0) {
     return [
       {
-        objectset: { title: baseTitle },
+        objectSet: { title: baseTitle },
         outcomes: updatedOutcomes.map((outcome) => outcome.id)
       }
     ]
@@ -103,7 +103,7 @@ export const getOutcomeIdFromWorkflow = (
   if (uncategorized.length > 0) {
     categories = [
       {
-        objectset: { title: _t('Uncategorized') },
+        objectSet: { title: _t('Uncategorized') },
         outcomes: uncategorized
       }
     ]
@@ -113,11 +113,11 @@ export const getOutcomeIdFromWorkflow = (
   categories = [
     ...categories,
     ...objectSets
-      .filter((objectset) => !objectset.hidden)
-      .map((objectset) => ({
-        objectset: objectset,
+      .filter((objectSet) => !objectSet.hidden)
+      .map((objectSet) => ({
+        objectSet: objectSet,
         outcomes: updatedOutcomes
-          .filter((outcome) => outcome.sets.indexOf(objectset.id) >= 0)
+          .filter((outcome) => outcome.sets.indexOf(objectSet.id) >= 0)
           .map((outcome) => outcome.id)
       }))
   ]

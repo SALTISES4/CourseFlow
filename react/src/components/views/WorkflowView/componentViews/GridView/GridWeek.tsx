@@ -49,7 +49,7 @@ const GridWeek: React.FC<OwnProps> = ({ objectId, parentId, rank, week }) => {
       (node) =>
         !Utility.checkSetHidden(
           node,
-          useSelector((state: RootState) => state.objectset)
+          useSelector((state: RootState) => state.objectSet)
         )
     )
 
@@ -253,8 +253,8 @@ export default GridWeek
 //   )
 //   const nodesData = nodeWeeks
 //     .map((nodeweek) => getNodeByID(state, nodeweek.node).data)
-//     .filter((node) => !Utility.checkSetHidden(node, state.objectset))
-//   // let nodesData = Utility.filterThenSortByID(state.node,nodeWeeks.map(nodeWeek=>nodeWeek.node)).filter(node=>!Utility.checkSetHidden(node,state.objectset));
+//     .filter((node) => !Utility.checkSetHidden(node, state.objectSet))
+//   // let nodesData = Utility.filterThenSortByID(state.node,nodeWeeks.map(nodeWeek=>nodeWeek.node)).filter(node=>!Utility.checkSetHidden(node,state.objectSet));
 //
 //   // @todo getNodeByID returns GetNodeByIDType
 //   // which does not contain representsWorkflow property

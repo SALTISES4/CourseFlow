@@ -52,7 +52,7 @@ type ConnectedProps = {
   weeks: AppState['week']
   nodeweeks: AppState['nodeweek']
   nodes: AppState['node']
-  objectSets: AppState['objectset']
+  objectSets: AppState['objectSet']
   weekworkflowOrder: any // @todo why isn't this set, does it exist?
   // weekworkflowOrder: AppState['weekworkflowSet'] // @todo why isn't this set, does it exist?
   outcomesSort: any // @todo why isn't this set, does it exist?
@@ -64,7 +64,7 @@ type ConnectedProps = {
 }
 type OwnProps = {
   objectId?: number
-  objectset?: any // is this not from store ?
+  objectSet?: any // is this not from store ?
   viewType?: WorkflowViewType // @todo can this just come from context?
 }
 type PropsType = ConnectedProps & OwnProps
@@ -148,8 +148,8 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
     specificEducation: number
   } {
     const nodesData = this.props.nodes.filter(
-      // @todo is this objectset different approach than in state
-      (node) => !Utility.checkSetHidden(node, this.props.objectset)
+      // @todo is this objectSet different approach than in state
+      (node) => !Utility.checkSetHidden(node, this.props.objectSet)
     )
 
     const linkedWfData = nodesData.map((node) => {
@@ -339,7 +339,7 @@ class CompetencyMatrixViewUnconnected extends React.Component<PropsType> {
               <div className="outcome-row outcome-category">
                 <div className="outcome-wrapper">
                   <div className="outcome-head">
-                    <h4>{category.objectset.title}</h4>
+                    <h4>{category.objectSet.title}</h4>
                   </div>
                 </div>
                 <div className="outcome-cells">{blankLine}</div>
@@ -409,7 +409,7 @@ const mapStateToProps = (state: AppState): ConnectedProps => {
     weeks: state.week,
     nodeweeks: state.nodeweek,
     nodes: state.node,
-    objectSets: state.objectset,
+    objectSets: state.objectSet,
     weekworkflowOrder: state.workflow.weekworkflowSet,
     outcomesSort: state.workflow.outcomesSort,
     outcomeworkflowOrder: state.workflow.outcomeworkflowSet,

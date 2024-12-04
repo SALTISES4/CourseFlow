@@ -5,19 +5,29 @@ import { _t } from '@cf/utility/Utility.class'
 import {
   MenuItemType,
   MenuWithOverflow,
-  SimpleMenu
+  SimpleMenu,
+  SimpleSwitchMenu
 } from '@cfComponents/menu/Menu'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ScrollToWeek from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ScrollToWeek'
 import { useMenuActions } from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useMenuActions'
+import { selectAllObjectSets } from '@cfRedux/selectors/objectSet.selector'
+import {
+  viewsettingsToggle,
+  viewsettingsUpdate
+} from '@cfRedux/slices/viewsettings.slice'
 import { RootState } from '@cfRedux/store'
 import EditIcon from '@mui/icons-material/Edit'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
-import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
-import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
-import { useContext } from 'react'
-import { useSelector } from 'react-redux'
+import TuneIcon from '@mui/icons-material/Tune'
+import { produce } from 'immer'
+import { useContext, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
+type ViewSettingsStateType = {
+  [index: string]: boolean
+}
 
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
@@ -124,71 +134,130 @@ const ActionMenu = () => {
   return <MenuWithOverflow menuItems={menuItems} size={2} />
 }
 
-const ExpandCollapseMenu = () => {
+const ViewSettingsMenu = () => {
+  const objectSets = useSelector((state: RootState) =>
+    selectAllObjectSets(state)
+  )
+  const viewSettings = useSelector((state: RootState) => state.viewsettings)
+
   const { expandAll, collapseAll } = useMenuActions()
+  const [viewState, setViewState] = useState<ViewSettingsStateType>({})
+  const dispatch = useDispatch()
+
+  const onSwitchMenuItemChange = (key: string, checked: boolean) => {
+    setViewState(
+      produce((draft) => {
+        draft[key] = checked
+      })
+    )
+  }
+
+  function toggleExpandWeeks() {
+    const weeks = viewSettings.expandedWeeks
+    if (!weeks) {
+      expandAll(CfObjectType.WEEK)
+    } else {
+      collapseAll(CfObjectType.WEEK)
+    }
+    dispatch(viewsettingsToggle({ key: 'expandedWeeks' }))
+  }
+
+  function toggleExpandNodes() {
+    const nodes = viewSettings.expandedNodes
+    if (!nodes) {
+      expandAll(CfObjectType.NODE)
+    } else {
+      collapseAll(CfObjectType.NODE)
+    }
+    dispatch(viewsettingsToggle({ key: 'expandedNodes' }))
+  }
+
+  function toggleViewSetting(key: string) {
+    dispatch(viewsettingsToggle({ key }))
+  }
+
+  function toggleObjectSet(id: number) {
+    const objectset = viewSettings.objectset
+    const clonedObjectset = [...objectset]
+
+    const index = objectset.indexOf(id)
+    if (index !== -1) {
+      clonedObjectset.splice(index, 1)
+    } else {
+      clonedObjectset.push(id)
+    }
+    dispatch(viewsettingsUpdate({ objectset: clonedObjectset }))
+  }
+
+  const objectSetOptions = objectSets.map((item, index) => {
+    return {
+      content: item.title,
+      action: () => toggleObjectSet(item.id),
+      show: true
+    }
+  })
 
   const header: MenuItemType = {
-    content: _t('Expand/Collapse'),
-    icon: <ZoomOutMapIcon />,
+    content: _t('View Settings'),
+    icon: <TuneIcon />,
     showIconInList: true,
     show: true
   }
 
   const menuItems: MenuItemType[] = [
+    // EXPAND
     {
-      content: _t('Expand all weeks'),
-      action: () => expandAll(CfObjectType.WEEK),
-      icon: <ZoomOutMapIcon />,
-      showIconInList: true,
-      show: true
+      content: _t('Expand weeks'),
+      action: () => toggleExpandWeeks(),
+      show: true,
+      defaultChecked: viewSettings.expandedWeeks
     },
     {
-      content: _t('Collapse all weeks'),
-      action: () => collapseAll(CfObjectType.WEEK),
-      icon: <ZoomInMapIcon />,
-      showIconInList: true,
-      show: true
+      content: _t('Expand nodes'),
+      action: () => toggleExpandNodes(),
+      show: true,
+      defaultChecked: viewSettings.expandedNodes
     },
+    // OUTCOMES
     {
-      content: _t('Expand all nodes'),
-      action: () => expandAll(CfObjectType.NODE),
-      icon: <ZoomInMapIcon />,
-      showIconInList: true,
-      show: true
-    },
-    {
-      content: _t('Collapse all nodes'),
-      action: () => collapseAll(CfObjectType.NODE),
-      icon: <ZoomOutMapIcon />,
-      showIconInList: true,
+      content: _t('Expand outcomes'),
+      action: () => toggleViewSetting('expandedOutcomes'),
       seperator: true,
-      show: true
+      show: true,
+      defaultChecked: viewSettings.expandedOutcomes
+    },
+    // GLOBAL
+    {
+      content: _t('Condensed view'),
+      action: () => toggleViewSetting('condensed'),
+      seperator: true,
+      show: true,
+      defaultChecked: viewSettings.condensed
     },
     {
-      content: _t('Expand all outcomes'),
-      action: () => expandAll(CfObjectType.OUTCOME),
-      icon: <ZoomInMapIcon />,
-      showIconInList: true,
-      show: true
+      content: _t('Display legend'),
+      action: () => toggleViewSetting('legend'),
+      show: true,
+      seperator: true,
+      defaultChecked: viewSettings.legend
     },
     {
-      content: _t('Collapse all outcomes'),
-      action: () => expandAll(CfObjectType.OUTCOME),
-      icon: <ZoomOutMapIcon />,
-      show: true
-    }
+      content: '',
+      sectionTitle: _t('Object Set')
+    },
+    // OBJECT SETS
+    ...objectSetOptions
   ]
   return (
-    <SimpleMenu
-      id="actions-menu"
-      data-test-id="ExpandCollapseMenu"
+    <SimpleSwitchMenu
+      id="view-settings-menu"
+      data-test-id="view-settings-menu"
       header={header}
       menuItems={menuItems}
     />
   )
 }
 
-//
 const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   const context = useContext(WorkflowConfigContext)
   const viewType = context.workflowView
@@ -213,4 +282,4 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   return <SimpleMenu id={'JumpToMenu'} menuItems={menuItems} header={header} />
 }
 
-export { JumpToMenu, ActionMenu, ExpandCollapseMenu }
+export { JumpToMenu, ActionMenu, ViewSettingsMenu }

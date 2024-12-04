@@ -1,6 +1,9 @@
 import * as Constants from '@cf/utility/constants'
 import { _t } from '@cf/utility/Utility.class'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
+import { selectAllNodes } from '@cfRedux/selectors/node.selector'
+import { selectAllWeeks } from '@cfRedux/selectors/week.selector'
+import { RootState } from '@cfRedux/store'
 import { AppState, TNode, TWeek } from '@cfRedux/types/type'
 import Legend from '@cfViews/common/Legend'
 import * as React from 'react'
@@ -12,19 +15,15 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * first pass on FV conversion is done
  *******************************************************/
 const WorkflowLegend = () => {
-  const stateNodes = useSelector<AppState, TNode[]>(
-    (state: AppState) => state.workspace.node
-  )
-  const stateWeeks = useSelector<AppState, TWeek[]>(
-    (state: AppState) => state.workspace.week
-  )
+  const nodes = useSelector((state: RootState) => selectAllNodes(state))
+  const weeks = useSelector((state: RootState) => selectAllWeeks(state))
 
   /*******************************************************
    * COMPONENTS
    *******************************************************/
 
   const Strategies = () => {
-    const strategies = stateWeeks
+    const strategies = weeks
       .map((week) => parseInt(week.strategyClassification.toString(), 10))
       .filter((value, index, self) => self.indexOf(value) === index)
       .filter((value) => value > 0)
@@ -54,7 +53,7 @@ const WorkflowLegend = () => {
   }
 
   const Contexts = () => {
-    const contexts = stateNodes
+    const contexts = nodes
       .map((node) => parseInt(node.contextClassification.toString(), 10))
       .filter((value, index, self) => self.indexOf(value) === index)
       .filter((value) => value > 0)
@@ -80,7 +79,7 @@ const WorkflowLegend = () => {
   }
 
   const Tasks = () => {
-    const tasks = stateNodes
+    const tasks = nodes
       .map((node) => parseInt(node.taskClassification.toString(), 10))
       .filter((value, index, self) => self.indexOf(value) === index)
       .filter((value) => value > 0)

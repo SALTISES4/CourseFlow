@@ -82,6 +82,7 @@ export interface EProject extends CourseFlowEntity {
   userPermissions: number
   favourite: boolean
   // objectPermission: ObjectPermission
+  disciplines: number[]
   objectSets: EObjectSet[]
   published: boolean
   type: CfObjectType.PROJECT
@@ -174,7 +175,7 @@ export interface ENode extends CourseFlowEntity {
   hasAssignment: boolean
   order: number
   week: number
-  sets: any[] // ..???
+  sets: number[]
   outcomenodeSet: number[]
   outcomenodeUniqueSet: number[]
   comments: number[]

@@ -42,7 +42,7 @@ export function newOutcomeQuery(
 ) {
   API_POST(COURSEFLOW_APP.globalContextData.path.post_paths.new_outcome, {
     workflowPk: workflowPk,
-    objectsetPk: object_setId
+    objectSetPk: object_setId
   }).then((response: EmptyPostResp) => {
     callBackFunction(response)
   })

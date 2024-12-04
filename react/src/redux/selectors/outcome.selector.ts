@@ -9,7 +9,7 @@ import { createSelector } from 'reselect'
 
 const selectOutcomes = (state: AppState) => state.outcome
 const selectOutcomeOutcome = (state: AppState) => state.outcomeoutcome
-const selectObjectSets = (state: AppState) => state.objectset
+const selectObjectSets = (state: AppState) => state.objectSet
 const selectWorkflowId = (state: AppState) => state.workspace.workflow.id
 // temp
 const stateProxy = (state: AppState) => state
@@ -183,7 +183,7 @@ export const selectOutcomeById = createSelector(
 //       data: updatedOutcome,
 //       hovertext: hovertext,
 //       prefix: prefix,
-//       objectSets: state.objectset,
+//       objectSets: state.objectSet,
 //       workflowId: state.workflow.id
 //     }
 //   }

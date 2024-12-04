@@ -32,7 +32,7 @@ const OutcomeTableView: React.FC<OwnProps> = () => {
     week,
     nodeweek,
     node,
-    objectset,
+    objectSet,
     columnworkflow,
     column,
     outcomeworkflow,
@@ -43,7 +43,7 @@ const OutcomeTableView: React.FC<OwnProps> = () => {
     week: state.week,
     nodeweek: state.nodeweek,
     node: state.node,
-    objectset: state.objectset,
+    objectSet: state.objectSet,
     columnworkflow: state.columnworkflow,
     column: state.column,
     outcomeworkflow: state.outcomeworkflow,
@@ -56,7 +56,7 @@ const OutcomeTableView: React.FC<OwnProps> = () => {
       outcome,
       outcomeworkflow,
       workflow.outcomes,
-      objectset
+      objectSet
     )
 
   // Get node categories based on sorting criteria
@@ -78,7 +78,7 @@ const OutcomeTableView: React.FC<OwnProps> = () => {
     const nodesOrdered = Utility.filterThenSortById<TNode>(
       node,
       nodeOrder
-    ).filter((node) => !Utility.checkSetHidden(node, objectset))
+    ).filter((node) => !Utility.checkSetHidden(node, objectSet))
 
     switch (workflow.outcomesSort) {
       case 0: {
@@ -187,11 +187,11 @@ const OutcomeTableView: React.FC<OwnProps> = () => {
   ))
 
   const outcomes = outcomesSorted.map((category) => (
-    <div key={category.objectset.title}>
-      {objectset.length > 0 && (
+    <div key={category.objectSet.title}>
+      {objectSet.length > 0 && (
         <div className="outcome-row outcome-category">
           <div className="outcome-head">
-            <h4>{category.objectset.title}</h4>
+            <h4>{category.objectSet.title}</h4>
           </div>
         </div>
       )}
@@ -251,7 +251,7 @@ export default OutcomeTableView
 //   | 'week'
 //   | 'nodeweek'
 //   | 'node'
-//   | 'objectset'
+//   | 'objectSet'
 //   | 'column'
 //   | 'outcomeworkflow'
 //   | 'outcome'
@@ -277,7 +277,7 @@ export default OutcomeTableView
 //       this.props.outcome,
 //       this.props.outcomeworkflow,
 //       this.props.workflow.outcomes,
-//       this.props.objectset
+//       this.props.objectSet
 //     )
 //   }
 //
@@ -303,7 +303,7 @@ export default OutcomeTableView
 //     const nodesOrdered = Utility.filterThenSortById<TNode>(
 //       this.props.node,
 //       nodeOrder
-//     ).filter((node) => !Utility.checkSetHidden(node, this.props.objectset))
+//     ).filter((node) => !Utility.checkSetHidden(node, this.props.objectSet))
 //
 //     switch (this.props.workflow.outcomesSort) {
 //       case 0: {
@@ -440,10 +440,10 @@ export default OutcomeTableView
 //
 //       const outcomes = outcomesSorted.map((category) => (
 //         <div>
-//           {this.props?.objectset?.length > 0 && (
+//           {this.props?.objectSet?.length > 0 && (
 //             <div className="outcome-row outcome-category">
 //               <div className="outcome-head">
-//                 <h4>{category.objectset.title}</h4>
+//                 <h4>{category.objectSet.title}</h4>
 //               </div>
 //             </div>
 //           )}
@@ -492,7 +492,7 @@ export default OutcomeTableView
 //     week: state.week,
 //     nodeweek: state.nodeweek,
 //     node: state.node,
-//     objectset: state.objectset,
+//     objectSet: state.objectSet,
 //     columnworkflow: state.columnworkflow,
 //     column: state.column,
 //     outcomeworkflow: state.outcomeworkflow,

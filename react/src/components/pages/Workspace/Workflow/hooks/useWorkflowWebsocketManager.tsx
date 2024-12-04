@@ -38,12 +38,12 @@ const convertWorkflowRESTResToAppState = (
     week: data.week,
     nodelink: data.nodelink,
     node: data.node,
+    objectSet: data.objectSet,
     //
     outcomeworkflow: data.outcomeworkflow,
     outcome: data.outcome,
     outcomenode: data.outcomenode,
     outcomeoutcome: data.outcomeoutcome,
-    objectset: data.objectset,
     strategy: data.strategy
   }
 }

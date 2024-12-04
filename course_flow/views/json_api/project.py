@@ -220,7 +220,7 @@ class ProjectEndpoint:
         translation_plural = body.get("translation_plural")
 
         try:
-            project.object_sets.create(
+            project.objectsets.create(
                 term=term,
                 title=title,
                 translation_plural=translation_plural,

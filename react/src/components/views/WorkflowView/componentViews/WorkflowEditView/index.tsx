@@ -1,6 +1,6 @@
 import { OuterContentWrap } from '@cf/mui/helper'
 import { CfObjectType } from '@cf/types/enum'
-import { RootState } from '@cfRedux/store'
+import { AppDispatch, RootState } from '@cfRedux/store'
 import { updateAllEntities } from '@cfRedux/thunks'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
@@ -15,7 +15,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 const WorkflowEditView = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   /*******************************************************
    * HOOKS: REDUX
    *******************************************************/
@@ -192,7 +192,7 @@ export default WorkflowEditView
 //
 // type ConnectedProps = {
 //   data: AppState['workflow']
-//   objectSets: AppState['objectset']
+//   objectSets: AppState['objectSet']
 //   week: AppState['week']
 //   node: AppState['node']
 //   outcome: AppState['outcome']
@@ -281,7 +281,7 @@ export default WorkflowEditView
 // }
 // const mapStateToProps = (state: AppState): ConnectedProps => ({
 //   data: state.workflow,
-//   objectSets: state.objectset,
+//   objectSets: state.objectSet,
 //   week: state.week,
 //   node: state.node,
 //   outcome: state.outcome

@@ -136,7 +136,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    objectSets: state.objectset
+    objectSets: state.objectSet
   }
 }
 

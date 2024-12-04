@@ -3,14 +3,14 @@ import { EventUnion } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
-import { weekChangeField } from '@cfRedux/slices/week.slice'
+import { AppDispatch } from '@cfRedux/store'
 import { updateAllEntities } from '@cfRedux/thunks'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQueryLegacy } from '@XMLHTTP/API/workspace.rtk'
 import { useDispatch } from 'react-redux'
 
 export const useMenuActions = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dispatchDialog } = useDialog()
 
   /*******************************************************
@@ -93,13 +93,12 @@ export const useMenuActions = () => {
     workflowType: WorkflowType
   ) {
     if (parentId != null) {
-
       duplicateBaseItemQuery(
         workflowId,
         workflowType,
         parentId,
         (responseData) => {
-          window.location.href = 'new iten path '
+          window.location.href = 'new item path '
         }
       )
     }

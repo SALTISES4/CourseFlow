@@ -51,7 +51,7 @@ import {
 
 type ConnectedProps = {
   data: AppState['workflow']
-  objectSets: AppState['objectset']
+  objectSets: AppState['objectSet']
   week: AppState['week']
   node: AppState['node']
   outcome: AppState['outcome']
@@ -629,7 +629,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    objectSets: state.objectset,
+    objectSets: state.objectSet,
     week: state.week,
     node: state.node,
     outcome: state.outcome

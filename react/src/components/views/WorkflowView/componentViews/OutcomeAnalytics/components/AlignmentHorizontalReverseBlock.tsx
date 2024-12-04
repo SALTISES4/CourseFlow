@@ -104,7 +104,7 @@ const mapStateToProps = (
       .filter(
         (outcome) => allowedChildOutcomeIdsFromOutcomes.indexOf(outcome.id) >= 0
       )
-      .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectset))
+      .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectSet))
       .map((outcome) => outcome.id)
 
     const allowedNodeIdsFromOutcomes = state.outcomenode
@@ -113,7 +113,7 @@ const mapStateToProps = (
 
     const allowedNodeIds = state.node
       .filter((node) => allowedNodeIdsFromOutcomes.indexOf(node.id) >= 0)
-      .filter((node) => !Utility.checkSetHidden(node, state.objectset))
+      .filter((node) => !Utility.checkSetHidden(node, state.objectSet))
       .map((node) => node.id)
 
     const nodeweeks = state.nodeweek.filter((nodeweek) =>
@@ -134,11 +134,11 @@ const mapStateToProps = (
     const allowedOutcomeIds = []
 
     const allowedNodeIds = state.node
-      .filter((node) => !Utility.checkSetHidden(node, state.objectset))
+      .filter((node) => !Utility.checkSetHidden(node, state.objectSet))
       .map((node) => node.id)
 
     const allowedChildOutcomeIds = state.outcome
-      .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectset))
+      .filter((outcome) => !Utility.checkSetHidden(outcome, state.objectSet))
       .map((outcome) => outcome.id)
 
     for (let i = 0; i < ownProps.baseOutcomes.length; i++) {

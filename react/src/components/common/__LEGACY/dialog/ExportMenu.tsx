@@ -138,17 +138,17 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
     if (this.props.data.objectSets.length > 0) {
       objectSets = [
         <h4>{_t('Object Set Visibility')}:</h4>,
-        this.props.data.objectSets.map((objectset) => (
+        this.props.data.objectSets.map((objectSet) => (
           <div>
             <input
-              onChange={this.inputChange.bind(this, 'set', objectset.id)}
+              onChange={this.inputChange.bind(this, 'set', objectSet.id)}
               name="objectSets[]"
-              value={objectset.id}
+              value={objectSet.id}
               type="checkbox"
-              id={objectset.id}
-              checked={!this.state[objectset.id]}
+              id={objectSet.id}
+              checked={!this.state[objectSet.id]}
             />
-            <label>{objectset.title}</label>
+            <label>{objectSet.title}</label>
           </div>
         ))
       ]

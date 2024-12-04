@@ -162,7 +162,7 @@ class ViewBarUnconnected extends React.Component<PropsType> {
   }
 }
 const mapStateToProps = (state: AppState): ConnectedProps => ({
-  objectSets: state.objectset
+  objectSets: state.objectSet
 })
 
 export default connect<ConnectedProps, DispatchProp, OwnProps, AppState>(

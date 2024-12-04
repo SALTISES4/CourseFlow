@@ -14,7 +14,7 @@ type ConnectedProps = {
   totalTime: number
   generalEducation: number
   specificEducation: number
-  objectSets: AppState['objectset']
+  objectSets: AppState['objectSet']
   nodes: any
 }
 type OwnProps = {
@@ -77,7 +77,7 @@ const mapStateToProps = (
   const nodesData = Utility.filterThenSortById(
     state.node,
     nodeWeeks.map((nodeWeek) => nodeWeek.node)
-  ).filter((node) => !Utility.checkSetHidden(node, state.objectset))
+  ).filter((node) => !Utility.checkSetHidden(node, state.objectSet))
   const linkedWfData = nodesData.map((node) => {
     if (node.representsWorkflow) {
       return { ...node, ...node.linkedWorkflowData }
@@ -137,7 +137,7 @@ const mapStateToProps = (
     totalTime: totalTime,
     generalEducation: generalEducation,
     specificEducation: specificEducation,
-    objectSets: state.objectset,
+    objectSets: state.objectSet,
     nodes: nodesData
   }
 }

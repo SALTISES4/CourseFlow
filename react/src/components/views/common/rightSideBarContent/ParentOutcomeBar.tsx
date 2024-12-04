@@ -47,7 +47,7 @@ class ParentOutcomeBarUnconnected extends React.Component<PropsType> {
         <div key={index}>
           <hr />
           <div>
-            <h4>{categoryItem.objectset.title}</h4>
+            <h4>{categoryItem.objectSet.title}</h4>
             {categoryItem.outcomes.map((outcomeItem, index) => (
               <div key={index} className="parent-outcome-node">
                 {/* @todo double check these vars  */}

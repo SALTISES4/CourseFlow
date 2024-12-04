@@ -24,7 +24,7 @@ export type WorkSpaceAppState = Pick<
   | 'outcome'
   | 'outcomenode'
   | 'outcomeoutcome'
-  | 'objectset'
+  | 'objectSet'
   | 'strategy'
   //   | 'parentWorkflow'
   //   | 'parentNode'

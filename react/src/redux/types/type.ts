@@ -35,6 +35,7 @@ export type WorkspaceAppState = {
   workflow: TWorkflow
   node: TNode[]
   strategy: TStrategy[]
+  objectSet: TObjectSet[]
 }
 
 export type AppState = {
@@ -48,7 +49,7 @@ export type AppState = {
   outcome: TOutcome[]
   outcomenode: TOutcomenode[]
   outcomeoutcome: TOutcomeOutcome[]
-  objectset: TObjectSet[]
+  objectSet: TObjectSet[]
   //
   sidebar: SidebarState
   //
@@ -110,7 +111,7 @@ export type TNodelink = ENodelink & {
 
 // @todo i think this is missing attributes
 export type TObjectSet = EObjectSet & {
-  hidden?: boolean // not sure if this is the same objectset
+  hidden?: boolean
 }
 
 export type TStrategy = EStrategy

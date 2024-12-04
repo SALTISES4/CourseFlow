@@ -1,18 +1,18 @@
-import BinarySlider from '@cfComponents/UIPrimitives/Slider'
+import { viewsettingsUpdate } from '@cfRedux/slices/viewsettings.slice'
+import { RootState } from '@cfRedux/store'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import React, { ReactElement, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Legend = ({ children }: { children: ReactElement }) => {
-  const key = 'show_legend'
-
-  const [showLegend, setShowLegend] = useState<boolean>(() => {
-    return JSON.parse(localStorage.getItem('show_legend') || 'false')
-  })
+  const showLegend = useSelector(
+    (state: RootState) => state.viewsettings.legend
+  )
+  const dispatch = useDispatch()
 
   function toggleLegend() {
     const newShowLegend = !showLegend
-    localStorage.setItem(key, JSON.stringify(newShowLegend))
-    setShowLegend(newShowLegend)
+    dispatch(viewsettingsUpdate({ legend: newShowLegend }))
   }
 
   /*******************************************************
@@ -20,8 +20,6 @@ const Legend = ({ children }: { children: ReactElement }) => {
    *******************************************************/
   return (
     <>
-      <h4>Legend</h4>
-      <BinarySlider handleChange={toggleLegend} value={showLegend} />
       {showLegend && (
         <div // imported from legacy css
           style={{

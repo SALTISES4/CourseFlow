@@ -78,19 +78,19 @@ const OutcomeEditView: React.FC<PropsType> = ({ objectId, parentId }) => {
     }
   }, [data])
 
-  const addNewWrapper = (objectset: any) => {
-    newOutcomeQuery(workflow.id, objectset.id)
+  const addNewWrapper = (objectSet: any) => {
+    newOutcomeQuery(workflow.id, objectSet.id)
   }
   /*******************************************************
    * COMPONENTS
    *******************************************************/
-  const AddNew: React.FC<{ objectset: any }> = ({ objectset }) => {
+  const AddNew: React.FC<{ objectSet: any }> = ({ objectSet }) => {
     if (workflow.workflowPermissions.write) {
       return (
         <div
           id="add-new-outcome"
           className="menu-create hover-shade"
-          onClick={() => addNewWrapper(objectset)}
+          onClick={() => addNewWrapper(objectSet)}
         >
           <img
             className="create-button"
@@ -112,14 +112,14 @@ const OutcomeEditView: React.FC<PropsType> = ({ objectId, parentId }) => {
               'Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.'
             )}
           </div>
-          <AddNew objectset={{}} />
+          <AddNew objectSet={{}} />
         </>
       )
     }
 
     return data.map((category: any, index: number) => (
       <div key={index} className="outcome-category">
-        <h4>{`${category.objectset.title}:`}</h4>
+        <h4>{`${category.objectSet.title}:`}</h4>
         <div className="outcome-category-block">
           {category.outcomes.map((outcome: any) => {
             const myClass = outcome.throughNoDrag
@@ -142,7 +142,7 @@ const OutcomeEditView: React.FC<PropsType> = ({ objectId, parentId }) => {
               </div>
             )
           })}
-          <AddNew objectset={category.objectset} />
+          <AddNew objectSet={category.objectSet} />
         </div>
       </div>
     ))
@@ -222,20 +222,20 @@ export default OutcomeEditView
 //     }
 //   }
 //
-//   addNewWrapper(objectset) {
-//     newOutcomeQuery(this.props.workflow.id, objectset.id)
+//   addNewWrapper(objectSet) {
+//     newOutcomeQuery(this.props.workflow.id, objectSet.id)
 //   }
 //
 //   /*******************************************************
 //    * COMPONENTS
 //    *******************************************************/
-//   AddNew = ({ objectset }: any) => {
+//   AddNew = ({ objectSet }: any) => {
 //     if (this.props.workflow.workflowPermissions.write) {
 //       return (
 //         <div
 //           id="add-new-outcome"
 //           className="menu-create hover-shade"
-//           onClick={this.addNewWrapper.bind(this, objectset)}
+//           onClick={this.addNewWrapper.bind(this, objectSet)}
 //         >
 //           <img
 //             className="create-button"
@@ -259,14 +259,14 @@ export default OutcomeEditView
 //             'Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.'
 //           )}
 //         </div>
-//         <this.AddNew objectset={{}} />
+//         <this.AddNew objectSet={{}} />
 //       </>
 //     )
 //
 //     const outcomes = this.props.data.length
 //       ? this.props.data.map((category, index) => (
 //           <div key={index} className="outcome-category">
-//             <h4>{category.objectset.title + ':'}</h4>
+//             <h4>{category.objectSet.title + ':'}</h4>
 //             <div className="outcome-category-block">
 //               {category.outcomes.map((outcome) => {
 //                 let myClass = 'outcome-workflow'
@@ -290,7 +290,7 @@ export default OutcomeEditView
 //                 )
 //               })}
 //
-//               <this.AddNew objectset={category.objectset} />
+//               <this.AddNew objectSet={category.objectSet} />
 //             </div>
 //           </div>
 //         ))

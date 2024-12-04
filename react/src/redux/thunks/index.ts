@@ -1,57 +1,37 @@
 import { CfObjectType } from '@cf/types/enum'
-import { nodeChangeField } from '@cfRedux/slices/node.slice'
-import { weekChangeField } from '@cfRedux/slices/week.slice'
-import { AppState, TNode, TWeek } from '@cfRedux/types/type'
-import { ThunkAction } from '@reduxjs/toolkit'
-import { AnyAction } from 'redux'
+import { selectAllNodes } from '@cfRedux/selectors/node.selector'
+import { selectAllWeeks } from '@cfRedux/selectors/week.selector'
+import { updateManyNodes } from '@cfRedux/slices/node.slice'
+import { updateManyWeeks } from '@cfRedux/slices/week.slice'
+import { RootState } from '@cfRedux/store'
+import { TNode, TWeek } from '@cfRedux/types/type'
+import { Action, ThunkAction } from '@reduxjs/toolkit'
 
 export const updateAllEntities =
   (
     type: CfObjectType,
     updateFn: (item: TWeek | TNode) => Partial<TWeek>
-  ): ThunkAction<void, AppState, unknown, AnyAction> =>
+  ): ThunkAction<void, RootState, unknown, Action> =>
   (dispatch, getState) => {
+    const state = getState() // Get the current state
     switch (type) {
       case CfObjectType.NODE: {
-        const currentNodes = getState().workspace.node
-
-        if (!Array.isArray(currentNodes)) {
-          return
-        }
-
-        currentNodes.forEach((item) => {
-          const updatedData = updateFn(item)
-          if (Object.keys(updatedData).length > 0) {
-            dispatch(
-              nodeChangeField({
-                id: item.id,
-                data: updatedData
-              })
-            )
-          }
-        })
+        const nodes = selectAllNodes(state)
+        const updates = nodes.map((node) => ({
+          id: node.id,
+          changes: { isDropped: !node.isDropped }
+        }))
+        dispatch(updateManyNodes(updates))
         break
       }
 
       case CfObjectType.WEEK: {
-        const currentWeeks = getState().workspace.week
-
-        if (!Array.isArray(currentWeeks)) {
-          console.error('Error: state.week is not an array', currentWeeks)
-          return
-        }
-
-        currentWeeks.forEach((item) => {
-          const updatedData = updateFn(item)
-          if (Object.keys(updatedData).length > 0) {
-            dispatch(
-              weekChangeField({
-                id: item.id,
-                data: updatedData
-              })
-            )
-          }
-        })
+        const weeks = selectAllWeeks(state)
+        const updates = weeks.map((week) => ({
+          id: week.id,
+          changes: { isDropped: !week.isDropped }
+        }))
+        dispatch(updateManyWeeks(updates))
         break
       }
     }
