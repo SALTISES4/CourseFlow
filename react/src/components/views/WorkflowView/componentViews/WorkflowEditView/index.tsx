@@ -1,5 +1,6 @@
 import { OuterContentWrap } from '@cf/mui/helper'
 import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/Utility.class'
 import { updateAllEntities } from '@cfRedux/thunks'
 import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
@@ -11,7 +12,9 @@ import {
   horizontalListSortingStrategy,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import React from 'react'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import * as Styled from './styles'
@@ -26,12 +29,13 @@ const WorkflowEditView = () => {
   /*******************************************************
    * HOOKS: STATE
    *******************************************************/
-  const [weeksDragState, setWeeksDragState] = React.useState(
-    workflow.weeks || []
-  )
-  const [columnsDragState, setColumnsDragState] = React.useState(
-    workflow.columns || []
-  )
+  const [weekReordering, setWeekReordering] = useState(false)
+  const [weekOrder, setWeekOrder] = useState(workflow.weeks || [])
+  const [columnOrder, setColumnOrder] = useState(workflow.columns || [])
+
+  const toggleWeekReordering = useCallback(() => {
+    setWeekReordering(!weekReordering)
+  }, [weekReordering])
 
   /*******************************************************
    * COMPONENTS
@@ -70,16 +74,16 @@ const WorkflowEditView = () => {
       return
     }
 
-    const oldIndex = columnsDragState.indexOf(active.id)
-    const newIndex = columnsDragState.indexOf(over.id)
+    const oldIndex = columnOrder.indexOf(active.id)
+    const newIndex = columnOrder.indexOf(over.id)
 
     const reorderedColumns = WorkflowFunctions.reorderArray(
-      columnsDragState,
+      columnOrder,
       oldIndex,
       newIndex
     )
     // set local state
-    setWeeksDragState(reorderedColumns)
+    setWeekOrder(reorderedColumns)
     // commit to DB
     //    WorkflowAction.
   }
@@ -88,11 +92,21 @@ const WorkflowEditView = () => {
     //  dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
   }
 
-  const columns = columnsDragState.map((columnId) => (
+  const columns = columnOrder.map((columnId) => (
     <ColumnWrapper
       key={`columnworkflow-${columnId}`}
       objectId={columnId}
       parentId={workflow.id}
+    />
+  ))
+
+  const weeks = weekOrder.map((weekId) => (
+    <WeekWrapper
+      condensed={false} // TODO: where does this come from?
+      key={`weekworkflow-${weekId}`}
+      objectId={weekId}
+      parentId={workflow.id}
+      reordering={weekReordering}
     />
   ))
 
@@ -105,12 +119,12 @@ const WorkflowEditView = () => {
       return
     }
 
-    const oldIndex = weeksDragState.indexOf(active.id)
-    const newIndex = weeksDragState.indexOf(over.id)
+    const oldIndex = weekOrder.indexOf(active.id)
+    const newIndex = weekOrder.indexOf(over.id)
 
     // calculate new order
     const reorderedWeeks: number[] = WorkflowFunctions.reorderArray(
-      weeksDragState,
+      weekOrder,
       oldIndex,
       newIndex
     )
@@ -119,7 +133,7 @@ const WorkflowEditView = () => {
     // dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: true })))
 
     // set local state
-    setWeeksDragState(reorderedWeeks)
+    setWeekOrder(reorderedWeeks)
 
     // commit to DB
     //    WorkflowAction.
@@ -141,7 +155,7 @@ const WorkflowEditView = () => {
             onDragStart={handleColumnDragStart}
           >
             <SortableContext
-              items={columnsDragState}
+              items={columnOrder}
               strategy={horizontalListSortingStrategy}
             >
               {columns}
@@ -149,25 +163,31 @@ const WorkflowEditView = () => {
           </DndContext>
         </Styled.CellRow>
 
-        <div data-test-id="weeks-block">
-          <DndContext
-            onDragEnd={handleWeekDragEnd}
-            onDragStart={handleWeekDragStart}
+        <Box sx={{ my: 3 }}>
+          <Button
+            variant={weekReordering ? 'contained' : 'outlined'}
+            onClick={toggleWeekReordering}
           >
-            <SortableContext
-              items={weeksDragState}
-              strategy={verticalListSortingStrategy}
+            {_t(weekReordering ? 'Save' : 'Reorder Weeks')}
+          </Button>
+        </Box>
+
+        <div data-test-id="weeks-block">
+          {weekReordering ? (
+            <DndContext
+              onDragEnd={handleWeekDragEnd}
+              onDragStart={handleWeekDragStart}
             >
-              {weeksDragState.map((weekId) => (
-                <WeekWrapper
-                  condensed={false} // TODO: where does this come from?
-                  key={`weekworkflow-${weekId}`}
-                  objectId={weekId}
-                  parentId={workflow.id}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+              <SortableContext
+                items={weekOrder}
+                strategy={verticalListSortingStrategy}
+              >
+                {weeks}
+              </SortableContext>
+            </DndContext>
+          ) : (
+            weeks
+          )}
         </div>
       </OuterContentWrap>
       <CanvasPlaceholder />

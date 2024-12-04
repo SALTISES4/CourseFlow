@@ -2,6 +2,24 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
+export const DraggingWeekWrapper = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  alignItems: 'center',
+  gap: theme.spacing(2),
+  '&:hover': {
+    cursor: 'grab'
+  },
+  '[aria-pressed=true] &': {
+    cursor: 'grabbing'
+  },
+  '& > div': {
+    margin: 0,
+    flexGrow: 1
+  }
+}))
+
 export const WeekWrapper = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(2),

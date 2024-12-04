@@ -20,17 +20,18 @@ import DroppableCell from '../DroppableCell'
 import * as Styled from './styles'
 import { Cell, CellRow, DebugCellInfo } from '../../styles'
 
-type OwnProps = {
+type PropsType = {
   objectId: number
   parentId: number
+  reordering: boolean
 }
 
-export type WeekUnconnectedPropsType = OwnProps
+export type WeekUnconnectedPropsType = PropsType
 
 /**
  *
  **/
-const Week = ({ objectId, parentId }) => {
+const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
   /*******************************************************
    * REDUX
    *******************************************************/
@@ -129,6 +130,9 @@ const Week = ({ objectId, parentId }) => {
     )
   }, [])
 
+  // always collapse if reordering is ongoing, otherwise rely on week data
+  const expanded = reordering === true ? false : weekData.week.isDropped
+
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -154,11 +158,14 @@ const Week = ({ objectId, parentId }) => {
         )
       }}
     >
-      <Styled.WeekHeader expanded={weekData.week.isDropped}>
+      <Styled.WeekHeader expanded={expanded}>
         <Styled.WeekTitle variant="subtitle2">
           <TitleText text={weekData.week.title} defaultText={defaultText} />
         </Styled.WeekTitle>
-        <IconButton onClick={toggleCollapse}>
+        <IconButton
+          onClick={toggleCollapse}
+          sx={{ opacity: reordering ? 0 : 1 }}
+        >
           <KeyboardArrowDown />
         </IconButton>
       </Styled.WeekHeader>
@@ -169,7 +176,7 @@ const Week = ({ objectId, parentId }) => {
        and css
       */}
 
-      {weekData.week.isDropped && (
+      {expanded && (
         <div
           id={`${objectId}-node-block`}
           className="node-block"
