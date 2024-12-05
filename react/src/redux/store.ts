@@ -1,3 +1,4 @@
+import { listenerMiddleware } from '@cfRedux/middleware/viewsettings.localstorage'
 import { legacyWorkflowReducers, workspaceReducer } from '@cfRedux/Reducers'
 import sidebarReducer from '@cfRedux/slices/sidebar.slice'
 import viewsettingsReducer from '@cfRedux/slices/viewsettings.slice'
@@ -18,8 +19,11 @@ const store = configureStore({
   devTools: process.env.NODE_ENV !== 'production',
   // Adding the api middleware enables caching, invalidation, polling,
   // and other useful features of `rtk-query`.
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(cfApi.middleware)
+  middleware: (getDefaultMiddleware) => {
+    return getDefaultMiddleware()
+      .prepend(listenerMiddleware.middleware)
+      .concat(cfApi.middleware)
+  }
 })
 export type AppDispatch = typeof store.dispatch
 export type RootState = ReturnType<typeof store.getState>

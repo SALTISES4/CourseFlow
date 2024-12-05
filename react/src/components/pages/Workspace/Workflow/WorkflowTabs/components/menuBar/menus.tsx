@@ -21,14 +21,12 @@ import EditIcon from '@mui/icons-material/Edit'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
 import TuneIcon from '@mui/icons-material/Tune'
-import { produce } from 'immer'
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-type ViewSettingsStateType = {
-  [index: string]: boolean
-}
-
+/*******************************************************
+ * ACTION MENU
+ *******************************************************/
 const ActionMenu = () => {
   const userContext = useContext(UserContext)
   const workflow = useSelector((state: RootState) => state.workspace.workflow)
@@ -134,6 +132,9 @@ const ActionMenu = () => {
   return <MenuWithOverflow menuItems={menuItems} size={2} />
 }
 
+/*******************************************************
+ * VIEW SETTINGS MENU
+ *******************************************************/
 const ViewSettingsMenu = () => {
   const objectSets = useSelector((state: RootState) =>
     selectAllObjectSets(state)
@@ -141,17 +142,11 @@ const ViewSettingsMenu = () => {
   const viewSettings = useSelector((state: RootState) => state.viewsettings)
 
   const { expandAll, collapseAll } = useMenuActions()
-  const [viewState, setViewState] = useState<ViewSettingsStateType>({})
   const dispatch = useDispatch()
 
-  const onSwitchMenuItemChange = (key: string, checked: boolean) => {
-    setViewState(
-      produce((draft) => {
-        draft[key] = checked
-      })
-    )
-  }
-
+  /*******************************************************
+   * FUNCTIONS / ACTIONS
+   *******************************************************/
   function toggleExpandWeeks() {
     const weeks = viewSettings.expandedWeeks
     if (!weeks) {
@@ -189,11 +184,15 @@ const ViewSettingsMenu = () => {
     dispatch(viewsettingsUpdate({ objectset: clonedObjectset }))
   }
 
+  /*******************************************************
+   * SUBCOMPONENTS
+   *******************************************************/
   const objectSetOptions = objectSets.map((item, index) => {
     return {
       content: item.title,
       action: () => toggleObjectSet(item.id),
-      show: true
+      show: true,
+      defaultChecked: viewSettings.objectset.find((id) => id === item.id)
     }
   })
 
@@ -258,6 +257,9 @@ const ViewSettingsMenu = () => {
   )
 }
 
+/*******************************************************
+ * JUMP MENU
+ *******************************************************/
 const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   const context = useContext(WorkflowConfigContext)
   const viewType = context.workflowView

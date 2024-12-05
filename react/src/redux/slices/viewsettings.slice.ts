@@ -10,17 +10,27 @@ export type ViewsettingsState = {
   objectset: number[]
 }
 
-// this should come from localstorage
-const initialState: ViewsettingsState = {
-  expandedWeeks: true,
-  expandedNodes: true,
-  expandedOutcomes: true,
-  condensed: false,
-  legend: false,
-  objectset: []
+const loadStateFromLocalStorage = (): ViewsettingsState => {
+  const savedState = localStorage.getItem('viewSettings')
+  if (savedState) {
+    try {
+      return JSON.parse(savedState) as ViewsettingsState
+    } catch (error) {
+      console.error('Failed to parse viewSettings from localStorage:', error)
+    }
+  }
+  return {
+    expandedWeeks: true,
+    expandedNodes: true,
+    expandedOutcomes: true,
+    condensed: false,
+    legend: false,
+    objectset: []
+  }
 }
 
-const viewsettingsSlice = createSlice({
+const initialState: ViewsettingsState = loadStateFromLocalStorage()
+export const viewsettingsSlice = createSlice({
   name: SliceNamespace.VIEWSETTINGS,
   initialState,
   reducers: {
