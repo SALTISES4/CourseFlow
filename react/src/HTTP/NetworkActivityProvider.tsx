@@ -7,7 +7,7 @@ import LinearProgress, {
   linearProgressClasses
 } from '@mui/material/LinearProgress'
 import { styled } from '@mui/material/styles'
-import React, {  useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: 10,
@@ -105,7 +105,9 @@ const NetworkActivityProvider = () => {
       } finally {
         setRequestCount((prevCount) => prevCount - 1)
         if (requestCount <= 1) {
-          setIsLoading(false)
+          setTimeout(() => {
+            setIsLoading(false)
+          }, 500)
         }
       }
     }

@@ -13,6 +13,7 @@ from rest_framework.response import Response
 
 from course_flow.apps import logger
 from course_flow.models import Column, Node, OutcomeNode, Week, Workflow
+from course_flow.models.objectset import ObjectSet
 from course_flow.models.relations import (
     ColumnWorkflow,
     NodeLink,
@@ -291,7 +292,7 @@ class NodeEndpoint:
     @api_view(["POST"])
     # @user_can_edit("nodePk")
     # @user_can_edit(False)
-    def node_link__create(request: Request) -> Response:
+    def node_link__create(request: Request, pk: int) -> Response:
         """
         really this is node node
         :param request:
@@ -299,7 +300,7 @@ class NodeEndpoint:
         """
         body = request.data
 
-        node_id = body.get("node_pk")
+        node_id = pk
         target_id = body.get("object_id")
         target_type = body.get("object_type")
         source_port = body.get("source_port")
@@ -334,6 +335,39 @@ class NodeEndpoint:
         )
 
         return Response({"message": "success"})
+
+    @staticmethod
+    @api_view(["POST"])
+    # @user_can_edit("nodePk")
+    # @user_can_edit(False)
+    def toggle_object_set(request: Request, pk: int) -> Response:
+        """ """
+        body = request.data
+
+        node_id = pk
+        object_set_id = body.get("object_set_id")
+
+        if not object_set_id:
+            return Response(
+                {"error": "object_set_id is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            node = Node.objects.get(pk=node_id)
+        except Node.DoesNotExist:
+            return Response({"error": "Node not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            obj_set = ObjectSet.objects.get(pk=object_set_id)
+        except ObjectSet.DoesNotExist:
+            return Response({"error": "ObjectSet not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if node.sets.filter(pk=obj_set.pk).exists():
+            node.sets.remove(obj_set)
+            return Response({"message": "ObjectSet removed from Node"}, status=status.HTTP_200_OK)
+        else:
+            node.sets.add(obj_set)
+            return Response({"message": "ObjectSet added to Node"}, status=status.HTTP_200_OK)
 
     # @staticmethod
     # @api_view(["POST"])

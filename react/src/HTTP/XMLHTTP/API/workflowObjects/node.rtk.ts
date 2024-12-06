@@ -109,6 +109,24 @@ const extendedApi = cfApi.injectEndpoints({
         }
       }
     }),
+    toggleObjectSetNode: builder.mutation<
+      EmptyPostResp,
+      {
+        id: number
+        payload: {
+          objectSetId: number
+        }
+      }
+    >({
+      query: (args) => {
+        const base = apiPaths.json_api.node.toggle_object_set
+        return {
+          method: Verb.POST,
+          url: generatePath(base, { id: args.id }),
+          body: args.payload
+        }
+      }
+    }),
     linkToWorkflow: builder.mutation<
       EmptyPostResp,
       {
@@ -156,7 +174,8 @@ export const {
   useDeleteSoftNodeMutation,
   useRestoreNodeMutation,
   useDuplicateNodeMutation,
-  useUpdatePositionMutation: useUpdatePositionNodeMutation,
+  useUpdatePositionNodeMutation,
   useLinkToWorkflowMutation,
-  useNodelinkCreateMutation
+  useNodelinkCreateMutation,
+  useToggleObjectSetNodeMutation
 } = extendedApi

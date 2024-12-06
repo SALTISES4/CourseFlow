@@ -192,7 +192,7 @@ const ViewSettingsMenu = () => {
       content: item.title,
       action: () => toggleObjectSet(item.id),
       show: true,
-      defaultChecked: viewSettings.objectset.find((id) => id === item.id)
+      defaultChecked: !!viewSettings.objectset.find((id) => id === item.id)
     }
   })
 

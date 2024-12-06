@@ -371,6 +371,11 @@ node_endpoints = [
         name="node--update-position",
     ),
     path(
+        "node/<int:pk>/toggle-object-set",
+        NodeEndpoint.toggle_object_set,
+        name="node--toggle-object-set",
+    ),
+    path(
         "node/<int:pk>/link-to-workflow",
         NodeEndpoint.link_to_workflow,
         name="node--link-to-node",

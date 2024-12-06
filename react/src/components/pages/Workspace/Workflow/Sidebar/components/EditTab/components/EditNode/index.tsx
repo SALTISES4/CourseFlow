@@ -20,6 +20,7 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { updateValueQuery } from '@XMLHTTP/API/update'
+import { useToggleObjectSetNodeMutation } from '@XMLHTTP/API/workflowObjects/node.rtk'
 import { useCallback, useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -27,7 +28,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import optionsData from './optionsData'
 import { NodeForm } from './types'
 
-const EditNode = ({ id }) => {
+const EditNode = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -35,6 +36,7 @@ const EditNode = ({ id }) => {
   const node = useSelector((state: RootState) =>
     selectNodeById(state, sidebarData.edit.id)
   )
+
   // these are created and attached to the parent project, they are like 'all available tags'
   const objectSets = useSelector((state: RootState) =>
     selectAllObjectSets(state)
@@ -42,6 +44,27 @@ const EditNode = ({ id }) => {
   const dispatch = useDispatch()
 
   const [linkedWorkflow, setLinkedWorkflow] = useState(false)
+
+  const [mutate] = useToggleObjectSetNodeMutation()
+  /*******************************************************
+   * RHF
+   *******************************************************/
+  const formValues = {
+    title: node.title,
+    description: node.description,
+    ponderation: {
+      theory: String(node.ponderationTheory),
+      practice: String(node.ponderationPractical),
+      individual: String(node.ponderationIndividual),
+      generalEdu: String(node.ponderationIndividual),
+      specificEdu: String(node.ponderationIndividual)
+    },
+    contextClassification: Number(node.contextClassification) || 0, // context_classification
+    taskClassification: Number(node.taskClassification) || 1, // task_classification
+    amount: node.timeRequired || '', // time_required
+    timeUnits: node.timeUnits || 1, // time units
+    sets: node.sets || [] // node_sets
+  }
 
   const {
     control,
@@ -51,63 +74,42 @@ const EditNode = ({ id }) => {
     handleSubmit,
     watch,
     reset,
-    formState: { errors, isDirty }
+    formState: { errors, isDirty, dirtyFields }
   } = useForm<NodeForm>({
     // @todo do i need to set the defaults here?
-    defaultValues: {
-      title: node.title,
-      description: node.description,
-      ponderation: {
-        theory: String(node.ponderationTheory),
-        practice: String(node.ponderationPractical),
-        individual: String(node.ponderationIndividual),
-        generalEdu: String(node.ponderationIndividual),
-        specificEdu: String(node.ponderationIndividual)
-      },
-      contextType: Number(node.contextClassification) || 0, // context_classification
-      taskType: Number(node.taskClassification) || 0, // task_classification
-      amount: node.timeRequired || '', // time_required
-      unitType: node.timeUnits || 0, // time units
-      objectSets: node.sets || []
-    }
+    defaultValues: formValues
   })
   const watchedFields = watch()
+  const watchObjecSets = watch('sets')
+  const ponderation = watch('linkedWorkflow')
+    ? watch('linkedWorkflow.ponderation')
+    : watch('ponderation')
 
   /*******************************************************
    * LIFECYCLE
    *******************************************************/
+
+  /*******************************************************
+   * HANDLE OBJECTSETS (TAGS) ONLY
+   *******************************************************/
   useEffect(() => {
     if (node && !isDirty) {
-      reset({
-        title: node.title,
-        description: node.description,
-        ponderation: {
-          theory: String(node.ponderationTheory),
-          practice: String(node.ponderationPractical),
-          individual: String(node.ponderationIndividual),
-          generalEdu: String(node.ponderationIndividual),
-          specificEdu: String(node.ponderationIndividual)
-        },
-        contextType: Number(node.contextClassification) || 0, // context_classification
-        taskType: Number(node.taskClassification) || 0, // task_classification
-        amount: node.timeRequired || '', // time_required
-        unitType: node.timeUnits || 0, // time units
-        objectSets: node.sets || [] // node_sets
-      })
+      reset(formValues)
     }
   }, [reset, isDirty, node])
 
+  // @todo this needs work
   const debouncedDispatch = useCallback(
     debounce((data) => {
       dispatch(
         nodeChangeField({
           id: sidebarData.edit.id,
-          data: {
-            title: data.title,
-            description: data.description
-          }
+          data
         })
       )
+
+      // dirty fields does not register?
+      //      if()
 
       // update the server
       updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
@@ -123,7 +125,27 @@ const EditNode = ({ id }) => {
     if (isDirty) {
       debouncedDispatch(formValues)
     }
-  }, [watchedFields, isDirty, getValues, debouncedDispatch])
+  }, [watchedFields, isDirty, debouncedDispatch])
+
+  /*******************************************************
+   * HANDLE OBJECTSETS (TAGS) ONLY
+   *******************************************************/
+  useEffect(() => {
+    if (watchObjecSets.length > node.sets.length) {
+      const newId = watchObjecSets.find((id) => !node.sets.includes(id))
+      if (newId) {
+        console.log('new id')
+        mutate({ id: node.id, payload: { objectSetId: newId } })
+      }
+    } else if (watchObjecSets.length < node.sets.length) {
+      const removedId = node.sets.find((id) => !watchObjecSets.includes(id))
+      if (removedId) {
+        mutate({ id: node.id, payload: { objectSetId: removedId } })
+      }
+    }
+
+    // Update previousSets to currentSets after processing
+  }, [watchObjecSets, node.sets])
 
   /*******************************************************
    * FUNCTIONS
@@ -141,14 +163,10 @@ const EditNode = ({ id }) => {
     setValue('linkedWorkflow', undefined)
   }
 
-  const ponderation = watch('linkedWorkflow')
-    ? watch('linkedWorkflow.ponderation')
-    : watch('ponderation')
   /*******************************************************
    * RENDER
    *******************************************************/
-
-  const Temp = (
+  const BottomButtons = () => (
     <SC.SidebarActions>
       <Button
         variant="contained"
@@ -228,7 +246,7 @@ const EditNode = ({ id }) => {
             <FormControl fullWidth>
               <InputLabel id="context-type-select-label">Context</InputLabel>
               <Controller
-                name="contextType"
+                name="contextClassification"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -249,7 +267,7 @@ const EditNode = ({ id }) => {
             <FormControl fullWidth>
               <InputLabel id="task-type-select-label">Type of task</InputLabel>
               <Controller
-                name="taskType"
+                name="taskClassification"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -278,7 +296,7 @@ const EditNode = ({ id }) => {
               <FormControl sx={{ flexGrow: 1 }}>
                 <InputLabel id="unit-type-select-label">Unit type</InputLabel>
                 <Controller
-                  name="unitType"
+                  name="timeUnits"
                   control={control}
                   render={({ field }) => (
                     <Select
@@ -298,7 +316,7 @@ const EditNode = ({ id }) => {
             </Stack>
 
             <Controller
-              name="objectSets"
+              name="sets"
               control={control}
               render={({ field }) => (
                 <Autocomplete
@@ -308,7 +326,14 @@ const EditNode = ({ id }) => {
                   isOptionEqualToValue={(option, value) =>
                     option.id === value.id
                   }
-                  onChange={(_, value) => field.onChange(value)}
+                  value={
+                    objectSets.filter((obj) => field.value?.includes(obj.id)) ||
+                    []
+                  } // Sync form data to objects
+                  onChange={(_, value) => {
+                    const ids = value.map((v) => v.id)
+                    field.onChange(ids)
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -368,6 +393,7 @@ const EditNode = ({ id }) => {
               </Stack>
             </>
           )}
+          <BottomButtons />
         </SC.SidebarContent>
       </SC.SidebarInnerWrap>
     </form>
