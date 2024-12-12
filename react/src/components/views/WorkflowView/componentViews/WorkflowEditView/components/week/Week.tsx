@@ -39,6 +39,9 @@ const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
   const weekData = useSelector((state: AppState) =>
     selectWeekById(state, objectId)
   )
+  const sidebarDragTarget = useSelector(
+    (state: AppState) => state.sidebar.dragging.target
+  )
   const workflow = useSelector((state: AppState) => state.workflow)
   /*******************************************************
    * HOOKS: STATE
@@ -182,17 +185,21 @@ const Week = ({ objectId, parentId, reordering = false }: PropsType) => {
           className="node-block"
           ref={nodeBlock}
         >
-          <DndContext
-            onDragEnd={handleNodeDragEnd}
-            onDragStart={handleNodeDragStart}
-          >
-            <SortableContext
-              items={nodesDragState}
-              strategy={rectSortingStrategy}
+          {sidebarDragTarget ? (
+            <Nodes />
+          ) : (
+            <DndContext
+              onDragEnd={handleNodeDragEnd}
+              onDragStart={handleNodeDragStart}
             >
-              <Nodes />
-            </SortableContext>
-          </DndContext>
+              <SortableContext
+                items={nodesDragState}
+                strategy={rectSortingStrategy}
+              >
+                <Nodes />
+              </SortableContext>
+            </DndContext>
+          )}
         </div>
       )}
       <StrategyTabIcon

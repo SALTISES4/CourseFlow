@@ -17,12 +17,7 @@ import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useW
 import { sidebarDragTarget } from '@cfRedux/slices/sidebar.slice'
 import { AppState } from '@cfRedux/types/type'
 import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent
-} from '@dnd-kit/core'
+import { DndContext, DragOverlay, DragStartEvent } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
@@ -100,12 +95,7 @@ const WorkflowTabs = () => {
   }
 
   function handleDragEnd() {
-    console.log(
-      'stopped dragging',
-      dragging.target,
-      'at coords',
-      dragging.coords
-    )
+    console.log('dropped', dragging.target, 'at coords', dragging.coords)
     dispatch(sidebarDragTarget(null))
   }
 

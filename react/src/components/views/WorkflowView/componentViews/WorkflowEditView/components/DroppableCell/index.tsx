@@ -1,9 +1,9 @@
-import { AppState } from '@cf/redux/types/type'
 import { sidebarUpdateDragCoords } from '@cfRedux/slices/sidebar.slice'
+import { useDroppable } from '@dnd-kit/core'
 import { SxProps } from '@mui/material'
 import Box from '@mui/material/Box'
-import { ReactNode, useCallback, useEffect, useRef } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { ReactNode, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 
 type PropsType = {
   children: ReactNode
@@ -13,41 +13,36 @@ type PropsType = {
 }
 
 const DroppableCell = ({ children, sx, groupId, coords }: PropsType) => {
-  const ref = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
-  const dragTarget = useSelector(
-    (state: AppState) => state.sidebar.dragging.target
-  )
 
-  const onMouseOver = useCallback(() => {
-    console.log('onMouseOver', coords)
-
-    if (dragTarget) {
-      console.log('currently dragging', dragTarget, 'over', coords)
-      dispatch(
-        sidebarUpdateDragCoords({
-          groupId,
-          x: coords.column,
-          y: coords.row
-        })
-      )
+  const { isOver, setNodeRef } = useDroppable({
+    id: `${groupId}_${coords.row}_${coords.column}`,
+    data: {
+      groupId,
+      coords
     }
-  }, [dragTarget, dispatch, groupId, coords])
+  })
 
   useEffect(() => {
-    const target = ref.current
-
-    if (target) {
-      target.addEventListener('mouseenter', onMouseOver)
-
-      return () => {
-        target.removeEventListener('mouseenter', onMouseOver)
-      }
+    if (isOver) {
+      // dispatch(
+      //   sidebarUpdateDragCoords({
+      //     groupId,
+      //     x: coords.column,
+      //     y: coords.row
+      //   })
+      // )
+      console.log('hovering', groupId, coords)
     }
-  }, [onMouseOver])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOver])
 
   return (
-    <Box ref={ref} sx={sx}>
+    <Box
+      ref={setNodeRef}
+      sx={sx}
+      style={{ backgroundColor: isOver ? '#0f9' : '' }}
+    >
       {children}
     </Box>
   )
