@@ -3,13 +3,13 @@ import { EWorkflow } from '@cf/HTTP/XMLHTTP/types/entity'
 import { CFRoutes, RelativeRoutes } from '@cf/router/appRoutes'
 import { _t } from '@cf/utility/Utility.class'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
-import AlignmentView from '@cfViews/WorkflowView/componentViews/AlignmentView/AlignmentView'
 import GridView from '@cfViews/WorkflowView/componentViews/GridView/GridView'
 import OutcomeAnalytics from '@cfViews/WorkflowView/componentViews/OutcomeAnalytics/OutcomeAnalytics'
 import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditView'
 import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/CompetencyMatrixView/CompetencyMatrixView'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
-import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditView'
+// import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditView'
+import WorkflowEditViewV2 from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2'
 import Tab from '@mui/material/Tab'
 import { ReactNode } from 'react'
 import { Route, generatePath, useNavigate, useParams } from 'react-router-dom'
@@ -42,7 +42,8 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       route: CFRoutes.WORKFLOW_WORKFLOW,
       relRoute: RelativeRoutes.WORKFLOW,
       label: _t('Workflows'),
-      content: <WorkflowEditView />,
+      // content: <WorkflowEditView />,
+      content: <WorkflowEditViewV2 />,
       allowedTabs: [1, 2, 3, 4]
     },
     {
