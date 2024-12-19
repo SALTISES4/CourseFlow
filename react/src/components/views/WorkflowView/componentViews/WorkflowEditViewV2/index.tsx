@@ -1,5 +1,8 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
+import { selectColumnById } from '@cfRedux/selectors/column.selector'
+import { TColumn } from '@cfRedux/types/type'
 import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
@@ -40,6 +43,21 @@ const CanvasPlaceholder = () => (
     </defs>
   </svg>
 )
+
+function getColumnColors(
+  columns: {
+    column: TColumn
+    siblingCount: number
+    columns: number[]
+  }[]
+): string[] {
+  return columns.map((columnData) =>
+    ThemeHelper.getColumnColour({
+      columnType: columnData.column.columnType,
+      colour: columnData.column.colour
+    })
+  )
+}
 
 const WorkflowEditView = () => {
   const workflow = useSelector((state: AppState) => state.workflow)
@@ -84,6 +102,10 @@ const WorkflowEditView = () => {
     )
   }
 
+  const columnData = useSelector((s: AppState) =>
+    state.columns.map((columnId) => selectColumnById(s, columnId))
+  )
+
   const columns = state.columns.map((columnId) => (
     <ColumnWrapper
       key={`columnworkflow-${columnId}`}
@@ -98,6 +120,7 @@ const WorkflowEditView = () => {
       objectId={weekId}
       parentId={workflow.id}
       reordering={state.weekReordering}
+      columnColors={getColumnColors(columnData)}
     />
   ))
 

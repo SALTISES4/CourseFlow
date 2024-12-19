@@ -19,7 +19,11 @@ import DroppableCell from '../Cell'
 
 import { PropsType } from './'
 
-const WeekSimple = ({ objectId, parentId }: Omit<PropsType, 'reordering'>) => {
+const WeekSimple = ({
+  objectId,
+  parentId,
+  columnColors
+}: Omit<PropsType, 'reordering'>) => {
   const dispatch = useDispatch()
   const weekData = useSelector((state: AppState) =>
     selectWeekById(state, objectId)
@@ -82,7 +86,7 @@ const WeekSimple = ({ objectId, parentId }: Omit<PropsType, 'reordering'>) => {
       return (
         <CellRow>
           {sidebarDragTarget ? (
-            workflow.columns.map((colNum) => (
+            workflow.columns.map((colNum, index) => (
               <DroppableCell
                 key={colNum}
                 groupId={weekData.week.id}
@@ -90,6 +94,7 @@ const WeekSimple = ({ objectId, parentId }: Omit<PropsType, 'reordering'>) => {
                   row: 0,
                   column: colNum
                 }}
+                color={columnColors[index]}
               >
                 <Cell sx={{ height: 64 }}>
                   <DebugCellInfo>row: 0, col: {colNum}</DebugCellInfo>
