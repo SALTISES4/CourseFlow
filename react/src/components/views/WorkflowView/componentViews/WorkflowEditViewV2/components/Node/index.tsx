@@ -1,16 +1,20 @@
-import { useState } from 'react'
+import NodeSimple from './NodeSimple'
 
-type PropsType = {
-  property?: any
+export type PropsType = {
+  id: number
+  parentId: number
+  row: number
+  columnColors: string[]
 }
 
-const Node = ({ property }: PropsType) => {
-  const [state, setState] = useState(false)
-
+const Node = ({ id, parentId, row, columnColors }: PropsType) => {
   return (
-    <div>
-      <span>Node here</span>
-    </div>
+    <NodeSimple
+      id={id}
+      parentId={parentId}
+      row={row}
+      columnColors={columnColors}
+    />
   )
 }
 

@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as Styled from './styles'
 import { Cell, CellRow, DebugCellInfo } from '../../styles'
 import DroppableCell from '../Cell'
+import Node from '../Node'
 
 import { PropsType } from './'
 
@@ -112,7 +113,12 @@ const WeekSimple = ({
 
     return state.nodes.map((nodeId, row) => (
       <CellRow key={`node-${nodeId}`}>
-        <NodeWrapper objectId={nodeId} parentId={weekData.week.id} row={row} />
+        <Node
+          id={nodeId}
+          parentId={weekData.week.id}
+          columnColors={columnColors}
+          row={row}
+        />
       </CellRow>
     ))
   }
