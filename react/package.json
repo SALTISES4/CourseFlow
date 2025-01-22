@@ -37,6 +37,7 @@
     "@dnd-kit/sortable": "^8.0.0",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
+    "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^3.9.1",
     "@mui/icons-material": "^5.14.14",
     "@mui/material": "^5.14.14",
