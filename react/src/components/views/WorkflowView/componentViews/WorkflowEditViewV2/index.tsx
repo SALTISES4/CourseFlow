@@ -18,6 +18,7 @@ import { produce } from 'immer'
 import { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import PangeaDnd from './components/PangeaDnd'
 import Week from './components/Week'
 import * as Styled from './styles'
 
@@ -147,7 +148,7 @@ const WorkflowEditView = () => {
       </Box>
 
       <div data-test-id="weeks-block">
-        {state.weekReordering ? (
+        {/* {state.weekReordering ? (
           <DndContext onDragEnd={(e: DragEndEvent) => onDragEnd(e, 'week')}>
             <SortableContext
               items={state.weeks}
@@ -158,7 +159,12 @@ const WorkflowEditView = () => {
           </DndContext>
         ) : (
           weeks
-        )}
+        )} */}
+
+        <PangeaDnd
+          columnColors={getColumnColors(columnData)}
+          weekIds={state.weeks}
+        />
       </div>
 
       <CanvasPlaceholder />
