@@ -4,17 +4,8 @@ import { _t } from '@cf/utility/Utility.class'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { TColumn } from '@cfRedux/types/type'
 import { AppState } from '@cfRedux/types/type'
-import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
-import {
-  DragDropContext,
-  Draggable,
-  DraggableProvided,
-  DraggableStateSnapshot,
-  DropResult,
-  Droppable,
-  DroppableProvided
-} from '@hello-pangea/dnd'
+import { DropResult } from '@hello-pangea/dnd'
 import { produce } from 'immer'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -62,11 +53,13 @@ function getColumnColors(
 
 const WorkflowEditView = () => {
   const workflow = useSelector((state: AppState) => state.workflow)
-
   const [state, setState] = useState({
     columns: workflow.columns || [],
     weeks: workflow.weeks || []
   })
+
+  // const nodeMatrix = getInitialNodeMatrix(workflow)
+  // console.log('nodeMatrix is', nodeMatrix)
 
   const onColumnDragEnd = (result: DropResult) => {
     const { source, destination } = result
@@ -97,9 +90,10 @@ const WorkflowEditView = () => {
 
       <div data-test-id="weeks-block">
         <PangeaDnd
-          columnColors={getColumnColors(columnData)}
           // parentId={workflow.id}
           weekIds={state.weeks}
+          columnIds={state.columns}
+          columnColors={getColumnColors(columnData)}
         />
       </div>
 
