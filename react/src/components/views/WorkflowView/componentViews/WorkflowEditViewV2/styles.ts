@@ -5,14 +5,14 @@ const COLUMN_WIDTH = 180
 
 export const CellRow = styled(Box)(({ theme }) => ({
   display: 'flex',
-  padding: theme.spacing(1),
-  gap: theme.spacing(3)
+  padding: theme.spacing(1)
 }))
 
 export const Cell = styled(Box)(() => ({
   position: 'relative',
   width: `${COLUMN_WIDTH}px`,
-  flexShrink: 0
+  flexShrink: 0,
+  margin: '12px 8px 16px 12px'
 }))
 
 export const DebugCellInfo = styled('span')(() => ({

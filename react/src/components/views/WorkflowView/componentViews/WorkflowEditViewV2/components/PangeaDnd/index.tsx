@@ -109,22 +109,21 @@ const PangeaDndWeek = (props: PangeaDndWeekProps) => {
       draggableId={`${props.objectId}_${index}`}
       index={index}
     >
-      {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
+      {(provided: DraggableProvided) => (
         <div ref={provided.innerRef} {...provided.draggableProps}>
-          <Styled.Cell sx={{ margin: '12px 8px 16px 12px' }}>
-            <div {...provided.dragHandleProps}>
-              <StyledNode.Border
-                sx={{ backgroundColor: props.columnColors[index] }}
-              />
-              <StyledNode.Content>
-                <StyledNode.Title variant="subtitle2">
-                  {props.objectId}_{index}
-                </StyledNode.Title>
-                <StyledNode.Subtitle variant="caption">
-                  Some description text here
-                </StyledNode.Subtitle>
-              </StyledNode.Content>
-            </div>
+          <Styled.Cell>
+            <StyledNode.Border
+              {...provided.dragHandleProps}
+              sx={{ backgroundColor: props.columnColors[index] }}
+            />
+            <StyledNode.Content>
+              <StyledNode.Title variant="subtitle2">
+                {props.objectId}_{index}
+              </StyledNode.Title>
+              <StyledNode.Subtitle variant="caption">
+                Some description text here
+              </StyledNode.Subtitle>
+            </StyledNode.Content>
           </Styled.Cell>
         </div>
       )}
@@ -147,10 +146,10 @@ const PangeaDndWeek = (props: PangeaDndWeekProps) => {
       </StyledWeek.WeekHeader>
 
       {state.expanded && (
-        <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <Styled.CellRow>
           {nodes}
           {props.placeholder}
-        </div>
+        </Styled.CellRow>
       )}
     </StyledWeek.WeekWrapper>
   )

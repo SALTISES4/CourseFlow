@@ -6,21 +6,21 @@ import { TColumn } from '@cfRedux/types/type'
 import { AppState } from '@cfRedux/types/type'
 import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
-import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import {
-  SortableContext,
-  horizontalListSortingStrategy,
-  verticalListSortingStrategy
-} from '@dnd-kit/sortable'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
+  DragDropContext,
+  Draggable,
+  DraggableProvided,
+  DraggableStateSnapshot,
+  DropResult,
+  Droppable,
+  DroppableProvided
+} from '@hello-pangea/dnd'
 import { produce } from 'immer'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import ColumnsHeader from './components/ColumnsHeader'
 import PangeaDnd from './components/PangeaDnd'
-import Week from './components/Week'
-import * as Styled from './styles'
 
 /*
   .workflow-canvas is used for all kinds of targeting
@@ -65,40 +65,20 @@ const WorkflowEditView = () => {
 
   const [state, setState] = useState({
     columns: workflow.columns || [],
-    weeks: workflow.weeks || [],
-    weekReordering: false
+    weeks: workflow.weeks || []
   })
 
-  const toggleWeekReordering = useCallback(() => {
-    setState(
-      produce((draft) => {
-        draft.weekReordering = !draft.weekReordering
-      })
-    )
-  }, [])
-
-  const onDragEnd = (event: DragEndEvent, type: 'column' | 'week') => {
-    const { active, over } = event
-    if (!over || active.id === over.id) {
-      return
-    }
-
-    const stateSource = type === 'column' ? state.columns : state.weeks
-    const oldIndex = stateSource.indexOf(active.id as number)
-    const newIndex = stateSource.indexOf(over.id as number)
+  const onColumnDragEnd = (result: DropResult) => {
+    const { source, destination } = result
     const reorderedColumns = WorkflowFunctions.reorderArray(
-      stateSource,
-      oldIndex,
-      newIndex
+      state.columns,
+      source.index,
+      destination.index
     )
 
     setState(
       produce((draft) => {
-        if (type === 'column') {
-          draft.columns = reorderedColumns
-        } else {
-          draft.weeks = reorderedColumns
-        }
+        draft.columns = reorderedColumns
       })
     )
   }
@@ -107,62 +87,18 @@ const WorkflowEditView = () => {
     state.columns.map((columnId) => selectColumnById(s, columnId))
   )
 
-  const columns = state.columns.map((columnId) => (
-    <ColumnWrapper
-      key={`columnworkflow-${columnId}`}
-      objectId={columnId}
-      parentId={workflow.id}
-    />
-  ))
-
-  const weeks = state.weeks.map((weekId) => (
-    <Week
-      key={`weekworkflow-${weekId}`}
-      objectId={weekId}
-      parentId={workflow.id}
-      reordering={state.weekReordering}
-      columnColors={getColumnColors(columnData)}
-    />
-  ))
-
   return (
     <OuterContentWrap>
-      <Styled.CellRow data-test-id="columns-block">
-        <DndContext onDragEnd={(e: DragEndEvent) => onDragEnd(e, 'column')}>
-          <SortableContext
-            items={state.columns}
-            strategy={horizontalListSortingStrategy}
-          >
-            {columns}
-          </SortableContext>
-        </DndContext>
-      </Styled.CellRow>
-
-      <Box sx={{ my: 3 }}>
-        <Button
-          variant={state.weekReordering ? 'contained' : 'outlined'}
-          onClick={toggleWeekReordering}
-        >
-          {_t(state.weekReordering ? 'Save' : 'Reorder Weeks')}
-        </Button>
-      </Box>
+      <ColumnsHeader
+        columns={state.columns}
+        parentId={workflow.id}
+        onReorder={onColumnDragEnd}
+      />
 
       <div data-test-id="weeks-block">
-        {/* {state.weekReordering ? (
-          <DndContext onDragEnd={(e: DragEndEvent) => onDragEnd(e, 'week')}>
-            <SortableContext
-              items={state.weeks}
-              strategy={verticalListSortingStrategy}
-            >
-              {weeks}
-            </SortableContext>
-          </DndContext>
-        ) : (
-          weeks
-        )} */}
-
         <PangeaDnd
           columnColors={getColumnColors(columnData)}
+          // parentId={workflow.id}
           weekIds={state.weeks}
         />
       </div>
