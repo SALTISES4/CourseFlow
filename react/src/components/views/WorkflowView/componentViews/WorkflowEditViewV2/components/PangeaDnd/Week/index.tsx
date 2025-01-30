@@ -12,20 +12,19 @@ import {
 } from '@hello-pangea/dnd'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import IconButton from '@mui/material/IconButton'
-import { produce } from 'immer'
 import { MouseEvent, useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import type { PropsType } from '../'
-import { getWeekNodesData } from './utility'
 import * as Styled from '../../../styles'
+import type { BoardWeekRowType } from '../../../utility'
 import * as StyledNode from '../../Node/styles'
-import { getNodeTitle } from '../../Node/utility'
 import * as StyledWeek from '../../Week/styles'
 
 type DndWeekProps = {
   index: number
-  objectId: number
+  weekId: number
+  weekRows: BoardWeekRowType[]
   parentId: number
   columnIds: PropsType['columnIds']
   columnColors: PropsType['columnColors']
@@ -33,43 +32,37 @@ type DndWeekProps = {
 
 const DndWeek = (props: DndWeekProps) => {
   const dispatch = useDispatch()
-  const [state, setState] = useState({
-    expanded: true
-  })
+  const [expanded, setExpanded] = useState(true)
   const workflow = useSelector((state: AppState) => state.workflow)
   const weekData = useSelector((state: AppState) =>
-    selectWeekById(state, props.objectId)
+    selectWeekById(state, props.weekId)
   )
-
   const manager = useRef(new BetterSelectionManager(dispatch))
-
-  const weekRows = getWeekNodesData(weekData.week, props.columnIds)
 
   const onWeekWrapperClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
       e.stopPropagation()
       manager.current.updateSidebar(
-        weekData.week.id,
+        props.weekId,
         CfObjectType.WEEK,
         props.parentId
       )
     },
-    [props.parentId, weekData.week.id]
+    [props.parentId, props.weekId]
   )
 
-  const onCollapseIconClick = useCallback((e: MouseEvent<HTMLElement>) => {
-    e.stopPropagation()
-    setState(
-      produce((draft) => {
-        draft.expanded = !draft.expanded
-      })
-    )
-  }, [])
+  const onCollapseIconClick = useCallback(
+    (e: MouseEvent<HTMLElement>) => {
+      e.stopPropagation()
+      setExpanded(!expanded)
+    },
+    [expanded]
+  )
 
-  const weekGrid = weekRows.map((row, rowIndex) => (
+  const weekGrid = props.weekRows.map((row, rowIndex) => (
     <Droppable
-      key={`week_${props.objectId}_${rowIndex}`}
-      droppableId={`week_${props.objectId}_${rowIndex}`}
+      key={`week_${props.weekId}_${rowIndex}`}
+      droppableId={`week_${props.weekId}_${rowIndex}`}
       direction="horizontal"
     >
       {(
@@ -87,8 +80,8 @@ const DndWeek = (props: DndWeekProps) => {
         >
           {row.map((node, nodeIndex) => (
             <Draggable
-              key={`${props.objectId}_${rowIndex}_${nodeIndex}`}
-              draggableId={`${props.objectId}_${rowIndex}_${nodeIndex}`}
+              key={`${props.weekId}_${rowIndex}_${nodeIndex}`}
+              draggableId={`${props.weekId}_${rowIndex}_${nodeIndex}`}
               index={nodeIndex}
             >
               {(dragProvided: DraggableProvided) => (
@@ -104,7 +97,7 @@ const DndWeek = (props: DndWeekProps) => {
                       />
                       <StyledNode.Content>
                         <StyledNode.Title variant="subtitle2">
-                          {props.objectId}_{rowIndex}_{nodeIndex}
+                          {props.weekId}_{rowIndex}_{nodeIndex}
                         </StyledNode.Title>
                       </StyledNode.Content>
                     </Styled.Cell>
@@ -118,17 +111,17 @@ const DndWeek = (props: DndWeekProps) => {
                         onClick={(e) => {
                           e.stopPropagation()
                           manager.current.updateSidebar(
-                            node.node.id,
+                            node.id,
                             CfObjectType.NODE,
                             props.parentId
                           )
                         }}
                       >
                         <StyledNode.Title variant="subtitle2">
-                          {getNodeTitle(node.node)}
+                          {node.title}
                         </StyledNode.Title>
                         <StyledNode.Subtitle variant="caption">
-                          {node.node.description}
+                          {node.description}
                         </StyledNode.Subtitle>
                       </StyledNode.Content>
                     </Styled.Cell>
@@ -149,7 +142,7 @@ const DndWeek = (props: DndWeekProps) => {
 
   return (
     <StyledWeek.WeekWrapper onClick={onWeekWrapperClick}>
-      <StyledWeek.WeekHeader expanded={state.expanded}>
+      <StyledWeek.WeekHeader expanded={expanded}>
         <StyledWeek.WeekTitle variant="subtitle2">
           <TitleText text={weekData.week.title} defaultText={defaultText} />
         </StyledWeek.WeekTitle>
@@ -158,7 +151,7 @@ const DndWeek = (props: DndWeekProps) => {
         </IconButton>
       </StyledWeek.WeekHeader>
 
-      {state.expanded && weekGrid}
+      {expanded && weekGrid}
     </StyledWeek.WeekWrapper>
   )
 }

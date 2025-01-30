@@ -1,4 +1,5 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import { selectWeekById } from '@cf/redux/selectors/week.selector'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
@@ -12,6 +13,7 @@ import { useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
 import PangeaDnd from './components/PangeaDnd'
+import { getWorkflowBoardData } from './utility'
 
 /*
   .workflow-canvas is used for all kinds of targeting
@@ -55,11 +57,8 @@ const WorkflowEditView = () => {
   const workflow = useSelector((state: AppState) => state.workflow)
   const [state, setState] = useState({
     columns: workflow.columns || [],
-    weeks: workflow.weeks || []
+    board: getWorkflowBoardData(workflow)
   })
-
-  // const nodeMatrix = getInitialNodeMatrix(workflow)
-  // console.log('nodeMatrix is', nodeMatrix)
 
   const onColumnDragEnd = (result: DropResult) => {
     const { source, destination } = result
@@ -90,8 +89,8 @@ const WorkflowEditView = () => {
 
       <div data-test-id="weeks-block">
         <PangeaDnd
-          // parentId={workflow.id}
-          weekIds={state.weeks}
+          board={state.board}
+          parentId={workflow.id}
           columnIds={state.columns}
           columnColors={getColumnColors(columnData)}
         />

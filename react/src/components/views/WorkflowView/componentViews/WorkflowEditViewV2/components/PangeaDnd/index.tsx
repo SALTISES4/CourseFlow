@@ -1,26 +1,29 @@
 import { DragDropContext, DropResult } from '@hello-pangea/dnd'
 
 import Week from './Week'
+import type { BoardType } from '../../utility'
 
 export type PropsType = {
-  weekIds: number[]
+  board: BoardType
+  parentId: number
   columnIds: number[]
   columnColors: string[]
 }
 
-const DndBoard = ({ weekIds, columnIds, columnColors }: PropsType) => {
+const DndBoard = ({ board, parentId, columnIds, columnColors }: PropsType) => {
   function onDragEnd(result: DropResult) {
     console.log('drag ended yo', result)
   }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      {weekIds.map((weekId, index) => (
+      {board.map((boardWeek, index) => (
         <Week
-          key={`week_${weekId}`}
-          objectId={weekId}
+          key={`week_${boardWeek.id}`}
+          weekId={boardWeek.id}
+          weekRows={boardWeek.rows}
           index={index}
-          parentId={1}
+          parentId={parentId}
           columnIds={columnIds}
           columnColors={columnColors}
         />
