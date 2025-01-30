@@ -35,7 +35,6 @@ export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
 
     const weekNodes = weekData.week.nodes
     // Create phantom nodes if initially empty
-    // TODO: figure out unique IDs for phantom nodes?
     if (!weekNodes.length) {
       const row: BoardNodeType[] = new Array(columns.length).fill('phantom')
       return { id: weekId, rows: [row] }
@@ -64,4 +63,13 @@ export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
   })
 
   return weeksData
+}
+
+// droppableId={`week_${props.weekId}_${rowIndex}`}
+export function parseWeekDroppableId(id: string) {
+  const split = id.split('_')
+  return {
+    weekId: parseInt(split[1], 10),
+    rowId: parseInt(split[2], 10)
+  }
 }

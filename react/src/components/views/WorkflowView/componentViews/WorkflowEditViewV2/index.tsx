@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
 import PangeaDnd from './components/PangeaDnd'
-import { getWorkflowBoardData } from './utility'
+import { getWorkflowBoardData, parseWeekDroppableId } from './utility'
 
 /*
   .workflow-canvas is used for all kinds of targeting
@@ -75,6 +75,43 @@ const WorkflowEditView = () => {
     )
   }
 
+  const onNodeDragEnd = (result: DropResult) => {
+    const { source, destination } = result
+
+    if (!result.destination) {
+      return
+    }
+
+    // moved between same board row
+    if (source.droppableId === destination.droppableId) {
+      // ... but actually returned to the same index, ie, no movement
+      if (source.index === destination.index) {
+        return
+      }
+
+      setState(
+        produce((draft) => {
+          const parsed = parseWeekDroppableId(source.droppableId)
+
+          const boardPartIndex = draft.board.findIndex(
+            (r) => r.id === parsed.weekId
+          )
+
+          const row = draft.board[boardPartIndex].rows[parsed.rowId]
+          const reordered = WorkflowFunctions.reorderArray(
+            // bad
+            row as any[],
+            source.index,
+            destination.index
+          )
+
+          // super baaaaaad
+          draft.board[boardPartIndex].rows[parsed.rowId] = reordered as any
+        })
+      )
+    }
+  }
+
   const columnData = useSelector((s: AppState) =>
     state.columns.map((columnId) => selectColumnById(s, columnId))
   )
@@ -89,6 +126,7 @@ const WorkflowEditView = () => {
 
       <div data-test-id="weeks-block">
         <PangeaDnd
+          onReorder={onNodeDragEnd}
           board={state.board}
           parentId={workflow.id}
           columnIds={state.columns}

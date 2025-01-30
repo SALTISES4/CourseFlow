@@ -8,15 +8,18 @@ export type PropsType = {
   parentId: number
   columnIds: number[]
   columnColors: string[]
+  onReorder: (result: DropResult) => void
 }
 
-const DndBoard = ({ board, parentId, columnIds, columnColors }: PropsType) => {
-  function onDragEnd(result: DropResult) {
-    console.log('drag ended yo', result)
-  }
-
+const DndBoard = ({
+  board,
+  parentId,
+  columnIds,
+  columnColors,
+  onReorder
+}: PropsType) => {
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
+    <DragDropContext onDragEnd={onReorder}>
       {board.map((boardWeek, index) => (
         <Week
           key={`week_${boardWeek.id}`}
