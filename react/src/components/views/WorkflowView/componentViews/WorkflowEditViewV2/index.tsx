@@ -1,12 +1,11 @@
 import { OuterContentWrap } from '@cf/mui/helper'
-import { selectWeekById } from '@cf/redux/selectors/week.selector'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { TColumn } from '@cfRedux/types/type'
 import { AppState } from '@cfRedux/types/type'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
-import { DropResult } from '@hello-pangea/dnd'
+import { DragDropContext, DropResult } from '@hello-pangea/dnd'
 import { produce } from 'immer'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -125,13 +124,14 @@ const WorkflowEditView = () => {
       />
 
       <div data-test-id="weeks-block">
-        <PangeaDnd
-          onReorder={onNodeDragEnd}
-          board={state.board}
-          parentId={workflow.id}
-          columnIds={state.columns}
-          columnColors={getColumnColors(columnData)}
-        />
+        <DragDropContext onDragEnd={onNodeDragEnd}>
+          <PangeaDnd
+            board={state.board}
+            parentId={workflow.id}
+            columnIds={state.columns}
+            columnColors={getColumnColors(columnData)}
+          />
+        </DragDropContext>
       </div>
 
       <CanvasPlaceholder />
