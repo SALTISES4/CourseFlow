@@ -48,6 +48,14 @@ class WorkflowFunctions {
     result.splice(endIndex, 0, removed)
     return result
   }
+
+  static swapInPlace(list: number[], from: number, to: number): number[] {
+    const result = Array.from(list)
+    const clone = result[from]
+    result[from] = result[to]
+    result[to] = clone
+    return result
+  }
 }
 
 export default WorkflowFunctions

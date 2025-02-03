@@ -5,14 +5,13 @@ import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { TColumn } from '@cfRedux/types/type'
 import { AppState } from '@cfRedux/types/type'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
-import { DragDropContext, DropResult } from '@hello-pangea/dnd'
 import { produce } from 'immer'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import ColumnsHeader from './components/ColumnsHeader'
 import PragmaticDnd from './components/PragmaticDnd'
-import { getWorkflowBoardData, parseWeekDroppableId } from './utility'
+import PragmaticDndColumnsHeader from './components/PragmaticDnd/ColumnsHeader'
+import { getWorkflowBoardData } from './utility'
 
 /*
   .workflow-canvas is used for all kinds of targeting
@@ -59,12 +58,15 @@ const WorkflowEditView = () => {
     board: getWorkflowBoardData(workflow)
   })
 
-  const onColumnDragEnd = (result: DropResult) => {
-    const { source, destination } = result
-    const reorderedColumns = WorkflowFunctions.reorderArray(
+  const onColumnDragEnd = (oldIndex: number, newIndex: number) => {
+    if (oldIndex === newIndex) {
+      return
+    }
+
+    const reorderedColumns = WorkflowFunctions.swapInPlace(
       state.columns,
-      source.index,
-      destination.index
+      oldIndex,
+      newIndex
     )
 
     setState(
@@ -118,7 +120,7 @@ const WorkflowEditView = () => {
 
   return (
     <OuterContentWrap>
-      <ColumnsHeader
+      <PragmaticDndColumnsHeader
         columns={state.columns}
         parentId={workflow.id}
         onReorder={onColumnDragEnd}

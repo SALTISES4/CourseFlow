@@ -8,12 +8,12 @@ export const CellRow = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1)
 }))
 
-export const Cell = styled(Box)(() => ({
+export const Cell = styled(Box)({
   position: 'relative',
   width: `${COLUMN_WIDTH}px`,
   flexShrink: 0,
   margin: '12px 8px 16px 12px'
-}))
+})
 
 export const DebugCellInfo = styled('span')(() => ({
   position: 'absolute',
