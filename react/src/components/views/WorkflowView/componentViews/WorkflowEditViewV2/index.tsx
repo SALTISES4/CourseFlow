@@ -11,7 +11,7 @@ import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
-import PangeaDnd from './components/PangeaDnd'
+import PragmaticDnd from './components/PragmaticDnd'
 import { getWorkflowBoardData, parseWeekDroppableId } from './utility'
 
 /*
@@ -74,41 +74,42 @@ const WorkflowEditView = () => {
     )
   }
 
-  const onNodeDragEnd = (result: DropResult) => {
-    const { source, destination } = result
+  const onNodeDragEnd = () => {
+    console.log('hello, node drag end')
+    // const { source, destination } = result
 
-    if (!result.destination) {
-      return
-    }
+    // if (!result.destination) {
+    //   return
+    // }
 
-    // moved between same board row
-    if (source.droppableId === destination.droppableId) {
-      // ... but actually returned to the same index, ie, no movement
-      if (source.index === destination.index) {
-        return
-      }
+    // // moved between same board row
+    // if (source.droppableId === destination.droppableId) {
+    //   // ... but actually returned to the same index, ie, no movement
+    //   if (source.index === destination.index) {
+    //     return
+    //   }
 
-      setState(
-        produce((draft) => {
-          const parsed = parseWeekDroppableId(source.droppableId)
+    //   setState(
+    //     produce((draft) => {
+    //       const parsed = parseWeekDroppableId(source.droppableId)
 
-          const boardPartIndex = draft.board.findIndex(
-            (r) => r.id === parsed.weekId
-          )
+    //       const boardPartIndex = draft.board.findIndex(
+    //         (r) => r.id === parsed.weekId
+    //       )
 
-          const row = draft.board[boardPartIndex].rows[parsed.rowId]
-          const reordered = WorkflowFunctions.reorderArray(
-            // bad
-            row as any[],
-            source.index,
-            destination.index
-          )
+    //       const row = draft.board[boardPartIndex].rows[parsed.rowId]
+    //       const reordered = WorkflowFunctions.reorderArray(
+    //         // bad
+    //         row as any[],
+    //         source.index,
+    //         destination.index
+    //       )
 
-          // super baaaaaad
-          draft.board[boardPartIndex].rows[parsed.rowId] = reordered as any
-        })
-      )
-    }
+    //       // super baaaaaad
+    //       draft.board[boardPartIndex].rows[parsed.rowId] = reordered as any
+    //     })
+    //   )
+    // }
   }
 
   const columnData = useSelector((s: AppState) =>
@@ -122,16 +123,13 @@ const WorkflowEditView = () => {
         parentId={workflow.id}
         onReorder={onColumnDragEnd}
       />
-
       <div data-test-id="weeks-block">
-        <DragDropContext onDragEnd={onNodeDragEnd}>
-          <PangeaDnd
-            board={state.board}
-            parentId={workflow.id}
-            columnIds={state.columns}
-            columnColors={getColumnColors(columnData)}
-          />
-        </DragDropContext>
+        <PragmaticDnd
+          board={state.board}
+          parentId={workflow.id}
+          columnIds={state.columns}
+          columnColors={getColumnColors(columnData)}
+        />
       </div>
 
       <CanvasPlaceholder />
