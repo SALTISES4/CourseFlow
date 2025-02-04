@@ -8,6 +8,7 @@ import { produce } from 'immer'
 import { useEffect, useRef, useState } from 'react'
 
 import * as Styled from '../../../styles'
+import { DRAGGABLE_TYPE } from '../types'
 
 type PropsType = {
   columns: number[]
@@ -41,7 +42,7 @@ type CellProps = {
 }
 
 const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
-  const ref = useRef(null)
+  const ref = useRef<HTMLDivElement>(null)
   const [state, setState] = useState({
     draggedOver: false
   })
@@ -51,7 +52,16 @@ const ColumnCell = ({ index, columnId, parentId, onReorder }: CellProps) => {
 
     return dropTargetForElements({
       element: el,
+      canDrop: ({ source }) => {
+        // early exit for unsupported draggables
+        if (source.data.type !== DRAGGABLE_TYPE.COLUMN) {
+          return false
+        }
+
+        return true
+      },
       onDragEnter: ({ source }) => {
+        // early exit if no position change
         if (source.data.index === index) {
           return
         }
@@ -107,7 +117,7 @@ const ColumnCellInner = ({
 
     return draggable({
       element: el,
-      getInitialData: () => ({ index, columnId }),
+      getInitialData: () => ({ index, columnId, type: DRAGGABLE_TYPE.COLUMN }),
       onDragStart: () =>
         setState(
           produce((draft) => {
