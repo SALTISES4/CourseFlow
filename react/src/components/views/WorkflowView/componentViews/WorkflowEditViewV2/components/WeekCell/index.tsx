@@ -6,9 +6,9 @@ import { alpha } from '@mui/material'
 import { produce } from 'immer'
 import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
 
-import * as Styled from '../../../styles'
-import * as StyledNode from '../../Node/styles'
-import { CellDataType, DRAGGABLE_TYPE } from '../types'
+import * as StyledNode from './styles'
+import * as Styled from '../../styles'
+import { CellDataType, DraggableType } from '../../types'
 
 type PropsType = {
   coords: CellDataType['coords']
@@ -123,7 +123,7 @@ const WeekCellInner = ({
       element: el,
       getInitialData: (): CellDataType => ({
         coords,
-        type: DRAGGABLE_TYPE.CELL
+        type: DraggableType.CELL
       }),
       onDragStart: () => {
         setState(

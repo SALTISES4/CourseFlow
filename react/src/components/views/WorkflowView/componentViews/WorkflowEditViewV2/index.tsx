@@ -9,10 +9,10 @@ import { produce } from 'immer'
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import PragmaticDnd from './components/PragmaticDnd'
-import PragmaticDndColumnsHeader from './components/PragmaticDnd/ColumnsHeader'
-import { CellReorderCallbackFn } from './components/PragmaticDnd/types'
-import { BoardNodeType, getWorkflowBoardData } from './utility'
+import ColumnsHeader from './components/ColumnsHeader'
+import Week from './components/Week'
+import { CellReorderCallbackFn } from './types'
+import { getWorkflowBoardData } from './utility'
 
 /*
   .workflow-canvas is used for all kinds of targeting
@@ -96,21 +96,28 @@ const WorkflowEditView = () => {
     state.columns.map((columnId) => selectColumnById(s, columnId))
   )
 
+  const columnColors = getColumnColors(columnData)
+
   return (
     <OuterContentWrap>
-      <PragmaticDndColumnsHeader
+      <ColumnsHeader
         columns={state.columns}
         parentId={workflow.id}
         onReorder={onColumnDragEnd}
       />
       <div data-test-id="weeks-block">
-        <PragmaticDnd
-          board={state.board}
-          parentId={workflow.id}
-          columnIds={state.columns}
-          columnColors={getColumnColors(columnData)}
-          onReorder={onNodeDragEnd}
-        />
+        {state.board.map((boardWeek, index) => (
+          <Week
+            key={`week_${boardWeek.id}`}
+            weekId={boardWeek.id}
+            weekRows={boardWeek.rows}
+            index={index}
+            parentId={workflow.id}
+            columnIds={state.columns}
+            columnColors={columnColors}
+            onReorder={onNodeDragEnd}
+          />
+        ))}
       </div>
 
       <CanvasPlaceholder />

@@ -1,29 +1,11 @@
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
 import { selectWeekById } from '@cf/redux/selectors/week.selector'
 import { AppState, TWorkflow } from '@cf/redux/types/type'
+import { _t } from '@cf/utility/Utility.class'
+import { TNode } from '@cfRedux/types/type'
 import { useSelector } from 'react-redux'
 
-import { getNodeTitle } from './components/Node/utility'
-
-export type BoardNodeType =
-  | 'phantom'
-  | {
-      id: number
-      title: string
-      description: string
-      column: number
-    }
-
-export type BoardWeekRowType = BoardNodeType[]
-
-type WeekId = number
-
-export type BoardWeekType = {
-  id: WeekId
-  rows: BoardWeekRowType[]
-}
-
-export type BoardType = BoardWeekType[]
+import type { BoardNodeType, BoardType } from './types'
 
 export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
   const { weeks, columns } = workflow
@@ -65,11 +47,18 @@ export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
   return weeksData
 }
 
-// droppableId={`week_${props.weekId}_${rowIndex}`}
-export function parseWeekDroppableId(id: string) {
-  const split = id.split('_')
-  return {
-    weekId: parseInt(split[1], 10),
-    rowId: parseInt(split[2], 10)
+export function getNodeTitle(node: TNode): string {
+  function calcTitle(): string {
+    if (!node.representsWorkflow || !node.linkedWorkflowData) {
+      return node.title
+    }
+
+    return [
+      node.linkedWorkflowData.code || '',
+      node.linkedWorkflowData.code && ' - ',
+      node.linkedWorkflowData.title
+    ].join()
   }
+
+  return calcTitle() || _t('Untitled')
 }
