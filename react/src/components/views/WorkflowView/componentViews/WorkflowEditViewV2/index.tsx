@@ -11,7 +11,8 @@ import { useSelector } from 'react-redux'
 
 import PragmaticDnd from './components/PragmaticDnd'
 import PragmaticDndColumnsHeader from './components/PragmaticDnd/ColumnsHeader'
-import { getWorkflowBoardData } from './utility'
+import { CellReorderCallbackFn } from './components/PragmaticDnd/types'
+import { BoardNodeType, getWorkflowBoardData } from './utility'
 
 /*
   .workflow-canvas is used for all kinds of targeting
@@ -76,42 +77,19 @@ const WorkflowEditView = () => {
     )
   }
 
-  const onNodeDragEnd = () => {
-    console.log('hello, node drag end')
-    // const { source, destination } = result
+  const onNodeDragEnd: CellReorderCallbackFn = (coords, newIndex) => {
+    setState(
+      produce((draft) => {
+        const weekIndex = draft.board.findIndex((w) => w.id === coords.week)
+        const reorderedColumns = WorkflowFunctions.swapInPlace(
+          draft.board[weekIndex].rows[coords.y],
+          coords.x,
+          newIndex
+        )
 
-    // if (!result.destination) {
-    //   return
-    // }
-
-    // // moved between same board row
-    // if (source.droppableId === destination.droppableId) {
-    //   // ... but actually returned to the same index, ie, no movement
-    //   if (source.index === destination.index) {
-    //     return
-    //   }
-
-    //   setState(
-    //     produce((draft) => {
-    //       const parsed = parseWeekDroppableId(source.droppableId)
-
-    //       const boardPartIndex = draft.board.findIndex(
-    //         (r) => r.id === parsed.weekId
-    //       )
-
-    //       const row = draft.board[boardPartIndex].rows[parsed.rowId]
-    //       const reordered = WorkflowFunctions.reorderArray(
-    //         // bad
-    //         row as any[],
-    //         source.index,
-    //         destination.index
-    //       )
-
-    //       // super baaaaaad
-    //       draft.board[boardPartIndex].rows[parsed.rowId] = reordered as any
-    //     })
-    //   )
-    // }
+        draft.board[weekIndex].rows[coords.y] = reorderedColumns
+      })
+    )
   }
 
   const columnData = useSelector((s: AppState) =>
@@ -131,6 +109,7 @@ const WorkflowEditView = () => {
           parentId={workflow.id}
           columnIds={state.columns}
           columnColors={getColumnColors(columnData)}
+          onReorder={onNodeDragEnd}
         />
       </div>
 

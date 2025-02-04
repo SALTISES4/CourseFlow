@@ -5,14 +5,15 @@ import { CfObjectType } from '@cf/types/enum'
 import { TitleText } from '@cfComponents/UIPrimitives/Titles.ts'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import IconButton from '@mui/material/IconButton'
-import { MouseEvent, useCallback, useRef, useState } from 'react'
+import { Fragment, MouseEvent, useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import type { PropsType } from '../'
 import * as Styled from '../../../styles'
 import type { BoardWeekRowType } from '../../../utility'
-import * as StyledNode from '../../Node/styles'
 import * as StyledWeek from '../../Week/styles'
+import { CellReorderCallbackFn } from '../types'
+import WeekCell from '../WeekCell'
 
 type DndWeekProps = {
   index: number
@@ -21,6 +22,7 @@ type DndWeekProps = {
   parentId: number
   columnIds: PropsType['columnIds']
   columnColors: PropsType['columnColors']
+  onReorder: CellReorderCallbackFn
 }
 
 const DndWeek = (props: DndWeekProps) => {
@@ -44,6 +46,14 @@ const DndWeek = (props: DndWeekProps) => {
     [props.parentId, props.weekId]
   )
 
+  const onNodeClick = useCallback(
+    (e: MouseEvent<HTMLDivElement>, nodeId: number) => {
+      e.stopPropagation()
+      manager.current.updateSidebar(nodeId, CfObjectType.NODE, props.parentId)
+    },
+    [props.parentId]
+  )
+
   const onCollapseIconClick = useCallback(
     (e: MouseEvent<HTMLElement>) => {
       e.stopPropagation()
@@ -55,43 +65,33 @@ const DndWeek = (props: DndWeekProps) => {
   const weekGrid = props.weekRows.map((row, rowIndex) => (
     <Styled.CellRow key={`week_${props.weekId}_${rowIndex}`}>
       {row.map((node, nodeIndex) => (
-        <div key={`${props.weekId}_${rowIndex}_${nodeIndex}`}>
+        <Fragment key={`${props.weekId}_${rowIndex}_${nodeIndex}`}>
           {node === 'phantom' ? (
-            <Styled.Cell sx={{ opacity: 0.2, pointerEvents: 'none' }}>
-              <StyledNode.Border
-                sx={{ backgroundColor: props.columnColors[nodeIndex] }}
-              />
-              <StyledNode.Content>
-                <StyledNode.Title variant="subtitle2">
-                  {props.weekId}_{rowIndex}_{nodeIndex}
-                </StyledNode.Title>
-              </StyledNode.Content>
-            </Styled.Cell>
+            <WeekCell
+              type="phantom"
+              coords={{
+                week: props.weekId,
+                x: nodeIndex,
+                y: rowIndex
+              }}
+              borderColor={props.columnColors[nodeIndex]}
+              onReorder={props.onReorder}
+            />
           ) : (
-            <Styled.Cell>
-              <StyledNode.Border
-                sx={{ backgroundColor: props.columnColors[nodeIndex] }}
-              />
-              <StyledNode.Content
-                onClick={(e) => {
-                  e.stopPropagation()
-                  manager.current.updateSidebar(
-                    node.id,
-                    CfObjectType.NODE,
-                    props.parentId
-                  )
-                }}
-              >
-                <StyledNode.Title variant="subtitle2">
-                  {node.title}
-                </StyledNode.Title>
-                <StyledNode.Subtitle variant="caption">
-                  {node.description}
-                </StyledNode.Subtitle>
-              </StyledNode.Content>
-            </Styled.Cell>
+            <WeekCell
+              type="node"
+              coords={{
+                week: props.weekId,
+                x: nodeIndex,
+                y: rowIndex
+              }}
+              borderColor={props.columnColors[nodeIndex]}
+              title={node.title}
+              description={node.description}
+              onClick={(e) => onNodeClick(e, node.id)}
+            />
           )}
-        </div>
+        </Fragment>
       ))}
     </Styled.CellRow>
   ))

@@ -18,20 +18,6 @@ export const Border = styled(Box)(({ theme }) => ({
     borderTopLeftRadius: 'inherit',
     borderTopRightRadius: 'inherit',
     transition: 'all 0.3s ease'
-  },
-  '&:hover': {
-    cursor: 'grab',
-    '&::after': {
-      borderRadius: 0,
-      transform: 'translateY(100%)'
-    }
-  },
-  '[aria-pressed=true] &': {
-    cursor: 'grabbing',
-    '&::after': {
-      borderRadius: 0,
-      transform: 'translateY(100%)'
-    }
   }
 }))
 
@@ -42,10 +28,10 @@ export const Content = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white
 }))
 
-export const Title = styled(Typography)(({ theme }) => ({
+export const Title = styled(Typography)({
   margin: 0,
   fontWeight: 600
-}))
+})
 
 export const Subtitle = styled(Typography)(({ theme }) => ({
   display: '-webkit-box',

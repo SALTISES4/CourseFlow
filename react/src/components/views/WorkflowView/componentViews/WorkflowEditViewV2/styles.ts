@@ -5,15 +5,25 @@ const COLUMN_WIDTH = 180
 
 export const CellRow = styled(Box)(({ theme }) => ({
   display: 'flex',
-  padding: theme.spacing(1)
+  padding: theme.spacing(2),
+  gap: theme.spacing(3)
 }))
 
 export const Cell = styled(Box)({
   position: 'relative',
   width: `${COLUMN_WIDTH}px`,
-  flexShrink: 0,
-  margin: '12px 8px 16px 12px'
+  flexShrink: 0
 })
+
+export const CellInner = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'dragging'
+})<{ dragging: boolean }>(({ theme, dragging }) => ({
+  transition: 'all 0.3s ease',
+  ...(dragging && {
+    opacity: 0.6,
+    transform: 'scale(0.8)'
+  })
+}))
 
 export const DebugCellInfo = styled('span')(() => ({
   position: 'absolute',

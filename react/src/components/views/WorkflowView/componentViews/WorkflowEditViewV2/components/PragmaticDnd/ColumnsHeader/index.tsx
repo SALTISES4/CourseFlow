@@ -118,26 +118,27 @@ const ColumnCellInner = ({
     return draggable({
       element: el,
       getInitialData: () => ({ index, columnId, type: DRAGGABLE_TYPE.COLUMN }),
-      onDragStart: () =>
+      onDragStart: () => {
         setState(
           produce((draft) => {
             draft.dragging = !draft.dragging
           })
-        ),
-      onDrop: () =>
+        )
+      },
+      onDrop: () => {
         setState(
           produce((draft) => {
             draft.dragging = false
           })
         )
+      }
     })
   }, [index, columnId])
 
   return (
-    <div ref={ref} style={{ opacity: state.dragging ? 0.2 : 1 }}>
-      <DragHandleIcon />
+    <Styled.CellInner ref={ref} dragging={state.dragging}>
       <Column objectId={columnId} parentId={parentId} />
-    </div>
+    </Styled.CellInner>
   )
 }
 

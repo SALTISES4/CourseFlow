@@ -49,8 +49,12 @@ class WorkflowFunctions {
     return result
   }
 
-  static swapInPlace(list: number[], from: number, to: number): number[] {
-    const result = Array.from(list)
+  static swapInPlace<ArrayItemsType>(
+    arr: ArrayItemsType[],
+    from: number,
+    to: number
+  ): ArrayItemsType[] {
+    const result = Array.from(arr)
     const clone = result[from]
     result[from] = result[to]
     result[to] = clone

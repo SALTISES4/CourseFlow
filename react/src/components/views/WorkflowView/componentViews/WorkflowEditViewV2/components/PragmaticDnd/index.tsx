@@ -1,3 +1,4 @@
+import { CellReorderCallbackFn } from './types'
 import Week from './Week'
 import type { BoardType } from '../../utility'
 
@@ -6,9 +7,16 @@ export type PropsType = {
   parentId: number
   columnIds: number[]
   columnColors: string[]
+  onReorder: CellReorderCallbackFn
 }
 
-const DndBoard = ({ board, parentId, columnIds, columnColors }: PropsType) => (
+const DndBoard = ({
+  board,
+  parentId,
+  columnIds,
+  columnColors,
+  onReorder
+}: PropsType) => (
   <>
     {board.map((boardWeek, index) => (
       <Week
@@ -19,6 +27,7 @@ const DndBoard = ({ board, parentId, columnIds, columnColors }: PropsType) => (
         parentId={parentId}
         columnIds={columnIds}
         columnColors={columnColors}
+        onReorder={onReorder}
       />
     ))}
   </>
