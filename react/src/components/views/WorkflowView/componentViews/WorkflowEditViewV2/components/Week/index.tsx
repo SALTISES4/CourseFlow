@@ -24,7 +24,12 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import * as StyledWeek from './styles'
 import * as Styled from '../../styles'
-import { BoardWeekRowType, CellReorderCallbackFn } from '../../types'
+import { hasCoords } from '../../types'
+import {
+  BoardWeekRowType,
+  CellReorderCallbackFn,
+  RowReorderCallbackFn
+} from '../../types'
 import WeekCell from '../WeekCell'
 
 type WeekPropsType = {
@@ -35,6 +40,7 @@ type WeekPropsType = {
   columnIds: number[]
   columnColors: string[]
   onReorder: CellReorderCallbackFn
+  onRowReorder: RowReorderCallbackFn
 }
 
 const Week = (props: WeekPropsType) => {
@@ -83,6 +89,7 @@ const Week = (props: WeekPropsType) => {
       parentId={props.parentId}
       columnColors={props.columnColors}
       onReorder={props.onReorder}
+      onRowReorder={props.onRowReorder}
       onNodeClick={onNodeClick}
     />
   ))
@@ -113,6 +120,7 @@ type WeekRowPropsType = {
   weekId: number
   rowIndex: number
   columnColors: WeekPropsType['columnColors']
+  onRowReorder: WeekPropsType['onRowReorder']
   onReorder: WeekPropsType['onReorder']
   onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeId: number) => void
 }
@@ -127,6 +135,7 @@ const WeekRow = ({
   rowIndex,
   columnColors,
   onReorder,
+  onRowReorder,
   onNodeClick
 }: WeekRowPropsType) => {
   const ref = useRef<HTMLDivElement>(null)
@@ -134,29 +143,18 @@ const WeekRow = ({
     edge: null
   })
 
-  // TODO: figure out debouncing
-  // const onEdgeChange = useCallback(
-  //   (edge: StateType['edge']) => {
-  //     console.log(edge, 'for', weekId, '/', rowIndex)
-  //     setState(
-  //       produce((draft) => {
-  //         draft.edge = edge
-  //       })
-  //     )
-  //   },
-  //   [weekId, rowIndex]
-  // )
-
-  // const debouncedEdgeChange = debounce(onEdgeChange, 200)
-
   useEffect(() => {
     const el = ref.current
 
     dropTargetForElements({
       element: el,
       getData: ({ input, element }) => {
+        // attach custom data for easier identifying on drop
         const data = {
-          itemId: 'A'
+          coords: {
+            week: weekId,
+            y: rowIndex
+          }
         }
         return attachClosestEdge(data, {
           input,
@@ -171,14 +169,39 @@ const WeekRow = ({
           })
         )
       },
-      onDrop: () => {
+      onDrop: ({ self, source }) => {
+        const fromData = source.data
+        const toData = self.data
+
+        // early exit if either from/to doesn't have coords
+        if (!hasCoords(fromData) || !hasCoords(toData)) {
+          return
+        }
+
+        const from = {
+          weekId: fromData.coords.week,
+          y: fromData.coords.y
+        }
+
+        const to = {
+          weekId: toData.coords.week,
+          y: toData.coords.y
+        }
+
+        // early exit if nothing changed
+        if (from.weekId === to.weekId && from.y === to.y) {
+          setState({ edge: null })
+          return
+        }
+
+        onRowReorder(from, to)
         setState({ edge: null })
       },
       onDragLeave: () => {
         setState({ edge: null })
       }
     })
-  }, [])
+  }, [weekId, rowIndex, onRowReorder])
 
   return (
     <Styled.CellRow ref={ref}>

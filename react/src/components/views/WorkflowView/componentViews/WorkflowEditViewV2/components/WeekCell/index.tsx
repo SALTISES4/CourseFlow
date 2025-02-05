@@ -9,6 +9,7 @@ import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
 import * as StyledNode from './styles'
 import * as Styled from '../../styles'
 import { CellDataType, DraggableType } from '../../types'
+import { hasCoords } from '../../types'
 
 type PropsType = {
   coords: CellDataType['coords']
@@ -18,13 +19,6 @@ type PropsType = {
   description?: string | ReactNode
   onClick?: (e: MouseEvent<HTMLDivElement>) => void
   onReorder?: (coords: CellDataType['coords'], newIndex: number) => void
-}
-
-// simple typeguard for better draggable data typing
-function hasCoords(
-  data: Record<string | symbol, unknown>
-): data is CellDataType {
-  return 'coords' in data
 }
 
 const WeekCell = (props: PropsType) => {
@@ -59,10 +53,10 @@ const WeekCell = (props: PropsType) => {
           return
         }
 
-        // early exit if different row
-        if (data.coords.y !== props.coords.y) {
-          return false
-        }
+        // early exit if different row - and to disable column swapping with the new row
+        // if (data.coords.y !== props.coords.y) {
+        //   return false
+        // }
 
         return true
       },

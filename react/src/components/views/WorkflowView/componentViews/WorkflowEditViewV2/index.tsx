@@ -6,12 +6,12 @@ import { TColumn } from '@cfRedux/types/type'
 import { AppState } from '@cfRedux/types/type'
 import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
 import { produce } from 'immer'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
 import Week from './components/Week'
-import { CellReorderCallbackFn } from './types'
+import { CellReorderCallbackFn, RowReorderCallbackFn } from './types'
 import { getWorkflowBoardData } from './utility'
 
 /*
@@ -77,6 +77,26 @@ const WorkflowEditView = () => {
     )
   }
 
+  const onRowDragEnd: RowReorderCallbackFn = useCallback((from, to) => {
+    setState(
+      produce((draft) => {
+        if (from.weekId === to.weekId) {
+          // reorganizing within the same week/part
+          const weekIndex = draft.board.findIndex((w) => w.id === from.weekId)
+          const moved = draft.board[weekIndex].rows.splice(from.y, 1)
+          draft.board[weekIndex].rows.splice(to.y, 0, moved[0])
+        } else {
+          // adding items to a different week/part
+          const fromIndex = draft.board.findIndex((w) => w.id === from.weekId)
+          const toIndex = draft.board.findIndex((w) => w.id === to.weekId)
+
+          const moved = draft.board[fromIndex].rows.splice(from.y, 1)
+          draft.board[toIndex].rows.splice(to.y, 0, moved[0])
+        }
+      })
+    )
+  }, [])
+
   const onNodeDragEnd: CellReorderCallbackFn = (coords, newIndex) => {
     setState(
       produce((draft) => {
@@ -115,6 +135,7 @@ const WorkflowEditView = () => {
             parentId={workflow.id}
             columnIds={state.columns}
             columnColors={columnColors}
+            onRowReorder={onRowDragEnd}
             onReorder={onNodeDragEnd}
           />
         ))}

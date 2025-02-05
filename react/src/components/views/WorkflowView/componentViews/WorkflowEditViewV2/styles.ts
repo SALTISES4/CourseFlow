@@ -21,7 +21,7 @@ export const CellRowIndicator = styled(Box, {
   height: '2px',
   width: '100%',
   opacity: edge ? 1 : 0,
-  backgroundColor: alpha(theme.palette.secondary.light, 0.2)
+  backgroundColor: alpha(theme.palette.secondary.light, 0.5)
 }))
 
 export const Cell = styled(Box)({
