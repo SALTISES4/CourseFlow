@@ -1,12 +1,27 @@
+import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
 import Box from '@mui/material/Box'
-import { styled } from '@mui/material/styles'
+import { alpha, styled } from '@mui/material/styles'
 
 const COLUMN_WIDTH = 180
 
 export const CellRow = styled(Box)(({ theme }) => ({
+  position: 'relative',
   display: 'flex',
   padding: theme.spacing(2),
   gap: theme.spacing(3)
+}))
+
+export const CellRowIndicator = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'edge'
+})<{ edge: Edge | null }>(({ theme, edge }) => ({
+  position: 'absolute',
+  top: edge === 'top' ? -1 : 'initial',
+  bottom: edge === 'bottom' ? -1 : 'initial',
+  left: 0,
+  height: '2px',
+  width: '100%',
+  opacity: edge ? 1 : 0,
+  backgroundColor: alpha(theme.palette.secondary.light, 0.2)
 }))
 
 export const Cell = styled(Box)({
