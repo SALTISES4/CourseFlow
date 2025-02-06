@@ -21,6 +21,7 @@ from .models import (
     OutcomeNode,
     OutcomeOutcome,
     OutcomeWorkflow,
+    Notification,
     Program,
     Project,
     UpdateNotification,
@@ -59,3 +60,4 @@ admin.site.register(LiveProjectUser)
 admin.site.register(LiveAssignment)
 admin.site.register(UserAssignment)
 admin.site.register(UpdateNotification)
+admin.site.register(Notification)
