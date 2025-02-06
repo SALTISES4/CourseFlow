@@ -60,6 +60,7 @@ class Project(models.Model):
     disciplines = models.ManyToManyField("Discipline", blank=True)
 
     favourited_by = GenericRelation("Favourite", related_query_name="project")
+    notified_by = GenericRelation("Notification", related_query_name="project")
     user_permissions = GenericRelation(
         "ObjectPermission", related_query_name="project"
     )
@@ -881,6 +882,7 @@ class Workflow(models.Model):
         "ObjectPermission", related_query_name="workflow"
     )
     favourited_by = GenericRelation("Favourite", related_query_name="workflow")
+    notified_by = GenericRelation("Notification", related_query_name="workflow")
 
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
