@@ -9,7 +9,7 @@ import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
 import * as StyledNode from './styles'
 import * as Styled from '../../styles'
 import { CellDataType, DraggableType } from '../../types'
-import { hasCoords } from '../../types'
+import { isGridCell } from '../../types'
 
 type PropsType = {
   coords: CellDataType['coords']
@@ -49,7 +49,7 @@ const WeekCell = (props: PropsType) => {
       canDrop: ({ source }) => {
         const data = source.data
 
-        if (!hasCoords(data)) {
+        if (!isGridCell(data)) {
           return
         }
 
@@ -63,7 +63,7 @@ const WeekCell = (props: PropsType) => {
       onDrop: ({ source }) => {
         const data = source.data
 
-        if (!hasCoords(data)) {
+        if (!isGridCell(data)) {
           return
         }
 

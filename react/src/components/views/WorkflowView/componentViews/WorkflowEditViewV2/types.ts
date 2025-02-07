@@ -1,13 +1,13 @@
-export type BoardNodeType =
-  | 'phantom'
-  | {
-      id: number
-      title: string
-      description: string
-      column: number
-    }
+export type BoardPhantomNodeType = 'phantom'
 
-export type BoardWeekRowType = BoardNodeType[]
+export type BoardNodeType = {
+  id: number
+  title: string
+  description: string
+  column: number
+}
+
+export type BoardWeekRowType = (BoardPhantomNodeType | BoardNodeType)[]
 
 type BoardWeekType = {
   id: number
@@ -21,6 +21,10 @@ export enum DraggableType {
   CELL = 'cell'
 }
 
+export enum DroppableType {
+  ROW = 'row'
+}
+
 export type CellDataType = {
   coords: {
     week: number
@@ -30,12 +34,18 @@ export type CellDataType = {
   type: DraggableType
 }
 
-type RowCords = {
-  weekId: number
-  y: number
+type RowDataType = {
+  coords: {
+    week: number
+    y: number
+  }
+  type: DroppableType
 }
 
-export type RowReorderCallbackFn = (from: RowCords, to: RowCords) => void
+export type RowReorderCallbackFn = (
+  from: RowDataType['coords'],
+  to: RowDataType['coords']
+) => void
 
 export type CellReorderCallbackFn = (
   coords: CellDataType['coords'],
@@ -43,8 +53,15 @@ export type CellReorderCallbackFn = (
 ) => void
 
 // simple typeguard for better draggable data typing
-export function hasCoords(
+export function isGridRow(
+  data: Record<string | symbol, unknown>
+): data is RowDataType {
+  return 'coords' in data && 'type' in data && data.type === DroppableType.ROW
+}
+
+// simple typeguard for better draggable data typing
+export function isGridCell(
   data: Record<string | symbol, unknown>
 ): data is CellDataType {
-  return 'coords' in data
+  return 'coords' in data && 'type' in data && data.type === DraggableType.CELL
 }

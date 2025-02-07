@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import * as StyledWeek from './styles'
 import * as Styled from '../../styles'
-import { hasCoords } from '../../types'
+import { DroppableType, isGridCell, isGridRow } from '../../types'
 import {
   BoardWeekRowType,
   CellReorderCallbackFn,
@@ -154,7 +154,8 @@ const WeekRow = ({
           coords: {
             week: weekId,
             y: rowIndex
-          }
+          },
+          type: DroppableType.ROW
         }
         return attachClosestEdge(data, {
           input,
@@ -162,10 +163,10 @@ const WeekRow = ({
           allowedEdges: ['top', 'bottom']
         })
       },
-      onDrag: (args) => {
+      onDrag: ({ self }) => {
         setState(
           produce((draft) => {
-            draft.edge = extractClosestEdge(args.self.data)
+            draft.edge = extractClosestEdge(self.data)
           })
         )
       },
@@ -173,23 +174,22 @@ const WeekRow = ({
         const fromData = source.data
         const toData = self.data
 
-        // early exit if either from/to doesn't have coords
-        if (!hasCoords(fromData) || !hasCoords(toData)) {
+        if (!isGridCell(fromData) || !isGridRow(toData)) {
           return
         }
 
         const from = {
-          weekId: fromData.coords.week,
+          week: fromData.coords.week,
           y: fromData.coords.y
         }
 
         const to = {
-          weekId: toData.coords.week,
+          week: toData.coords.week,
           y: toData.coords.y
         }
 
         // early exit if nothing changed
-        if (from.weekId === to.weekId && from.y === to.y) {
+        if (from.week === to.week && from.y === to.y) {
           setState({ edge: null })
           return
         }

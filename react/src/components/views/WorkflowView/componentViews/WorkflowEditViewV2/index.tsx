@@ -80,15 +80,15 @@ const WorkflowEditView = () => {
   const onRowDragEnd: RowReorderCallbackFn = useCallback((from, to) => {
     setState(
       produce((draft) => {
-        if (from.weekId === to.weekId) {
+        if (from.week === to.week) {
           // reorganizing within the same week/part
-          const weekIndex = draft.board.findIndex((w) => w.id === from.weekId)
+          const weekIndex = draft.board.findIndex((w) => w.id === from.week)
           const moved = draft.board[weekIndex].rows.splice(from.y, 1)
           draft.board[weekIndex].rows.splice(to.y, 0, moved[0])
         } else {
           // adding items to a different week/part
-          const fromIndex = draft.board.findIndex((w) => w.id === from.weekId)
-          const toIndex = draft.board.findIndex((w) => w.id === to.weekId)
+          const fromIndex = draft.board.findIndex((w) => w.id === from.week)
+          const toIndex = draft.board.findIndex((w) => w.id === to.week)
 
           const moved = draft.board[fromIndex].rows.splice(from.y, 1)
           draft.board[toIndex].rows.splice(to.y, 0, moved[0])

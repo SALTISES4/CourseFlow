@@ -5,7 +5,7 @@ import { _t } from '@cf/utility/Utility.class'
 import { TNode } from '@cfRedux/types/type'
 import { useSelector } from 'react-redux'
 
-import type { BoardNodeType, BoardType } from './types'
+import type { BoardType, BoardWeekRowType } from './types'
 
 export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
   const { weeks, columns } = workflow
@@ -18,13 +18,13 @@ export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
     const weekNodes = weekData.week.nodes
     // Create phantom nodes if initially empty
     if (!weekNodes.length) {
-      const row: BoardNodeType[] = new Array(columns.length).fill('phantom')
+      const row: BoardWeekRowType = new Array(columns.length).fill('phantom')
       return { id: weekId, rows: [row] }
     }
 
     // else, every node is on its own row and associated to a single column ID
     const rows = weekNodes.map((nodeId, index) => {
-      const rowArr: BoardNodeType[] = new Array(columns.length).fill('phantom')
+      const rowArr: BoardWeekRowType = new Array(columns.length).fill('phantom')
 
       const nodeData = useSelector((state: AppState) =>
         selectNodeById(state, nodeId)
