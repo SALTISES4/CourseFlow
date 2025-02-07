@@ -42,6 +42,11 @@ type RowDataType = {
   type: DroppableType
 }
 
+export type ColumnReorderCallbackFn = (
+  oldIndex: number,
+  newIndex: number
+) => void
+
 export type RowReorderCallbackFn = (
   from: RowDataType['coords'],
   to: RowDataType['coords']

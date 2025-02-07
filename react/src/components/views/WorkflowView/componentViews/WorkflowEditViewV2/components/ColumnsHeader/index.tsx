@@ -7,12 +7,12 @@ import { produce } from 'immer'
 import { useEffect, useRef, useState } from 'react'
 
 import * as Styled from '../../styles'
-import { DraggableType } from '../../types'
+import { ColumnReorderCallbackFn, DraggableType } from '../../types'
 
 type PropsType = {
   columns: number[]
   parentId: number
-  onReorder: (oldIndex: number, newIndex: number) => void
+  onReorder: ColumnReorderCallbackFn
 }
 
 const ColumnsHeader = ({ columns, parentId, onReorder }: PropsType) => {

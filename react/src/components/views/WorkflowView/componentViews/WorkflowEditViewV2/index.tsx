@@ -11,7 +11,11 @@ import { useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
 import Week from './components/Week'
-import { CellReorderCallbackFn, RowReorderCallbackFn } from './types'
+import {
+  CellReorderCallbackFn,
+  ColumnReorderCallbackFn,
+  RowReorderCallbackFn
+} from './types'
 import { getWorkflowBoardData } from './utility'
 
 /*
@@ -59,23 +63,26 @@ const WorkflowEditView = () => {
     board: getWorkflowBoardData(workflow)
   })
 
-  const onColumnDragEnd = (oldIndex: number, newIndex: number) => {
-    if (oldIndex === newIndex) {
-      return
-    }
+  const onColumnDragEnd: ColumnReorderCallbackFn = useCallback(
+    (oldIndex: number, newIndex: number) => {
+      if (oldIndex === newIndex) {
+        return
+      }
 
-    const reorderedColumns = WorkflowFunctions.swapInPlace(
-      state.columns,
-      oldIndex,
-      newIndex
-    )
+      const reorderedColumns = WorkflowFunctions.swapInPlace(
+        state.columns,
+        oldIndex,
+        newIndex
+      )
 
-    setState(
-      produce((draft) => {
-        draft.columns = reorderedColumns
-      })
-    )
-  }
+      setState(
+        produce((draft) => {
+          draft.columns = reorderedColumns
+        })
+      )
+    },
+    [state.columns]
+  )
 
   const onRowDragEnd: RowReorderCallbackFn = useCallback((from, to) => {
     setState(
@@ -89,7 +96,6 @@ const WorkflowEditView = () => {
           // adding items to a different week/part
           const fromIndex = draft.board.findIndex((w) => w.id === from.week)
           const toIndex = draft.board.findIndex((w) => w.id === to.week)
-
           const moved = draft.board[fromIndex].rows.splice(from.y, 1)
           draft.board[toIndex].rows.splice(to.y, 0, moved[0])
         }
@@ -97,20 +103,23 @@ const WorkflowEditView = () => {
     )
   }, [])
 
-  const onNodeDragEnd: CellReorderCallbackFn = (coords, newIndex) => {
-    setState(
-      produce((draft) => {
-        const weekIndex = draft.board.findIndex((w) => w.id === coords.week)
-        const reorderedColumns = WorkflowFunctions.swapInPlace(
-          draft.board[weekIndex].rows[coords.y],
-          coords.x,
-          newIndex
-        )
+  const onNodeDragEnd: CellReorderCallbackFn = useCallback(
+    (coords, newIndex) => {
+      setState(
+        produce((draft) => {
+          const weekIndex = draft.board.findIndex((w) => w.id === coords.week)
+          const reorderedColumns = WorkflowFunctions.swapInPlace(
+            draft.board[weekIndex].rows[coords.y],
+            coords.x,
+            newIndex
+          )
 
-        draft.board[weekIndex].rows[coords.y] = reorderedColumns
-      })
-    )
-  }
+          draft.board[weekIndex].rows[coords.y] = reorderedColumns
+        })
+      )
+    },
+    []
+  )
 
   const columnData = useSelector((s: AppState) =>
     state.columns.map((columnId) => selectColumnById(s, columnId))
