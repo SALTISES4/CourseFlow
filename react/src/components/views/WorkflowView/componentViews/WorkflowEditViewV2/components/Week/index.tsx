@@ -85,6 +85,7 @@ const Week = (props: WeekPropsType) => {
       key={`week_${props.weekId}_${rowIndex}`}
       row={row}
       rowIndex={rowIndex}
+      rowCount={props.weekRows.length}
       weekId={props.weekId}
       parentId={props.parentId}
       columnColors={props.columnColors}
@@ -119,6 +120,7 @@ type WeekRowPropsType = {
   parentId: number
   weekId: number
   rowIndex: number
+  rowCount: number
   columnColors: WeekPropsType['columnColors']
   onRowReorder: WeekPropsType['onRowReorder']
   onReorder: WeekPropsType['onReorder']
@@ -133,6 +135,7 @@ const WeekRow = ({
   row,
   weekId,
   rowIndex,
+  rowCount,
   columnColors,
   onReorder,
   onRowReorder,
@@ -163,14 +166,41 @@ const WeekRow = ({
           allowedEdges: ['top', 'bottom']
         })
       },
-      onDrag: ({ self }) => {
+      onDrag: ({ self, source }) => {
+        const edge: Edge = extractClosestEdge(self.data)
+        const fromData = source.data
+        const toData = self.data
+
+        if (!isGridCell(fromData) || !isGridRow(toData)) {
+          return
+        }
+
+        if (fromData.coords.week === toData.coords.week) {
+          // hide the top indicator for the top-most row
+          if (fromData.coords.y === 0 && edge === 'top') {
+            return
+          }
+
+          // and the bottom indicator when dragging the bottom-most row
+          if (
+            fromData.coords.y === toData.coords.y &&
+            toData.coords.y === rowCount - 1 &&
+            edge === 'bottom'
+          ) {
+            return
+          }
+        }
+
         setState(
           produce((draft) => {
-            draft.edge = extractClosestEdge(self.data)
+            if (draft.edge !== edge) {
+              draft.edge = edge
+            }
           })
         )
       },
       onDrop: ({ self, source }) => {
+        const edge: Edge = extractClosestEdge(self.data)
         const fromData = source.data
         const toData = self.data
 
@@ -188,10 +218,38 @@ const WeekRow = ({
           y: toData.coords.y
         }
 
-        // early exit if nothing changed
-        if (from.week === to.week && from.y === to.y) {
-          setState({ edge: null })
-          return
+        if (from.week === to.week) {
+          // early exit if nothing changed
+          if (from.y === to.y) {
+            setState({ edge: null })
+            return
+          }
+
+          // if we've triggered the 'top' side of the row, we still want
+          // to nest the dragged item between it and the previous row
+          if (edge === 'top') {
+            if (from.y < to.y) {
+              to.y = Math.max(0, to.y - 1)
+            }
+          }
+
+          // same as above, but for the bottom edge
+          if (edge === 'bottom') {
+            if (from.y > to.y) {
+              to.y = Math.min(rowCount, to.y + 1)
+            }
+          }
+        } else {
+          // if we've triggered the 'top' side of the row, we still want
+          // to nest the dragged item between it and the previous row
+          if (edge === 'top') {
+            to.y = Math.max(0, to.y - 1)
+          }
+
+          // same as above, but for the bottom edge
+          if (edge === 'bottom') {
+            to.y = Math.min(rowCount, to.y + 1)
+          }
         }
 
         onRowReorder(from, to)
@@ -201,7 +259,17 @@ const WeekRow = ({
         setState({ edge: null })
       }
     })
-  }, [weekId, rowIndex, onRowReorder])
+  }, [weekId, rowIndex, rowCount, onRowReorder])
+
+  // don't render empty phantom rows unless it's the only empty row in the week/part
+  // but still need to supply the ref to make drag listeners happy hence the empty div
+  if (rowCount !== 1 && row.every((node) => node === 'phantom')) {
+    return (
+      <div ref={ref} style={{ display: 'none' }}>
+        <Styled.CellRowIndicator edge={state.edge} />
+      </div>
+    )
+  }
 
   return (
     <Styled.CellRow ref={ref}>
