@@ -129,6 +129,7 @@ type WeekRowPropsType = {
 
 type StateType = {
   edge: Edge | null
+  draggedOver: boolean
 }
 
 const WeekRow = ({
@@ -143,8 +144,18 @@ const WeekRow = ({
 }: WeekRowPropsType) => {
   const ref = useRef<HTMLDivElement>(null)
   const [state, setState] = useState<StateType>({
-    edge: null
+    edge: null,
+    draggedOver: false
   })
+
+  const resetState = useCallback(() => {
+    setState(
+      produce((draft) => {
+        draft.edge = null
+        draft.draggedOver = false
+      })
+    )
+  }, [])
 
   useEffect(() => {
     const el = ref.current
@@ -196,6 +207,7 @@ const WeekRow = ({
             if (draft.edge !== edge) {
               draft.edge = edge
             }
+            draft.draggedOver = true
           })
         )
       },
@@ -221,7 +233,7 @@ const WeekRow = ({
         if (from.week === to.week) {
           // early exit if nothing changed
           if (from.y === to.y) {
-            setState({ edge: null })
+            resetState()
             return
           }
 
@@ -253,21 +265,35 @@ const WeekRow = ({
         }
 
         onRowReorder(from, to)
-        setState({ edge: null })
+        resetState()
       },
-      onDragLeave: () => {
-        setState({ edge: null })
-      }
+      onDragLeave: resetState
     })
-  }, [weekId, rowIndex, rowCount, onRowReorder])
+  }, [weekId, rowIndex, rowCount, onRowReorder, resetState])
+
+  // show a 'drag things into this container' message if nothing is being dragged
+  // and all the nodes for this row are phantom nodes
+  if (
+    rowCount === 1 &&
+    row.every((node) => node === 'phantom') &&
+    !state.draggedOver
+  ) {
+    return (
+      <Styled.CellRow ref={ref}>
+        <span style={{ minHeight: 50 }}>
+          Drag nodes from the sidebar or other parts to add them here.
+        </span>
+      </Styled.CellRow>
+    )
+  }
 
   // don't render empty phantom rows unless it's the only empty row in the week/part
   // but still need to supply the ref to make drag listeners happy hence the empty div
   if (rowCount !== 1 && row.every((node) => node === 'phantom')) {
     return (
-      <div ref={ref} style={{ display: 'none' }}>
+      <Styled.CellRow ref={ref} style={{ display: 'none' }}>
         <Styled.CellRowIndicator edge={state.edge} />
-      </div>
+      </Styled.CellRow>
     )
   }
 
