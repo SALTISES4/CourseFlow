@@ -2,12 +2,12 @@ import {
   draggable,
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import Column from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/Column'
 import { produce } from 'immer'
 import { useEffect, useRef, useState } from 'react'
 
 import * as Styled from '../../styles'
 import { ColumnReorderCallbackFn, DraggableType } from '../../types'
+import Column from '../ColumnCell'
 
 type PropsType = {
   columns: number[]

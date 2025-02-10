@@ -39,7 +39,7 @@ type WeekPropsType = {
   parentId: number
   columnIds: number[]
   columnColors: string[]
-  onReorder: CellReorderCallbackFn
+  onNodeReorder: CellReorderCallbackFn
   onRowReorder: RowReorderCallbackFn
 }
 
@@ -89,7 +89,7 @@ const Week = (props: WeekPropsType) => {
       weekId={props.weekId}
       parentId={props.parentId}
       columnColors={props.columnColors}
-      onReorder={props.onReorder}
+      onNodeReorder={props.onNodeReorder}
       onRowReorder={props.onRowReorder}
       onNodeClick={onNodeClick}
     />
@@ -123,7 +123,7 @@ type WeekRowPropsType = {
   rowCount: number
   columnColors: WeekPropsType['columnColors']
   onRowReorder: WeekPropsType['onRowReorder']
-  onReorder: WeekPropsType['onReorder']
+  onNodeReorder: WeekPropsType['onNodeReorder']
   onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeId: number) => void
 }
 
@@ -138,7 +138,7 @@ const WeekRow = ({
   rowIndex,
   rowCount,
   columnColors,
-  onReorder,
+  onNodeReorder,
   onRowReorder,
   onNodeClick
 }: WeekRowPropsType) => {
@@ -311,7 +311,7 @@ const WeekRow = ({
                 y: rowIndex
               }}
               borderColor={columnColors[nodeIndex]}
-              onReorder={onReorder}
+              onReorder={onNodeReorder}
             />
           ) : (
             <WeekCell

@@ -4,7 +4,6 @@ import { _t } from '@cf/utility/Utility.class'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { TColumn } from '@cfRedux/types/type'
 import { AppState } from '@cfRedux/types/type'
-import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
 import { produce } from 'immer'
 import { useCallback, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -16,7 +15,7 @@ import {
   ColumnReorderCallbackFn,
   RowReorderCallbackFn
 } from './types'
-import { getWorkflowBoardData } from './utility'
+import { getWorkflowBoardData, swapInPlace } from './utility'
 
 /*
   .workflow-canvas is used for all kinds of targeting
@@ -69,11 +68,7 @@ const WorkflowEditView = () => {
         return
       }
 
-      const reorderedColumns = WorkflowFunctions.swapInPlace(
-        state.columns,
-        oldIndex,
-        newIndex
-      )
+      const reorderedColumns = swapInPlace(state.columns, oldIndex, newIndex)
 
       setState(
         produce((draft) => {
@@ -108,7 +103,7 @@ const WorkflowEditView = () => {
       setState(
         produce((draft) => {
           const weekIndex = draft.board.findIndex((w) => w.id === coords.week)
-          const reorderedColumns = WorkflowFunctions.swapInPlace(
+          const reorderedColumns = swapInPlace(
             draft.board[weekIndex].rows[coords.y],
             coords.x,
             newIndex
@@ -145,7 +140,7 @@ const WorkflowEditView = () => {
             columnIds={state.columns}
             columnColors={columnColors}
             onRowReorder={onRowDragEnd}
-            onReorder={onNodeDragEnd}
+            onNodeReorder={onNodeDragEnd}
           />
         ))}
       </div>

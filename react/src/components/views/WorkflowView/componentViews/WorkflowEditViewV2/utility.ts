@@ -7,6 +7,9 @@ import { useSelector } from 'react-redux'
 
 import type { BoardType, BoardWeekRowType } from './types'
 
+// Parses workflow week/column data to prepare part grid data beforehand
+// so it all comes from the parent view and trickles down into children
+// instead of various children having to pull data when they are rendered
 export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
   const { weeks, columns } = workflow
 
@@ -47,6 +50,7 @@ export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
   return weeksData
 }
 
+// Applies some basic formatting to node's title
 export function getNodeTitle(node: TNode): string {
   function calcTitle(): string {
     if (!node.representsWorkflow || !node.linkedWorkflowData) {
@@ -61,4 +65,17 @@ export function getNodeTitle(node: TNode): string {
   }
 
   return calcTitle() || _t('Untitled')
+}
+
+// Swaps the positions between two elements of an array
+export function swapInPlace<ArrayItemsType>(
+  arr: ArrayItemsType[],
+  from: number,
+  to: number
+): ArrayItemsType[] {
+  const result = Array.from(arr)
+  const clone = result[from]
+  result[from] = result[to]
+  result[to] = clone
+  return result
 }
