@@ -24,6 +24,14 @@ export const CellRowIndicator = styled(Box, {
   backgroundColor: alpha(theme.palette.secondary.light, 0.5)
 }))
 
+export const WeekRowIndicator = styled(CellRowIndicator, {
+  shouldForwardProp: (prop) => prop !== 'edge'
+})<{ edge: Edge | null }>(({ theme, edge }) => ({
+  height: '16px',
+  top: edge === 'top' ? -16 : 'initial',
+  bottom: edge === 'bottom' ? -16 : 'initial'
+}))
+
 export const Cell = styled(Box)({
   position: 'relative',
   width: `${COLUMN_WIDTH}px`,
@@ -38,13 +46,4 @@ export const CellInner = styled(Box, {
     opacity: 0.6,
     transform: 'scale(0.8)'
   })
-}))
-
-export const DebugCellInfo = styled('span')(() => ({
-  position: 'absolute',
-  top: '0.5em',
-  left: '0.5em',
-  fontWeight: 600,
-  fontSize: '12px',
-  opacity: 0.5
 }))

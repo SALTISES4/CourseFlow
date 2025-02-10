@@ -21,6 +21,7 @@ export const DraggingWeekWrapper = styled(Box)(({ theme }) => ({
 }))
 
 export const WeekWrapper = styled(Box)(({ theme }) => ({
+  position: 'relative',
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(2),
   backgroundColor: 'rgb(238, 242, 253)',
@@ -35,6 +36,7 @@ export const WeekHeader = styled('header', {
   justifyContent: 'space-between',
   alignItems: 'center',
   borderBottom: '1px solid transparent',
+  minHeight: 57,
   ...(expanded && {
     borderBottomColor: theme.palette.divider,
     '.MuiIconButton-root': {

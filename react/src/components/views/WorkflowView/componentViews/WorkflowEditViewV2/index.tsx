@@ -1,3 +1,8 @@
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import {
+  dropTargetForElements,
+  monitorForElements
+} from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { OuterContentWrap } from '@cf/mui/helper'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
@@ -5,15 +10,17 @@ import { selectColumnById } from '@cfRedux/selectors/column.selector'
 import { TColumn } from '@cfRedux/types/type'
 import { AppState } from '@cfRedux/types/type'
 import { produce } from 'immer'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
 import Week from './components/Week'
+import * as Styled from './styles'
 import {
   CellReorderCallbackFn,
   ColumnReorderCallbackFn,
-  RowReorderCallbackFn
+  RowReorderCallbackFn,
+  isGridWeek
 } from './types'
 import { getWorkflowBoardData, swapInPlace } from './utility'
 
@@ -56,11 +63,50 @@ function getColumnColors(
 }
 
 const WorkflowEditView = () => {
+  const weeksWrapperRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: AppState) => state.workflow)
   const [state, setState] = useState({
+    condensed: false,
     columns: workflow.columns || [],
     board: getWorkflowBoardData(workflow)
   })
+
+  useEffect(() => {
+    const el = weeksWrapperRef.current
+    return combine(
+      // because the user can technically drag elements outside the drop container
+      // we use a global monitor to reset the weeks/parts into non-condensed state
+      // when a drop (or error, or drop cancel) happens
+      monitorForElements({
+        onDrop({ source }) {
+          if (!isGridWeek(source.data)) {
+            return
+          }
+          setState(
+            produce((draft) => {
+              draft.condensed = false
+            })
+          )
+        }
+      }),
+      dropTargetForElements({
+        element: el,
+        canDrop({ source }) {
+          return isGridWeek(source.data)
+        },
+        onDragStart({ source }) {
+          if (!isGridWeek(source.data)) {
+            return
+          }
+          setState(
+            produce((draft) => {
+              draft.condensed = true
+            })
+          )
+        }
+      })
+    )
+  }, [])
 
   const onColumnDragEnd: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {
@@ -78,6 +124,15 @@ const WorkflowEditView = () => {
     },
     [state.columns]
   )
+
+  const onWeekReorder = useCallback((from: number, to: number) => {
+    setState(
+      produce((draft) => {
+        const moved = draft.board.splice(from, 1)
+        draft.board.splice(to, 0, moved[0])
+      })
+    )
+  }, [])
 
   const onRowDragEnd: RowReorderCallbackFn = useCallback((from, to) => {
     setState(
@@ -129,7 +184,7 @@ const WorkflowEditView = () => {
         parentId={workflow.id}
         onReorder={onColumnDragEnd}
       />
-      <div data-test-id="weeks-block">
+      <div data-test-id="weeks-block" ref={weeksWrapperRef}>
         {state.board.map((boardWeek, index) => (
           <Week
             key={`week_${boardWeek.id}`}
@@ -139,6 +194,8 @@ const WorkflowEditView = () => {
             parentId={workflow.id}
             columnIds={state.columns}
             columnColors={columnColors}
+            condensed={state.condensed}
+            onWeekReorder={onWeekReorder}
             onRowReorder={onRowDragEnd}
             onNodeReorder={onNodeDragEnd}
           />

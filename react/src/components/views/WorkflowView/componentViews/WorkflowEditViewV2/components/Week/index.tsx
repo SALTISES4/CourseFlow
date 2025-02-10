@@ -1,4 +1,8 @@
-import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import {
+  draggable,
+  dropTargetForElements
+} from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import {
   Edge,
   attachClosestEdge,
@@ -24,33 +28,138 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import * as StyledWeek from './styles'
 import * as Styled from '../../styles'
-import { DroppableType, isGridCell, isGridRow } from '../../types'
+import {
+  DraggableType,
+  DroppableType,
+  isGridCell,
+  isGridRow,
+  isGridWeek
+} from '../../types'
 import {
   BoardWeekRowType,
   CellReorderCallbackFn,
-  RowReorderCallbackFn
+  RowReorderCallbackFn,
+  WeekReorderCallbackFn
 } from '../../types'
 import WeekCell from '../WeekCell'
 
 type WeekPropsType = {
   index: number
   weekId: number
+  condensed: boolean
   weekRows: BoardWeekRowType[]
   parentId: number
   columnIds: number[]
   columnColors: string[]
   onNodeReorder: CellReorderCallbackFn
   onRowReorder: RowReorderCallbackFn
+  onWeekReorder: WeekReorderCallbackFn
+}
+
+type WeekStateType = {
+  expanded: boolean
+  closestEdge: Edge | null
+  draggedOver: boolean
 }
 
 const Week = (props: WeekPropsType) => {
+  const [state, setState] = useState<WeekStateType>({
+    expanded: true,
+    closestEdge: null,
+    draggedOver: false
+  })
+  const weekWrapperRef = useRef<HTMLDivElement>(null)
+  const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
-  const [expanded, setExpanded] = useState(true)
   const workflow = useSelector((state: AppState) => state.workflow)
   const weekData = useSelector((state: AppState) =>
     selectWeekById(state, props.weekId)
   )
   const manager = useRef(new BetterSelectionManager(dispatch))
+
+  const resetState = useCallback(() => {
+    setState(
+      produce((draft) => {
+        draft.draggedOver = false
+        draft.closestEdge = null
+      })
+    )
+  }, [])
+
+  useEffect(() => {
+    const outerEl = weekWrapperRef.current
+    const el = dragHandleRef.current
+    return combine(
+      draggable({
+        element: el,
+        getInitialData: () => ({
+          index: props.index,
+          type: DraggableType.WEEK
+        })
+      }),
+      dropTargetForElements({
+        element: outerEl,
+        getData: ({ element, input }) => {
+          const data = {
+            index: props.index,
+            type: DraggableType.WEEK
+          }
+          return attachClosestEdge(data, {
+            element,
+            input,
+            allowedEdges: ['top', 'bottom']
+          })
+        },
+        canDrop({ source }) {
+          return isGridWeek(source.data)
+        },
+        onDragLeave() {
+          resetState()
+        },
+        onDrag({ source, self }) {
+          const dragging = source.data
+          if (!isGridWeek(dragging)) {
+            return
+          }
+
+          const closestEdge = extractClosestEdge(self.data)
+          if (!closestEdge) {
+            return
+          }
+
+          setState(
+            produce((draft) => {
+              draft.closestEdge = closestEdge
+            })
+          )
+        },
+        onDrop({ source, self }) {
+          const from = source.data
+          const to = self.data
+          if (!isGridWeek(from) || !isGridWeek(to)) {
+            return
+          }
+
+          const closestEdge = extractClosestEdge(to)
+
+          let moveToIndex = to.index
+          if (from.index < to.index && closestEdge === 'top') {
+            moveToIndex -= 1
+          }
+
+          if (from.index > to.index && closestEdge === 'bottom') {
+            moveToIndex += 1
+          }
+
+          if (from.index !== moveToIndex) {
+            props.onWeekReorder(from.index, moveToIndex)
+          }
+
+          resetState()
+        }
+      })
+    )
+  }, [resetState, props])
 
   const onWeekWrapperClick = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
@@ -72,13 +181,14 @@ const Week = (props: WeekPropsType) => {
     [props.parentId]
   )
 
-  const onCollapseIconClick = useCallback(
-    (e: MouseEvent<HTMLElement>) => {
-      e.stopPropagation()
-      setExpanded(!expanded)
-    },
-    [expanded]
-  )
+  const onCollapseIconClick = useCallback((e: MouseEvent<HTMLElement>) => {
+    e.stopPropagation()
+    setState(
+      produce((draft) => {
+        draft.expanded = !draft.expanded
+      })
+    )
+  }, [])
 
   const weekGrid = props.weekRows.map((row, rowIndex) => (
     <WeekRow
@@ -100,17 +210,24 @@ const Week = (props: WeekPropsType) => {
     : undefined
 
   return (
-    <StyledWeek.WeekWrapper onClick={onWeekWrapperClick}>
-      <StyledWeek.WeekHeader expanded={expanded}>
+    <StyledWeek.WeekWrapper onClick={onWeekWrapperClick} ref={weekWrapperRef}>
+      <Styled.WeekRowIndicator edge={state.closestEdge} />
+      <StyledWeek.WeekHeader
+        ref={dragHandleRef}
+        expanded={state.expanded && !props.condensed}
+      >
         <StyledWeek.WeekTitle variant="subtitle2">
           <TitleText text={weekData.week.title} defaultText={defaultText} />
         </StyledWeek.WeekTitle>
-        <IconButton onClick={onCollapseIconClick}>
-          <KeyboardArrowDown />
-        </IconButton>
+
+        {!props.condensed && (
+          <IconButton onClick={onCollapseIconClick}>
+            <KeyboardArrowDown />
+          </IconButton>
+        )}
       </StyledWeek.WeekHeader>
 
-      {expanded && weekGrid}
+      {state.expanded && !props.condensed && weekGrid}
     </StyledWeek.WeekWrapper>
   )
 }
@@ -127,7 +244,7 @@ type WeekRowPropsType = {
   onNodeClick: (e: MouseEvent<HTMLDivElement>, nodeId: number) => void
 }
 
-type StateType = {
+type WeekRowStateType = {
   edge: Edge | null
   draggedOver: boolean
 }
@@ -143,7 +260,7 @@ const WeekRow = ({
   onNodeClick
 }: WeekRowPropsType) => {
   const ref = useRef<HTMLDivElement>(null)
-  const [state, setState] = useState<StateType>({
+  const [state, setState] = useState<WeekRowStateType>({
     edge: null,
     draggedOver: false
   })

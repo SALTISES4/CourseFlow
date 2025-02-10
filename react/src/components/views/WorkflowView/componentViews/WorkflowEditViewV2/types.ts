@@ -18,7 +18,8 @@ export type BoardType = BoardWeekType[]
 
 export enum DraggableType {
   COLUMN = 'column',
-  CELL = 'cell'
+  CELL = 'cell',
+  WEEK = 'week'
 }
 
 export enum DroppableType {
@@ -42,10 +43,17 @@ type RowDataType = {
   type: DroppableType
 }
 
+type WeekDataType = {
+  index: number
+  type: DraggableType
+}
+
 export type ColumnReorderCallbackFn = (
   oldIndex: number,
   newIndex: number
 ) => void
+
+export type WeekReorderCallbackFn = (from: number, to: number) => void
 
 export type RowReorderCallbackFn = (
   from: RowDataType['coords'],
@@ -58,6 +66,12 @@ export type CellReorderCallbackFn = (
 ) => void
 
 // simple typeguard for better draggable data typing
+export function isGridWeek(
+  data: Record<string | symbol, unknown>
+): data is WeekDataType {
+  return 'index' in data && 'type' in data && data.type === DraggableType.WEEK
+}
+
 export function isGridRow(
   data: Record<string | symbol, unknown>
 ): data is RowDataType {
