@@ -20,7 +20,8 @@ import {
   CellReorderCallbackFn,
   ColumnReorderCallbackFn,
   RowReorderCallbackFn,
-  isGridWeek
+  isGridWeek,
+  isSidebarReusablePart
 } from './types'
 import { getWorkflowBoardData, swapInPlace } from './utility'
 
@@ -79,7 +80,7 @@ const WorkflowEditView = () => {
       // when a drop (or error, or drop cancel) happens
       monitorForElements({
         onDrop({ source }) {
-          if (!isGridWeek(source.data)) {
+          if (!isGridWeek(source.data) || !isSidebarReusablePart(source.data)) {
             return
           }
           setState(
@@ -92,10 +93,10 @@ const WorkflowEditView = () => {
       dropTargetForElements({
         element: el,
         canDrop({ source }) {
-          return isGridWeek(source.data)
+          return isGridWeek(source.data) || isSidebarReusablePart(source.data)
         },
         onDragStart({ source }) {
-          if (!isGridWeek(source.data)) {
+          if (!isGridWeek(source.data) || !isSidebarReusablePart(source.data)) {
             return
           }
           setState(
@@ -108,7 +109,7 @@ const WorkflowEditView = () => {
     )
   }, [])
 
-  const onColumnDragEnd: ColumnReorderCallbackFn = useCallback(
+  const onColumnReorder: ColumnReorderCallbackFn = useCallback(
     (oldIndex: number, newIndex: number) => {
       if (oldIndex === newIndex) {
         return
@@ -182,7 +183,7 @@ const WorkflowEditView = () => {
       <ColumnsHeader
         columns={state.columns}
         parentId={workflow.id}
-        onReorder={onColumnDragEnd}
+        onReorder={onColumnReorder}
       />
       <div data-test-id="weeks-block" ref={weeksWrapperRef}>
         {state.board.map((boardWeek, index) => (

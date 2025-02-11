@@ -33,7 +33,8 @@ import {
   DroppableType,
   isGridCell,
   isGridRow,
-  isGridWeek
+  isGridWeek,
+  isSidebarReusablePart
 } from '../../types'
 import {
   BoardWeekRowType,
@@ -118,7 +119,7 @@ const Week = (props: WeekPropsType) => {
         },
         onDrag({ source, self }) {
           const dragging = source.data
-          if (!isGridWeek(dragging)) {
+          if (!isGridWeek(dragging) || !isSidebarReusablePart(dragging)) {
             return
           }
 
@@ -136,23 +137,28 @@ const Week = (props: WeekPropsType) => {
         onDrop({ source, self }) {
           const from = source.data
           const to = self.data
-          if (!isGridWeek(from) || !isGridWeek(to)) {
+
+          if (!isGridWeek(to)) {
             return
           }
 
           const closestEdge = extractClosestEdge(to)
 
-          let moveToIndex = to.index
-          if (from.index < to.index && closestEdge === 'top') {
-            moveToIndex -= 1
-          }
-
-          if (from.index > to.index && closestEdge === 'bottom') {
-            moveToIndex += 1
-          }
-
-          if (from.index !== moveToIndex) {
-            props.onWeekReorder(from.index, moveToIndex)
+          if (isGridWeek(from)) {
+            let moveToIndex = to.index
+            if (from.index < to.index && closestEdge === 'top') {
+              moveToIndex -= 1
+            }
+            if (from.index > to.index && closestEdge === 'bottom') {
+              moveToIndex += 1
+            }
+            if (from.index !== moveToIndex) {
+              props.onWeekReorder(from.index, moveToIndex)
+            }
+          } else if (isSidebarReusablePart(from)) {
+            console.log('dragged a reusable block', from)
+          } else {
+            return
           }
 
           resetState()

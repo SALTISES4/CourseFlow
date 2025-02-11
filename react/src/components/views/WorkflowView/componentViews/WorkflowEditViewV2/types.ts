@@ -19,7 +19,8 @@ export type BoardType = BoardWeekType[]
 export enum DraggableType {
   COLUMN = 'column',
   CELL = 'cell',
-  WEEK = 'week'
+  WEEK = 'week',
+  REUSABLE = 'reusable'
 }
 
 export enum DroppableType {
@@ -65,7 +66,7 @@ export type CellReorderCallbackFn = (
   newIndex: number
 ) => void
 
-// simple typeguard for better draggable data typing
+// simple typeguards for better draggable data typing
 export function isGridWeek(
   data: Record<string | symbol, unknown>
 ): data is WeekDataType {
@@ -78,9 +79,14 @@ export function isGridRow(
   return 'coords' in data && 'type' in data && data.type === DroppableType.ROW
 }
 
-// simple typeguard for better draggable data typing
 export function isGridCell(
   data: Record<string | symbol, unknown>
 ): data is CellDataType {
   return 'coords' in data && 'type' in data && data.type === DraggableType.CELL
+}
+
+export function isSidebarReusablePart(
+  data: Record<string | symbol, unknown>
+): data is BoardWeekType {
+  return 'id' in data && 'rows' in data && data.type === DraggableType.REUSABLE
 }
