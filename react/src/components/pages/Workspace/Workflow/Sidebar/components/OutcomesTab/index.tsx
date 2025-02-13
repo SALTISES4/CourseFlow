@@ -6,8 +6,9 @@ import { ReactNode, useCallback, useState } from 'react'
 
 import data from './data'
 import { StyledOutcomes } from './styles'
-import DraggableBlock from '../../Draggable/Block'
-import { DraggableBlockToggle } from '../../Draggable/Block/styles'
+import DraggableBlock from '../../Draggable'
+import { DraggableBlockToggle } from '../../Draggable/styles'
+import type { DraggableBlockType } from '../../Draggable/types'
 import {
   GroupWrap,
   SidebarActions,
@@ -15,7 +16,7 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '../../styles'
-import { DraggableBlock as DraggableBlockType, OutcomeGroup } from '../../types'
+import { OutcomeGroup } from '../../types'
 
 const OutcomeTab = () => {
   const { title, subtitle, groups } = data
@@ -86,8 +87,8 @@ const DraggableOutcomes = ({
     <li key={block.id}>
       <DraggableBlock
         id={block.id}
-        group={group.type}
-        type={block.type}
+        // TODO: properly type this thing when working on outcome tabs
+        type={group.type as any}
         label={block.label}
         toggle={
           block.blocks ? (

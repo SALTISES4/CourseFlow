@@ -4,10 +4,8 @@ import {
   monitorForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { OuterContentWrap } from '@cf/mui/helper'
-import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import { selectColumnById } from '@cfRedux/selectors/column.selector'
-import { TColumn } from '@cfRedux/types/type'
 import { AppState } from '@cfRedux/types/type'
 import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -15,7 +13,6 @@ import { useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
 import Week from './components/Week'
-import * as Styled from './styles'
 import {
   CellReorderCallbackFn,
   ColumnReorderCallbackFn,
@@ -23,7 +20,7 @@ import {
   isGridWeek,
   isSidebarReusablePart
 } from './types'
-import { getWorkflowBoardData, swapInPlace } from './utility'
+import { getColumnColors, getWorkflowBoardData, swapInPlace } from './utility'
 
 /*
   .workflow-canvas is used for all kinds of targeting
@@ -48,21 +45,6 @@ const CanvasPlaceholder = () => (
   </svg>
 )
 
-function getColumnColors(
-  columns: {
-    column: TColumn
-    siblingCount: number
-    columns: number[]
-  }[]
-): string[] {
-  return columns.map((columnData) =>
-    ThemeHelper.getColumnColour({
-      columnType: columnData.column.columnType,
-      colour: columnData.column.colour
-    })
-  )
-}
-
 const WorkflowEditView = () => {
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: AppState) => state.workflow)
@@ -80,7 +62,7 @@ const WorkflowEditView = () => {
       // when a drop (or error, or drop cancel) happens
       monitorForElements({
         onDrop({ source }) {
-          if (!isGridWeek(source.data) || !isSidebarReusablePart(source.data)) {
+          if (!isGridWeek(source.data) && !isSidebarReusablePart(source.data)) {
             return
           }
           setState(
@@ -96,7 +78,7 @@ const WorkflowEditView = () => {
           return isGridWeek(source.data) || isSidebarReusablePart(source.data)
         },
         onDragStart({ source }) {
-          if (!isGridWeek(source.data) || !isSidebarReusablePart(source.data)) {
+          if (!isGridWeek(source.data) && !isSidebarReusablePart(source.data)) {
             return
           }
           setState(

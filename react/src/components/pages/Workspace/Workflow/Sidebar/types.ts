@@ -1,15 +1,12 @@
+import type { DraggableType } from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2/types'
+
+import type { DraggableBlockType } from './Draggable/types'
+
 type GroupType<T> = {
   title: string
   subtitle?: string
   readonly?: boolean
   groups?: T[]
-}
-
-export type DraggableBlock = {
-  id: number
-  label: string
-  type: string
-  blocks?: DraggableBlock[]
 }
 
 export type RestorableBlock = {
@@ -20,13 +17,13 @@ export type RestorableBlock = {
 export type OutcomeGroup = {
   title: string
   type: string
-  blocks: DraggableBlock[]
+  blocks: DraggableBlockType[]
 }
 
 type AddGroup = {
   title: string
-  type: string
-  blocks: DraggableBlock[]
+  type: DraggableType
+  blocks: DraggableBlockType[]
 }
 
 export type RestoreGroup = {

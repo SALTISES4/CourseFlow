@@ -1,11 +1,25 @@
+import { AppState } from '@cf/redux/types/type'
 import * as SC from '@cfSidebar/styles'
+import { DraggableType } from '@cfViews/WorkflowView/componentViews/WorkflowEditViewV2/types'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { useSelector } from 'react-redux'
 
-import data from './data'
-import DraggableBlock from '../../Draggable/Block'
+import data, { getNodeCategoriesData } from './data'
+import DraggableBlock from '../../Draggable'
 
 const AddTab = () => {
+  const theme = useTheme()
   const { title, subtitle, groups } = data
+  const workflow = useSelector((state: AppState) => state.workflow)
+  const nodeCategories = getNodeCategoriesData(workflow)
+
+  // TODO: fetch from strategies
+  // but where do the reusable blocks come from?
+  // state.strategy
+  // state.saltiseStrategy
+  // const strategies = useSelector((state: AppState) => state.strategy)
+  // console.log({ strategies })
 
   return (
     <SC.SidebarInnerWrap>
@@ -18,6 +32,32 @@ const AddTab = () => {
             {subtitle}
           </Typography>
         )}
+        {nodeCategories && (
+          <SC.GroupWrap>
+            <Typography component="h6" variant="body2">
+              Node categories
+            </Typography>
+            <ul>
+              {nodeCategories.map((column) => (
+                <DraggableBlock
+                  key={column.id}
+                  component="li"
+                  id={column.id}
+                  label={column.title}
+                  type={DraggableType.COLUMN}
+                  typeColor={column.color}
+                />
+              ))}
+              <DraggableBlock
+                component="li"
+                id="new"
+                label={'Custom node category'}
+                type={DraggableType.COLUMN}
+                dashed
+              />
+            </ul>
+          </SC.GroupWrap>
+        )}
         {groups?.map((group, idx) => (
           <SC.GroupWrap key={idx}>
             <Typography component="h6" variant="body2">
@@ -27,12 +67,16 @@ const AddTab = () => {
               <ul>
                 {group.blocks.map((block) => (
                   <DraggableBlock
-                    component="li"
                     key={block.id}
+                    component="li"
                     id={block.id}
-                    group={group.type}
-                    type={block.type}
                     label={block.label}
+                    type={group.type}
+                    typeColor={
+                      group.type === DraggableType.REUSABLE
+                        ? theme.palette.workspaceBlocks.reusableBlocks
+                        : theme.palette.workspaceBlocks.strategies
+                    }
                   />
                 ))}
               </ul>

@@ -119,7 +119,8 @@ const Week = (props: WeekPropsType) => {
         },
         onDrag({ source, self }) {
           const dragging = source.data
-          if (!isGridWeek(dragging) || !isSidebarReusablePart(dragging)) {
+
+          if (!isGridWeek(dragging) && !isSidebarReusablePart(dragging)) {
             return
           }
 

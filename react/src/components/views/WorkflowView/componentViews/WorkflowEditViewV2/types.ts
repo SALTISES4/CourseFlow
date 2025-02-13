@@ -20,7 +20,8 @@ export enum DraggableType {
   COLUMN = 'column',
   CELL = 'cell',
   WEEK = 'week',
-  REUSABLE = 'reusable'
+  REUSABLE = 'reusable',
+  STRATEGIES = 'strategies'
 }
 
 export enum DroppableType {

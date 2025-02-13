@@ -1,6 +1,7 @@
 import { selectNodeById } from '@cf/redux/selectors/node.selector'
 import { selectWeekById } from '@cf/redux/selectors/week.selector'
-import { AppState, TWorkflow } from '@cf/redux/types/type'
+import { AppState, TColumn, TWorkflow } from '@cf/redux/types/type'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import { TNode } from '@cfRedux/types/type'
 import { useSelector } from 'react-redux'
@@ -48,6 +49,21 @@ export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
   })
 
   return weeksData
+}
+
+export function getColumnColors(
+  columns: {
+    column: TColumn
+    siblingCount: number
+    columns: number[]
+  }[]
+): string[] {
+  return columns.map((columnData) =>
+    ThemeHelper.getColumnColour({
+      columnType: columnData.column.columnType,
+      colour: columnData.column.colour
+    })
+  )
 }
 
 // Applies some basic formatting to node's title
