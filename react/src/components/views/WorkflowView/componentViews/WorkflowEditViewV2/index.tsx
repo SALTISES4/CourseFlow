@@ -18,7 +18,7 @@ import {
   ColumnReorderCallbackFn,
   RowReorderCallbackFn,
   isGridWeek,
-  isSidebarReusablePart
+  isSidebarPart
 } from './types'
 import { getColumnColors, getWorkflowBoardData, swapInPlace } from './utility'
 
@@ -62,7 +62,7 @@ const WorkflowEditView = () => {
       // when a drop (or error, or drop cancel) happens
       monitorForElements({
         onDrop({ source }) {
-          if (!isGridWeek(source.data) && !isSidebarReusablePart(source.data)) {
+          if (!isGridWeek(source.data) && !isSidebarPart(source.data)) {
             return
           }
           setState(
@@ -75,10 +75,10 @@ const WorkflowEditView = () => {
       dropTargetForElements({
         element: el,
         canDrop({ source }) {
-          return isGridWeek(source.data) || isSidebarReusablePart(source.data)
+          return isGridWeek(source.data) || isSidebarPart(source.data)
         },
         onDragStart({ source }) {
-          if (!isGridWeek(source.data) && !isSidebarReusablePart(source.data)) {
+          if (!isGridWeek(source.data) && !isSidebarPart(source.data)) {
             return
           }
           setState(
@@ -107,6 +107,16 @@ const WorkflowEditView = () => {
     },
     [state.columns]
   )
+
+  // TODO: actually use real data instead of this cloning nonsense
+  const onWeekInsert = useCallback((insertIndex: number) => {
+    setState(
+      produce((draft) => {
+        const clone = draft.board[0]
+        draft.board.splice(insertIndex, 0, clone)
+      })
+    )
+  }, [])
 
   const onWeekReorder = useCallback((from: number, to: number) => {
     setState(
@@ -178,6 +188,7 @@ const WorkflowEditView = () => {
             columnIds={state.columns}
             columnColors={columnColors}
             condensed={state.condensed}
+            onWeekInsert={onWeekInsert}
             onWeekReorder={onWeekReorder}
             onRowReorder={onRowDragEnd}
             onNodeReorder={onNodeDragEnd}

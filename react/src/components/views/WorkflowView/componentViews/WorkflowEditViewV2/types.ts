@@ -55,6 +55,7 @@ export type ColumnReorderCallbackFn = (
   newIndex: number
 ) => void
 
+export type WeekInsertCallbackFn = (insertAt: number) => void
 export type WeekReorderCallbackFn = (from: number, to: number) => void
 
 export type RowReorderCallbackFn = (
@@ -86,8 +87,13 @@ export function isGridCell(
   return 'coords' in data && 'type' in data && data.type === DraggableType.CELL
 }
 
-export function isSidebarReusablePart(
+export function isSidebarPart(
   data: Record<string | symbol, unknown>
 ): data is BoardWeekType {
-  return 'id' in data && 'rows' in data && data.type === DraggableType.REUSABLE
+  return (
+    'id' in data &&
+    'rows' in data &&
+    (data.type === DraggableType.REUSABLE ||
+      data.type === DraggableType.STRATEGIES)
+  )
 }

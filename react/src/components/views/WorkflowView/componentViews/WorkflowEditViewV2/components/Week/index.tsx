@@ -34,12 +34,13 @@ import {
   isGridCell,
   isGridRow,
   isGridWeek,
-  isSidebarReusablePart
+  isSidebarPart
 } from '../../types'
 import {
   BoardWeekRowType,
   CellReorderCallbackFn,
   RowReorderCallbackFn,
+  WeekInsertCallbackFn,
   WeekReorderCallbackFn
 } from '../../types'
 import WeekCell from '../WeekCell'
@@ -55,6 +56,7 @@ type WeekPropsType = {
   onNodeReorder: CellReorderCallbackFn
   onRowReorder: RowReorderCallbackFn
   onWeekReorder: WeekReorderCallbackFn
+  onWeekInsert: WeekInsertCallbackFn
 }
 
 type WeekStateType = {
@@ -112,15 +114,14 @@ const Week = (props: WeekPropsType) => {
           })
         },
         canDrop({ source }) {
-          return isGridWeek(source.data)
+          return isGridWeek(source.data) || isSidebarPart(source.data)
         },
         onDragLeave() {
           resetState()
         },
         onDrag({ source, self }) {
           const dragging = source.data
-
-          if (!isGridWeek(dragging) && !isSidebarReusablePart(dragging)) {
+          if (!isGridWeek(dragging) && !isSidebarPart(dragging)) {
             return
           }
 
@@ -156,8 +157,10 @@ const Week = (props: WeekPropsType) => {
             if (from.index !== moveToIndex) {
               props.onWeekReorder(from.index, moveToIndex)
             }
-          } else if (isSidebarReusablePart(from)) {
-            console.log('dragged a reusable block', from)
+          } else if (isSidebarPart(from)) {
+            const insertIndex =
+              closestEdge === 'bottom' ? to.index + 1 : to.index
+            props.onWeekInsert(insertIndex)
           } else {
             return
           }

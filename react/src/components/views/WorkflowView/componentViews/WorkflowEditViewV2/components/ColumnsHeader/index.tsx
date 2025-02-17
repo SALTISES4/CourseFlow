@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import * as Styled from '../../styles'
 import { ColumnReorderCallbackFn, DraggableType } from '../../types'
-import Column from '../ColumnCell'
+import ColumnInner from '../ColumnInner'
 
 type PropsType = {
   columns: number[]
@@ -136,7 +136,7 @@ const ColumnCellInner = ({
 
   return (
     <Styled.CellInner ref={ref} dragging={state.dragging}>
-      <Column objectId={columnId} parentId={parentId} />
+      <ColumnInner objectId={columnId} parentId={parentId} />
     </Styled.CellInner>
   )
 }

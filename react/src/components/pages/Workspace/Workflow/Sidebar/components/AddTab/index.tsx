@@ -44,7 +44,7 @@ const AddTab = () => {
                   component="li"
                   id={column.id}
                   label={column.title}
-                  type={DraggableType.COLUMN}
+                  type={DraggableType.CELL}
                   typeColor={column.color}
                 />
               ))}
