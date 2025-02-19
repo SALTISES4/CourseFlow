@@ -9,7 +9,7 @@ export class ExportMenu extends React.Component{
         super(props);
         this.state={type:"outcome"}
     }
-    
+
     render(){
         let object_sets;
         if(this.props.data.object_sets.length>0){
@@ -23,12 +23,12 @@ export class ExportMenu extends React.Component{
                 ]
             )
         }
-        
+
         return(
             <div class="message-wrap">
                 <h2>{gettext("Export files")}</h2>
                 <p>{gettext("Use this menu to export files.")}</p>
-                <form id="export-form" enctype="multipart/form-data" action={post_paths.get_export} method="POST" id="export-form" target="redirect-iframe" onSubmit={this.submit.bind(this)}>
+                <form id="export-form" enctype="multipart/form-data" action={post_paths.get_export} method="POST" target="redirect-iframe" onSubmit={this.submit.bind(this)}>
                     <input type="hidden" name="csrfmiddlewaretoken" value={root.getCsrfToken()}/>
                     <h4>{gettext("Export Type")}:</h4>
                     {this.getExportTypes()}
@@ -49,7 +49,7 @@ export class ExportMenu extends React.Component{
             </div>
         );
     }
-    
+
     getExportTypes(){
         let type = this.props.data.type;
         let exports=[];
@@ -68,9 +68,14 @@ export class ExportMenu extends React.Component{
         if(type=="project"||type=="program")exports.push(
             [<input name="export_type" type="radio" value="sobec" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="sobec"}/>,<label for="export_type">{gettext("Sobec Validation")}</label>]
         );
+
+        exports.push(
+            [<input name="export_type" type="radio" value="jexcel" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="jexcel"}/>,<label for="export_type">{gettext("jExcel Export")}</label>]
+        );
+
         return exports;
     }
-    
+
     inputChange(type,id,evt){
         if(type=="set"){
             let new_state={};
@@ -80,7 +85,7 @@ export class ExportMenu extends React.Component{
             this.setState({type:evt.target.value});
         }
     }
-    
+
     click(evt){
         if(evt.ctrlKey){
             this.ctrlKey=true;
@@ -96,5 +101,5 @@ export class ExportMenu extends React.Component{
         },100);
         return true;
     }
-    
+
 }

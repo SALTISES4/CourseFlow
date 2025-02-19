@@ -36,7 +36,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
-from course_flow import export_functions, tasks
+from course_flow import export_functions, tasks, excel_export
 
 from . import redux_actions as actions
 from .decorators import (
@@ -1967,6 +1967,7 @@ def get_export(request: HttpRequest) -> HttpResponse:
     export_type = request.POST.get("export_type")
     export_format = request.POST.get("export_format")
     allowed_sets = request.POST.getlist("object_sets[]", [])
+    # print(export_type) delete later
     try:
         subject = _("Your CourseFlow Export")
         text = _("Hi there! Here are the results of your recent export.")
@@ -2017,6 +2018,7 @@ def get_export_download(request: HttpRequest) -> HttpResponse:
     allowed_sets = request.POST.getlist("object_sets[]", "[]")
     model_object = get_model_from_str(object_type).objects.get(pk=object_id)
 
+
     if object_type == "project":
         project_sets = ObjectSet.objects.filter(project=model_object)
     else:
@@ -2024,6 +2026,7 @@ def get_export_download(request: HttpRequest) -> HttpResponse:
             project=model_object.get_project()
         )
     allowed_sets = project_sets.filter(id__in=allowed_sets)
+
     if export_type == "outcome":
         file = export_functions.get_outcomes_export(
             model_object, object_type, export_format, allowed_sets
