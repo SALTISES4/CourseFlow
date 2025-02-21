@@ -178,14 +178,20 @@ def gfet_courses_data(project):
 
 
 def get_courses_data(program_outcome):
+    #possibly rename to "get_course_associated_program_outcomes"?
     program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
-    outcome_nodes = []
-    for outcome in program_outcome_children:
-        outcome_nodes.append(models.OutcomeNode.objects.filter(outcome=outcome))
-    nodes = []
-    for node in outcome_nodes:
-        nodes.append(models.Node.objects.filter(outcomenode=node))
-    return node
+    outcome_nodes = (
+      [models.OutcomeNode.objects.filter(outcome=outcome) for outcome in program_outcome_children]
+    )
+    nodes = [models.Node.objects.filter(outcomenode__in=node) for node in outcome_nodes]
+
+    # check for associated workflows in these nodes, will be course workflows
+    # get course outcomes using get unique outcome horizontal links, filtering with program_outcome_children
+    # for each outcome, display associated program outcomes
+
+
+    return nodes
+    # eventually return associated program outcome
 
     # outcome is linked to outcomenode which is then linked to a node
 
