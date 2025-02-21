@@ -39,8 +39,12 @@ def async_send_export_email(
 
     #Jason tester
     if export_type == "jexcel":
-      courses = excel_export.get_courses_data(model_object)
-      
+      program = excel_export.get_program_data(model_object)
+      print("po: ", program)
+      co = excel_export.get_courses_data(program[0])
+      print("co: ", co)
+      # cd = excel_export.view_courses_data(model_object)
+
 
 
     if export_type == "outcome":

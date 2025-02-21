@@ -9,6 +9,7 @@ from course_flow import analytics, models
 from .models import (
     Course,
     Node,
+    Outcome,
     OutcomeNode,
     OutcomeWorkflow,
     Program,
@@ -21,10 +22,13 @@ from .serializers import (
     OutcomeExportSerializer,
     WeekExportSerializer,
     WorkflowExportSerializer,
+    ProgramSerializerShallow,
+    CourseSerializerShallow,
 )
 from .utils import (
     get_all_outcomes_ordered_filtered,
     get_all_outcomes_ordered,
+    get_all_outcomes_ordered_for_outcome,
     get_all_outcomes_for_workflow,
     get_all_outcomes_for_outcome,
     get_alphanum,
@@ -32,6 +36,7 @@ from .utils import (
     get_outcomenodes,
     get_parent_nodes_for_workflow,
     get_unique_outcomehorizontallinks,
+    get_descendant_outcomes,
 )
 
 from .export_functions import (
@@ -144,17 +149,9 @@ def get_all_workflows_for_project(project):
     return workflows
 
 
-def get_program_data(project):
-    all_workflows = get_all_workflows_for_project(project)
-    programs_workflow = []
-    for workflow in all_workflows:
-        if workflow.type == "program":
-            programs_workflow.append(workflow)
-    prime_program = programs_workflow[0]
-    program_outcomes = get_all_outcomes_ordered(prime_program)
-    program = {prime_program.id: program_outcomes}
-    return program
-    # pass back list of database instances
+def get_program_data(workflow):
+    return get_all_outcomes_ordered(workflow)
+    # pass back list of program outcomes
     # [PO1, PO1.1, PO2]
 
 
@@ -178,6 +175,31 @@ def gfet_courses_data(project):
 
     # pass into this an individual program outcome, look at which courses are linked to that outcome
     # the term is a week model
-def get_courses_data(program):
-    outcomes = get_all_outcomes_for_outcome(get_all_outcomes_ordered(program)[0])
-    print(outcomes)
+
+
+def get_courses_data(program_outcome):
+    program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
+    outcome_nodes = []
+    for outcome in program_outcome_children:
+        outcome_nodes.append(models.OutcomeNode.objects.filter(outcome=outcome))
+    nodes = []
+    for node in outcome_nodes:
+        nodes.append(models.Node.objects.filter(outcomenode=node))
+    return node
+
+    # outcome is linked to outcomenode which is then linked to a node
+
+
+    # grabs course data by taking the program node from a program outcome
+
+
+def get_course_term(course_workflow):
+    weeks = models.Weeks.objects.filter(
+        Q(workflow=course_workflow)
+    )
+    return weeks
+
+
+def view_courses_data(workflow):
+    workflow_serialized = ProgramSerializerShallow(workflow)
+    print(workflow_serialized.data)
