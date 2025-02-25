@@ -186,11 +186,12 @@ def get_courses_data(program_outcome):
     for outcome in course_outcomes:
         horizontal_links = list(get_unique_outcomehorizontallinks(outcome))
         for link in horizontal_links:
-            program_outcome = link.outcome
-            if course_outcomes_with_associated_program_outcomes[outcome] in course_outcomes_with_associated_program_outcomes:
-                course_outcomes_with_associated_program_outcomes += link.outcome if check_associated_outcome
-            course_outcomes_with_associated_program_outcomes[outcome] = [link.outcome]
-
+            program_outcome = link.parent_outcome
+            if check_associated_outcome(program_outcome, program_outcome_children):
+                if outcome not in course_outcomes_with_associated_program_outcomes:
+                    course_outcomes_with_associated_program_outcomes[outcome] = [program_outcome]
+                else:
+                    course_outcomes_with_associated_program_outcomes[outcome].append(program_outcome)
 
     # for each outcome, display associated program outcomes
 
