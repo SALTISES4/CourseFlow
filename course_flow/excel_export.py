@@ -154,49 +154,48 @@ def get_program_data(workflow):
     # pass back list of program outcomes
     # [PO1, PO1.1, PO2]
 
+def check_associated_outcome(outcome, program_outcomes):
+    if outcome in program_outcomes:
+        return True
 
-def gfet_courses_data(project):
-    all_workflows = get_all_workflows_for_project(project)
-    courses_workflow = []
-    for workflow in all_workflows:
-        if workflow.type == "course":
-            courses_workflow.append(workflow)
-    courses = {}
-    count = 0
-    for course in courses_workflow:
-        outcomes = get_all_outcomes_ordered(course)
-        outcome_titles = []
-        for outcome in outcomes:
-            outcome_titles.append(outcome.title)
-        code = course.code or "n/a"
-        courses[count] = [course.title, code, "find the term somehow", outcome_titles]
-        count +=1
-    return courses
-
-    # pass into this an individual program outcome, look at which courses are linked to that outcome
-    # the term is a week model
-
-
+    # pass in an individual program outcome, look at which courses are linked to that outcome
 def get_courses_data(program_outcome):
-    #possibly rename to "get_course_associated_program_outcomes"?
+
+    #access associated nodes
     program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
-    outcome_nodes = (
-      [models.OutcomeNode.objects.filter(outcome=outcome) for outcome in program_outcome_children]
-    )
-    nodes = [models.Node.objects.filter(outcomenode__in=node) for node in outcome_nodes]
+    nodes = list(
+          models.Node.objects.filter(outcomes__in=program_outcome_children)
+          .order_by("week")
+      )
+    # needs to be organized by term, use order by?
 
     # check for associated workflows in these nodes, will be course workflows
-    # get course outcomes using get unique outcome horizontal links, filtering with program_outcome_children
+    courses = list(node.linked_workflow for node in nodes)
+
+    # get course outcomes
+
+    course_outcomes = []
+
+    for course in courses:
+        for outcome in get_all_outcomes_ordered(course):
+            course_outcomes.append(outcome)
+
+    # get program level outcomes using get unique outcome horizontal links, filtering with program_outcome_children
+
+    course_outcomes_with_associated_program_outcomes = {}
+    for outcome in course_outcomes:
+        horizontal_links = list(get_unique_outcomehorizontallinks(outcome))
+        for link in horizontal_links:
+            program_outcome = link.outcome
+            if course_outcomes_with_associated_program_outcomes[outcome] in course_outcomes_with_associated_program_outcomes:
+                course_outcomes_with_associated_program_outcomes += link.outcome if check_associated_outcome
+            course_outcomes_with_associated_program_outcomes[outcome] = [link.outcome]
+
+
     # for each outcome, display associated program outcomes
 
-
-    return nodes
+    return course_outcomes_with_associated_program_outcomes
     # eventually return associated program outcome
-
-    # outcome is linked to outcomenode which is then linked to a node
-
-
-    # grabs course data by taking the program node from a program outcome
 
 
 def get_course_term(course_workflow):
