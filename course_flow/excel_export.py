@@ -79,68 +79,7 @@ def get_excel_export(model_object, object_type, export_format, allowed_sets):
 
 
 
-# def get_excel_outcome(workflow, outcome, allowed_sets):
-#     nodes = (
-#         Node.objects.filter(week__workflow=workflow)
-#         .filter(deleted=False)
-#         .filter(allowed_sets_Q(allowed_sets))
-#         .filter(
-#             Q(outcomes=outcome)
-#             | Q(
-#                 outcomes__parent_outcomes=outcome,
-#                 outcomes__parent_outcomes__deleted=False,
-#             )
-#             | Q(
-#                 outcomes__parent_outcomes__parent_outcomes=outcome,
-#                 outcomes__parent_outcomes__parent_outcomes__deleted=False,
-#             )
-#         )
-#         .distinct()
-#     )
-#     header = {
-#         "comp_code": outcome.code,
-#         "code": f"Pass X of the following courses ({nodes.count()})",
-#     }
-#     nodes_serialized = NodeExportSerializerWithTime(nodes, many=True).data
-#     return [header] + nodes_serialized
 
-
-# def get_excel(workflow, allowed_sets):
-#     outcomes = get_base_outcomes_ordered_filtered(
-#         workflow, allowed_sets_Q(allowed_sets)
-#     )
-#     data = []
-#     for outcome in outcomes:
-#         data += get_sobec_outcome(workflow, outcome, allowed_sets)
-
-#     df = pd.DataFrame(
-#         data,
-#         columns=[
-#             "comp_code",
-#             "code",
-#             "title",
-#             "term",
-#             "course_outcome",
-#             "course_outcome_two",
-#             "suboutcomes",
-
-#         ],
-#     )
-#     df.rename(
-#         columns={
-#             "comp_code": _("Competency Code"),
-#             "code": _("Course Code"),
-#             "title": _("Course Title"),
-#             "term": _("Term #")
-#             "course_outcome": _("Course Outcome Level 1")
-#             "course_outcome_two": _("Course Outcome Level 2")
-#             "suboutcomes": _("Sub Outcomes")
-
-#         },
-#         inplace=True,
-#     )
-#     pd.set_option("display.max_colwidth", None)
-#     return df
 
 def get_all_workflows_for_project(project):
     workflows = models.Workflow.objects.filter(
@@ -177,21 +116,28 @@ def get_courses_data(program_outcome):
     course_outcomes = []
 
     for course in courses:
-        for outcome in get_all_outcomes_ordered(course):
-            course_outcomes.append(outcome)
+        if course == None:
+            course_outcomes.append(None)
+        else:
+            for outcome in get_all_outcomes_ordered(course):
+                course_outcomes.append(outcome)
 
     # get program level outcomes using get unique outcome horizontal links, filtering with program_outcome_children
 
     course_outcomes_with_associated_program_outcomes = {}
     for outcome in course_outcomes:
         horizontal_links = list(get_unique_outcomehorizontallinks(outcome))
-        for link in horizontal_links:
-            program_outcome = link.parent_outcome
-            if check_associated_outcome(program_outcome, program_outcome_children):
-                if outcome not in course_outcomes_with_associated_program_outcomes:
-                    course_outcomes_with_associated_program_outcomes[outcome] = [program_outcome]
-                else:
-                    course_outcomes_with_associated_program_outcomes[outcome].append(program_outcome)
+        if len(horizontal_links) > 0:
+          for link in horizontal_links:
+              program_outcome = link.parent_outcome
+              if check_associated_outcome(program_outcome, program_outcome_children):
+                  if outcome.id not in course_outcomes_with_associated_program_outcomes:
+                      course_outcomes_with_associated_program_outcomes[outcome.id] = {"instance": outcome, "program outcome": [program_outcome]}
+                  else:
+                      course_outcomes_with_associated_program_outcomes[outcome.id]["program outcome"].append(program_outcome)
+        else:
+            course_outcomes_with_associated_program_outcomes[outcome.id] = {"instance": outcome, "program outcome": [None]}
+
 
     # for each outcome, display associated program outcomes
 
@@ -206,6 +152,8 @@ def get_course_term(course_workflow):
     return weeks
 
 
-def view_courses_data(workflow):
-    workflow_serialized = ProgramSerializerShallow(workflow)
-    print(workflow_serialized.data)
+def get_framework(workflow):
+    program_serialized = ProgramSerializerShallow(workflow)
+    course_instances = get_courses_data(get_program_data(workflow)[0])
+
+    return program_serialized.data

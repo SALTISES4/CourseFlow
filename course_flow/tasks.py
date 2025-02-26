@@ -43,7 +43,8 @@ def async_send_export_email(
       print("po: ", program)
       co = excel_export.get_courses_data(program[0])
       print("co: ", co)
-      # cd = excel_export.view_courses_data(model_object)
+      fw = excel_export.get_framework(model_object)
+      print("cd: ", fw)
 
 
 
