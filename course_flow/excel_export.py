@@ -19,6 +19,7 @@ from .models import (
 from .serializers import (
     NodeExportSerializer,
     NodeExportSerializerWithTime,
+    OutcomeSerializerShallow,
     OutcomeExportSerializer,
     WeekExportSerializer,
     WorkflowExportSerializer,
@@ -153,7 +154,34 @@ def get_course_term(course_workflow):
 
 
 def get_framework(workflow):
-    program_serialized = ProgramSerializerShallow(workflow)
-    course_instances = get_courses_data(get_program_data(workflow)[0])
+    program_serialized = WorkflowExportSerializer(workflow).data
+    # print("pro_ser", program_serialized)
+    program_outcome_serialized = OutcomeExportSerializer(get_program_data(workflow)[0]).data
+    # print("pro_out_ser", program_outcome_serialized)
+    course_outcome_instances = get_courses_data(get_program_data(workflow)[0])
+    course_outcomes_serialized = []
+    courses_serialized = []
+    add_ons = 0
+    for course_outcome in course_outcome_instances.values():
+        course_outcomes_serialized.append(OutcomeExportSerializer(course_outcome["instance"]).data)
+        print("cos", course_outcomes_serialized)
+        course = models.Workflow.objects.filter(outcomes=course_outcome["instance"])
+        print("course", course)
+        courses_serialized.append(WorkflowExportSerializer(course).data)
+        print("cs", courses_serialized)
+        if len(course_outcome["program outcome"]) > add_ons:
+            add_ons = len(course_outcome["program outcome"])
+    num_columns = 9 + add_ons
+    # print("ps: ", program_serialized, "pos: ", program_outcome_serialized, "cs: ", courses_serialized, "cos: ", course_outcomes_serialized)
+    # df = pd.Dataframe(columns=[str(i) for i in range(num_columns)])
 
-    return program_serialized.data
+    # df = concat_line(
+    #     df,
+    #     {
+    #         "0": _("Program Name"),
+    #         "1": program_serialized["title"],
+    #         "2": _("Program Outcome"),
+    #         "3": program_outcome["title"]
+    #     }
+    # )
+    return True
