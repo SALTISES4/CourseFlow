@@ -1596,7 +1596,6 @@ class WeekExportSerializer(
     def get_type(self, instance):
         return "week"
 
-
 class NodeExportSerializer(
     serializers.ModelSerializer,
     TitleSerializerTextMixin,

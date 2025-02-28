@@ -72,7 +72,6 @@ def get_descendant_outcomes(outcome):
         | Q(parent_outcomes__parent_outcomes=outcome)
     )
 
-
 def get_all_outcomes_for_outcome(outcome):
     outcomes = models.Outcome.objects.filter(
         Q(parent_outcomes=outcome)
@@ -120,8 +119,14 @@ def get_all_outcomes_ordered(workflow):
         )
     return outcomes
 
+def get_direct_children_of_outcome_ordered(outcome):
+    return(models.Outcome.objects.filter(
+        parent_outcomes=outcome,deleted=False
+    ).order_by("parent_outcome_links__rank"))
 
-def get_base_outcomes_ordered_filtered(workflow, extra_filter):
+
+
+def get_base_outcomes_ordered_filtered(workflow, extra_filter=Q()):
     return (
         models.Outcome.objects.filter(workflow=workflow, deleted=False)
         .filter(extra_filter)
@@ -138,7 +143,6 @@ def get_all_outcomes_ordered_filtered(workflow, extra_filter):
     ):
         outcomes += get_all_outcomes_ordered_for_outcome(outcome)
     return outcomes
-
 
 def get_unique_outcomenodes(node):
     return (
