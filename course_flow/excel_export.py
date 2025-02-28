@@ -212,9 +212,7 @@ def get_d01_code(serialized_outcome):
 #Pass in a node, get all the lines corresponding to its data
 def get_course_lines(node,program_outcome_children):
     node_serialized = NodeExportSerializer(node).data
-
-    #TODO: Do some serializing of week, etc here. Currently I append the instance,
-    #change it to the serialized version
+    week_serialized = WeekExportSerializer(node.week_set.first()).data
 
     #Check if there is no linked workflow
     if node.linked_workflow is None:
@@ -226,7 +224,7 @@ def get_course_lines(node,program_outcome_children):
         program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
 
         return [{
-            "Week":node.week_set.first(),
+            "Week":week_serialized,
             "Node":node_serialized,
             "Program Outcome Codes":program_outcome_codes,
             "Program Outcomes":associated_program_outcomes_serialized,
@@ -247,7 +245,7 @@ def get_course_lines(node,program_outcome_children):
         #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
         program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
         return [{
-            "Week":node.week_set.first(),
+            "Week":week_serialized,
             "Node":node_serialized,
             "Program Outcome Codes":program_outcome_codes,
             "Program Outcomes":associated_program_outcomes_serialized,
@@ -255,7 +253,7 @@ def get_course_lines(node,program_outcome_children):
 
     output = []
     base_dict = {
-        "Week":node.week_set.first(),
+        "Week":week_serialized,
         "Node":node_serialized,
     }
     for base_course_outcome in base_course_outcomes:
