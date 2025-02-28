@@ -219,11 +219,17 @@ def get_course_lines(node,program_outcome_children):
     #Check if there is no linked workflow
     if node.linked_workflow is None:
         #Get the program outcomes from the list associated with that node
-        associated_program_outcomes_unique = [outcomenode.outcome for outcomenode in get_unique_outcomenodes(node).filter(ouctome__in=program_outcome_children)]
+        associated_program_outcomes_unique = [outcomenode.outcome for outcomenode in get_unique_outcomenodes(node).filter(outcome__in=program_outcome_children)]
+        associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
+
+        #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
+        program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
+
         return [{
             "Week":node.week_set.first(),
             "Node":node_serialized,
-            "Program Outcomes": program_outcomes,
+            "Program Outcome Codes":program_outcome_codes,
+            "Program Outcomes":associated_program_outcomes_serialized,
         }]
     #Start with base course outcomes, they are the only ones that can have horizontal links at this point
     base_course_outcomes = get_base_outcomes_ordered_filtered(
@@ -235,11 +241,16 @@ def get_course_lines(node,program_outcome_children):
     #no linked workflow
     if len(base_course_outcomes)==0:
         #Get the program outcomes from the list associated with that node
-        associated_program_outcomes_unique = [outcomenode.outcome for outcomenode in get_unique_outcomenodes(node).filter(ouctome__in=program_outcome_children)]
+        associated_program_outcomes_unique = [outcomenode.outcome for outcomenode in get_unique_outcomenodes(node).filter(outcome__in=program_outcome_children)]
+        associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
+
+        #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
+        program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
         return [{
             "Week":node.week_set.first(),
             "Node":node_serialized,
-            "Program Outcomes": program_outcomes,
+            "Program Outcome Codes":program_outcome_codes,
+            "Program Outcomes":associated_program_outcomes_serialized,
         }]
 
     output = []
@@ -258,8 +269,7 @@ def get_course_lines(node,program_outcome_children):
         associated_program_outcomes_unique = [link.outcome for link in get_unique_outcomehorizontallinks(base_course_outcome)]
         associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
 
-        #Get a comma separated list of the depth 0 or depth 1 outcome
-        #parent to each program outcome
+        #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
         program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
 
 
@@ -277,7 +287,7 @@ def get_course_lines(node,program_outcome_children):
         else:
             course_sub_outcomes_serialized = OutcomeExportSerializer(course_sub_outcomes,many=True).data
 
-            #Otherwise we iterateover all the sub outcomes
+            #Otherwise we iterate over all the sub outcomes
             for course_outcome_serialized in course_sub_outcomes_serialized:
                 output.append(
                     {
