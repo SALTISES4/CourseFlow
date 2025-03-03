@@ -3,6 +3,7 @@ from io import BytesIO
 import pandas as pd
 from django.db.models import Q
 from django.utils.translation import gettext as _
+from django.utils import timezone
 
 from course_flow import analytics, models
 
@@ -40,10 +41,12 @@ from .utils import (
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
     get_descendant_outcomes,
+    dateTimeFormatNoSpace,
 )
 
 from .export_functions import (
    get_sobec_outcome,
+   concat_line
 )
 
 def get_excel_export(model_object, object_type, export_format, allowed_sets):
@@ -157,12 +160,10 @@ def get_course_term(course_workflow):
 
 def get_framework(workflow):
     program_serialized = WorkflowExportSerializer(workflow).data
-    # print("pro_ser", program_serialized)
+    print("pro_ser", program_serialized)
     program_outcome_serialized = OutcomeExportSerializer(get_program_data(workflow)[0]).data
-    # print("pro_out_ser", program_outcome_serialized)
-    #course_outcome_instances = get_courses_data(get_program_data(workflow)[0])
-    program_outcomes = get_base_outcomes_ordered_filtered(workflow)
-    course_data = [get_courses_data_j(oc) for oc in program_outcomes]
+    print("pro_out_ser", program_outcome_serialized)
+    course_outcome_instances = get_courses_data(get_program_data(workflow)[0])
     add_ons = 0
     courses = []
     course_outcomes = []
@@ -196,7 +197,7 @@ def get_framework(workflow):
 
 
 
-''' 
+'''
 Jeremie's code!
 '''
 #Quick utility function to get the codes for the first program
@@ -306,7 +307,7 @@ def get_courses_data_j(program_outcome):
 
     #Get a list of all the sub-outcomes
     program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
-    
+
     #Find all the nodes they've been associated with
     nodes  = models.Node.objects.filter(outcomes__in=program_outcome_children).distinct().order_by("week")
 
@@ -315,6 +316,107 @@ def get_courses_data_j(program_outcome):
     for node in nodes:
         course_data+=get_course_lines(node,program_outcome_children)
     print(course_data)
-    return course_data 
+    return course_data
 
 
+def practice_panda(dic):
+    # serializers doing work
+    program_data = {
+        "id": 0,
+        "Program": "Program Title Example",
+        "Program Outcome": "Program Outcome Example"
+    }
+    # data being generated is a list where each item is a row in the excel (each item is a dictionary of dictionaries)
+    # dictionaries include: week, node, base course outcome, sub course outcome, program outcome number, program outcomes (this is a list of serialized program outcomes and will have to be accessed through numbered keys so turn them into dictionaries)
+    date = timezone.now().strftime(dateTimeFormatNoSpace())
+    course_outcome_data = [
+        {
+            "id": 0,
+            "instance": "Course Outcome Example",
+            "associated course": {
+                "Course Title": "Course Example",
+                "Term": "1",
+                "Course Code": "1"
+            },
+            "associated program": {
+                "number": "01WN",
+                "outcomes": {
+                    "title": "Program Outcome Example 1.1"
+                },
+                {
+                    "title": "Program Outcome Example 1.2",
+                }
+            }
+        },
+        {
+            "id": 1,
+            "instance": "Course Outcome Example 1.1",
+            "associated course": {
+                "Course Title": "Course Example",
+                "Term": "1",
+                "Course Code": "1"
+            },
+            "associated programs": {
+                "number": "01WN"
+                "outcome": {
+                    "title": "Program Outcome 1.1",
+                }
+            }
+        },
+        {
+            "id": 2,
+            "instance": "Course Outcome Example 2",
+            "associated course": {
+                "Course Title": "Course Example 2",
+                "Term": "2",
+                "Course Code": "2"
+            },
+            "associated programs": {
+                "number": "02WN",
+                "outcomes": {
+                    "title": "Program Outcome Example 2.1",
+                }
+            }
+        }
+    ]
+
+    df = pd.DataFrame(
+        columns=[
+                "Program",
+                "Program Outcome",
+                "Export Date",
+                "Term #",
+                "Course Code",
+                "Course Title",
+                "Course Outcome",
+                "Associated Program Outcome #",
+                "Associated Program Outcome 1",
+                "Associated Program Outcome 2",
+                "Associated Program Outcome 3"
+            ]
+    )
+    df = concat_line(
+        df,
+        {
+            "Program": program_data["Program"],
+            "Program Outcome": program_data["Program Outcome"],
+            "Export Date": date
+        }
+    )
+    # for loop to go through each outcome instance to add to the df?
+    count = 0
+    program_count = 0
+    df = concat_line(
+        df,
+        {
+            "Term #": course_outcome_data[count]["associated course"]["Term"],
+            "Course Code": course_outcome_data[count]["associated course"]["Course Code"],
+            "Course Title": course_outcome_data[count]["associated course"]["Course Title"],
+            "Course Outcome": course_outcome_data[count]["instance"],
+            # another for loop to get each instances number of associated program outcomes?
+            "Associated Program Outcome #": course_outcome_data[count]["associated programs"]["number"],
+            "Associated Program Outcome 1": course_outcome_data[count]["associated programs"]["outcomes"][program_count]
+        }
+    )
+
+    return df
