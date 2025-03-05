@@ -291,168 +291,105 @@ def get_export_analytics(workflow):
             "Term #",
             "Course Code",
             "Course Title",
-            "Course Outcome",
+            "Course Outcome Level 1",
+            "Course Outcome Level 2",
             "Associated Program Outcome #",
             "Associated Program Outcome 1",
             "Associated Program Outcome 2",
             "Associated Program Outcome 3"
         ]
     )
+    # print("df",df)
 
-    df = df.concant_line(
+    df = concat_line(
         df,
         {
             "Program": workflow.title,
             "Program Outcome": program_outcome.title,
-            "Export Date": date
-        }
+            "Export Date": date,
+        },
     )
+
+    one_row = {}  #collects data for one row
 
     for d in data:
         if d.get("Week"):
             term = d["Week"]["title"]
-        elif d.get("Node"):
+            one_row["term"] = term
+            # term data
+        if d.get("Node"):
             course_title = d["Node"]["title"]
-        elif d.get("Base_Course_Outcomes"):
-            course_code = d["Base_Course_Outcomes"].get("code")
+            one_row["course_title"] = course_title
+            # course title data
+        if d.get("Base_Course_Outcome"):
+            course_code = d["Base_Course_Outcome"].get("code")
             if course_code:
-                course_outcome = "-".join(course_code, d["Base_Course_Outcomes"]["title"])
+                one_row["course_code"] = course_code
+                course_outcome = "-".join([course_code, d["Base_Course_Outcome"]["title"]])
+                one_row["course_outcome"] = course_outcome
             else:
-                course_outcome = d["Base_Course_Outcomes"]["title"]
-        elif d.get("Sub_Course_Outcome"):
+                course_outcome = d["Base_Course_Outcome"]["title"]
+                one_row["course_code"] = None
+                one_row["course_outcome"] = course_outcome
+            # base course outcome
+        if d.get("Sub_Course_Outcome"):
             course_code_2 = d["Sub_Course_Outcome"].get("code")
             if course_code_2:
-                course_outcome_2 = "-".join(course_code, d["Sub_Course_Outcome"]["title"])
+                one_row["subcourse_outcome"] = "-".join([course_code_2, d["Sub_Course_Outcome"]["title"]])
             else:
-                course_outcome_2 = d["Sub_Course_Outcome"]["title"]
-        elif d.get("Program Outcomes"):
+                one_row["course_outcome_2"] = d["Sub_Course_Outcome"]["title"]
+            #subcourse outcome
+        if d.get("Program Outcomes"):
             outcomes = []
             for outcome in d["Program Outcomes"]:
                 APCN = outcome["code"]
-                outcomes.append("-".join(APCN, outcome["title"]))
+                outcomes.append("-".join([APCN, outcome["title"]]))
+            # program outcomes
+            if len(outcomes) == 1:
+                # based on how many outcomes, add the row data to the df, will probably need to change this to handle dynamically
+                df = concat_line(
+                    df,
+                    {
+                        "Term #": one_row["term"],
+                        "Course Code": one_row["course_code"],
+                        "Course Title": one_row["course_title"],
+                        "Course Outcome Level 1": one_row["course_outcome"],
+                        "Course Outcome Level 2": one_row["subcourse_outcome"],
+                        "Associated Program Outcome #": APCN,
+                        "Associated Program Outcome 1": outcomes[0],
+                    }
+                )
+            elif len(outcomes) == 2:
+                df = concat_line(
+                    df,
+                    {
+                        "Term #": one_row["term"],
+                        "Course Code": one_row["course_code"],
+                        "Course Title": one_row["course_title"],
+                        "Course Outcome Level 1": one_row["course_outcome"],
+                        "Course Outcome Level 2": one_row["subcourse_outcome"],
+                        "Associated Program Outcome #": APCN,
+                        "Associated Program Outcome 1": outcomes[0],
+                        "Associated Program Outcome 2": outcomes[1],
+                    }
+                )
+            elif len(outcomes) == 3:
+                df = concat_line(
+                    df,
+                    {
+                        "Term #": one_row["term"],
+                        "Course Code": one_row["course_code"],
+                        "Course Title": one_row["course_title"],
+                        "Course Outcome Level 1": one_row["course_outcome"],
+                        "Course Outcome Level 2": one_row["subcourse_outcome"],
+                        "Associated Program Outcome #": APCN,
+                        "Associated Program Outcome 1": outcomes[0],
+                        "Associated Program Outcome 2": outcomes[1],
+                        "Associated Program Outcome 3": outcomes[2]
+                    }
+                )
+        # print("one_row", one_row)
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print("df", df)
+    return True # df
 
-            df = df.concant_line(
-                df,
-                {
-                    "Term #": term,
-                    "Course Code": course_code,
-                    "Course Title": course_title,
-                    "Course Outcome": course_outcome,
-                    "Associated Program Outcome #": APCN,
-                    "Associated Program Outcome 1": outcomes[0],
-                    "Associated Program Outcome 2": outcomes[1],
-                    "Associated Program Outcome 3": outcomes[2]
-                }
-            )
-
-    # df = concat_line(
-    #     df,
-    #     {
-    #         "0": _("Program Name"),
-    #         "1": program_serialized["title"],
-    #         "2": _("Program Outcome"),
-    #         "3": program_outcome["title"]
-    #     }
-    # )
-    return True
-
-
-# def practice_panda(dic):
-    # serializers doing work
-    # program_data = {
-    #     "id": 0,
-    #     "Program": "Program Title Example",
-    #     "Program Outcome": "Program Outcome Example"
-    # }
-    # data being generated is a list where each item is a row in the excel (each item is a dictionary of dictionaries)
-    # dictionaries include: week, node, base course outcome, sub course outcome, program outcome number, program outcomes (this is a list of serialized program outcomes and will have to be accessed through numbered keys so turn them into dictionaries)
-    # date = timezone.now().strftime(dateTimeFormatNoSpace())
-    # course_outcome_data = [
-    #     {
-    #       "id": 0,
-    #       "instance": "Course Outcome Example 1.0",
-    #       "associated course": {
-    #           "Course Title": "Course Example",
-    #           "Term": "1",
-    #           "Course Code": "1"
-    #       },
-    #       "associated programs": {
-    #           "code": "01WN",
-    #           "outcomes": {
-    #               "title": "Program Outcome 1.0",
-    #               "title": "Program Outcome 1.1"
-    #           }
-    #       }
-    #     },
-    #     {
-    #         "id": 1,
-    #         "instance": "Course Outcome Example 1.1",
-    #         "associated course": {
-    #             "Course Title": "Course Example",
-    #             "Term": "1",
-    #             "Course Code": "1"
-    #         },
-    #         "associated programs": {
-    #             "number": "01WN",
-    #             "outcomes": {
-    #                 "title": "Program Outcome 1.1",
-    #             }
-    #         }
-    #     },
-    #     {
-    #         "id": 2,
-    #         "instance": "Course Outcome Example 2",
-    #         "associated course": {
-    #             "Course Title": "Course Example 2",
-    #             "Term": "2",
-    #             "Course Code": "2"
-    #         },
-    #         "associated programs": {
-    #             "number": "02WN",
-    #             "outcomes": {
-    #                 "title": "Program Outcome Example 2.1",
-    #             }
-    #         }
-    #     }
-    # ]
-
-    # df = pd.DataFrame(
-    #     columns=[
-    #             "Program",
-    #             "Program Outcome",
-    #             "Export Date",
-    #             "Term #",
-    #             "Course Code",
-    #             "Course Title",
-    #             "Course Outcome",
-    #             "Associated Program Outcome #",
-    #             "Associated Program Outcome 1",
-    #             "Associated Program Outcome 2",
-    #             "Associated Program Outcome 3"
-    #         ]
-    # )
-    # df = concat_line(
-    #     df,
-    #     {
-    #         "Program": program_data["Program"],
-    #         "Program Outcome": program_data["Program Outcome"],
-    #         "Export Date": date
-    #     }
-    # )
-    # # for loop to go through each outcome instance to add to the df?
-    # count = 0
-    # program_count = 0
-    # df = concat_line(
-    #     df,
-    #     {
-    #         "Term #": course_outcome_data[count]["associated course"]["Term"],
-    #         "Course Code": course_outcome_data[count]["associated course"]["Course Code"],
-    #         "Course Title": course_outcome_data[count]["associated course"]["Course Title"],
-    #         "Course Outcome": course_outcome_data[count]["instance"],
-    #         # another for loop to get each instances number of associated program outcomes?
-    #         "Associated Program Outcome #": course_outcome_data[count]["associated programs"]["number"],
-    #         "Associated Program Outcome 1": course_outcome_data[count]["associated programs"]["outcomes"][program_count]
-    #     }
-    # )
-
-    # return df
