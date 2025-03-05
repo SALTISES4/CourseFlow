@@ -391,5 +391,16 @@ def get_export_analytics(workflow):
         # print("one_row", one_row)
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print("df", df)
-    return True # df
+    return df
 
+def get_analytics_table(workflow, export_format):
+    with BytesIO() as b:
+        with pd.ExcelWriter(b, engine='xlsxwriter') as writer:
+            df = get_export_analytics(workflow)
+            sheet_name = get_alphanum(workflow.title)
+            df.to_excel(
+                writer,
+                sheet_name=sheet_name,
+                index=False,
+            )
+        return b.get_value()
