@@ -49,43 +49,6 @@ from .export_functions import (
    concat_line
 )
 
-def get_excel_export(model_object, object_type, export_format, allowed_sets):
-    if object_type == "project":
-        workflows = list(
-            Program.objects.filter(project=model_object, deleted=False)
-        )
-    else:
-        workflows = [model_object]
-    with BytesIO() as b:
-        with pd.ExcelWriter(b, engine="xlsxwriter") as writer:
-            workbook = writer.book
-            header_format = workbook.add_format({"bg_color": "#b5fbbb"})
-            bold_format = workbook.add_format(
-                {"bold": True, "bg_color": "#04BA74", "color": "white"}
-            )
-            wrap_format = workbook.add_format()
-            wrap_format.set_text_wrap()
-            wrap_format.set_align("top")
-            for workflow in workflows:
-                df = get_excel(workflow, allowed_sets)
-                sheet_name = (
-                    get_alphanum(workflow.title) + "_" + str(workflow.pk)
-                )[:30]
-                df.to_excel(
-                    writer,
-                    sheet_name=sheet_name,
-                    index=False,
-                )
-                worksheet = writer.sheets[sheet_name]
-                worksheet.set_row(0, None, bold_format)
-                worksheet.set_row(1, None, bold_format)
-                worksheet.set_row(2, None, bold_format)
-                worksheet.add_table(6, 0, "# of outcomes per terms", 7)
-            return b.getvalue()
-
-
-
-
 
 def get_all_workflows_for_project(project):
     workflows = models.Workflow.objects.filter(
@@ -150,12 +113,6 @@ def get_courses_data(program_outcome):
     return course_outcomes_with_associated_program_outcomes
     # eventually return associated program outcome
 
-
-def get_course_term(course_workflow):
-    weeks = models.Weeks.objects.filter(
-        Q(workflow=course_workflow)
-    )
-    return weeks
 
 '''
 Jeremie's code!
@@ -281,7 +238,7 @@ def get_courses_data_j(program_outcome):
 
 def get_export_analytics(workflow):
     program_outcome = get_program_outcome(workflow)[0]
-    data = get_courses_data_j(program_outcome)
+    course_data = get_courses_data_j(program_outcome)
     date = timezone.now().strftime(dateTimeFormatNoSpace())
     df = pd.DataFrame(
         columns=[
@@ -309,89 +266,52 @@ def get_export_analytics(workflow):
             "Export Date": date,
         },
     )
+    # delete this function once I'm done using it as a reference
 
-    one_row = {}  #collects data for one row
+def get_export_analytics_1(workflow):
+    program_outcome = get_program_outcome(workflow)[0]
+    course_data = get_courses_data_j(program_outcome)
+    date = timezone.now().strftime(dateTimeFormatNoSpace())
+    initial_data = [{
+        "Program": workflow.title,
+        "Program Outcome": program_outcome.title,
+        "Export Date": date,
+    }]
+    idf = pd.DataFrame(initial_data)
+    # print("data: ", course_data)
+    df = pd.DataFrame(course_data)
+    # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+    #     print("df", df)
+    df["Term #"] = df["Week"].apply(lambda x: x["title"])
+    df["Course Code"] = df["Base_Course_Outcome"].apply(lambda x: x["code"])
+    df["Course Title"] = df["Node"].apply(lambda x: x["title"])
+    df["Course Outcome Level 1"] = df["Base_Course_Outcome"].apply(lambda x: "-".join([x["code"], x["title"]]))
+    df["Course Outcome Level 2"] = df["Sub_Course_Outcome"].apply(lambda x: "-".join([x["code"], x["title"]]))
+    df["Associated Program Outcome #"] = df["Program Outcome Codes"]
 
-    for d in data:
-        if d.get("Week"):
-            term = d["Week"]["title"]
-            one_row["term"] = term
-            # term data
-        if d.get("Node"):
-            course_title = d["Node"]["title"]
-            one_row["course_title"] = course_title
-            # course title data
-        if d.get("Base_Course_Outcome"):
-            course_code = d["Base_Course_Outcome"].get("code")
-            if course_code:
-                one_row["course_code"] = course_code
-                course_outcome = "-".join([course_code, d["Base_Course_Outcome"]["title"]])
-                one_row["course_outcome"] = course_outcome
-            else:
-                course_outcome = d["Base_Course_Outcome"]["title"]
-                one_row["course_code"] = None
-                one_row["course_outcome"] = course_outcome
-            # base course outcome
-        if d.get("Sub_Course_Outcome"):
-            course_code_2 = d["Sub_Course_Outcome"].get("code")
-            if course_code_2:
-                one_row["subcourse_outcome"] = "-".join([course_code_2, d["Sub_Course_Outcome"]["title"]])
-            else:
-                one_row["course_outcome_2"] = d["Sub_Course_Outcome"]["title"]
-            #subcourse outcome
-        if d.get("Program Outcomes"):
-            outcomes = []
-            for outcome in d["Program Outcomes"]:
-                APCN = outcome["code"]
-                outcomes.append("-".join([APCN, outcome["title"]]))
-            # program outcomes
-            if len(outcomes) == 1:
-                # based on how many outcomes, add the row data to the df, will probably need to change this to handle dynamically
-                df = concat_line(
-                    df,
-                    {
-                        "Term #": one_row["term"],
-                        "Course Code": one_row["course_code"],
-                        "Course Title": one_row["course_title"],
-                        "Course Outcome Level 1": one_row["course_outcome"],
-                        "Course Outcome Level 2": one_row["subcourse_outcome"],
-                        "Associated Program Outcome #": APCN,
-                        "Associated Program Outcome 1": outcomes[0],
-                    }
-                )
-            elif len(outcomes) == 2:
-                df = concat_line(
-                    df,
-                    {
-                        "Term #": one_row["term"],
-                        "Course Code": one_row["course_code"],
-                        "Course Title": one_row["course_title"],
-                        "Course Outcome Level 1": one_row["course_outcome"],
-                        "Course Outcome Level 2": one_row["subcourse_outcome"],
-                        "Associated Program Outcome #": APCN,
-                        "Associated Program Outcome 1": outcomes[0],
-                        "Associated Program Outcome 2": outcomes[1],
-                    }
-                )
-            elif len(outcomes) == 3:
-                df = concat_line(
-                    df,
-                    {
-                        "Term #": one_row["term"],
-                        "Course Code": one_row["course_code"],
-                        "Course Title": one_row["course_title"],
-                        "Course Outcome Level 1": one_row["course_outcome"],
-                        "Course Outcome Level 2": one_row["subcourse_outcome"],
-                        "Associated Program Outcome #": APCN,
-                        "Associated Program Outcome 1": outcomes[0],
-                        "Associated Program Outcome 2": outcomes[1],
-                        "Associated Program Outcome 3": outcomes[2]
-                    }
-                )
-        # print("one_row", one_row)
+    num_outcomes = []
+    for lis in df["Program Outcomes"]:
+        for row in lis:
+            for outcome in row["title"]:
+                print(outcome)
+
+
+    # print(df["Program Outcomes"])
+
+    # cdf = df.drop(columns=[
+    #     "Week",
+    #     "Node",
+    #     "Base_Course_Outcome",
+    #     "Sub_Course_Outcome",
+    #     "Program Outcome Codes",
+    #     "Program Outcomes",
+    # ])
+    # df = pd.concat([idf,cdf])
+
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print("df", df)
-    return df
+    return True
+
 
 def get_analytics_table(workflow, export_format):
     with BytesIO() as b:
