@@ -220,7 +220,7 @@ def get_course_lines(node,program_outcome_children):
    # pass in an individual program outcome, look at which courses are linked to that outcome
 def get_courses_data_j(program_outcome):
 
-    print("beginning of Jeremie's code")
+    # print("beginning of Jeremie's code")
 
     #Get a list of all the sub-outcomes
     program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
@@ -271,6 +271,7 @@ def get_export_analytics(workflow):
 def get_export_analytics_1(workflow):
     program_outcome = get_program_outcome(workflow)[0]
     course_data = get_courses_data_j(program_outcome)
+    print("course data", course_data)
     date = timezone.now().strftime(dateTimeFormatNoSpace())
     initial_data = [{
         "Program": workflow.title,
@@ -289,28 +290,33 @@ def get_export_analytics_1(workflow):
     df["Course Outcome Level 2"] = df["Sub_Course_Outcome"].apply(lambda x: "-".join([x["code"], x["title"]]))
     df["Associated Program Outcome #"] = df["Program Outcome Codes"]
 
-    num_outcomes = []
-    for lis in df["Program Outcomes"]:
-        for row in lis:
-            for outcome in row["title"]:
-                print(outcome)
+    maximum = 0
+
+    for data in course_data:
+        if data.get("Program Outcomes"):
+            count = 0
+            for outcome in data["Program Outcomes"]["title"]:
+                count += 1
+            if count > maximum:
+                maximum = count
+
+    for i in range(maximum):
+        df[f'Associated Program Outcome {i+1}'] = df["Program Outcome"].apply(lambda x: "-".join([x["code"][i], x["title"][i]]))
 
 
-    # print(df["Program Outcomes"])
-
-    # cdf = df.drop(columns=[
-    #     "Week",
-    #     "Node",
-    #     "Base_Course_Outcome",
-    #     "Sub_Course_Outcome",
-    #     "Program Outcome Codes",
-    #     "Program Outcomes",
-    # ])
-    # df = pd.concat([idf,cdf])
+    cdf = df.drop(columns=[
+        "Week",
+        "Node",
+        "Base_Course_Outcome",
+        "Sub_Course_Outcome",
+        "Program Outcome Codes",
+        "Program Outcomes",
+    ])
+    df = pd.concat([idf,cdf])
 
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print("df", df)
-    return True
+    return df
 
 
 def get_analytics_table(workflow, export_format):
