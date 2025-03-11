@@ -129,7 +129,7 @@ def get_course_framework(workflow, allowed_sets):
         df,
         {
             "0": _("Course Title"),
-            "1": workflow_serialized["title"],
+            "1de": workflow_serialized["title"],
             "2": _("Ponderation Theory/Practical/Individual"),
             "3": str(workflow.ponderation_theory)
             + "/"
