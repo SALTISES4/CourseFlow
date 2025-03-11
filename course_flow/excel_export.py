@@ -264,7 +264,7 @@ def get_course_lines(node,program_outcome_children):
 
         #Get a list of all the program outcomes associated with the base course outcome
         #This just gets repeated for each base course outcome in the table
-        associated_program_outcomes_unique = [link.outcome for link in get_unique_outcomehorizontallinks(base_course_outcome)]
+        associated_program_outcomes_unique = [link.parent_outcome for link in get_unique_outcomehorizontallinks(base_course_outcome)]
         associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
 
         #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
