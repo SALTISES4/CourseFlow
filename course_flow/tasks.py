@@ -39,7 +39,7 @@ def async_send_export_email(
 
     #Jason tester
     if export_type == "jexcel":
-        print(excel_export.get_export_analytics_1(model_object))
+        print(excel_export.get_export_analytics(model_object))
 
 
 

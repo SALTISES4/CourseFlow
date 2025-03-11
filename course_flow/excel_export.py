@@ -239,38 +239,6 @@ def get_courses_data_j(program_outcome):
 def get_export_analytics(workflow):
     program_outcome = get_program_outcome(workflow)[0]
     course_data = get_courses_data_j(program_outcome)
-    date = timezone.now().strftime(dateTimeFormatNoSpace())
-    df = pd.DataFrame(
-        columns=[
-            "Program", # = workflow.title
-            "Program Outcome", # program_outcome.title
-            "Export Date",  # date
-            "Term #",
-            "Course Code",
-            "Course Title",
-            "Course Outcome Level 1",
-            "Course Outcome Level 2",
-            "Associated Program Outcome #",
-            "Associated Program Outcome 1",
-            "Associated Program Outcome 2",
-            "Associated Program Outcome 3"
-        ]
-    )
-    # print("df",df)
-
-    df = concat_line(
-        df,
-        {
-            "Program": workflow.title,
-            "Program Outcome": program_outcome.title,
-            "Export Date": date,
-        },
-    )
-    # delete this function once I'm done using it as a reference
-
-def get_export_analytics_1(workflow):
-    program_outcome = get_program_outcome(workflow)[0]
-    course_data = get_courses_data_j(program_outcome)
     print("course data", course_data)
     date = timezone.now().strftime(dateTimeFormatNoSpace())
     initial_data = [{
