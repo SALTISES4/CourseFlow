@@ -2422,3 +2422,5 @@ def live_assignment_creation_defaults(sender, instance, created, **kwargs):
                 UserAssignment.objects.create(
                     user=student.user, assignment=instance
                 )
+
+

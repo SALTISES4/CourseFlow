@@ -22,6 +22,7 @@ from .serializers import (
     NodeExportSerializerWithTime,
     OutcomeSerializerShallow,
     OutcomeExportSerializer,
+    OutcomeWithChildrenSerializer,
     WeekExportSerializer,
     WorkflowExportSerializer,
     ProgramSerializerShallow,
@@ -140,7 +141,6 @@ def get_course_lines(node,program_outcome_children):
 
         #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
         program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
-
         return [{
             "Week":week_serialized,
             "Node":node_serialized,
@@ -158,8 +158,7 @@ def get_course_lines(node,program_outcome_children):
     if len(base_course_outcomes)==0:
         #Get the program outcomes from the list associated with that node
         associated_program_outcomes_unique = [outcomenode.outcome for outcomenode in get_unique_outcomenodes(node).filter(outcome__in=program_outcome_children)]
-        associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
-
+        associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique).data
         #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
         program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
         return [{
@@ -182,16 +181,19 @@ def get_course_lines(node,program_outcome_children):
 
         #Get a list of all the program outcomes associated with the base course outcome
         #This just gets repeated for each base course outcome in the table
-        associated_program_outcomes_unique = [link.parent_outcome for link in get_unique_outcomehorizontallinks(base_course_outcome)]
-        associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
+        # associated_program_outcomes_unique = [link.parent_outcome for link in get_unique_outcomehorizontallinks(base_course_outcome)]
+        associated_program_outcomes = [link.parent_outcome for link in get_unique_outcomehorizontallinks(base_course_outcome)]
+        associated_program_outcomes_unique = OutcomeExportSerializer(associated_program_outcomes,many=True).data
+        # associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
+        associated_program_outcomes_serialized = OutcomeWithChildrenSerializer(associated_program_outcomes,many=True).data
+        # print("program outcomes datafied", associated_program_outcomes_serialized)
 
         #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
-        program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
+        program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_unique]))
 
 
         #If there are no sub-outcomes, just use the base outcome
         if len(course_sub_outcomes) == 0:
-
             output.append(
                 {
                     **base_dict,
@@ -202,7 +204,7 @@ def get_course_lines(node,program_outcome_children):
             )
         else:
             course_sub_outcomes_serialized = OutcomeExportSerializer(course_sub_outcomes,many=True).data
-
+            # print("course suboutcomes > 0")
             #Otherwise we iterate over all the sub outcomes
             for course_outcome_serialized in course_sub_outcomes_serialized:
                 output.append(
@@ -223,7 +225,7 @@ def get_courses_data_j(program_outcome):
     # print("beginning of Jeremie's code")
 
     #Get a list of all the sub-outcomes
-    program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
+    program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)\
 
     #Find all the nodes they've been associated with
     nodes  = models.Node.objects.filter(outcomes__in=program_outcome_children).distinct().order_by("week")
@@ -239,7 +241,7 @@ def get_courses_data_j(program_outcome):
 def get_export_analytics(workflow):
     program_outcome = get_program_outcome(workflow)[0]
     course_data = get_courses_data_j(program_outcome)
-    print("course data", course_data)
+    # print("course data", course_data)
     date = timezone.now().strftime(dateTimeFormatNoSpace())
     initial_data = [{
         "Program": workflow.title,
@@ -247,10 +249,7 @@ def get_export_analytics(workflow):
         "Export Date": date,
     }]
     idf = pd.DataFrame(initial_data)
-    # print("data: ", course_data)
     df = pd.DataFrame(course_data)
-    # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-    #     print("df", df)
     df["Term #"] = df["Week"].apply(lambda x: x["title"])
     df["Course Code"] = df["Base_Course_Outcome"].apply(lambda x: x["code"])
     df["Course Title"] = df["Node"].apply(lambda x: x["title"])
@@ -260,16 +259,16 @@ def get_export_analytics(workflow):
 
     maximum = 0
 
+
     for data in course_data:
         if data.get("Program Outcomes"):
-            count = 0
-            for outcome in data["Program Outcomes"]["title"]:
-                count += 1
+            count = len(data["Program Outcomes"][0]["children"])
+
             if count > maximum:
                 maximum = count
 
     for i in range(maximum):
-        df[f'Associated Program Outcome {i+1}'] = df["Program Outcome"].apply(lambda x: "-".join([x["code"][i], x["title"][i]]))
+        df[f'Associated Program Outcome {i+1}'] = df["Program Outcomes"].apply(lambda x: x[0]["children"][i]['title'])
 
 
     cdf = df.drop(columns=[
