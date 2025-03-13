@@ -52,70 +52,20 @@ from .export_functions import (
    concat_line
 )
 
-
 def get_all_workflows_for_project(project):
     workflows = models.Workflow.objects.filter(
        Q(project=project)
     )
     return workflows
 
-
-def get_program_outcome(workflow):
-    return get_all_outcomes_ordered(workflow)
+def get_program_outcomes(workflow):
+    return get_base_outcomes_ordered_filtered(workflow)
     # pass back list of program outcomes
     # [PO1, PO1.1, PO2]
 
 def check_associated_outcome(outcome, program_outcomes):
     if outcome in program_outcomes:
         return True
-
-    # pass in an individual program outcome, look at which courses are linked to that outcome
-def get_courses_data(program_outcome):
-
-    #access associated nodes
-    program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
-    nodes = list(
-          models.Node.objects.filter(outcomes__in=program_outcome_children)
-          .order_by("week")
-      )
-    # needs to be organized by term, use order by?
-
-    # check for associated workflows in these nodes, will be course workflows
-    courses = list(node.linked_workflow for node in nodes)
-
-    # get course outcomes
-
-    course_outcomes = []
-
-    for course in courses:
-        if course == None:
-            course_outcomes.append(None)
-        else:
-            for outcome in get_all_outcomes_ordered(course):
-                course_outcomes.append(outcome)
-
-    # get program level outcomes using get unique outcome horizontal links, filtering with program_outcome_children
-
-    course_outcomes_with_associated_program_outcomes = {}
-    for outcome in course_outcomes:
-        horizontal_links = list(get_unique_outcomehorizontallinks(outcome))
-        if len(horizontal_links) > 0:
-          for link in horizontal_links:
-              program_outcome = link.parent_outcome
-              if check_associated_outcome(program_outcome, program_outcome_children):
-                  if outcome.id not in course_outcomes_with_associated_program_outcomes:
-                      course_outcomes_with_associated_program_outcomes[outcome.id] = {"instance": outcome, "program outcome": [program_outcome]}
-                  else:
-                      course_outcomes_with_associated_program_outcomes[outcome.id]["program outcome"].append(program_outcome)
-        else:
-            course_outcomes_with_associated_program_outcomes[outcome.id] = {"instance": outcome, "program outcome": [None]}
-
-
-    # for each outcome, display associated program outcomes
-
-    return course_outcomes_with_associated_program_outcomes
-    # eventually return associated program outcome
-
 
 '''
 Jeremie's code!
@@ -184,12 +134,8 @@ def get_course_lines(node,program_outcome_children):
         #Get a list of all the program outcomes associated with the base course outcome
         #This just gets repeated for each base course outcome in the table
         associated_program_outcomes_unique = [link.parent_outcome for link in get_unique_outcomehorizontallinks(base_course_outcome)]
-        #associated_program_outcomes = [link.parent_outcome for link in get_unique_outcomehorizontallinks(base_course_outcome)]
-        #associated_program_outcomes_unique = OutcomeExportSerializer(associated_program_outcomes,many=True).data
-        
+
         associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
-        # associated_program_outcomes_serialized = OutcomeWithChildrenSerializer(associated_program_outcomes,many=True).data
-        # print("program outcomes datafied", associated_program_outcomes_serialized)
 
         #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
         program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
@@ -223,7 +169,7 @@ def get_course_lines(node,program_outcome_children):
 
 
    # pass in an individual program outcome, look at which courses are linked to that outcome
-def get_courses_data_j(program_outcome):
+def get_courses_data(program_outcome):
 
     # print("beginning of Jeremie's code")
 
@@ -237,32 +183,29 @@ def get_courses_data_j(program_outcome):
     course_data=[]
     for node in nodes:
         course_data+=get_course_lines(node,program_outcome_children)
-    # print(course_data)
     return course_data
 
 def make_outcome_text(serialized_outcome):
     return serialized_outcome["code"]+"-"+serialized_outcome["title"]
 
-def get_export_analytics(workflow):
+def get_export_analytics(workflow, index):
 
     last_time = time.time()
-
-    program_outcome = get_program_outcome(workflow)[0]
+    program_outcome = get_program_outcomes(workflow)[index]
 
     last_time = benchmark("initial program outcome retrieval",time.time())
 
-    course_data = get_courses_data_j(program_outcome)
+    course_data = get_courses_data(program_outcome)
 
     last_time = benchmark("course data fetch",time.time())
 
-    # print("course data", course_data)
     date = timezone.now().strftime(dateTimeFormatNoSpace())
     initial_data = [{
         "Program": workflow.title,
         "Program Outcome": program_outcome.title,
         "Export Date": date,
     }]
-    idf = pd.DataFrame(initial_data)
+    initial_df = pd.DataFrame(initial_data)
     df = pd.DataFrame(course_data)
     df["Term #"] = df["Week"].apply(lambda x: x["title"])
     df["Course Code"] = df["Base_Course_Outcome"].apply(lambda x: x["code"])
@@ -270,19 +213,6 @@ def get_export_analytics(workflow):
     df["Course Outcome Level 1"] = df["Base_Course_Outcome"].apply(make_outcome_text)
     df["Course Outcome Level 2"] = df["Sub_Course_Outcome"].apply(make_outcome_text)
     df["Associated Program Outcome #"] = df["Program Outcome Codes"]
-
-    maximum = 0
-
-
-    # for data in course_data:
-    #     if data.get("Program Outcomes"):
-    #         count = len(data["Program Outcomes"][0]["children"])
-
-    #         if count > maximum:
-    #             maximum = count
-
-    # for i in range(maximum):
-    #     df[f'Associated Program Outcome {i+1}'] = df["Program Outcomes"].apply(lambda x: x[0]["children"][i]['title'])
 
     program_outcomes = df["Program Outcomes"].apply(pd.Series)
     program_outcomes = program_outcomes.rename(columns = lambda x : 'Associated Program Outcome ' + str(x + 1))
@@ -297,23 +227,32 @@ def get_export_analytics(workflow):
         "Program Outcome Codes",
         "Program Outcomes",
     ])
-    df = pd.concat([idf,cdf])
 
     last_time = benchmark("dataframe building",time.time())
 
-    #with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-    #    print("df", df)
-    return df
+    return initial_df, cdf
 
 
 def get_analytics_table(workflow, export_format):
-    df = get_export_analytics(workflow)
+    outcomes = get_program_outcomes(workflow)
     with BytesIO() as b:
         with pd.ExcelWriter(b, engine='xlsxwriter') as writer:
-            sheet_name = get_alphanum(workflow.title)[:30]
-            df.to_excel(
-                writer,
-                sheet_name=sheet_name,
-                index=False,
-            )
+            for outcome in range(len(list(outcomes))):
+                df1, df2 = get_export_analytics(workflow, outcome)
+                sheet_name = get_alphanum(outcomes[outcome].code)[:30] or get_alphanum(outcomes[outcome].title)[:30]
+                # sheet name is assigned to the program outcome title if there is no code
+                df1.to_excel(
+                    writer,
+                    sheet_name=sheet_name,
+                    index=False,
+                    startrow=0,
+                    startcol=0
+                )
+                df2.to_excel(
+                    writer,
+                    sheet_name=sheet_name,
+                    index=False,
+                    startrow=len(df1) + 2,
+                    startcol=0
+                )
         return b.getvalue()

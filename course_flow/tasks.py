@@ -37,11 +37,6 @@ def async_send_export_email(
         )
     allowed_sets = project_sets.filter(id__in=allowed_sets)
 
-    #Jason tester
-    if export_type == "jexcel":
-        excel_export.get_analytics_table(model_object, export_format)
-
-
     if export_type == "outcome":
         file = export_functions.get_outcomes_export(
             model_object, object_type, export_format, allowed_sets
