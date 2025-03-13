@@ -42,7 +42,6 @@ def async_send_export_email(
         excel_export.get_analytics_table(model_object, export_format)
 
 
-
     if export_type == "outcome":
         file = export_functions.get_outcomes_export(
             model_object, object_type, export_format, allowed_sets
@@ -63,7 +62,9 @@ def async_send_export_email(
         file = export_functions.get_nodes_export(
             model_object, object_type, export_format, allowed_sets
         )
-    #add new elif with export type here
+    elif export_type == "jexcel":
+        file = excel_export.get_analytics_table(model_object,export_format)
+
     if export_format == "excel":
         file_ext = "xlsx"
     elif export_format == "csv":
@@ -92,6 +93,7 @@ def async_send_export_email(
         file_data = (
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
     if settings.DEBUG:
         with open("last_export." + file_ext, "wb") as out_file:
             out_file.write(file)
