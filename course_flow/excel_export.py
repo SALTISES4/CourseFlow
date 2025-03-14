@@ -49,7 +49,8 @@ from .utils import (
 
 from .export_functions import (
    get_sobec_outcome,
-   concat_line
+   concat_line,
+   concat_df
 )
 
 def get_all_workflows_for_project(project):
@@ -62,10 +63,6 @@ def get_program_outcomes(workflow):
     return get_base_outcomes_ordered_filtered(workflow)
     # pass back list of program outcomes
     # [PO1, PO1.1, PO2]
-
-def check_associated_outcome(outcome, program_outcomes):
-    if outcome in program_outcomes:
-        return True
 
 '''
 Jeremie's code!
@@ -236,23 +233,37 @@ def get_export_analytics(workflow, index):
 def get_analytics_table(workflow, export_format):
     outcomes = get_program_outcomes(workflow)
     with BytesIO() as b:
-        with pd.ExcelWriter(b, engine='xlsxwriter') as writer:
+        if export_format == "excel":
+            with pd.ExcelWriter(b, engine='xlsxwriter') as writer:
+                for outcome in range(len(list(outcomes))):
+                    df1, df2 = get_export_analytics(workflow, outcome)
+                    sheet_name = get_alphanum(outcomes[outcome].code)[:30] or get_alphanum(outcomes[outcome].title)[:30]
+                    # sheet name is assigned to the program outcome title if there is no code
+                    df1.to_excel(
+                        writer,
+                        sheet_name=sheet_name,
+                        index=False,
+                        startrow=0,
+                        startcol=0
+                    )
+                    df2.to_excel(
+                        writer,
+                        sheet_name=sheet_name,
+                        index=False,
+                        startrow=len(df1) + 2,
+                        startcol=0
+                    )
+            return b.getvalue()
+        elif export_format == "csv":
+            print("in csv")
+            df = pd.DataFrame({})
             for outcome in range(len(list(outcomes))):
                 df1, df2 = get_export_analytics(workflow, outcome)
-                sheet_name = get_alphanum(outcomes[outcome].code)[:30] or get_alphanum(outcomes[outcome].title)[:30]
-                # sheet name is assigned to the program outcome title if there is no code
-                df1.to_excel(
-                    writer,
-                    sheet_name=sheet_name,
-                    index=False,
-                    startrow=0,
-                    startcol=0
+                df = concat_df(
+                    df, df1
                 )
-                df2.to_excel(
-                    writer,
-                    sheet_name=sheet_name,
-                    index=False,
-                    startrow=len(df1) + 2,
-                    startcol=0
+                df = concat_df(
+                    df, df2
                 )
+            df.to_csv(path_or_buf=b, sep=",", index=False)
         return b.getvalue()

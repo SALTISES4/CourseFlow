@@ -57,7 +57,7 @@ def async_send_export_email(
         file = export_functions.get_nodes_export(
             model_object, object_type, export_format, allowed_sets
         )
-    elif export_type == "jexcel":
+    elif export_type == "excel":
         file = excel_export.get_analytics_table(model_object,export_format)
 
     if export_format == "excel":
