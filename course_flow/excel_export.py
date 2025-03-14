@@ -43,7 +43,7 @@ from .utils import (
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
     get_descendant_outcomes,
-    dateTimeFormatNoSpace,
+    dateTimeFormat,
     benchmark,
 )
 
@@ -196,7 +196,7 @@ def get_export_analytics(workflow, index):
 
     last_time = benchmark("course data fetch",time.time())
 
-    date = timezone.now().strftime(dateTimeFormatNoSpace())
+    date = timezone.now().strftime(dateTimeFormat())
     initial_data = [{
         "Program": workflow.title,
         "Program Outcome": program_outcome.title,
@@ -235,6 +235,14 @@ def get_analytics_table(workflow, export_format):
     with BytesIO() as b:
         if export_format == "excel":
             with pd.ExcelWriter(b, engine='xlsxwriter') as writer:
+                workbook = writer.book
+                header_format = workbook.add_format({"bg_color": "#b5fbbb"})
+                bold_format = workbook.add_format(
+                    {"bold": True, "bg_color": "#04BA74", "color": "white"}
+                )
+                wrap_format = workbook.add_format()
+                wrap_format.set_text_wrap()
+                wrap_format.set_align("center")
                 for outcome in range(len(list(outcomes))):
                     df1, df2 = get_export_analytics(workflow, outcome)
                     sheet_name = get_alphanum(outcomes[outcome].code)[:30] or get_alphanum(outcomes[outcome].title)[:30]
@@ -253,9 +261,17 @@ def get_analytics_table(workflow, export_format):
                         startrow=len(df1) + 2,
                         startcol=0
                     )
-            return b.getvalue()
+                    worksheet = writer.sheets[sheet_name]
+                    worksheet.set_column(0, 0, 20, wrap_format)
+                    worksheet.set_column(1, 1, 30, wrap_format)
+                    worksheet.set_column(2, 2, 40, wrap_format)
+                    worksheet.set_column(3, 3, 40, wrap_format)
+                    worksheet.set_column(4, 4, 40, wrap_format)
+                    worksheet.set_column(5, 5, 40, wrap_format)
+                    worksheet.set_column(6, 15, 40, wrap_format)
+                    worksheet.set_row(0, None, bold_format)
+                    worksheet.set_row(3, None, bold_format)
         elif export_format == "csv":
-            print("in csv")
             df = pd.DataFrame({})
             for outcome in range(len(list(outcomes))):
                 df1, df2 = get_export_analytics(workflow, outcome)
