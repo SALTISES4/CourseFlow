@@ -23,7 +23,6 @@ from .serializers import (
     NodeExportSerializerWithTime,
     OutcomeSerializerShallow,
     OutcomeExportSerializer,
-    OutcomeWithChildrenSerializer,
     WeekExportSerializer,
     WorkflowExportSerializer,
     ProgramSerializerShallow,
@@ -59,14 +58,6 @@ def get_all_workflows_for_project(project):
     )
     return workflows
 
-def get_program_outcomes(workflow):
-    return get_base_outcomes_ordered_filtered(workflow)
-    # pass back list of program outcomes
-    # [PO1, PO1.1, PO2]
-
-'''
-Jeremie's code!
-'''
 #Quick utility function to get the codes for the first program
 #outcome column
 def get_d01_code(serialized_outcome):
@@ -82,6 +73,10 @@ def get_course_lines(node,program_outcome_children):
     node_serialized = NodeExportSerializer(node).data
     week_serialized = WeekExportSerializer(node.week_set.first()).data
 
+    print("getting course lines for node,week")
+    print(node_serialized)
+    print(week_serialized)
+
     #Check if there is no linked workflow
     if node.linked_workflow is None:
         #Get the program outcomes from the list associated with that node
@@ -94,7 +89,7 @@ def get_course_lines(node,program_outcome_children):
             "Week":week_serialized,
             "Node":node_serialized,
             "Program Outcome Codes":program_outcome_codes,
-            "Program Outcomes":associated_program_outcomes_serialized,
+            "Program Outcomes":[make_outcome_text(x) for x in associated_program_outcomes_serialized],
         }]
     #Start with base course outcomes, they are the only ones that can have horizontal links at this point
     base_course_outcomes = get_base_outcomes_ordered_filtered(
@@ -107,7 +102,7 @@ def get_course_lines(node,program_outcome_children):
     if len(base_course_outcomes)==0:
         #Get the program outcomes from the list associated with that node
         associated_program_outcomes_unique = [outcomenode.outcome for outcomenode in get_unique_outcomenodes(node).filter(outcome__in=program_outcome_children)]
-        associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique).data
+        associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
         #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
         program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
         return [{
@@ -162,16 +157,16 @@ def get_course_lines(node,program_outcome_children):
                         "Program Outcomes":[make_outcome_text(x) for x in associated_program_outcomes_serialized], #We don't need any more details after this, just make the text now for simplicity
                     }
                 )
+    print("returning course lines")
+    print(output)
     return output
 
 
    # pass in an individual program outcome, look at which courses are linked to that outcome
 def get_courses_data(program_outcome):
 
-    # print("beginning of Jeremie's code")
-
     #Get a list of all the sub-outcomes
-    program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)\
+    program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
 
     #Find all the nodes they've been associated with
     nodes  = models.Node.objects.filter(outcomes__in=program_outcome_children).distinct().order_by("week")
@@ -182,13 +177,15 @@ def get_courses_data(program_outcome):
         course_data+=get_course_lines(node,program_outcome_children)
     return course_data
 
+#This is applied to whole columns of dataframes which may have NA, make sure we return empty string if so
 def make_outcome_text(serialized_outcome):
-    return serialized_outcome["code"]+"-"+serialized_outcome["title"]
+    if pd.isnull(serialized_outcome):
+        return ""
+    return serialized_outcome.get("code","")+"-"+serialized_outcome.get("title","")
 
-def get_export_analytics(workflow, index):
+def get_export_analytics(workflow, program_outcome, program_outcome_serialized):
 
     last_time = time.time()
-    program_outcome = get_program_outcomes(workflow)[index]
 
     last_time = benchmark("initial program outcome retrieval",time.time())
 
@@ -199,13 +196,13 @@ def get_export_analytics(workflow, index):
     date = timezone.now().strftime(dateTimeFormat())
     initial_data = [{
         "Program": workflow.title,
-        "Program Outcome": program_outcome.title,
+        "Program Outcome": make_outcome_text(program_outcome_serialized),
         "Export Date": date,
     }]
     initial_df = pd.DataFrame(initial_data)
     df = pd.DataFrame(course_data)
     df["Term #"] = df["Week"].apply(lambda x: x["title"])
-    df["Course Code"] = df["Base_Course_Outcome"].apply(lambda x: x["code"])
+    df["Course Code"] = df["Base_Course_Outcome"].apply(lambda x: "" if pd.isnull(x) else x.get("code"))
     df["Course Title"] = df["Node"].apply(lambda x: x["title"])
     df["Course Outcome Level 1"] = df["Base_Course_Outcome"].apply(make_outcome_text)
     df["Course Outcome Level 2"] = df["Sub_Course_Outcome"].apply(make_outcome_text)
@@ -229,24 +226,30 @@ def get_export_analytics(workflow, index):
 
     return initial_df, cdf
 
-
 def get_analytics_table(workflow, export_format):
-    outcomes = get_program_outcomes(workflow)
+    print("Starting analytics export")
+    outcomes = get_base_outcomes_ordered_filtered(workflow)
     with BytesIO() as b:
         if export_format == "excel":
+            print("excel")
             with pd.ExcelWriter(b, engine='xlsxwriter') as writer:
                 workbook = writer.book
                 header_format = workbook.add_format({"bg_color": "#b5fbbb"})
                 bold_format = workbook.add_format(
-                    {"bold": True, "bg_color": "#04BA74", "color": "white"}
+                    {"bold": True, "color": "white"}
                 )
                 wrap_format = workbook.add_format()
                 wrap_format.set_text_wrap()
-                wrap_format.set_align("center")
-                for outcome in range(len(list(outcomes))):
-                    df1, df2 = get_export_analytics(workflow, outcome)
-                    sheet_name = get_alphanum(outcomes[outcome].code)[:30] or get_alphanum(outcomes[outcome].title)[:30]
-                    # sheet name is assigned to the program outcome title if there is no code
+                wrap_format.set_align("left")
+                wrap_format.set_align("top")
+                for outcome in outcomes:
+                    print("serializing outcome")
+                    outcome_serialized = OutcomeExportSerializer(outcome).data
+                    print(outcome_serialized)
+                    print("getting dfs")
+                    df1, df2 = get_export_analytics(workflow, outcome, outcome_serialized)
+                    sheet_name = get_alphanum(outcome_serialized["code"])[:30]
+                    print("start writing")
                     df1.to_excel(
                         writer,
                         sheet_name=sheet_name,
@@ -261,25 +264,20 @@ def get_analytics_table(workflow, export_format):
                         startrow=len(df1) + 2,
                         startcol=0
                     )
+                    print("wrote to excel")
                     worksheet = writer.sheets[sheet_name]
                     worksheet.set_column(0, 0, 20, wrap_format)
                     worksheet.set_column(1, 1, 30, wrap_format)
-                    worksheet.set_column(2, 2, 40, wrap_format)
-                    worksheet.set_column(3, 3, 40, wrap_format)
-                    worksheet.set_column(4, 4, 40, wrap_format)
-                    worksheet.set_column(5, 5, 40, wrap_format)
-                    worksheet.set_column(6, 15, 40, wrap_format)
+                    worksheet.set_column(2, 2, 30, wrap_format)
+                    for i in range(3,len(df2.columns)):
+                        worksheet.set_column(i, i, 40, wrap_format)
                     worksheet.set_row(0, None, bold_format)
                     worksheet.set_row(3, None, bold_format)
+                    print("done excel")
         elif export_format == "csv":
-            df = pd.DataFrame({})
-            for outcome in range(len(list(outcomes))):
-                df1, df2 = get_export_analytics(workflow, outcome)
-                df = concat_df(
-                    df, df1
-                )
-                df = concat_df(
-                    df, df2
-                )
-            df.to_csv(path_or_buf=b, sep=",", index=False)
+            for outcome in outcomes:
+                outcome_serialized = OutcomeExportSerializer(outcome).data
+                df1, df2 = get_export_analytics(workflow, outcome, outcome_serialized)
+                df1.to_csv(path_or_buf=b, sep=",", index=False)
+                df2.to_csv(path_or_buf=b, sep=",", index=False)
         return b.getvalue()
