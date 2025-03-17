@@ -165,7 +165,7 @@ def get_courses_data(program_outcome,allowed_sets):
     program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
 
     #Find all the nodes they've been associated with
-    nodes  = models.Node.objects.filter(outcomes__in=program_outcome_children).filter(allowed_sets_Q(allowed_sets)).distinct().order_by("week")
+    nodes  = models.Node.objects.filter(outcomes__in=program_outcome_children).filter(allowed_sets_Q(allowed_sets)).filter(deleted=False).distinct().order_by("week")
 
     #Get a list of dicts that will go int our dataframe
     course_data=[]
@@ -205,7 +205,6 @@ def get_export_analytics(workflow, program_outcome, program_outcome_serialized, 
     df["Course Outcome Level 2"] = df["Sub_Course_Outcome"].apply(make_outcome_text)
     df["Associated Program Outcome #"] = df["Program Outcome Codes"]
 
-    print(df.shape)
     #Expand out the program outcomes into their own columns
     program_outcomes = df["Program Outcomes"].apply(pd.Series)
     program_outcomes = program_outcomes.rename(columns = lambda x : 'Associated Program Outcome ' + str(x + 1))
