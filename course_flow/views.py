@@ -36,7 +36,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
-from course_flow import export_functions, tasks, excel_export
+from course_flow import export_functions, tasks
 
 from . import redux_actions as actions
 from .decorators import (

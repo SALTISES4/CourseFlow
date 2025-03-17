@@ -8,7 +8,7 @@ from django.core.files.storage import default_storage
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
-from course_flow import export_functions, import_functions, excel_export
+from course_flow import export_functions, import_functions, export_analytics
 from course_flow import redux_actions as actions
 
 from .celery import logger, try_async
@@ -58,7 +58,7 @@ def async_send_export_email(
             model_object, object_type, export_format, allowed_sets
         )
     elif export_type == "excel":
-        file = excel_export.get_analytics_table(model_object,export_format)
+        file = export_analytics.get_analytics_table(model_object, object_type, export_format, allowed_sets)
 
     if export_format == "excel":
         file_ext = "xlsx"

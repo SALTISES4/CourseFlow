@@ -1605,6 +1605,7 @@ class NodeExportSerializer(
         model = Node
         fields = [
             "id",
+            "code",
             "title",
             "description",
             "column_order",
@@ -1613,12 +1614,19 @@ class NodeExportSerializer(
 
     column_order = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
+    code = serializers.SerializerMethodField()
 
     def get_column_order(self, instance):
         return str(ColumnWorkflow.objects.get(column=instance.column).rank)
 
     def get_type(self, instance):
         return "node"
+
+    def get_code(self, instance):
+        if instance.linked_workflow and instance.linked_workflow.code is not None:
+            return instance.linked_workflow.code
+        else:
+            return ""
 
 
 class NodeExportSerializerWithTime(NodeExportSerializer):

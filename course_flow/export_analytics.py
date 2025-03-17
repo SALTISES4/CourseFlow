@@ -8,6 +8,8 @@ from django.utils import timezone
 
 from course_flow import analytics, models
 
+from course_flow.export_functions import allowed_sets_Q
+
 from .models import (
     Course,
     Node,
@@ -69,13 +71,9 @@ def get_d01_code(serialized_outcome):
 
 
 #Pass in a node, get all the lines corresponding to its data
-def get_course_lines(node,program_outcome_children):
+def get_course_lines(node,program_outcome_children,allowed_sets):
     node_serialized = NodeExportSerializer(node).data
     week_serialized = WeekExportSerializer(node.week_set.first()).data
-
-    print("getting course lines for node,week")
-    print(node_serialized)
-    print(week_serialized)
 
     #Check if there is no linked workflow
     if node.linked_workflow is None:
@@ -94,7 +92,7 @@ def get_course_lines(node,program_outcome_children):
     #Start with base course outcomes, they are the only ones that can have horizontal links at this point
     base_course_outcomes = get_base_outcomes_ordered_filtered(
         node.linked_workflow,
-        Q(outcome_horizontal_links__parent_outcome__in=program_outcome_children)
+        Q(outcome_horizontal_links__parent_outcome__in=program_outcome_children) & allowed_sets_Q(allowed_sets)
     )
 
     #If there are no outcomes on the workflow, treat it as though there were
@@ -132,7 +130,6 @@ def get_course_lines(node,program_outcome_children):
         #Get a comma separated list of the depth 0 or depth 1 outcome parent to each program outcome
         program_outcome_codes = ", ".join(set([get_d01_code(outcome) for outcome in associated_program_outcomes_serialized]))
 
-
         #If there are no sub-outcomes, just use the base outcome
         if len(course_sub_outcomes) == 0:
             output.append(
@@ -145,7 +142,7 @@ def get_course_lines(node,program_outcome_children):
             )
         else:
             course_sub_outcomes_serialized = OutcomeExportSerializer(course_sub_outcomes,many=True).data
-            # print("course suboutcomes > 0")
+
             #Otherwise we iterate over all the sub outcomes
             for course_outcome_serialized in course_sub_outcomes_serialized:
                 output.append(
@@ -157,24 +154,23 @@ def get_course_lines(node,program_outcome_children):
                         "Program Outcomes":[make_outcome_text(x) for x in associated_program_outcomes_serialized], #We don't need any more details after this, just make the text now for simplicity
                     }
                 )
-    print("returning course lines")
-    print(output)
+
     return output
 
 
    # pass in an individual program outcome, look at which courses are linked to that outcome
-def get_courses_data(program_outcome):
+def get_courses_data(program_outcome,allowed_sets):
 
     #Get a list of all the sub-outcomes
     program_outcome_children = get_all_outcomes_ordered_for_outcome(program_outcome)
 
     #Find all the nodes they've been associated with
-    nodes  = models.Node.objects.filter(outcomes__in=program_outcome_children).distinct().order_by("week")
+    nodes  = models.Node.objects.filter(outcomes__in=program_outcome_children).filter(allowed_sets_Q(allowed_sets)).distinct().order_by("week")
 
     #Get a list of dicts that will go int our dataframe
     course_data=[]
     for node in nodes:
-        course_data+=get_course_lines(node,program_outcome_children)
+        course_data+=get_course_lines(node,program_outcome_children,allowed_sets)
     return course_data
 
 #This is applied to whole columns of dataframes which may have NA, make sure we return empty string if so
@@ -183,15 +179,9 @@ def make_outcome_text(serialized_outcome):
         return ""
     return serialized_outcome.get("code","")+"-"+serialized_outcome.get("title","")
 
-def get_export_analytics(workflow, program_outcome, program_outcome_serialized):
+def get_export_analytics(workflow, program_outcome, program_outcome_serialized, allowed_sets):
 
-    last_time = time.time()
-
-    last_time = benchmark("initial program outcome retrieval",time.time())
-
-    course_data = get_courses_data(program_outcome)
-
-    last_time = benchmark("course data fetch",time.time())
+    course_data = get_courses_data(program_outcome,allowed_sets)
 
     date = timezone.now().strftime(dateTimeFormat())
     initial_data = [{
@@ -201,13 +191,22 @@ def get_export_analytics(workflow, program_outcome, program_outcome_serialized):
     }]
     initial_df = pd.DataFrame(initial_data)
     df = pd.DataFrame(course_data)
+    #Ensure all our columns are present
+    for col in ["Node","Week","Base_Course_Outcome","Program Outcome Codes","Sub_Course_Outcome"]:
+        if col not in df.columns:
+            df[col]=None
+    if "Program Outcomes" not in df.columns:
+        return initial_df,pd.DataFrame([{"Error":"This outcome was not used"}])
+
     df["Term #"] = df["Week"].apply(lambda x: x["title"])
-    df["Course Code"] = df["Base_Course_Outcome"].apply(lambda x: "" if pd.isnull(x) else x.get("code"))
+    df["Course Code"] = df["Node"].apply(lambda x: x.get("code",""))
     df["Course Title"] = df["Node"].apply(lambda x: x["title"])
     df["Course Outcome Level 1"] = df["Base_Course_Outcome"].apply(make_outcome_text)
     df["Course Outcome Level 2"] = df["Sub_Course_Outcome"].apply(make_outcome_text)
     df["Associated Program Outcome #"] = df["Program Outcome Codes"]
 
+    print(df.shape)
+    #Expand out the program outcomes into their own columns
     program_outcomes = df["Program Outcomes"].apply(pd.Series)
     program_outcomes = program_outcomes.rename(columns = lambda x : 'Associated Program Outcome ' + str(x + 1))
     df = df.join(program_outcomes)
@@ -222,16 +221,15 @@ def get_export_analytics(workflow, program_outcome, program_outcome_serialized):
         "Program Outcomes",
     ])
 
-    last_time = benchmark("dataframe building",time.time())
 
     return initial_df, cdf
 
-def get_analytics_table(workflow, export_format):
-    print("Starting analytics export")
-    outcomes = get_base_outcomes_ordered_filtered(workflow)
+def get_analytics_table(workflow, object_type, export_format, allowed_sets):
+
+    outcomes = get_base_outcomes_ordered_filtered(workflow,allowed_sets_Q(allowed_sets))
+
     with BytesIO() as b:
         if export_format == "excel":
-            print("excel")
             with pd.ExcelWriter(b, engine='xlsxwriter') as writer:
                 workbook = writer.book
                 header_format = workbook.add_format({"bg_color": "#b5fbbb"})
@@ -242,14 +240,12 @@ def get_analytics_table(workflow, export_format):
                 wrap_format.set_text_wrap()
                 wrap_format.set_align("left")
                 wrap_format.set_align("top")
+
                 for outcome in outcomes:
-                    print("serializing outcome")
                     outcome_serialized = OutcomeExportSerializer(outcome).data
-                    print(outcome_serialized)
-                    print("getting dfs")
-                    df1, df2 = get_export_analytics(workflow, outcome, outcome_serialized)
+                    df1, df2 = get_export_analytics(workflow, outcome, outcome_serialized,allowed_sets)
                     sheet_name = get_alphanum(outcome_serialized["code"])[:30]
-                    print("start writing")
+
                     df1.to_excel(
                         writer,
                         sheet_name=sheet_name,
@@ -264,7 +260,7 @@ def get_analytics_table(workflow, export_format):
                         startrow=len(df1) + 2,
                         startcol=0
                     )
-                    print("wrote to excel")
+
                     worksheet = writer.sheets[sheet_name]
                     worksheet.set_column(0, 0, 20, wrap_format)
                     worksheet.set_column(1, 1, 30, wrap_format)
@@ -273,7 +269,7 @@ def get_analytics_table(workflow, export_format):
                         worksheet.set_column(i, i, 40, wrap_format)
                     worksheet.set_row(0, None, bold_format)
                     worksheet.set_row(3, None, bold_format)
-                    print("done excel")
+
         elif export_format == "csv":
             for outcome in outcomes:
                 outcome_serialized = OutcomeExportSerializer(outcome).data
