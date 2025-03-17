@@ -93,7 +93,7 @@ def get_course_lines(node,program_outcome_children,allowed_sets):
     base_course_outcomes = get_base_outcomes_ordered_filtered(
         node.linked_workflow,
         Q(outcome_horizontal_links__parent_outcome__in=program_outcome_children) & allowed_sets_Q(allowed_sets)
-    )
+    ).distinct()
 
     #If there are no outcomes on the workflow, treat it as though there were
     #no linked workflow
@@ -122,8 +122,7 @@ def get_course_lines(node,program_outcome_children,allowed_sets):
         course_sub_outcomes = get_direct_children_of_outcome_ordered(base_course_outcome)
 
         #Get a list of all the program outcomes associated with the base course outcome
-        #This just gets repeated for each base course outcome in the table
-        associated_program_outcomes_unique = [link.parent_outcome for link in get_unique_outcomehorizontallinks(base_course_outcome)]
+        associated_program_outcomes_unique = [link.parent_outcome for link in get_unique_outcomehorizontallinks(base_course_outcome).filter(parent_outcome__in=program_outcome_children)]
 
         associated_program_outcomes_serialized = OutcomeExportSerializer(associated_program_outcomes_unique,many=True).data
 
@@ -209,7 +208,6 @@ def get_export_analytics(workflow, program_outcome, program_outcome_serialized, 
     program_outcomes = df["Program Outcomes"].apply(pd.Series)
     program_outcomes = program_outcomes.rename(columns = lambda x : 'Associated Program Outcome ' + str(x + 1))
     df = df.join(program_outcomes)
-
 
     cdf = df.drop(columns=[
         "Week",
