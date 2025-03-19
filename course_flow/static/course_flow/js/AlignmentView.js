@@ -424,8 +424,10 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         let child_outcomes;
         if(this.props.child_outcomes!=-1)child_outcomes = this.props.child_outcomes.map(child_outcome=>{
             if(!this.state.show_all && this.props.restriction_set && this.props.restriction_set.child_outcomes && this.props.restriction_set.child_outcomes.indexOf(child_outcome)==-1)return null;
+            console.log("Making the alignment horizontal reverse child outcome");
+            console.log(data);
             return(
-                <AlignmentHorizontalReverseChildOutcome objectID={child_outcome} node_data={data} renderer={this.props.renderer} restriction_set={this.props.restriction_set}/>
+                <AlignmentHorizontalReverseChildOutcome objectID={child_outcome} parentID={data.linked_workflow} node_data={data} renderer={this.props.renderer} restriction_set={this.props.restriction_set}/>
             )
         });
         
@@ -610,7 +612,7 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component{
         return(
             <div class="child-outcome">
                 <div class="half-width alignment-column">
-                    <OutcomeView objectID={data.id} comments={true} edit={true} renderer={this.props.renderer}/>
+                    <OutcomeView objectID={data.id} parentID={this.props.parentID} comments={true} edit={true} renderer={this.props.renderer}/>
                 </div>
                 <div class="half-width alignment-column">
                     {parent_outcomes}
