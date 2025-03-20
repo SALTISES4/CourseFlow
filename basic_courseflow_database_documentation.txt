@@ -1,0 +1,237 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+//Acts as a "folder" containing Workflow objects. Relationships
+//can only exist between objects in the same project, barring a
+//few links that are not shown here (pertaining to duplicating
+//objects, which retain a link to the object they were copied
+//from)
+Table Project {
+  id integer [PK]
+  author id
+  title CharField
+  description TextField
+  deleted BooleanField
+}
+
+//A Workflow represents either a Program, a Course, or an Activity.
+//Which one it represents is based on whether it is associated with
+//a Program, Course, or Activity instance (row). In Django this is
+//implemented as three separated classes that inherit from Workflow,
+//so the tables this pattern produces look a bit odd.
+Table Workflow {
+  id integer [PK]
+  author id
+  code CharField
+  title CharField
+  description TextField
+  deleted BooleanField //Many models have this to allow objects to be "soft deleted" then restored afterwards
+  ponderation_individual integer
+  ponderation_practical integer
+  ponderation_theory integer
+  time_general_hours integer
+  time_specific_hours integer
+  time_required CharField //Allows the user to associate # of credits or hours to overall workflow
+  time_units integer //The units corresponding to time_required
+  /*
+    0, none
+    1, seconds
+    2, minutes
+    3, hours
+    4, days
+    5, weeks
+    6, months
+    7, years
+    8, credits
+  */
+  outcomes_type integer //Allows the user to select between "normal" and advanced.
+  /* When assigning outcomes to nodes in this workflow:
+    0, normal: allowed values of "OutcomeNode"."degree" are 0 and 1, deleted automatically on 0
+      1 corresponds to completed
+    1, advanced: allowed values of "OutcomeNode"."degree" are 0-15, deleted automatically on 0
+      First bit of integer represents "completed"
+      Second bit is "Introduced"
+      Third bit is "Developed"
+      Fourth bit is "Advanced"
+      This allows combinations, ex 6=ID, 10=IA, 14=IDA
+  */
+}
+
+//Organizes Workflows into Projects, acting as a throughmodel.
+//The programmer who created the initial database linked almost all
+//the tables via throughmodels, and although they aren't actually
+//necessary we're sort of stuck with them now.
+Table WorkflowProject{
+  id integer [PK]
+  project integer
+  workflow integer 
+  rank integer
+}
+
+Ref: "Workflow"."id" < "WorkflowProject"."workflow"
+Ref: "Project"."id" < "WorkflowProject"."project"
+
+//Represents a section of a workflow. At the course level, this corresponds to a week,
+//however for a program workflow this corresponds to a Term or Semester.
+Table Week{
+  id integer [PK]
+  author id
+  title CharField
+  description TextField
+  deleted BooleanField
+}
+
+//Week to workflow throughmodel
+Table WeekWorkflow{
+  id integer [PK]
+  week integer
+  workflow integer 
+  rank integer
+}
+
+Ref: "Week"."id" < "WeekWorkflow"."week"
+Ref: "Workflow"."id" < "WeekWorkflow"."workflow"
+
+//Represents a category of nodes (such as a category of courses)
+Table Column{
+  id integer [PK]
+  author id
+  title CharField
+}
+
+//Column to workflow throughmodel
+Table ColumnWorkflow{
+  id integer [PK]
+  column integer
+  workflow integer 
+  rank integer
+}
+
+Ref: "Column"."id" < "ColumnWorkflow"."column"
+Ref: "Workflow"."id" < "ColumnWorkflow"."workflow"
+
+//Representation of a Course in the program level, or a lesson, activity, etc
+//at the course level. Assuming you have a node at the program level: if no 
+//course-level workflow has been created, the node usually acts as a stand-in
+//for the course. If a course-level workflow HAS been created, it can be linked
+//to the node through linked_workflow. Note that this is the ONLY link between a
+//program-level workflow and a course-level workflow, all correspondance between
+//the two is routed through Program Workflow -> Week -> Node -> Course Workflow
+Table Node{
+  id integer [PK]
+  author id
+  title CharField
+  description TextField
+  deleted BooleanField
+  ponderation_individual integer
+  ponderation_practical integer
+  ponderation_theory integer
+  time_general_hours integer
+  time_specific_hours integer
+  time_required CharField
+  time_units integer
+  linked_workflow integer //The linked workflow, if any. For a program-level node, this would link to a course workflow.
+  represents_workflow BooleanField //Overrides the values in the node. If True, all fields that appear on both Node and Workflow should be ignored on the Node in favour of those on the workflow
+  column integer
+}
+
+Ref: "Workflow"."id" < "Node"."linked_workflow"
+Ref: "Column"."id" < "Node"."column"
+
+//Node to week throughmodel
+Table NodeWeek{
+  id integer [PK]
+  week integer
+  node integer 
+  rank integer
+}
+
+Ref: "Week"."id" < "NodeWeek"."week"
+Ref: "Node"."id" < "NodeWeek"."node"
+
+//Outcome, either a course outcome or program outcome (competency)
+//We use the same table for both, the only difference is which type
+//of workflow they are associated with
+Table Outcome{
+  id integer [PK]
+  author id
+  title CharField
+  description TextField
+  deleted BooleanField
+}
+
+//Linking model between a higher-level outcome and its sub-outcomes
+//Parent will always have a depth one smaller than child
+Table OutcomeOutcome{
+  id integer [PK]
+  child integer
+  parent integer 
+  rank integer
+  depth integer //Degree of nesting, either 0, 1, 2
+}
+
+Ref: "Outcome"."id" < "OutcomeOutcome"."child"
+Ref: "Outcome"."id" < "OutcomeOutcome"."parent"
+
+//Throughmodel between a workflow and its depth 0 outcomes,
+//i.e. a course and its course outcomes or a program its program outcomes
+Table OutcomeWorkflow{
+  id integer [PK]
+  outcome integer
+  workflow integer 
+  code CharField
+  rank integer
+}
+
+Ref: "Outcome"."id" < "OutcomeWorkflow"."outcome"
+Ref: "Workflow"."id" < "OutcomeWorkflow"."workflow"
+
+//Creates an association between a node (generally representing a course) and an outcome
+//If a higher-level (low depth) outcome is associated with the node, OutcomeNode links
+//are created to ALL its descendants as well
+Table OutcomeNode{
+  id integer [PK]
+  outcome integer
+  node integer 
+  rank integer
+  degree integer
+}
+
+Ref: "Outcome"."id" < "OutcomeNode"."outcome"
+Ref: "Node"."id" < "OutcomeNode"."node"
+
+//Creates a link between a course-level outcome and a program-level outcome (competency)
+//In CourseFlow the course-level outcome will always have depth 0 for simplicity
+//If a higher-level (low depth) program outcome is associated with a course outcome, OutcomeHorizontalLinks
+//are created to ALL the program outcome's descendants (but not the course outcome's descendants) as well
+Table OutcomeHorizontalLink{
+  id integer [PK]
+  outcome integer //The course-level outcome
+  parent_outcome integer //The program-level outcome
+  rank integer
+}
+
+Ref: "Outcome"."id" < "OutcomeHorizontalLink"."outcome"
+Ref: "Outcome"."id" < "OutcomeHorizontalLink"."parent_outcome"
+
+//Table created through Django's class inheritance
+//Activity inherits from Workflow
+Table Activity{
+  workflow_ptr integer //One to one field.
+}
+
+//Table created through Django's class inheritance
+//Course inherits from Workflow
+Table Course{
+  workflow_ptr integer //One to one field
+}
+
+//Table created through Django's class inheritance
+//Program inherits from Workflow
+Table Program{
+  workflow_ptr integer //One to one field
+}
+
+Ref: "Workflow"."id" < "Activity"."workflow_ptr"
+Ref: "Workflow"."id" < "Course"."workflow_ptr"
+Ref: "Workflow"."id" < "Program"."workflow_ptr"
