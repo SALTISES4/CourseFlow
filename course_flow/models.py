@@ -60,6 +60,7 @@ class Project(models.Model):
     disciplines = models.ManyToManyField("Discipline", blank=True)
 
     favourited_by = GenericRelation("Favourite", related_query_name="project")
+    notified_by = GenericRelation("Notification", related_query_name="project")
     user_permissions = GenericRelation(
         "ObjectPermission", related_query_name="project"
     )
@@ -881,6 +882,7 @@ class Workflow(models.Model):
         "ObjectPermission", related_query_name="workflow"
     )
     favourited_by = GenericRelation("Favourite", related_query_name="workflow")
+    notified_by = GenericRelation("Notification", related_query_name="workflow")
 
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
@@ -1563,6 +1565,9 @@ def delete_project_objects(sender, instance, **kwargs):
     favourites = Favourite.objects.filter(
         Q(workflow__in=workflows) | Q(project=instance)
     )
+    notifications = Notification.objects.filter(
+        Q(workflow__in=workflows) | Q(project=instance)
+    )
     Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
     Node.objects.filter(linked_workflow__in=workflows).update(
         linked_workflow=None
@@ -1590,6 +1595,7 @@ def delete_project_objects(sender, instance, **kwargs):
     outcomes._raw_delete(outcomes.db)
     objectpermissions._raw_delete(objectpermissions.db)
     favourites._raw_delete(favourites.db)
+    notifications._raw_delete(notifications.db)
     activities = Activity.objects.filter(pk__in=workflows)
     activities._raw_delete(activities.db)
     courses = Course.objects.filter(pk__in=workflows)
@@ -1672,6 +1678,12 @@ def delete_workflow_objects(sender, instance, **kwargs):
     Outcome.objects.filter(parent_outcome__in=outcomes).update(
         parent_outcome=None
     )
+    favourites = Favourite.objects.filter(
+        workflow=instance
+    )
+    notifications = Notification.objects.filter(
+        workflow=instance
+    )
 
     # Delete nonlinking instances
     nodes = Node.objects.filter(pk__in=nodes)
@@ -1682,6 +1694,8 @@ def delete_workflow_objects(sender, instance, **kwargs):
     columns._raw_delete(columns.db)
     outcomes = Outcome.objects.filter(pk__in=outcomes)
     outcomes._raw_delete(outcomes.db)
+    favourites._raw_delete(favourites.db)
+    notifications._raw_delete(notifications.db)
 
 
 @receiver(pre_delete, sender=Week)
