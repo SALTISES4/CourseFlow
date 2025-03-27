@@ -239,6 +239,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         overflow_links.push(this.getExportButton());
         overflow_links.push(this.getCopyButton());
         overflow_links.push(this.getImportButton());
+        overflow_links.push(this.getMoodleExport());
         overflow_links.push(this.getDeleteWorkflow());
         if(overflow_links.filter(x=>x!=null).length==0)$("#overflow-options").addClass("hidden")
         return overflow_links;
@@ -289,6 +290,18 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let export_button = (
             <div id="export-button" class="hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}>
                 <div>{gettext("Export")}</div>
+            </div>
+        );
+        return export_button;
+    }
+
+    getMoodleExport(){
+        if(this.props.renderer.public_view && !user_id)return null;
+        if(this.props.renderer.is_student && !this.props.renderer.can_view)return null;
+        let export_button = [<hr/>];
+        export_button.push(
+            <div id="moodle-export-button" class="hover-shade" onClick={()=>renderMessageBox({...this.props.data},"moodle_export",closeMessageBox)}>
+                <div>{gettext("Moodle Plugin")}</div>
             </div>
         );
         return export_button;

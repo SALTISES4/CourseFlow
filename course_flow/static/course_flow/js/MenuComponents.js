@@ -8,6 +8,7 @@ import * as Constants from "./Constants";
 import {ShareMenu} from "./ShareMenu";
 import {ImportMenu} from "./ImportMenu";
 import {ExportMenu} from "./ExportMenu";
+import {MoodleExportMenu} from "./MoodleExportMenu";
 import {WorkflowForMenu} from "./Library";
 import {WorkflowTitle} from "./ComponentJSON";
 import {LiveProjectSettings} from "./LiveProjectView";
@@ -29,6 +30,9 @@ export class MessageBox extends React.Component{
         );
         if(this.props.message_type=="export")menu=(
             <ExportMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
+        );
+        if(this.props.message_type=="moodle_export")menu=(
+            <MoodleExportMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
         return(
             <div class="screen-barrier" onClick={(evt)=>evt.stopPropagation()}>

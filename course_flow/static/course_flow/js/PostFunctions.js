@@ -1080,6 +1080,20 @@ export function getWorkflowsForProject(projectPk,callBackFunction=()=>console.lo
     }
 }
 
+//Get the moodle json data, not public
+export function getMoodleJsonData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_moodle_json_data,{
+            workflowPk:workflowPk,
+            objectType:"workflow",
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 //Search entire library
 export function searchAllObjects(filter,data,callBackFunction=()=>console.log("success")){
     try{
