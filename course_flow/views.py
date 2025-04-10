@@ -90,6 +90,7 @@ from .models import (  # OutcomeProject,
     Workflow,
     WorkflowProject,
 )
+from .moodle_export import get_moodle_json
 from .serializers import (  # OutcomeProjectSerializerShallow,
     ActivitySerializerShallow,
     ColumnSerializerShallow,
@@ -2272,6 +2273,26 @@ def get_public_workflow_parent_data(request: HttpRequest, pk) -> HttpResponse:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted", "data_package": data_package})
 
+@public_model_access("workflow")
+def get_public_moodle_json_data(request: HttpRequest, pk) -> HttpResponse:
+    try:
+        data_package = get_moodle_json(
+            pk
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "data_package": data_package})
+
+@user_can_view("workflowPk")
+def get_moodle_json_data(request: HttpRequest) -> HttpResponse:
+    pk=request.POST.get("workflowPk")
+    try:
+        data_package = get_moodle_json(
+            pk
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "data_package": data_package})
 
 @user_can_view("projectPk")
 def get_project_data(request: HttpRequest) -> HttpResponse:

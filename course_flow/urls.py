@@ -238,6 +238,16 @@ def course_flow_patterns():
             name="get-public-workflow-child-data",
         ),
         path(
+            "workflow/<int:pk>/get-public-moodle-json/",
+            views.get_public_moodle_json_data,
+            name="get-public-moodle-json-data",
+        ),
+        path(
+            "workflow/get-moodle-json/",
+            views.get_moodle_json_data,
+            name="get-moodle-json-data",
+        ),
+        path(
             "project/get-project-data/",
             views.get_project_data,
             name="get-project-data",
