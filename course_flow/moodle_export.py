@@ -32,11 +32,13 @@ class MoodleNodeSerializer(
 	        "lessonintro",
 	        "outcomes",
 	        "pagetitle",
-	        "pagecontents"
+	        "pagecontents",
+	        "lessontype",
 	    ]
 
 	lessonname = serializers.SerializerMethodField()
 	lessonintro = serializers.SerializerMethodField()
+	lessontype = serializers.SerializerMethodField()
 	pagetitle = serializers.SerializerMethodField()
 	pagecontents = serializers.SerializerMethodField()
 	outcomes = serializers.SerializerMethodField()
@@ -58,6 +60,9 @@ class MoodleNodeSerializer(
 
 	def get_lessonintro(self, instance):
 		return self.get_description(instance)
+
+	def get_lessontype(self, instance):
+		return instance.column.get_display_title()
 
 	def get_pagetitle(self, instance):
 		return _("Outcomes")
