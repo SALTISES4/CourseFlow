@@ -2,10 +2,12 @@ import {
   draggable,
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import useHover from '@cf/hooks/useHover'
 import { alpha } from '@mui/material'
 import { produce } from 'immer'
 import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
 
+import HoverMenu from './components/HoverMenu'
 import * as StyledNode from './styles'
 import * as Styled from '../../styles'
 import { CellDataType, DraggableType } from '../../types'
@@ -101,7 +103,7 @@ const WeekCellInner = ({
   description,
   onClick
 }: PropsType) => {
-  const ref = useRef<HTMLDivElement>(null)
+  const [ref, isHovered] = useHover()
   const [state, setState] = useState({
     dragging: false
   })
@@ -134,7 +136,7 @@ const WeekCellInner = ({
         )
       }
     })
-  }, [coords])
+  }, [ref, coords])
 
   // TODO: add NodeLink / NodePorts for node link lines to work
 
@@ -142,6 +144,7 @@ const WeekCellInner = ({
     <div style={{ backgroundColor: borderColor }} />
   ) : (
     <Styled.CellInner ref={ref} dragging={state.dragging}>
+      <HoverMenu show={isHovered} />
       <StyledNode.Border sx={{ backgroundColor: borderColor }} />
       <StyledNode.Content onClick={onClick}>
         <StyledNode.Title variant="subtitle2">{title}</StyledNode.Title>
