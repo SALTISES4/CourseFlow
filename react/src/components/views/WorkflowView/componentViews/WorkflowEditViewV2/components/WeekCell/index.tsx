@@ -136,6 +136,8 @@ const WeekCellInner = ({
     })
   }, [coords])
 
+  // TODO: add NodeLink / NodePorts for node link lines to work
+
   return type === 'phantom' ? (
     <div style={{ backgroundColor: borderColor }} />
   ) : (

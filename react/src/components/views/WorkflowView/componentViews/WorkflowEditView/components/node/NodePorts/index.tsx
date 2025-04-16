@@ -10,7 +10,7 @@ import { Action } from 'redux'
 //The ports used to connect links for the nodes
 type PropsType = {
   nodeId: number
-  dispatch: Dispatch<Action>
+  dispatch?: Dispatch<Action>
   nodeDiv: React.RefObject<HTMLDivElement>
   show: boolean
 }
@@ -139,7 +139,8 @@ export class NodePorts extends React.Component<PropsType, StateType> {
 
     if (this.state.nodeDimensions) {
       nodeDimensions = this.state.nodeDimensions
-      this.positioned = true
+      // TODO? property doesn't exist?
+      // this.positioned = true
     } else {
       nodeDimensions = { width: 0, height: 0 }
     }

@@ -4,7 +4,8 @@ import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { selectNodeLinkById } from '@cfRedux/selectors/nodelink.selector'
 import { AppState } from '@cfRedux/types/type'
 import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
-import React, { useEffect, useState } from 'react'
+import * as d3 from 'd3'
+import React, { useCallback, useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -32,12 +33,17 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
   /*******************************************************
    * STATE
    *******************************************************/
-  const [sourceNode, setSourceNode] = useState<JQuery>(null)
-  const [targetNode, setTargetNode] = useState<JQuery>(null)
+  const [sourceNode, setSourceNode] = useState(null)
+  const [targetNode, setTargetNode] = useState(null)
   const [sourcePortHandle, setSourcePortHandle] =
     useState<d3.Selection<SVGElement, unknown, HTMLElement, any>>(null)
   const [targetPortHandle, setTargetPortHandle] =
     useState<d3.Selection<SVGElement, unknown, HTMLElement, any>>(null)
+
+  const rerender = useCallback(() => {
+    setSourceNode($(nodeDiv.current))
+    setTargetNode($(`#${nodeLink.targetNode}.node`))
+  }, [nodeDiv, nodeLink.targetNode])
 
   /*******************************************************
    * LIFECYCLE HOOKS
@@ -80,7 +86,7 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
       srcNode.off(rerenderEvents)
       tgtNode.off(rerenderEvents)
     }
-  }, [nodeLink, nodeDiv])
+  }, [nodeLink, nodeDiv, rerenderEvents, rerender])
 
   /**
    * FUNCTIONS
@@ -88,10 +94,6 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
   /**
    * This is outside of react, so we need to redraw the nodeLinks manually
    **/
-  const rerender = () => {
-    setSourceNode($(nodeDiv.current))
-    setTargetNode($(`#${nodeLink.targetNode}.node`))
-  }
 
   /**
    * Early exit if dimensions are not available
@@ -146,7 +148,7 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
       style={style}
       hovered={nodeHovered}
       nodeSelected={nodeSelected}
-      lock={nodeLink?.lock}
+      // lock={nodeLink?.lock}
       title={nodeLink.title}
       textPosition={nodeLink.textPosition}
       sourcePortHandle={sourcePortHandle}
@@ -163,7 +165,7 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
     $('.workflow-canvas')[0]
   )
 
-  return <>{portal}</>
+  return portal
 }
 
 export default NodeLink

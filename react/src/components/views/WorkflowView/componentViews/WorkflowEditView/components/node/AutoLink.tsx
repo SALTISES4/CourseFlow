@@ -1,5 +1,6 @@
 import NodeLinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG'
-import React, { useEffect, useRef, useState } from 'react'
+import * as d3 from 'd3'
+import React, { useEffect, useState } from 'react'
 import * as reactDom from 'react-dom'
 
 type PropsType = {

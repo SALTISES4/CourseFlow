@@ -2,11 +2,12 @@ import { NumTuple, ObjectLock } from '@cf/types/common'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import Utility from '@cf/utility/Utility.class'
 import PathGenerator from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLinkSVG/PathGenerator.class'
+import * as d3 from 'd3'
 import * as React from 'react'
 
 /**
  * Creates paths between two ports
- *  SVG portion of a NodeLink
+ * SVG portion of a NodeLink
  */
 
 export type OwnProps = {
