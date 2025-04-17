@@ -34,6 +34,7 @@ class MoodleNodeSerializer(
 	        "pagetitle",
 	        "pagecontents",
 	        "lessontype",
+	        "colour",
 	    ]
 
 	lessonname = serializers.SerializerMethodField()
@@ -42,6 +43,7 @@ class MoodleNodeSerializer(
 	pagetitle = serializers.SerializerMethodField()
 	pagecontents = serializers.SerializerMethodField()
 	outcomes = serializers.SerializerMethodField()
+	colour = serializers.SerializerMethodField()
 
 
 	def get_outcomes_list(self, instance):
@@ -72,8 +74,10 @@ class MoodleNodeSerializer(
 		outcomes_df = self.context.get("outcomes")
 		if outcomes_df is not None:
 			filtered_df = outcomes_df[outcomes_df["id"].isin(outcomes)]
-		return "\n".join(list(filtered_df["contents"]))
+		return "\n\n".join(list(filtered_df["contents"]))
 
+	def get_colour(self, instance):
+		return instance.column.colour
 
 
 
