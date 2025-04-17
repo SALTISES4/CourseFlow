@@ -33,6 +33,7 @@ class MoodleNodeSerializer(
 	        "outcomes",
 	        "pagetitle",
 	        "pagecontents",
+	        "lessontype_display",
 	        "lessontype",
 	        "colour",
 	    ]
@@ -40,6 +41,7 @@ class MoodleNodeSerializer(
 	lessonname = serializers.SerializerMethodField()
 	lessonintro = serializers.SerializerMethodField()
 	lessontype = serializers.SerializerMethodField()
+	lessontype_display = serializers.SerializerMethodField()
 	pagetitle = serializers.SerializerMethodField()
 	pagecontents = serializers.SerializerMethodField()
 	outcomes = serializers.SerializerMethodField()
@@ -63,8 +65,11 @@ class MoodleNodeSerializer(
 	def get_lessonintro(self, instance):
 		return self.get_description(instance)
 
-	def get_lessontype(self, instance):
+	def get_lessontype_display(self, instance):
 		return instance.column.get_display_title()
+
+	def get_lessontype(self, instance):
+		return instance.column.column_type
 
 	def get_pagetitle(self, instance):
 		return _("Outcomes")
