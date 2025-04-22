@@ -110,9 +110,10 @@ def get_moodle_json(workflow_id):
 	outcomes = get_all_outcomes_ordered(workflow)
 	outcomes_serialized = OutcomeExportSerializer(outcomes,many=True).data
 	outcomes_df = pd.DataFrame(outcomes_serialized)
-	outcomes_df["shortname"] = outcomes_df["code"]
-	outcomes_df["fullname"] = outcomes_df["title"]
-	outcomes_df["contents"] = outcomes_df["code"] + " - " + outcomes_df["fullname"]
+	if outcomes_df.shape[0] > 0:
+		outcomes_df["shortname"] = outcomes_df["code"]
+		outcomes_df["fullname"] = outcomes_df["title"]
+		outcomes_df["contents"] = outcomes_df["code"] + " - " + outcomes_df["fullname"]
 	weeks = Week.objects.filter(workflow__id = workflow_id,deleted=False)
 	weeks_serialized = MoodleWeekSerializer(weeks,many=True,context={"outcomes":outcomes_df}).data
 	return {
