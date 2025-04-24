@@ -1679,6 +1679,19 @@ button:hover{
     
 }
 
+.export-jobs{
+    width: fit-content;
+}
+
+.export-item{
+    width: 100%;
+    border: 2px solid #04ba74;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
 .window-close-button{
     right:8px;
     top:8px;

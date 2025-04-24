@@ -358,6 +358,16 @@ def course_flow_patterns():
             name="get-export",
         ),
         path(
+            "exports/check-status/",
+            views.check_export_status,
+            name="check-export-status",
+        ),
+        path(
+            "downloads/exports/<str:filename>/get/",
+            views.get_export_download,
+            name="get-export-download",
+        ),
+        path(
             "imports/import-data/",
             views.import_data,
             name="import-data",
@@ -366,11 +376,6 @@ def course_flow_patterns():
             "downloads/saltise/get/",
             views.get_saltise_download,
             name="get-saltise-download",
-        ),
-        path(
-            "downloads/exports/get/",
-            views.get_export_download,
-            name="get-export-download",
         ),
         path(
             "project/makelive",

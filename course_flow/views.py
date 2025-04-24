@@ -2,11 +2,15 @@ import json
 import math
 import re
 import time
+import uuid
+import os
 
 # import time
 from functools import reduce
 from itertools import chain
 from operator import attrgetter
+
+from pathlib import Path
 
 import bleach
 import pandas as pd
@@ -25,6 +29,8 @@ from django.http import (
     HttpResponse,
     HttpResponseForbidden,
     JsonResponse,
+    Http404,
+    FileResponse,
 )
 from django.shortcuts import redirect, render
 from django.urls import reverse
@@ -132,6 +138,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
 from .utils import (  # dateTimeFormat,; get_parent_model,; get_parent_model_str,; get_unique_outcomehorizontallinks,; get_unique_outcomenodes,
     benchmark,
     check_possible_parent,
+    clean_old_exports,
     dateTimeFormatNoSpace,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
@@ -1961,32 +1968,115 @@ def import_data(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"action": "posted"})
 
 
+EXPORT_DIR = 'exports/courseflow/exports'
+
 @user_can_view(False)
 def get_export(request: HttpRequest) -> HttpResponse:
+    user = request.user
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     export_type = request.POST.get("export_type")
     export_format = request.POST.get("export_format")
+    export_method = request.POST.get("export_method")
     allowed_sets = request.POST.getlist("object_sets[]", [])
-    # print(export_type) delete later
-    try:
-        subject = _("Your CourseFlow Export")
-        text = _("Hi there! Here are the results of your recent export.")
-        tasks.async_send_export_email(
-            request.user.email,
-            object_id,
-            object_type,
-            export_type,
-            export_format,
-            allowed_sets,
-            subject,
-            text,
-        )
 
-    except AttributeError:
-        return JsonResponse({"action": "error"})
+    if export_method == "download":
+        try:
+            job_id = str(uuid.uuid4())
+            dir_path = os.path.join(EXPORT_DIR,str(user.id))
+            os.makedirs(dir_path, exist_ok=True)
+            clean_old_exports(dir_path)
+            job_data = {
+                'job_id' : job_id,
+                'user_id': user.id,
+                'object_id' : object_id,
+                'object_type' : object_type,
+                'export_type' : export_type,
+                'export_format': export_format,
+                'created': timezone.now().isoformat(),
+                'status': 'pending',
+                'error': None,
+                'filename': None,
+            }
+            with open(f'{dir_path}/job_{job_id}.json', 'w') as f:
+                json.dump(job_data, f)
+            tasks.async_create_export_file(
+                job_data,
+                allowed_sets,
+                dir_path,
+            )
+
+        except AttributeError:
+            return JsonResponse({"action": "error"})
+
+
+    else:
+        try:
+            subject = _("Your CourseFlow Export")
+            text = _("Hi there! Here are the results of your recent export.")
+            tasks.async_send_export_email(
+                request.user.email,
+                object_id,
+                object_type,
+                export_type,
+                export_format,
+                allowed_sets,
+                subject,
+                text,
+            )
+
+        except AttributeError:
+            return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
 
+@ajax_login_required
+@require_POST
+def check_export_status(request: HttpRequest) -> HttpResponse:
+    dir_path = os.path.join(EXPORT_DIR,str(request.user.id))
+    os.makedirs(dir_path, exist_ok=True)
+    job_summaries = []
+
+    for filename in os.listdir(dir_path):
+        if filename.endswith('.json'):
+            filepath = os.path.join(dir_path, filename)
+            try:
+                with open(filepath, 'r') as f:
+                    job_data = json.load(f)
+
+                # Strip debug_info before returning to user
+                sanitized_data = {
+                    k: v for k, v in job_data.items()
+                    if k != 'debug_info'
+                }
+
+                job_summaries.append(sanitized_data)
+
+            except Exception as e:
+                # Skip corrupted files, but log if needed
+                continue
+
+    return JsonResponse({"action":"posted",'jobs': job_summaries})
+
+# Get a file that has been completed
+@ajax_login_required
+def get_export_download(request: HttpRequest, filename) -> HttpResponse:
+    #Security checks
+    if '..' in filename or '/' in filename or '\\' in filename:
+        raise Http404("Invalid filename")
+    if not filename.endswith(('.csv', '.xlsx')):
+        raise Http404("Unsupported file type")
+    
+    dir_path = Path(EXPORT_DIR) / str(request.user.id)
+    file_path = (dir_path / filename).resolve()
+
+    # Check that the resolved path is actually inside the expected dir
+    if not str(file_path).startswith(str(dir_path.resolve())):
+        raise Http404("Invalid path")
+
+    if not file_path.exists():
+        raise Http404("File not found")
+
+    return FileResponse(open(file_path, 'rb'), as_attachment=True)
 
 @ajax_login_required
 def get_saltise_download(request: HttpRequest) -> HttpResponse:
@@ -2008,66 +2098,6 @@ def get_saltise_download(request: HttpRequest) -> HttpResponse:
     response["Content-Disposition"] = "attachment; filename=%s" % filename
     return response
 
-
-# enable for testing/download
-@user_can_view(False)
-def get_export_download(request: HttpRequest) -> HttpResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    export_type = request.POST.get("export_type")
-    export_format = request.POST.get("export_format")
-    allowed_sets = request.POST.getlist("object_sets[]", "[]")
-    model_object = get_model_from_str(object_type).objects.get(pk=object_id)
-
-
-    if object_type == "project":
-        project_sets = ObjectSet.objects.filter(project=model_object)
-    else:
-        project_sets = ObjectSet.objects.filter(
-            project=model_object.get_project()
-        )
-    allowed_sets = project_sets.filter(id__in=allowed_sets)
-
-    if export_type == "outcome":
-        file = export_functions.get_outcomes_export(
-            model_object, object_type, export_format, allowed_sets
-        )
-    elif export_type == "framework":
-        file = export_functions.get_course_frameworks_export(
-            model_object, object_type, export_format, allowed_sets
-        )
-    elif export_type == "matrix":
-        file = export_functions.get_program_matrix_export(
-            model_object, object_type, export_format, allowed_sets
-        )
-    elif export_type == "node":
-        file = export_functions.get_nodes_export(
-            model_object, object_type, export_format, allowed_sets
-        )
-    if export_format == "excel":
-        file_ext = "xlsx"
-    elif export_format == "csv":
-        file_ext = "csv"
-
-    filename = (
-        object_type
-        + "_"
-        + str(object_id)
-        + "_"
-        + timezone.now().strftime(dateTimeFormatNoSpace())
-        + "."
-        + file_ext
-    )
-
-    if export_format == "csv":
-        file_data = "text/csv"
-    elif export_format == "excel":
-        file_data = (
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-    response = HttpResponse(file, content_type=file_data)
-    response["Content-Disposition"] = "attachment; filename=%s" % filename
-    return response
 
 
 """

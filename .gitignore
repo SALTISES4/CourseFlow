@@ -21,6 +21,7 @@
 /log
 /media
 /media
+/exports
 /node_modules
 /sent_emails
 /static

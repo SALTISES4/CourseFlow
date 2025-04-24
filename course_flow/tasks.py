@@ -1,6 +1,9 @@
 from smtplib import SMTPException
 
 import pandas as pd
+import os
+import json
+import traceback
 from celery import shared_task
 from django.conf import settings
 from django.core.cache import cache
@@ -107,6 +110,84 @@ def async_send_export_email(
         logger.info(
             f"Email - {email_subject} - {filename} - could NOT be sent to {user_email}"
         )
+
+@try_async
+@shared_task
+def async_create_export_file(
+    job_data,
+    allowed_sets,
+    dir_path,
+):
+    try:
+        job_id = job_data.get("job_id")
+        user_id = job_data.get("user_id")
+        pk = job_data.get("object_id")
+        object_type = job_data.get("object_type")
+        export_type = job_data.get("export_type")
+        export_format = job_data.get("export_format")
+        model_object = get_model_from_str(object_type).objects.get(pk=pk)
+        if object_type == "project":
+            project_sets = ObjectSet.objects.filter(project=model_object)
+        else:
+            project_sets = ObjectSet.objects.filter(
+                project=model_object.get_project()
+            )
+        allowed_sets = project_sets.filter(id__in=allowed_sets)
+
+        if export_type == "outcome":
+            file = export_functions.get_outcomes_export(
+                model_object, object_type, export_format, allowed_sets
+            )
+        elif export_type == "framework":
+            file = export_functions.get_course_frameworks_export(
+                model_object, object_type, export_format, allowed_sets
+            )
+        elif export_type == "matrix":
+            file = export_functions.get_program_matrix_export(
+                model_object, object_type, export_format, allowed_sets
+            )
+        elif export_type == "sobec":
+            file = export_functions.get_sobec_export(
+                model_object, object_type, export_format, allowed_sets
+            )
+        elif export_type == "node":
+            file = export_functions.get_nodes_export(
+                model_object, object_type, export_format, allowed_sets
+            )
+        elif export_type == "excel":
+            file = export_analytics.get_analytics_table(model_object, object_type, export_format, allowed_sets)
+
+        if export_format == "excel":
+            file_ext = "xlsx"
+        elif export_format == "csv":
+            file_ext = "csv"
+
+        filename = (
+            str(user_id)
+            + "_"
+            + str(pk)
+            + "_"
+            + export_type
+            + "_"
+            + timezone.now().strftime(dateTimeFormatNoSpace())
+            + "."
+            + file_ext
+        )
+        
+        file_path = os.path.join(dir_path,filename)
+
+        with open(file_path, "wb") as out_file:
+            out_file.write(file)
+        job_data["status"] = "success"
+        job_data["filename"] = filename
+    except Exception as err:
+        job_data["status"] = "failed"
+        job_data["error"] = str(err)
+        job_data['debug_info'] = traceback.format_exc()  # not exposed to users
+    with open(f'{dir_path}/job_{job_id}.json', 'w') as f:
+        json.dump(job_data, f)
+
+
 
 
 @try_async

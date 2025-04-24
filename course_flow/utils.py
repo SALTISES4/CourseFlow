@@ -1,5 +1,8 @@
 import re
 import time
+import os
+import json
+from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth.models import Group
@@ -7,6 +10,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.urls import reverse
+from django.utils.dateparse import parse_datetime
+from django.utils import timezone
 
 from course_flow import models
 
@@ -386,3 +391,65 @@ def benchmark(identifier, last_time):
     current_time = time.time()
     print("Completed " + identifier + " in " + str(current_time - last_time))
     return current_time
+
+
+def clean_old_exports(user_dir, max_jobs: int = 2):
+    user_dir = Path(user_dir)
+    if not user_dir.exists():
+        return
+
+    # Find all job JSON files
+    job_files = list(user_dir.glob('*.json'))
+    jobs = []
+
+    for job_file in job_files:
+        try:
+            with open(job_file) as f:
+                job_data = json.load(f)
+                created = job_data.get('created')
+                if created:
+                    dt = parse_datetime(created)
+                    jobs.append((dt, job_data['filename'], job_file))
+        except Exception as e:
+            # If the file is corrupt, we delete it
+            try:
+                print("deleting a corrupt job file")
+                print(e)
+                job_file.unlink()
+            except Exception as delete_err:
+                print(f"Error deleting corrupt file: {delete_err}")
+
+    # Sort by creation date
+    jobs.sort(key=lambda tup: tup[0])  # oldest first
+
+    # If too many, delete oldest
+    while len(jobs) >= max_jobs + 1:
+        print(f"max jobs {max_jobs} less than num jobs {len(jobs)}")
+        _, filename, job_file = jobs.pop(0)
+        data_file = user_dir / filename
+        job_file.unlink()
+        if data_file.exists():
+            data_file.unlink()
+
+    valid_filenames = {filename for _, filename, _ in jobs}
+
+    # Delete any files in the folder that aren't .json and not in the valid set
+    for f in user_dir.iterdir():
+        if f.suffix in {'.csv', '.xlsx'} and f.name not in valid_filenames:
+            try:
+                f.unlink()
+                print(f"Deleted orphaned export file: {f}")
+            except Exception as e:
+                print(f"Error deleting orphaned file {f}: {e}")
+
+    #Delete any files older than 24 hours
+    EXPORT_MAX_AGE_SECONDS = 86400
+
+    now = timezone.now()
+    for f in user_dir.iterdir():
+        try:
+            mtime = timezone.datetime.fromtimestamp(f.stat().st_mtime, tz=timezone.utc)
+            if (now - mtime).total_seconds() > EXPORT_MAX_AGE_SECONDS:
+                f.unlink()
+        except Exception as e:
+            print(f"Error deleting {f}: {e}")

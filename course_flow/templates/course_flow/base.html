@@ -374,7 +374,7 @@
       remove_all_comments: "{% url 'course_flow:remove-all-comments' %}",
       get_parent_workflow_info: "{% url 'course_flow:get-parent-workflow-info' %}",
       get_export: "{% url 'course_flow:get-export' %}",
-      get_export_download: "{% url 'course_flow:get-export-download' %}",
+      check_export_status: "{% url 'course_flow:check-export-status' %}",
       import_data: "{% url 'course_flow:import-data' %}",
       make_project_live: "{% url 'course_flow:make-project-live' %}",
       set_workflow_visibility: "{% url 'course_flow:set-workflow-visibility' %}",
@@ -401,6 +401,7 @@
       get_public_workflow_parent_data: "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
       get_public_workflow_child_data: "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
       get_public_parent_workflow_info: "{% url 'course_flow:get-public-parent-workflow-info' pk='0' %}",
+      get_export_download: "{% url 'course_flow:get-export-download' filename='0' %}",
     };
     const create_path = {
         activity_strategy:"{% url 'course_flow:activity-strategy-create' %}",
