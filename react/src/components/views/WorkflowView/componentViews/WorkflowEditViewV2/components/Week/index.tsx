@@ -44,6 +44,7 @@ import {
   WeekReorderCallbackFn
 } from '../../types'
 import WeekCell from '../WeekCell'
+import { WeekCellNodeType } from '../WeekCell/types'
 
 type WeekPropsType = {
   index: number
@@ -402,7 +403,7 @@ const WeekRow = ({
   // and all the nodes for this row are phantom nodes
   if (
     rowCount === 1 &&
-    row.every((node) => node === 'phantom') &&
+    row.every((node) => node === WeekCellNodeType.PHANTOM) &&
     !state.draggedOver
   ) {
     return (
@@ -416,7 +417,10 @@ const WeekRow = ({
 
   // don't render empty phantom rows unless it's the only empty row in the week/part
   // but still need to supply the ref to make drag listeners happy hence the empty div
-  if (rowCount !== 1 && row.every((node) => node === 'phantom')) {
+  if (
+    rowCount !== 1 &&
+    row.every((node) => node === WeekCellNodeType.PHANTOM)
+  ) {
     return (
       <Styled.CellRow ref={ref} style={{ display: 'none' }}>
         <Styled.CellRowIndicator edge={state.edge} />
@@ -429,9 +433,9 @@ const WeekRow = ({
       <Styled.CellRowIndicator edge={state.edge} />
       {row.map((node, nodeIndex) => (
         <Fragment key={`${weekId}_${rowIndex}_${nodeIndex}`}>
-          {node === 'phantom' ? (
+          {node === WeekCellNodeType.PHANTOM ? (
             <WeekCell
-              type="phantom"
+              type={WeekCellNodeType.PHANTOM}
               coords={{
                 week: weekId,
                 x: nodeIndex,
@@ -442,7 +446,7 @@ const WeekRow = ({
             />
           ) : (
             <WeekCell
-              type="node"
+              type={WeekCellNodeType.NODE}
               coords={{
                 week: weekId,
                 x: nodeIndex,

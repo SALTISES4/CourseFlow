@@ -5,23 +5,16 @@ import {
 import useHover from '@cf/hooks/useHover'
 import { alpha } from '@mui/material'
 import { produce } from 'immer'
-import { MouseEvent, ReactNode, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import HoverMenu from './components/HoverMenu'
 import * as StyledNode from './styles'
+import { NodePropsType, PhantomPropsType, WeekCellNodeType } from './types'
 import * as Styled from '../../styles'
 import { CellDataType, DraggableType } from '../../types'
 import { isGridCell } from '../../types'
 
-type PropsType = {
-  coords: CellDataType['coords']
-  type: 'phantom' | 'node'
-  borderColor: string
-  title?: string | ReactNode
-  description?: string | ReactNode
-  onClick?: (e: MouseEvent<HTMLDivElement>) => void
-  onReorder?: (coords: CellDataType['coords'], newIndex: number) => void
-}
+type PropsType = PhantomPropsType | NodePropsType
 
 const WeekCell = (props: PropsType) => {
   const ref = useRef<HTMLDivElement>(null)
@@ -69,7 +62,10 @@ const WeekCell = (props: PropsType) => {
           return
         }
 
-        if (data.coords.x !== props.coords.x) {
+        if (
+          data.coords.x !== props.coords.x &&
+          props.type === WeekCellNodeType.PHANTOM
+        ) {
           props.onReorder(data.coords, props.coords.x)
         }
 
@@ -95,18 +91,13 @@ const WeekCell = (props: PropsType) => {
   )
 }
 
-const WeekCellInner = ({
-  coords,
-  type,
-  borderColor,
-  title,
-  description,
-  onClick
-}: PropsType) => {
+const WeekCellInner = (props: PropsType) => {
   const [ref, isHovered] = useHover()
   const [state, setState] = useState({
     dragging: false
   })
+
+  const { coords, type, borderColor } = props
 
   useEffect(() => {
     const el = ref.current
@@ -140,22 +131,26 @@ const WeekCellInner = ({
 
   // TODO: add NodeLink / NodePorts for node link lines to work
 
-  return type === 'phantom' ? (
-    <div style={{ backgroundColor: borderColor }} />
-  ) : (
-    <Styled.CellInner ref={ref} dragging={state.dragging}>
-      <HoverMenu show={isHovered} />
-      <StyledNode.Border sx={{ backgroundColor: borderColor }} />
-      <StyledNode.Content onClick={onClick}>
-        <StyledNode.Title variant="subtitle2">{title}</StyledNode.Title>
-        {description && (
-          <StyledNode.Subtitle variant="caption">
-            {description}
-          </StyledNode.Subtitle>
-        )}
-      </StyledNode.Content>
-    </Styled.CellInner>
-  )
+  if (type === WeekCellNodeType.PHANTOM) {
+    return <div style={{ backgroundColor: borderColor }} />
+  } else {
+    const { title, description, onClick } = props
+
+    return (
+      <Styled.CellInner ref={ref} dragging={state.dragging}>
+        <HoverMenu show={isHovered} />
+        <StyledNode.Border sx={{ backgroundColor: borderColor }} />
+        <StyledNode.Content onClick={onClick}>
+          <StyledNode.Title variant="subtitle2">{title}</StyledNode.Title>
+          {description && (
+            <StyledNode.Subtitle variant="caption">
+              {description}
+            </StyledNode.Subtitle>
+          )}
+        </StyledNode.Content>
+      </Styled.CellInner>
+    )
+  }
 }
 
 export default WeekCell

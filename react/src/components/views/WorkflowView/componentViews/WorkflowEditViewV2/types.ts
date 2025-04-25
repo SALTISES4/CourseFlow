@@ -1,13 +1,13 @@
-export type BoardPhantomNodeType = 'phantom'
+import { WeekCellNodeType } from './components/WeekCell/types'
 
-export type BoardNodeType = {
+type BoardNodeType = {
   id: number
   title: string
   description: string
   column: number
 }
 
-export type BoardWeekRowType = (BoardPhantomNodeType | BoardNodeType)[]
+export type BoardWeekRowType = (WeekCellNodeType.PHANTOM | BoardNodeType)[]
 
 type BoardWeekType = {
   id: number
