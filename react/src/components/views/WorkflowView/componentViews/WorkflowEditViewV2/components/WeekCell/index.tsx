@@ -3,9 +3,13 @@ import {
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import useHover from '@cf/hooks/useHover'
+import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
+import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
+import NodePorts from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
 import { alpha } from '@mui/material'
 import { produce } from 'immer'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import HoverMenu from './components/HoverMenu'
 import * as StyledNode from './styles'
@@ -94,10 +98,24 @@ const WeekCell = (props: PropsType) => {
 const WeekCellInner = (props: PropsType) => {
   const [ref, isHovered] = useHover()
   const [state, setState] = useState({
-    dragging: false
+    dragging: false,
+    initialRender: true,
+
+    // circles where the node lines start from
+    nodePorts: null,
+    // lines between the nodes
+    nodeLinks: null,
+    // ??
+    nodeAutoLink: null
   })
 
   const { coords, type, borderColor } = props
+
+  // TODO: navigate to workflow
+  const onMouseDoubleClick = useCallback((evt: MouseEvent) => {
+    evt.stopPropagation()
+    console.log('navigate to workflow')
+  }, [])
 
   useEffect(() => {
     const el = ref.current
@@ -129,15 +147,61 @@ const WeekCellInner = (props: PropsType) => {
     })
   }, [ref, coords])
 
-  // TODO: add NodeLink / NodePorts for node link lines to work
+  useEffect(() => {
+    if (state.initialRender) {
+      setState(
+        produce((draft) => {
+          draft.initialRender = false
+        })
+      )
+    }
+
+    const component = ref.current
+    if (component) {
+      component.addEventListener('dblclick', onMouseDoubleClick)
+    }
+
+    return () => {
+      if (component) {
+        component.removeEventListener('dblclick', onMouseDoubleClick)
+      }
+    }
+  }, [ref, onMouseDoubleClick, state.initialRender])
+
+  useEffect(() => {
+    if (!state.initialRender && props.type === WeekCellNodeType.NODE) {
+      const objectId = props.id
+      setState(
+        produce((draft) => {
+          draft.nodePorts = createPortal(
+            <NodePorts
+              show={isHovered}
+              nodeId={objectId}
+              nodeDiv={ref}
+              // dispatch={dispatch}
+            />,
+            $('.workflow-canvas')[0]
+          )
+        })
+      )
+
+      // nodeLinks = node.outgoingLinks.map((link) => (
+      //   <NodeLink key={link} objectId={link} nodeDiv={ref} />
+      // ))
+
+      // if (node.hasAutolink) {
+      //   autoLink = <AutoLink nodeId={objectId} nodeDiv={ref} />
+      // }
+    }
+  }, [isHovered, state.initialRender, props, ref])
 
   if (type === WeekCellNodeType.PHANTOM) {
     return <div style={{ backgroundColor: borderColor }} />
   } else {
-    const { title, description, onClick } = props
+    const { id, title, description, onClick } = props
 
     return (
-      <Styled.CellInner ref={ref} dragging={state.dragging}>
+      <Styled.CellInner id={`'node-${id}`} ref={ref} dragging={state.dragging}>
         <HoverMenu show={isHovered} />
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onClick}>
@@ -148,6 +212,9 @@ const WeekCellInner = (props: PropsType) => {
             </StyledNode.Subtitle>
           )}
         </StyledNode.Content>
+        {state.nodePorts}
+        {state.nodeLinks}
+        {state.nodeAutoLink}
       </Styled.CellInner>
     )
   }

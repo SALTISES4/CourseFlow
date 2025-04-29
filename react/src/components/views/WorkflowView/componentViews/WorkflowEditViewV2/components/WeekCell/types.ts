@@ -18,6 +18,7 @@ export type PhantomPropsType = SharedProps & {
 }
 
 export type NodePropsType = SharedProps & {
+  id: number
   type: WeekCellNodeType.NODE
   title: string | ReactNode
   description: string | ReactNode

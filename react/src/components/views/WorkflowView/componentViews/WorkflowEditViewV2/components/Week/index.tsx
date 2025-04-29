@@ -446,6 +446,7 @@ const WeekRow = ({
             />
           ) : (
             <WeekCell
+              id={node.id}
               type={WeekCellNodeType.NODE}
               coords={{
                 week: weekId,
