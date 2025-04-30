@@ -3,6 +3,7 @@ import * as Constants from '@cf/utility/constants'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { Dispatch } from '@reduxjs/toolkit'
 import { newNodeLinkQuery } from '@XMLHTTP/API/create'
+import * as d3 from 'd3'
 import * as React from 'react'
 import { Action } from 'redux'
 // import $ from 'jquery'
@@ -46,7 +47,7 @@ export class NodePorts extends React.Component<PropsType, StateType> {
       ).call(
         d3
           .drag<SVGCircleElement, any>()
-          .on('start', function (d) {
+          .on('start', function (event) {
             $('.workflow-canvas').addClass('creating-node-link')
 
             const canvasOffset = $('.workflow-canvas').offset()
@@ -56,24 +57,24 @@ export class NodePorts extends React.Component<PropsType, StateType> {
             d3.select('.workflow-canvas')
               .append('line')
               .attr('class', 'node-link-creator')
-              .attr('x1', d3.event.sourceEvent.x - canvasOffset.left)
-              .attr('y1', d3.event.sourceEvent.y - canvasOffset.top)
-              .attr('x2', d3.event.sourceEvent.x - canvasOffset.left)
-              .attr('y2', d3.event.sourceEvent.y - canvasOffset.top)
+              .attr('x1', event.sourceEvent.x - canvasOffset.left)
+              .attr('y1', event.sourceEvent.y - canvasOffset.top)
+              .attr('x2', event.sourceEvent.x - canvasOffset.left)
+              .attr('y2', event.sourceEvent.y - canvasOffset.top)
               .attr('stroke', 'red')
               .attr('stroke-width', '2')
           })
 
-          .on('drag', function (d) {
+          .on('drag', function (event) {
             const canvasOffset = $('.workflow-canvas').offset()
             d3.select('.node-link-creator')
-              .attr('x2', d3.event.sourceEvent.x - canvasOffset.left)
-              .attr('y2', d3.event.sourceEvent.y - canvasOffset.top)
+              .attr('x2', event.sourceEvent.x - canvasOffset.left)
+              .attr('y2', event.sourceEvent.y - canvasOffset.top)
           })
-          .on('end', function (d) {
+          .on('end', function (event) {
             $('.workflow-canvas').removeClass('creating-node-link')
 
-            const target = d3.select(d3.event.sourceEvent.target)
+            const target = d3.select(event.sourceEvent.target)
 
             if (target.attr('data-port-type') == 'target') {
               thisComponent.nodeLinkAdded(
