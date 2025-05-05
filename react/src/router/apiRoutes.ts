@@ -79,7 +79,7 @@ export const apiPathRoutes = {
       restore: '/node/:id/restore',
       duplicate: '/node/:id/duplicate',
       update_position: '/node/:id/update-position',
-      link__create: '/node/node-link/create',
+      link_create: '/node/node-link/create',
       link_to_workflow: '/node/:id/link-to-workflow'
     },
     week: {

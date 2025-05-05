@@ -73,7 +73,7 @@ export function newNodeLinkQuery(
   targetPort: number,
   callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
-  const url = apiPaths.json_api.node.link__create
+  const url = apiPaths.json_api.node.link_create
   API_POST(url, {
     nodePk: sourceNodeId,
     objectId: targetNodeId,
