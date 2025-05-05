@@ -456,6 +456,8 @@ const WeekRow = ({
               borderColor={columnColors[nodeIndex]}
               title={node.title}
               description={node.description}
+              hasAutoLink={node.hasAutoLink}
+              outgoingLinks={node.outgoingLinks}
               onClick={(e) => onNodeClick(e, node.id)}
             />
           )}

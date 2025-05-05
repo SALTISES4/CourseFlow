@@ -42,7 +42,7 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
 
   const rerender = useCallback(() => {
     setSourceNode($(nodeDiv.current))
-    setTargetNode($(`#${nodeLink.targetNode}.node`))
+    setTargetNode($(`#node-${nodeLink.targetNode}`))
   }, [nodeDiv, nodeLink.targetNode])
 
   /*******************************************************
@@ -55,7 +55,7 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
     }
 
     const srcNode = $(nodeDiv.current)
-    const tgtNode = $(`#${nodeLink.targetNode}.node`)
+    const tgtNode = $(`#node-${nodeLink.targetNode}`)
 
     setSourceNode(srcNode)
     setTargetNode(tgtNode)
@@ -110,6 +110,7 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
   const nodeSelected =
     sourceNode.attr('data-selected') === 'true' ||
     targetNode.attr('data-selected') === 'true'
+
   const nodeHovered =
     sourceNode.attr('data-hovered') === 'true' ||
     targetNode.attr('data-hovered') === 'true'
@@ -165,7 +166,7 @@ const NodeLink = ({ objectId, nodeDiv }: PropsType) => {
     $('.workflow-canvas')[0]
   )
 
-  return portal
+  return <>{portal}</>
 }
 
 export default NodeLink

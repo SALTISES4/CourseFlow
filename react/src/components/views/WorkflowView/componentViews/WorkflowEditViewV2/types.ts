@@ -1,13 +1,15 @@
 import { WeekCellNodeType } from './components/WeekCell/types'
 
-type BoardNodeType = {
+export type BoardNodeDataType = {
   id: number
   title: string
   description: string
   column: number
+  hasAutoLink: boolean
+  outgoingLinks: number[]
 }
 
-export type BoardWeekRowType = (WeekCellNodeType.PHANTOM | BoardNodeType)[]
+export type BoardWeekRowType = (WeekCellNodeType.PHANTOM | BoardNodeDataType)[]
 
 type BoardWeekType = {
   id: number

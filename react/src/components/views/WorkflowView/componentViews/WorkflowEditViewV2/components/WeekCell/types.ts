@@ -1,6 +1,6 @@
 import { MouseEvent, ReactNode } from 'react'
 
-import { CellDataType } from '../../types'
+import { BoardNodeDataType, CellDataType } from '../../types'
 
 export enum WeekCellNodeType {
   PHANTOM = 'phantom',
@@ -18,9 +18,11 @@ export type PhantomPropsType = SharedProps & {
 }
 
 export type NodePropsType = SharedProps & {
-  id: number
+  id: BoardNodeDataType['id']
   type: WeekCellNodeType.NODE
   title: string | ReactNode
   description: string | ReactNode
   onClick: (e: MouseEvent<HTMLDivElement>) => void
+  outgoingLinks: BoardNodeDataType['outgoingLinks']
+  hasAutoLink: BoardNodeDataType['hasAutoLink']
 }

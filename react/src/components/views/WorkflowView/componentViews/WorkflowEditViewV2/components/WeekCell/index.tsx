@@ -174,24 +174,21 @@ const WeekCellInner = (props: PropsType) => {
       setState(
         produce((draft) => {
           draft.nodePorts = createPortal(
-            <NodePorts
-              show={isHovered}
-              nodeId={objectId}
-              nodeDiv={ref}
-              // dispatch={dispatch}
-            />,
+            <NodePorts show={isHovered} nodeId={objectId} nodeDiv={ref} />,
             $('.workflow-canvas')[0]
           )
+
+          if (props.outgoingLinks.length) {
+            draft.nodeLinks = props.outgoingLinks.map((link) => (
+              <NodeLink key={link} objectId={link} nodeDiv={ref} />
+            ))
+          }
+
+          if (props.hasAutoLink) {
+            draft.nodeAutoLink = <AutoLink nodeId={objectId} nodeDiv={ref} />
+          }
         })
       )
-
-      // nodeLinks = node.outgoingLinks.map((link) => (
-      //   <NodeLink key={link} objectId={link} nodeDiv={ref} />
-      // ))
-
-      // if (node.hasAutolink) {
-      //   autoLink = <AutoLink nodeId={objectId} nodeDiv={ref} />
-      // }
     }
   }, [isHovered, state.initialRender, props, ref])
 
@@ -201,7 +198,7 @@ const WeekCellInner = (props: PropsType) => {
     const { id, title, description, onClick } = props
 
     return (
-      <Styled.CellInner id={`'node-${id}`} ref={ref} dragging={state.dragging}>
+      <Styled.CellInner id={`node-${id}`} ref={ref} dragging={state.dragging}>
         <HoverMenu show={isHovered} />
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onClick}>
