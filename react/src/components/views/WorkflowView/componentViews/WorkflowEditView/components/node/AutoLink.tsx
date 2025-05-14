@@ -32,10 +32,11 @@ const AutoLink = ({ nodeId, nodeDiv }: PropsType) => {
     const srcNode = $(nodeDiv.current)
     setSourceNode(srcNode)
 
-    const srcPortHandle = d3.select(
-      `g.port-${nodeId} circle[data-port-type='source'][data-port='s']`
+    setSourcePortHandle(
+      d3.select(
+        `g.port-${nodeId} circle[data-port-type='source'][data-port='s']`
+      )
     )
-    setSourcePortHandle(srcPortHandle)
 
     srcNode.on(rerenderEvents, rerender)
 
@@ -91,17 +92,18 @@ const AutoLink = ({ nodeId, nodeDiv }: PropsType) => {
    **/
   const setTarget = (target: string) => {
     if (target) {
-      const tgtNode = $(`.week #${target}.node`)
-      const tgtPortHandle = d3.select(
-        `g.port-${target} circle[data-port-type='target'][data-port='n']`
-      )
+      const tgtNode = $(`#node-${target}`)
 
       if (targetNode) {
         targetNode.off(rerenderEvents)
       }
 
       setTargetNode(tgtNode)
-      setTargetPortHandle(tgtPortHandle)
+      setTargetPortHandle(
+        d3.select(
+          `g.port-${target} circle[data-port-type='target'][data-port='n']`
+        )
+      )
 
       tgtNode.on(rerenderEvents, rerender)
     } else {
