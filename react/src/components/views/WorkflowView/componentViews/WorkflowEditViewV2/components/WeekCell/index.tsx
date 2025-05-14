@@ -12,6 +12,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import HoverMenu from './components/HoverMenu'
+import Meta from './components/Meta'
 import * as StyledNode from './styles'
 import { NodePropsType, PhantomPropsType, WeekCellNodeType } from './types'
 import * as Styled from '../../styles'
@@ -202,12 +203,13 @@ const WeekCellInner = (props: PropsType) => {
         <HoverMenu show={isHovered} />
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onClick}>
-          <StyledNode.Title variant="subtitle2">{title}</StyledNode.Title>
+          <StyledNode.Title variant="body2">{title}</StyledNode.Title>
           {description && (
             <StyledNode.Subtitle variant="caption">
               {description}
             </StyledNode.Subtitle>
           )}
+          <Meta workflow="#" duration="5 hours" />
         </StyledNode.Content>
         {state.nodePorts}
         {state.nodeLinks}

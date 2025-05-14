@@ -29,8 +29,7 @@ export const Content = styled(Box)(({ theme }) => ({
 }))
 
 export const Title = styled(Typography)({
-  margin: 0,
-  fontWeight: 600
+  margin: 0
 })
 
 export const Subtitle = styled(Typography)(({ theme }) => ({
