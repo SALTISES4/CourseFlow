@@ -1,6 +1,5 @@
 import { CfObjectType } from '@cf/types/enum'
 import Utility from '@cf/utility/Utility.class'
-import { NodeForm } from './types'
 import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { nodeChangeField } from '@cfRedux/slices/node.slice'
 import { AppState } from '@cfRedux/types/type'
@@ -25,6 +24,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
 import optionsData from './optionsData'
+import { NodeForm } from './types'
 
 const EditNode = ({ id }) => {
   /*******************************************************
@@ -58,11 +58,11 @@ const EditNode = ({ id }) => {
         generalEdu: String(nodeData.node.ponderationGeneralEdu),
         specificEdu: String(nodeData.node.ponderationSpecificEdu)
       },
-      contextType: nodeData.node.contextType || '',
-      taskType: nodeData.node.taskType || '',
+      contextType: nodeData.node.contextClassification || '',
+      taskType: nodeData.node.taskClassification || '',
       amount: nodeData.node.amount || '',
       unitType: nodeData.node.unitType || '',
-      objectSets: nodeData.node.objectSets || []
+      objectSets: nodeData.node.sets || []
     }
   })
   const watchedFields = watch()
@@ -83,11 +83,11 @@ const EditNode = ({ id }) => {
           generalEdu: String(nodeData.node.ponderationGeneralEdu),
           specificEdu: String(nodeData.node.ponderationSpecificEdu)
         },
-        contextType: nodeData.node.contextType || '',
-        taskType: nodeData.node.taskType || '',
+        contextType: nodeData.node.contextClassification || '',
+        taskType: nodeData.node.taskClassification || '',
         amount: nodeData.node.amount || '',
         unitType: nodeData.node.unitType || '',
-        objectSets: nodeData.node.objectSets || []
+        objectSets: nodeData.node.sets || []
       })
     }
   }, [reset, isDirty, nodeData])
@@ -220,7 +220,7 @@ const EditNode = ({ id }) => {
               </>
             )}
 
-            <FormControl fullWidth>
+            <FormControl fullWidth size="small">
               <InputLabel id="context-type-select-label">Context</InputLabel>
               <Controller
                 name="contextType"
@@ -241,7 +241,7 @@ const EditNode = ({ id }) => {
               />
             </FormControl>
 
-            <FormControl fullWidth>
+            <FormControl fullWidth size="small">
               <InputLabel id="task-type-select-label">Type of task</InputLabel>
               <Controller
                 name="taskType"
@@ -270,7 +270,7 @@ const EditNode = ({ id }) => {
                 {...register('amount')}
                 sx={{ flexBasis: '35%' }}
               />
-              <FormControl sx={{ flexGrow: 1 }}>
+              <FormControl sx={{ flexGrow: 1 }} size="small">
                 <InputLabel id="unit-type-select-label">Unit type</InputLabel>
                 <Controller
                   name="unitType"

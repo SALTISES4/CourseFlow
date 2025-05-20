@@ -1,8 +1,8 @@
 export type NodeForm = {
   title?: string
   description?: string
-  contextType?: number
-  taskType?: number
+  contextType?: number | string
+  taskType?: number | string
   unitType?: number
   amount?: number
   objectSets?: number[]
