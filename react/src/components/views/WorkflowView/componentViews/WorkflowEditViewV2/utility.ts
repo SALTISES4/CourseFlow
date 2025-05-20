@@ -46,7 +46,9 @@ export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
         description: nodeData.node.description,
         column: nodeData.node.column,
         hasAutoLink: nodeData.node.hasAutolink,
-        outgoingLinks: nodeData.node.outgoingLinks
+        outgoingLinks: nodeData.node.outgoingLinks,
+        contextType: nodeData.node.contextClassification,
+        taskType: nodeData.node.taskClassification
       }
 
       return rowArr

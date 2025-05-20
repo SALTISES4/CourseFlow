@@ -3,13 +3,19 @@ import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined'
 import Link from '@mui/material/Link'
 
 import * as Styled from './styles'
+import { getIcon } from './utility'
 
 type PropsType = {
   workflow?: string
+  contextType: number
+  taskType: number
   duration?: string
 }
 
-const Meta = ({ workflow, duration }: PropsType) => {
+const Meta = ({ workflow, contextType, taskType, duration }: PropsType) => {
+  const contextIcon = getIcon('context', contextType)
+  const taskIcon = getIcon('task', taskType)
+
   return (
     <Styled.Wrap>
       {workflow && (
@@ -20,16 +26,14 @@ const Meta = ({ workflow, duration }: PropsType) => {
           </Link>
         </Styled.WorkflowLink>
       )}
-      {duration && (
+      {(duration || contextIcon || taskIcon) && (
         <Styled.Footer>
-          <Styled.IconWrap>
-            <Styled.Tag>
-              <TimerOutlinedIcon />
-            </Styled.Tag>
-            <Styled.Tag>
-              <TimerOutlinedIcon />
-            </Styled.Tag>
-          </Styled.IconWrap>
+          {(contextIcon || taskIcon) && (
+            <Styled.IconWrap>
+              {contextIcon && <Styled.Tag>{contextIcon}</Styled.Tag>}
+              {taskIcon && <Styled.Tag>{taskIcon}</Styled.Tag>}
+            </Styled.IconWrap>
+          )}
           {duration && (
             <Styled.Tag>
               <TimerOutlinedIcon />

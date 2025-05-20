@@ -7,6 +7,8 @@ export type BoardNodeDataType = {
   column: number
   hasAutoLink: boolean
   outgoingLinks: number[]
+  contextType: number
+  taskType: number
 }
 
 export type BoardWeekRowType = (WeekCellNodeType.PHANTOM | BoardNodeDataType)[]

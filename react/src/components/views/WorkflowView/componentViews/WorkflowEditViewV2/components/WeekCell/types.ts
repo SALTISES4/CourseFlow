@@ -17,12 +17,13 @@ export type PhantomPropsType = SharedProps & {
   onReorder: (coords: CellDataType['coords'], newIndex: number) => void
 }
 
-export type NodePropsType = SharedProps & {
-  id: BoardNodeDataType['id']
-  type: WeekCellNodeType.NODE
-  title: string | ReactNode
-  description: string | ReactNode
-  onClick: (e: MouseEvent<HTMLDivElement>) => void
-  outgoingLinks: BoardNodeDataType['outgoingLinks']
-  hasAutoLink: BoardNodeDataType['hasAutoLink']
-}
+export type NodePropsType = SharedProps &
+  Pick<
+    BoardNodeDataType,
+    'id' | 'outgoingLinks' | 'hasAutoLink' | 'contextType' | 'taskType'
+  > & {
+    type: WeekCellNodeType.NODE
+    title: string | ReactNode
+    description: string | ReactNode
+    onClick: (e: MouseEvent<HTMLDivElement>) => void
+  }

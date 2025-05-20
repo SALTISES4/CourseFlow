@@ -196,7 +196,7 @@ const WeekCellInner = (props: PropsType) => {
   if (type === WeekCellNodeType.PHANTOM) {
     return <div style={{ backgroundColor: borderColor }} />
   } else {
-    const { id, title, description, onClick } = props
+    const { id, title, description, contextType, taskType, onClick } = props
 
     return (
       <Styled.CellInner id={`node-${id}`} ref={ref} dragging={state.dragging}>
@@ -209,7 +209,12 @@ const WeekCellInner = (props: PropsType) => {
               {description}
             </StyledNode.Subtitle>
           )}
-          <Meta workflow="#" duration="5 hours" />
+          <Meta
+            workflow="#"
+            contextType={contextType}
+            taskType={taskType}
+            duration="5 hours"
+          />
         </StyledNode.Content>
         {state.nodePorts}
         {state.nodeLinks}

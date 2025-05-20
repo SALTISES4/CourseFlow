@@ -458,6 +458,8 @@ const WeekRow = ({
               description={node.description}
               hasAutoLink={node.hasAutoLink}
               outgoingLinks={node.outgoingLinks}
+              contextType={node.contextType}
+              taskType={node.taskType}
               onClick={(e) => onNodeClick(e, node.id)}
             />
           )}
