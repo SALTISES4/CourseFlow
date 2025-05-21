@@ -20,7 +20,7 @@ export type PhantomPropsType = SharedProps & {
 export type NodePropsType = SharedProps &
   Pick<
     BoardNodeDataType,
-    'id' | 'outgoingLinks' | 'hasAutoLink' | 'contextType' | 'taskType'
+    'id' | 'outgoingLinks' | 'hasAutoLink' | 'contextType' | 'taskType' | 'time'
   > & {
     type: WeekCellNodeType.NODE
     title: string | ReactNode

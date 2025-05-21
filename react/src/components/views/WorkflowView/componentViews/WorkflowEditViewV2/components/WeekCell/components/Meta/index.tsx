@@ -5,14 +5,19 @@ import Link from '@mui/material/Link'
 import * as Styled from './styles'
 import { getIcon } from './utility'
 
+const choices = COURSEFLOW_APP.globalContextData.workflowChoices
+
 type PropsType = {
   workflow?: string
   contextType: number
   taskType: number
-  duration?: string
+  time?: {
+    length: number
+    unit: number
+  }
 }
 
-const Meta = ({ workflow, contextType, taskType, duration }: PropsType) => {
+const Meta = ({ workflow, contextType, taskType, time }: PropsType) => {
   const contextIcon = getIcon('context', contextType)
   const taskIcon = getIcon('task', taskType)
 
@@ -26,7 +31,7 @@ const Meta = ({ workflow, contextType, taskType, duration }: PropsType) => {
           </Link>
         </Styled.WorkflowLink>
       )}
-      {(duration || contextIcon || taskIcon) && (
+      {(time || contextIcon || taskIcon) && (
         <Styled.Footer>
           {(contextIcon || taskIcon) && (
             <Styled.IconWrap>
@@ -34,10 +39,10 @@ const Meta = ({ workflow, contextType, taskType, duration }: PropsType) => {
               {taskIcon && <Styled.Tag>{taskIcon}</Styled.Tag>}
             </Styled.IconWrap>
           )}
-          {duration && (
+          {time && time.unit !== 0 && (
             <Styled.Tag>
               <TimerOutlinedIcon />
-              <span>{duration}</span>
+              <span>{`${time.length} ${choices.timeChoices[time.unit].name}`}</span>
             </Styled.Tag>
           )}
         </Styled.Footer>

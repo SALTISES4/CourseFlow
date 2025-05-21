@@ -196,7 +196,8 @@ const WeekCellInner = (props: PropsType) => {
   if (type === WeekCellNodeType.PHANTOM) {
     return <div style={{ backgroundColor: borderColor }} />
   } else {
-    const { id, title, description, contextType, taskType, onClick } = props
+    const { id, title, description, contextType, taskType, time, onClick } =
+      props
 
     return (
       <Styled.CellInner id={`node-${id}`} ref={ref} dragging={state.dragging}>
@@ -213,7 +214,7 @@ const WeekCellInner = (props: PropsType) => {
             workflow="#"
             contextType={contextType}
             taskType={taskType}
-            duration="5 hours"
+            time={time}
           />
         </StyledNode.Content>
         {state.nodePorts}

@@ -9,6 +9,10 @@ export type BoardNodeDataType = {
   outgoingLinks: number[]
   contextType: number
   taskType: number
+  time: {
+    length: number
+    unit: number
+  }
 }
 
 export type BoardWeekRowType = (WeekCellNodeType.PHANTOM | BoardNodeDataType)[]
