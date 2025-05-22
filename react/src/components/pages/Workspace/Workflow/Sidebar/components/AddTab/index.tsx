@@ -5,14 +5,14 @@ import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useSelector } from 'react-redux'
 
-import data, { getNodeCategoriesData } from './data'
+import data, { getColumnData } from './data'
 import DraggableBlock from '../../Draggable'
 
 const AddTab = () => {
   const theme = useTheme()
   const { title, subtitle, groups } = data
   const workflow = useSelector((state: AppState) => state.workflow)
-  const nodeCategories = getNodeCategoriesData(workflow)
+  const nodeCategories = getColumnData(workflow)
 
   // TODO: fetch from strategies
   // but where do the reusable blocks come from?

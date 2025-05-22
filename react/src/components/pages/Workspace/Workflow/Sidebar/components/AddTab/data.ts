@@ -6,16 +6,14 @@ import { useSelector } from 'react-redux'
 
 import { AddTabType } from '../../types'
 
-type NodeCategoriesData = {
+type ColumnNodeDataType = {
   id: number
   title: string
   color: string
 }
 
 // Prepare the workflow node categories (columns) data
-export function getNodeCategoriesData(
-  workflow: TWorkflow
-): NodeCategoriesData[] {
+export function getColumnData(workflow: TWorkflow): ColumnNodeDataType[] {
   const { columns } = workflow
   const columnData = columns.map((columnId) =>
     useSelector((appState: AppState) => selectColumnById(appState, columnId))
@@ -23,7 +21,7 @@ export function getNodeCategoriesData(
   const colors = getColumnColors(columnData)
   return columnData.map((data, index) => {
     const { column } = data
-    const parsed: NodeCategoriesData = {
+    const parsed: ColumnNodeDataType = {
       id: columns[index],
       title: column.title ?? column.columnTypeDisplay,
       color: colors[index]

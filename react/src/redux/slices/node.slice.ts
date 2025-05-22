@@ -15,7 +15,7 @@ import {
   WeekActions
 } from '@cfRedux/types/enumActions'
 import { AppState, TNode } from '@cfRedux/types/type'
-import { AnyAction, PayloadAction, createSlice } from '@reduxjs/toolkit'
+import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 interface DeleteColumnAction {
   id: number

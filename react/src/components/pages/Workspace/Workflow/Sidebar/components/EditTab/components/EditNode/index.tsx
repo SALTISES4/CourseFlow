@@ -19,14 +19,14 @@ import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { updateValueQuery } from '@XMLHTTP/API/update'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
 import optionsData from './optionsData'
 import { NodeForm } from './types'
 
-const EditNode = ({ id }) => {
+const EditNode = () => {
   /*******************************************************
    * HOOKS
    *******************************************************/
@@ -65,8 +65,8 @@ const EditNode = ({ id }) => {
       objectSets: nodeData.node.sets || []
     }
   })
+
   const watchedFields = watch()
-  const formValues = getValues()
 
   /*******************************************************
    * LIFECYCLE
@@ -92,33 +92,33 @@ const EditNode = ({ id }) => {
     }
   }, [reset, isDirty, nodeData])
 
-  const debouncedDispatch = useCallback(
-    debounce((data) => {
-      dispatch(
-        nodeChangeField({
-          id: sidebarData.edit.id,
-          data: {
-            title: data.title,
-            description: data.description
-          }
-        })
-      )
+  const debouncedDispatch = useMemo(
+    () =>
+      debounce((data) => {
+        // update redux state
+        dispatch(
+          nodeChangeField({
+            id: sidebarData.edit.id,
+            data: {
+              title: data.title,
+              description: data.description
+            }
+          })
+        )
 
-      // update the server
-      updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
+        // update the server
+        updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
 
-      reset({}, { keepValues: true })
-    }, 300),
-    [dispatch, sidebarData.edit.id]
+        reset({}, { keepValues: true })
+      }, 300),
+    [dispatch, reset, sidebarData.edit.id]
   )
 
   useEffect(() => {
-    const formValues = getValues()
-
     if (isDirty) {
-      debouncedDispatch(formValues)
+      debouncedDispatch(watchedFields)
     }
-  }, [watchedFields, isDirty, getValues, debouncedDispatch])
+  }, [watchedFields, isDirty, debouncedDispatch])
 
   /*******************************************************
    * FUNCTIONS
@@ -298,6 +298,7 @@ const EditNode = ({ id }) => {
               render={({ field }) => (
                 <Autocomplete
                   multiple
+                  size="small"
                   options={optionsData.objectSets}
                   getOptionLabel={(option) => option.label}
                   isOptionEqualToValue={(option, value) =>
