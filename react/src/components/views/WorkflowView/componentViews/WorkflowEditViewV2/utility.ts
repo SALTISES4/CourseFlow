@@ -1,4 +1,3 @@
-import { selectNodeById } from '@cf/redux/selectors/node.selector'
 import { selectWeekById } from '@cf/redux/selectors/week.selector'
 import { AppState, TColumn, TWorkflow } from '@cf/redux/types/type'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
@@ -12,7 +11,10 @@ import type { BoardType, BoardWeekRowType } from './types'
 // Parses workflow week/column data to prepare part grid data beforehand
 // so it all comes from the parent view and trickles down into children
 // instead of various children having to pull data when they are rendered
-export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
+export function getWorkflowBoardData(
+  workflow: TWorkflow,
+  nodes: TNode[]
+): BoardType {
   const { weeks, columns } = workflow
 
   const weeksData = weeks.map((weekId) => {
@@ -35,23 +37,21 @@ export function getWorkflowBoardData(workflow: TWorkflow): BoardType {
         WeekCellNodeType.PHANTOM
       )
 
-      const nodeData = useSelector((state: AppState) =>
-        selectNodeById(state, nodeId)
-      )
+      const nodeData = nodes.find((n) => n.id === nodeId)
 
-      const nodeAtIndex = columns.indexOf(nodeData.node.column)
+      const nodeAtIndex = columns.indexOf(nodeData.column)
       rowArr[nodeAtIndex] = {
-        id: nodeData.node.id,
-        title: getNodeTitle(nodeData.node),
-        description: nodeData.node.description,
-        column: nodeData.node.column,
-        hasAutoLink: nodeData.node.hasAutolink,
-        outgoingLinks: nodeData.node.outgoingLinks,
-        contextType: nodeData.node.contextClassification,
-        taskType: nodeData.node.taskClassification,
+        id: nodeData.id,
+        title: getNodeTitle(nodeData),
+        description: nodeData.description,
+        column: nodeData.column,
+        hasAutoLink: nodeData.hasAutolink,
+        outgoingLinks: nodeData.outgoingLinks,
+        contextType: nodeData.contextClassification,
+        taskType: nodeData.taskClassification,
         time: {
-          length: nodeData.node.timeRequired,
-          unit: nodeData.node.timeUnits
+          length: nodeData.timeRequired,
+          unit: nodeData.timeUnits
         }
       }
 

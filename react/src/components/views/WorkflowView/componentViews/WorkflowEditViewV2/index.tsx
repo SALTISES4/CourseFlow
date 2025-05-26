@@ -5,7 +5,7 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/Utility.class'
-import { selectColumnById } from '@cfRedux/selectors/column.selector'
+import { getColumnData } from '@cfPages/Workspace/Workflow/Sidebar/components/AddTab/data'
 import { AppState } from '@cfRedux/types/type'
 import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -20,7 +20,7 @@ import {
   isGridWeek,
   isSidebarPart
 } from './types'
-import { getColumnColors, getWorkflowBoardData, swapInPlace } from './utility'
+import { getWorkflowBoardData, swapInPlace } from './utility'
 
 /*
   .workflow-canvas is used for all kinds of targeting
@@ -48,10 +48,15 @@ const CanvasPlaceholder = () => (
 const WorkflowEditView = () => {
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: AppState) => state.workflow)
+  const nodes = useSelector((state: AppState) => state.node)
   const [state, setState] = useState({
     condensed: false,
     columns: workflow.columns || [],
-    board: getWorkflowBoardData(workflow)
+    board: getWorkflowBoardData(workflow, nodes)
+  })
+
+  const columnColors = getColumnData(workflow).map((col) => {
+    return col.color
   })
 
   useEffect(() => {
@@ -163,12 +168,6 @@ const WorkflowEditView = () => {
     },
     []
   )
-
-  const columnData = useSelector((s: AppState) =>
-    state.columns.map((columnId) => selectColumnById(s, columnId))
-  )
-
-  const columnColors = getColumnColors(columnData)
 
   return (
     <OuterContentWrap>
