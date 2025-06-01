@@ -6,9 +6,10 @@ import {
 import { OuterContentWrap } from '@cf/mui/helper'
 import { _t } from '@cf/utility/Utility.class'
 import { getColumnData } from '@cfPages/Workspace/Workflow/Sidebar/components/AddTab/data'
-import { AppState } from '@cfRedux/types/type'
+import { AppState, TNode, TWorkflow } from '@cfRedux/types/type'
+import { debounce } from '@mui/material'
 import { produce } from 'immer'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 import ColumnsHeader from './components/ColumnsHeader'
@@ -49,11 +50,42 @@ const WorkflowEditView = () => {
   const weeksWrapperRef = useRef<HTMLDivElement>(null)
   const workflow = useSelector((state: AppState) => state.workflow)
   const nodes = useSelector((state: AppState) => state.node)
+  const weeks = useSelector((state: AppState) => state.week)
+
+  // memoize costly state derivations
+  const weeksMap = useMemo(() => {
+    return Object.fromEntries(weeks.map((week) => [week.id, week]))
+  }, [weeks])
+
+  const boardData = useMemo(() => {
+    return getWorkflowBoardData(workflow, nodes, weeksMap)
+  }, [workflow, nodes, weeksMap])
+
+  // detach from redux state and locally make board changes to not trigger
+  // redux updates all over the place and (and restructure redux app state even further)
   const [state, setState] = useState({
     condensed: false,
     columns: workflow.columns || [],
-    board: getWorkflowBoardData(workflow, nodes)
+    board: boardData
   })
+
+  // sync local state to redux when board changes (nodes, actually)
+  const debouncedSync = useMemo(() => {
+    return debounce(() => {
+      setState(
+        produce((draft) => {
+          draft.board = boardData
+        })
+      )
+    }, 200)
+  }, [boardData])
+
+  useEffect(() => {
+    debouncedSync()
+    return () => {
+      debouncedSync.clear()
+    }
+  }, [debouncedSync, nodes])
 
   const columnColors = getColumnData(workflow).map((col) => {
     return col.color

@@ -32,9 +32,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import TimerOutlinedIcon from '@mui/icons-material/TimerOutlined'
 import { ReactElement } from 'react'
 
-type IconMapGroup = {
-  [index: number]: ReactElement
-}
+type IconMapGroup = Record<number, ReactElement>
 
 const contextIconMap: IconMapGroup = {
   // activity

@@ -1,9 +1,7 @@
-import { selectWeekById } from '@cf/redux/selectors/week.selector'
-import { AppState, TColumn, TWorkflow } from '@cf/redux/types/type'
+import { TColumn, TWeek, TWorkflow } from '@cf/redux/types/type'
 import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import { _t } from '@cf/utility/Utility.class'
 import { TNode } from '@cfRedux/types/type'
-import { useSelector } from 'react-redux'
 
 import { WeekCellNodeType } from './components/WeekCell/types'
 import type { BoardType, BoardWeekRowType } from './types'
@@ -13,16 +11,14 @@ import type { BoardType, BoardWeekRowType } from './types'
 // instead of various children having to pull data when they are rendered
 export function getWorkflowBoardData(
   workflow: TWorkflow,
-  nodes: TNode[]
+  nodes: TNode[],
+  weeksMap: Record<string, TWeek>
 ): BoardType {
   const { weeks, columns } = workflow
 
   const weeksData = weeks.map((weekId) => {
-    const weekData = useSelector((appState: AppState) =>
-      selectWeekById(appState, weekId)
-    )
+    const weekNodes = weeksMap[weekId].nodes
 
-    const weekNodes = weekData.week.nodes
     // Create phantom nodes if initially empty
     if (!weekNodes.length) {
       const row: BoardWeekRowType = new Array(columns.length).fill(
@@ -38,9 +34,10 @@ export function getWorkflowBoardData(
       )
 
       const nodeData = nodes.find((n) => n.id === nodeId)
+      const nodeColumnIndex = columns.indexOf(nodeData.column)
 
-      const nodeAtIndex = columns.indexOf(nodeData.column)
-      rowArr[nodeAtIndex] = {
+      // prepare node data beforehand
+      rowArr[nodeColumnIndex] = {
         id: nodeData.id,
         title: getNodeTitle(nodeData),
         description: nodeData.description,
