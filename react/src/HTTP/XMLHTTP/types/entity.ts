@@ -153,8 +153,8 @@ export type ENode = {
   deleted: boolean
   deletedOn: EDate
   id: number
-  title: null
-  description: null
+  title: string
+  description: string
   column: number
   columnworkflow: number
   contextClassification: number

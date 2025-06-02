@@ -1,3 +1,4 @@
+
 const contexts = [
   {
     value: 0,
@@ -26,6 +27,26 @@ const contexts = [
   {
     value: 6,
     label: 'Two-Stage Exam'
+  },
+  {
+    value: 7,
+    label: 'Toolkit'
+  },
+  {
+    value: 8,
+    label: 'One Minute Paper'
+  },
+  {
+    value: 9,
+    label: 'Distributed Problem Solving'
+  },
+  {
+    value: 10,
+    label: 'Peer Assessment'
+  },
+  {
+    value: 11,
+    label: 'Other'
   }
 ]
 

@@ -4,7 +4,6 @@ import { _t } from '@cf/utility/Utility.class'
 import {
   ColumnActions,
   CommonActions,
-  NodeActions,
   NodeLinkActions,
   OutcomeActions,
   OutcomeBaseActions,
@@ -27,11 +26,11 @@ const initialState: TNode[] = []
 /*******************************************************
  * Reusable Reducer Functions
  *******************************************************/
-const updateEntity = <T, S>(
-  state: T,
+const updateEntity = (
+  state: AppState['node'],
   action: PayloadAction<{
     id: number
-    data: Pick<S>
+    data: Partial<TNode>
   }>
 ) => {
   return state.map((item) =>
@@ -114,7 +113,7 @@ const updateItem = (state, action: PayloadAction<{ extraData: any[] }>) => {
 /*******************************************************
  * Node Slice
  *******************************************************/
-const nodeSlice = createSlice<AppState['node']>({
+const nodeSlice = createSlice({
   name: SliceNamespace.NODE,
   initialState,
   reducers: {
@@ -129,8 +128,8 @@ const nodeSlice = createSlice<AppState['node']>({
         return item
       })
     },
-    createLock: updateEntity<AppState['node'], TNode>,
-    changeField: updateEntity<AppState['node'], TNode>,
+    createLock: updateEntity,
+    changeField: updateEntity,
     deleteSelf: removeEntityById,
     deleteSelfSoft: toggleArchiveEntity,
     insertBelow(state, action: PayloadAction<{ newModel: TNode }>) {

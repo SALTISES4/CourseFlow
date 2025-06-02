@@ -55,13 +55,13 @@ const EditNode = () => {
         theory: String(nodeData.node.ponderationTheory),
         practice: String(nodeData.node.ponderationPractical),
         individual: String(nodeData.node.ponderationIndividual),
-        generalEdu: String(nodeData.node.ponderationGeneralEdu),
-        specificEdu: String(nodeData.node.ponderationSpecificEdu)
+        // generalEdu: String(nodeData.node.ponderationGeneralEdu),
+        // specificEdu: String(nodeData.node.ponderationSpecificEdu)
       },
       contextType: nodeData.node.contextClassification || '',
       taskType: nodeData.node.taskClassification || '',
-      amount: nodeData.node.amount || '',
-      unitType: nodeData.node.unitType || '',
+      // amount: nodeData.node.amount || '',
+      // unitType: nodeData.node.unitType || '',
       objectSets: nodeData.node.sets || []
     }
   })
@@ -80,13 +80,13 @@ const EditNode = () => {
           theory: String(nodeData.node.ponderationTheory),
           practice: String(nodeData.node.ponderationPractical),
           individual: String(nodeData.node.ponderationIndividual),
-          generalEdu: String(nodeData.node.ponderationGeneralEdu),
-          specificEdu: String(nodeData.node.ponderationSpecificEdu)
+          // generalEdu: String(nodeData.node.ponderationGeneralEdu),
+          // specificEdu: String(nodeData.node.ponderationSpecificEdu)
         },
         contextType: nodeData.node.contextClassification || '',
         taskType: nodeData.node.taskClassification || '',
-        amount: nodeData.node.amount || '',
-        unitType: nodeData.node.unitType || '',
+        // amount: nodeData.node.amount || '',
+        // unitType: nodeData.node.unitType || '',
         objectSets: nodeData.node.sets || []
       })
     }
@@ -94,14 +94,16 @@ const EditNode = () => {
 
   const debouncedDispatch = useMemo(
     () =>
-      debounce((data) => {
+      debounce((data: NodeForm) => {
         // update redux state
         dispatch(
           nodeChangeField({
             id: sidebarData.edit.id,
             data: {
               title: data.title,
-              description: data.description
+              description: data.description,
+              contextClassification: parseInt(data.contextType.toString(), 10),
+              taskClassification: parseInt(data.taskType.toString(), 10)
             }
           })
         )
