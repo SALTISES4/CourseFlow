@@ -85,7 +85,7 @@ export function restoreSelf({ id, objectType }: ActionItemArgs): void {
     id,
     Constants.objectDictionary[objectType],
     (responseData) => {
-      COURSEFLOW_APP.tinyLoader.endLoad
+      COURSEFLOW_APP.tinyLoader.endLoad()
     }
   )
 }

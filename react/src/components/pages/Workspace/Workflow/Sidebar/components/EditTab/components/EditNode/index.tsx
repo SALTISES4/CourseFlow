@@ -110,6 +110,7 @@ const EditNode = () => {
         updateValueQuery(sidebarData.edit.id, CfObjectType.NODE, data, true)
 
         reset({}, { keepValues: true })
+        COURSEFLOW_APP.tinyLoader.endLoad()
       }, 300),
     [dispatch, reset, sidebarData.edit.id]
   )
