@@ -55,13 +55,14 @@ const EditNode = () => {
         theory: String(nodeData.node.ponderationTheory),
         practice: String(nodeData.node.ponderationPractical),
         individual: String(nodeData.node.ponderationIndividual),
+        // TODO: where do these come from?
         // generalEdu: String(nodeData.node.ponderationGeneralEdu),
         // specificEdu: String(nodeData.node.ponderationSpecificEdu)
       },
       contextType: nodeData.node.contextClassification || '',
       taskType: nodeData.node.taskClassification || '',
-      // amount: nodeData.node.amount || '',
-      // unitType: nodeData.node.unitType || '',
+      timeRequired: nodeData.node.timeRequired,
+      timeUnits: nodeData.node.timeUnits,
       objectSets: nodeData.node.sets || []
     }
   })
@@ -80,13 +81,14 @@ const EditNode = () => {
           theory: String(nodeData.node.ponderationTheory),
           practice: String(nodeData.node.ponderationPractical),
           individual: String(nodeData.node.ponderationIndividual),
+          // TODO: where do these come from?
           // generalEdu: String(nodeData.node.ponderationGeneralEdu),
           // specificEdu: String(nodeData.node.ponderationSpecificEdu)
         },
         contextType: nodeData.node.contextClassification || '',
         taskType: nodeData.node.taskClassification || '',
-        // amount: nodeData.node.amount || '',
-        // unitType: nodeData.node.unitType || '',
+        timeRequired: nodeData.node.timeRequired,
+        timeUnits: nodeData.node.timeUnits,
         objectSets: nodeData.node.sets || []
       })
     }
@@ -103,7 +105,9 @@ const EditNode = () => {
               title: data.title,
               description: data.description,
               contextClassification: parseInt(data.contextType.toString(), 10),
-              taskClassification: parseInt(data.taskType.toString(), 10)
+              taskClassification: parseInt(data.taskType.toString(), 10),
+              timeRequired: data.timeRequired,
+              timeUnits: data.timeUnits
             }
           })
         )
@@ -270,13 +274,13 @@ const EditNode = () => {
                 label="Amount"
                 variant="outlined"
                 size="small"
-                {...register('amount')}
+                {...register('timeRequired')}
                 sx={{ flexBasis: '35%' }}
               />
               <FormControl sx={{ flexGrow: 1 }} size="small">
                 <InputLabel id="unit-type-select-label">Unit type</InputLabel>
                 <Controller
-                  name="unitType"
+                  name="timeUnits"
                   control={control}
                   render={({ field }) => (
                     <Select
@@ -284,9 +288,9 @@ const EditNode = () => {
                       label="Unit type"
                       labelId="unit-type-select-label"
                     >
-                      {optionsData.unitTypes.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                          {option.label}
+                      {optionsData.timeUnits.map((unit, idx) => (
+                        <MenuItem key={idx} value={idx + 1}>
+                          {unit}
                         </MenuItem>
                       ))}
                     </Select>

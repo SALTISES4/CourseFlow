@@ -3,8 +3,8 @@ export type NodeForm = {
   description?: string
   contextType?: number | string
   taskType?: number | string
-  unitType?: number
-  amount?: number
+  timeUnits?: number
+  timeRequired?: number
   objectSets?: number[]
   linkedWorkflow?: LinkedWorkflowType
   ponderation?: PonderationType

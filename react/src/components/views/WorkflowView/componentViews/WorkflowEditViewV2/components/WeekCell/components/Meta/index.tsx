@@ -39,7 +39,7 @@ const Meta = ({ workflow, contextType, taskType, time }: PropsType) => {
               {taskIcon && <Styled.Tag>{taskIcon}</Styled.Tag>}
             </Styled.IconWrap>
           )}
-          {time && time.unit !== 0 && (
+          {time && time.length && time.unit !== 0 && (
             <Styled.Tag>
               <TimerOutlinedIcon />
               <span>{`${time.length} ${choices.timeChoices[time.unit].name}`}</span>
