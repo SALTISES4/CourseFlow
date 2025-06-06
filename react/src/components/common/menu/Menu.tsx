@@ -1,4 +1,3 @@
-import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import { StyledMenu } from '@cfComponents/globalNav/TopBar/styles'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
@@ -10,7 +9,6 @@ import {
   InsertSiblingButton
 } from '@cfEditableComponents/hoverEditActions'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import QueueIcon from '@mui/icons-material/Queue'
 import { Menu } from '@mui/material'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -18,7 +16,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useMemo, useState } from 'react'
+import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 import * as React from 'react'
 
 const StyledPopover = styled(Popover)({
@@ -67,6 +65,27 @@ export const IconMenuItem = ({
   )
 }
 
+export const ToggleButtonItem = ({
+  content,
+  show,
+  showIconInList,
+  icon
+}: MenuItemType) => {
+  if (!show) {
+    return null
+  }
+
+  if (typeof content === 'string') {
+    return (
+      <>
+        {showIconInList && icon} <Typography>{content}</Typography>
+      </>
+    )
+  }
+
+  return content
+}
+
 export const ListMenuItem = ({
   id,
   title,
@@ -94,12 +113,7 @@ export const ListMenuItem = ({
 
   return (
     <>
-      <MenuItem
-        id={`${id}-button`}
-        className="hover-shade"
-        onClick={action}
-        title={title}
-      >
+      <MenuItem id={`${id}-button`} onClick={action} title={title}>
         {contentChooser(content)}
       </MenuItem>
       {seperator && <Divider />}
@@ -116,9 +130,9 @@ const SimpleMenu = ({
   menuItems: MenuItemType[]
   header: MenuItemType
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickHandler = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
@@ -139,7 +153,7 @@ const SimpleMenu = ({
         aria-expanded={open ? 'true' : undefined}
         onClick={onClickHandler}
       >
-        <ListMenuItem {...header} />
+        <ToggleButtonItem {...header} />
       </Button>
       <StyledMenu
         anchorEl={anchorEl}
@@ -162,9 +176,9 @@ const MenuWithOverflow = ({
   size: number
   menuItems: MenuItemType[]
 }) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickHandler = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
@@ -213,7 +227,7 @@ type StaticMenuProps = {
   id: string
   menuItems?: MenuItemType[] // Optional if you might only have content
   header: MenuItemType
-  content?: React.ReactNode // Optional content to be displayed
+  content?: ReactNode // Optional content to be displayed
 }
 
 const StaticMenu = ({
@@ -222,10 +236,10 @@ const StaticMenu = ({
   header,
   content
 }: StaticMenuProps) => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickHandler = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -265,7 +279,13 @@ const StaticMenu = ({
   )
 }
 
-const HoverMenu = ({ id, menuItems }: { id?: string, menuItems: MenuItemType[] }) => {
+const HoverMenu = ({
+  id,
+  menuItems
+}: {
+  id?: string
+  menuItems: MenuItemType[]
+}) => {
   const [show, setShow] = useState<boolean>(false)
 
   const buttons = menuItems.map((item, el) => {

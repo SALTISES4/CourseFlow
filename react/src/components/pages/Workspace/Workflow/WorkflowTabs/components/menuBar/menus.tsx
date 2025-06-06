@@ -14,9 +14,12 @@ import { AppState } from '@cfRedux/types/type'
 import EditIcon from '@mui/icons-material/Edit'
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown'
 import PersonAddIcon from '@mui/icons-material/PersonAdd'
+import TuneIcon from '@mui/icons-material/Tune'
 import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
-import { useContext, useState } from 'react'
+import { FormControlLabel, Switch } from '@mui/material'
+import { produce } from 'immer'
+import { ChangeEvent, useCallback, useContext, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 type StateType = {
@@ -141,58 +144,96 @@ const ActionMenu = () => {
 
 const ExpandCollapseMenu = () => {
   const { expandAll, collapseAll } = useMenuActions()
+  const [expanded, setExpanded] = useState({
+    [CfObjectType.WEEK]: true,
+    [CfObjectType.NODE]: true,
+    [CfObjectType.OUTCOME]: true
+  })
+
+  const onExpandChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const type = event.target.value as CfObjectType
+      const checked = event.target.checked
+
+      setExpanded(
+        produce((draft) => {
+          draft[type] = checked
+
+          if (checked) {
+            expandAll(type)
+          } else {
+            collapseAll(type)
+          }
+        })
+      )
+    },
+    [expandAll, collapseAll]
+  )
 
   const header: MenuItemType = {
-    content: _t('Expand/Collapse'),
-    icon: <ZoomOutMapIcon />,
+    content: _t('View settings'),
+    icon: <TuneIcon />,
     showIconInList: true,
     show: true
   }
 
   const menuItems: MenuItemType[] = [
     {
-      content: _t('Expand all weeks'),
-      action: () => expandAll(CfObjectType.WEEK),
+      content: (
+        <FormControlLabel
+          control={
+            <Switch
+              value={CfObjectType.WEEK}
+              checked={expanded[CfObjectType.WEEK]}
+              onChange={onExpandChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          }
+          label={_t('Expand all weeks')}
+        />
+      ),
       icon: <ZoomOutMapIcon />,
       showIconInList: true,
       show: true
     },
     {
-      content: _t('Collapse all weeks'),
-      action: () => collapseAll(CfObjectType.WEEK),
+      content: (
+        <FormControlLabel
+          control={
+            <Switch
+              value={CfObjectType.NODE}
+              checked={expanded[CfObjectType.NODE]}
+              onChange={onExpandChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          }
+          label={_t('Expand all nodes')}
+        />
+      ),
       icon: <ZoomInMapIcon />,
       showIconInList: true,
       show: true
     },
     {
-      content: _t('Expand all nodes'),
-      action: () => expandAll(CfObjectType.NODE),
+      content: (
+        <FormControlLabel
+          control={
+            <Switch
+              value={CfObjectType.OUTCOME}
+              checked={expanded[CfObjectType.OUTCOME]}
+              onChange={onExpandChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          }
+          label={_t('Expand all outcomes')}
+        />
+      ),
       icon: <ZoomInMapIcon />,
       showIconInList: true,
-      show: true
-    },
-    {
-      content: _t('Collapse all nodes'),
-      action: () => collapseAll(CfObjectType.NODE),
-      icon: <ZoomOutMapIcon />,
-      showIconInList: true,
-      seperator: true,
-      show: true
-    },
-    {
-      content: _t('Expand all outcomes'),
-      action: () => expandAll(CfObjectType.OUTCOME),
-      icon: <ZoomInMapIcon />,
-      showIconInList: true,
-      show: true
-    },
-    {
-      content: _t('Collapse all outcomes'),
-      action: () => expandAll(CfObjectType.OUTCOME),
-      icon: <ZoomOutMapIcon />,
       show: true
     }
   ]
+
   return (
     <SimpleMenu
       id="actions-menu"
@@ -211,18 +252,15 @@ const JumpToMenu = ({ weekIds }: { weekIds: number[] }) => {
   if (viewType !== WorkflowViewType.WORKFLOW || !weekIds.length) {
     return null
   }
+
   const menuItems: MenuItemType[] = weekIds.map((item, index) => {
     return {
-      content: (
-        <ScrollToWeek
-          key={`weekworkflow-${item}`}
-          objectId={item}
-        />
-      ),
+      content: <ScrollToWeek key={`weekworkflow-${item}`} objectId={item} />,
       action: null,
       show: true
     }
   })
+
   const header: MenuItemType = {
     content: _t('Jump to'),
     icon: <KeyboardDoubleArrowDownIcon />,

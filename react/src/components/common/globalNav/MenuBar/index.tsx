@@ -1,5 +1,4 @@
 import { styled } from '@mui/material/styles'
-import * as React from 'react'
 import { ReactElement } from 'react'
 
 /**
@@ -16,17 +15,16 @@ type PropsType = {
   userbar?: ReactElement
   legendbar?: ReactElement
 }
-const colorWhiteGreen = '#E8F5E9' // Example color, replace with the actual color code
 
-const SCMenubar = styled('div')`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  font-family: 'Open Sans', sans-serif;
-  align-items: center;
-  background: ${colorWhiteGreen};
-  box-sizing: border-box;
-`
+const SCMenubar = styled('div')(({ theme }) => ({
+  display: 'flex',
+  width: '100%',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  background: '#E2F5EB',
+  color: theme.palette.primary.main
+}))
+
 /**
  * there is room to make this more flex, i.e. left, middle etc sections should be just layout wrappers that content gets assigned to
  */
