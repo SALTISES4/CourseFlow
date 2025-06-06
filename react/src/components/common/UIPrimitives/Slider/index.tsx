@@ -1,5 +1,4 @@
 import Slider from '@mui/material/Slider'
-import React from 'react'
 
 type PropsType = {
   value: boolean

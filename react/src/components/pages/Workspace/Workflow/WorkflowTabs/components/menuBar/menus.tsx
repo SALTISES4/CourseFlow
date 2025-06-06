@@ -19,7 +19,14 @@ import ZoomInMapIcon from '@mui/icons-material/ZoomInMap'
 import ZoomOutMapIcon from '@mui/icons-material/ZoomOutMap'
 import { FormControlLabel, Switch } from '@mui/material'
 import { produce } from 'immer'
-import { ChangeEvent, useCallback, useContext, useState } from 'react'
+import {
+  ChangeEvent,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useContext,
+  useState
+} from 'react'
 import { useSelector } from 'react-redux'
 
 type StateType = {
@@ -142,7 +149,7 @@ const ActionMenu = () => {
   return <MenuWithOverflow menuItems={menuItems} size={2} />
 }
 
-const ExpandCollapseMenu = () => {
+const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {
   const { expandAll, collapseAll } = useMenuActions()
   const [expanded, setExpanded] = useState({
     [CfObjectType.WEEK]: true,
@@ -233,6 +240,13 @@ const ExpandCollapseMenu = () => {
       show: true
     }
   ]
+
+  if (legend) {
+    menuItems.unshift({
+      content: legend,
+      show: true
+    })
+  }
 
   return (
     <SimpleMenu

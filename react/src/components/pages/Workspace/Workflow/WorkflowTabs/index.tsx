@@ -92,7 +92,7 @@ const WorkflowTabs = () => {
   const ViewBar = () => (
     <>
       <JumpToMenu weekIds={workflow.weeks} />
-      <ExpandCollapseMenu />
+      <ExpandCollapseMenu legend={<WorkflowLegend />} />
     </>
   )
 
@@ -119,7 +119,6 @@ const WorkflowTabs = () => {
           leftSection={<ActionMenu />}
           viewbar={<ViewBar />}
           userbar={<ConnectionBar show={!workflow.publicView} />}
-          legendbar={<WorkflowLegend />}
         />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
