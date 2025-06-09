@@ -228,6 +228,7 @@ const ProjectForm = ({
               render={({ field }) => (
                 <Select
                   {...field}
+                  label={_t('Discipline')}
                   labelId="create-project-discipline"
                   variant={'outlined'}
                   open={selectOpenStates['disciplines'] ?? false}
