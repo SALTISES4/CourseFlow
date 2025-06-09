@@ -78,7 +78,7 @@ const ActionMenu = () => {
   const menuItems: MenuItemType[] = [
     {
       id: 'edit-project',
-      title: _t('Edit Workflow'),
+      title: _t('Edit workflow'),
       action: openEditMenu,
       iconButton: {
         icon: <EditIcon />

@@ -129,7 +129,7 @@ const WeekHoverMenu = ({
       show: true
     },
     {
-      content: _t('Insert New'),
+      content: _t('Insert new'),
       action: () => createButtonHandler(CfObjectType.WEEK),
       icon: <QueueIcon />,
       show: true

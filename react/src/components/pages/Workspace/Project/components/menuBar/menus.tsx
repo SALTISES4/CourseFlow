@@ -43,7 +43,7 @@ const ActionMenu = () => {
   const menuItems: MenuItemType[] = [
     {
       id: 'edit-project',
-      title: _t('Edit Project'),
+      title: _t('Edit project'),
       action: openEditDialog,
       iconButton: {
         icon: <EditIcon />
@@ -73,14 +73,14 @@ const ActionMenu = () => {
      */
     {
       id: 'duplicate-project',
-      content: _t('Copy Project'),
+      content: _t('Copy project'),
       action: () => duplicateProject(projectId),
       show: projectPermission.read
     },
     {
       id: 'archive-project',
       action: archiveProject,
-      content: _t('Archive Project'),
+      content: _t('Archive project'),
       show: projectPermission.manage && !project.deleted
     },
     {

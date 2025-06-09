@@ -108,7 +108,7 @@ const ColumnHoverMenu = ({
       show: true
     },
     {
-      content: _t('Insert New'),
+      content: _t('Insert new'),
       action: () => createButtonHandler(CfObjectType.COLUMN),
       icon: <QueueIcon />,
       show: true
