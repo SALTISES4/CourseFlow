@@ -11,7 +11,7 @@ export const OuterContentWrap = styled(Box, {
   padding: theme.spacing(8),
   paddingTop: 0,
   ...(narrow && {
-    maxWidth: '34.25rem', // This can be adjusted as per your design requirement
+    maxWidth: '34.25rem',
     marginLeft: 'auto',
     marginRight: 'auto',
     paddingLeft: theme.spacing(2),

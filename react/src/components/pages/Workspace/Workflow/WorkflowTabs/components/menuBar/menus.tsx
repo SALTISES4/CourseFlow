@@ -80,13 +80,17 @@ const ActionMenu = () => {
       id: 'edit-project',
       title: _t('Edit Workflow'),
       action: openEditMenu,
-      content: <EditIcon />,
+      iconButton: {
+        icon: <EditIcon />
+      },
       show: workflow.workflowPermissions.write
     },
     {
       id: 'share',
       title: _t('Sharing'),
-      content: <PersonAddIcon />,
+      iconButton: {
+        icon: <PersonAddIcon />
+      },
       action: openShareDialog,
       show: workflow.workflowPermissions.write
     },
@@ -146,7 +150,9 @@ const ActionMenu = () => {
     }
   ]
 
-  return <MenuWithOverflow menuItems={menuItems} size={2} />
+  return (
+    <MenuWithOverflow menuItems={menuItems} size={2} buttonColor="primary" />
+  )
 }
 
 const ExpandCollapseMenu = ({ legend }: { legend?: ReactElement }) => {

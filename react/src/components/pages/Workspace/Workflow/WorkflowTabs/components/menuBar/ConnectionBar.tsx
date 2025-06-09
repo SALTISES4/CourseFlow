@@ -1,25 +1,13 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@mui/material/Alert'
-import Chip from '@mui/material/Chip'
-import * as React from 'react'
+import Avatar from '@mui/material/Avatar'
+import AvatarGroup from '@mui/material/AvatarGroup'
+import Tooltip from '@mui/material/Tooltip'
 import { useContext } from 'react'
 
-const ConnectedUser = ({
-  userColour,
-  username
-}: {
-  userColour: string
-  username: string
-}) => {
-  return (
-    <Chip
-      style={{
-        backgroundColor: userColour
-      }}
-      label={username}
-    />
-  )
+function getAvatarInitials(username: string) {
+  return username.substring(0, 1)
 }
 
 const ConnectionBar = ({ show }: { show: boolean }) => {
@@ -33,16 +21,30 @@ const ConnectionBar = ({ show }: { show: boolean }) => {
     return <Alert severity="warning">{_t('Not Connected')}</Alert>
   }
 
-  const users = context.ws.connectedUsers.map((item) => {
-    return (
-      <ConnectedUser
-        userColour={item.userColour}
-        username={item.user.username}
-      />
-    )
-  })
+  const users = context.ws.connectedUsers.map((item) => (
+    <Tooltip
+      key={item.user.username}
+      arrow
+      placement="top"
+      title={item.user.username}
+    >
+      <Avatar
+        alt={item.user.username}
+        sx={{
+          width: 24,
+          height: 24,
+          border: '2px solid white',
+          fontSize: '12px',
+          textTransform: 'uppercase',
+          backgroundColor: item.userColour
+        }}
+      >
+        {getAvatarInitials(item.user.username)}
+      </Avatar>
+    </Tooltip>
+  ))
 
-  return <div>{users}</div>
+  return <AvatarGroup max={2}>{users}</AvatarGroup>
 }
 
 export default ConnectionBar

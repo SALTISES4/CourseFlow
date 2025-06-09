@@ -9,15 +9,16 @@ import {
   InsertSiblingButton
 } from '@cfEditableComponents/hoverEditActions'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import { Menu } from '@mui/material'
-import Button from '@mui/material/Button'
+import Button, { ButtonProps } from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import IconButton, { IconButtonProps } from '@mui/material/IconButton'
+import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
+import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
-import * as React from 'react'
 
 const StyledPopover = styled(Popover)({
   '& .MuiPaper-root': {
@@ -31,8 +32,7 @@ const StyledPopover = styled(Popover)({
  *  and construct some different menu types based around MUI menu
  *******************************************************/
 
-export type MenuItemType = {
-  content: string | ReactElement
+type BaseMenuItemType = {
   action?: any
   show?: boolean
   id?: string
@@ -42,48 +42,57 @@ export type MenuItemType = {
   showIconInList?: boolean
 }
 
-export const IconMenuItem = ({
-  id,
-  title,
-  action,
-  icon,
-  show
-}: MenuItemType) => {
-  if (!show) {
-    return null
+type IconButtonMenuItemType = BaseMenuItemType & {
+  iconButton: IconButtonProps & {
+    icon: ReactElement
   }
-
-  return (
-    <div
-      className="hover-shade"
-      id={`${id}-project-button`}
-      title={title}
-      onClick={action}
-    >
-      {icon}
-    </div>
-  )
+  content?: never
 }
 
-export const ToggleButtonItem = ({
-  content,
-  show,
-  showIconInList,
-  icon
-}: MenuItemType) => {
-  if (!show) {
+type ContentMenuItemType = BaseMenuItemType & {
+  iconButton?: never
+  content: string | ReactElement
+}
+
+export type MenuItemType = IconButtonMenuItemType | ContentMenuItemType
+
+const MenuToggleButton = (props: MenuItemType) => {
+  if (!props.show) {
     return null
   }
 
-  if (typeof content === 'string') {
+  const buttonProps = {
+    ...props,
+    content: null,
+    action: null,
+    onClick: props.action
+  }
+
+  if ('iconButton' in props) {
     return (
-      <>
-        {showIconInList && icon} <Typography>{content}</Typography>
-      </>
+      <IconButton
+        size={buttonProps.iconButton.size ?? 'small'}
+        color={buttonProps.iconButton.color}
+        {...buttonProps}
+      >
+        {props.iconButton.icon}
+      </IconButton>
     )
   }
 
-  return content
+  if (typeof props.content === 'string') {
+    return (
+      <Button
+        size="small"
+        startIcon={props.showIconInList && props.icon}
+        {...buttonProps}
+      >
+        {props.content}
+      </Button>
+    )
+  }
+
+  return props.content
 }
 
 export const ListMenuItem = ({
@@ -121,6 +130,7 @@ export const ListMenuItem = ({
   )
 }
 
+// Regular menu structure
 const SimpleMenu = ({
   id,
   menuItems,
@@ -145,23 +155,20 @@ const SimpleMenu = ({
 
   return (
     <>
-      <Button
+      <MenuToggleButton
         id={`${id}-button`}
         data-test-id={`${id}-button`}
-        aria-controls={open ? 'basic-menu' : undefined}
+        aria-controls={`${id}-menu`}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={onClickHandler}
-      >
-        <ToggleButtonItem {...header} />
-      </Button>
+        aria-expanded={open ? 'true' : 'false'}
+        action={onClickHandler}
+        {...header}
+      />
       <StyledMenu
+        id={`${id}-menu`}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button'
-        }}
       >
         {buttons}
       </StyledMenu>
@@ -169,12 +176,17 @@ const SimpleMenu = ({
   )
 }
 
+// A list of menu items, with a size limiter (moving overflow into [...] button)
 const MenuWithOverflow = ({
   size,
-  menuItems
+  menuItems,
+  buttonColor,
+  buttonSize = 'medium'
 }: {
   size: number
   menuItems: MenuItemType[]
+  buttonColor: IconButtonProps['color']
+  buttonSize?: IconButtonProps['size']
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
@@ -185,8 +197,33 @@ const MenuWithOverflow = ({
     setAnchorEl(null)
   }
 
-  const menuEls = menuItems.map((item, el) => {
-    return <ListMenuItem key={item.id} {...item} />
+  const menuEls = menuItems.map((item, index) => {
+    if (size && index < size) {
+      const props = item
+
+      if ('iconButton' in props) {
+        props.iconButton = {
+          ...props.iconButton,
+          color: buttonColor,
+          size: buttonSize
+        }
+      }
+
+      return (
+        <MenuToggleButton
+          key={props.id}
+          id={`${props.id}-button`}
+          data-test-id={`${props.id}-button`}
+          aria-controls={`${props.id}-menu`}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : 'false'}
+          action={onClickHandler}
+          {...props}
+        />
+      )
+    } else {
+      return <ListMenuItem key={item.id} {...item} />
+    }
   })
 
   const visibleButtons = menuEls.slice(0, size)
@@ -194,30 +231,37 @@ const MenuWithOverflow = ({
 
   return (
     <>
-      {visibleButtons}
-      {overflowButtons.length && (
-        <>
-          <Button
-            id="basic-button"
-            aria-controls={open ? 'basic-menu' : undefined}
+      <Stack direction="row" spacing={1}>
+        {visibleButtons}
+        {overflowButtons.length && (
+          <MenuToggleButton
+            show={true}
+            id="overflow-button"
+            data-test-id="overflow-button"
+            aria-controls="overflow-menu"
             aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={onClickHandler}
-          >
-            <MoreHorizIcon />
-          </Button>
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button'
+            aria-expanded={open ? 'true' : 'false'}
+            action={onClickHandler}
+            iconButton={{
+              icon: <MoreHorizIcon />,
+              size: buttonSize,
+              color: buttonColor
             }}
-          >
-            {overflowButtons}
-          </Menu>
-        </>
+          />
+        )}
+      </Stack>
+      {overflowButtons.length && (
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button'
+          }}
+        >
+          {overflowButtons}
+        </Menu>
       )}
     </>
   )
@@ -230,6 +274,7 @@ type StaticMenuProps = {
   content?: ReactNode // Optional content to be displayed
 }
 
+// Non-standard/custom menu with content you inject through props
 const StaticMenu = ({
   id,
   menuItems = [], // Default to an empty array if not provided
@@ -249,15 +294,16 @@ const StaticMenu = ({
 
   return (
     <>
-      <Button
+      <MenuToggleButton
         id={`${id}-button`}
-        aria-controls={open ? `${id}-menu` : undefined}
+        data-test-id={`${id}-button`}
+        aria-controls={`${id}-menu`}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}
-        onClick={onClickHandler}
-      >
-        {header.content}
-      </Button>
+        aria-expanded={open ? 'true' : 'false'}
+        action={onClickHandler}
+        {...header}
+      />
+
       <StyledPopover
         anchorEl={anchorEl}
         id={`${id}-menu`}

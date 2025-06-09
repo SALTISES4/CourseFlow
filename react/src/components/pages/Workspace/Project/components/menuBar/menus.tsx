@@ -43,15 +43,19 @@ const ActionMenu = () => {
   const menuItems: MenuItemType[] = [
     {
       id: 'edit-project',
-      title: _t('Edit Workflow'),
+      title: _t('Edit Project'),
       action: openEditDialog,
-      content: <EditIcon />,
+      iconButton: {
+        icon: <EditIcon />
+      },
       show: projectPermission.write
     },
     {
       id: 'share',
       title: _t('Sharing'),
-      content: <PersonAddIcon />,
+      iconButton: {
+        icon: <PersonAddIcon />
+      },
       action: openShareDialog,
       show: projectPermission.manage
     },
@@ -93,7 +97,9 @@ const ActionMenu = () => {
     }
   ]
 
-  return <MenuWithOverflow menuItems={menuItems} size={2} />
+  return (
+    <MenuWithOverflow menuItems={menuItems} size={2} buttonColor="primary" />
+  )
 }
 
 export { ActionMenu }

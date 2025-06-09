@@ -1,5 +1,7 @@
-import { styled } from '@mui/material/styles'
+import { OuterContentWrap } from '@cf/mui/helper'
 import { ReactElement } from 'react'
+
+import * as Styled from './styles'
 
 /**
  * Creates a menu bar at the top of the page which can be passed
@@ -16,15 +18,6 @@ type PropsType = {
   legendbar?: ReactElement
 }
 
-const SCMenubar = styled('div')(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  background: '#E2F5EB',
-  color: theme.palette.primary.main
-}))
-
 /**
  * there is room to make this more flex, i.e. left, middle etc sections should be just layout wrappers that content gets assigned to
  */
@@ -33,14 +26,18 @@ const MenuBar = ({ leftSection, viewbar, userbar, legendbar }: PropsType) => {
    * RENDER
    *******************************************************/
   return (
-    <SCMenubar>
-      <div data-test-id="actions-bar" style={{ display: 'flex' }}>
-        {leftSection}
-      </div>
-      <div data-test-id="user-bar">{userbar}</div>
-      <div data-test-id="viewbar">{viewbar}</div>
-      {legendbar && <div data-test-id="legend-bar">{legendbar}</div>}
-    </SCMenubar>
+    <Styled.Wrapper>
+      <OuterContentWrap>
+        <Styled.Inner>
+          <div data-test-id="actions-bar" style={{ display: 'flex' }}>
+            {leftSection}
+          </div>
+          <div data-test-id="user-bar">{userbar}</div>
+          <div data-test-id="viewbar">{viewbar}</div>
+          {legendbar && <div data-test-id="legend-bar">{legendbar}</div>}
+        </Styled.Inner>
+      </OuterContentWrap>
+    </Styled.Wrapper>
   )
 }
 export default MenuBar

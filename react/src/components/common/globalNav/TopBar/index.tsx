@@ -14,16 +14,15 @@ import AppBar from '@mui/material/AppBar'
 import Avatar from '@mui/material/Avatar'
 import Badge from '@mui/material/Badge'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
 import ListItem from '@mui/material/ListItem'
 import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
+import Stack from '@mui/material/Stack'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import { useGetNotificationsQuery } from '@XMLHTTP/API/notifications.rtk'
-import * as React from 'react'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 import * as SC from './styles'
@@ -48,16 +47,14 @@ const TopBar = () => {
     }
 
     const header: MenuItemType = {
-      content: (
-        <IconButton
-          aria-label="add menu"
-          aria-controls="add-menu"
-          aria-haspopup="true"
-          color="primary"
-        >
-          <AddCircleIcon />
-        </IconButton>
-      ),
+      iconButton: {
+        icon: <AddCircleIcon />,
+        'aria-label': 'add menu',
+        'aria-controls': 'add-menu',
+        'aria-haspopup': 'true',
+        color: 'primary',
+        size: 'large'
+      },
       show: true
     }
 
@@ -97,17 +94,16 @@ const TopBar = () => {
 
   const AccountMenu = () => {
     const header: MenuItemType = {
-      content: (
-        <IconButton
-          aria-label="account of current user"
-          aria-controls="account-menu"
-          aria-haspopup="true"
-        >
-          <AccountCircle />
-        </IconButton>
-      ),
+      iconButton: {
+        icon: <AccountCircle />,
+        'aria-label': 'account of current user',
+        'aria-controls': 'account-menu',
+        'aria-haspopup': 'true',
+        size: 'large'
+      },
       show: true
     }
+
     const menuItems: MenuItemType[] = [
       {
         content: strings.profile,
@@ -203,23 +199,22 @@ const TopBar = () => {
     )
 
     const unreadCount = data.dataPackage.meta.unreadCount
+
     const header: MenuItemType = {
-      content: (
-        <IconButton
-          size="large"
-          aria-label={
-            unreadCount >= 1
-              ? `show ${unreadCount} new notifications`
-              : 'no new notifications'
-          }
-          aria-controls="notifications-menu"
-          aria-haspopup="true"
-        >
+      iconButton: {
+        icon: (
           <Badge badgeContent={unreadCount} color="primary">
             <NotificationsIcon />
           </Badge>
-        </IconButton>
-      ),
+        ),
+        'aria-label':
+          unreadCount >= 1
+            ? `show ${unreadCount} new notifications`
+            : 'no new notifications',
+        'aria-controls': 'notifications-menu',
+        'aria-haspopup': 'true',
+        size: 'large'
+      },
       show: true
     }
 
@@ -240,11 +235,11 @@ const TopBar = () => {
       <Toolbar variant="dense">
         <ReturnLinks />
         <Box sx={{ flexGrow: 1 }} className="title" />
-        <Box sx={{ display: 'flex' }}>
+        <Stack direction="row" spacing={1}>
           <AddMenu show />
           <NotificationsMenu />
           <AccountMenu />
-        </Box>
+        </Stack>
       </Toolbar>
     )
   }
