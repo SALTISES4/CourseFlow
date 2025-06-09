@@ -15,6 +15,7 @@ import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useW
 import { AppState } from '@cfRedux/types/type'
 import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Tabs from '@mui/material/Tabs'
 import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
@@ -90,10 +91,10 @@ const WorkflowTabs = () => {
    *******************************************************/
 
   const ViewBar = () => (
-    <>
+    <Stack direction="row" spacing={2}>
       <JumpToMenu weekIds={workflow.weeks} />
       <ExpandCollapseMenu legend={<WorkflowLegend />} />
-    </>
+    </Stack>
   )
 
   /*******************************************************

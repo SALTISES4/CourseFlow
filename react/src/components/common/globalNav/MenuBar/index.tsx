@@ -1,4 +1,5 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
 import * as Styled from './styles'
@@ -15,13 +16,12 @@ type PropsType = {
   leftSection: ReactElement
   viewbar?: ReactElement
   userbar?: ReactElement
-  legendbar?: ReactElement
 }
 
 /**
  * there is room to make this more flex, i.e. left, middle etc sections should be just layout wrappers that content gets assigned to
  */
-const MenuBar = ({ leftSection, viewbar, userbar, legendbar }: PropsType) => {
+const MenuBar = ({ leftSection, viewbar, userbar }: PropsType) => {
   /*******************************************************
    * RENDER
    *******************************************************/
@@ -32,9 +32,10 @@ const MenuBar = ({ leftSection, viewbar, userbar, legendbar }: PropsType) => {
           <div data-test-id="actions-bar" style={{ display: 'flex' }}>
             {leftSection}
           </div>
-          <div data-test-id="user-bar">{userbar}</div>
-          <div data-test-id="viewbar">{viewbar}</div>
-          {legendbar && <div data-test-id="legend-bar">{legendbar}</div>}
+          <Stack direction="row" spacing={2}>
+            <div data-test-id="user-bar">{userbar}</div>
+            <div data-test-id="viewbar">{viewbar}</div>
+          </Stack>
         </Styled.Inner>
       </OuterContentWrap>
     </Styled.Wrapper>
