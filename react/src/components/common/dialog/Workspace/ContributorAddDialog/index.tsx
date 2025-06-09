@@ -4,6 +4,7 @@ import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { PermissionGroup } from '@cf/types/common'
 import { WorkspaceType } from '@cf/types/enum'
 import { permissionGroupMenuOptions } from '@cf/utility/permissions'
+import { _t } from '@cf/utility/Utility.class'
 import Button from '@mui/material/Button'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -149,11 +150,13 @@ const ContributorAddDialog = ({
       maxWidth="sm"
       aria-labelledby="add-contributor-modal"
     >
-      <DialogTitle id="add-contributor-modal">Add Contributor</DialogTitle>
+      <DialogTitle id="add-contributor-modal">
+        {_t('Add contributor')}
+      </DialogTitle>
       <DialogContent dividers>
         <StyledBox component="form">
           <FormControl variant="standard" fullWidth>
-            <InputLabel>Courseflow Users</InputLabel>
+            <InputLabel>{_t('Courseflow Users')}</InputLabel>
             {/*
                   @todo
               *  this needs to be a search 'input' field as well like the library search |
@@ -179,7 +182,7 @@ const ContributorAddDialog = ({
           </FormControl>
 
           <FormControl>
-            <FormLabel id="add-contributor-role-label">Roles</FormLabel>
+            <FormLabel id="add-contributor-role-label">{_t('Role')}</FormLabel>
             <Controller
               name="group"
               control={control}
