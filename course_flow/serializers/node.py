@@ -1,16 +1,20 @@
 from django.db.models import Q
 from rest_framework import serializers
 
-from course_flow.models import User
+from course_flow.models import User, Week
 from course_flow.models.relations.columnWorkflow import ColumnWorkflow
 from course_flow.models.relations.nodeLink import NodeLink
 from course_flow.models.workflow_objects.node import Node
-from course_flow.serializers.container import LinkedWorkflowSerializerShallow
+from course_flow.serializers.container import (
+    LinkedWorkflowSerializerShallow,
+    WeekSerializerShallow,
+)
 from course_flow.serializers.mixin import (
     DescriptionSerializerMixin,
     TimeRequiredSerializerMixin,
     TitleSerializerMixin,
 )
+from course_flow.serializers.workflow_objects import CommentSerializer
 from course_flow.services import DAO, Utility
 
 
@@ -70,6 +74,10 @@ class NodeLinkSerializerShallow(serializers.ModelSerializer, TitleSerializerMixi
         return instance
 
 
+#########################################################
+# This, like many others are called shallow
+# but they don't actually supply non shallow versions
+#########################################################
 class NodeSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
@@ -82,6 +90,18 @@ class NodeSerializerShallow(
     columnworkflow = serializers.SerializerMethodField()
     column = serializers.SerializerMethodField()
     linked_workflow_data = serializers.SerializerMethodField()
+    # adding full comments object here, this is a step backwards in some ways
+    # the DB model has many unneeded relations, and so in most queries the
+    # full related object is not loaded to reduce query load
+    # this kind of optimization really has no purpose until the DB model is fixed
+    # especially as it's applied inconsistently,
+    # (review the get workflow endpoint)
+
+    # it's also creating a mess in the frontend
+    comments = CommentSerializer(many=True, read_only=True)
+    week = serializers.SerializerMethodField()
+    order = serializers.SerializerMethodField()
+    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -116,9 +136,9 @@ class NodeSerializerShallow(
             "is_dropped",
             "comments",
             "sets",
+            "week",
+            "order",
         ]
-
-    deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
 
     def get_columnworkflow(self, instance):
         if instance.column is None:
@@ -140,6 +160,27 @@ class NodeSerializerShallow(
         else:
             return instance.column.columnworkflow_set.get(column=instance.column).id
 
+    # @todo 11/24
+    # this is temporary until we fix the model (convert the n2M relationships)
+    def get_week(self, obj):
+        if obj.nodeweek_set.exists():
+            # this is the 'workaround' treating the first returned item as the only one
+            nodeweek = obj.nodeweek_set.first()
+            week = nodeweek.week
+            return week.id
+        return None
+
+    # @todo 11/24
+    # this is temporary until we fix the model (convert the n2M relationships)
+    def get_order(self, obj):
+        if obj.nodeweek_set.exists():
+            # this is the 'workaround' treating the first returned item as the only one
+            nodeweek = obj.nodeweek_set.first()
+            return nodeweek.rank
+        return None
+
+    ## this is another pseudo 1toM method
+    # model needs fixing
     def get_column(self, instance):
         if instance.column is None:
             instance.column = (

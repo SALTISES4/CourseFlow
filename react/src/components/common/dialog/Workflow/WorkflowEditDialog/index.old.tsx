@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { _t } from '@cf/utility/utilityFunctions'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import {
   WorkflowFormType,
@@ -66,7 +65,7 @@ const WorkflowEditDialog = () => {
    *******************************************************/
   const { id } = useParams()
 
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const config = configFields(workflow)
 

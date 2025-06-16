@@ -1,30 +1,30 @@
-import EditableComponent, {
-  EditableComponentProps,
-  EditableComponentStateType
-} from '@cf/components/common/editableComponents/EditableComponent'
 import { TitleText } from '@cf/components/common/UIPrimitives/Titles.ts'
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
-import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
-import * as Constants from '@cfConstants'
-import {
-  DeleteSelfButton,
-  DuplicateSelfButton,
-  InsertSiblingButton
-} from '@cfEditableComponents/hoverEditActions'
-import { TGetNodeById, getNodeByID } from '@cfFindState'
+import * as Constants from '@cf/utility/constants'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import { _t } from '@cf/utility/Utility.class'
+import Utility from '@cf/utility/Utility.class'
+import { HoverMenu } from '@cfEditableComponents/hoverEditActions'
+import { TGetNodeById } from '@cfFindState'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import { selectNodeById } from '@cfRedux/selectors/node.selector'
 import { AppState, TWorkflow } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
-import OutcomeNode from '@cfViews/components/OutcomeNode'
+import OutcomeNode from '@cfViews/common/OutcomeNode'
+import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
+import { Dispatch } from '@reduxjs/toolkit'
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Action } from 'redux'
 
 type ConnectedProps = { node: TGetNodeById; workflow: TWorkflow }
-type OwnProps = EditableComponentProps
+type OwnProps = {
+  objectId: number
+  parentId: number
+} & { dispatch?: Dispatch<Action> }
 type StateProps = {
-  show_outcomes: boolean
-} & EditableComponentStateType
+  showOutcomes: boolean
+}
 type PropsType = ConnectedProps & OwnProps
 
 /**
@@ -36,177 +36,165 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * renderer.selectionManager
  * renderer.viewComments
  * renderer.contextChoices
- * renderer.task_choices
+ * renderer.taskChoices
  * renderer.readOnly
  */
-class ComparisonNodeUnconnected extends EditableComponent<
-  PropsType,
-  StateProps
-> {
+class ComparisonNodeUnconnected extends React.Component<PropsType, StateProps> {
+  private manager: BetterSelectionManager
+  private mainDiv: React.RefObject<HTMLDivElement>
+  private objectType: CfObjectType
+
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
+
     this.objectType = CfObjectType.NODE
-  }
-
-  HoverMenu = () => {
-    const mouseoverActions = []
-    if (this.props.workflow.workflowPermissions.write) {
-      mouseoverActions.push(
-        <InsertSiblingButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DuplicateSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-          parentId={this.props.parentId}
-        />
-      )
-      mouseoverActions.push(
-        <DeleteSelfButton
-          id={this.props.objectId}
-          objectType={this.objectType}
-        />
-      )
-    }
-
-    if (this.props.workflow.workflowPermissions.viewComments) {
-      mouseoverActions.push(<this.AddCommenting />)
-    }
-    return mouseoverActions
   }
 
   /*******************************************************
    * RENDER
    *******************************************************/
   render() {
-    const side_actions = []
-    let data_override
+    const sideActions = []
+    let dataOverride
     let lefticon
     let righticon
 
-    const data = this.props.data
+    const node = this.props.node.data
 
-    if (data.representsWorkflow) {
-      data_override = {
-        ...data,
-        ...data.linkedWorkflowData,
-        id: data.id
+    if (node.representsWorkflow) {
+      dataOverride = {
+        ...node,
+        ...node.linkedWorkflowData,
+        id: node.id
       }
     } else {
-      data_override = { ...data }
+      dataOverride = { ...node }
     }
-    const selectionManager = this.context.selectionManager
 
     const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour(this.props.node.column)
+      backgroundColor: ThemeHelper.getColumnColour({
+        columnType: this.props.node.column.columnType,
+        colour: this.props.node.column.colour
+      })
     }
-    if (data.lock) {
-      style.outline = '2px solid ' + data.lock.userColour
+    if (node.lock) {
+      style.outline = '2px solid ' + node.lock.userColour
     }
-    if (Utility.checkSetHidden(data, this.props.objectSets)) {
+    if (Utility.checkSetHidden(node, this.props.node.objectSets)) {
       style.display = 'none'
     }
 
     let outcomenodes
-    if (this.state.show_outcomes) {
+    if (this.state.showOutcomes) {
       outcomenodes = (
         <div
-          className={'outcome-node-container column-111111-' + data.column}
+          className={'outcome-node-container column-111111-' + node.column}
           onMouseLeave={() => {
             this.setState({
-              show_outcomes: false
+              showOutcomes: false
             })
           }}
           style={{
-            borderColor: Constants.getColumnColour(this.props.node.column)
+            borderColor: ThemeHelper.getColumnColour({
+              columnType: this.props.node.column.columnType,
+              colour: this.props.node.column.colour
+            })
           }}
         >
-          {data.outcomenodeUniqueSet.map((outcomenode) => (
+          {node.outcomenodeUniqueSet.map((outcomenode) => (
             <OutcomeNode key={outcomenode} objectId={outcomenode} />
           ))}
         </div>
       )
     }
 
-    if (data.outcomenodeUniqueSet.length > 0) {
-      side_actions.push(
+    if (node.outcomenodeUniqueSet.length > 0) {
+      sideActions.push(
         <div className="outcome-node-indicator">
           <div
-            className={'outcome-node-indicator-number column-' + data.column}
+            className={'outcome-node-indicator-number column-' + node.column}
             onMouseEnter={() => {
-              this.setState({ show_outcomes: true })
+              this.setState({ showOutcomes: true })
             }}
             style={{
-              borderColor: Constants.getColumnColour(this.props.node.column)
+              borderColor: ThemeHelper.getColumnColour({
+                columnType: this.props.node.column.columnType,
+                colour: this.props.node.column.colour
+              })
             }}
           >
-            {data.outcomenodeUniqueSet.length}
+            {node.outcomenodeUniqueSet.length}
           </div>
           {outcomenodes}
         </div>
       )
     }
 
-    if (data.contextClassification > 0) {
+    if (node.contextClassification > 0) {
       lefticon = (
         <img
           title={
             choices.contextChoices.find(
-              (obj) => obj.type == data.contextClassification
+              (obj) => obj.type == node.contextClassification
             ).name
           }
           src={
             apiPaths.external.static_assets.icon +
-            Constants.contextKeys[data.contextClassification] +
+            Constants.contextKeys[node.contextClassification] +
             '.svg'
           }
         />
       )
     }
 
-    if (data.taskClassification > 0) {
+    if (node.taskClassification > 0) {
       righticon = (
         <img
           title={
             choices.taskChoices.find(
-              (obj) => obj.type == data.taskClassification
+              (obj) => obj.type == node.taskClassification
             ).name
           }
           src={
             apiPaths.external.static_assets.icon +
-            Constants.taskKeys[data.taskClassification] +
+            Constants.taskKeys[node.taskClassification] +
             '.svg'
           }
         />
       )
     }
 
-    const titleText = <NodeTitle data={data} />
+    const titleText = <NodeTitle node={node} />
 
     // let cssClass =
     //   'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType]
     // if (data.lock) cssClass += ' locked locked-' + data.lock.userId
 
     const cssClasses = [
-      'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],
-      data.lock ? 'locked locked-' + data.lock.userId : ''
+      'node column-' + node.column + ' ' + Constants.nodeKeys[node.nodeType],
+      node.lock ? 'locked locked-' + node.lock.userId : ''
     ].join(' ')
 
     return (
       <>
-        {this.addEditable(data_override)}
+        {/*{this.addEditable(dataOverride)}*/}
         <div
           style={style}
           className={cssClasses}
-          id={data.id}
+          id={String(node.id)}
           ref={this.mainDiv}
-          onClick={(evt) => {
-            return () =>
-              selectionManager.changeSelection({ evt, newSelection: this })
+          // onClick={(evt) => {
+          //   return () =>
+          //     selectionManager.changeSelection({ evt, newSelection: this })
+          // }}
+          onClick={(e) => {
+            e.stopPropagation()
+            this.manager.updateSidebar(
+              node.id,
+              this.objectType,
+              this.props.parentId
+            )
           }}
         >
           <div className="node-top-row">
@@ -216,14 +204,18 @@ class ComparisonNodeUnconnected extends EditableComponent<
           </div>
           <div className="node-details">
             <TitleText
-              text={data_override.description}
+              text={dataOverride.description}
               defaultText={_t('Click to edit')}
             />
           </div>
-          <div className="mouseover-actions">
-            <this.HoverMenu />
-          </div>
-          <div className="side-actions">{side_actions}</div>
+          <HoverMenu
+            canWrite={this.props.workflow.workflowPermissions.write}
+            canComment={this.props.workflow.workflowPermissions.viewComments}
+            objectId={this.props.objectId}
+            parentId={this.props.parentId}
+            objectType={this.objectType}
+          />
+          <div className="side-actions">{sideActions}</div>
         </div>
       </>
     )
@@ -234,7 +226,7 @@ const mapStateToProps = (
   ownProps: OwnProps
 ): ConnectedProps => {
   return {
-    node: getNodeByID(state, ownProps.objectId),
+    node: selectNodeById(state, ownProps.objectId),
     workflow: state.workflow
   }
 }

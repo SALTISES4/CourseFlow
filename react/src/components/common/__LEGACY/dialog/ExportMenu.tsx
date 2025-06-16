@@ -3,7 +3,7 @@
 // which could be renamed since the same dialog appears when exporting workflows
 
 import { apiPaths } from '@cf/router/apiRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import * as React from 'react'
 // import $ from 'jquery'
 
@@ -67,49 +67,49 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
 
     exports.push([
       <input
-        name="export_type"
+        name="exportType"
         type="radio"
         value="outcome"
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'outcome'}
       />,
-      <label htmlFor="export_type">{_t('Outcomes')}</label>
+      <label htmlFor="exportType">{_t('Outcomes')}</label>
     ])
 
     exports.push([
       <input
-        name="export_type"
+        name="exportType"
         type="radio"
         value="node"
         onChange={this.inputChange.bind(this, 'type', '')}
         checked={this.state.type == 'node'}
       />,
-      <label htmlFor="export_type">{_t('Nodes')}</label>
+      <label htmlFor="exportType">{_t('Nodes')}</label>
     ])
 
     if (type == 'project' || type == 'course') {
       exports.push([
         <input
-          name="export_type"
+          name="exportType"
           type="radio"
           value="framework"
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'framework'}
         />,
-        <label htmlFor="export_type">{_t('Course Framework')}</label>
+        <label htmlFor="exportType">{_t('Course Framework')}</label>
       ])
     }
 
     if (type == 'project' || type == 'program') {
       exports.push([
         <input
-          name="export_type"
+          name="exportType"
           type="radio"
           value="matrix"
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'matrix'}
         />,
-        <label htmlFor="export_type">{_t('Competency Matrix')}</label>
+        <label htmlFor="exportType">{_t('Competency Matrix')}</label>
       ])
     }
 
@@ -117,13 +117,13 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
     if (type == 'project' || type == 'program') {
       exports.push([
         <input
-          name="export_type"
+          name="exportType"
           type="radio"
           value="sobec"
           onChange={this.inputChange.bind(this, 'type', '')}
           checked={this.state.type == 'sobec'}
         />,
-        <label htmlFor="export_type">{_t('Sobec Validation')}</label>
+        <label htmlFor="exportType">{_t('Sobec Validation')}</label>
       ])
     }
 
@@ -138,17 +138,17 @@ class ExportMenu extends React.Component<PropsType, StateProps> {
     if (this.props.data.objectSets.length > 0) {
       objectSets = [
         <h4>{_t('Object Set Visibility')}:</h4>,
-        this.props.data.objectSets.map((objectset) => (
+        this.props.data.objectSets.map((objectSet) => (
           <div>
             <input
-              onChange={this.inputChange.bind(this, 'set', objectset.id)}
+              onChange={this.inputChange.bind(this, 'set', objectSet.id)}
               name="objectSets[]"
-              value={objectset.id}
+              value={objectSet.id}
               type="checkbox"
-              id={objectset.id}
-              checked={!this.state[objectset.id]}
+              id={objectSet.id}
+              checked={!this.state[objectSet.id]}
             />
-            <label>{objectset.title}</label>
+            <label>{objectSet.title}</label>
           </div>
         ))
       ]

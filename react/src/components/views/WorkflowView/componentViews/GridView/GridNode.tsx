@@ -1,112 +1,209 @@
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
+import * as Constants from '@cf/utility/constants'
 import { calcWorkflowPermissions } from '@cf/utility/permissions'
-import { NodeTitle } from '@cfComponents/UIPrimitives/Titles'
-import * as Constants from '@cfConstants'
-import EditableComponent from '@cfEditableComponents/EditableComponent'
-import { EditableComponentWithCommentsStateType } from '@cfEditableComponents/EditableComponentWithComments'
-import { AppState, TColumn, TWorkflow } from '@cfRedux/types/type'
-import * as React from 'react'
-import { connect } from 'react-redux'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+import { AppState, TColumn, TNode, TWorkflow } from '@cfRedux/types/type'
+import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
+import clsx from 'clsx'
+import React, { useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {RootState} from "@cfRedux/store";
 
 type OwnProps = {
-  // renderer: any
-  data: any
+  node: TNode
+  parentId: number
 }
-type ConnectedProps = {
-  column: TColumn
-  workflow: TWorkflow
-}
-type PropsType = OwnProps & ConnectedProps
-type StateProps = EditableComponentWithCommentsStateType
-/**
- * A node in the grid view
- */
-class GridNodeUnconnected extends EditableComponent<PropsType, StateProps> {
-  static contextType = WorkflowConfigContext
-  declare context: React.ContextType<typeof WorkflowConfigContext>
 
-  constructor(props: PropsType) {
-    super(props)
-    this.objectType = CfObjectType.NODE
+const GridNode: React.FC<OwnProps> = ({ node, parentId }) => {
+  const dispatch = useDispatch()
+  const column = useSelector((state: RootState) =>
+    state.column.find((column) => column.id === node.column)
+  )
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
+
+  const mainDiv = useRef<HTMLDivElement>(null)
+  const manager = useRef(new BetterSelectionManager(dispatch))
+  const objectType = CfObjectType.NODE
+
+  const style: React.CSSProperties = {
+    backgroundColor: ThemeHelper.getColumnColour({
+      columnType: column?.columnType,
+      colour: column?.colour
+    }),
+    outline: node.lock ? `2px solid ${node.lock.userColour}` : undefined
   }
 
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const selectionManager = this.context.selectionManager
-    const data = this.props.data
+  const permissions = calcWorkflowPermissions(workflow.userPermissions)
+  const comments = permissions.read ? <>commentbox placeholder</> : null
 
-    const data_override = data.representsWorkflow
-      ? { ...data, ...data.linkedWorkflowData, id: data.id }
-      : data
-    // this was moved from the return function
-    // because this is not a returned element
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    manager.current.updateSidebar(node.id, objectType, node.id)
+  }
 
-    const ponderation = (
+  const Ponderation = () => {
+    const dataOverride = node.representsWorkflow
+      ? { ...node, ...node.linkedWorkflowData, id: node.id }
+      : node
+
+    return (
       <div className="grid-ponderation">
-        {data_override.ponderationTheory +
-          '/' +
-          data_override.ponderationPractical +
-          '/' +
-          data_override.ponderationIndividual}
+        {`${dataOverride.ponderationTheory}/${dataOverride.ponderationPractical}/${dataOverride.ponderationIndividual}`}
       </div>
     )
-
-    const style: React.CSSProperties = {
-      backgroundColor: Constants.getColumnColour(this.props.column),
-      outline: data.lock ? '2px solid ' + data.lock.userColour : undefined
-    }
-
-    const cssClass = [
-      'node column-' + data.column + ' ' + Constants.nodeKeys[data.nodeType],
-      data.isDropped ? 'dropped' : '',
-      data.lock ? 'locked locked-' + data.lock.userId : ''
-    ].join(' ')
-
-    const permissions = calcWorkflowPermissions(
-      this.props.workflow.userPermissions
-    )
-    const comments = permissions.read ? <this.AddCommenting /> : ''
-
-    const portal = this.addEditable(data_override, true)
-    return (
-      <>
-        {portal}
-        <div
-          style={style}
-          id={data.id}
-          ref={this.mainDiv}
-          onClick={(evt) =>
-            selectionManager.changeSelection({ evt, newSelection: this })
-          }
-          className={cssClass}
-        >
-          <div className="node-top-row">
-            <NodeTitle data={data} />
-            {ponderation}
-          </div>
-          <div className="mouseover-actions">{comments}</div>
-          <div className="side-actions">
-            <div className="comment-indicator-container"></div>
-          </div>
-        </div>
-      </>
-    )
   }
+
+  return (
+    <div
+      id={String(node.id)}
+      className={clsx(
+        `node column-${node.column}`,
+        Constants.nodeKeys[node.nodeType],
+        node.isDropped && 'dropped',
+        node.lock && `locked locked-${node.lock.userId}`
+      )}
+      style={style}
+      ref={mainDiv}
+      onClick={handleClick}
+    >
+      <div className="node-top-row">
+        <NodeTitle node={node} />
+        <Ponderation />
+      </div>
+      <div className="mouseover-actions">{comments}</div>
+      <div className="side-actions">
+        <div className="comment-indicator-container"></div>
+      </div>
+    </div>
+  )
 }
 
-const mapStateToProps = (
-  state: AppState,
-  ownProps: OwnProps
-): ConnectedProps => ({
-  column: state.column.find((column) => column.id == ownProps.data.column),
-  workflow: state.workflow
-})
-const GridNode = connect<ConnectedProps, object, OwnProps, AppState>(
-  mapStateToProps,
-  null
-)(GridNodeUnconnected)
-
 export default GridNode
+
+// import { CfObjectType } from '@cf/types/enum'
+// import * as Constants from '@cf/utility/constants'
+// import { calcWorkflowPermissions } from '@cf/utility/permissions'
+// import ThemeHelper from '@cf/utility/ThemeHelper.class'
+// import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
+// import { AppState, TColumn, TNode, TWorkflow } from '@cfRedux/types/type'
+// import NodeTitle from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeTitle'
+// import { Dispatch } from '@reduxjs/toolkit'
+// import clsx from 'clsx'
+// import * as React from 'react'
+// import { connect } from 'react-redux'
+// import { Action } from 'redux'
+//
+// type OwnProps = {
+//   node: TNode
+//   parentId: number
+// } & { dispatch?: Dispatch<Action> }
+//
+// type ConnectedProps = {
+//   column: TColumn
+//   workflow: TWorkflow
+// }
+// type PropsType = OwnProps & ConnectedProps
+// type StateProps = {}
+// /**
+//  * A node in the grid view
+//  */
+// class GridNodeUnconnected extends React.Component<PropsType, StateProps> {
+//   private manager: BetterSelectionManager
+//   private objectType: CfObjectType
+//   private mainDiv: React.RefObject<HTMLDivElement>
+//
+//   constructor(props: PropsType) {
+//     super(props)
+//     this.manager = new BetterSelectionManager(this.props.dispatch)
+//     this.mainDiv = React.createRef()
+//     this.objectType = CfObjectType.NODE
+//   }
+//
+//   Ponderation = () => {
+//     const node = this.props.node
+//     const dataOverride = node.representsWorkflow
+//       ? { ...node, ...node.linkedWorkflowData, id: node.id }
+//       : node
+//
+//     return (
+//       <div className="grid-ponderation">
+//         {dataOverride.ponderationTheory +
+//           '/' +
+//           dataOverride.ponderationPractical +
+//           '/' +
+//           dataOverride.ponderationIndividual}
+//       </div>
+//     )
+//   }
+//   /*******************************************************
+//    * RENDER
+//    *******************************************************/
+//   render() {
+//     const node = this.props.node
+//
+//     const style: React.CSSProperties = {
+//       backgroundColor: ThemeHelper.getColumnColour({
+//         columnType: this.props.column.columnType,
+//         colour: this.props.column.colour
+//       }),
+//       outline: node.lock ? '2px solid ' + node.lock.userColour : undefined
+//     }
+//
+//     const permissions = calcWorkflowPermissions(
+//       this.props.workflow.userPermissions
+//     )
+//     //    const comments = permissions.read ? <AddCommenting /> : ''
+//     const comments = permissions.read ? <>commentbox placeholder</> : ''
+//
+//     //     const portal = this.addEditable(dataOverride, true)
+//
+//     return (
+//       <>
+//         {/*{portal}*/}
+//         <div
+//           id={String(node.id)}
+//           className={clsx(
+//             `node column-${node.column}`,
+//             Constants.nodeKeys[node.nodeType],
+//             node.isDropped && 'dropped',
+//             node.lock && `locked locked-${node.lock.userId}`
+//           )}
+//           style={style}
+//           ref={this.mainDiv}
+//           onClick={(e) => {
+//             e.stopPropagation()
+//             this.manager.updateSidebar(
+//               node.id,
+//               this.objectType,
+//               this.props.node.id
+//             )
+//           }}
+//         >
+//           <div className="node-top-row">
+//             <NodeTitle node={node} />
+//             <this.Ponderation />
+//           </div>
+//           <div className="mouseover-actions">{comments}</div>
+//           <div className="side-actions">
+//             <div className="comment-indicator-container"></div>
+//           </div>
+//         </div>
+//       </>
+//     )
+//   }
+// }
+//
+// const mapStateToProps = (
+//   state: AppState,
+//   ownProps: OwnProps
+// ): ConnectedProps => ({
+//   column: state.column.find((column) => column.id == ownProps.objectId),
+//   workflow: state.workflow
+// })
+// const GridNode = connect<ConnectedProps, object, OwnProps, AppState>(
+//   mapStateToProps,
+//   null
+// )(GridNodeUnconnected)
+//
+// export default GridNode

@@ -44,7 +44,7 @@
   {% if debug %}
     <script
       type="module"
-      src="http://localhost:3000/@vite/client"
+      src="http://{{ host }}:{{ port }}/@vite/client"
       nonce="{{ request.csp_nonce }}">
     </script>
 
@@ -53,7 +53,7 @@
       type="module"
       nonce="{{ request.csp_nonce }}"
     >
-      import RefreshRuntime from 'http://localhost:3000/@react-refresh'
+      import RefreshRuntime from 'http://{{ host }}:{{ port }}/@react-refresh'
 
       if (RefreshRuntime) {
         RefreshRuntime.injectIntoGlobalHook(window)
@@ -78,7 +78,7 @@
   {% if debug %}
     <script
       type="module"
-      src="http://localhost:3000/src/app.tsx"
+      src="http://{{ host }}:{{ port }}/src/app.tsx"
       nonce="{{ request.csp_nonce }}"
     ></script>
   {% else %}

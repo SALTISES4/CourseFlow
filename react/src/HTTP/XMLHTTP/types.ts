@@ -34,7 +34,7 @@ export type WorkflowParentDataPackage = {
 
 export type WorkflowChildDataPackage = {
   node: ENode[]
-  child_workflow: EWorkflow[]
+  childWorkflow: EWorkflow[]
   outcomeworkflow: EOutcomeWorkflow[]
   outcome: EOutcome[]
   outcomeoutcome: TOutcomeOutcome[]
@@ -43,7 +43,7 @@ export type WorkflowChildDataPackage = {
 
 export type WorkflowDataPackage = {
   workflow: EWorkflow
-  parentProject: EProject
+  project: EProject
   columnworkflow: EColumnworkflow[]
   column: EColumn[]
   weekworkflow: EWeekworkflow[]
@@ -55,9 +55,9 @@ export type WorkflowDataPackage = {
   outcomenode: EOutcomenode[]
   outcomeworkflow: EOutcomeWorkflow[]
   outcomeoutcome: EOutcomeOutcome[]
-  objectset: EObjectSet[]
+  objectSet: EObjectSet[]
   strategy: EStrategy[]
   //
   unreadComments: any[]
-  saltise_strategy: EWorkflow[]
+  saltiseStrategy: EWorkflow[]
 }

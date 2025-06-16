@@ -59,50 +59,6 @@ def duplicate_nodelink(
     return new_nodelink
 
 
-def duplicate_node(node: Node, author: User, new_workflow: Workflow, outcome_ids) -> Node:
-    if new_workflow is not None:
-        for new_column in new_workflow.columns.all():
-            if new_column == node.column or new_column.parent_column == node.column:
-                column = new_column
-                break
-    else:
-        column = node.column
-    new_node = Node.objects.create(
-        title=node.title,
-        description=node.description,
-        author=author,
-        node_type=node.node_type,
-        column=column,
-        task_classification=node.task_classification,
-        context_classification=node.context_classification,
-        has_autolink=node.has_autolink,
-        represents_workflow=node.represents_workflow,
-        time_required=node.time_required,
-        time_units=node.time_units,
-        is_original=False,
-        parent_node=node,
-        linked_workflow=node.linked_workflow,
-        deleted=node.deleted,
-    )
-
-    for object_set in node.sets.all():
-        if new_workflow is None:
-            new_node.sets.add(object_set)
-
-    for outcome in node.outcomes.all():
-        if new_workflow is not None:
-            new_outcome = Outcome.objects.get(parent_outcome=outcome, id__in=outcome_ids)
-        else:
-            new_outcome = outcome
-        OutcomeNode.objects.create(
-            outcome=new_outcome,
-            node=new_node,
-            rank=OutcomeNode.objects.get(node=node, outcome=outcome).rank,
-        )
-
-    return new_node
-
-
 def duplicate_week(week: Week, author: User, new_workflow: Workflow, outcome_ids) -> Week:
     new_week = Week.objects.create(
         title=week.title,

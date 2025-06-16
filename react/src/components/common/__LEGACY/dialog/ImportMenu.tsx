@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { apiPaths } from '@cf/router/apiRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import * as React from 'react'
 // import $ from 'jquery'
 

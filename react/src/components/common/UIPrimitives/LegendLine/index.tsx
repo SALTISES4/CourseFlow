@@ -1,35 +1,54 @@
 import { apiPaths } from '@cf/router/apiRoutes'
 import * as React from 'react'
 
-// Define the props type
-interface LegendLineProps {
+type PropsType = {
   icon?: string
-  divclass?: string
+  divClass?: string
   div?: string | JSX.Element
   text: string | JSX.Element
 }
 
-class LegendLine extends React.Component<LegendLineProps> {
-  Icon = () => {
-    if (this.props.icon) {
+const LegendLine = ({ icon, divClass, div, text }: PropsType) => {
+  const Icon = () => {
+    if (icon) {
       return (
         <img
-          src={`${apiPaths.external.static_assets.icon}${this.props.icon}.svg`}
+          // imported from legacy css
+          style={{
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            width: '24px'
+          }}
+          src={`${apiPaths.external.static_assets.icon}${icon}.svg`}
           alt="icon"
         />
       )
     }
-    return <div className={this.props.divclass}>{this.props.div}</div>
+    return <div className={divClass}>{div}</div>
   }
 
-  render() {
-    return (
-      <div className="legend-line">
-        <this.Icon />
-        <div>{this.props.text}</div>
+  return (
+    <div
+      style={{
+        width: '100%',
+        padding: '2px'
+      }}
+    >
+      <Icon />
+      <div
+        // imported from legacy css
+        style={{
+          display: 'inline-block',
+          verticalAlign: 'middle',
+          marginLeft: '8px',
+          fontWeight: 600,
+          fontSize: '12px'
+        }}
+      >
+        {text}
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 export default LegendLine

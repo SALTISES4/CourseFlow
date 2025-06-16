@@ -1,7 +1,7 @@
 // import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
 import { LibraryObjectType } from '@cf/types/enum'
-import { _t, convertEnum } from '@cf/utility/utilityFunctions'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import { ChipOptions } from '@cfComponents/cards/WorkflowCardDumb'
 import { CardChip } from '@cfComponents/cards/WorkflowCardDumb/styles'
 import Favourite from '@cfComponents/UIPrimitives/Favourite'
@@ -11,12 +11,13 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 // import { useContext } from 'react'
 import { useSelector } from 'react-redux'
+import {RootState} from "@cfRedux/store";
 
 // @todo not sure this needs its own file
 const Header = () => {
   // TODO: add editable name functinality
   // const context = useContext(WorkflowConfigContext)
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const typeText = `${_t(workflow.type)} ${
     workflow.isStrategy ? _t('strategy') : ''
@@ -57,7 +58,7 @@ const Header = () => {
         <Favourite
           id={workflow.id}
           isFavourite={workflow.favourite}
-          type={convertEnum<LibraryObjectType>(
+          type={Utility.convertEnum<LibraryObjectType>(
             workflow.type,
             LibraryObjectType,
             LibraryObjectType.ACTIVITY

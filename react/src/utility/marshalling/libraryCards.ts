@@ -1,6 +1,6 @@
 import { LibraryObjectType } from '@cf/types/enum'
-import * as Utility from '@cf/utility/utilityFunctions'
-import { _t, convertEnum } from '@cf/utility/utilityFunctions'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
+import Utility, { _t } from '@cf/utility/Utility.class'
 import {
   ChipOptions,
   WorkflowCardChipType
@@ -13,7 +13,11 @@ import { ELibraryObject } from '@XMLHTTP/types/entity'
  * @param type
  */
 function mapChipType(type: LibraryObjectType): ChipOptions {
-  return convertEnum<ChipOptions>(type, ChipOptions, ChipOptions.DEFAULT)
+  return Utility.convertEnum<ChipOptions>(
+    type,
+    ChipOptions,
+    ChipOptions.DEFAULT
+  )
 }
 
 function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
@@ -33,7 +37,7 @@ function getTypeChip(workflow: ELibraryObject): WorkflowCardChipType {
 
   return {
     type: chipType,
-    label: Utility.capWords(typeText)
+    label: ThemeHelper.capWords(typeText)
   }
 }
 
@@ -76,9 +80,9 @@ export function formatLibraryObject(
   WorkflowCardWrapperPropsType,
   'id' | 'title' | 'description' | 'isFavourite' | 'chips' | 'isLinked' | 'type'
 > {
-  const type_chip = getTypeChip(libraryObject)
-  const template_chip = getTemplateChip(libraryObject)
-  const count_chip = getWorkflowCountChip(libraryObject)
+  const typeChip = getTypeChip(libraryObject)
+  const templateChip = getTemplateChip(libraryObject)
+  const countChip = getWorkflowCountChip(libraryObject)
   return {
     id: libraryObject.id,
     title: libraryObject.title,
@@ -87,8 +91,6 @@ export function formatLibraryObject(
     isFavourite: libraryObject.favourite,
     isLinked: libraryObject.isLinked,
     type: libraryObject.type,
-    chips: [type_chip, template_chip, count_chip].filter(
-      (entry) => entry != null
-    )
+    chips: [typeChip, templateChip, countChip].filter((entry) => entry != null)
   }
 }

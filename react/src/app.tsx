@@ -1,27 +1,22 @@
 // import './wdyr'
 import createCache from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
 import ScopedCssBaseline from '@mui/material/ScopedCssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
-import { configureStore } from '@reduxjs/toolkit'
-import { cfApi } from '@XMLHTTP/API/api'
 import { SnackbarProvider } from 'notistack'
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { RouterProvider } from 'react-router-dom'
-
-import theme from './mui/theme'
-
 import '@cfSCSS/base_style.scss'
 import '@cfSCSS/workflow_styles.scss'
 import CfRouter from '@cf/router/appRoutes'
-import { MouseCursorLoader } from '@cf/utility/mouseCursorLoader.js'
 import { CookieProvider } from '@cf/context/cookieContext'
 import { DialogContextProvider } from '@cf/context/dialogContext'
 import UserProvider from '@cf/context/userContext'
-import { rootWorkflowReducers } from '@cfRedux/Reducers'
 import { SidebarRootStyles } from '@cfComponents/globalNav/Sidebar/styles'
+import { CacheProvider } from '@emotion/react'
+
+import theme from './mui/theme'
+import store from './redux/store'
 
 /*******************************************************
  * HACK: React's missing key error is adding too much noise to our
@@ -48,15 +43,6 @@ console.error = (message, ...args) => {
  * // HACK
  *******************************************************/
 
-// @todo:
-// legacy, to remove it
-// see note in mouseCursorLoader.js
-// we don't want t a mouse loader at all, but the placeholder calls are useful currently
-
-const tinyLoader = new MouseCursorLoader($('body')[0])
-// @ts-ignore
-COURSEFLOW_APP.tinyLoader = tinyLoader
-
 // create the emotion cache
 const cache = createCache({
   key: 'emotion',
@@ -65,19 +51,6 @@ const cache = createCache({
 
 const rootElement = document.getElementById('root')
 const root = ReactDOM.createRoot(rootElement)
-const store = configureStore({
-  reducer: {
-    // workflow: Reducers.rootWorkflowReducer,
-    // outcome: Reducers.rootOutcomeReducer,
-    ...rootWorkflowReducers,
-    [cfApi.reducerPath]: cfApi.reducer
-  },
-  devTools: process.env.NODE_ENV !== 'production', // Enable Redux DevTools only in non-production environments
-  // Adding the api middleware enables caching, invalidation, polling,
-  // and other useful features of `rtk-query`.
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(cfApi.middleware)
-})
 
 root.render(
   <Provider store={store}>
@@ -90,7 +63,10 @@ root.render(
             <UserProvider>
               <ThemeProvider theme={theme}>
                 <ScopedCssBaseline sx={SidebarRootStyles}>
-                  <RouterProvider router={CfRouter} />
+                  <RouterProvider
+                    router={CfRouter}
+                    future={{ v7_startTransition: true }}
+                  />
                 </ScopedCssBaseline>
               </ThemeProvider>
             </UserProvider>

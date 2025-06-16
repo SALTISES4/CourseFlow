@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { ReactNode, useCallback, useState } from 'react'
 
+import data from './data'
 import { StyledOutcomes } from './styles'
 import DraggableBlock from '../../Draggable/Block'
 import { DraggableBlockToggle } from '../../Draggable/Block/styles'
@@ -14,45 +15,41 @@ import {
   SidebarInnerWrap,
   SidebarTitle
 } from '../../styles'
-import {
-  DraggableBlock as DraggableBlockType,
-  OutcomeGroup,
-  SidebarDataType
-} from '../../types'
+import { DraggableBlock as DraggableBlockType, OutcomeGroup } from '../../types'
 
-const OutcomeTab = ({
-  title,
-  subtitle,
-  groups
-}: SidebarDataType['outcomes']) => (
-  <SidebarInnerWrap>
-    <SidebarContent>
-      {title && (
-        <SidebarTitle as="h3" variant="h6">
-          {title}
-        </SidebarTitle>
-      )}
-      {subtitle && (
-        <Typography variant="body2" sx={{ mb: 3 }}>
-          {subtitle}
-        </Typography>
-      )}
-      {groups?.map((group, idx) => (
-        <GroupWrap key={idx}>
-          <Typography component="h6" variant="body2">
-            {group.title}
+const OutcomeTab = () => {
+  const { title, subtitle, groups } = data
+
+  return (
+    <SidebarInnerWrap>
+      <SidebarContent>
+        {title && (
+          <SidebarTitle as="h3" variant="h6">
+            {title}
+          </SidebarTitle>
+        )}
+        {subtitle && (
+          <Typography variant="body2" sx={{ mb: 3 }}>
+            {subtitle}
           </Typography>
-          <OutcomeGroupWrap group={group} blocks={group.blocks} />
-        </GroupWrap>
-      ))}
-    </SidebarContent>
-    <SidebarActions>
-      <Button variant="contained" color="secondary">
-        Edit outcomes
-      </Button>
-    </SidebarActions>
-  </SidebarInnerWrap>
-)
+        )}
+        {groups?.map((group, idx) => (
+          <GroupWrap key={idx}>
+            <Typography component="h6" variant="body2">
+              {group.title}
+            </Typography>
+            <OutcomeGroupWrap group={group} blocks={group.blocks} />
+          </GroupWrap>
+        ))}
+      </SidebarContent>
+      <SidebarActions>
+        <Button variant="contained" color="secondary">
+          Edit outcomes
+        </Button>
+      </SidebarActions>
+    </SidebarInnerWrap>
+  )
+}
 
 export const OutcomeGroupWrap = ({
   group,

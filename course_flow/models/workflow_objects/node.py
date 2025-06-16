@@ -164,6 +164,7 @@ class Node(AbstractCourseFlowModel):
     #########################################################
     # RELATIONS
     #########################################################
+    # @todo why has this been arbitrarily renamed?
     sets = models.ManyToManyField("ObjectSet", blank=True)
 
     comments = models.ManyToManyField("Comment", blank=True, related_name="node")

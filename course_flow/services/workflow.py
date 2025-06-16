@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from course_flow.models import Activity, Course, Notification
 from course_flow.models.objectset import ObjectSet
 from course_flow.models.relations import NodeLink, NodeWeek
@@ -133,6 +135,14 @@ class WorkflowService:
 
     @staticmethod
     def get_workflow_info_boxes(user, workflow_type, **kwargs):
+        """
+        what is meant by this
+
+        :param user:
+        :param workflow_type:
+        :param kwargs:
+        :return:
+        """
         project = kwargs.get("project", None)
         this_project = kwargs.get("this_project", True)
         get_strategies = kwargs.get("get_strategies", False)
@@ -389,47 +399,66 @@ class WorkflowService:
         SerializerClass = serializer_lookups_shallow[workflow.type]
 
         # Fetch related objects
-        columnworkflows = workflow.columnworkflow_set.all()
-        weekworkflows = workflow.weekworkflow_set.all()
+        #        columnworkflows = workflow.columnworkflow_set.all()
+        #        weekworkflows = workflow.weekworkflow_set.all()
+        #        nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
         columns = workflow.columns.all()
-        weeks = workflow.weeks.all()
-        nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
+        weeks = workflow.weeks.all().prefetch_related("comments", "weekworkflow_set")
         nodes = Node.objects.filter(week__workflow=workflow).prefetch_related(
-            "outcomenode_set", "liveassignment_set"
+            "outcomenode_set", "comments", "nodeweek_set"
         )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
 
-        # Initialize data
+        # this is not well constructed
+        # during phase of model rework, go back to a combined query
+        # i.e.
+        #       workflow = Workflow.objects.filter(id=workflow_id).prefetch_related(
+        #     'columnworkflow_set',
+        #     'weekworkflow_set',
+        #     'columns',
+        #     'weeks',
+        #     'weeks__nodeweeks',
+        #     'weeks__nodes__outcomenode_set',
+        #       ...
+        #     'weeks__nodes__nodelinks',
+        # ).select_related().first()
+        # etc
+        # now, we could keep the model lookup distributed like this IF we tried to implement lazy/async querying
         data = {
             "workflow": SerializerClass(workflow, context={"user": user}).data,
-            "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflows, many=True).data,
             "column": ColumnSerializerShallow(columns, many=True).data,
-            "weekworkflow": WeekWorkflowSerializerShallow(weekworkflows, many=True).data,
             "week": WeekSerializerShallow(weeks, many=True).data,
-            "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
-            "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
             "node": NodeSerializerShallow(nodes, many=True, context={"user": user}).data,
+            "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
+            #   "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflows, many=True).data,
+            #   "weekworkflow": WeekWorkflowSerializerShallow(weekworkflows, many=True).data,
+            #   "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
         }
 
         # If the workflow is not a strategy, add additional data
+        # @todo this is a problem, it loads many additional things and should be fixed
         if not workflow.is_strategy:
             WorkflowService.add_workflow_outcomes(data, workflow, user)
             # Add strategies based on the workflow type
             WorkflowService.add_strategies(data, workflow, user)
-            WorkflowService.add_project(data, workflow, user)
+            data["project"] = WorkflowService.get_project(workflow, user)
+            # for now, objectset (i.e. tags) are only present on projects, and projects which are not strategies\
+            objectsets = ObjectSet.objects.filter(project__workflows=workflow)
+            data["object_set"] = ObjectSetSerializerShallow(objectsets, many=True).data
 
         # Add unread comments if the user is authenticated
-        if user and user.pk:
-            data["unread_comments"] = WorkflowService.add_unread_comments(data, workflow, user)
+        # this should not go here
+        #        data["unread_comments"] = WorkflowService.get_unread_comments(workflow, user)
+        data["unread_comments"] = WorkflowService.get_unread_comments(workflow, user)
 
         return data
 
     @staticmethod
-    def add_project(data, workflow, user):
-        project = WorkflowProject.objects.get(workflow=workflow).project
-        parent_project = ProjectSerializerShallow(project, context={"user": user}).data
+    def get_project(workflow, user):
+        parent_project = WorkflowProject.objects.get(workflow=workflow).project
+        serialized_project = ProjectSerializerShallow(parent_project, context={"user": user}).data
 
-        data["parent_project"] = parent_project
+        return serialized_project
 
     @staticmethod
     def add_workflow_outcomes(data, workflow, user):
@@ -437,7 +466,6 @@ class WorkflowService:
         outcomeworkflows = workflow.outcomeworkflow_set.all()
         outcomes, outcomeoutcomes = DAO.get_all_outcomes_for_workflow(workflow)
         outcomenodes = OutcomeNode.objects.filter(node__week__workflow=workflow)
-        objectsets = ObjectSet.objects.filter(project__workflows=workflow)
 
         data.update(
             {
@@ -451,12 +479,48 @@ class WorkflowService:
                 ).data,
                 "outcomeoutcome": OutcomeOutcomeSerializerShallow(outcomeoutcomes, many=True).data,
                 "outcomenode": OutcomeNodeSerializerShallow(outcomenodes, many=True).data,
-                "objectset": ObjectSetSerializerShallow(objectsets, many=True).data,
             }
         )
 
+    # @staticmethod
+    # def add_strategies(data, workflow, user):
+    #     """
+    #     Add strategies for "course" and "activity" types
+    #     :param data:
+    #     :param workflow:
+    #     :param user:
+    #     :return:
+    #     """
+    #     if not user or not user.is_authenticated:
+    #         return
+    #
+    #     if workflow.type == "course" or workflow.type == "activity":
+    #         data["strategy"] = WorkflowSerializerShallow(
+    #             Workflow.objects.filter(author=user, is_strategy=True, deleted=False),
+    #             many=True,
+    #             context={"user": user},
+    #         ).data
+    #
+    #         data["saltise_strategy"] = WorkflowSerializerShallow(
+    #             Workflow.objects.filter(
+    #                 from_saltise=True,
+    #                 is_strategy=True,
+    #                 published=True,
+    #                 deleted=False,
+    #             ),
+    #             many=True,
+    #             context={"user": user},
+    #         ).data
+
     @staticmethod
     def add_strategies(data, workflow, user):
+        """
+        this condition should be merged together once we fix the model inheritance
+        :param data:
+        :param workflow:
+        :param user:
+        :return:
+        """
         # Add strategies for "course" and "activity" types
         if user and user.is_authenticated:
             if workflow.type == "course":
@@ -493,7 +557,7 @@ class WorkflowService:
                 ).data
 
     @staticmethod
-    def add_unread_comments(data, workflow, user):
+    def get_unread_comments(workflow: Workflow, user):
         # Get unread comments for the user on the specific workflow
         comments = [
             x.comment.id
@@ -504,4 +568,4 @@ class WorkflowService:
                 is_unread=True,
             ).exclude(comment=None)
         ]
-        data["unread_comments"] = comments
+        return comments

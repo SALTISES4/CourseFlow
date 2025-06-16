@@ -4,7 +4,6 @@ from enum import Enum
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.db.models import ProtectedError, Q
-from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -29,7 +28,7 @@ from course_flow.serializers import (
 from course_flow.services import DAO, Utility
 from course_flow.services.events_dispatch import EventsDispatch
 from course_flow.services.workspace import WorkspaceService
-from course_flow.sockets import redux_actions as actions
+from course_flow.sockets.emitters import WorkflowUpdateEmitter
 from course_flow.views.json_api._validators import DeleteRequestSerializer
 
 
@@ -46,49 +45,65 @@ class ObjectType(Enum):
 
 
 class WorkspaceEndpoint:
+    # @todo no...
+    # 1. needs to go away
+    # 2. filtering should happen on the server
+    # but then we would have to change a bunch of stuff including the room group names
+    # so clean up by user ID (publishing_user_id) and continue to filter on client for now
+    #
     # Updates an object's information using its serializer. This is
     # the most frequently used view, used to change almost any
     # non-foreign key fields on models
     @staticmethod
     @api_view(["POST"])
-    @user_can_edit(False)
-    def update_value(request: Request) -> Response:
-        body = json.loads(
-            request.body
-        )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
+    # @user_can_edit(False)
+    def update_value(request: Request, pk: int) -> Response:
+        body = request.data
+        current_user_id = request.user.id
 
         try:
-            object_id = body.get("objectID")
-            object_type = body.get("objectType")
+            object_id = body.get("object_id")
+            object_type = body.get("object_type")
             data = body.get("data")
-            changeFieldID = body.get("changeFieldID", False)
+
             objects = DAO.get_model_from_str(object_type).objects
 
             if hasattr(objects, "get_subclass"):
                 object_to_update = objects.get_subclass(pk=object_id)
             else:
                 object_to_update = objects.get(pk=object_id)
+
             serializer = serializer_lookups_shallow[object_type](
                 object_to_update,
                 data=data,
                 partial=True,
                 context={"user": request.user},
             )
+
             Utility.save_serializer(serializer)
 
         except ValidationError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             workflow = object_to_update.get_workflow()
-            actions.dispatch_wf(
+            WorkflowUpdateEmitter.emit_workflow_update(
                 workflow,
-                actions.changeField(object_id, object_type, data, changeFieldID),
+                WorkflowUpdateEmitter.prepare_change_field_payload(
+                    object_id=object_id,
+                    object_type=object_type,
+                    json=data,
+                    publishing_user_id=current_user_id,
+                ),
             )
             if object_type == "outcome":
-                actions.dispatch_to_parent_wf(
+                WorkflowUpdateEmitter.dispatch_to_parent_wf(
                     workflow,
-                    actions.changeField(object_id, object_type, data),
+                    WorkflowUpdateEmitter.prepare_change_field_payload(
+                        object_id=object_id,
+                        object_type=object_type,
+                        json=data,
+                    ),
                 )
 
         except AttributeError as e:
@@ -102,17 +117,20 @@ class WorkspaceEndpoint:
 
     #########################################################
     # @todo this is still a giant catchall for all objects
-    # separate out the worklow objects:
-    #  - columnn
+    #
+    # Separate out the workflow objects:
+    #  - column
     #  - node
     #  - outcome
-    #  - weekl
-    #  from the workspace objects
+    #  - week
+    #
+    #  From the workspace objects
     #   - workflow
     #   - project
+
     #########################################################
     @staticmethod
-    @user_can_delete(False)
+    # @user_can_delete(False)
     @api_view(["POST"])
     def delete(request: Request, pk: int) -> Response:
         """
@@ -132,7 +150,12 @@ class WorkspaceEndpoint:
         try:
             model = DAO.get_model_from_str(object_type).objects.get(id=object_id)
         except (ProtectedError, ObjectDoesNotExist):
-            return Response({"error": "Object does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "error": "Object does not exist",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Delete the object
         # @todo verify if we need to do this at the end
@@ -149,6 +172,7 @@ class WorkspaceEndpoint:
 
         # Additional data handling based on object type
         extra_data = None
+
         if object_type in ["outcome", "outcome_base"]:
             affected_nodes = [pk] + list(
                 DAO.get_descendant_outcomes(model).values_list("pk", flat=True)
@@ -156,6 +180,7 @@ class WorkspaceEndpoint:
             extra_data = RefreshSerializerNode(
                 Node.objects.filter(pk__in=affected_nodes), many=True
             ).data
+
         elif object_type == "column" and linked_workflows:
             extra_data = (
                 linked_workflows[0]
@@ -190,7 +215,7 @@ class WorkspaceEndpoint:
     #   - project
     #########################################################
     @staticmethod
-    # @user_can_delete(False)
+    # #@user_can_delete(False)
     @api_view(["POST"])
     def delete_soft(request: Request, pk: int) -> Response:
         """
@@ -280,7 +305,7 @@ class WorkspaceEndpoint:
         )
 
     @staticmethod
-    # @user_can_delete(False)
+    # #@user_can_delete(False)
     @api_view(["POST"])
     def restore(request: Request, pk: int) -> Response:
         """
@@ -319,10 +344,13 @@ class WorkspaceEndpoint:
 
             # Check to see if we have any linked workflows that need to be updated
             linked_workflows = False
+
             if object_type == ObjectType.NODE:
                 linked_workflows = list(Workflow.objects.filter(linked_nodes=model))
+
             elif object_type == ObjectType.WEEK:
                 linked_workflows = list(Workflow.objects.filter(linked_nodes__week=model))
+
             elif object_type in ["workflow", "activity", "course", "program"]:
                 linked_workflows = list(
                     Workflow.objects.filter(linked_nodes__week__workflow__id=model.id)
@@ -330,6 +358,7 @@ class WorkspaceEndpoint:
                 parent_workflows = [
                     node.get_workflow() for node in Node.objects.filter(linked_workflow=model)
                 ]
+
             elif object_type == ObjectType.OUTCOME:
                 linked_workflows = list(
                     Workflow.objects.filter(
@@ -339,6 +368,7 @@ class WorkspaceEndpoint:
                         )
                     )
                 )
+
             if object_type == ObjectType.OUTCOME:
                 outcomes_list = [object_id] + list(
                     DAO.get_descendant_outcomes(model).values_list("pk", flat=True)
@@ -351,6 +381,7 @@ class WorkspaceEndpoint:
                     Outcome.objects.filter(horizontal_outcomes__in=outcomes_list),
                     many=True,
                 ).data
+
             if object_type == ObjectType.WEEK:
                 throughparent = WeekWorkflow.objects.get(week=model)
                 throughparent_id = throughparent.id
@@ -360,6 +391,7 @@ class WorkspaceEndpoint:
                     .filter(rank__lt=throughparent.rank)
                     .count()
                 )
+
             elif object_type == ObjectType.COLUMN:
                 throughparent = ColumnWorkflow.objects.get(column=model)
                 throughparent_id = throughparent.id
@@ -410,7 +442,7 @@ class WorkspaceEndpoint:
             return Response({"error": "ObjectDoesNotExist"}, status=400)
 
         if workflow is not None:
-            action = actions.restoreSelfAction(
+            action = WorkflowUpdateEmitter.restore_self_action(
                 object_id,
                 object_type,
                 parent_id,
@@ -418,27 +450,31 @@ class WorkspaceEndpoint:
                 throughparent_index,
                 extra_data,
             )
-            actions.dispatch_wf(
+            WorkflowUpdateEmitter.emit_workflow_update(
                 workflow,
                 action,
             )
             if object_type == "outcome" or object_type == "outcome_base":
-                actions.dispatch_to_parent_wf(
+                WorkflowUpdateEmitter.dispatch_to_parent_wf(
                     workflow,
                     action,
                 )
                 if linked_workflows:
                     for wf in linked_workflows:
-                        actions.dispatch_wf(wf, action)
-                        actions.dispatch_wf(
+                        WorkflowUpdateEmitter.emit_workflow_update(wf, action)
+                        WorkflowUpdateEmitter.emit_workflow_update(
                             wf,
-                            actions.updateHorizontalLinks({"data": outcomes_to_update}),
+                            WorkflowUpdateEmitter.update_horizontal_links(
+                                {"data": outcomes_to_update}
+                            ),
                         )
+
         if object_type != "outcome" and object_type != "outcome_base" and linked_workflows:
             for wf in linked_workflows:
-                actions.dispatch_parent_updated(wf)
+                WorkflowUpdateEmitter.emit_parent_updated(wf)
+
         if object_type in ["workflow", "activity", "course", "program"]:
             for parent_workflow in parent_workflows:
-                actions.dispatch_child_updated(parent_workflow, model.get_workflow())
+                WorkflowUpdateEmitter.emit_child_updated(parent_workflow, model.get_workflow())
 
         return Response({"message": "success"}, status=status.HTTP_200_OK)

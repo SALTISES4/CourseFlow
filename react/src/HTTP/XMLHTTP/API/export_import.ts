@@ -7,7 +7,7 @@ export function getExport(
   objectId,
   objectType,
   exportType,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.exportImport.export
   API_POST(url, {
@@ -25,7 +25,7 @@ export function importData(
   objectType,
   importType,
   myFile,
-  callBackFunction = (_data: EmptyPostResp) => console.log('success')
+  callBackFunction = (_data: EmptyPostResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.exportImport.import
   API_POST_FILE(

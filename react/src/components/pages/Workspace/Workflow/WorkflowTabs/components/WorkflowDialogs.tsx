@@ -6,7 +6,7 @@ import WorkflowLinkDialog from '@cfComponents/dialog/Workflow/WorkflowLinkDialog
 import ArchiveDialog from '@cfComponents/dialog/Workspace/ArchiveDialog'
 import ContributorRemoveDialog from '@cfComponents/dialog/Workspace/ContributorRemoveDialog'
 import RestoreDialog from '@cfComponents/dialog/Workspace/RestoreDialog'
-import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
+import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { useParams } from 'react-router-dom'
 
 const WorkflowDialogs = () => {

@@ -1,21 +1,23 @@
+import Slider from '@mui/material/Slider'
 import React from 'react'
 
 type PropsType = {
-  checked: boolean
-  toggleAction: () => void
+  value: boolean
+  handleChange: () => void
 }
 
-const Slider: React.FC<PropsType> = ({ checked, toggleAction }) => {
+const BinarySlider = ({ value, handleChange }: PropsType) => {
   return (
-    <label className="switch">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={toggleAction} // No need to bind in functional components
-      />
-      <span className="slider round" />
-    </label>
+    <Slider
+      value={Number(value)}
+      min={0}
+      max={1}
+      step={1}
+      track="normal"
+      valueLabelDisplay="off"
+      onChange={handleChange}
+    />
   )
 }
 
-export default Slider
+export default BinarySlider

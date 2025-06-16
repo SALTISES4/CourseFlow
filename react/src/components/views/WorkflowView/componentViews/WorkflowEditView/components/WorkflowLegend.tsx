@@ -1,12 +1,12 @@
-import * as Constants from '@cf/constants'
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
-import { apiPaths } from '@cf/router/apiRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as Constants from '@cf/utility/constants'
+import { _t } from '@cf/utility/Utility.class'
 import LegendLine from '@cfComponents/UIPrimitives/LegendLine'
-import Slider from '@cfComponents/UIPrimitives/Slider'
+import { selectAllNodes } from '@cfRedux/selectors/node.selector'
+import { selectAllWeeks } from '@cfRedux/selectors/week.selector'
+import { RootState } from '@cfRedux/store'
 import { AppState, TNode, TWeek } from '@cfRedux/types/type'
+import Legend from '@cfViews/common/Legend'
 import * as React from 'react'
-import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
 const choices = COURSEFLOW_APP.globalContextData.workflowChoices
@@ -15,134 +15,114 @@ const choices = COURSEFLOW_APP.globalContextData.workflowChoices
  * first pass on FV conversion is done
  *******************************************************/
 const WorkflowLegend = () => {
-  const workFlowConfigContext = React.useContext(WorkflowConfigContext)
+  const nodes = useSelector((state: RootState) => selectAllNodes(state))
+  const weeks = useSelector((state: RootState) => selectAllWeeks(state))
 
-  const [showLegend, setShowLegend] = useState<boolean>(() => {
-    return JSON.parse(localStorage.getItem('show_legend'))
-  })
+  /*******************************************************
+   * COMPONENTS
+   *******************************************************/
 
-  const [showSlider, setShowSlider] = useState<boolean>(false)
+  const Strategies = () => {
+    const strategies = weeks
+      .map((week) => parseInt(week.strategyClassification.toString(), 10))
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .filter((value) => value > 0)
 
-  // this was draggable
-  useEffect(() => {
-    // $('.workflow-legend').draggable();
-    setShowSlider(true)
-  }, [])
-
-  // this was draggable
-  const toggle = () => {
-    localStorage.setItem('show_legend', String(!showLegend))
-    setShowLegend((prev) => !prev)
-  }
-
-  // Redux state selections
-  const stateNodes = useSelector<AppState, TNode[]>(
-    (state: AppState) => state.node
-  )
-  const stateWeeks = useSelector<AppState, TWeek[]>(
-    (state: AppState) => state.week
-  )
-
-  const contexts = stateNodes
-    .map((node) => parseInt(node.contextClassification.toString(), 10))
-    .filter((value, index, self) => self.indexOf(value) === index)
-    .filter((value) => value > 0)
-
-  const tasks = stateNodes
-    .map((node) => parseInt(node.taskClassification.toString(), 10))
-    .filter((value, index, self) => self.indexOf(value) === index)
-    .filter((value) => value > 0)
-
-  const strategies = stateWeeks
-    .map((week) => parseInt(week.strategyClassification.toString(), 10))
-    .filter((value, index, self) => self.indexOf(value) === index)
-    .filter((value) => value > 0)
-
-  const getSlider = () => {
-    if (showSlider) {
-      return (
-        <>
-          <div>{_t('Legend')}</div>
-          <Slider checked={showLegend} toggleAction={toggle} />
-        </>
-      )
+    if (!strategies.length) {
+      return <></>
     }
-    return null
-  }
+    const renderedStrategies = strategies.map((value, index) => (
+      <LegendLine
+        key={index}
+        icon={Constants.strategyKeys[value]}
+        text={
+          choices.strategyClassificationChoices.find(
+            (obj) => obj.type === value
+          )?.name
+        }
+      />
+    ))
 
-  const renderedContexts = contexts.map((value, index) => (
-    <LegendLine
-      key={index}
-      icon={Constants.contextKeys[value]}
-      text={choices.contextChoices.find((obj) => obj.type === value)?.name}
-    />
-  ))
-
-  const renderedTasks = tasks.map((value, index) => (
-    <LegendLine
-      key={index}
-      icon={Constants.taskKeys[value]}
-      text={choices.taskChoices.find((obj) => obj.type === value)?.name}
-    />
-  ))
-
-  const renderedStrategies = strategies.map((value, index) => (
-    <LegendLine
-      key={index}
-      icon={Constants.strategyKeys[value]}
-      text={
-        choices.strategyClassificationChoices.find((obj) => obj.type === value)
-          ?.name
-      }
-    />
-  ))
-
-  const renderLegend = () => {
-    if (showLegend === false) {
-      return null
-    }
     return (
-      <div className="workflow-legend">
-        <h4>Legend</h4>
-
-        {!!renderedContexts.length && (
-          <div className="legend-section">
-            <hr />
-            <h5>Contexts:</h5>
-            {renderedContexts}
-          </div>
-        )}
-
-        {!!renderedTasks.length && (
-          <div className="legend-section">
-            <hr />
-            <h5>Tasks:</h5>
-            {renderedTasks}
-          </div>
-        )}
-
-        {!!renderedStrategies.length && (
-          <div className="legend-section">
-            <hr />
-            <h5>Strategies:</h5>
-            {renderedStrategies}
-          </div>
-        )}
-
-        <div className="window-close-button" onClick={toggle}>
-          <img
-            src={`${apiPaths.external.static_assets.icon}close.svg`}
-            alt="Close"
-          />
-        </div>
-      </div>
+      <>
+        <hr />
+        <h5>Strategies:</h5>
+        {renderedStrategies}
+      </>
     )
   }
 
+  const Contexts = () => {
+    const contexts = nodes
+      .map((node) => parseInt(node.contextClassification.toString(), 10))
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .filter((value) => value > 0)
+
+    if (!contexts.length) {
+      return <></>
+    }
+    const renderedContexts = contexts.map((value, index) => (
+      <LegendLine
+        key={index}
+        icon={Constants.contextKeys[value]}
+        text={choices.contextChoices.find((obj) => obj.type === value)?.name}
+      />
+    ))
+
+    return (
+      <>
+        <hr />
+        <h5>Contexts:</h5>
+        {renderedContexts}
+      </>
+    )
+  }
+
+  const Tasks = () => {
+    const tasks = nodes
+      .map((node) => parseInt(node.taskClassification.toString(), 10))
+      .filter((value, index, self) => self.indexOf(value) === index)
+      .filter((value) => value > 0)
+
+    if (!tasks.length) {
+      return <></>
+    }
+
+    const renderedTasks = tasks.map((value, index) => (
+      <LegendLine
+        key={index}
+        icon={Constants.taskKeys[value]}
+        text={choices.taskChoices.find((obj) => obj.type === value)?.name}
+      />
+    ))
+
+    return (
+      <>
+        <hr />
+        <h5>Tasks:</h5>
+        {renderedTasks}
+      </>
+    )
+  }
+
+  const LegendContent = () => {
+    return (
+      <>
+        <h4>Legend</h4>
+        <Strategies />
+        <Tasks />
+        <Contexts />
+      </>
+    )
+  }
+
+  /*******************************************************
+   * RENDER RETURN
+   *******************************************************/
   return (
-    <div>
-      {getSlider()} {renderLegend()}
-    </div>
+    <Legend>
+      <LegendContent />
+    </Legend>
   )
 }
 

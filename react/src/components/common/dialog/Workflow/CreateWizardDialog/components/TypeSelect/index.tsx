@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/utilityFunctions'
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize'
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch'
 import Stack from '@mui/material/Stack'

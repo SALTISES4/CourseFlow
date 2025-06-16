@@ -1,5 +1,11 @@
 import useWorkflowSidebar from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import { isTabVisible } from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar/permissions'
+import { SidebarState } from '@cfRedux/slices/sidebar.slice'
+import {
+  sidebarChangeTab,
+  sidebarCollapse
+} from '@cfRedux/slices/sidebar.slice'
+import { AppState } from '@cfRedux/types/type'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import EditIcon from '@mui/icons-material/Edit'
@@ -8,34 +14,22 @@ import LinkIcon from '@mui/icons-material/Link'
 import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash'
 import Paper from '@mui/material/Paper'
 import ToggleButton from '@mui/material/ToggleButton'
-import { produce } from 'immer'
-import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { ReactNode, useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import AddTab from './components/AddTab'
 import EditTab from './components/EditTab'
+import { EditableType } from './components/EditTab/types'
 import OutcomesTab from './components/OutcomesTab'
 import RelatedTab from './components/RelatedTab'
 import RestoreTab from './components/RestoreTab'
-import useEditable from './hooks/useEditable'
-import { EditablePropsType } from './hooks/useEditable/types'
 import { SidebarTabsWrap, SidebarToggle, SidebarWrap } from './styles'
-import { SidebarDataType } from './types'
-
-type StateType = {
-  tab: keyof SidebarDataType | null
-  collapsed: boolean
-}
-
-const initialState: StateType = {
-  tab: null,
-  collapsed: true
-}
+import {RootState} from "@cfRedux/store";
 
 function getTabContent(
-  tab: keyof SidebarDataType | null,
-  props: SidebarDataType,
-  editable: EditablePropsType
+  tab: SidebarState['tab'],
+  edit: SidebarState['edit']
 ): ReactNode {
   if (!tab) {
     return
@@ -43,108 +37,75 @@ function getTabContent(
 
   switch (tab) {
     case 'edit':
-      return <EditTab {...editable} />
+      return <EditTab type={edit.objectType as unknown as EditableType} />
     case 'add':
-      return <AddTab {...(props[tab] as SidebarDataType['add'])} />
+      return <AddTab />
     case 'restore':
-      return <RestoreTab {...(props[tab] as SidebarDataType['restore'])} />
+      return <RestoreTab />
     case 'outcomes':
-      return <OutcomesTab {...(props[tab] as SidebarDataType['outcomes'])} />
+      return <OutcomesTab />
     case 'related':
-      return <RelatedTab {...(props[tab] as SidebarDataType['related'])} />
+      return <RelatedTab />
     default:
       return <>{tab} tab not implemented yet</>
   }
 }
 
-const WorkspaceSidebar = (props: SidebarDataType) => {
-  const [state, setState] = useState<StateType>(initialState)
+const WorkspaceSidebar = () => {
   const [sidebarConfig] = useWorkflowSidebar()
-  const editable = useEditable()
   const location = useLocation()
+  const dispatch = useDispatch()
+
+  const sidebar = useSelector((state: RootState) => state.sidebar)
 
   useEffect(() => {
-    setState({
-      tab: null,
-      collapsed: true
-    })
-  }, [location.pathname])
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+  }, [dispatch, location.pathname])
 
   useEffect(() => {
-    if (editable.type) {
+    if (sidebar.edit.objectType) {
       onTabClick('edit')
     } else {
-      setState({
-        tab: null,
-        collapsed: true
-      })
+      dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editable.type])
+  }, [sidebar.edit.objectType])
 
   const onToggleClick = useCallback(() => {
-    setState({
-      tab: null,
-      collapsed: !state.collapsed
-    })
-  }, [state.collapsed])
+    dispatch(sidebarCollapse())
+  }, [dispatch])
 
-  const onTabClick = (tab: keyof SidebarDataType | null) => {
+  const onTabClick = (tab: SidebarState['tab']) => {
     if (!tab) {
-      return setState(
-        produce((draft) => {
-          draft.tab = null
-          draft.collapsed = true
-        })
-      )
+      dispatch(sidebarCollapse())
     }
 
     if (tab) {
-      return setState(
-        produce((draft) => {
-          draft.tab = tab
-          draft.collapsed = false
-        })
-      )
-    }
-
-    if (state.collapsed) {
-      setState(
-        produce((draft) => {
-          draft.collapsed = false
-        })
-      )
+      dispatch(sidebarChangeTab({ tab, collapsed: false }))
     }
   }
 
-  const { add, edit, outcomes, restore } = props
-  const tabContent = getTabContent(state.tab, props, {
-    type: editable.type,
-    data: editable.data
-  })
+  const tabContent = getTabContent(sidebar.tab, sidebar.edit)
 
   const tabs: {
     disabled?: boolean
-    value: keyof SidebarDataType
+    value: SidebarState['tab']
     icon: ReactNode
   }[] = [
     {
-      disabled: edit.readonly && !editable.type,
+      disabled: !sidebar.edit.objectType,
       value: 'edit',
       icon: <EditIcon />
     },
     {
-      disabled: add.readonly,
       value: 'add',
       icon: <AddCircleIcon />
     },
     {
-      disabled: outcomes.readonly,
       value: 'outcomes',
       icon: <EmojiEventsOutlinedIcon />
     },
     {
-      disabled: restore.readonly,
       value: 'restore',
       icon: <RestoreFromTrashIcon />
     },
@@ -177,11 +138,11 @@ const WorkspaceSidebar = (props: SidebarDataType) => {
   }
 
   return (
-    <SidebarWrap collapsed={state.collapsed}>
+    <SidebarWrap collapsed={sidebar.collapsed}>
       <SidebarTabsWrap
         exclusive
         orientation="vertical"
-        value={state.tab}
+        value={sidebar.tab}
         onChange={(_, tab) => onTabClick(tab)}
       >
         {visibleTabs}

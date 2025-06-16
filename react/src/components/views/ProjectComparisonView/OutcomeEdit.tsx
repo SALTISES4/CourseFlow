@@ -1,12 +1,12 @@
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { getSortedOutcomesFromOutcomeWorkflowSet } from '@cfFindState'
 import { AppState } from '@cfRedux/types/type'
 import {
   OutcomeEditViewProps,
   OutcomeEditViewState,
   OutcomeEditViewUnconnected
-} from '@cfViews/WorkflowView/componentViews/OutcomeEditView/OutcomeEditView'
+} from '@cfViews/WorkflowView/componentViews/OutcomeEditView'
 import { insertedAtInstant } from '@XMLHTTP/API/update'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
@@ -55,7 +55,7 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected<
     }
   }
 
-  sortableMovedOutFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedOutFunction(id, newPosition, type, newParent, childId) {
     if (
       type === CfObjectType.OUTCOMEWORKFLOW &&
       confirm(
@@ -71,15 +71,15 @@ class OutcomeEditUnconnected extends OutcomeEditViewUnconnected<
         'outcome',
         this.props.workflow.id,
         'workflow',
-        new_position,
+        newPosition,
         'outcomeworkflow'
       )
       insertedAtInstant(
-        child_id,
+        childId,
         'outcome',
         this.props.workflow.id,
         'workflow',
-        new_position,
+        newPosition,
         'outcomeworkflow'
       )
     }

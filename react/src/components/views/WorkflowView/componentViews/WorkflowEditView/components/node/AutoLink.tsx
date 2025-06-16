@@ -1,0 +1,354 @@
+import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
+import React, { useEffect, useRef, useState } from 'react'
+import * as reactDom from 'react-dom'
+
+type PropsType = {
+  nodeId: number
+  nodeDiv: React.RefObject<HTMLElement>
+}
+
+const AutoLink = ({ nodeId, nodeDiv }: PropsType) => {
+  /*******************************************************
+   * CONSTANT
+   *******************************************************/
+  const eventNameSpace = `autolink${nodeId}`
+  const rerenderEvents = `ports-rendered.${eventNameSpace}`
+
+  /*******************************************************
+   * STATE
+   *******************************************************/
+  const [sourceNode, setSourceNode] = useState<JQuery<HTMLElement>>(null)
+  const [targetNode, setTargetNode] = useState<JQuery<HTMLElement>>(null)
+  const [sourcePortHandle, setSourcePortHandle] =
+    useState<d3.Selection<SVGElement, unknown, HTMLElement, any>>(null)
+  const [targetPortHandle, setTargetPortHandle] =
+    useState<d3.Selection<SVGElement, unknown, HTMLElement, any>>(null)
+
+  /*******************************************************
+   * LIFECYCLE HOOKS
+   *******************************************************/
+  useEffect(() => {
+    const srcNode = $(nodeDiv.current)
+    setSourceNode(srcNode)
+
+    const srcPortHandle = d3.select(
+      `g.port-${nodeId} circle[data-port-type='source'][data-port='s']`
+    )
+    setSourcePortHandle(srcPortHandle)
+
+    srcNode.on(rerenderEvents, rerender)
+
+    return () => {
+      srcNode.off(rerenderEvents)
+    }
+  }, [nodeDiv, nodeId])
+
+  useEffect(() => {
+    if (!sourceNode) {
+      return
+    }
+
+    findAutoTarget()
+
+    return () => {
+      if (targetNode) {
+        targetNode.off(rerenderEvents)
+      }
+    }
+  }, [sourceNode, targetNode])
+
+  /*******************************************************
+   * FUNCTIONS
+   *******************************************************/
+  const rerender = () => {
+    setSourceNode($(nodeDiv.current))
+  }
+
+  const findAutoTarget = () => {
+    const ns = sourceNode.closest('.node-week')
+    const nextNs = ns
+      .nextAll('.node-week:not(.ui-sortable-placeholder)')
+      .first()
+
+    let target = nextNs.length > 0 ? nextNs.find('.node').attr('id') : null
+
+    if (!target) {
+      let nextSw = ns.closest('.week-workflow').next()
+      while (nextSw.length > 0 && !target) {
+        target = nextSw
+          .find('.node-week:not(.ui-sortable-placeholder) .node')
+          .attr('id')
+        nextSw = nextSw.next()
+      }
+    }
+
+    setTarget(target)
+  }
+
+  /**
+   *  set the target node and port handle
+   **/
+  const setTarget = (target: string) => {
+    if (target) {
+      const tgtNode = $(`.week #${target}.node`)
+      const tgtPortHandle = d3.select(
+        `g.port-${target} circle[data-port-type='target'][data-port='n']`
+      )
+
+      if (targetNode) {
+        targetNode.off(rerenderEvents)
+      }
+
+      setTargetNode(tgtNode)
+      setTargetPortHandle(tgtPortHandle)
+
+      tgtNode.on(rerenderEvents, rerender)
+    } else {
+      if (targetNode) {
+        targetNode.off(rerenderEvents)
+      }
+
+      setTargetNode(null)
+      setTargetPortHandle(null)
+    }
+  }
+
+  /**
+   * if source or target is not properly set
+   **/
+  if (
+    !sourceNode ||
+    !sourcePortHandle ||
+    sourcePortHandle.empty() ||
+    !targetNode
+  ) {
+    return null
+  }
+
+  /**
+   * is the target node is still in the DOM
+   **/
+  if (targetNode && targetNode.parent().parent().length === 0) {
+    setTargetNode(null)
+  }
+
+  /*******************************************************
+   * RENDER PORTAL
+   *******************************************************/
+  const sourceDims = {
+    width: sourceNode.outerWidth(),
+    height: sourceNode.outerHeight()
+  }
+
+  const targetDims = {
+    width: targetNode.outerWidth(),
+    height: targetNode.outerHeight()
+  }
+
+  const nodeSelected =
+    sourceNode.attr('data-selected') === 'true' ||
+    targetNode.attr('data-selected') === 'true'
+  const nodeHovered =
+    sourceNode.attr('data-hovered') === 'true' ||
+    targetNode.attr('data-hovered') === 'true'
+
+  // Create the portal for NodelinkSVG
+  const portal = reactDom.createPortal(
+    <NodelinkSVG
+      hovered={nodeHovered}
+      nodeSelected={nodeSelected}
+      sourcePortHandle={sourcePortHandle}
+      sourcePort={2}
+      targetPortHandle={targetPortHandle}
+      targetPort={0}
+      sourceDimensions={sourceDims}
+      targetDimensions={targetDims}
+    />,
+    $('.workflow-canvas')[0]
+  )
+
+  return <>{portal}</>
+}
+
+export default AutoLink
+
+// import NodelinkSVG from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodelinkSVG'
+// import * as React from 'react'
+// import * as reactDom from 'react-dom'
+// // import $ from 'jquery'
+//
+// type PropsType = {
+//   nodeId: number
+//   nodeDiv: React.RefObject<HTMLElement>
+// }
+//
+// /**
+//  * A Nodelink that is automatically generated based on node setting. Has no direct back-end representation
+//  */
+// class AutoLink extends React.Component<PropsType> {
+//   private eventNameSpace: string
+//   private rerenderEvents: string
+//   private sourcePortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+//   private targetPortHandle: d3.Selection<SVGElement, unknown, HTMLElement, any>
+//   private targetNode: JQuery<HTMLElement>
+//   private sourceNode: JQuery<HTMLElement>
+//   constructor(props) {
+//     super(props)
+//     this.eventNameSpace = 'autolink' + this.props.nodeId
+//     this.rerenderEvents = 'ports-rendered.' + this.eventNameSpace
+//   }
+//
+//   /*******************************************************
+//    * LIFECYCLE
+//    *******************************************************/
+//   componentWillUnmount() {
+//     if (this.targetNode && this.targetNode.length > 0) {
+//       this.sourceNode.off(this.rerenderEvents)
+//       this.targetNode.off(this.rerenderEvents)
+//     }
+//   }
+//
+//   /*******************************************************
+//    * FUNCTIONS
+//    *******************************************************/
+//   findAutoTarget() {
+//     let target = null
+//     const ns = this.sourceNode.closest('.node-week')
+//     const nextNs = ns
+//       .nextAll('.node-week:not(.ui-sortable-placeholder)')
+//       .first()
+//
+//     if (nextNs.length > 0) {
+//       target = nextNs.find('.node').attr('id')
+//     } else {
+//       let nextSw = ns.closest('.week-workflow').next()
+//
+//       while (nextSw.length > 0 && !target) {
+//         target = nextSw
+//           .find('.node-week:not(.ui-sortable-placeholder) .node')
+//           .attr('id')
+//         nextSw = nextSw.next()
+//       }
+//     }
+//
+//     this.setTarget(target)
+//   }
+//
+//   rerender(evt) {
+//     this.setState({}) // @todo verify, there is no state in this component
+//   }
+//
+//   setTarget(target) {
+//     if (target) {
+//       if (this.targetNode && target == this.targetNode.attr('id')) {
+//         if (!this.targetPortHandle || this.targetPortHandle.empty()) {
+//           this.targetPortHandle = d3.select(
+//             'g.port-' +
+//               target +
+//               " circle[data-port-type='target'][data-port='n']"
+//           )
+//         }
+//         return
+//       }
+//       if (this.targetNode) {
+//         this.targetNode.off(this.rerenderEvents)
+//       }
+//
+//       this.targetNode = $('.week #' + target + '.node')
+//
+//       this.targetPortHandle = d3.select(
+//         'g.port-' + target + " circle[data-port-type='target'][data-port='n']"
+//       )
+//
+//       this.targetNode.on(this.rerenderEvents, this.rerender.bind(this))
+//     } else {
+//       if (this.targetNode) {
+//         this.targetNode.off(this.rerenderEvents)
+//       }
+//
+//       this.targetNode = null
+//       this.targetPortHandle = null
+//     }
+//   }
+//
+//   /*******************************************************
+//    * RENDER
+//    *******************************************************/
+//   render() {
+//     // Utility.logger(this.props.nodeId)
+//     // Utility.logger(this)
+//     // Utility.logger(this.sourceNode)
+//     //
+//     // Utility.logger(Object.keys(this))
+//     // Utility.logger(JSON.parse(Utility.stringifyMaxDepth(this, 2)))
+//
+//     // this is some race condition hack BS
+//     // node is not drawn? so sourcePort doesn't exist?
+//     // add to an 'rerender' event to rerender later?
+//     // wat
+//     if (
+//       !this.sourceNode ||
+//       this.sourceNode?.length == 0 ||
+//       !this.sourcePortHandle ||
+//       this.sourcePortHandle.empty()
+//     ) {
+//       this.sourceNode = $(this.props.nodeDiv.current)
+//
+//       this.sourcePortHandle = d3.select(
+//         'g.port-' +
+//           this.props.nodeId +
+//           " circle[data-port-type='source'][data-port='s']"
+//       )
+//       // Utility.logger('this.sourcePortHandle')
+//       // Utility.logger(this.sourcePortHandle)
+//
+//       this.sourceNode.on(this.rerenderEvents, this.rerender.bind(this))
+//       //      return
+//     }
+//
+//     if (this.targetNode && this.targetNode.parent().parent().length == 0) {
+//       this.targetNode = null
+//     }
+//
+//     this.findAutoTarget()
+//
+//     if (!this.targetNode) {
+//       return null
+//     }
+//
+//     const sourceDims = {
+//       width: this.sourceNode.outerWidth(),
+//       height: this.sourceNode.outerHeight()
+//     }
+//     const targetDims = {
+//       width: this.targetNode.outerWidth(),
+//       height: this.targetNode.outerHeight()
+//     }
+//
+//     const nodeSelected =
+//       this.sourceNode.attr('data-selected') === 'true' ||
+//       this.targetNode.attr('data-selected') === 'true'
+//
+//     const nodeHovered =
+//       this.sourceNode.attr('data-hovered') === 'true' ||
+//       this.targetNode.attr('data-hovered') === 'true'
+//
+//     //  .workflow-canvas is dynamic portal
+//     const portal = reactDom.createPortal(
+//       <NodelinkSVG
+//         hovered={nodeHovered}
+//         nodeSelected={nodeSelected}
+//         sourcePortHandle={this.sourcePortHandle}
+//         sourcePort={2}
+//         targetPortHandle={this.targetPortHandle}
+//         targetPort={0}
+//         sourceDimensions={sourceDims}
+//         targetDimensions={targetDims}
+//       />,
+//       $('.workflow-canvas')[0]
+//     )
+//     return <>{portal}</>
+//   }
+// }
+//
+// export default AutoLink

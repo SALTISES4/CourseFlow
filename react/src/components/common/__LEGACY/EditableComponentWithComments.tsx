@@ -1,7 +1,7 @@
-import * as Constants from '@cf/constants'
-// @components
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
-import { _t } from '@cf/utility/utilityFunctions'
+import * as Constants from '@cf/utility/constants'
+// @components
+import { _t } from '@cf/utility/Utility.class'
 import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import CommentBox from '@cfEditableComponents/components/CommentBox'
 import EditableComponent, {
@@ -15,7 +15,7 @@ import * as React from 'react'
 import { Action } from 'redux'
 
 type StateType = {
-  show_comments: boolean
+  showComments: boolean
 } & EditableComponentStateType
 
 type OwnProps = {

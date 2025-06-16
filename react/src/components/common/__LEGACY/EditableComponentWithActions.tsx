@@ -1,4 +1,4 @@
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import * as React from 'react'
 
 import EditableComponentWithComments, {
@@ -7,7 +7,7 @@ import EditableComponentWithComments, {
 } from './EditableComponentWithComments'
 
 type OwnProps = {
-  sibling_count?: any
+  siblingCount?: any
   parentId?: any
 } & EditableComponentWithCommentsType
 export type EditableComponentWithActionsProps = OwnProps

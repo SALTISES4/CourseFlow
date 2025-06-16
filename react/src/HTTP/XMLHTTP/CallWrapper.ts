@@ -21,6 +21,7 @@ export function API_GET<T>(url = ''): Promise<any> {
   if (!url) {
     return Promise.reject('You need to specify an URL for API_GET to run.')
   }
+
   return new Promise((res, rej) => {
     fetch(url, {
       method: 'GET',
@@ -55,8 +56,9 @@ export function API_POST<T>(url = '', data = {}): Promise<any> {
   if (!url) {
     return Promise.reject('You need to specify an URL in for API_POST to run.')
   }
+
   return new Promise((res, rej) => {
-    COURSEFLOW_APP.tinyLoader.startLoad()
+
     fetch(url, {
       method: 'POST',
       headers: {
@@ -72,7 +74,7 @@ export function API_POST<T>(url = '', data = {}): Promise<any> {
           return response.json()
         }
         // here we have a handled server error
-        // parse out the message we're returning from API
+        // aparse out the message we're returning from API
         // TDB whether we pass these messages on to the frontend
         return response.json().then((err) => {
           rej({
@@ -107,9 +109,9 @@ export function API_POST_FILE<T>(
   if (!url) {
     return Promise.reject('You need to specify an URL in for API_POST to run.')
   }
-  const form_data = new FormData()
-  form_data.set('body', JSON.stringify(data))
-  form_data.set('file', file)
+  const formData = new FormData()
+  formData.set('body', JSON.stringify(data))
+  formData.set('file', file)
   return new Promise((res, rej) => {
     fetch(url, {
       method: 'POST',
@@ -117,7 +119,7 @@ export function API_POST_FILE<T>(
         // // 'root' comes from the csrf-setup script
         'X-CSRFToken': window.getCsrfToken()
       },
-      body: form_data
+      body: formData
     })
       // convert to JSON
       .then((response) => response.json())

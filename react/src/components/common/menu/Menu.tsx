@@ -1,13 +1,17 @@
+import { _t } from '@cf/utility/Utility.class'
 import { StyledMenu } from '@cfComponents/globalNav/TopBar/styles'
+import ActionButton from '@cfComponents/UIPrimitives/ActionButton'
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
 import { Menu } from '@mui/material'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Popover from '@mui/material/Popover'
 import { styled } from '@mui/material/styles'
+import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ChangeEvent, ReactElement, ReactNode, useMemo, useState } from 'react'
 import * as React from 'react'
 
 const StyledPopover = styled(Popover)({
@@ -16,6 +20,15 @@ const StyledPopover = styled(Popover)({
     width: 500
   }
 })
+
+export const MenuItemLabel = styled(MenuItem)({
+  textTransform: 'uppercase',
+  fontSize: '12px'
+})
+/*******************************************************
+ * MENU ITEMS
+ *******************************************************/
+
 /*******************************************************
  * This file contains menu 'builders' the accept a config list, as a plain object
  *  and construct some different menu types based around MUI menu
@@ -27,9 +40,11 @@ export type MenuItemType = {
   show?: boolean
   id?: string
   title?: string
+  sectionTitle?: string
   icon?: ReactElement
   seperator?: boolean
   showIconInList?: boolean
+  defaultChecked?: boolean
 }
 
 export const IconMenuItem = ({
@@ -95,6 +110,118 @@ export const ListMenuItem = ({
   )
 }
 
+type PropsType = {
+  disabled?: boolean
+  children: ReactNode
+  name: string
+  onChange: (key: string, checked: boolean) => void
+  seperator?: boolean
+  defaultChecked?: boolean
+}
+
+const SwitchMenuItem = ({
+  children,
+  name,
+  disabled,
+  onChange,
+  seperator,
+  defaultChecked
+}: PropsType) => (
+  <>
+    <MenuItem disableRipple>
+      <FormControlLabel
+        control={
+          <Switch
+            size="medium"
+            checked={defaultChecked}
+            disabled={disabled}
+            onChange={(_: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+              onChange(name, checked)
+            }}
+          />
+        }
+        label={children}
+      />
+    </MenuItem>
+    {seperator && <Divider />}
+  </>
+)
+
+const SimpleSwitchMenu = ({
+  id,
+  menuItems,
+  header
+}: {
+  id: string
+  menuItems: MenuItemType[]
+  header: MenuItemType
+}) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
+
+  const buttons = menuItems.map((item, idx) => {
+    const Title = () => {
+      if (item.sectionTitle) {
+        return (
+          <MenuItemLabel key={idx} disabled>
+            {item.sectionTitle}
+          </MenuItemLabel>
+        )
+      }
+      return <></>
+    }
+
+    return [
+      <Title />,
+      item.content && (
+        <SwitchMenuItem
+          key={JSON.stringify(item.content)}
+          name={JSON.stringify(item.content)}
+          disabled={!item.show}
+          defaultChecked={item.defaultChecked}
+          onChange={item.action}
+          seperator={item.seperator}
+        >
+          {item.content}
+        </SwitchMenuItem>
+      )
+    ]
+  })
+
+  return (
+    <>
+      <Button
+        id={`${id}-button`}
+        data-test-id={`${id}-button`}
+        aria-controls={open ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}
+        onClick={onClickHandler}
+      >
+        <ListMenuItem {...header} />
+      </Button>
+      <StyledMenu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button'
+        }}
+      >
+        {buttons}
+      </StyledMenu>
+    </>
+  )
+}
+/*******************************************************
+ * MENUS
+ *******************************************************/
 const SimpleMenu = ({
   id,
   menuItems,
@@ -106,7 +233,7 @@ const SimpleMenu = ({
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
@@ -125,7 +252,7 @@ const SimpleMenu = ({
         aria-controls={open ? 'basic-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+        onClick={onClickHandler}
       >
         <ListMenuItem {...header} />
       </Button>
@@ -152,7 +279,7 @@ const MenuWithOverflow = ({
 }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
   const handleClose = () => {
@@ -176,7 +303,7 @@ const MenuWithOverflow = ({
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
+            onClick={onClickHandler}
           >
             <MoreHorizIcon />
           </Button>
@@ -196,6 +323,7 @@ const MenuWithOverflow = ({
     </>
   )
 }
+
 type StaticMenuProps = {
   id: string
   menuItems?: MenuItemType[] // Optional if you might only have content
@@ -212,7 +340,7 @@ const StaticMenu = ({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickHandler = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -227,7 +355,7 @@ const StaticMenu = ({
         aria-controls={open ? `${id}-menu` : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+        onClick={onClickHandler}
       >
         {header.content}
       </Button>
@@ -252,4 +380,53 @@ const StaticMenu = ({
   )
 }
 
-export { MenuWithOverflow, SimpleMenu, StaticMenu }
+const HoverMenu = ({
+  id,
+  menuItems
+}: {
+  id?: string
+  menuItems: MenuItemType[]
+}) => {
+  const [show, setShow] = useState<boolean>(false)
+
+  const buttons = menuItems.map((item, el) => {
+    return (
+      <ActionButton
+        key={item.id}
+        buttonIcon={item.icon}
+        buttonClass="insert-sibling-button"
+        titleText={item.title}
+        onClickHandler={item.action}
+      />
+    )
+  })
+
+  return (
+    <div id={id} style={{ position: 'absolute', top: 0, right: 0 }}>
+      {buttons}
+      {/*{canWrite && (*/}
+      {/*  <>*/}
+      {/*    <InsertSiblingButton*/}
+      {/*      id={objectId}*/}
+      {/*      objectType={objectType}*/}
+      {/*      parentId={parentId}*/}
+      {/*    />*/}
+      {/*    <DuplicateSelfButton*/}
+      {/*      id={objectId}*/}
+      {/*      objectType={objectType}*/}
+      {/*      parentId={parentId}*/}
+      {/*    />*/}
+      {/*    <DeleteSelfButton id={objectId} objectType={objectType} />*/}
+      {/*  </>*/}
+      {/*)}*/}
+      {/*{canComment && <AddCommentingButton show={show} setShow={setShow} />}*/}
+    </div>
+
+    // {/*{show && (*/}
+    // {/*  <CommentBox id={objectId} setShow={setShow} objectType={objectType} />*/}
+    // {/*)}*/}
+    // {/*{show && memoizedCommentBox}*/}
+  )
+}
+
+export { MenuWithOverflow, SimpleMenu, StaticMenu, HoverMenu, SimpleSwitchMenu }

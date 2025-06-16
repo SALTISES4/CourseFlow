@@ -3,15 +3,17 @@ import TextField from '@mui/material/TextField'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import { TermForm } from './types'
+import getTermData from './getTermData'
 import {
   SidebarActions,
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
-} from '../../../../styles'
+} from '@cfSidebar/styles'
 
-const EditTerm = ({ title }: TermForm) => {
+const EditTerm = () => {
+  const { title } = getTermData(1)
+
   const [state, setState] = useState({
     title
   })

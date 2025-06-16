@@ -1,17 +1,14 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum.js'
-import { _t } from '@cf/utility/utilityFunctions'
-import WorkflowCardWrapper from '@cfComponents/cards/WorkflowCardWrapper'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import EditableComponent, {
   EditableComponentStateType
 } from '@cfEditableComponents/EditableComponent'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import ActionCreator from '@cfRedux/ActionCreator'
+import BetterSelectionManager from '@cfRedux/BetterSelectionManager'
 import { AppState } from '@cfRedux/types/type'
-import {
-  getWorkflowParentDataQuery,
-  getWorkflowParentDataQueryLegacy
-} from '@XMLHTTP/API/workflow'
+import { getWorkflowParentDataQueryLegacy } from '@XMLHTTP/API/workflowObjects/workflow'
 import * as React from 'react'
 import { DispatchProp, connect } from 'react-redux'
 
@@ -34,9 +31,11 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
   PropsType,
   StateProps
 > {
+  private manager: BetterSelectionManager
   static contextType = WorkflowConfigContext
   constructor(props: PropsType) {
     super(props)
+    this.manager = new BetterSelectionManager(this.props.dispatch)
     this.objectType = CfObjectType.WORKFLOW
   }
 
@@ -59,7 +58,11 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
    * FUNCTIONS
    *******************************************************/
   openEdit(evt) {
-    this.context.selectionManager.changeSelection({ evt, newSelection: this })
+    //     this.context.selectionManager.changeSelection({ evt, newSelection: this })
+    if (evt && evt.stopPropagation) {
+      evt.stopPropagation()
+    }
+    this.manager.updateSidebar(this.props.data.id, this.objectType)
   }
 
   addObjectSetTrigger() {
@@ -91,7 +94,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
     if (this.context.workflowView === WorkflowViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQueryLegacy(this.props.data.id, (response) => {
         this.props.dispatch(
-          ActionCreator.refreshStoreData(response.dataPackage)
+          ActionCreator.refreshWorkspaceStoreData(response.dataPackage)
         )
       })
       return <OutcomeEdit objectId={this.props.data.id} />
@@ -105,15 +108,17 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
   render() {
     const data = this.props.data
 
-    const style: React.CSSProperties = {
-      border: data.lock ? '2px solid ' + data.lock.userColour : undefined // @todo not sure what the best default state is for this
-    }
-
-    const portal = this.addEditable(data, true)
+    //     const portal = this.addEditable(data, true)
     return (
       <>
-        {portal}
-        <div className="workflow-header" style={style}>
+        {/*        {portal}*/}
+        <div
+          className="workflow-header"
+          style={ThemeHelper.getBorderStyle({
+            isLocked: data.lock?.lock,
+            colour: data.lock.userColour
+          })}
+        >
           {/*<WorkflowCard*/}
           {/*  workflowData={data}*/}
           {/*  selectAction={this.openEdit.bind(this, null)}*/}
@@ -131,7 +136,7 @@ class ComparisonWorkflowBaseUnconnected extends EditableComponent<
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    objectSets: state.objectset
+    objectSets: state.objectSet
   }
 }
 

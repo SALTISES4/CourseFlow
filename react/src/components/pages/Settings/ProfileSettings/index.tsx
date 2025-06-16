@@ -1,6 +1,6 @@
-import { languageOptions } from '@cf/constants'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
 import { OuterContentWrap } from '@cf/mui/helper'
+import { languageOptions } from '@cf/utility/constants'
 import strings from '@cf/utility/strings'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -145,8 +145,6 @@ const ProfileSettingsPage = () => {
                 name="language"
                 control={control}
                 render={({ field }) => {
-                  console.log('field')
-                  console.log(field)
                   return (
                     <RadioGroup
                       {...field}

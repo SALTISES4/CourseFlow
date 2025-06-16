@@ -1,4 +1,4 @@
-import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
+import { CfObjectType } from '@cf/types/enum'
 import { EUser } from '@XMLHTTP/types/entity'
 import { MouseEvent as ReactMouseEvent } from 'react'
 
@@ -6,25 +6,20 @@ export type ToDefine = any
 
 export type ObjectPermission = {
   permissionType: number
-  role_type: number
+  roleType: number
   lastViewed?: Date
 }
 
 export type QueryPages = {
-  total_results: number
-  page_count: number
-  current_page: number
-  results_per_page: number
+  totalResults: number
+  pageCount: number
+  currentPage: number
+  resultsPerPage: number
 }
 
 export type Discipline = {
   id: number
   title: string
-}
-
-export type ObjectLock = {
-  userId: number
-  userColour: string
 }
 
 export type NumTuple = [number, number]
@@ -34,9 +29,13 @@ export type FieldChoice = {
   name: string
 }
 
-export type Lock = {
-  userColour: string
-  userId: string
+export type CfLock = {
+  userId: number
+  objectId: number
+  expires: number
+  userColour?: string
+  lock?: boolean
+  objectType: CfObjectType
 }
 
 export type FormFieldSerialized = {

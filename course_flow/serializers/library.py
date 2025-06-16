@@ -48,6 +48,7 @@ class SearchSerializer(serializers.Serializer):
             "keyword",
             "workspaceType",
             "parentProject",
+            "project",
         }
         for filter_item in filters:
             if filter_item["name"] not in allowed_filters:

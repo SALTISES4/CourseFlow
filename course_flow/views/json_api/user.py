@@ -172,7 +172,7 @@ class UserEndpoint:
 
         except ValidationError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {

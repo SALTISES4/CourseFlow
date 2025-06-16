@@ -1,5 +1,5 @@
 import { calcProjectPermissions } from '@cf/utility/permissions'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import { MenuItemType, MenuWithOverflow } from '@cfComponents/menu/Menu'
 import { useMenuActions } from '@cfPages/Workspace/Project/hooks/useMenuActions'
 import EditIcon from '@mui/icons-material/Edit'

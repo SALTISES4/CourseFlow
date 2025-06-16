@@ -1,8 +1,8 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import { Verb, cfApi } from '@XMLHTTP/API/api'
 import { EUser } from '@XMLHTTP/types/entity'
 import { EmptyPostResp } from '@XMLHTTP/types/query'
 
-import { Verb, cfApi } from './api'
 /*******************************************************
  * TYPES
  *******************************************************/

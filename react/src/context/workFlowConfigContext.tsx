@@ -1,4 +1,5 @@
 import { ConnectedUser } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
+import { CfObjectType } from '@cf/types/enum'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import { SelectionManager } from '@cfRedux/utility/SelectionManager'
 import React, { Dispatch, ReactNode, SetStateAction, useState } from 'react'
@@ -11,7 +12,11 @@ export type WorkflowContextType = {
   selectionManager: SelectionManager
 
   editableMethods: {
-    lockUpdate: (obj: any, time: any, lock: any) => void
+    lockUpdate: (
+      obj: { objectId: number; objectType: CfObjectType },
+      time: any,
+      lock: boolean
+    ) => void
     microUpdate: (obj: any) => void
     changeField: (id: any, objectType: any, field: any, value: any) => void
   }
@@ -33,7 +38,7 @@ type PropsType = {
 }
 
 const WorkflowConfigProvider = ({ children, initialValue }: PropsType) => {
-  // this default serves not purpose, it's immediately overwritten by the workflow tab manager, but otherwise RR complains with verbosity...
+  // this default serves no direct purpose, and is  immediately overwritten by the workflow tab manager. But otherwise RR complains
   const [workflowViewType, setWorkflowViewType] = useState<WorkflowViewType>(
     WorkflowViewType.OVERVIEW
   )
@@ -41,16 +46,9 @@ const WorkflowConfigProvider = ({ children, initialValue }: PropsType) => {
   const formatInitialValue = (
     initialValue: PropsType['initialValue']
   ): Omit<WorkflowContextType, 'workflowView' | 'setWorkflowView'> => {
-    // Process and format the workflowInstance
-    // Return an object of type ChildRenderer
-
     const formattedValue = {
-      selectionManager: initialValue.selectionManager, // define this as a singleton
-
-      // functions, these are the only items which actually belong to the 'workflow' react component class and as noted in the copponent, these
-      // probably belong to something in the editable component area ...
+      selectionManager: initialValue.selectionManager,
       editableMethods: initialValue.editableMethods,
-
       ws: initialValue.ws,
       container: ''
     }

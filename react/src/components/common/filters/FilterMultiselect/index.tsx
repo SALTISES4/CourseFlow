@@ -92,8 +92,6 @@ const FilterMultiselect = ({
         .search(term)
         .map((result) => result.item)
 
-      console.log('filtered')
-      console.log(filtered)
       setFilteredOptions(filtered)
     }, 500)
   }, [options])

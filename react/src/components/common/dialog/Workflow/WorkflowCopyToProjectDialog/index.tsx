@@ -1,10 +1,10 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import WorkflowsMenu from '@cfComponents/__LEGACY/dialog/WorkflowsMenu'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
-import { getTargetProjectMenuQuery } from '@XMLHTTP/API/workflow'
+import { getTargetProjectMenuQuery } from '@XMLHTTP/API/workflowObjects/workflow'
 import { TargetProjectQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 
@@ -13,7 +13,6 @@ import { useState } from 'react'
 //    projectId: number,
 //    workflowType: WorkflowType
 //  ) {
-//    const loader = COURSEFLOW_APP.tinyLoader
 //    loader.startLoad()
 //    duplicateBaseItemQuery(
 //      workflowId,

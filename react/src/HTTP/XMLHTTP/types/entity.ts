@@ -1,5 +1,5 @@
 import { ObjectPermission, PermissionGroup } from '@cf/types/common'
-import { LibraryObjectType } from '@cf/types/enum'
+import { CfObjectType, LibraryObjectType } from '@cf/types/enum'
 import { WorkspaceType } from '@cf/types/enum'
 import { ObjectSetOptions } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
@@ -10,7 +10,25 @@ import { NodeTypeDisplay } from '@cfRedux/types/type'
  * python/django datamodels.
  * the abstraction leaks are problematic
  *******************************************************/
+
+/*******************************************************
+ * PRIMITIVES
+ *******************************************************/
 export type EDate = string
+
+/*******************************************************
+ * ABSTRACT
+ *******************************************************/
+interface CourseFlowEntity {
+  id: number
+  hash: string
+  deleted: boolean
+  deletedOn: EDate
+  createdOn: EDate
+  lastModified: EDate
+  title: string
+  description: string
+}
 
 export type EUser = {
   id: number
@@ -22,19 +40,29 @@ export type EUser = {
   language?: string
 }
 
+// @todo what is this for?
+export interface ENewItem extends CourseFlowEntity {
+  type: string
+  favourite: boolean
+  isOwned: boolean
+  isStrategy: boolean
+  published: boolean
+  author: string
+  projectTitle: null
+  objectPermission: ObjectPermission
+  hasLiveproEject: boolean
+  workflowCount: number
+  isLinked: boolean
+  isVisible: boolean
+}
+
 /*******************************************************E
  * LIBRARY
  *******************************************************/
-export type ELibraryObject = {
-  id: number
+export interface ELibraryObject extends CourseFlowEntity {
   author: EUser
-  deleted: boolean
-  createdOn: EDate
-  lastModified: EDate
-  title: string
   favourite: boolean
   published: boolean
-  description: string
   type: LibraryObjectType
   isOwned: boolean
   isStrategy: boolean
@@ -45,44 +73,30 @@ export type ELibraryObject = {
   isVisible: boolean
   isTemplate: boolean
 }
+
 /*******************************************************
  * PROJECT
  *******************************************************/
-export type EProject = {
+export interface EProject extends CourseFlowEntity {
   author: EUser
-  createdOn: Date
-  deleted: boolean
-  deletedOn: Date
-  description: string
-  disciplines: number[]
-  favourite: boolean
-  id: number
-  lastModified: string
-  // objectPermission: ObjectPermission
   userPermissions: number
+  favourite: boolean
+  // objectPermission: ObjectPermission
+  disciplines: number[]
   objectSets: EObjectSet[]
   published: boolean
-  title: string
-  // TODO: identify these really are the types / convert to enum?
-  type: 'project'
+  type: CfObjectType.PROJECT
   workflowprojectSet: number[]
 }
 
 /*******************************************************
  * WORKFLOW
  *******************************************************/
-export type EWorkflow = {
-  id: number
-  userPermissions: number
+export interface EWorkflow extends CourseFlowEntity {
   author: EUser
-  deleted: boolean
-  createdOn: Date
-  lastModified: Date
-  deletedOn: EDate
-  title: string
+  userPermissions: number
   favourite: boolean
   published: boolean
-  description: null | string
   isOriginal: boolean
   isStrategy: boolean
   isTemplate: boolean
@@ -101,66 +115,49 @@ export type EWorkflow = {
   ponderationTheory: number
 
   timeGeneralHours: number
-  timeRequired: null
+  timeRequired: number | null
   timeSpecificHours: number
   timeUnits: number
 
-  weekworkflowSet: number[]
-  columnworkflowSet: number[]
-  outcomeworkflowSet: any[]
-
   tableType: number
-
   url: string
   editCount?: number
-  defaultColumns: number[]
   defaultCustomColumn: number
+  defaultColumns: number[]
+  weeks: number[]
+  columns: number[]
+  outcomes: number[]
 }
 
 /*******************************************************
  * WORKFLOW OBJECTS
  *******************************************************/
-export type EWeek = {
-  id: number
-  deleted: boolean
-  deletedOn: EDate
-  title: string | null
-  description: string | null
+export interface EWeek extends CourseFlowEntity {
+  isStrategy: boolean
   default: boolean
-  nodeweekSet: number[]
   weekType: number // @todo try to check this
   weekTypeDisplay: string
-  isStrategy: boolean
   strategyClassification: number
-  comments: any[] // @todo
+  order: number
+  comments: number[]
+  nodes: number[]
 }
 
-export type EColumn = {
-  id: number
-  deleted: boolean
-  deletedOn: EDate
-  title: null
-
+export interface EColumn extends CourseFlowEntity {
   colour: null
   columnType: number
   columnTypeDisplay: string
-  comments: any[]
   icon: string | null
   visible: boolean
+  comments: number[]
+  order: number
 }
 
-export type ENode = {
-  deleted: boolean
-  deletedOn: EDate
-  id: number
-  title: null
-  description: null
+export interface ENode extends CourseFlowEntity {
   column: number
   columnworkflow: number
   contextClassification: number
   taskClassification: number
-  outcomenodeSet: any[]
-  outcomenodeUniqueSet: any[]
   outgoingLinks: any[]
   nodeType: number
   nodeTypeDisplay: NodeTypeDisplay
@@ -173,12 +170,15 @@ export type ENode = {
   timeGeneralHours: number
   timeSpecificHours: number
   representsWorkflow: boolean
-  linkedWorkflow: any
+  linkedWorkflow: number
   linkedWorkflowData: any
-  comments: any[]
-  sets: any[]
   hasAssignment: boolean
-  isDropped?: boolean
+  order: number
+  week: number
+  sets: number[]
+  outcomenodeSet: number[]
+  outcomenodeUniqueSet: number[]
+  comments: number[]
 }
 
 export type EObjectSet = {
@@ -199,18 +199,6 @@ export type EComment = {
   createdOn: EDate
   text: string
 }
-
-/*******************************************************
- * WORKFLOW RELATIONS
- *******************************************************/
-export type EWeekworkflow = {
-  workflow: number
-  week: number
-  rank: number
-  id: number
-  objectType: number
-}
-export type EColumnworkflow = EOutcomeWorkflow
 
 export type ENodelink = {
   deleted: boolean
@@ -236,16 +224,29 @@ export type EOutcome = {
   description: string
 
   code: string
+
+  depth: number
+  type: string
+  outcomeworkflow: number
+  comments: number[]
+  sets: number[]
   childOutcomeLinks: number[]
   outcomeHorizontalLinks: number[]
   outcomeHorizontalLinksUnique: number[]
-  depth: number
-  type: string
-  comments: any[]
-  sets: number[]
-  outcomeworkflow: number
-  isDropped: boolean
 }
+
+/*******************************************************
+ * WORKFLOW RELATIONS
+ *******************************************************/
+export type EWeekworkflow = {
+  id: number
+  workflow: number
+  week: number
+  rank: number
+  objectType: number
+}
+export type EColumnworkflow = EOutcomeWorkflow
+
 export type EOutcomeWorkflow = {
   id: number
   rank: number
@@ -284,27 +285,6 @@ export type EOutcomenode = {
   degree: number
 }
 
-export type ENewItem = {
-  deleted: boolean
-  id: number
-  createdOn: EDate
-  lastModified: string
-  type: string
-  favourite: boolean
-  isOwned: boolean
-  isStrategy: boolean
-  published: boolean
-  author: string
-  title: string
-  description: string
-  projectTitle: null
-  objectPermission: ObjectPermission
-  hasLiveproject: boolean
-  workflowCount: number
-  isLinked: boolean
-  isVisible: boolean
-}
-
 export type ESectionGroup = {
   title: string
   sections: ESection[]
@@ -319,6 +299,7 @@ export type ESection = {
   isStrategy: boolean
   objects: ELibraryObject[]
 }
+
 export type ENotification = {
   id: number
   type: WorkspaceType

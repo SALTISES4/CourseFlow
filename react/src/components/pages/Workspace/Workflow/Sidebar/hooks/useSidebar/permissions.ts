@@ -1,13 +1,13 @@
+import { SidebarState } from '@cf/redux/reducers/sidebar/types'
 import {
   WorkflowType,
   WorkflowViewType
 } from '@cfPages/Workspace/Workflow/types'
 
 import { ConfigType } from './types'
-import { SidebarDataType } from '../../types'
 
 type PermissionMatrixType = {
-  [index in keyof SidebarDataType]: {
+  [index in SidebarState['tab']]: {
     [index in WorkflowType]?: WorkflowViewType[]
   }
 }
@@ -65,7 +65,7 @@ const permissionMatrix: PermissionMatrixType = {
 }
 
 export function isTabVisible(
-  tab: keyof SidebarDataType,
+  tab: SidebarState['tab'],
   config: ConfigType
 ): boolean {
   const { workflowType, viewType } = config

@@ -1,14 +1,13 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { CfObjectType } from '@cf/types/enum'
-import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
-import { EditableComponentWithSortingState } from '@cfEditableComponents/EditableComponentWithSorting'
+import ThemeHelper from '@cf/utility/ThemeHelper.class'
 import ActionCreator from '@cfRedux/ActionCreator'
 import { AppState } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
 import WeekWorkflowComparison from '@cfViews/ProjectComparisonView/WeekWorkflowComparison'
 import { insertedAt } from '@XMLHTTP/postTemp.jsx'
 import * as React from 'react'
 import { connect } from 'react-redux'
+
 // import $ from 'jquery'
 
 type ConnectedProps = {
@@ -17,19 +16,20 @@ type ConnectedProps = {
 }
 type OwnProps = {
   objectId: number
+  parentId: number
 }
-type StateProps = EditableComponentWithSortingState
+// type StateProps = EditableComponentWithSortingState
+// type PropsType = ConnectedProps & OwnProps
 type PropsType = ConnectedProps & OwnProps
 
+type StateProps = {}
+
 //Basic component representing the workflow
-class WorkflowUnconnected extends EditableComponentWithSorting<
-  PropsType,
-  StateProps
-> {
+class WorkflowUnconnected extends React.Component<PropsType, StateProps> {
   static contextType = WorkflowConfigContext
+
   constructor(props: PropsType) {
     super(props)
-    this.objectType = CfObjectType.WORKFLOW
   }
 
   /*******************************************************
@@ -61,21 +61,21 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
   }
 
   stopSortFunction() {
-    Utility.triggerHandlerEach($('.week .node'), 'component-updated')
+    ThemeHelper.triggerHandlerEach($('.week .node'), 'component-updated')
   }
 
-  sortableMovedFunction(id, new_position, type, new_parent, child_id) {
+  sortableMovedFunction(id, newPosition, type, newParent, childId) {
     if (type === 'weekworkflow') {
       this.context.editableMethods.microUpdate(
-        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
+        ActionCreator.moveWeekWorkflow(id, newPosition, newParent, childId)
       )
       insertedAt(
         this.context, // dragaction
-        child_id,
+        childId,
         'week',
-        new_parent,
+        newParent,
         'workflow',
-        new_position,
+        newPosition,
         'weekworkflow'
       )
     }
@@ -109,7 +109,7 @@ class WorkflowUnconnected extends EditableComponentWithSorting<
 const mapWorkflowStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    objectSets: state.objectset
+    objectSets: state.objectSet
   }
 }
 

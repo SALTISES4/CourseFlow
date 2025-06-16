@@ -34,10 +34,6 @@ class ConfigService:
                 "update_outcomenode_degree": reverse(
                     "json_api:json-api-post-update-outcomenode-degree"
                 ),
-                "update_object_set": reverse("json_api:json-api-post-update-object-set"),
-                # generic
-                # "insert_sibling": reverse("json_api:json-api-post-insert-sibling"),
-                # "insert_child": reverse("json_api:json-api-post-insert-child"),
             },
             "get_paths": {
                 "get_public_workflow_child_data": reverse(

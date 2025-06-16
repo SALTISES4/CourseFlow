@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/utilityFunctions'
 import {
   SortDirection,
   SortValueOption

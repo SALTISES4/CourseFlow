@@ -101,7 +101,7 @@ class WorkspaceUserEndpoint:
         except ContentType.DoesNotExist:
             return Response({"error": "Invalid object type"}, status=400)
         except DAO.get_model_from_str(object_type).DoesNotExist:
-            return Response({"error": "Object not found"}, status=404)
+            return Response({"error": "Object not found"}, status=status.HTTP_404_NOT_FOUND)
         except SystemError as e:
             logger.exception("An unexpected error occurred")
             return Response({"error": "An error occurred"}, status=500)
@@ -146,13 +146,13 @@ class WorkspaceUserEndpoint:
         except ContentType.DoesNotExist:
             return Response({"error": "Invalid object type"}, status=400)
         except DAO.get_model_from_str(object_type).DoesNotExist:
-            return Response({"error": "Object not found"}, status=404)
+            return Response({"error": "Object not found"}, status=status.HTTP_404_NOT_FOUND)
         except SystemError as e:
             logger.exception("An unexpected error occurred")
             return Response({"error": "An error occurred"}, status=500)
 
     @staticmethod
-    # @user_can_view(False)
+    # #@user_can_view(False)
     @api_view(["POST"])
     def list_legacy(request: Request, pk: int) -> Response:
         """
@@ -240,7 +240,7 @@ class WorkspaceUserEndpoint:
 
         except ValidationError as e:
             logger.exception("An error occurred")
-            return Response({"action": "error"})
+            return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(
             {
@@ -261,7 +261,7 @@ class WorkspaceUserEndpoint:
         )
 
     @staticmethod
-    # @user_can_edit(False)
+    # #@user_can_edit(False)
     @api_view(["POST"])
     def create(request: Request, pk: int) -> Response:
         """
@@ -287,7 +287,7 @@ class WorkspaceUserEndpoint:
         )
 
     # @staticmethod
-    # @user_can_edit("objectId")
+    # #@user_can_edit("objectId")
     # @api_view(["POST"])
     # def delete(request: Request, pk: int) -> Response:
     #     """
@@ -299,7 +299,7 @@ class WorkspaceUserEndpoint:
     #     object_id = pk
     #
     #     body = json.loads(request.body) # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
-    #     object_type = body.get("objectType")
+    #     object_type = body.get("object_type")
     #
     #     # Validate object_type and map to correct model if needed
     #     if object_type in ["activity", "course", "program"]:
@@ -412,7 +412,7 @@ class WorkspaceUserEndpoint:
             )
 
     @staticmethod
-    # @user_can_edit(False)
+    # #@user_can_edit(False)
     @api_view(["POST"])
     def json_api_post_set_permission(request: Request) -> Response:
         """
@@ -423,7 +423,7 @@ class WorkspaceUserEndpoint:
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectId")
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
 
         if object_type in ["activity", "course", "program"]:
             object_type = "workflow"

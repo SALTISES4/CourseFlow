@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 
 // import $ from 'jquery'
 import UserAdd from '@cfComponents/dialog/components/UserAdd'
@@ -145,7 +145,6 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
   }
 
   setUserPermission(permissionType, user) {
-    COURSEFLOW_APP.tinyLoader.startLoad()
     setUserPermission(
       user.id,
       this.props.data.id,
@@ -162,7 +161,7 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
               edit: response.editors,
               student: response.students
             })
-            COURSEFLOW_APP.tinyLoader.endLoad()
+
           }
         )
       }
@@ -257,8 +256,6 @@ export class ShareMenu extends React.Component<PropsType, StateType> {
                 const copy_icon_text = $(
                   '#public-page-code .copy-link-icon .material-symbols-rounded'
                 ).text()
-                console.log('copy_icon_text')
-                console.log(copy_icon_text)
 
                 const copy_description_text = $(
                   '#public-page-code .copy-link-text'

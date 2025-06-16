@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/utilityFunctions'
 import ObjectSets from '@cfComponents/dialog/Project/components/ObjectSets'
 import {
   ObjectSetOptions,
@@ -6,7 +5,6 @@ import {
 } from '@cfComponents/dialog/Project/components/ObjectSets/type'
 import { StyledBox } from '@cfComponents/dialog/styles'
 import Alert from '@cfComponents/UIPrimitives/Alert'
-import { zodResolver } from '@hookform/resolvers/zod'
 import CancelIcon from '@mui/icons-material/Cancel'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'

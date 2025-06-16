@@ -1,5 +1,5 @@
 // @ts-nocheck
-import * as Constants from '@cf/constants'
+import * as Constants from '@cf/utility/constants'
 import ExportMenu from '@cfCommonComponents/dialog/ExportMenu.jsx'
 import ShareMenu from '@cfCommonComponents/dialog/ShareMenu.jsx'
 import EditableComponent, {
@@ -38,7 +38,7 @@ import { Dialog, DialogTitle } from '@mui/material'
 import { deleteSelfQuery, restoreSelfQuery } from '@XMLHTTP/API/delete'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { getUsersForObjectQuery } from '@XMLHTTP/API/sharing'
-import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflow'
+import { getWorkflowParentDataQuery } from '@XMLHTTP/API/workflowObjects/workflow'
 import { ReactElement } from 'react'
 import * as React from 'react'
 import { DispatchProp, connect } from 'react-redux'
@@ -51,7 +51,7 @@ import {
 
 type ConnectedProps = {
   data: AppState['workflow']
-  objectSets: AppState['objectset']
+  objectSets: AppState['objectSet']
   week: AppState['week']
   node: AppState['node']
   outcome: AppState['outcome']
@@ -101,7 +101,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   // Constants
   objectType = CfObjectType.WORKFLOW
-  private allowed_tabs = [0, 1, 2, 3, 4]
+  private allowedTabs = [0, 1, 2, 3, 4]
 
   private readOnly: boolean
 
@@ -120,8 +120,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
     this.context = context
 
-    // console.log('this.context')
-    // console.log(this.context)
+    // Utility.logger('this.context')
+    // Utility.logger(this.context)
 
     this.data = this.props.data
     this.project = this.context.workflow.project
@@ -152,7 +152,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     if (this.context.viewType === WorkflowViewType.OUTCOME_EDIT) {
       getWorkflowParentDataQuery(this.workflowId, (response) => {
         this.props.dispatch(
-          ActionCreator.refreshStoreData(response.dataPackage)
+          ActionCreator.refreshWorkspaceStoreData(response.dataPackage)
         )
       })
     }
@@ -180,14 +180,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   }
 
   copyToProject = () => {
-    const loader = COURSEFLOW_APP.tinyLoader
-    loader.startLoad()
     duplicateBaseItemQuery(
       this.data.id,
       this.data.type,
       this.project.id,
       (responseData) => {
-        loader.endLoad()
         // @ts-ignore
         window.location =
           COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
@@ -202,8 +199,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
   // @todo swap back to real function after hook conversion
   // importOutcomes = () => dispatch(DIALOG_TYPE.IMPORT_OUTCOMES)
   // importNodes = () => dispatch(DIALOG_TYPE.IMPORT_NODES)
-  importOutcomes = () => console.log('importOutcomes')
-  importNodes = () => console.log('importNodes')
+  importOutcomes = () => Utility.logger('importOutcomes')
+  importNodes = () => Utility.logger('importNodes')
 
   deleteWorkflow() {
     if (
@@ -266,13 +263,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   duplicateItem(responseData) {
     if (responseData.parentId != null) {
-      const utilLoader = new UtilityLoader('body')
       duplicateBaseItemQuery(
         this.data.id,
         this.data.type,
         responseData.parentId,
         (responseData) => {
-          utilLoader.endLoad()
           // @ts-ignore
           window.location =
             COURSEFLOW_APP.globalContextData.path.html.update_path_temp.replace(
@@ -296,7 +291,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     const disabled_tabs = []
 
     for (let i = 0; i <= 4; i++) {
-      if (this.allowed_tabs.indexOf(i) < 0) {
+      if (this.allowedTabs.indexOf(i) < 0) {
         disabled_tabs.push(i)
       }
     }
@@ -307,14 +302,14 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
     $('#sidebar').tabs({ disabled: false })
     const current_tab = $('#sidebar').tabs('option', 'active')
 
-    if (this.allowed_tabs.indexOf(current_tab) < 0) {
-      if (this.allowed_tabs.length == 0) {
+    if (this.allowedTabs.indexOf(current_tab) < 0) {
+      if (this.allowedTabs.length == 0) {
         $('#sidebar').tabs({
           active: false
         })
       } else {
         $('#sidebar').tabs({
-          active: this.allowed_tabs[0]
+          active: this.allowedTabs[0]
         })
       }
     }
@@ -380,7 +375,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 
   updateFunction(newData) {
     if (newData.liveproject) {
-      console.log('liveproject updated')
+      Utility.logger('liveproject updated')
     } else {
       this.setState({
         ...this.state,
@@ -634,7 +629,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent<
 const mapStateToProps = (state: AppState): ConnectedProps => {
   return {
     data: state.workflow,
-    objectSets: state.objectset,
+    objectSets: state.objectSet,
     week: state.week,
     node: state.node,
     outcome: state.outcome

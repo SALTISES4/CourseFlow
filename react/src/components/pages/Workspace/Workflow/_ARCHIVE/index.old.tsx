@@ -1,10 +1,13 @@
 import { UserContext } from '@cf/context/userContext'
 import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
-import legacyWithRouter from '@cf/HOC/legacyWithRouter'
+// import legacyWithRouter from '@cf/HOC/legacyWithRouter'
 import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
+import { CfLock } from '@cf/types/common'
+import { CfObjectType } from '@cf/types/enum'
+import Utility from '@cf/utility/Utility.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
@@ -16,7 +19,7 @@ import {
   getWorkflowByIdQuery,
   getWorkflowChildDataQuery,
   getWorkflowParentDataQueryLegacy
-} from '@XMLHTTP/API/workflow'
+} from '@XMLHTTP/API/workflowObjects/workflow'
 import { Component, ContextType } from 'react'
 import { DispatchProp, connect } from 'react-redux'
 import { RouterProps } from 'react-router'
@@ -127,7 +130,9 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
     getWorkflowByIdQuery(this.workflowId, (response) => {
       // this.unreadComments = response.dataPackage?.unreadComments // @todo do not assign this explicitly here, not seeing this in data package yet
 
-      this.props.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      this.props.dispatch(
+        ActionCreator.refreshWorkspaceStoreData(response.dataPackage)
+      )
 
       this.selectionManager = new SelectionManager(
         response.dataPackage.workflow.workflowPermissions.read
@@ -215,7 +220,7 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
         this.onChildWorkflowUpdateReceived(data.childWorkflowId)
         break
       default:
-        console.log('socket message not handled')
+        Utility.logger('socket message not handled')
         break
     }
   }
@@ -268,12 +273,14 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
     getWorkflowParentDataQueryLegacy(this.workflowId, (response) => {
       // remove all the parent node and parent workflow data
       this.props.dispatch(
-        ActionCreator.replaceStoreData({
+        ActionCreator.replaceWorkspaceStoreData({
           parentNode: [],
           parentWorkflow: []
         })
       )
-      this.props.dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      this.props.dispatch(
+        ActionCreator.refreshWorkspaceStoreData(response.dataPackage)
+      )
       this.clearQueue(0)
     })
   }
@@ -316,7 +323,7 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
       this.childDataNeeded[this.childDataCompleted],
       (response) => {
         this.props.dispatch(
-          ActionCreator.refreshStoreData(response.dataPackage)
+          ActionCreator.refreshWorkspaceStoreData(response.dataPackage)
         )
         setTimeout(() => this.getDataForChildWorkflow(), 50) // why another timeout here
       }
@@ -331,7 +338,7 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
    *******************************************************/
   // @todo how used?
   microUpdate(obj) {
-    console.log('i am a microupdate')
+    Utility.logger('i am a microupdate')
     if (this.wsService) {
       this.wsService.send(
         JSON.stringify({
@@ -354,7 +361,11 @@ class Workflow extends Component<PropsType & RouterProps, StateProps> {
   // lock an object, indicating it should not be selectable
   // by any other users
   // this should not live here, it go in the draggable class
-  lockUpdate(obj, time, lock) {
+  lockUpdate(
+    obj: { objectId: number; objectType: CfObjectType },
+    time,
+    lock: boolean
+  ) {
     if (this.wsService) {
       this.wsService.send(
         JSON.stringify({

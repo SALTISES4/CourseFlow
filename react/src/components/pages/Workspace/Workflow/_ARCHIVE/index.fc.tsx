@@ -4,6 +4,7 @@ import { WS_EVENT_TYPE, WebSocketService } from '@cf/HTTP/WebSocketService'
 import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
+import Utility from '@cf/utility/Utility.class'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import WorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs'
 import ActionCreator from '@cfRedux/ActionCreator'
@@ -13,7 +14,7 @@ import {
   getWorkflowByIdQuery,
   getWorkflowChildDataQuery,
   getWorkflowParentDataQueryLegacy
-} from '@XMLHTTP/API/workflow'
+} from '@XMLHTTP/API/workflowObjects/workflow'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useParams } from 'react-router-dom'
@@ -91,7 +92,7 @@ const Workflow: React.FC<PropsType> = () => {
       setState((prevState) => ({ ...prevState, wsConnected: true }))
 
       getWorkflowByIdQuery(workflowId, (response) => {
-        dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+        dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
 
         const newSelectionManager = new SelectionManager(
           response.dataPackage.workflow.workflowPermissions.read
@@ -107,7 +108,7 @@ const Workflow: React.FC<PropsType> = () => {
 
   const handleSocketClose = useCallback(() => {
     setState((prevState) => ({ ...prevState, wsConnected: false }))
-    console.log('socket disconnected')
+    Utility.logger('socket disconnected')
   }, [])
 
   const onMessageReceived = useCallback(
@@ -169,7 +170,7 @@ const Workflow: React.FC<PropsType> = () => {
           onChildWorkflowUpdateReceived(data.childWorkflowId)
           break
         default:
-          console.log('socket message not handled')
+          Utility.logger('socket message not handled')
           break
       }
     },
@@ -214,12 +215,12 @@ const Workflow: React.FC<PropsType> = () => {
     setIsMessagesQueued(true)
     getWorkflowParentDataQueryLegacy(Number(id), (response) => {
       dispatch(
-        ActionCreator.replaceStoreData({
+        ActionCreator.replaceWorkspaceStoreData({
           parentNode: [],
           parentWorkflow: []
         })
       )
-      dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
       clearQueue(0)
     })
   }
@@ -227,14 +228,14 @@ const Workflow: React.FC<PropsType> = () => {
   const onChildWorkflowUpdateReceived = (childWorkflowId: number) => {
     setIsMessagesQueued(true)
     getWorkflowChildDataQuery(childWorkflowId, (response) => {
-      dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
       clearQueue()
     })
   }
 
   const microUpdate = useCallback(
     (obj: any) => {
-      console.log('i am a microupdate')
+      Utility.logger('i am a microupdate')
       if (wsService) {
         wsService.send(
           JSON.stringify({
@@ -258,7 +259,7 @@ const Workflow: React.FC<PropsType> = () => {
   )
 
   const lockUpdate = useCallback(
-    (obj: any, time: number, lock: boolean) => {
+    (obj: CfLock, time: number, lock: boolean) => {
       if (wsService) {
         wsService.send(
           JSON.stringify({
@@ -299,7 +300,7 @@ const Workflow: React.FC<PropsType> = () => {
     getWorkflowChildDataQuery(
       childDataNeeded[childDataCompleted + 1],
       (response) => {
-        dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+        dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
         setTimeout(() => getDataForChildWorkflow(), 50)
       }
     )

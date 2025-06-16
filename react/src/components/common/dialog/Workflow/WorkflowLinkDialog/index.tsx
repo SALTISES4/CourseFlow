@@ -1,10 +1,10 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
-import { _t } from '@cf/utility/utilityFunctions'
+import { _t } from '@cf/utility/Utility.class'
 import WorkflowsMenu from '@cfComponents/__LEGACY/dialog/WorkflowsMenu'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
-import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflow'
+import { getLinkedWorkflowMenuQuery } from '@XMLHTTP/API/workflowObjects/workflow'
 import { LinkedWorkflowMenuQueryResp } from '@XMLHTTP/types/query'
 import { useState } from 'react'
 

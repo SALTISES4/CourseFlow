@@ -3,19 +3,49 @@ import WebSocketServiceConnectedUserManager, {
   ConnectedUser
 } from '@cf/HTTP/WebsocketServiceConnectedUserManager'
 import { EUser } from '@cf/HTTP/XMLHTTP/types/entity'
-import ActionCreator from '@cfRedux/ActionCreator'
+import { CfLock } from '@cf/types/common'
+import { CfObjectType } from '@cf/types/enum'
+import Utility from '@cf/utility/Utility.class'
+import ActionCreator, { WorkSpaceAppState } from '@cfRedux/ActionCreator'
 import { updateValueQuery } from '@XMLHTTP/API/update'
 import {
   getWorkflowChildDataQuery,
   getWorkflowParentDataQueryLegacy
-} from '@XMLHTTP/API/workflow'
-import { useGetWorkflowByIdQuery } from '@XMLHTTP/API/workflow.rtk'
+} from '@XMLHTTP/API/workflowObjects/workflow'
+import {
+  GetWorkflowByIdQueryTransform,
+  useGetWorkflowByIdQuery
+} from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 type UseWebSocketManagerProps = {
   user: EUser
   workflowId: number
+}
+
+// this function doesn't do much
+// but it highlights that the REST res is being loaded into redux without passing through an appropriate interface
+// and this will likely change
+// i.e. if we're just going to dump REST json into redux, why use redux at all? TBD
+const convertWorkflowRESTResToAppState = (
+  data: GetWorkflowByIdQueryTransform['dataPackage']
+): WorkSpaceAppState => {
+  return {
+    project: data.project,
+    workflow: data.workflow,
+    column: data.column,
+    week: data.week,
+    nodelink: data.nodelink,
+    node: data.node,
+    objectSet: data.objectSet,
+    //
+    outcomeworkflow: data.outcomeworkflow,
+    outcome: data.outcome,
+    outcomenode: data.outcomenode,
+    outcomeoutcome: data.outcomeoutcome,
+    strategy: data.strategy
+  }
 }
 
 export const useWorkflowWebsocketManager = ({
@@ -95,7 +125,8 @@ export const useWorkflowWebsocketManager = ({
 
   useEffect(() => {
     if (data) {
-      dispatch(ActionCreator.refreshStoreData(data.dataPackage))
+      const payload = convertWorkflowRESTResToAppState(data.dataPackage)
+      dispatch(ActionCreator.refreshWorkspaceStoreData(payload))
       setIsMessagesQueued(false)
     }
   }, [data])
@@ -129,11 +160,23 @@ export const useWorkflowWebsocketManager = ({
   }
 
   /**
-   *
+   *  for receiving the WS message and updating local store
    */
-  const onLockUpdateReceived = (data: any) => {
-    const { objectType, objectId } = data
-
+  const onLockUpdateReceived = ({
+    objectType,
+    objectId,
+    lock,
+    userId,
+    userColour,
+    expires
+  }: {
+    objectType: CfObjectType
+    objectId: number
+    lock: boolean
+    userId: number
+    userColour: string
+    expires: number
+  }) => {
     if (!locks[objectType]) {
       locks[objectType] = {}
     }
@@ -146,16 +189,16 @@ export const useWorkflowWebsocketManager = ({
       ActionCreator.createLockAction(
         objectId,
         objectType,
-        data.lock,
-        data.userId,
-        data.userColour
+        lock,
+        userId,
+        userColour
       )
     )
 
-    if (data.lock) {
+    if (lock) {
       locks[objectType][objectId] = setTimeout(() => {
         dispatch(ActionCreator.createLockAction(objectId, objectType, false))
-      }, data.expires - Date.now())
+      }, expires - Date.now())
     } else {
       locks[objectType][objectId] = null
     }
@@ -175,12 +218,12 @@ export const useWorkflowWebsocketManager = ({
     setIsMessagesQueued(true)
     getWorkflowParentDataQueryLegacy(Number(id), (response) => {
       dispatch(
-        ActionCreator.replaceStoreData({
+        ActionCreator.replaceWorkspaceStoreData({
           parentNode: [],
           parentWorkflow: []
         })
       )
-      dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
       clearQueue(0)
     })
   }
@@ -191,7 +234,7 @@ export const useWorkflowWebsocketManager = ({
   const onChildWorkflowUpdateReceived = (childWorkflowId: number) => {
     setIsMessagesQueued(true)
     getWorkflowChildDataQuery(childWorkflowId, (response) => {
-      dispatch(ActionCreator.refreshStoreData(response.dataPackage))
+      dispatch(ActionCreator.refreshWorkspaceStoreData(response.dataPackage))
       clearQueue()
     })
   }
@@ -234,40 +277,24 @@ export const useWorkflowWebsocketManager = ({
     [messageQueue]
   )
 
-  /**
-   *
-   */
-  // const parseAndRouteMessage = useCallback(
-  //   (e: MessageEvent) => {
-  //     console.log('parseAndRouteMessage')
-  //     const data = JSON.parse(e.data)
-  //
-  //     switch (data.type) {
-  //       case WS_EVENT_TYPE.WORKFLOW_ACTION:
-  //         dispatch(data.action)
-  //         break
-  //       case WS_EVENT_TYPE.LOCK_UPDATE:
-  //         onLockUpdateReceived(data.action)
-  //         break
-  //       case WS_EVENT_TYPE.CONNECTION_UPDATE:
-  //         onUserConnectionUpdateReceived(data.action)
-  //         break
-  //       case WS_EVENT_TYPE.WORKFLOW_PARENT_UPDATED:
-  //         onParentWorkflowUpdateReceived()
-  //         break
-  //       case WS_EVENT_TYPE.WORKFLOW_CHILD_UPDATED:
-  //         onChildWorkflowUpdateReceived(data.childWorkflowId)
-  //         break
-  //       default:
-  //         console.log('socket message not handled')
-  //         break
-  //     }
-  //   },
-  //   [dispatch]
-  // )
-
   const parseAndRouteMessage = (e: MessageEvent) => {
     const data = JSON.parse(e.data)
+
+    // check if the publishing user is the current user
+    // if so we don't want to act on this message as it originated locally
+    // this system is flawed
+    // but leave as is for now (dec '24)
+    // until a real pub sub system is evaluated
+    try {
+      const userId = data.action.payload.publishingUserId
+
+      // @todo need to insert type guards here and correct the try catch
+      if (userId === user.id) {
+        return
+      }
+    } catch (e) {
+      return
+    }
 
     switch (data.type) {
       case WS_EVENT_TYPE.WORKFLOW_ACTION:
@@ -286,7 +313,7 @@ export const useWorkflowWebsocketManager = ({
         onChildWorkflowUpdateReceived(data.childWorkflowId)
         break
       default:
-        console.log('socket message not handled')
+        Utility.logger('socket message not handled')
         break
     }
   }
@@ -310,18 +337,31 @@ export const useWorkflowWebsocketManager = ({
       [wsService]
     ),
     changeField: useCallback(
-      (id: number, objectType: string, field: string, value: any) => {
+      (id: number, objectType: CfObjectType, field: string, value: any) => {
         const json: Record<string, any> = { [field]: value }
+
+        // dispatch value to redux and then perform REST query
+        // this is therefore an optimistic update, but we are not performing
         dispatch(ActionCreator.changeField(id, objectType, json))
         updateValueQuery(id, objectType, json, true)
       },
       [dispatch]
     ),
+    // lock update is for transmitting the WS message
     lockUpdate: useCallback(
-      (obj: any, time: number, lock: boolean) => {
-        const payload: { type: WS_EVENT_TYPE; lock: any } = {
+      (
+        obj: { objectId: number; objectType: CfObjectType },
+        time: number,
+        lock: boolean
+      ) => {
+        const payload: { type: WS_EVENT_TYPE; lock: CfLock } = {
           type: WS_EVENT_TYPE.LOCK_UPDATE,
-          lock: { ...obj, expires: Date.now() + time, user, lock }
+          lock: {
+            ...obj,
+            expires: Date.now() + time,
+            userId: user.id,
+            lock
+          }
         }
 
         if (wsService) {

@@ -8,17 +8,18 @@ import TextField from '@mui/material/TextField'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import { PartForm } from './types'
 import {
   SidebarActions,
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
-} from '../../../../styles'
+} from '@cfSidebar/styles'
 import SaveAsTemplate from '../SaveAsTemplate'
-import strategies from './data'
+import getPartData from './getPartData'
+import { strategiesOptions } from './optionsData'
 
-const EditPart = ({ title, strategy }: PartForm) => {
+const EditPart = () => {
+  const { title, strategy } = getPartData(1)
   const [state, setState] = useState({
     title,
     strategy,
@@ -89,8 +90,10 @@ const EditPart = ({ title, strategy }: PartForm) => {
               value={state.strategy.toString()}
               onChange={onSttrategyChange}
             >
-              {strategies.map((strat) => (
-                <MenuItem value={strat.value}>{strat.label}</MenuItem>
+              {strategiesOptions.map((strat) => (
+                <MenuItem key={strat.value} value={strat.value}>
+                  {strat.label}
+                </MenuItem>
               ))}
             </Select>
           </FormControl>

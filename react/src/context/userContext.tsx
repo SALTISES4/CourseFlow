@@ -6,7 +6,6 @@ import React, { ReactNode } from 'react'
 type UserContextType = {
   id: number
   user: EUser
-  changeFieldID: number
 }
 
 export const UserContext = React.createContext<UserContextType>(
@@ -19,8 +18,6 @@ interface UserProviderProps {
 const UserProvider = ({ children }: UserProviderProps) => {
   const { data, error, isLoading, isError } = useGetCurrentUserQuery()
 
-  const changeFieldId = Math.floor(Math.random() * 10000)
-
   if (isLoading) {
     return <Loader />
   }
@@ -29,8 +26,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     <UserContext.Provider
       value={{
         id: data.dataPackage.id,
-        user: data.dataPackage,
-        changeFieldID: changeFieldId
+        user: data.dataPackage
       }}
     >
       {children}

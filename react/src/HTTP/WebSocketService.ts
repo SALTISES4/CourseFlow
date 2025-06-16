@@ -4,7 +4,7 @@
  * 2 - CLOSING: The connection is in the process of closing.
  * 3 - CLOSED: The connection is closed or couldn't be opened.
  */
-import { _t } from '@cf/utility/utilityFunctions'
+import Utility, { _t } from '@cf/utility/Utility.class'
 
 /*******************************************************
  * keep these in snake case, as they are not being converted by the middleware
@@ -88,14 +88,14 @@ export class WebSocketService {
     try {
       this.websocket.close(1000) // Close with normal closure code
     } catch (e) {
-      console.log('tried to call close on a non-existent socket ')
-      console.log(e)
+      Utility.logger('tried to call close on a non-existent socket ')
+      Utility.logger(e)
     }
   }
 
   handleSocketClose(event: CloseEvent) {
     if (event.code === 1000) {
-      console.log('WebSocket closed normally.')
+      Utility.logger('WebSocket closed normally.')
     } else {
       this.reconnectAttempts++
       if (this.reconnectAttempts <= this.maxReconnectAttempts) {

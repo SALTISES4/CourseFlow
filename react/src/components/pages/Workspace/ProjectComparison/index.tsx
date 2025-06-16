@@ -1,13 +1,12 @@
 // @ts-nocheck
 import WorkflowConfigProvider from '@cf/context/workFlowConfigContext'
-import legacyWithRouter from '@cf/HOC/legacyWithRouter'
 import Loader from '@cfComponents/UIPrimitives/Loader'
 import Workflow from '@cfPages/Workspace/Workflow'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import * as Reducers from '@cfRedux/Reducers'
 import ComparisonWorkflowBase from '@cfViews/ProjectComparisonView/ComparisonWorkflowBase'
 import { createStore } from '@reduxjs/toolkit'
-import { getWorkflowByIdQuery } from '@XMLHTTP/API/workflow'
+import { getWorkflowByIdQuery } from '@XMLHTTP/API/workflowObjects/workflow'
 import React from 'react'
 import { Provider } from 'react-redux'
 
@@ -67,7 +66,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
 //       if (this.initialObjectSets) {
 //         dataFlat = {
 //           ...dataFlat,
-//           objectset: this.initialObjectSets
+//           objectSet: this.initialObjectSets
 //         }
 //       }
 //

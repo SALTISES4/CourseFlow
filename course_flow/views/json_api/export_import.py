@@ -20,11 +20,11 @@ from course_flow.decorators import user_can_edit, user_can_view
 ######################################
 class ExportImport:
     @staticmethod
-    @user_can_edit(False)
+    # @user_can_edit(False)
     def object__import(request: Request) -> Response:
         body = json.loads(request.POST["body"])
         object_id = body.get("objectID")
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
         task_type = body.get("importType")
         file = request.FILES.get("file")
 
@@ -67,13 +67,13 @@ class ExportImport:
         return Response({"message": "success"})
 
     @staticmethod
-    @user_can_view(False)
+    # @user_can_view(False)
     def object__export(request: Request) -> Response:
         body = json.loads(
             request.body
         )  # note this is using django directl and not DRF, we are bypassing the middleware for case conversion
         object_id = body.get("objectID")
-        object_type = body.get("objectType")
+        object_type = body.get("object_type")
         export_type = body.get("exportType")
         export_format = body.get("exportFormat")
         allowed_sets = body.get("objectSets", [])

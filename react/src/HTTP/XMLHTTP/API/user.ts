@@ -1,4 +1,5 @@
 import { apiPaths } from '@cf/router/apiRoutes'
+import Utility from '@cf/utility/Utility.class'
 import { UserListResp } from '@XMLHTTP/API/workspaceUser.rtk'
 import { API_POST } from '@XMLHTTP/CallWrapper'
 
@@ -22,7 +23,7 @@ import { API_POST } from '@XMLHTTP/CallWrapper'
  */
 export function getUserListQuery(
   filter: any,
-  callBackFunction = (_data: UserListResp) => console.log('success')
+  callBackFunction = (_data: UserListResp) => Utility.logger('success')
 ) {
   const url = apiPaths.json_api.user.list
   API_POST(url, {

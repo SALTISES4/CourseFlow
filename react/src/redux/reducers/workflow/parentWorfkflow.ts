@@ -1,0 +1,74 @@
+import { CommonActions } from '@cfRedux/types/enumActions'
+import { TParentWorkflow } from '@cfRedux/types/type'
+import { AnyAction } from '@reduxjs/toolkit'
+
+interface ReplaceStoreDataAction extends AnyAction {
+  type: CommonActions.REPLACE_STOREDATA
+  payload: { parentWorkflow?: TParentWorkflow[] }
+}
+
+interface RefreshStoreDataAction extends AnyAction {
+  type: CommonActions.REFRESH_STOREDATA
+  payload: { parentWorkflow: TParentWorkflow[] }
+}
+type ParentWorkflowActionTypes = ReplaceStoreDataAction | RefreshStoreDataAction
+
+export default function parentWorkflowReducer(
+  state: TParentWorkflow[] = [],
+  action: ParentWorkflowActionTypes
+): TParentWorkflow[] {
+  switch (action.type) {
+    case CommonActions.REPLACE_STOREDATA:
+      return action.payload.parentWorkflow || state
+
+    case CommonActions.REFRESH_STOREDATA: {
+      if (!action.payload.parentWorkflow) {
+        return state
+      }
+
+      return action.payload.parentWorkflow.reduce(
+        (acc, newItem) => {
+          const index = acc.findIndex((item) => item.id === newItem.id)
+          if (index > -1) {
+            acc.splice(index, 1, newItem)
+          } else {
+            acc.push(newItem)
+          }
+          return acc
+        },
+        [...state]
+      )
+    }
+
+    default:
+      return state
+  }
+}
+
+// export default function parentWorkflowReducer(state = [], action) {
+//   switch (action.type) {
+//     case 'replaceStoreData':
+//       if (action.payload.parentWorkflow) return action.payload.parentWorkflow
+//       return state
+//     case 'refreshStoreData':
+//       var newState = state.slice()
+//       if (action.payload.parentWorkflow) {
+//         for (let i = 0; i < action.payload.parentWorkflow.length; i++) {
+//           const newObj = action.payload.parentWorkflow[i]
+//           let added = false
+//           for (let j = 0; j < newState.length; j++) {
+//             if (newState[j].id == newObj.id) {
+//               newState.splice(j, 1, newObj)
+//               added = true
+//               break
+//             }
+//           }
+//           if (added) continue
+//           newState.push(newObj)
+//         }
+//       }
+//       return newState
+//     default:
+//       return state
+//   }
+// }

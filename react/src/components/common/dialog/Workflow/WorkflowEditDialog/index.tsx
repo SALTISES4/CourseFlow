@@ -1,6 +1,6 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import useGenericMsgHandler from '@cf/hooks/useGenericMsgHandler'
-import { Utility } from '@cf/utility/utilityFunctions'
+import Utility from '@cf/utility/Utility.class'
 import { StyledBox, StyledDialog } from '@cfComponents/dialog/styles'
 import { FormField } from '@cfComponents/dialog/Workflow/componnets/WorkflowForm'
 import {
@@ -22,11 +22,12 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { useUpdateWorkflowMutation } from '@XMLHTTP/API/workflow.rtk'
+import { useUpdateWorkflowMutation } from '@XMLHTTP/API/workflowObjects/workflow.rtk'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
+import {RootState} from "@cfRedux/store";
 
 function configFields(workflow: AppState['workflow']): FormField[] {
   const allFields = [
@@ -80,7 +81,7 @@ const WorkflowEditDialog = () => {
    *******************************************************/
   const { id } = useParams()
 
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   const config = configFields(workflow)
 

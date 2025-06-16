@@ -1,20 +1,18 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { OuterContentWrap } from '@cf/mui/helper'
-import { _t } from '@cf/utility/utilityFunctions'
 import MenuBar from '@cfComponents/globalNav/MenuBar'
 import WorkspaceSidebar from '@cfPages/Workspace/Workflow/Sidebar'
-import workspaceSidebarData from '@cfPages/Workspace/Workflow/Sidebar/data'
 import { useWorkflowSidebar } from '@cfPages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import Header from '@cfPages/Workspace/Workflow/WorkflowTabs/components/Header'
 import ConnectionBar from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/ConnectionBar'
 import {
   ActionMenu,
-  ExpandCollapseMenu,
-  JumpToMenu
+  JumpToMenu,
+  ViewSettingsMenu
 } from '@cfPages/Workspace/Workflow/WorkflowTabs/components/menuBar/menus'
 import WorkflowDialogs from '@cfPages/Workspace/Workflow/WorkflowTabs/components/WorkflowDialogs'
 import useWorkflowTabs from '@cfPages/Workspace/Workflow/WorkflowTabs/hooks/useWorkflowTabs'
-import { AppState } from '@cfRedux/types/type'
+import { RootState } from '@cfRedux/store'
 import WorkflowLegend from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/WorkflowLegend'
 import Box from '@mui/material/Box'
 import Tabs from '@mui/material/Tabs'
@@ -22,13 +20,7 @@ import { useContext, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Routes, matchPath } from 'react-router-dom'
 
-// & EditableComponentProps
 
-// type PropsType = DispatchProp & ConnectedProps & OwnProps
-type StateType = {
-  users: any
-  data?: any
-} // & EditableComponentStateType
 
 /**
  * The base component of our workflow view. This renders the menu bar
@@ -42,7 +34,7 @@ type StateType = {
 // class WorkflowTabsUnconnected extends EditableComponent<PropsType, StateType> {
 const WorkflowTabs = () => {
   const context = useContext(WorkflowConfigContext)
-  const workflow = useSelector((state: AppState) => state.workflow)
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   useWorkflowSidebar({
     workflowType: workflow.type,
@@ -85,7 +77,7 @@ const WorkflowTabs = () => {
     }
   }, [])
 
-  // console.log({ context })
+  // Utility.logger({ context })
 
   /*******************************************************
    * COMPONENTS
@@ -93,8 +85,8 @@ const WorkflowTabs = () => {
 
   const ViewBar = () => (
     <>
-      <JumpToMenu weekWorkflowSet={workflow.weekworkflowSet} />
-      <ExpandCollapseMenu />
+      <JumpToMenu weekIds={workflow.weeks} />
+      <ViewSettingsMenu />
     </>
   )
 
@@ -121,8 +113,8 @@ const WorkflowTabs = () => {
           leftSection={<ActionMenu />}
           viewbar={<ViewBar />}
           userbar={<ConnectionBar show={!workflow.publicView} />}
-          legendbar={<WorkflowLegend />}
         />
+        <WorkflowLegend />
         <div className="right-panel-wrapper">
           <div className="body-wrapper">
             <div id="workflow-wrapper" className="workflow-wrapper">
@@ -141,7 +133,7 @@ const WorkflowTabs = () => {
             </div>
           </div>
 
-          <WorkspaceSidebar {...workspaceSidebarData} />
+          <WorkspaceSidebar />
 
           {/*<RightSideBar*/}
           {/*  wfcontext={WFContext.WORKFLOW}*/}

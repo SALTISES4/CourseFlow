@@ -1,15 +1,16 @@
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { EventUnion } from '@cf/types/common'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import { _t } from '@cf/utility/Utility.class'
 import { WorkflowType } from '@cfPages/Workspace/Workflow/types'
+import { AppDispatch } from '@cfRedux/store'
+import { updateAllEntities } from '@cfRedux/thunks'
 import { duplicateBaseItemQuery } from '@XMLHTTP/API/duplication'
 import { deleteSelfQueryLegacy } from '@XMLHTTP/API/workspace.rtk'
 import { useDispatch } from 'react-redux'
 
 export const useMenuActions = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { dispatch: dispatchDialog } = useDialog()
 
   /*******************************************************
@@ -78,29 +79,12 @@ export const useMenuActions = () => {
     }
   }
 
-  // @todo is this ViewType or cfobjecttype
   function expandAll(type: CfObjectType) {
-    // expand all by 'workflow type' and workflow content types
-    // according to the redux store, which has 'week' 'node' and 'outcome'
-    // hence this.props[type]
-    // it's an array i.e. TOutcome[]
-    // go trhough them all and call this redux method
-    // @todo don't know how to fix this yet
-    // this.props[type].forEach((week) =>
-    //   toggleDropReduxAction(week.id, type, true, dispatch)
-    // )
+    dispatch(updateAllEntities(type, () => ({ isDropped: true })))
   }
 
   function collapseAll(type: CfObjectType) {
-    // collapse all by 'workflow type' and workflow content types
-    // according to the redux store, which has 'week' 'node' and 'outcome'
-    // hence this.props[type]
-    // it's an array i.e. TOutcome[]
-    // go through them all and call this redux method
-    // @todo don't know how to fix this yet
-    // this.props[type].forEach((week) =>
-    //   toggleDropReduxAction(week.id, type, false, dispatch)
-    // )
+    dispatch(updateAllEntities(type, () => ({ isDropped: false })))
   }
 
   function duplicateItem(
@@ -109,15 +93,12 @@ export const useMenuActions = () => {
     workflowType: WorkflowType
   ) {
     if (parentId != null) {
-      const utilLoader = new UtilityLoader('body')
-
       duplicateBaseItemQuery(
         workflowId,
         workflowType,
         parentId,
         (responseData) => {
-          utilLoader.endLoad()
-          window.location.href = 'new iten path '
+          window.location.href = 'new item path '
         }
       )
     }

@@ -41,7 +41,6 @@ const MenuBar = ({ leftSection, viewbar, userbar, legendbar }: PropsType) => {
       </div>
       <div data-test-id="user-bar">{userbar}</div>
       <div data-test-id="viewbar">{viewbar}</div>
-      <div data-test-id="legend-bar">{legendbar}</div>
     </SCMenubar>
   )
 }

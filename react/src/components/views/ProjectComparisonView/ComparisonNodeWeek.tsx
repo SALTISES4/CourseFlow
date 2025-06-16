@@ -1,5 +1,5 @@
-import { TGetNodeWeekById, getNodeWeekByID } from '@cfFindState'
 // @local
+import { getNodeWeekById } from '@cfRedux/selectors/nodeweek.selector'
 import { AppState } from '@cfRedux/types/type'
 import ComparisonNode from '@cfViews/ProjectComparisonView/ComparisonNode'
 import { NodeWeekUnconnected } from '@cfViews/WorkflowView/componentViews/WorkflowView/components/NodeWeek'
@@ -23,12 +23,12 @@ class ComparisonNodeWeekUnconnected extends NodeWeekUnconnected<PropsType> {
         objectId={data.node}
         parentId={this.props.parentId}
         // @ts-ignore
-        column_order={this.props.column_order}
+        columnOrder={this.props.columnOrder}
         // throughParentId={data.id}
         // legacyRenderer={this.props.renderer}
         // legacyRenderer={{
-        //   task_choices: this.props.renderer.task_choices,
-        //   time_choices: this.props.renderer.time_choices,
+        //   taskChoices: this.props.renderer.taskChoices,
+        //   timeChoices: this.props.renderer.timeChoices,
         //   readOnly: this.props.renderer.readOnly,
         //   contextChoices: this.props.renderer.contextChoices,
         //   outcome_type_choices: this.props.renderer.outcome_type_choices,
@@ -37,7 +37,7 @@ class ComparisonNodeWeekUnconnected extends NodeWeekUnconnected<PropsType> {
         //   changeField: this.props.renderer.changeField,
         //   workflowId: this.props.renderer.workflowId,
         //   unreadComments: this.props.renderer.unreadComments,
-        //   add_comments: this.props.renderer.add_comments,
+        //   addComments: this.props.renderer.addComments,
         //   viewComments: this.props.renderer.viewComments,
         //   selectionManager: this.props.renderer.selectionManager
         // }}
@@ -49,7 +49,7 @@ const mapStateToProps = (
   state: AppState,
   ownProps: OwnProps
 ): TGetNodeWeekById => {
-  return getNodeWeekByID(state, ownProps.objectId)
+  return getNodeWeekById(state, ownProps.objectId)
 }
 const ComparisonNodeWeek = connect<ConnectedProps, object, OwnProps, AppState>(
   mapStateToProps,

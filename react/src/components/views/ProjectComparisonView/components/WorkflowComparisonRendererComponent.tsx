@@ -1,8 +1,7 @@
 // @ts-nocheck
 import { apiPaths } from '@cf/router/apiRoutes'
 import { CfObjectType } from '@cf/types/enum'
-import { _t } from '@cf/utility/utilityFunctions'
-import { UtilityLoader } from '@cf/utility/UtilityLoader'
+import { _t } from '@cf/utility/Utility.class'
 import { ProjectComparisonClass } from '@cfPages/Workspace/ProjectComparison'
 import * as React from 'react'
 
@@ -29,15 +28,14 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
    * LIFECYCLE
    *******************************************************/
   componentDidMount() {
-    const loader = new UtilityLoader('body')
 
     const querystring = window.location.search
-    const url_params = new URLSearchParams(querystring)
-    const workflows_added = url_params
+    const urlParams = new URLSearchParams(querystring)
+    const workflowsAdded = urlParams
       .getAll('workflows')
       .map((workflowId) => parseInt(workflowId))
-    if (workflows_added.indexOf(this.props.workflowId) < 0) {
-      url_params.append('workflows', this.props.workflowId)
+    if (workflowsAdded.indexOf(this.props.workflowId) < 0) {
+      urlParams.append('workflows', this.props.workflowId)
 
       // @todo
       if (history.pushState) {
@@ -47,7 +45,7 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
           window.location.host +
           window.location.pathname +
           '?' +
-          url_params.toString()
+          urlParams.toString()
         window.history.pushState({ path: newurl }, '', newurl)
       }
     }
@@ -55,8 +53,8 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
     // @todo
     // not sure, i think it's attempting to attach the parent as eaach row in the comparions
     // leave for now
-    getWorkflowContextQuery(this.props.workflowId, (context_responseData) => {
-      const context_data = context_responseData.dataPackage
+    getWorkflowContextQuery(this.props.workflowId, (contextResponseData) => {
+      const contextData = contextResponseData.dataPackage
 
       // @todo this will need to be unpacked, type unified with parent and called into parent
       // is there a reason #workflow-inner-wrapper is a real dom element?
@@ -69,14 +67,13 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
         container: $(this.mainDiv.current),
         viewType: this.props.viewType,
         initialObjectSets: this.props.objectSets,
-        dataPackage: context_data.dataPackage
+        dataPackage: contextData.dataPackage
       })
 
       // @todo no...
       // this.workflowComparison.silent_connect_fail = true
       // this.workflowComparison.init()
 
-      loader.endLoad()
     })
   }
 
@@ -92,17 +89,17 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
 
   componentWillUnmount() {
     const querystring = window.location.search
-    const url_params = new URLSearchParams(querystring)
+    const urlParams = new URLSearchParams(querystring)
 
-    const workflows_added = url_params
+    const workflowsAdded = urlParams
       .getAll('workflows')
       .map((workflowId) => parseInt(workflowId))
 
-    if (workflows_added.indexOf(this.props.workflowId) >= 0) {
-      workflows_added.splice(workflows_added.indexOf(this.props.workflowId), 1)
+    if (workflowsAdded.indexOf(this.props.workflowId) >= 0) {
+      workflowsAdded.splice(workflowsAdded.indexOf(this.props.workflowId), 1)
 
       // @ts-ignore @todo why are we using parseInt ?
-      url_params.set('workflows', workflows_added)
+      urlParams.set('workflows', workflowsAdded)
       if (history.pushState) {
         const newurl =
           window.location.protocol +
@@ -110,7 +107,7 @@ class WorkflowComparisonRendererComponent extends React.Component<OwnProps> {
           window.location.host +
           window.location.pathname +
           '?' +
-          url_params.toString()
+          urlParams.toString()
         window.history.pushState({ path: newurl }, '', newurl)
       }
     }

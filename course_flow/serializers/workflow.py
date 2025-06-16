@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
@@ -33,24 +35,22 @@ class WorkflowSerializerShallow(
     #########################################################
     created_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
     last_modified = serializers.DateTimeField(format=Utility.dateTimeFormat())
-    weekworkflow_set = serializers.SerializerMethodField()
-    columnworkflow_set = serializers.SerializerMethodField()
-    outcomeworkflow_set = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=Utility.dateTimeFormat())
     outcomes_sort = serializers.SerializerMethodField()
-    user_permissions = serializers.SerializerMethodField()
     strategy_icon = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
-
+    user_permissions = serializers.SerializerMethodField()
     author = UserSerializer(read_only=True)
+    columns = serializers.SerializerMethodField()
+    weeks = serializers.SerializerMethodField()
+    outcomes = serializers.SerializerMethodField()
 
     class Meta:
         model = Workflow
         fields = [
             "author",
             "code",
-            "columnworkflow_set",
             "condensed",
             "created_on",
             "deleted",
@@ -66,7 +66,6 @@ class WorkflowSerializerShallow(
             "last_modified",
             "outcomes_sort",
             "outcomes_type",
-            "outcomeworkflow_set",
             "parent_workflow",
             "ponderation_individual",
             "ponderation_practical",
@@ -81,7 +80,9 @@ class WorkflowSerializerShallow(
             "title",
             "url",
             "user_permissions",
-            "weekworkflow_set",
+            "columns",
+            "outcomes",
+            "weeks",
         ]
 
     #########################################################
@@ -119,26 +120,33 @@ class WorkflowSerializerShallow(
         return False
 
     @staticmethod
-    def get_strategy_icon(instance):
+    def get_strategy_icon(instance: Workflow):
         if instance.is_strategy:
-            return instance.weeks.first().strategy_classification
+            # Check if weeks exists and has at least one entry
+            # @todo this is a problem!
+            # it's 'maybe' loading a child week and then determining a derived quality about it
+            # NO.
+            first_week = instance.weeks.first() if instance.weeks.exists() else None
+            if first_week:
+                return first_week.strategy_classification
         else:
             return None
 
     @staticmethod
-    def get_weekworkflow_set(instance):
-        links = instance.weekworkflow_set.filter(week__deleted=False).order_by("rank")
-        return list(map(Utility.linkIDMap, links))
+    def get_weeks(instance):
+        weeks = instance.weekworkflow_set.filter(week__deleted=False).order_by("rank")
+        return list(map(lambda item: item.week_id, weeks))
 
     @staticmethod
-    def get_columnworkflow_set(instance):
-        links = instance.columnworkflow_set.filter(column__deleted=False).order_by("rank")
-        return list(map(Utility.linkIDMap, links))
+    def get_columns(instance):
+        columns = instance.columnworkflow_set.filter(column__deleted=False).order_by("rank")
+        return list(map(lambda item: item.column_id, columns))
 
     @staticmethod
-    def get_outcomeworkflow_set(instance):
-        links = instance.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank")
-        return list(map(Utility.linkIDMap, links))
+    def get_outcomes(instance):
+        outcomes = instance.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank")
+        #        return list(map(Utility.linkIDMap, links))
+        return list(map(lambda item: item.outcome_id, outcomes))
 
     def get_user_permissions(self, instance):
         user = self.context.get("user", None)

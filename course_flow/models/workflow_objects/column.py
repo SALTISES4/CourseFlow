@@ -40,6 +40,7 @@ class Column(AbstractCourseFlowModel):
 
     visible = models.BooleanField(default=True)
 
+    # this is the RGB colour code in decimal notation
     colour = models.PositiveIntegerField(null=True)
 
     column_type = models.PositiveIntegerField(choices=column_types(), default=0)

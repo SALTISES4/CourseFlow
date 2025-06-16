@@ -1,7 +1,9 @@
-import { Lock } from '@cf/types/common'
+import { CfLock } from '@cf/types/common'
 import { WorkflowPermission } from '@cf/utility/permissions'
+import { SidebarState } from '@cfRedux/slices/sidebar.slice'
 import {
   EColumn,
+  EComment,
   EDate,
   ENode,
   ENodelink,
@@ -20,56 +22,70 @@ import {
   EWorkflow
 } from '@XMLHTTP/types/entity'
 
-export type AppState = {
-  workflow: TWorkflow
-  columnworkflow: TColumnworkflow[]
-  column: TColumn[]
-  weekworkflow: TWeekworkflow[]
-  week: TWeek[]
-  nodeweek: TNodeweek[]
+// so lock is not persisted
+// but instead it's broadcast via emitter
+// obviously that won't, but keep the lockable interface for now
+//
+
+export type WorkspaceAppState = {
+  project?: TProject
   nodelink: TNodelink[]
+  column: TColumn[]
+  week: TWeek[]
+  workflow: TWorkflow
   node: TNode[]
+  strategy: TStrategy[]
+  objectSet: TObjectSet[]
+}
+
+export type AppState = {
+  workspace: WorkspaceAppState
+  // relations
+  columnworkflow: TColumnworkflow[]
+  weekworkflow: TWeekworkflow[]
+  nodeweek: TNodeweek[]
   outcomeworkflow: TColumnworkflow[]
+  // outcomes
   outcome: TOutcome[]
   outcomenode: TOutcomenode[]
   outcomeoutcome: TOutcomeOutcome[]
-  objectset: TObjectSet[]
-  strategy: TStrategy[]
+  objectSet: TObjectSet[]
+  //
+  sidebar: SidebarState
   //
   parentWorkflow?: TParentWorkflow[]
   parentNode?: TParentNode[]
-  parentProject?: TProject
   outcomehorizontallink?: TOutcomeHorizontalLink[]
-  child_workflow?: TChildWorkflow[]
+  childWorkflow?: TChildWorkflow[]
 }
 
 export type RootOutcomeStateType = Pick<AppState, 'outcomeoutcome' | 'outcome'>
 
 /*******************************************************
- * INDIVIDUALL REDUCER TYPES
+ * INDIVIDUAL REDUCER TYPES
  *******************************************************/
-export type TOutcomenode = EOutcomenode
-
-export type TOutcomeOutcome = EOutcomeOutcome
-
-// @todo look into where lock comes from
-export type TOutcome = EOutcome & {
-  lock?: Lock
-}
-
-// @todo look into where lock comes from
-export type TColumn = EColumn & {
-  lock?: Lock
-}
-
-// @todo look into where lock comes from
-export type TNode = ENode & {
-  lock?: Lock
-}
 export type TUser = EUser & {
   userColour?: string
 }
 
+type LockableItem = {
+  lock?: CfLock
+}
+
+type ExpandableItem = {
+  isDropped?: boolean
+}
+
+export type TOutcome = EOutcome & LockableItem
+export type TColumn = EColumn & LockableItem
+export type TNode = ENode & LockableItem & ExpandableItem
+export type TWeek = EWeek & LockableItem & ExpandableItem
+
+/*******************************************************
+ * MORE RELAIONS
+ *******************************************************/
+export type TOutcomenode = EOutcomenode
+export type TOutcomeOutcome = EOutcomeOutcome
 export type TColumnworkflow = EOutcomeWorkflow & {
   outcome?: number
   noDrag?: boolean
@@ -77,11 +93,6 @@ export type TColumnworkflow = EOutcomeWorkflow & {
 }
 
 export type TNodeweek = ENodeweek
-
-export type TWeek = EWeek & {
-  isDropped?: boolean
-  lock?: Lock
-}
 
 export type TWeekworkflow = EWeekworkflow & {
   noDrag?: boolean
@@ -91,14 +102,16 @@ export type TOutcomeWorkflow = EOutcomeWorkflow
 
 export type TWorkflow = EWorkflow & {
   workflowPermissions: WorkflowPermission
-  lock?: boolean
+  lock?: CfLock
 }
 
-export type TNodelink = ENodelink
+export type TNodelink = ENodelink & {
+  lock?: CfLock
+}
 
 // @todo i think this is missing attributes
 export type TObjectSet = EObjectSet & {
-  hidden?: boolean // not sure if this is the same objectset
+  hidden?: boolean
 }
 
 export type TStrategy = EStrategy
@@ -108,6 +121,7 @@ export type TOutcomeHorizontalLink = any
 export type TParentNode = any
 export type TDate = EDate
 export type TProject = EProject
+export type TComment = EComment
 export type TNotification = ENotification & {
   url: string
 }

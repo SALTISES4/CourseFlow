@@ -1,3 +1,4 @@
+import Utility from '@cf/utility/Utility.class'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -5,20 +6,19 @@ import TextField from '@mui/material/TextField'
 import { produce } from 'immer'
 import { ChangeEvent, useCallback, useState } from 'react'
 
-import { OutcomeForm } from './types'
+import getOutcomeData from './getOutcomeData'
 import {
   SidebarActions,
   SidebarContent,
   SidebarInnerWrap,
   SidebarTitle
 } from '../../../../styles'
-
-// dummy data
-import data from '../EditNode/data'
+import data from '../EditNode/optionsData'
 const objectSetOptions = data.objectSets
 
-const EditOutcome = (props: OutcomeForm) => {
-  const [state, setState] = useState(props)
+const EditOutcome = () => {
+  const data = getOutcomeData(1)
+  const [state, setState] = useState(data)
 
   const onFieldChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setState(
@@ -55,7 +55,7 @@ const EditOutcome = (props: OutcomeForm) => {
             value={state.description}
             onChange={onFieldChange}
           />
-          {props.code && (
+          {data.code && (
             <TextField
               variant="outlined"
               label="Code"
@@ -65,17 +65,17 @@ const EditOutcome = (props: OutcomeForm) => {
               onChange={onFieldChange}
             />
           )}
-          {props.objectSets && (
+          {data.objectSets && (
             <Autocomplete
               multiple
               size="small"
               options={objectSetOptions}
-              onChange={(_, v) => console.log('changed to', v)}
+              onChange={(_, v) => Utility.logger('changed to', v)}
               isOptionEqualToValue={(option, value) =>
                 option.value === value.value
               }
               defaultValue={objectSetOptions.filter((o) =>
-                props.objectSets!.includes(o.value)
+                data.objectSets!.includes(o.value)
               )}
               renderInput={(params) => (
                 <TextField {...params} variant="outlined" label="Object sets" />

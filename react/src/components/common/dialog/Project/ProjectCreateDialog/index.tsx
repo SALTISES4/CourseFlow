@@ -1,7 +1,6 @@
 import * as SC from '@cf/components/common/dialog/styles'
 import { DialogMode, useDialog } from '@cf/hooks/useDialog'
 import { CFRoutes } from '@cf/router/appRoutes'
-import { _t } from '@cf/utility/utilityFunctions'
 import ProjectForm, {
   ProjectFormValues
 } from '@cfComponents/dialog/Project/components/ProjectForm'

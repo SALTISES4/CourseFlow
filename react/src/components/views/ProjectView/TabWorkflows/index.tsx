@@ -1,4 +1,3 @@
-import { _t } from '@cf/utility/utilityFunctions'
 import LibrarySearchView from '@cfViews/LibrarySearchView'
 import LibraryHelper from '@cfViews/LibrarySearchView/LibraryHelper.Class'
 import { LibraryObjectsSearchQueryArgs } from '@XMLHTTP/types/args'
@@ -25,7 +24,7 @@ const TabWorkflows = ({ projectId }: PropsType) => {
     keywordFilter: true
   }
 
-  const locked = [{ name: 'parentProject', value: projectId }]
+  const locked = [{ name: 'project', value: projectId }]
 
   const [searchArgs, setSearchArgs] = useState<LibraryObjectsSearchQueryArgs>(
     {}

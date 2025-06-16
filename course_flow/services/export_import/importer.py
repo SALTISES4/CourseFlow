@@ -18,7 +18,7 @@ from course_flow.serializers import (
     WeekWorkflowSerializerShallow,
 )
 from course_flow.services import Utility
-from course_flow.sockets import redux_actions as actions
+from course_flow.sockets.emitters import WorkflowUpdateEmitter
 
 
 class Importer:
@@ -77,8 +77,12 @@ class Importer:
                     "new_through": OutcomeWorkflowSerializerShallow(outcomeworkflow).data,
                     "parentId": workflow.id,
                 }
-                actions.dispatch_wf(workflow, actions.newOutcomeAction(response_data))
-                actions.dispatch_to_parent_wf(workflow, actions.newOutcomeAction(response_data))
+                WorkflowUpdateEmitter.emit_workflow_update(
+                    workflow, WorkflowUpdateEmitter.new_outcome_action(response_data)
+                )
+                WorkflowUpdateEmitter.dispatch_to_parent_wf(
+                    workflow, WorkflowUpdateEmitter.new_outcome_action(response_data)
+                )
             else:
                 outcomeoutcome = self.add_to_outcome_parent_with_depth(
                     outcome, last_outcome, depth - 1
@@ -91,13 +95,13 @@ class Importer:
                     "new_through": new_through_serialized,
                     "parentId": outcomeoutcome.parent.id,
                 }
-                actions.dispatch_wf(
+                WorkflowUpdateEmitter.emit_workflow_update(
                     workflow,
-                    actions.insertChildAction(response_data, "outcome"),
+                    WorkflowUpdateEmitter.insert_child_action(response_data, "outcome"),
                 )
-                actions.dispatch_to_parent_wf(
+                WorkflowUpdateEmitter.dispatch_to_parent_wf(
                     workflow,
-                    actions.insertChildAction(response_data, "outcome"),
+                    WorkflowUpdateEmitter.insert_child_action(response_data, "outcome"),
                 )
             try:
                 if isinstance(code, str) and code.isnumeric():
@@ -160,14 +164,16 @@ class Importer:
                         "new_through": WeekWorkflowSerializerShallow(weekworkflow).data,
                         "parentId": workflow.id,
                     }
-                    actions.dispatch_wf(
+                    WorkflowUpdateEmitter.emit_workflow_update(
                         workflow,
-                        actions.insertBelowAction(response_data, "week"),
+                        WorkflowUpdateEmitter.insert_below_action(response_data, "week"),
                     )
                 else:
-                    actions.dispatch_wf(
+                    WorkflowUpdateEmitter.emit_workflow_update(
                         workflow,
-                        actions.changeField(week.id, "week", data, False),
+                        WorkflowUpdateEmitter.prepare_change_field_payload(
+                            object_id=week.id, object_type="week", json=data
+                        ),
                     )
 
             elif type == "node":
@@ -218,4 +224,6 @@ class Importer:
                     "parentId": week.id,
                 }
 
-                actions.dispatch_wf(workflow, actions.insertBelowAction(response_data, "node"))
+                WorkflowUpdateEmitter.emit_workflow_update(
+                    workflow, WorkflowUpdateEmitter.insert_below_action(response_data, "node")
+                )

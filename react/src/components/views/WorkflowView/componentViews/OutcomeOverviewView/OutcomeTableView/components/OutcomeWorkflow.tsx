@@ -1,0 +1,88 @@
+import { getOutcomeWorkflowByID } from '@cfFindState'
+import { AppState } from '@cfRedux/types/type'
+import React from 'react'
+import { useSelector } from 'react-redux'
+
+import Outcome from './Outcome'
+import {RootState} from "@cfRedux/store";
+
+type OwnProps = {
+  objectId: number
+  nodecategory: any
+  outcomesType: any
+}
+
+const TableOutcomeWorkflow = ({
+  objectId,
+  nodecategory,
+  outcomesType
+}: OwnProps) => {
+  const data = useSelector((state: RootState) =>
+    getOutcomeWorkflowByID(state, objectId)
+  )
+
+  return (
+    <div>
+      <Outcome
+        objectId={data.outcome}
+        nodecategory={nodecategory}
+        outcomesType={outcomesType}
+      />
+    </div>
+  )
+}
+
+export default TableOutcomeWorkflow
+
+// import { TGetOutcomeWorkflowByID, getOutcomeWorkflowByID } from '@cfFindState'
+// import { AppState } from '@cfRedux/types/type'
+// import * as React from 'react'
+// import { connect } from 'react-redux'
+//
+// import Outcome from './Outcome'
+//
+// type ConnectedProps = TGetOutcomeWorkflowByID
+// type OwnProps = {
+//   objectId: number
+//   nodecategory: any
+//   outcomesType: any
+// }
+// type PropsType = ConnectedProps & OwnProps
+// /**
+//  * OutcomeWorkflow for the tables.
+//  * Not currently used.
+//  */
+// class TableOutcomeWorkflowUnconnected extends React.Component<PropsType> {
+//   /*******************************************************
+//    * RENDER
+//    *******************************************************/
+//   render() {
+//     const data = this.props.data
+//     return (
+//       <div>
+//         <Outcome
+//           objectId={data.outcome}
+//           nodecategory={this.props.nodecategory}
+//           outcomesType={this.props.outcomesType}
+//         />
+//       </div>
+//     )
+//   }
+// }
+// const mapStateToProps = (
+//   state: AppState,
+//   ownProps: OwnProps
+// ): TGetOutcomeWorkflowByID => {
+//   return getOutcomeWorkflowByID(state, ownProps.objectId)
+// }
+// const TableOutcomeWorkflow = connect<
+//   ConnectedProps,
+//   object,
+//   OwnProps,
+//   AppState
+// >(
+//   mapStateToProps,
+//   null
+// )(TableOutcomeWorkflowUnconnected)
+//
+// export default TableOutcomeWorkflow

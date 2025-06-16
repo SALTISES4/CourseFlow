@@ -1,3 +1,18 @@
+// Slice namespaces
+
+export enum SliceNamespace {
+  NODE = 'node',
+  SIDEBAR = 'sidebar',
+  WEEK = 'week',
+  COLUMN = 'column',
+  STRATEGY = 'strategy',
+  OBJECTSET = 'objectSet',
+  NODELINK = 'nodelink',
+  WORKFLOW = 'workflow',
+  PROJECT = 'project',
+  VIEWSETTINGS = 'viewsettings'
+}
+
 // group all actions together which are global
 export enum CommonActions {
   REPLACE_STOREDATA = 'replaceStoreData',
@@ -7,7 +22,7 @@ export enum CommonActions {
 
 export enum WorkflowActions {
   CREATELOCK = 'workflow/createLock',
-  changeField = 'workflow/changeField',
+  CHANGE_FIELD = 'workflow/changeField',
   DELETE_SELF_SOFT = 'workflow/deleteSelfSoft',
   RESTORE_SELF = 'workflow/restoreSelf'
 }
@@ -18,12 +33,12 @@ export enum WeekActions {
   RESTORE_SELF = 'week/restoreSelf',
   INSERT_BELOW = 'week/insertBelow',
   CREATE_LOCK = 'week/createLock',
-  changeField = 'week/changeField',
+  CHANGE_FIELD = 'week/changeField',
   RELOAD_COMMENTS = 'week/reloadComments'
 }
 
 export enum WeekWorkflowActions {
-  CHANGE_ID = 'weekworkflow/changeID',
+  CHANGE_ID = 'weekworkflow/changeId',
   MOVED_TO = 'weekworkflow/movedTo'
 }
 
@@ -37,8 +52,8 @@ export enum OutcomeActions {
   CREATE_LOCK = 'outcome/createLock',
   RELOAD_COMMENTS = 'outcome/reloadComments',
   UPDATE_HORIZONTAL_LINK = 'outcome/updateHorizontalLinks',
-  changeField = 'outcome/changeField',
-  changeField_MANY = 'outcome/changeFieldMany'
+  CHANGE_FIELD = 'outcome/changeField',
+  CHANGE_FIELD_MANY = 'outcome/changeFieldMany'
 }
 
 export enum OutcomeNodeActions {
@@ -52,17 +67,17 @@ export enum OutcomeBaseActions {
   INSERT_BELOW = 'outcomeBase/insertBelow',
   INSERT_CHILD = 'outcomeBase/insertChild',
   RELOAD_COMMENTS = 'outcomeBase/reloadComments',
-  changeField = 'outcomeBase/changeField',
-  changeField_MANY = 'outcomeBase/changeFieldMany'
+  CHANGE_FIELD = 'outcomeBase/changeField',
+  CHANGE_FIELD_MANY = 'outcomeBase/changeFieldMany'
 }
 
 export enum OutcomeWorkflowActions {
   MOVED_TO = 'outcomeworkflow/movedTo',
-  CHANGE_ID = 'outcomeworkflow/changeID'
+  CHANGE_ID = 'outcomeworkflow/changeId'
 }
 
 export enum OutcomeOutcomeActions {
-  CHANGE_ID = 'outcomeoutcome/changeID',
+  CHANGE_ID = 'outcomeoutcome/changeId',
   MOVED_TO = 'outcomeoutcome/movedTo'
 }
 
@@ -78,16 +93,16 @@ export enum ColumnActions {
   INSERT_BELOW = 'column/insertBelow',
   CREATE_LOCK = 'column/createLock',
   RELOAD_COMMENTS = 'column/reloadComments',
-  changeField = 'column/changeField'
+  CHANGE_FIELD = 'column/changeField'
 }
 
 export enum ColumnWorkflowActions {
-  CHANGE_ID = 'columnworkflow/changeID',
+  CHANGE_ID = 'columnworkflow/changeId',
   MOVED_TO = 'columnworkflow/movedTo'
 }
 
 export enum NodeWeekActions {
-  CHANGE_ID = 'nodeweek/changeID',
+  CHANGE_ID = 'nodeweek/changeId',
   MOVED_TO = 'nodeweek/movedTo'
 }
 
@@ -100,28 +115,30 @@ export enum NodeActions {
   CHANGED_COLUMN = 'node/changedColumn',
   CREATE_LOCK = 'node/createLock',
   INSERT_BELOW = 'node/insertBelow',
-  changeField = 'node/changeField',
+  CHANGE_FIELD = 'node/changeField',
   RELOAD_COMMENTS = 'node/reloadComments',
-  SET_linkedWorkflow = 'node/setLinkedWorkflow'
+  SET_LINKED_WORKFLOW = 'node/setLinkedWorkflow'
 }
 
-export enum NodeLinkActions {
+export enum NodelinkActions {
   CREATE_LOCK = 'nodelink/createLock',
-  changeField = 'nodelink/changeField',
+  CHANGE_FIELD = 'nodelink/changeField',
   RESTORE_SELF = 'nodelink/restoreSelf',
   DELETE_SELF = 'nodelink/deleteSelf',
   DELETE_SELF_SOFT = 'nodelink/deleteSelfSoft',
-  NEW_NODE_LINK = 'nodelink/newNodeLink'
-}
-
-export enum GridMenuActions {
-  ITEM_ADDED = 'gridmenu/itemAdded'
+  NEW_NODE_LINK = 'nodelink/newNodelink'
 }
 
 export enum ObjectSetActions {
-  TOGGLE_OBJECT_SET = 'objectset/toggleObjectSet'
+  TOGGLE_OBJECT_SET = 'objectSet/toggleObjectSet'
 }
 
 export enum OutcomeHorizontalLinkActions {
   UPDATE_DEGREE = 'outcomehorizontallink/updateDegree'
+}
+
+export enum SidebarActions {
+  COLLAPSE = 'sidebar/collapse',
+  EDIT = 'sidebar/edit',
+  CHANGE_TAB = 'sidebar/changeTab'
 }

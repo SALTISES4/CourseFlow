@@ -66,7 +66,7 @@ export function useDialog<T extends keyof DialogPayloadMap>(dialogType?: T) {
   const dialogContext = useContext(DialogContext)
   const dialogDispatch = useContext(DialogDispatchContext)
 
-  // if no dialog type is provided, just return the dispatch
+  // if no dialog type is provided, just return dispatch
   if (!dialogType) {
     return {
       show: false,
@@ -77,14 +77,13 @@ export function useDialog<T extends keyof DialogPayloadMap>(dialogType?: T) {
     }
   }
 
-  // to control whether the dialog shows
   let show = dialogContext.type === dialogType
   show = dialogContext.show ? show : dialogContext.show
 
   return {
     show,
     type: dialogContext.type,
-    payload: dialogContext.payload as DialogPayloadMap[T], // Cast payload to the specific type
+    payload: dialogContext.payload as DialogPayloadMap[T],
     onClose: () => dialogDispatch(null),
     dispatch: <D extends T>(type: D, payload?: DialogPayloadMap[D]) =>
       dialogDispatch({ type, payload })

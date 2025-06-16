@@ -37,7 +37,7 @@ class NotificationEndPoint:
             request.user.notifications.filter(id=notification_id).delete()
             return Response({"message": "success"})
 
-        return Response({"action": "error"})
+        return Response({"action": "error"}, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     @login_required
@@ -49,14 +49,10 @@ class NotificationEndPoint:
             # if a notification_id is passed as post data
             # then we're updating that specific notification object
             notification_id = post_data["notification_id"]
-            request.user.notifications.filter(id=notification_id).update(
-                is_unread=False
-            )
+            request.user.notifications.filter(id=notification_id).update(is_unread=False)
         else:
             # otherwise, we're updating all the notifications to be read
-            request.user.notifications.filter(is_unread=True).update(
-                is_unread=False
-            )
+            request.user.notifications.filter(is_unread=True).update(is_unread=False)
 
         return Response({"message": "success"})
 

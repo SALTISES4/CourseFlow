@@ -1,7 +1,7 @@
+import { CfObjectType } from '@cf/types/enum'
 import {
   ColumnWorkflowActions,
   CommonActions,
-  GridMenuActions,
   NodeActions,
   NodeWeekActions,
   ObjectSetActions,
@@ -9,6 +9,29 @@ import {
   OutcomeWorkflowActions,
   WeekWorkflowActions
 } from '@cfRedux/types/enumActions'
+import { AppState } from '@cfRedux/types/type'
+import { EComment } from '@XMLHTTP/types/entity'
+
+// eventually this will simply be AppState['workspace']
+export type WorkSpaceAppState = Pick<
+  AppState,
+  | 'workflow'
+  | 'column'
+  | 'week'
+  | 'nodelink'
+  | 'node'
+  | 'outcomeworkflow'
+  | 'outcome'
+  | 'outcomenode'
+  | 'outcomeoutcome'
+  | 'objectSet'
+  | 'strategy'
+  //   | 'parentWorkflow'
+  //   | 'parentNode'
+  //  | 'outcomehorizontallink'
+  //  | 'childWorkflow'
+> &
+  AppState['workspace']
 
 /**
  *  local action creators
@@ -20,17 +43,18 @@ class ActionCreator {
    * COMMON / DYNAMIC OBJECT
    *******************************************************/
   static createLockAction = (
-    objectId,
-    objectType,
-    lock?,
-    userId?,
-    userColour?
+    objectId: number,
+    objectType: CfObjectType,
+    lock?: boolean,
+    userId?: number,
+    userColour?: string
   ) => {
     if (lock) {
       return {
-        type: objectType + '/createLock',
+        type: objectType + '/createLock', // this is a redux antipattern
         payload: {
           id: objectId,
+          // where are rest of props for lock?
           lock: { userId: userId, userColour: userColour }
         }
       }
@@ -45,20 +69,28 @@ class ActionCreator {
     }
   }
 
-  static reloadCommentsAction = (id, objectType, comment_data) => {
+  static reloadCommentsAction = (
+    id: number,
+    objectType: CfObjectType,
+    commentData: EComment[]
+  ) => {
     return {
-      type: objectType + '/reloadComments',
+      type: objectType + '/reloadComments', // this is a redux antipattern
       payload: {
         id: id,
         objectType: objectType,
-        comment_data
+        commentData
       }
     }
   }
 
-  static changeField = (id, objectType, json) => {
+  static changeField = <T>(id: number, objectType: CfObjectType, json: T) => {
+    console.log(
+      'what is  static changeField = (id: number, objectType: CfObjectType, json) => {'
+    )
+    console.log(json)
     return {
-      type: objectType + '/changeField',
+      type: objectType + '/changeField', // this is a redux antipattern
       payload: {
         id: id,
         objectType: objectType,
@@ -75,102 +107,122 @@ class ActionCreator {
     type: CommonActions.CLEAR_WORKFLOW_DATA
   })
 
-  static replaceStoreData = (dataPackage) => {
+  static replaceWorkspaceStoreData = (dataPackage) => {
     return {
       type: CommonActions.REPLACE_STOREDATA,
       payload: dataPackage
     }
   }
 
-  static refreshStoreData = (dataPackage) => {
+  static refreshWorkspaceStoreData = (
+    dataPackage: WorkSpaceAppState
+  ): { type: CommonActions; payload: WorkSpaceAppState } => {
     return {
       type: CommonActions.REFRESH_STOREDATA,
       payload: dataPackage
     }
   }
 
-  static reloadAssignmentsAction = (id, hasAssignment) => {
-    return {
-      type: NodeActions.RELOAD_ASSIGNMENTS,
-      payload: { id: id, hasAssignment: hasAssignment }
-    }
-  }
+  // static reloadAssignmentsAction = (id: number, hasAssignment) => {
+  //   return {
+  //     type: NodeActions.RELOAD_ASSIGNMENTS,
+  //     payload: { id: id, hasAssignment: hasAssignment }
+  //   }
+  // }
 
-  static moveColumnWorkflow = (id, new_position, new_parent, child_id) => {
+  static moveColumnWorkflow = (
+    id: number,
+    newIndex: number,
+    newParent: number,
+    childId: number
+  ) => {
     return {
       type: ColumnWorkflowActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
-  static moveWeekWorkflow = (id, new_position, new_parent, child_id) => {
+  static moveWeekWorkflow = (
+    id: number,
+    newIndex: number,
+    newParent: number,
+    childId: number
+  ) => {
     return {
       type: WeekWorkflowActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
-  static columnChangeNode = (id, new_column) => {
+  static columnChangeNode = (id: number, newColumn: number) => {
     return {
       type: NodeActions.CHANGED_COLUMN,
-      payload: { id: id, new_column: new_column }
+      payload: { id, newColumn }
     }
   }
 
-  static moveNodeWeek = (id, new_position, new_parent, child_id) => {
+  static moveNodeWeek = (
+    id: number,
+    newIndex: number,
+    newParent: number,
+    childId: number
+  ) => {
     return {
       type: NodeWeekActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
-  static moveOutcomeOutcome = (id, new_position, new_parent, child_id) => {
+  static moveOutcomeOutcome = (
+    id: number,
+    newIndex: number,
+    newParent: number,
+    childId: number
+  ) => {
     return {
       type: OutcomeOutcomeActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
-  static moveOutcomeWorkflow = (id, new_position, new_parent, child_id) => {
+  static moveOutcomeWorkflow = (
+    id: number,
+    newIndex: number,
+    newParent: number,
+    childId: number
+  ) => {
     return {
       type: OutcomeWorkflowActions.MOVED_TO,
       payload: {
-        id: id,
-        new_index: new_position,
-        new_parent: new_parent,
-        child_id: child_id
+        id,
+        newIndex,
+        newParent,
+        childId
       }
     }
   }
 
-  static gridMenuItemAdded = (responseData) => {
-    return {
-      type: GridMenuActions.ITEM_ADDED,
-      payload: responseData
-    }
-  }
-
-  static toggleObjectSet = (id, hidden) => {
+  static toggleObjectSet = (id: number, hidden: boolean) => {
     return {
       type: ObjectSetActions.TOGGLE_OBJECT_SET,
       payload: { id: id, hidden: hidden }

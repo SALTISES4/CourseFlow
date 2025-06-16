@@ -6,8 +6,12 @@ from course_flow.models import Node, Week
 
 
 class NodeWeek(models.Model):
+    # if week is deleted, delete this nodeweek
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
+
+    # if node is deleted, delete this nodeweek
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
+
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 

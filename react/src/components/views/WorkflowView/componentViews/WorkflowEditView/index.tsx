@@ -1,205 +1,295 @@
-import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
+import { OuterContentWrap } from '@cf/mui/helper'
 import { CfObjectType } from '@cf/types/enum'
+import { AppDispatch, RootState } from '@cfRedux/store'
+import { updateAllEntities } from '@cfRedux/thunks'
+import ColumnWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWrapper'
+import WeekWrapper from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWrapper'
+import WorkflowFunctions from '@cfViews/WorkflowView/componentViews/WorkflowEditView/workflow.actions.class'
+import { DndContext } from '@dnd-kit/core'
 import {
-  EditableComponentWithSortingProps,
-  EditableComponentWithSortingState
-} from '@cfEditableComponents/EditableComponentWithSorting'
-import EditableComponentWithSorting from '@cfEditableComponents/EditableComponentWithSorting'
-import ActionCreator from '@cfRedux/ActionCreator'
-import { AppState } from '@cfRedux/types/type'
-import * as Utility from '@cfUtility'
-import ColumnWorkflow from '@cfViews/components/ColumnWorkflow'
-import { insertedAt } from '@XMLHTTP/postTemp.jsx'
-import * as React from 'react'
-import { connect } from 'react-redux'
+  SortableContext,
+  horizontalListSortingStrategy,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
-import WeekWorkflow from './components/WeekWorkflow'
-import WorkflowLegend from './components/WorkflowLegend'
-// import $ from 'jquery'
-
-type ConnectedProps = {
-  data: AppState['workflow']
-  objectSets: AppState['objectset']
-  week: AppState['week']
-  node: AppState['node']
-  outcome: AppState['outcome']
-}
-type OwnProps = EditableComponentWithSortingProps
-type StateProps = EditableComponentWithSortingState
-type PropsType = ConnectedProps & OwnProps
-
-/**
- * The workflow view with drag and drop nodes/weeks/columns
- * ...
- * what view is this?
- */
-class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
-  PropsType,
-  StateProps
-> {
-  static contextType = WorkflowConfigContext
-  declare context: React.ContextType<typeof WorkflowConfigContext>
-
-  constructor(props: PropsType) {
-    super(props)
-    this.objectType = CfObjectType.WORKFLOW
-    this.state = {} as StateProps
-  }
+const WorkflowEditView = () => {
+  const dispatch = useDispatch<AppDispatch>()
+  /*******************************************************
+   * HOOKS: REDUX
+   *******************************************************/
+  const workflow = useSelector((state: RootState) => state.workspace.workflow)
 
   /*******************************************************
-   * LIFECYCLE
+   * HOOKS: STATE
    *******************************************************/
-  componentDidMount() {
-    this.makeDragAndDrop()
-  }
-
-  componentDidUpdate() {
-    this.makeDragAndDrop()
-  }
+  const [weeksDragState, setWeeksDragState] = useState(workflow.weeks || [])
+  const [columnsDragState, setColumnsDragState] = useState(
+    workflow.columns || []
+  )
 
   /*******************************************************
-   * FUNCTIONS
+   * COMPONENTS
    *******************************************************/
-  makeDragAndDrop() {
-    this.makeSortableNode(
-      $('.column-row').children('.column-workflow').not('.ui-draggable'),
-      this.props.objectId,
-      'columnworkflow',
-      '.column-workflow',
-      // @ts-ignore
-      'x',
-      false,
-      null,
-      '.column',
-      '.column-row'
-    )
-    this.makeSortableNode(
-      $('.week-block').children('.week-workflow').not('.ui-draggable'),
-      this.props.objectId,
-      'weekworkflow',
-      '.week-workflow',
-      // @ts-ignore
-      'y',
-      false,
-      null,
-      '.week',
-      '.week-block'
-    )
-  }
-
-  stopSortFunction() {
-    Utility.triggerHandlerEach($('.week .node'), 'component-updated')
-  }
-
-  sortableMovedFunction(
-    id: number,
-    new_position: number,
-    type: string,
-    new_parent: number,
-    child_id: number
-  ) {
-    if (type === 'columnworkflow') {
-      this.context.editableMethods.microUpdate(
-        ActionCreator.moveColumnWorkflow(id, new_position, new_parent, child_id)
-      )
-      insertedAt(
-        this.context.selectionManager,
-        child_id,
-        'column',
-        new_parent,
-        'workflow',
-        new_position,
-        'columnworkflow'
-      )
-    }
-    if (type === 'weekworkflow') {
-      this.context.editableMethods.microUpdate(
-        ActionCreator.moveWeekWorkflow(id, new_position, new_parent, child_id)
-      )
-      insertedAt(
-        this.context.selectionManager,
-        child_id,
-        'week',
-        new_parent,
-        'workflow',
-        new_position,
-        'weekworkflow'
-      )
-    }
-  }
-
-  /*******************************************************
-   * RENDER
-   *******************************************************/
-  render() {
-    const data = this.props.data
-
-    const columnworkflows = data.columnworkflowSet?.map(
-      (columnworkflow, index) => (
-        <ColumnWorkflow
-          key={`columnworkflow-${columnworkflow}`}
-          objectId={columnworkflow}
-          parentId={data.id}
-        />
-      )
-    )
-    const weekworkflows = data.weekworkflowSet?.map((weekworkflow, index) => (
-      <WeekWorkflow
-        condensed={data.condensed}
-        key={`weekworkflow-${weekworkflow}`}
-        objectId={weekworkflow}
-        parentId={data.id}
-      />
-    ))
-
-    let cssClass = 'workflow-details'
-    if (data.condensed) {
-      cssClass += ' condensed'
-    }
-
-    // We render an svg canvas in front of the rest of
-    // the workflow for drawing node ports and links
+  const CanvasPlaceholder = () => {
+    /*
+      .workflow-canvas is used for all kinds of targeting
+      nodes and nodelinks (drawn line connections between nodes) are added/rendered to the canvas and they seem to float on top of react
+      it doesn't look like comments, nodes, weeks etc are part of the 3js stuff
+      */
     return (
-      <div className={cssClass}>
-        <div className="column-row" id={data.id + '-column-block'}>
-          {columnworkflows}
-        </div>
-        <div className="week-block" id={data.id + '-week-block'}>
-          {weekworkflows}
-        </div>
-        {/*
-        PLACEHOLDER PORTAL TARGET FOR ALL KINDS OF STUFF
-        */}
-        <svg className="workflow-canvas" width="100%" height="100%">
-          <defs>
-            <marker
-              id="arrow"
-              viewBox="0 0 10 10"
-              refX="10"
-              refY="5"
-              markerWidth="4"
-              markerHeight="4"
-              orient="auto-start-reverse"
-            >
-              <path d="M 0 0 L 10 5 L 0 10 z" />
-            </marker>
-          </defs>
-        </svg>
-      </div>
+      <svg className="workflow-canvas" width="100%" height="100%">
+        <defs>
+          <marker
+            id="arrow"
+            viewBox="0 0 10 10"
+            refX="10"
+            refY="5"
+            markerWidth="4"
+            markerHeight="4"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 5 L 0 10 z" />
+          </marker>
+        </defs>
+      </svg>
     )
   }
-}
-const mapStateToProps = (state: AppState): ConnectedProps => ({
-  data: state.workflow,
-  objectSets: state.objectset,
-  week: state.week,
-  node: state.node,
-  outcome: state.outcome
-})
 
-const WorkflowEditView = connect<ConnectedProps, object, OwnProps, AppState>(
-  mapStateToProps,
-  null
-)(WorkflowEditViewUnconnected)
+  /*******************************************************
+   * DRAGGABLE COLUMNS AREAS
+   *******************************************************/
+  const handleColumnDragEnd = (event) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) {
+      return
+    }
+
+    const oldIndex = columnsDragState.indexOf(active.id)
+    const newIndex = columnsDragState.indexOf(over.id)
+
+    const reorderedColumns = WorkflowFunctions.reorderArray(
+      columnsDragState,
+      oldIndex,
+      newIndex
+    )
+    // set local state
+    setWeeksDragState(reorderedColumns)
+    // commit to DB
+    //    WorkflowAction.
+  }
+
+  const handleColumnDragStart = () => {
+    //  dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
+  }
+
+  const columns = columnsDragState.map((columnId) => (
+    <ColumnWrapper
+      key={`columnworkflow-${columnId}`}
+      objectId={columnId}
+      parentId={workflow.id}
+    />
+  ))
+
+  /*******************************************************
+   * DRAGGABLE WEEKS AREAS
+   *******************************************************/
+  const handleWeekDragEnd = (event) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) {
+      return
+    }
+
+    const oldIndex = weeksDragState.indexOf(active.id)
+    const newIndex = weeksDragState.indexOf(over.id)
+
+    // calculate new order
+    const reorderedWeeks: number[] = WorkflowFunctions.reorderArray(
+      weeksDragState,
+      oldIndex,
+      newIndex
+    )
+
+    // set redux state
+    dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: true })))
+
+    // set local state
+    setWeeksDragState(reorderedWeeks)
+
+    // commit to DB
+    //    WorkflowAction.
+  }
+
+  const handleWeekDragStart = () => {
+    dispatch(updateAllEntities(CfObjectType.WEEK, () => ({ isDropped: false })))
+  }
+
+  /*******************************************************
+   * RETURN
+   *******************************************************/
+  return (
+    <>
+      <OuterContentWrap>
+        <div data-test-id="columns-block" style={{ display: 'flex' }}>
+          <DndContext
+            onDragEnd={handleColumnDragEnd}
+            onDragStart={handleColumnDragStart}
+          >
+            <SortableContext
+              items={columnsDragState}
+              strategy={horizontalListSortingStrategy}
+            >
+              {columns}
+            </SortableContext>
+          </DndContext>
+        </div>
+
+        <div data-test-id="weeks-block">
+          <DndContext
+            onDragEnd={handleWeekDragEnd}
+            onDragStart={handleWeekDragStart}
+          >
+            <SortableContext
+              items={weeksDragState}
+              strategy={verticalListSortingStrategy}
+            >
+              {weeksDragState.map((weekId) => (
+                <WeekWrapper
+                  condensed={false} // TODO: where does this come from?
+                  key={`weekworkflow-${weekId}`}
+                  objectId={weekId}
+                  parentId={workflow.id}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        </div>
+      </OuterContentWrap>
+      <CanvasPlaceholder />
+    </>
+  )
+}
 
 export default WorkflowEditView
+
+// import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
+// import { CfObjectType } from '@cf/types/enum'
+// import ThemeHelper from '@cf/utility/ThemeHelper.class'
+// import EditableComponentWithSorting, {
+//   EditableComponentWithSortingProps,
+//   EditableComponentWithSortingState
+// } from '@cfEditableComponents/EditableComponentWithSorting'
+// import ActionCreator from '@cfRedux/ActionCreator'
+// import { AppState } from '@cfRedux/types/type'
+// import ColumnWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/column/ColumnWorkflow'
+// import WeekWorkflow from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/week/WeekWorkflow'
+// import { insertedAt } from '@XMLHTTP/postTemp.jsx'
+// import * as React from 'react'
+// import { connect } from 'react-redux'
+//
+// // import $ from 'jquery'
+//
+// type ConnectedProps = {
+//   data: AppState['workflow']
+//   objectSets: AppState['objectSet']
+//   week: AppState['week']
+//   node: AppState['node']
+//   outcome: AppState['outcome']
+// }
+// type OwnProps = EditableComponentWithSortingProps
+// type StateProps = EditableComponentWithSortingState
+// type PropsType = ConnectedProps & OwnProps
+//
+// /**
+//  * The workflow view with drag and drop nodes/weeks/columns
+//  * ...
+//  * what view is this?
+//  */
+// class WorkflowEditViewUnconnected extends EditableComponentWithSorting<
+//   PropsType,
+//   StateProps
+// > {
+//   static contextType = WorkflowConfigContext
+//   declare context: React.ContextType<typeof WorkflowConfigContext>
+//
+//   constructor(props: PropsType) {
+//     super(props)
+//     this.state = {} as StateProps
+//   }
+//
+//   /*******************************************************
+//    * RENDER
+//    *******************************************************/
+//   render() {
+//     const data = this.props.data
+//
+//     const columnworkflows = data.columnworkflowSet?.map(
+//       (columnworkflow, index) => (
+//         <ColumnWorkflow
+//           key={`columnworkflow-${columnworkflow}`}
+//           objectId={columnworkflow}
+//           parentId={data.id}
+//         />
+//       )
+//     )
+//     const weekworkflows = data.weekworkflowSet?.map((weekworkflow, index) => (
+//       <WeekWorkflow
+//         condensed={data.condensed}
+//         key={`weekworkflow-${weekworkflow}`}
+//         objectId={weekworkflow}
+//         parentId={data.id}
+//       />
+//     ))
+//
+//     let cssClass = 'workflow-details'
+//     if (data.condensed) {
+//       cssClass += ' condensed'
+//     }
+//
+//     // We render an svg canvas in front of the rest of
+//     // the workflow for drawing node ports and links
+//     return (
+//       <div className={cssClass}>
+//         <div className="column-row" id={data.id + '-column-block'}>
+//           {columnworkflows}
+//         </div>
+//         <div className="week-block" id={data.id + '-week-block'}>
+//           {weekworkflows}
+//         </div>
+//         {/*
+//         PLACEHOLDER PORTAL TARGET FOR ALL KINDS OF STUFF
+//         */}
+//         <svg className="workflow-canvas" width="100%" height="100%">
+//           <defs>
+//             <marker
+//               id="arrow"
+//               viewBox="0 0 10 10"
+//               refX="10"
+//               refY="5"
+//               markerWidth="4"
+//               markerHeight="4"
+//               orient="auto-start-reverse"
+//             >
+//               <path d="M 0 0 L 10 5 L 0 10 z" />
+//             </marker>
+//           </defs>
+//         </svg>
+//       </div>
+//     )
+//   }
+// }
+// const mapStateToProps = (state: AppState): ConnectedProps => ({
+//   data: state.workflow,
+//   objectSets: state.objectSet,
+//   week: state.week,
+//   node: state.node,
+//   outcome: state.outcome
+// })
+//
+// const WorkflowEditView = connect<ConnectedProps, object, OwnProps, AppState>(
+//   mapStateToProps,
+//   null
+// )(WorkflowEditViewUnconnected)
+//
+// export default WorkflowEditView
