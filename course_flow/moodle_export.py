@@ -77,9 +77,10 @@ class MoodleNodeSerializer(
 	def get_pagecontents(self, instance):
 		outcomes = self.get_outcomes_list(instance)
 		outcomes_df = self.context.get("outcomes")
-		if outcomes_df is not None:
+		if outcomes_df is not None and outcomes_df.shape[0] > 0:
 			filtered_df = outcomes_df[outcomes_df["id"].isin(outcomes)]
-		return "\n\n".join(list(filtered_df["contents"]))
+			return "\n\n".join(list(filtered_df["contents"]))
+		else: return ""
 
 	def get_colour(self, instance):
 		return instance.column.colour

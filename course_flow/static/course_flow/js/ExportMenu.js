@@ -111,7 +111,7 @@ export class ExportMenu extends React.Component{
             [<input name="export_type" type="radio" value="sobec" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="sobec"}/>,<label for="export_type">{gettext("Sobec Validation")}</label>]
         );
         if(type=="program")exports.push(
-            [<input name="export_type" type="radio" value="excel" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="excel"}/>,<label for="export_type">{gettext("Program Analytics Export")}</label>]
+            [<input name="export_type" type="radio" value="analytics" onChange={this.inputChange.bind(this,"type","")} checked={this.state.type=="analytics"}/>,<label for="export_type">{gettext("Program Analytics Export")}</label>]
         );
 
 

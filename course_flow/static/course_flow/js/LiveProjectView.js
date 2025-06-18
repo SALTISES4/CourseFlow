@@ -564,7 +564,7 @@ export class LiveProjectStudents extends LiveProjectSection{
                                 ()=>{
                                     navigator.clipboard.writeText(register_url);
                                     $("#copy-text").attr("src",iconpath+"duplicate_checked.svg");
-                                    $("#url-text").text("Copied to Clipboard");
+                                    $("#url-text").text(gettext("Copied to Clipboard"));
                                     setTimeout(()=>{
                                         $("#copy-text").attr("src",iconpath+"duplicate_clipboard.svg");
                                         $("#url-text").text(register_url);

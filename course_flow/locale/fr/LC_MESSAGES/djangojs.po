@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-16 10:34-0400\n"
+"POT-Creation-Date: 2025-06-17 11:05-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -421,83 +421,98 @@ msgstr "Association a l'acquis parent"
 msgid "Association to the outcome"
 msgstr "Association a l'acquis"
 
-#: static/course_flow/js/Constants.js:209
+#: static/course_flow/js/Constants.js:188
+#: static/course_flow/js/Constants.js:210
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "program outcome"
 msgstr "acquis de programme"
 
-#: static/course_flow/js/Constants.js:210
+#: static/course_flow/js/Constants.js:190
+msgid "program outcomes"
+msgstr "acquis de programme"
+
+#: static/course_flow/js/Constants.js:194
+#: static/course_flow/js/Constants.js:211
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "course outcome"
 msgstr "acquis de cours"
 
-#: static/course_flow/js/Constants.js:211
+#: static/course_flow/js/Constants.js:196
+msgid "course outcomes"
+msgstr "acquis de cours"
+
+#: static/course_flow/js/Constants.js:200
+#: static/course_flow/js/Constants.js:212
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "activity outcome"
 msgstr "acquis d'activité"
 
-#: static/course_flow/js/Constants.js:212
+#: static/course_flow/js/Constants.js:202
+msgid "activity outcomes"
+msgstr "acquis d'activité"
+
+#: static/course_flow/js/Constants.js:213
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "program node"
 msgstr "noeud de programme"
 
-#: static/course_flow/js/Constants.js:213
+#: static/course_flow/js/Constants.js:214
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "course node"
 msgstr "noeud de cours"
 
-#: static/course_flow/js/Constants.js:214
+#: static/course_flow/js/Constants.js:215
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "activity node"
 msgstr "noeud d'activité"
 
-#: static/course_flow/js/Constants.js:224
+#: static/course_flow/js/Constants.js:225
 msgid "activity"
 msgstr "activité"
 
-#: static/course_flow/js/Constants.js:225
+#: static/course_flow/js/Constants.js:226
 msgid "course"
 msgstr "cours"
 
-#: static/course_flow/js/Constants.js:226
+#: static/course_flow/js/Constants.js:227
 msgid "program"
 msgstr "programme"
 
-#: static/course_flow/js/Constants.js:227
+#: static/course_flow/js/Constants.js:228
 msgid "project"
 msgstr "projet"
 
-#: static/course_flow/js/Constants.js:448
+#: static/course_flow/js/Constants.js:449
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:27
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: static/course_flow/js/Constants.js:449
+#: static/course_flow/js/Constants.js:450
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:27
 msgid "Editor"
 msgstr "Peur modifier"
 
-#: static/course_flow/js/Constants.js:450
+#: static/course_flow/js/Constants.js:451
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:27
 msgid "Commenter"
 msgstr "Peut commenter"
 
-#: static/course_flow/js/Constants.js:451
+#: static/course_flow/js/Constants.js:452
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:27
 msgid "Viewer"
@@ -546,6 +561,9 @@ msgid "No export jobs found."
 msgstr "Aucun résultat trouvé."
 
 #: static/course_flow/js/ExportMenu.js:68
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-live.min.js:28
+#: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid ""
 "Note: you may have a maximum of 3 export jobs at once. Items in excess of "
 "this limit will be deleted. Export jobs are deleted after 24 hours."
@@ -1341,6 +1359,14 @@ msgstr "Autres plans de travail"
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Student Registration Link: "
 msgstr "Lien d'inscription pour les étudiants"
+
+#: static/course_flow/js/LiveProjectView.js:567
+#: static/course_flow/js/MoodleExportMenu.js:25
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-live.min.js:28
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid "Copied to Clipboard"
+msgstr "Copié"
 
 #: static/course_flow/js/LiveProjectView.js:573
 #: static/course_flow/js/scripts-library.min.js:27
@@ -2142,17 +2168,6 @@ msgstr "Courriel"
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid ""
-"Note: you may have a maximum of 5 export jobs at once. Items in excess of "
-"this limit will be deleted. Export jobs are deleted after 24 hours."
-msgstr ""
-"Remarque: vous pouvez avoir un maximum de 5 tâches d’exportation à la fois. "
-"Les éléments dépassant cette limite seront supprimés. Les tâches "
-"d'exportation sont supprimées après 24 heures."
-
-#: static/course_flow/js/scripts-library.min.js:27
-#: static/course_flow/js/scripts-live.min.js:28
-#: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "with error: "
 msgstr "avec erreur:"
 
@@ -2554,6 +2569,14 @@ msgstr "Ajouter au plan de travail"
 msgid "Used in:"
 msgstr "Utilisé dans:"
 
+#~ msgid ""
+#~ "Note: you may have a maximum of 5 export jobs at once. Items in excess of "
+#~ "this limit will be deleted. Export jobs are deleted after 24 hours."
+#~ msgstr ""
+#~ "Remarque: vous pouvez avoir un maximum de 5 tâches d’exportation à la "
+#~ "fois. Les éléments dépassant cette limite seront supprimés. Les tâches "
+#~ "d'exportation sont supprimées après 24 heures."
+
 #~ msgid "Return to classroom ("
 #~ msgstr "Retour a la classe ("
 
@@ -2669,12 +2692,6 @@ msgstr "Utilisé dans:"
 
 #~ msgid "fallbackFocus"
 #~ msgstr "fallbackFocus"
-
-#~ msgid "program outcomes"
-#~ msgstr "acquis de programme"
-
-#~ msgid "activity outcomes"
-#~ msgstr "acquis d'activité"
 
 #~ msgid "Outcomes to .xls"
 #~ msgstr "Acquis (.xls)"
