@@ -22,7 +22,7 @@ export class MoodleExportMenu extends React.Component{
                     let copy_icon_text = $("#moodle-json-copy .copy-link-icon .material-symbols-rounded").text();
                     let copy_description_text = $("#moodle-json-copy .copy-link-text").text();
                     $("#moodle-json-copy .copy-link-icon .material-symbols-rounded").text("done");
-                    $("#moodle-json-copy .copy-link-text").text("Copied to Clipboard");
+                    $("#moodle-json-copy .copy-link-text").text(gettext("Copied to Clipboard"));
                     setTimeout(()=>{
                         $("#moodle-json-copy .copy-link-icon .material-symbols-rounded").text(copy_icon_text);
                         $("#moodle-json-copy .copy-link-text").text(copy_description_text);
@@ -51,7 +51,7 @@ export class MoodleExportMenu extends React.Component{
                     let copy_icon_text = $("#moodle-url-copy .copy-link-icon .material-symbols-rounded").text();
                     let copy_description_text = $("#moodle-url-copy .copy-link-text").text();
                     $("#moodle-url-copy .copy-link-icon .material-symbols-rounded").text("done");
-                    $("#moodle-url-copy .copy-link-text").text("Copied to Clipboard");
+                    $("#moodle-url-copy .copy-link-text").text(gettext("Copied to Clipboard"));
                     setTimeout(()=>{
                         $("#moodle-url-copy .copy-link-icon .material-symbols-rounded").text(copy_icon_text);
                         $("#moodle-url-copy .copy-link-text").text(copy_description_text);
