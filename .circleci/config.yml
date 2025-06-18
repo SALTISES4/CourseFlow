@@ -20,3 +20,13 @@ jobs:
             . test_venv/bin/activate
             python3 course_flow.py migrate
             python3 -m pytest
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - cfv1/staging
