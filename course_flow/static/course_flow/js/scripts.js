@@ -1,3 +1,5 @@
+console.log('CourseFLow version 0.8.34 scripts')
+
 
 $.ajaxSetup({
   beforeSend: function(xhr, settings) {
