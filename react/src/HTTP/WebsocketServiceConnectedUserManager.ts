@@ -16,16 +16,16 @@ class WebSocketServiceConnectedUserManager {
   private updateStateCallback: UpdateStateCallback
   private connectedUsers: ConnectedUser[]
   private userUpdateInterval: NodeJS.Timeout | null
-
-  // how is currenUser set?
-  private currenUser: EUser
+  private currentUser: EUser
 
   constructor(
     websocket: WebSocketService,
+    user: EUser,
     updateStateCallback: UpdateStateCallback
   ) {
     this.websocketService = websocket
     this.updateStateCallback = updateStateCallback
+    this.currentUser = user
     this.connectedUsers = []
     this.userUpdateInterval = null
   }
@@ -34,12 +34,39 @@ class WebSocketServiceConnectedUserManager {
    * method to initiate user update intervals
    * this should probably just send the id (or really nothing at all as payload)
    **/
-  public startUserUpdates(user: EUser): void {
-    this.currenUser = user
+  public startUserUpdates(): void {
+    // fire up connection update as soon as the websocket is open
+    this.waitForWebsocketToOpen().then(() => {
+      this.sendConnectionUpdate()
+    })
+
+    // and then send updates in 10s intervals
     this.userUpdateInterval = setInterval(
       () => this.sendConnectionUpdate(),
       10000
     )
+  }
+
+  // Promise to check if websocket service is open every 10ms
+  private waitForWebsocketToOpen() {
+    const self = this
+    const intervalTime = 10
+    let retryingTime = 0
+
+    return new Promise<number>((res, rej) => {
+      const intvl = setInterval(() => {
+        retryingTime += intervalTime
+        if (self.websocketService.getState() === WebSocket.OPEN) {
+          clearInterval(intvl)
+          res(self.websocketService.getState())
+        }
+
+        if (retryingTime >= 5000) {
+          clearInterval(intvl)
+          rej(new Error('Websocket took more than 5 seconds to be OPEN'))
+        }
+      }, intervalTime)
+    })
   }
 
   /*******************************************************
@@ -61,8 +88,8 @@ class WebSocketServiceConnectedUserManager {
     }
 
     const payLoad = {
-      user: this.currenUser,
-      userColour: ThemeHelper.generateColorFromIntToHex(this.currenUser.id),
+      user: this.currentUser,
+      userColour: ThemeHelper.generateColorFromIntToHex(this.currentUser.id),
       connected: connected
     }
 

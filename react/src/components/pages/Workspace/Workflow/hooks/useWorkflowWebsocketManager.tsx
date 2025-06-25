@@ -45,7 +45,7 @@ export const useWorkflowWebsocketManager = ({
     socketInit: false,
     socketService: null,
 
-    // @todo queue mgmt is not working, disable for now (init state = false)
+    // TODO: queue mgmt is not working, disable for now (init state = false)
     messagesQueued: false,
     messageQueue: [],
 
@@ -53,6 +53,8 @@ export const useWorkflowWebsocketManager = ({
     connectedUsersService: null
   })
 
+  // TODO: move to state above, identify why its 'readonly' when
+  // WebSocketServiceConnectedUserManager modifies internal properties (?)
   const [connectedUsers, setConnectedUsers] = useState<ConnectedUser[]>([])
 
   /*******************************************************
@@ -109,7 +111,7 @@ export const useWorkflowWebsocketManager = ({
   )
 
   const onUserConnectionUpdateReceived = useCallback(
-    (data: any) => {
+    (data: ConnectedUser) => {
       state.connectedUsersService?.connectionUpdateReceived(data)
     },
     [state.connectedUsersService]
@@ -273,10 +275,12 @@ export const useWorkflowWebsocketManager = ({
 
     const newWsUserConnectedService = new WebSocketServiceConnectedUserManager(
       service,
+      user,
       handleConnectedUsersUpdate
     )
 
-    newWsUserConnectedService.startUserUpdates(user)
+    // fire internally on init?
+    newWsUserConnectedService.startUserUpdates()
 
     setState(
       produce((draft) => {
