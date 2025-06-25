@@ -1,5 +1,6 @@
 import { WorkflowConfigContext } from '@cf/context/workFlowConfigContext'
 import { _t } from '@cf/utility/Utility.class'
+import WarningIcon from '@mui/icons-material/Warning'
 import Alert from '@mui/material/Alert'
 import Avatar from '@mui/material/Avatar'
 import AvatarGroup from '@mui/material/AvatarGroup'
@@ -18,7 +19,16 @@ const ConnectionBar = ({ show }: { show: boolean }) => {
   }
 
   if (!context.ws.wsConnected) {
-    return <Alert severity="warning">{_t('Not Connected')}</Alert>
+    return (
+      <Tooltip arrow placement="top" title={_t('Not Connected')}>
+        <WarningIcon
+          sx={{
+            verticalAlign: 'center',
+            color: 'warning.main'
+          }}
+        />
+      </Tooltip>
+    )
   }
 
   const users = context.ws.connectedUsers.map((item) => (
