@@ -4,7 +4,7 @@ import AlertTitle from '@mui/material/AlertTitle'
 import { SxProps, styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Cookies from 'js-cookie'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useCallback, useState } from 'react'
 
 type PropsType = {
   severity?: AlertProps['severity'] | 'update'
@@ -44,11 +44,17 @@ const CFAlert = ({
     hideIfCookie ? !!Cookies.get(hideIfCookie) : false
   )
 
-  function handleClose() {
-    onClose && onClose()
-    hideIfCookie && Cookies.set(hideIfCookie, 'true', { expires: 7 }) // expires?
+  const handleClose = useCallback(() => {
+    if (onClose) {
+      onClose()
+    }
+
+    if (hideIfCookie) {
+      Cookies.set(hideIfCookie, 'true', { expires: 7 }) // expires?
+    }
+
     setHide(true)
-  }
+  }, [hideIfCookie, onClose])
 
   if (hide) {
     return null
@@ -61,13 +67,7 @@ const CFAlert = ({
       severity={isUpdateAnnouncement ? 'info' : severity}
       icon={isUpdateAnnouncement ? <CampaignIcon /> : null}
       sx={sx}
-      onClose={
-        persistent
-          ? undefined
-          : () => {
-              hideIfCookie && handleClose()
-            }
-      }
+      onClose={persistent ? undefined : handleClose}
     >
       {title && <StyledTitle>{title}</StyledTitle>}
       {subtitle && <StyledSubtitle variant="body2">{subtitle}</StyledSubtitle>}
