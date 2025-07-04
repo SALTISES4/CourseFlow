@@ -1,3 +1,4 @@
+import outcomesReducer from '@cf/redux/slices/outcomes.slice'
 import { legacyWorkflowReducers, workspaceReducer } from '@cfRedux/Reducers'
 import columnReducer from '@cfRedux/slices/column.slice'
 import nodeReducer from '@cfRedux/slices/node.slice'
@@ -23,6 +24,7 @@ const store = configureStore({
     node: nodeReducer,
     nodelink: nodelinkReducer,
     strategy: strategyReducer,
+    outcomes: outcomesReducer,
 
     [cfApi.reducerPath]: cfApi.reducer
   },

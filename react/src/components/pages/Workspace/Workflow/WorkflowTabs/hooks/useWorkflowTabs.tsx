@@ -5,7 +5,8 @@ import { _t } from '@cf/utility/Utility.class'
 import { WorkflowViewType } from '@cfPages/Workspace/Workflow/types'
 import GridView from '@cfViews/WorkflowView/componentViews/GridView/GridView'
 import OutcomeAnalytics from '@cfViews/WorkflowView/componentViews/OutcomeAnalytics/OutcomeAnalytics'
-import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditView'
+// import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditView'
+import OutcomeEditView from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2'
 import CompetencyMatrixView from '@cfViews/WorkflowView/componentViews/OutcomeOverviewView/CompetencyMatrixView/CompetencyMatrixView'
 import OverviewView from '@cfViews/WorkflowView/componentViews/OverviewView'
 // import WorkflowEditView from '@cfViews/WorkflowView/componentViews/WorkflowEditView'
@@ -41,7 +42,7 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       type: WorkflowViewType.WORKFLOW,
       route: CFRoutes.WORKFLOW_WORKFLOW,
       relRoute: RelativeRoutes.WORKFLOW,
-      label: _t('Workflows'),
+      label: _t('Workflow'),
       // content: <WorkflowEditView />,
       content: <WorkflowEditViewV2 />,
       allowedTabs: [1, 2, 3, 4]
@@ -58,7 +59,7 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       type: WorkflowViewType.OUTCOME_TABLE,
       route: CFRoutes.WORKFLOW_OUTCOME_TABLE,
       relRoute: RelativeRoutes.OUTCOME_TABLE,
-      label: _t('Outcome Table'),
+      label: _t('Outcome table'),
       content:
         workflow.tableType === 1 ? (
           <CompetencyMatrixView />
@@ -71,7 +72,7 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       type: WorkflowViewType.OUTCOME_ANALYTICS,
       route: CFRoutes.WORKFLOW_ALIGNMENT_ANALYSIS,
       relRoute: RelativeRoutes.ALIGNMENT_ANALYSIS,
-      label: _t('Outcome Analytics'),
+      label: _t('Outcome analytics'),
       content: <OutcomeAnalytics />,
       allowedTabs: [3],
       hidden: ['activity'].includes(workflow.type)
@@ -80,7 +81,7 @@ const useWorkflowTabs = (workflow: EWorkflow, context: WorkflowContextType) => {
       type: WorkflowViewType.GRID_VIEW,
       route: CFRoutes.WORKFLOW_GRID,
       relRoute: RelativeRoutes.GRID,
-      label: _t('Grid View'),
+      label: _t('Grid view'),
       content: <GridView />,
       allowedTabs: [3],
       hidden: ['activity', 'course'].includes(workflow.type)
