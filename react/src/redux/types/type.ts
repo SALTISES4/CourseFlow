@@ -1,6 +1,6 @@
 import { CfLock } from '@cf/types/common'
 import { WorkflowPermission } from '@cf/utility/permissions'
-import { Outcome } from '@cfRedux/slices/outcomes.slice'
+import { OutcomesState } from '@cfRedux/slices/outcomes.slice'
 import { SidebarState } from '@cfRedux/slices/sidebar.slice'
 import {
   EColumn,
@@ -49,7 +49,7 @@ export type AppState = {
   childWorkflow?: TChildWorkflow[]
 
   // temporary, joined outcomes
-  outcomes: Outcome[]
+  outcomes: OutcomesState
 }
 
 export type RootOutcomeStateType = Pick<AppState, 'outcomeoutcome' | 'outcome'>

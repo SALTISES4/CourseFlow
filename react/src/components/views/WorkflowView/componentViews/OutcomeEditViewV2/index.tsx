@@ -1,5 +1,5 @@
 import { OuterContentWrap } from '@cf/mui/helper'
-import { addOutcome } from '@cf/redux/slices/outcomes.slice'
+import { addOutcomeGroup } from '@cf/redux/slices/outcomes.slice'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
 import { AppState } from '@cfRedux/types/type'
@@ -8,26 +8,20 @@ import Button from '@mui/material/Button'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import OutcomeGroup from './components/OutcomeGroup'
+import OutcomeGroupWrap from './components/OutcomeGroup'
 
 const OutcomeEditView = () => {
   const dispatch = useDispatch()
   const workflow = useSelector((state: AppState) => state.workflow)
-  const outcomes = useSelector((state: AppState) => state.outcomes)
+  const outcomeGroups = useSelector((state: AppState) => state.outcomes.groups)
 
-  const onAddNewClick = useCallback(() => {
-    const newId = outcomes.length ? outcomes[outcomes.length - 1].id + 1 : 1
-    dispatch(
-      addOutcome({
-        id: newId,
-        title: 'Blank Outcome title'
-      })
-    )
-  }, [dispatch, outcomes])
+  const onAddNewGroup = useCallback(() => {
+    dispatch(addOutcomeGroup('Outcome group label'))
+  }, [dispatch])
 
   return (
     <OuterContentWrap id={`#workflow-${workflow.id}`} sx={{ pt: 4 }}>
-      {!outcomes.length ? (
+      {!outcomeGroups.length ? (
         <Box>
           <Alert
             sx={{ mb: 3 }}
@@ -39,11 +33,13 @@ const OutcomeEditView = () => {
           />
         </Box>
       ) : (
-        <OutcomeGroup outcomes={outcomes} />
+        outcomeGroups.map((group) => (
+          <OutcomeGroupWrap key={group.id} {...group} />
+        ))
       )}
 
       <Box sx={{ mt: 3 }}>
-        <Button color="primary" variant="contained" onClick={onAddNewClick}>
+        <Button color="primary" variant="contained" onClick={onAddNewGroup}>
           {_t('Add outcome group')}
         </Button>
       </Box>

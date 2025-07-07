@@ -1,32 +1,76 @@
+import theme from '@cf/mui/theme'
 import { Outcome as OutcomeType } from '@cf/redux/slices/outcomes.slice'
 import { addOutcome, findIndexPath } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
+import { SxProps } from '@mui/material'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import { useCallback, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 import * as Styled from './styles'
 
-type OutcomeGroupType = {
-  outcomes: OutcomeType[]
+const AddButton = ({ sx, onClick }: { onClick: () => void; sx?: SxProps }) => (
+  <Styled.AddNewButton sx={sx} variant="text" disableRipple onClick={onClick}>
+    {_t('Add outcome')}
+  </Styled.AddNewButton>
+)
+
+const OutcomeGroupWrap = ({
+  id,
+  title,
+  children,
+  level = 0
+}: OutcomeType & {
+  level?: number
+}) => {
+  const dispatch = useDispatch()
+
+  const onAddNewOutcome = useCallback(() => {
+    dispatch(
+      addOutcome({
+        id,
+        title: 'Blank Outcome title'
+      })
+    )
+  }, [dispatch, id])
+
+  return (
+    <Styled.OutcomeGroupWrap>
+      <Styled.OutcomeGroupTitle variant="body2">
+        {title}
+      </Styled.OutcomeGroupTitle>
+
+      <OutcomeGroup level={level + 1} outcomes={children} />
+
+      <AddButton onClick={onAddNewOutcome} />
+    </Styled.OutcomeGroupWrap>
+  )
 }
 
 const OutcomeGroup = ({
   outcomes,
-  level = 1
-}: OutcomeGroupType & { level?: number }) => (
-  <Styled.OutcomeGroup data-level={level}>
-    {outcomes.map((outcome) => (
-      <li key={outcome.id}>
-        <Outcome level={level} {...outcome} />
-      </li>
-    ))}
-  </Styled.OutcomeGroup>
-)
+  level
+}: {
+  outcomes: OutcomeType[]
+  level: number
+}) => {
+  if (!outcomes.length) {
+    return null
+  }
+
+  return (
+    <Styled.OutcomeGroup>
+      {outcomes.map((outcome) => (
+        <li key={outcome.id}>
+          <Outcome level={level} {...outcome} />
+        </li>
+      ))}
+    </Styled.OutcomeGroup>
+  )
+}
 
 const Outcome = ({
   id,
@@ -36,32 +80,15 @@ const Outcome = ({
 }: OutcomeType & { level: number }) => {
   const dispatch = useDispatch()
   const [collapsed, setCollapsed] = useState(true)
-  const outcomes = useSelector((state: AppState) => state.outcomes)
 
-  const onAddNewClick = useCallback(
-    (parent: OutcomeType) => {
-      return () => {
-        const parentIndexPath = findIndexPath(parent, outcomes)
-
-        // just to avoid id collision, remove when we start working with real IDs
-        const multiplier = parentIndexPath.length * 100
-
-        // figure out the new id
-        const newId = parent.children?.length
-          ? parent.children[parent.children.length - 1].id + 1
-          : multiplier + 1
-
-        dispatch(
-          addOutcome({
-            parent,
-            id: newId,
-            title: 'Blank Outcome title'
-          })
-        )
-      }
-    },
-    [dispatch, outcomes]
-  )
+  const onAddNewClick = useCallback(() => {
+    dispatch(
+      addOutcome({
+        id,
+        title: 'Blank Outcome title'
+      })
+    )
+  }, [dispatch, id])
 
   const onToggleClick = useCallback(() => {
     setCollapsed(!collapsed)
@@ -70,7 +97,7 @@ const Outcome = ({
   const showToggleButton = level !== 3
 
   return (
-    <Box data-id={id}>
+    <Box>
       <Styled.OutcomeHeader>
         <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
         {showToggleButton && (
@@ -88,13 +115,9 @@ const Outcome = ({
         <>
           {children && <OutcomeGroup level={level + 1} outcomes={children} />}
           {showToggleButton && (
-            <Styled.AddNewButton
-              variant="text"
-              disableRipple
-              onClick={onAddNewClick({ id, title, children })}
-            >
-              {_t('Add outcome')}
-            </Styled.AddNewButton>
+            <footer style={{ paddingLeft: theme.spacing(level) }}>
+              <AddButton onClick={onAddNewClick} />
+            </footer>
           )}
         </>
       )}
@@ -102,4 +125,4 @@ const Outcome = ({
   )
 }
 
-export default OutcomeGroup
+export default OutcomeGroupWrap
