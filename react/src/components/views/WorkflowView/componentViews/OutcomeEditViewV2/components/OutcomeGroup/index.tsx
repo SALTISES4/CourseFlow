@@ -1,13 +1,14 @@
 import theme from '@cf/mui/theme'
+import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
 import { Outcome as OutcomeType } from '@cf/redux/slices/outcomes.slice'
-import { addOutcome, findIndexPath } from '@cf/redux/slices/outcomes.slice'
-import { AppState } from '@cf/redux/types/type'
+import { addOutcome } from '@cf/redux/slices/outcomes.slice'
+import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveIcon from '@mui/icons-material/Remove'
 import { SxProps } from '@mui/material'
 import Box from '@mui/material/Box'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import * as Styled from './styles'
@@ -79,6 +80,7 @@ const Outcome = ({
   level
 }: OutcomeType & { level: number }) => {
   const dispatch = useDispatch()
+  const manager = useRef(new BetterSelectionManager(dispatch))
   const [collapsed, setCollapsed] = useState(true)
 
   const onAddNewClick = useCallback(() => {
@@ -94,11 +96,15 @@ const Outcome = ({
     setCollapsed(!collapsed)
   }, [collapsed])
 
+  const onHeaderClick = useCallback(() => {
+    manager.current.updateSidebar(id, CfObjectType.OUTCOME, -1)
+  }, [id])
+
   const showToggleButton = level !== 3
 
   return (
     <Box>
-      <Styled.OutcomeHeader>
+      <Styled.OutcomeHeader onClick={onHeaderClick}>
         <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
         {showToggleButton && (
           <Styled.OutcomeHeaderToggle onClick={onToggleClick}>

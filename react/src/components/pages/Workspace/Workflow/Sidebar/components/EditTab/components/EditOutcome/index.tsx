@@ -1,17 +1,16 @@
+import { Outcome, updateOutcome } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
-import Utility, { _t } from '@cf/utility/Utility.class'
-import { selectOutcomeById } from '@cfRedux/selectors/outcome.selector'
+import { _t } from '@cf/utility/Utility.class'
+import { selectOutcomeById } from '@cfRedux/selectors/outcomes.selector'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import { produce } from 'immer'
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 
-import type { OutcomeForm } from './types'
 import {
   SidebarActions,
   SidebarContent,
@@ -22,63 +21,66 @@ import data from '../EditNode/optionsData'
 const objectSetOptions = data.objectSets
 
 const EditOutcome = () => {
-  const sidebarData = useSelector((state: AppState) => state.sidebar)
-  const outcomeData = useSelector((state: AppState) =>
-    selectOutcomeById(state, state.sidebar.edit.id)
-  )
-  const [state, setState] = useState(outcomeData)
   const dispatch = useDispatch()
+  const firstRender = useRef(true)
 
-  const onFieldChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setState(
-      produce((draft) => {
-        const key = e.target.name as 'title' | 'description' | 'code'
-        draft[key] = e.target.value
-      })
-    )
-  }, [])
+  const outcomeId = useSelector((state: AppState) => state.sidebar.edit.id)
+  const outcome = useSelector((state: AppState) =>
+    selectOutcomeById(state, outcomeId)
+  )
 
   const {
     register,
     watch,
     reset,
-    formState: { errors, isDirty }
-  } = useForm<OutcomeForm>({
+    formState: { isDirty }
+  } = useForm<Outcome>({
     defaultValues: {
-      title: outcomeData.outcome.title,
-      description: outcomeData.outcome.description
+      title: outcome.title,
+      description: outcome.description,
+      code: outcome.code
     }
   })
 
-  const watchedFields = watch()
+  const watched = watch()
 
   const debouncedDispatch = useMemo(
     () =>
-      debounce((data: OutcomeForm) => {
-        console.log('EditOutcome debounced dispatch', data)
-        // dispatch(
-        //   outcomeChangeField({
-        //     id: sidebarData.edit.id,
-        //     data: {
-        //       title: data.title,
-        //       description: data.description
-        //     }
-        //   })
-        // )
-        // update the server
-        // updateValueQuery(sidebarData.edit.id, CfObjectType.OUTCOME, data, true)
-        // reset({}, { keepValues: true })
+      debounce((data: Outcome) => {
+        dispatch(
+          updateOutcome({
+            id: outcomeId,
+            title: data.title,
+            description: data.description,
+            code: data.code
+          })
+        )
       }, 300),
-    []
+    [dispatch, outcomeId]
   )
 
   useEffect(() => {
-    if (isDirty) {
-      debouncedDispatch(watchedFields)
+    if (firstRender.current) {
+      firstRender.current = false
+      return
     }
-  }, [watchedFields, isDirty, debouncedDispatch])
 
-  if (!outcomeData) {
+    if (isDirty) {
+      debouncedDispatch(watched)
+    }
+  }, [watched, isDirty, debouncedDispatch])
+
+  useEffect(() => {
+    if (outcomeId === outcome.id) {
+      reset({
+        title: outcome.title,
+        description: outcome.description,
+        code: outcome.code
+      })
+    }
+  }, [outcomeId, outcome, reset])
+
+  if (!outcome) {
     return null
   }
 
@@ -94,9 +96,7 @@ const EditOutcome = () => {
             variant="outlined"
             label={_t('Title')}
             size="small"
-            {...register('title', { required: 'Title is required' })}
-            error={!!errors.title}
-            helperText={errors.title?.message}
+            {...register('title')}
           />
           <TextField
             variant="outlined"
@@ -105,19 +105,13 @@ const EditOutcome = () => {
             multiline
             maxRows={5}
             {...register('description')}
-            error={!!errors.description}
-            helperText={errors.description?.message}
           />
-          {/* {data.code && (
-            <TextField
-              variant="outlined"
-              label="Code"
-              size="small"
-              name="code"
-              value={state.code}
-              onChange={onFieldChange}
-            />
-          )} */}
+          <TextField
+            variant="outlined"
+            label={_t('Code')}
+            size="small"
+            {...register('code')}
+          />
           {/* {data.objectSets && (
             <Autocomplete
               multiple

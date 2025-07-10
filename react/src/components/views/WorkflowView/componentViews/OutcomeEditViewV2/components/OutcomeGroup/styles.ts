@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import { blueGrey } from '@mui/material/colors'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -50,7 +51,11 @@ export const OutcomeHeader = styled(Box)(({ theme }) => ({
   borderRadius: `${theme.shape.borderRadius}px`,
   flexDirection: 'row',
   flexGrow: 1,
-  minWidth: 0
+  minWidth: 0,
+  '&:hover': {
+    boxShadow: `0 0 0 1px ${blueGrey[100]}`,
+    cursor: 'grab'
+  }
 }))
 
 export const OutcomeHeaderToggle = styled(IconButton)(({ theme }) => ({

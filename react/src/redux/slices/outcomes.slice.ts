@@ -6,6 +6,8 @@ let dynamicID = 1
 export type Outcome = {
   id: number
   title: string
+  description?: string
+  code?: string
   children?: Outcome[]
 }
 
@@ -75,17 +77,34 @@ export const outcomesSlice = createSlice({
           parent.children = []
         }
 
-        const newItem = {
+        parent.children.push({
           id: dynamicID++,
           title: action.payload.title,
+          description: action.payload.description ?? '',
           children: action.payload.children ?? []
+        })
+      }
+    },
+    updateOutcome: (state, action: PayloadAction<Outcome>) => {
+      // find the path
+      const pathToOutcome = findIndexPath(action.payload.id, state.groups)
+      // drill to the correct outcome
+      if (pathToOutcome.length) {
+        let current: Outcome[] | undefined = state.groups
+        for (let i = 0; i < pathToOutcome.length - 1; i++) {
+          const index = pathToOutcome[i]
+          current = current?.[index].children
         }
-
-        parent.children.push(newItem)
+        const lastIndex = pathToOutcome[pathToOutcome.length - 1]
+        // and update the target outcome
+        if (current && current[lastIndex]) {
+          current[lastIndex] = action.payload
+        }
       }
     }
   }
 })
 
-export const { addOutcomeGroup, addOutcome } = outcomesSlice.actions
+export const { addOutcomeGroup, addOutcome, updateOutcome } =
+  outcomesSlice.actions
 export default outcomesSlice.reducer
