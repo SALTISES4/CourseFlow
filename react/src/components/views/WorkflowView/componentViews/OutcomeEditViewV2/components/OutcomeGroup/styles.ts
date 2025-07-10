@@ -45,7 +45,9 @@ export const OutcomeGroup = styled('ul')(({ theme }) => ({
   }
 }))
 
-export const OutcomeHeader = styled(Box)(({ theme }) => ({
+export const OutcomeHeader = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'selected'
+})<{ selected: boolean }>(({ theme, selected }) => ({
   position: 'relative',
   display: 'flex',
   borderRadius: `${theme.shape.borderRadius}px`,
@@ -55,7 +57,12 @@ export const OutcomeHeader = styled(Box)(({ theme }) => ({
   '&:hover': {
     boxShadow: `0 0 0 1px ${blueGrey[100]}`,
     cursor: 'grab'
-  }
+  },
+  ...(selected && {
+    '&, &:hover': {
+      boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
+    }
+  })
 }))
 
 export const OutcomeHeaderToggle = styled(IconButton)(({ theme }) => ({

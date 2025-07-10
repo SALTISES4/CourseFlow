@@ -49,14 +49,13 @@ const EditOutcome = () => {
       debounce((data: Outcome) => {
         dispatch(
           updateOutcome({
-            id: outcomeId,
-            title: data.title,
-            description: data.description,
-            code: data.code
+            id: outcome.id,
+            children: outcome.children,
+            ...data
           })
         )
       }, 300),
-    [dispatch, outcomeId]
+    [dispatch, outcome]
   )
 
   useEffect(() => {
