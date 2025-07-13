@@ -5,11 +5,7 @@ import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 
-export const OutcomeGroupWrap = styled(Box)(({ theme }) => ({
-  '&:not(:first-of-type)': {
-    marginTop: theme.spacing(3)
-  }
-}))
+export const OutcomeGroupWrap = styled(Box)(({ theme }) => ({}))
 
 export const OutcomeGroupTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 600,

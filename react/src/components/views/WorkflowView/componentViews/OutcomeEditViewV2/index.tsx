@@ -5,6 +5,7 @@ import Alert from '@cfComponents/UIPrimitives/Alert'
 import { AppState } from '@cfRedux/types/type'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -33,9 +34,11 @@ const OutcomeEditView = () => {
           />
         </Box>
       ) : (
-        outcomeGroups.map((group) => (
-          <OutcomeGroupWrap key={group.id} {...group} />
-        ))
+        <Stack spacing={3} direction="column">
+          {outcomeGroups.map((group) => (
+            <OutcomeGroupWrap key={group.id} {...group} />
+          ))}
+        </Stack>
       )}
 
       <Box sx={{ mt: 3 }}>

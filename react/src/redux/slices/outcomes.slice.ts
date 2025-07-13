@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { current as currentRTK } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
 let dynamicID = 1
@@ -43,6 +44,20 @@ export function findIndexPath(
   }
 
   return null
+}
+
+function findOutcome(path: number[], state: Outcome[]) {
+  if (path.length) {
+    let current: Outcome[] | undefined = state
+    for (let i = 0; i < path.length - 1; i++) {
+      const index = path[i]
+      current = current?.[index].children
+    }
+    const lastIndex = path[path.length - 1]
+    if (current && current[lastIndex]) {
+      return current[lastIndex]
+    }
+  }
 }
 
 export const outcomesSlice = createSlice({
@@ -101,10 +116,37 @@ export const outcomesSlice = createSlice({
           current[lastIndex] = action.payload
         }
       }
+    },
+    moveOutcome: (
+      state,
+      action: PayloadAction<{ targetId: number; moveToId: number }>
+    ) => {
+      const { targetId, moveToId } = action.payload
+      const newParentPath = findIndexPath(moveToId, state.groups)
+      const targetPath = findIndexPath(targetId, state.groups)
+
+      if (newParentPath.length && targetPath.length) {
+        // remove from old parent
+        const oldParent = findOutcome(
+          targetPath.slice(0, targetPath.length - 1),
+          state.groups
+        )
+
+        const oldIndex = oldParent.children?.findIndex((o) => o.id === targetId)
+
+        if (oldIndex !== -1) {
+          const elem = oldParent.children.splice(oldIndex, 1)
+          const newParent = findOutcome(newParentPath, state.groups)
+          if (!newParent.children.length) {
+            newParent.children = []
+          }
+          newParent.children.push(elem[0])
+        }
+      }
     }
   }
 })
 
-export const { addOutcomeGroup, addOutcome, updateOutcome } =
+export const { addOutcomeGroup, addOutcome, updateOutcome, moveOutcome } =
   outcomesSlice.actions
 export default outcomesSlice.reducer
