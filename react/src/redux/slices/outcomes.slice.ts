@@ -1,4 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { type Instruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
+import { createSlice, current as currentRTK } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
 let dynamicID = 1
@@ -123,26 +124,78 @@ export const outcomesSlice = createSlice({
     },
 
     // move outcome within the outcome tree
+    // optional operation param indicates reordering/combining action
     moveOutcome: (
       state,
-      action: PayloadAction<{ targetId: number; moveToId: number }>
+      action: PayloadAction<{
+        targetId: number
+        destinationId: number
+        operation?: Instruction['operation']
+      }>
     ) => {
-      const { targetId, moveToId } = action.payload
-      const newParentPath = findIndexPath(moveToId, state.groups)
+      const { targetId, destinationId, operation } = action.payload
+      const destinationPath = findIndexPath(destinationId, state.groups)
       const targetPath = findIndexPath(targetId, state.groups)
 
-      if (newParentPath.length && targetPath.length) {
-        // remove from old parent
-        const oldParent = findOutcome(
-          targetPath.slice(0, targetPath.length - 1),
-          state.groups
-        )
+      const targetIndex = targetPath.slice(-1)[0]
+      const destinationIndex = destinationPath.slice(-1)[0]
 
-        const oldIndex = oldParent.children?.findIndex((o) => o.id === targetId)
+      if (destinationPath.length && targetPath.length) {
+        if (operation && operation !== 'combine') {
+          // if the paths match, they belong to the same parent
+          if (
+            targetPath
+              .slice(0, -1)
+              .every((v, i) => v === destinationPath.slice(0, -1)[i])
+          ) {
+            // skip unnecessary reorders when positions wouldn't change
+            if (
+              operation === 'reorder-before' &&
+              targetIndex < destinationIndex
+            ) {
+              return
+            }
 
-        if (oldIndex !== -1) {
+            if (
+              operation === 'reorder-after' &&
+              targetIndex > destinationIndex
+            ) {
+              return
+            }
+
+            const parent = findOutcome(targetPath.slice(0, -1), state.groups)
+            const oldTarget = parent.children.splice(targetIndex, 1)
+            parent.children.splice(
+              operation === 'reorder-after'
+                ? destinationIndex + 1
+                : destinationIndex,
+              0,
+              oldTarget[0]
+            )
+          } else {
+            const oldParent = findOutcome(targetPath.slice(0, -1), state.groups)
+            const oldIndex = targetPath.slice(-1)[0]
+            const elem = oldParent.children.splice(oldIndex, 1)
+            const newParent = findOutcome(
+              destinationPath.slice(0, -1),
+              state.groups
+            )
+
+            newParent.children.splice(
+              operation === 'reorder-after'
+                ? destinationIndex + 1
+                : destinationIndex,
+              0,
+              elem[0]
+            )
+          }
+        } else {
+          // if no operation is provided, we're just "reparenting" outcome
+          // remove from old parent
+          const oldParent = findOutcome(targetPath.slice(0, -1), state.groups)
+          const oldIndex = targetPath.slice(-1)[0]
           const elem = oldParent.children.splice(oldIndex, 1)
-          const newParent = findOutcome(newParentPath, state.groups)
+          const newParent = findOutcome(destinationPath, state.groups)
           if (!newParent.children.length) {
             newParent.children = []
           }

@@ -1,5 +1,10 @@
 @import './utility/variables';
 
+// pragmatic drag and DropIndicator border color
+:root {
+  --ds-border-selected: #52C68C;
+}
+
 body,
 html {
   overflow: hidden;

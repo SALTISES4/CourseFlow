@@ -47,7 +47,7 @@ const GroupDropzone = ({
         dispatch(
           moveOutcome({
             targetId: data.id as number,
-            moveToId: id
+            destinationId: id
           })
         )
         setDraggingOver(false)

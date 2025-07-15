@@ -11,7 +11,10 @@ import {
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
 import theme from '@cf/mui/theme'
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
-import { Outcome as OutcomeType } from '@cf/redux/slices/outcomes.slice'
+import {
+  Outcome as OutcomeType,
+  moveOutcome
+} from '@cf/redux/slices/outcomes.slice'
 import { addOutcome, setDragging } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
@@ -72,6 +75,8 @@ const Outcome = ({
       dropTargetForElements({
         element: el,
         getData: ({ input, element }) => {
+          const data = { id }
+
           // only allow reordering if the target/dragged outcomes are different
           // and only if they're of the same level
           const allowReorder = dragging?.id !== id && dragging?.level === level
@@ -82,7 +87,7 @@ const Outcome = ({
           const allowCombine =
             dragging?.id !== id && dragging?.level === level + 1
 
-          return attachInstruction(null, {
+          return attachInstruction(data, {
             input,
             element,
             operations: {
@@ -114,7 +119,15 @@ const Outcome = ({
             args.self.data
           )
 
-          console.log('on drop', instruction?.operation)
+          if (instruction) {
+            dispatch(
+              moveOutcome({
+                targetId: args.source.data.id as number,
+                destinationId: args.self.data.id as number,
+                operation: instruction.operation
+              })
+            )
+          }
 
           setState(
             produce((draft) => {
@@ -158,7 +171,7 @@ const Outcome = ({
   const showToggleButton = level !== 3
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative', opacity: dragging?.id === id ? 0.4 : 1 }}>
       <Styled.OutcomeHeader
         ref={dragHandle}
         selected={selected}
@@ -193,6 +206,7 @@ const Outcome = ({
 
       <DropIndicator
         lineGap="8px"
+        lineType="no-terminal"
         instruction={{
           operation: state.operation,
           axis: 'vertical',
