@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack'
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import OutcomeGroupWrap from './components/OutcomeGroup'
+import OutcomeTree from './components/OutcomeTree'
 
 const OutcomeEditView = () => {
   const dispatch = useDispatch()
@@ -36,7 +36,7 @@ const OutcomeEditView = () => {
       ) : (
         <Stack spacing={3} direction="column">
           {outcomeGroups.map((group) => (
-            <OutcomeGroupWrap key={group.id} {...group} />
+            <OutcomeTree key={group.id} {...group} />
           ))}
         </Stack>
       )}

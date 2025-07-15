@@ -97,3 +97,12 @@ export const AddNewButton = styled(Button)(({ theme }) => ({
   fontWeight: 'normal',
   lineHeight: 1.3
 }))
+
+export const GroupDropzone = styled('div', {
+  shouldForwardProp: (prop) => !['highlight'].includes(prop as string)
+})<{ highlight: boolean }>(({ theme, highlight }) => ({
+  ...(highlight && {
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: `0 0 0 2px ${theme.palette.primary.light}`
+  })
+}))

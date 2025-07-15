@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { current as currentRTK } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
 let dynamicID = 1
@@ -13,12 +12,12 @@ export type Outcome = {
 }
 
 export type OutcomesState = {
-  editing: Outcome | null
+  dragging: { id: number; level: number } | null
   groups: Outcome[]
 }
 
 const initialState: OutcomesState = {
-  editing: null,
+  dragging: null,
   groups: []
 }
 
@@ -64,6 +63,7 @@ export const outcomesSlice = createSlice({
   name: 'outcomes',
   initialState,
   reducers: {
+    // add new outcome group (at root level)
     addOutcomeGroup: (state, action: PayloadAction<string>) => {
       state.groups.push({
         id: dynamicID++,
@@ -71,6 +71,8 @@ export const outcomesSlice = createSlice({
         children: []
       })
     },
+
+    // add outcome to a specific parent
     addOutcome: (state, action: PayloadAction<Outcome>) => {
       // payload id here is the id of the parent we want to add the outcome to
       const parentId = action.payload.id
@@ -100,6 +102,8 @@ export const outcomesSlice = createSlice({
         })
       }
     },
+
+    // edit/update existing outcome with payload data
     updateOutcome: (state, action: PayloadAction<Outcome>) => {
       // find the path
       const pathToOutcome = findIndexPath(action.payload.id, state.groups)
@@ -117,6 +121,8 @@ export const outcomesSlice = createSlice({
         }
       }
     },
+
+    // move outcome within the outcome tree
     moveOutcome: (
       state,
       action: PayloadAction<{ targetId: number; moveToId: number }>
@@ -143,10 +149,23 @@ export const outcomesSlice = createSlice({
           newParent.children.push(elem[0])
         }
       }
+    },
+
+    // set currently dragged outcome ID to better control pragmatic dropzones
+    setDragging: (
+      state,
+      action: PayloadAction<{ id: number; level: number } | null>
+    ) => {
+      state.dragging = action.payload
     }
   }
 })
 
-export const { addOutcomeGroup, addOutcome, updateOutcome, moveOutcome } =
-  outcomesSlice.actions
+export const {
+  addOutcomeGroup,
+  addOutcome,
+  updateOutcome,
+  moveOutcome,
+  setDragging
+} = outcomesSlice.actions
 export default outcomesSlice.reducer

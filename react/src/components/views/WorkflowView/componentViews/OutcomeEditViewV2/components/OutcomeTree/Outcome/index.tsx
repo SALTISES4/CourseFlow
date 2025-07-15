@@ -1,0 +1,206 @@
+import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
+import {
+  draggable,
+  dropTargetForElements
+} from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import {
+  type Instruction,
+  attachInstruction,
+  extractInstruction
+} from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
+import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
+import theme from '@cf/mui/theme'
+import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
+import { Outcome as OutcomeType } from '@cf/redux/slices/outcomes.slice'
+import { addOutcome, setDragging } from '@cf/redux/slices/outcomes.slice'
+import { AppState } from '@cf/redux/types/type'
+import { CfObjectType } from '@cf/types/enum'
+import { _t } from '@cf/utility/Utility.class'
+import AddIcon from '@mui/icons-material/Add'
+import RemoveIcon from '@mui/icons-material/Remove'
+import Box from '@mui/material/Box'
+import { produce } from 'immer'
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { AddButton, OutcomeGroup } from '..'
+import GroupDropzone from '../GroupDropzone'
+import * as Styled from '../styles'
+
+type OutcomeStateType = {
+  collapsed: boolean
+  operation: null | Instruction['operation']
+}
+
+const Outcome = ({
+  id,
+  title,
+  children,
+  level
+}: OutcomeType & { level: number }) => {
+  const dragHandle = useRef<HTMLDivElement>(null)
+  const dispatch = useDispatch()
+  const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
+  const dragging = useSelector((state: AppState) => state.outcomes.dragging)
+  const manager = useRef(new BetterSelectionManager(dispatch))
+  const [state, setState] = useState<OutcomeStateType>({
+    collapsed: true,
+    operation: null
+  })
+
+  useEffect(() => {
+    const el = dragHandle.current
+
+    if (!el) {
+      return
+    }
+
+    return combine(
+      draggable({
+        element: el,
+        getInitialData: () => ({
+          id,
+          level
+        }),
+        onDragStart: () => {
+          dispatch(setDragging({ id, level }))
+        },
+        onDrop: () => {
+          dispatch(setDragging(null))
+        }
+      }),
+      dropTargetForElements({
+        element: el,
+        getData: ({ input, element }) => {
+          // only allow reordering if the target/dragged outcomes are different
+          // and only if they're of the same level
+          const allowReorder = dragging?.id !== id && dragging?.level === level
+
+          // allow combine if we're combining different outcome IDs
+          // (ie, you can't combine self with self)
+          // and the dragged outcome level must be +1 compared to our target
+          const allowCombine =
+            dragging?.id !== id && dragging?.level === level + 1
+
+          return attachInstruction(null, {
+            input,
+            element,
+            operations: {
+              'reorder-before': allowReorder ? 'available' : 'not-available',
+              'reorder-after': allowReorder ? 'available' : 'not-available',
+              combine: allowCombine ? 'available' : 'not-available'
+            }
+          })
+        },
+        onDrag: (args) => {
+          const instruction: Instruction | null = extractInstruction(
+            args.self.data
+          )
+          setState(
+            produce((draft) => {
+              draft.operation = instruction?.operation ?? null
+            })
+          )
+        },
+        onDropTargetChange: () => {
+          setState(
+            produce((draft) => {
+              draft.operation = null
+            })
+          )
+        },
+        onDrop: (args) => {
+          const instruction: Instruction | null = extractInstruction(
+            args.self.data
+          )
+
+          console.log('on drop', instruction?.operation)
+
+          setState(
+            produce((draft) => {
+              draft.operation = null
+            })
+          )
+        }
+      })
+    )
+  }, [dispatch, dragHandle, dragging, id, level])
+
+  const selected =
+    sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.id === id
+
+  const onAddNewClick = useCallback(() => {
+    dispatch(
+      addOutcome({
+        id,
+        title: 'Blank Outcome title'
+      })
+    )
+  }, [dispatch, id])
+
+  const onToggleClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    setState(
+      produce((draft) => {
+        draft.collapsed = !draft.collapsed
+      })
+    )
+  }, [])
+
+  const onHeaderClick = useCallback(() => {
+    if (selected) {
+      manager.current.clearSidebar()
+    } else {
+      manager.current.updateSidebar(id, CfObjectType.OUTCOME, -1)
+    }
+  }, [id, selected])
+
+  const showToggleButton = level !== 3
+
+  return (
+    <Box sx={{ position: 'relative' }}>
+      <Styled.OutcomeHeader
+        ref={dragHandle}
+        selected={selected}
+        onClick={onHeaderClick}
+      >
+        <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
+        {showToggleButton && (
+          <Styled.OutcomeHeaderToggle onClick={onToggleClick}>
+            {state.collapsed ? (
+              <AddIcon fontSize="small" />
+            ) : (
+              <RemoveIcon fontSize="small" />
+            )}
+          </Styled.OutcomeHeaderToggle>
+        )}
+      </Styled.OutcomeHeader>
+
+      {!state.collapsed && (
+        <GroupDropzone
+          id={id}
+          level={level + 1}
+          hasChildren={!!children.length}
+        >
+          {children && <OutcomeGroup level={level + 1} outcomes={children} />}
+          {showToggleButton && (
+            <footer style={{ paddingLeft: theme.spacing(level) }}>
+              <AddButton onClick={onAddNewClick} />
+            </footer>
+          )}
+        </GroupDropzone>
+      )}
+
+      <DropIndicator
+        lineGap="8px"
+        instruction={{
+          operation: state.operation,
+          axis: 'vertical',
+          blocked: false
+        }}
+      />
+    </Box>
+  )
+}
+
+export default Outcome
