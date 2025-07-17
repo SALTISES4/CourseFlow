@@ -1,5 +1,9 @@
 import useHover from '@cf/hooks/useHover'
-import { addOutcome, deleteOutcome } from '@cf/redux/slices/outcomes.slice'
+import {
+  addOutcome,
+  deleteOutcome,
+  duplicateOutcome
+} from '@cf/redux/slices/outcomes.slice'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import AddIcon from '@mui/icons-material/Add'
@@ -116,6 +120,7 @@ const HoverMenu = ({
             setCollapsed(false)
             break
           case 'duplicate':
+            dispatch(duplicateOutcome(id))
             break
           case 'delete':
             dispatch(deleteOutcome(id))

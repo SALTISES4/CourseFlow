@@ -60,6 +60,16 @@ function findOutcome(path: number[], state: Outcome[]) {
   }
 }
 
+// recursively go over the tree of outcomes and update ID to avoid collision
+function cloneOutcomeTree(outcome: Outcome) {
+  return {
+    ...outcome,
+    id: dynamicID++,
+    title: outcome.title + ' (duplicate)',
+    children: outcome.children.map(cloneOutcomeTree)
+  }
+}
+
 export const outcomesSlice = createSlice({
   name: 'outcomes',
   initialState,
@@ -114,6 +124,18 @@ export const outcomesSlice = createSlice({
       const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
       const targetIndex = pathToOutcome.slice(-1)[0]
       targetParent.children.splice(targetIndex, 1)
+    },
+
+    // duplicates the outcome below the target
+    // cloning the tree structure as well
+    duplicateOutcome: (state, action: PayloadAction<number>) => {
+      const pathToOutcome = findIndexPath(action.payload, state.groups)
+      const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
+      const targetIndex = pathToOutcome.slice(-1)[0]
+
+      const clone = cloneOutcomeTree(targetParent.children[targetIndex])
+
+      targetParent.children.splice(targetIndex + 1, 0, clone)
     },
 
     // edit/update existing outcome with payload data
@@ -219,6 +241,7 @@ export const {
   addOutcomeGroup,
   addOutcome,
   deleteOutcome,
+  duplicateOutcome,
   updateOutcome,
   moveOutcome,
   setDragging
