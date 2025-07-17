@@ -74,28 +74,33 @@ export const outcomesSlice = createSlice({
     },
 
     // add outcome to a specific parent
-    addOutcome: (state, action: PayloadAction<Outcome>) => {
-      // payload id here is the id of the parent we want to add the outcome to
-      const parentId = action.payload.id
-      const pathToParent = findIndexPath(parentId, state.groups)
-      if (pathToParent.length) {
-        let current: Outcome[] | undefined = state.groups
+    addOutcome: (
+      state,
+      action: PayloadAction<Outcome & { order?: 'after' }>
+    ) => {
+      const targetId = action.payload.id
 
-        // loop down the path
-        for (let i = 0; i < pathToParent.length - 1; i++) {
-          const index = pathToParent[i]
-          current = current?.[index].children
-        }
+      // if no "order", then we're simply appending to the parent ID
+      if (!action.payload.order) {
+        const pathToParent = findIndexPath(targetId, state.groups)
+        const parent = findOutcome(pathToParent, state.groups)
 
-        // ... and find the target parent we're injecting to
-        const lastIndex = pathToParent[pathToParent.length - 1]
-        const parent = current[lastIndex]
-
-        if (!parent.children?.length) {
+        if (!parent.children) {
           parent.children = []
         }
 
         parent.children.push({
+          id: dynamicID++,
+          title: action.payload.title,
+          description: action.payload.description ?? '',
+          children: action.payload.children ?? []
+        })
+      } else {
+        // otherwise, we're adding outcome after the target ID's index
+        const pathToParent = findIndexPath(targetId, state.groups)
+        const parent = findOutcome(pathToParent.slice(0, -1), state.groups)
+        const targetIndex = pathToParent.slice(-1)[0]
+        parent.children.splice(targetIndex + 1, 0, {
           id: dynamicID++,
           title: action.payload.title,
           description: action.payload.description ?? '',
@@ -106,21 +111,10 @@ export const outcomesSlice = createSlice({
 
     // edit/update existing outcome with payload data
     updateOutcome: (state, action: PayloadAction<Outcome>) => {
-      // find the path
       const pathToOutcome = findIndexPath(action.payload.id, state.groups)
-      // drill to the correct outcome
-      if (pathToOutcome.length) {
-        let current: Outcome[] | undefined = state.groups
-        for (let i = 0; i < pathToOutcome.length - 1; i++) {
-          const index = pathToOutcome[i]
-          current = current?.[index].children
-        }
-        const lastIndex = pathToOutcome[pathToOutcome.length - 1]
-        // and update the target outcome
-        if (current && current[lastIndex]) {
-          current[lastIndex] = action.payload
-        }
-      }
+      const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
+      const targetIndex = pathToOutcome.slice(-1)[0]
+      targetParent.children[targetIndex] = action.payload
     },
 
     // move outcome within the outcome tree
