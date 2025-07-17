@@ -1,25 +1,12 @@
 import { Outcome as OutcomeType } from '@cf/redux/slices/outcomes.slice'
 import { addOutcome } from '@cf/redux/slices/outcomes.slice'
 import { _t } from '@cf/utility/Utility.class'
-import { SxProps } from '@mui/material'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
 import GroupDropzone from './GroupDropzone'
 import Outcome from './Outcome'
 import * as Styled from './styles'
-
-export const AddButton = ({
-  sx,
-  onClick
-}: {
-  onClick: () => void
-  sx?: SxProps
-}) => (
-  <Styled.AddNewButton sx={sx} variant="text" disableRipple onClick={onClick}>
-    {_t('Add outcome')}
-  </Styled.AddNewButton>
-)
 
 const OutcomeGroupWrap = ({
   id,
@@ -47,7 +34,15 @@ const OutcomeGroupWrap = ({
           {title}
         </Styled.OutcomeGroupTitle>
         <OutcomeGroup level={level + 1} outcomes={children} />
-        <AddButton onClick={onAddNewOutcome} />
+        {!children.length && (
+          <Styled.AddNewButton
+            variant="text"
+            disableRipple
+            onClick={onAddNewOutcome}
+          >
+            {_t('Add outcome')}
+          </Styled.AddNewButton>
+        )}
       </Styled.OutcomeGroupWrap>
     </GroupDropzone>
   )

@@ -9,26 +9,22 @@ import {
   extractInstruction
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
-import theme from '@cf/mui/theme'
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
 import {
   Outcome as OutcomeType,
   moveOutcome
 } from '@cf/redux/slices/outcomes.slice'
-import { addOutcome, setDragging } from '@cf/redux/slices/outcomes.slice'
+import { setDragging } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
-import AddIcon from '@mui/icons-material/Add'
-import RemoveIcon from '@mui/icons-material/Remove'
 import Box from '@mui/material/Box'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { AddButton, OutcomeGroup } from '..'
-import GroupDropzone from '../GroupDropzone'
-import * as Styled from '../styles'
+import { OutcomeGroup } from '..'
+import OutcomeHeader from './Header'
 
 type OutcomeStateType = {
   collapsed: boolean
@@ -41,7 +37,7 @@ const Outcome = ({
   children,
   level
 }: OutcomeType & { level: number }) => {
-  const dragHandle = useRef<HTMLDivElement>(null)
+  const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
   const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
   const dragging = useSelector((state: AppState) => state.outcomes.dragging)
@@ -52,7 +48,7 @@ const Outcome = ({
   })
 
   useEffect(() => {
-    const el = dragHandle.current
+    const el = dragHandleRef.current
 
     if (!el) {
       return
@@ -137,28 +133,26 @@ const Outcome = ({
         }
       })
     )
-  }, [dispatch, dragHandle, dragging, id, level])
+  }, [dispatch, dragHandleRef, dragging, id, level])
 
   const selected =
     sidebarData.objectType === CfObjectType.OUTCOME && sidebarData.id === id
 
-  const onAddNewClick = useCallback(() => {
-    dispatch(
-      addOutcome({
-        id,
-        title: 'Blank Outcome title'
-      })
-    )
-  }, [dispatch, id])
-
-  const onToggleClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation()
+  const setCollapsed = useCallback((value: boolean) => {
     setState(
       produce((draft) => {
-        draft.collapsed = !draft.collapsed
+        draft.collapsed = value
       })
     )
   }, [])
+
+  const onToggleClick = useCallback(
+    (e: MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+      setCollapsed(!state.collapsed)
+    },
+    [setCollapsed, state.collapsed]
+  )
 
   const onHeaderClick = useCallback(() => {
     if (selected) {
@@ -168,40 +162,25 @@ const Outcome = ({
     }
   }, [id, selected])
 
-  const showToggleButton = level !== 3
+  const showToggleButton = !!children.length && level !== 3
 
   return (
     <Box sx={{ position: 'relative', opacity: dragging?.id === id ? 0.4 : 1 }}>
-      <Styled.OutcomeHeader
-        ref={dragHandle}
+      <OutcomeHeader
+        id={id}
+        level={level}
+        dragRef={dragHandleRef}
+        title={title}
         selected={selected}
+        collapsed={state.collapsed}
+        setCollapsed={setCollapsed}
+        showToggle={showToggleButton}
         onClick={onHeaderClick}
-      >
-        <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
-        {showToggleButton && (
-          <Styled.OutcomeHeaderToggle onClick={onToggleClick}>
-            {state.collapsed ? (
-              <AddIcon fontSize="small" />
-            ) : (
-              <RemoveIcon fontSize="small" />
-            )}
-          </Styled.OutcomeHeaderToggle>
-        )}
-      </Styled.OutcomeHeader>
+        onToggleClick={onToggleClick}
+      />
 
       {!state.collapsed && (
-        <GroupDropzone
-          id={id}
-          level={level + 1}
-          hasChildren={!!children.length}
-        >
-          {children && <OutcomeGroup level={level + 1} outcomes={children} />}
-          {showToggleButton && (
-            <footer style={{ paddingLeft: theme.spacing(level) }}>
-              <AddButton onClick={onAddNewClick} />
-            </footer>
-          )}
-        </GroupDropzone>
+        <OutcomeGroup level={level + 1} outcomes={children} />
       )}
 
       <DropIndicator
