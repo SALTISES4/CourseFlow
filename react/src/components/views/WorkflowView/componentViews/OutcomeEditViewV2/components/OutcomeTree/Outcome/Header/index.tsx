@@ -1,5 +1,5 @@
 import useHover from '@cf/hooks/useHover'
-import { addOutcome } from '@cf/redux/slices/outcomes.slice'
+import { addOutcome, deleteOutcome } from '@cf/redux/slices/outcomes.slice'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import AddIcon from '@mui/icons-material/Add'
@@ -118,6 +118,7 @@ const HoverMenu = ({
           case 'duplicate':
             break
           case 'delete':
+            dispatch(deleteOutcome(id))
             break
           case 'comments':
             break

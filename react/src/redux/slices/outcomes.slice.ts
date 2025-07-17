@@ -109,6 +109,13 @@ export const outcomesSlice = createSlice({
       }
     },
 
+    deleteOutcome: (state, action: PayloadAction<number>) => {
+      const pathToOutcome = findIndexPath(action.payload, state.groups)
+      const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
+      const targetIndex = pathToOutcome.slice(-1)[0]
+      targetParent.children.splice(targetIndex, 1)
+    },
+
     // edit/update existing outcome with payload data
     updateOutcome: (state, action: PayloadAction<Outcome>) => {
       const pathToOutcome = findIndexPath(action.payload.id, state.groups)
@@ -211,6 +218,7 @@ export const outcomesSlice = createSlice({
 export const {
   addOutcomeGroup,
   addOutcome,
+  deleteOutcome,
   updateOutcome,
   moveOutcome,
   setDragging
