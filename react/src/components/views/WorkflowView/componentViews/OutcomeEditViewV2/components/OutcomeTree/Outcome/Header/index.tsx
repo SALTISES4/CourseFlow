@@ -4,8 +4,10 @@ import {
   deleteOutcome,
   duplicateOutcome
 } from '@cf/redux/slices/outcomes.slice'
+import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
+import { sidebarChangeTab, sidebarEdit } from '@cfRedux/slices/sidebar.slice'
 import AddIcon from '@mui/icons-material/Add'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import ChatIcon from '@mui/icons-material/Chat'
@@ -115,6 +117,13 @@ const HoverMenu = ({
             dispatch(deleteOutcome(id))
             break
           case 'comments':
+            dispatch(
+              sidebarEdit({
+                id,
+                objectType: CfObjectType.OUTCOME,
+                tab: 'comments'
+              })
+            )
             break
           default:
             break

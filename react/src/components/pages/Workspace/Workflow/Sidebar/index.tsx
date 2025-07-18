@@ -1,5 +1,6 @@
 import useWorkflowSidebar from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar'
 import { isTabVisible } from '@cf/components/pages/Workspace/Workflow/Sidebar/hooks/useSidebar/permissions'
+import { CfObjectType } from '@cf/types/enum'
 import { SidebarState } from '@cfRedux/slices/sidebar.slice'
 import {
   sidebarChangeTab,
@@ -8,6 +9,7 @@ import {
 import { AppState } from '@cfRedux/types/type'
 import AddCircleIcon from '@mui/icons-material/AddCircle'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import ChatIcon from '@mui/icons-material/Chat'
 import EditIcon from '@mui/icons-material/Edit'
 import EmojiEventsOutlinedIcon from '@mui/icons-material/EmojiEventsOutlined'
 import LinkIcon from '@mui/icons-material/Link'
@@ -19,6 +21,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
 import AddTab from './components/AddTab'
+import CommentsTab from './components/CommentsTab'
 import EditTab from './components/EditTab'
 import { EditableType } from './components/EditTab/types'
 import OutcomesTab from './components/OutcomesTab'
@@ -39,6 +42,8 @@ function getTabContent(
       return <EditTab type={edit.objectType as unknown as EditableType} />
     case 'add':
       return <AddTab />
+    case 'comments':
+      return <CommentsTab />
     case 'restore':
       return <RestoreTab />
     case 'outcomes':
@@ -50,6 +55,12 @@ function getTabContent(
   }
 }
 
+// Object types that have Comments tab shown once clicked on/edited
+const objectTypesWithComments: CfObjectType[] = [
+  CfObjectType.NODE,
+  CfObjectType.OUTCOME
+]
+
 const WorkspaceSidebar = () => {
   const [sidebarConfig] = useWorkflowSidebar()
   const location = useLocation()
@@ -57,32 +68,28 @@ const WorkspaceSidebar = () => {
 
   const sidebar = useSelector((state: AppState) => state.sidebar)
 
-  useEffect(() => {
-    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
-  }, [dispatch, location.pathname])
-
-  useEffect(() => {
-    if (sidebar.edit.objectType) {
-      onTabClick('edit')
-    } else {
-      dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sidebar.edit.objectType])
-
   const onToggleClick = useCallback(() => {
     dispatch(sidebarCollapse())
   }, [dispatch])
 
-  const onTabClick = (tab: SidebarState['tab']) => {
-    if (!tab) {
-      dispatch(sidebarCollapse())
-    }
+  const onTabClick = useCallback(
+    (tab: SidebarState['tab']) => {
+      if (!tab) {
+        dispatch(sidebarCollapse())
+      }
 
-    if (tab) {
-      dispatch(sidebarChangeTab({ tab, collapsed: false }))
-    }
-  }
+      if (tab) {
+        dispatch(sidebarChangeTab({ tab, collapsed: false }))
+      }
+    },
+    [dispatch]
+  )
+
+  // when pathname changes, dismiss sidebar
+  // (internally also resets sidebar's 'edit' state)
+  useEffect(() => {
+    dispatch(sidebarChangeTab({ tab: null, collapsed: true }))
+  }, [dispatch, location.pathname])
 
   const tabContent = getTabContent(sidebar.tab, sidebar.edit)
 
@@ -100,6 +107,10 @@ const WorkspaceSidebar = () => {
       value: 'add',
       icon: <AddCircleIcon />
     },
+    objectTypesWithComments.includes(sidebar.edit.objectType) && {
+      value: 'comments',
+      icon: <ChatIcon />
+    },
     {
       value: 'outcomes',
       icon: <EmojiEventsOutlinedIcon />
@@ -115,22 +126,26 @@ const WorkspaceSidebar = () => {
   ]
 
   const visibleTabs: ReactNode[] = []
-  tabs.map((tab) => {
-    if (isTabVisible(tab.value, sidebarConfig)) {
-      visibleTabs.push(
-        <ToggleButton
-          key={tab.value}
-          disabled={tab.disabled}
-          size="small"
-          color="primary"
-          value={tab.value}
-          aria-label={`${tab.value} tab`}
-        >
-          {tab.icon}
-        </ToggleButton>
-      )
-    }
-  })
+
+  // need both workflow type and view type in order to determine whether tabs show
+  if (sidebarConfig.workflowType && sidebarConfig.viewType) {
+    tabs.map((tab) => {
+      if (tab && isTabVisible(tab.value, sidebarConfig)) {
+        visibleTabs.push(
+          <ToggleButton
+            key={tab.value}
+            disabled={tab.disabled}
+            size="small"
+            color="primary"
+            value={tab.value}
+            aria-label={`${tab.value} tab`}
+          >
+            {tab.icon}
+          </ToggleButton>
+        )
+      }
+    })
+  }
 
   if (!visibleTabs.length) {
     return null

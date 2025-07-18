@@ -1,21 +1,22 @@
-import { SidebarState } from '@cf/redux/reducers/sidebar/types'
 import {
   WorkflowType,
   WorkflowViewType
 } from '@cfPages/Workspace/Workflow/types'
+import { SidebarState } from '@cfRedux/slices/sidebar.slice'
 
 import { ConfigType } from './types'
 
-type PermissionMatrixType = {
-  [index in SidebarState['tab']]: {
+type PermissionMatrixType = Record<
+  SidebarState['tab'],
+  {
     [index in WorkflowType]?: WorkflowViewType[]
   }
-}
+>
 
 // describes where each tab exists and should be rendered
-// ie, EDIT
-// -> exists for activity (workflow type)
-// --> workflow and outcomes (workflow type view / tab)
+// ie, EDIT exists for
+// -> ACTIVITY (workflow type)
+// --> WORKFLOW and OUTCOMES (type / tab view)
 const permissionMatrix: PermissionMatrixType = {
   edit: {
     [WorkflowType.ACTIVITY]: [
@@ -38,6 +39,20 @@ const permissionMatrix: PermissionMatrixType = {
     [WorkflowType.ACTIVITY]: [WorkflowViewType.WORKFLOW],
     [WorkflowType.COURSE]: [WorkflowViewType.WORKFLOW],
     [WorkflowType.PROGRAM]: [WorkflowViewType.WORKFLOW]
+  },
+  comments: {
+    [WorkflowType.ACTIVITY]: [
+      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.OUTCOME_EDIT
+    ],
+    [WorkflowType.COURSE]: [
+      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.OUTCOME_EDIT
+    ],
+    [WorkflowType.PROGRAM]: [
+      WorkflowViewType.WORKFLOW,
+      WorkflowViewType.OUTCOME_EDIT
+    ]
   },
   outcomes: {
     [WorkflowType.ACTIVITY]: [WorkflowViewType.WORKFLOW],
