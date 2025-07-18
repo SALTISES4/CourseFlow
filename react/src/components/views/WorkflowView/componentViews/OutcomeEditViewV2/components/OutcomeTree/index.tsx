@@ -19,12 +19,7 @@ const OutcomeGroupWrap = ({
   const dispatch = useDispatch()
 
   const onAddNewOutcome = useCallback(() => {
-    dispatch(
-      addOutcome({
-        id,
-        title: 'Blank Outcome title'
-      })
-    )
+    dispatch(addOutcome({ id }))
   }, [dispatch, id])
 
   return (

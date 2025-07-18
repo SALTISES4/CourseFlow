@@ -1,7 +1,8 @@
 import { type Instruction } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
-import { createSlice, current as currentRTK } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import { type PayloadAction } from '@reduxjs/toolkit'
 
+// to keep track of newly created Outcome IDs
 let dynamicID = 1
 
 export type Outcome = {
@@ -22,7 +23,7 @@ const initialState: OutcomesState = {
   groups: []
 }
 
-// // DFS / depth first search shizzle
+// DFS / depth first search
 export function findIndexPath(
   needleId: number,
   haystack: Outcome[],
@@ -70,6 +71,9 @@ function cloneOutcomeTree(outcome: Outcome) {
   }
 }
 
+type AddOutcomeType = Pick<Outcome, 'id'> &
+  Partial<Outcome> & { order?: 'after' }
+
 export const outcomesSlice = createSlice({
   name: 'outcomes',
   initialState,
@@ -84,11 +88,15 @@ export const outcomesSlice = createSlice({
     },
 
     // add outcome to a specific parent
-    addOutcome: (
-      state,
-      action: PayloadAction<Outcome & { order?: 'after' }>
-    ) => {
+    addOutcome: (state, action: PayloadAction<AddOutcomeType>) => {
       const targetId = action.payload.id
+
+      const newOutcomeData = {
+        id: dynamicID++,
+        title: action.payload.title ?? 'Blank outcome title',
+        description: action.payload.description ?? '',
+        children: action.payload.children ?? []
+      }
 
       // if no "order", then we're simply appending to the parent ID
       if (!action.payload.order) {
@@ -99,23 +107,13 @@ export const outcomesSlice = createSlice({
           parent.children = []
         }
 
-        parent.children.push({
-          id: dynamicID++,
-          title: action.payload.title,
-          description: action.payload.description ?? '',
-          children: action.payload.children ?? []
-        })
+        parent.children.push(newOutcomeData)
       } else {
         // otherwise, we're adding outcome after the target ID's index
         const pathToParent = findIndexPath(targetId, state.groups)
         const parent = findOutcome(pathToParent.slice(0, -1), state.groups)
         const targetIndex = pathToParent.slice(-1)[0]
-        parent.children.splice(targetIndex + 1, 0, {
-          id: dynamicID++,
-          title: action.payload.title,
-          description: action.payload.description ?? '',
-          children: action.payload.children ?? []
-        })
+        parent.children.splice(targetIndex + 1, 0, newOutcomeData)
       }
     },
 

@@ -102,21 +102,10 @@ const HoverMenu = ({
         e.stopPropagation()
         switch (action) {
           case 'insert-sibling':
-            dispatch(
-              addOutcome({
-                id,
-                title: 'Blank Outcome title',
-                order: 'after'
-              })
-            )
+            dispatch(addOutcome({ id, order: 'after' }))
             break
           case 'insert-child':
-            dispatch(
-              addOutcome({
-                id,
-                title: 'Blank Outcome title'
-              })
-            )
+            dispatch(addOutcome({ id }))
             setCollapsed(false)
             break
           case 'duplicate':
