@@ -46,7 +46,8 @@ const sidebarSlice = createSlice({
         state.edit.id === action.payload.id &&
         state.edit.objectType === action.payload.objectType &&
         state.edit.parentId === action.payload.parentId &&
-        state.tab === action.payload.tab
+        (state.tab === action.payload.tab ||
+          !!state.tab === !action.payload.tab)
       ) {
         return resetState(state)
       }
