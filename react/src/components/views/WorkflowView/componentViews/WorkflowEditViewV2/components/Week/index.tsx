@@ -72,6 +72,7 @@ const Week = (props: WeekPropsType) => {
     closestEdge: null,
     draggedOver: false
   })
+  const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
   const weekWrapperRef = useRef<HTMLDivElement>(null)
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
@@ -220,8 +221,16 @@ const Week = (props: WeekPropsType) => {
     ? `${weekData.week.weekTypeDisplay} ${weekData.week.order + 1}`
     : undefined
 
+  const selected =
+    sidebarData.objectType === CfObjectType.WEEK &&
+    sidebarData.id === props.weekId
+
   return (
-    <StyledWeek.WeekWrapper onClick={onWeekWrapperClick} ref={weekWrapperRef}>
+    <StyledWeek.WeekWrapper
+      onClick={onWeekWrapperClick}
+      ref={weekWrapperRef}
+      selected={selected}
+    >
       <Styled.WeekRowIndicator edge={state.closestEdge} />
       <StyledWeek.WeekHeader
         ref={dragHandleRef}

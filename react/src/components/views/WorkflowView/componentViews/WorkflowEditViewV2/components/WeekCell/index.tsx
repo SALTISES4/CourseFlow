@@ -3,6 +3,8 @@ import {
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import useHover from '@cf/hooks/useHover'
+import { AppState } from '@cf/redux/types/type'
+import { CfObjectType } from '@cf/types/enum'
 import AutoLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/AutoLink'
 import NodeLink from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodeLink'
 import NodePorts from '@cfViews/WorkflowView/componentViews/WorkflowEditView/components/node/NodePorts'
@@ -10,6 +12,7 @@ import { alpha } from '@mui/material'
 import { produce } from 'immer'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useSelector } from 'react-redux'
 
 import HoverMenu from './components/HoverMenu'
 import Meta from './components/Meta'
@@ -97,6 +100,7 @@ const WeekCell = (props: PropsType) => {
 }
 
 const WeekCellInner = (props: PropsType) => {
+  const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
   const [ref, isHovered] = useHover()
   const [state, setState] = useState({
     dragging: false,
@@ -199,8 +203,16 @@ const WeekCellInner = (props: PropsType) => {
     const { id, title, description, contextType, taskType, time, onClick } =
       props
 
+    const selected =
+      sidebarData.objectType === CfObjectType.NODE && sidebarData.id === id
+
     return (
-      <Styled.CellInner id={`node-${id}`} ref={ref} dragging={state.dragging}>
+      <Styled.CellInner
+        id={`node-${id}`}
+        ref={ref}
+        selected={selected}
+        dragging={state.dragging}
+      >
         <HoverMenu show={isHovered} id={id} />
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onClick}>

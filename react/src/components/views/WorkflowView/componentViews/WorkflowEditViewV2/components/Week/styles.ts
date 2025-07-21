@@ -20,12 +20,19 @@ export const DraggingWeekWrapper = styled(Box)(({ theme }) => ({
   }
 }))
 
-export const WeekWrapper = styled(Box)(({ theme }) => ({
+export const WeekWrapper = styled(Box, {
+  shouldForwardProp: (prop) => !['selected'].includes(prop as string)
+})<{ selected: boolean }>(({ theme, selected }) => ({
   position: 'relative',
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(2),
   backgroundColor: 'rgb(238, 242, 253)',
-  borderRadius: theme.shape.borderRadius
+  borderRadius: theme.shape.borderRadius,
+  ...(selected && {
+    '&, &:hover': {
+      boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
+    }
+  })
 }))
 
 export const WeekHeader = styled('header', {

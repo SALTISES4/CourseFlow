@@ -39,11 +39,20 @@ export const Cell = styled(Box)({
 })
 
 export const CellInner = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'dragging'
-})<{ dragging: boolean }>(({ theme, dragging }) => ({
-  transition: 'all 0.3s ease',
-  ...(dragging && {
-    opacity: 0.6,
-    transform: 'scale(0.8)'
+  shouldForwardProp: (prop) =>
+    !['dragging', 'selected'].includes(prop as string)
+})<{ dragging: boolean; selected: boolean }>(
+  ({ theme, dragging, selected }) => ({
+    borderRadius: theme.shape.borderRadius,
+    transition: 'all 0.3s ease',
+    ...(dragging && {
+      opacity: 0.6,
+      transform: 'scale(0.8)'
+    }),
+    ...(selected && {
+      '&, &:hover': {
+        boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
+      }
+    })
   })
-}))
+)

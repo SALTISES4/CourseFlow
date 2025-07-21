@@ -2,8 +2,11 @@ import {
   draggable,
   dropTargetForElements
 } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
+import { AppState } from '@cf/redux/types/type'
+import { CfObjectType } from '@cf/types/enum'
 import { produce } from 'immer'
 import { useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import * as Styled from '../../styles'
 import { ColumnReorderCallbackFn, DraggableType } from '../../types'
@@ -106,10 +109,15 @@ const ColumnCellInner = ({
   columnId,
   parentId
 }: Omit<CellProps, 'onReorder'>) => {
+  const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
   const ref = useRef<HTMLDivElement>(null)
   const [state, setState] = useState({
     dragging: false
   })
+
+  const selected =
+    sidebarData.objectType === CfObjectType.COLUMN &&
+    sidebarData.id === columnId
 
   useEffect(() => {
     const el = ref.current
@@ -135,7 +143,7 @@ const ColumnCellInner = ({
   }, [index, columnId])
 
   return (
-    <Styled.CellInner ref={ref} dragging={state.dragging}>
+    <Styled.CellInner ref={ref} selected={selected} dragging={state.dragging}>
       <ColumnInner objectId={columnId} parentId={parentId} />
     </Styled.CellInner>
   )
