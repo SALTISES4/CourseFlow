@@ -201,7 +201,7 @@ const WeekCellInner = (props: PropsType) => {
 
     return (
       <Styled.CellInner id={`node-${id}`} ref={ref} dragging={state.dragging}>
-        <HoverMenu show={isHovered} />
+        <HoverMenu show={isHovered} id={id} />
         <StyledNode.Border sx={{ backgroundColor: borderColor }} />
         <StyledNode.Content onClick={onClick}>
           <StyledNode.Title variant="body2">{title}</StyledNode.Title>
