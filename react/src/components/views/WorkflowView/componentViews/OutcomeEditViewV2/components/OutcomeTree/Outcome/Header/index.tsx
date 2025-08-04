@@ -48,15 +48,13 @@ const OutcomeHeader = ({
   const [, isHovered] = useHover(dragRef)
 
   return (
-    <Styled.OutcomeHeader ref={dragRef} selected={selected} onClick={onClick}>
-      <div
-        style={{
-          display: 'flex',
-          gap: '1em',
-          justifyContent: 'space-between',
-          flexGrow: 1
-        }}
-      >
+    <Styled.OutcomeHeader
+      ref={dragRef}
+      selected={selected}
+      level={level}
+      onClick={onClick}
+    >
+      <Styled.OutcomeHeaderInner>
         <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
         <HoverMenu
           show={isHovered}
@@ -64,7 +62,7 @@ const OutcomeHeader = ({
           level={level}
           setCollapsed={setCollapsed}
         />
-      </div>
+      </Styled.OutcomeHeaderInner>
       {showToggle && (
         <Styled.OutcomeHeaderToggle onClick={onToggleClick}>
           {collapsed ? (

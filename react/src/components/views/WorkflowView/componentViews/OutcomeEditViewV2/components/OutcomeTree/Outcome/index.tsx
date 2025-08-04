@@ -18,13 +18,13 @@ import { setDragging } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
-import Box from '@mui/material/Box'
 import { produce } from 'immer'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { OutcomeGroup } from '..'
 import OutcomeHeader from './Header'
+import * as Styled from '../styles'
 
 type OutcomeStateType = {
   collapsed: boolean
@@ -33,10 +33,11 @@ type OutcomeStateType = {
 
 const Outcome = ({
   id,
+  prefix,
   title,
   children,
   level
-}: OutcomeType & { level: number }) => {
+}: OutcomeType & { level: number; prefix: number[] }) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
   const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
@@ -165,12 +166,12 @@ const Outcome = ({
   const showToggleButton = !!children.length && level !== 3
 
   return (
-    <Box sx={{ position: 'relative', opacity: dragging?.id === id ? 0.4 : 1 }}>
+    <Styled.OutcomeWrapper dragging={dragging?.id === id}>
       <OutcomeHeader
         id={id}
         level={level}
         dragRef={dragHandleRef}
-        title={title}
+        title={`${prefix.join('.')} - ${title}`}
         selected={selected}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
@@ -180,7 +181,7 @@ const Outcome = ({
       />
 
       {!state.collapsed && (
-        <OutcomeGroup level={level + 1} outcomes={children} />
+        <OutcomeGroup prefix={prefix} level={level + 1} outcomes={children} />
       )}
 
       <DropIndicator
@@ -192,7 +193,7 @@ const Outcome = ({
           blocked: false
         }}
       />
-    </Box>
+    </Styled.OutcomeWrapper>
   )
 }
 

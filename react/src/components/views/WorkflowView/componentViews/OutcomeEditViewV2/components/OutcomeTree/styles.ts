@@ -16,34 +16,24 @@ export const OutcomeGroup = styled('ul')(({ theme }) => ({
   margin: 0,
   padding: 0,
   listStyle: 'none',
-  counterReset: 'index',
   '& ul': {
     marginLeft: theme.spacing(1)
   },
   '& li': {
     marginTop: theme.spacing(1)
-  },
-  '& li .MuiTypography-root::before': {
-    counterIncrement: 'index',
-    content: `counters(index, '.', decimal) ' - '`
-  },
-  '& .MuiBox-root > .MuiBox-root': {
-    border: 0,
-    backgroundColor: 'rgb(229, 233, 244)' // NOTE: Figma says grey[100] but it's not
-  },
-  '& ul .MuiBox-root > .MuiBox-root': {
-    backgroundColor: 'rgb(245, 249, 255)' // NOTE: Figma says grey[50] but it's not
-  },
-  '& ul ul .MuiBox-root > .MuiBox-root': {
-    border: '1px solid',
-    borderColor: 'rgb(238, 242, 253)',
-    backgroundColor: 'transparent'
   }
 }))
 
+export const OutcomeWrapper = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'dragging'
+})<{ dragging: boolean }>(({ theme, dragging }) => ({
+  position: 'relative',
+  opacity: dragging ? 0.4 : 1
+}))
+
 export const OutcomeHeader = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'selected'
-})<{ selected: boolean }>(({ theme, selected }) => ({
+  shouldForwardProp: (prop) => !['selected', 'level'].includes(prop as string)
+})<{ selected: boolean; level: number }>(({ theme, selected, level }) => ({
   position: 'relative',
   display: 'flex',
   borderRadius: `${theme.shape.borderRadius}px`,
@@ -58,7 +48,25 @@ export const OutcomeHeader = styled(Box, {
     '&, &:hover': {
       boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`
     }
+  }),
+  ...(level === 1 && {
+    backgroundColor: 'rgb(229, 233, 244)' // NOTE: Figma says grey[100] but it's not
+  }),
+  ...(level === 2 && {
+    backgroundColor: 'rgb(245, 249, 255)' // NOTE: Figma says grey[50] but it's not
+  }),
+  ...(level === 3 && {
+    border: '1px solid',
+    borderColor: 'rgb(238, 242, 253)',
+    backgroundColor: 'transparent'
   })
+}))
+
+export const OutcomeHeaderInner = styled(Box)(() => ({
+  display: 'flex',
+  gap: '1em',
+  justifyContent: 'space-between',
+  flexGrow: 1
 }))
 
 export const OutcomeHeaderToggle = styled(IconButton)(({ theme }) => ({

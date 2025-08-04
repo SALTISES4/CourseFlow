@@ -45,20 +45,27 @@ const OutcomeGroupWrap = ({
 
 export const OutcomeGroup = ({
   outcomes,
-  level
+  level,
+  prefix
 }: {
   outcomes: OutcomeType[]
   level: number
+  prefix?: number[]
 }) => {
   if (!outcomes.length) {
     return null
   }
 
+  const pref = []
+  if (prefix) {
+    pref.unshift(...prefix)
+  }
+
   return (
     <Styled.OutcomeGroup>
-      {outcomes.map((outcome) => (
+      {outcomes.map((outcome, index) => (
         <li key={outcome.id}>
-          <Outcome level={level} {...outcome} />
+          <Outcome level={level} prefix={[...pref, index + 1]} {...outcome} />
         </li>
       ))}
     </Styled.OutcomeGroup>
