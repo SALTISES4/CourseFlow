@@ -1,24 +1,15 @@
 import useHover from '@cf/hooks/useHover'
-import {
-  addOutcome,
-  deleteOutcome,
-  duplicateOutcome
-} from '@cf/redux/slices/outcomes.slice'
 import { CfObjectType } from '@cf/types/enum'
 import { _t } from '@cf/utility/Utility.class'
 import NodeHoverMenu from '@cfComponents/UIPrimitives/NodeHoverMenu'
 import { sidebarEdit } from '@cfRedux/slices/sidebar.slice'
+import * as Styled from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/OutcomeTree/styles'
 import AddIcon from '@mui/icons-material/Add'
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
 import ChatIcon from '@mui/icons-material/Chat'
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'
-import DeleteIcon from '@mui/icons-material/Delete'
-import QueueIcon from '@mui/icons-material/Queue'
 import RemoveIcon from '@mui/icons-material/Remove'
 import { MouseEvent, MutableRefObject, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
-
-import * as Styled from '../../styles'
 
 type PropsType = {
   id: number
@@ -27,9 +18,7 @@ type PropsType = {
   dragRef: MutableRefObject<HTMLDivElement>
   selected: boolean
   collapsed: boolean
-  setCollapsed: (value: boolean) => void
   showToggle: boolean
-  onClick: () => void
   onToggleClick: (e: MouseEvent<HTMLButtonElement>) => void
 }
 
@@ -40,8 +29,6 @@ const OutcomeHeader = ({
   dragRef,
   selected,
   collapsed,
-  setCollapsed,
-  onClick,
   showToggle,
   onToggleClick
 }: PropsType) => {
@@ -53,16 +40,10 @@ const OutcomeHeader = ({
       highlighted={false}
       selected={selected}
       level={level}
-      onClick={onClick}
     >
       <Styled.OutcomeHeaderInner>
         <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>
-        <HoverMenu
-          show={isHovered}
-          id={id}
-          level={level}
-          setCollapsed={setCollapsed}
-        />
+        <HoverMenu show={isHovered} id={id} />
       </Styled.OutcomeHeaderInner>
       {showToggle && (
         <Styled.OutcomeHeaderToggle onClick={onToggleClick}>
@@ -77,24 +58,12 @@ const OutcomeHeader = ({
   )
 }
 
-type HoverMenuActions =
-  | 'insert-sibling'
-  | 'insert-child'
-  | 'duplicate'
-  | 'delete'
-  | 'comments'
+enum HoverMenuActions {
+  UNLINK = 'unlink',
+  COMMENTS = 'comments'
+}
 
-const HoverMenu = ({
-  id,
-  level,
-  show,
-  setCollapsed
-}: {
-  id: PropsType['id']
-  level: PropsType['level']
-  show: boolean
-  setCollapsed: PropsType['setCollapsed']
-}) => {
+const HoverMenu = ({ id, show }: { id: PropsType['id']; show: boolean }) => {
   const dispatch = useDispatch()
 
   const onActionClick = useCallback(
@@ -102,20 +71,10 @@ const HoverMenu = ({
       return (e: MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation()
         switch (action) {
-          case 'insert-sibling':
-            dispatch(addOutcome({ id, order: 'after' }))
+          case HoverMenuActions.UNLINK:
+            console.log('delete linked outcome', id)
             break
-          case 'insert-child':
-            dispatch(addOutcome({ id }))
-            setCollapsed(false)
-            break
-          case 'duplicate':
-            dispatch(duplicateOutcome(id))
-            break
-          case 'delete':
-            dispatch(deleteOutcome(id))
-            break
-          case 'comments':
+          case HoverMenuActions.COMMENTS:
             dispatch(
               sidebarEdit({
                 id,
@@ -129,7 +88,7 @@ const HoverMenu = ({
         }
       }
     },
-    [dispatch, setCollapsed, id]
+    [dispatch, id]
   )
 
   return (
@@ -141,29 +100,14 @@ const HoverMenu = ({
         }}
         items={[
           {
-            label: 'Insert outcome below',
-            icon: <AddCircleOutlineIcon />,
-            onClick: onActionClick('insert-sibling')
-          },
-          level !== 3 && {
-            label: 'Insert child outcome',
-            icon: <QueueIcon />,
-            onClick: onActionClick('insert-child')
-          },
-          {
-            label: 'Duplicate outcome below',
-            icon: <ContentCopyIcon />,
-            onClick: onActionClick('duplicate')
-          },
-          {
-            label: 'Delete outcome',
-            icon: <DeleteIcon />,
-            onClick: onActionClick('delete')
+            label: 'Unlink outcome',
+            icon: <CancelOutlinedIcon />,
+            onClick: onActionClick(HoverMenuActions.UNLINK)
           },
           {
             label: 'Comments',
             icon: <ChatIcon />,
-            onClick: onActionClick('comments')
+            onClick: onActionClick(HoverMenuActions.COMMENTS)
           }
         ]}
       />

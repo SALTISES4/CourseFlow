@@ -7,6 +7,7 @@ let dynamicID = 1
 
 export type Outcome = {
   id: number
+  level: number
   title: string
   description?: string
   code?: string
@@ -83,6 +84,7 @@ export const outcomesSlice = createSlice({
       state.groups.push({
         id: dynamicID++,
         title: action.payload,
+        level: 0,
         children: []
       })
     },
@@ -93,6 +95,7 @@ export const outcomesSlice = createSlice({
 
       const newOutcomeData = {
         id: dynamicID++,
+        level: 1,
         title: action.payload.title ?? 'Blank outcome title',
         description: action.payload.description ?? '',
         children: action.payload.children ?? []
@@ -107,12 +110,14 @@ export const outcomesSlice = createSlice({
           parent.children = []
         }
 
+        newOutcomeData.level = pathToParent.length
         parent.children.push(newOutcomeData)
       } else {
         // otherwise, we're adding outcome after the target ID's index
         const pathToParent = findIndexPath(targetId, state.groups)
         const parent = findOutcome(pathToParent.slice(0, -1), state.groups)
         const targetIndex = pathToParent.slice(-1)[0]
+        newOutcomeData.level = parent.level + 1
         parent.children.splice(targetIndex + 1, 0, newOutcomeData)
       }
     },
@@ -141,7 +146,10 @@ export const outcomesSlice = createSlice({
       const pathToOutcome = findIndexPath(action.payload.id, state.groups)
       const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
       const targetIndex = pathToOutcome.slice(-1)[0]
-      targetParent.children[targetIndex] = action.payload
+      targetParent.children[targetIndex] = {
+        ...targetParent.children[targetIndex],
+        ...action.payload
+      }
     },
 
     // move outcome within the outcome tree

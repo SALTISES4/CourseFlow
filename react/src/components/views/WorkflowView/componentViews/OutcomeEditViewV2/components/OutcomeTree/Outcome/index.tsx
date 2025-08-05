@@ -180,9 +180,7 @@ const Outcome = ({
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && (
-        <OutcomeGroup prefix={prefix} level={level + 1} outcomes={children} />
-      )}
+      {!state.collapsed && <OutcomeGroup prefix={prefix} outcomes={children} />}
 
       <DropIndicator
         lineGap="8px"

@@ -1,6 +1,7 @@
 import { Outcome as OutcomeType } from '@cf/redux/slices/outcomes.slice'
 import { addOutcome } from '@cf/redux/slices/outcomes.slice'
 import { _t } from '@cf/utility/Utility.class'
+import LinkedOutcomes from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/components/LinkedOutcomes'
 import { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 
@@ -28,7 +29,7 @@ const OutcomeGroupWrap = ({
         <Styled.OutcomeGroupTitle variant="body2">
           {title}
         </Styled.OutcomeGroupTitle>
-        <OutcomeGroup level={level + 1} outcomes={children} />
+        <OutcomeGroup outcomes={children} />
         {!children.length && (
           <Styled.AddNewButton
             variant="text"
@@ -45,11 +46,9 @@ const OutcomeGroupWrap = ({
 
 export const OutcomeGroup = ({
   outcomes,
-  level,
   prefix
 }: {
   outcomes: OutcomeType[]
-  level: number
   prefix?: number[]
 }) => {
   if (!outcomes.length) {
@@ -64,9 +63,14 @@ export const OutcomeGroup = ({
   return (
     <Styled.OutcomeGroup>
       {outcomes.map((outcome, index) => (
-        <li key={outcome.id}>
-          <Outcome level={level} prefix={[...pref, index + 1]} {...outcome} />
-        </li>
+        <Styled.OutcomeGroupItem key={outcome.id}>
+          <Outcome
+            level={outcome.level}
+            prefix={[...pref, index + 1]}
+            {...outcome}
+          />
+          {outcome.level === 1 && <LinkedOutcomes outcomes={outcomes} />}
+        </Styled.OutcomeGroupItem>
       ))}
     </Styled.OutcomeGroup>
   )
