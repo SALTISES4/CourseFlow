@@ -40,6 +40,12 @@ const OutcomeHeader = ({
       highlighted={false}
       selected={selected}
       level={level}
+      sx={{
+        '&:hover': {
+          boxShadow: 'none',
+          cursor: 'default'
+        }
+      }}
     >
       <Styled.OutcomeHeaderInner>
         <Styled.OutcomeTitle variant="body2">{title}</Styled.OutcomeTitle>

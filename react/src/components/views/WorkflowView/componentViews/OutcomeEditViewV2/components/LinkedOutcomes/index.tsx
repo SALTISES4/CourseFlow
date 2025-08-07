@@ -44,14 +44,15 @@ const LinkedOutcomes = ({ outcomes }: PropsType) => {
         onClose={onWrapLeave}
         anchorOrigin={{
           vertical: 'top',
-          horizontal: 'right'
+          horizontal: 'left'
         }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'left'
+          horizontal: 'right'
         }}
       >
-        <TreeView outcomes={outcomes} />
+        {/* <TreeView outcomes={outcomes} /> */}
+        <h1>Hello</h1>
       </Styled.Popover>
     </Styled.Wrap>
   )

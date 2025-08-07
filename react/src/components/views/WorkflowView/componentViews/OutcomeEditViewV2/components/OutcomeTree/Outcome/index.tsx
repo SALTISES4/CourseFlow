@@ -31,13 +31,7 @@ type OutcomeStateType = {
   operation: null | Instruction['operation']
 }
 
-const Outcome = ({
-  id,
-  prefix,
-  title,
-  children,
-  level
-}: OutcomeType & { level: number; prefix: number[] }) => {
+const Outcome = ({ id, title, children, level }: OutcomeType) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
   const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
@@ -58,10 +52,7 @@ const Outcome = ({
     return combine(
       draggable({
         element: el,
-        getInitialData: () => ({
-          id,
-          level
-        }),
+        getInitialData: () => ({ id, level }),
         onDragStart: () => {
           dispatch(setDragging({ id, level }))
         },
@@ -76,21 +67,20 @@ const Outcome = ({
 
           // only allow reordering if the target/dragged outcomes are different
           // and only if they're of the same level
-          const allowReorder = dragging?.id !== id && dragging?.level === level
+          const reorder = dragging?.id !== id && dragging?.level === level
 
           // allow combine if we're combining different outcome IDs
           // (ie, you can't combine self with self)
           // and the dragged outcome level must be +1 compared to our target
-          const allowCombine =
-            dragging?.id !== id && dragging?.level === level + 1
+          const combine = dragging?.id !== id && dragging?.level === level + 1
 
           return attachInstruction(data, {
             input,
             element,
             operations: {
-              'reorder-before': allowReorder ? 'available' : 'not-available',
-              'reorder-after': allowReorder ? 'available' : 'not-available',
-              combine: allowCombine ? 'available' : 'not-available'
+              'reorder-before': reorder ? 'available' : 'not-available',
+              'reorder-after': reorder ? 'available' : 'not-available',
+              combine: combine ? 'available' : 'not-available'
             }
           })
         },
@@ -163,24 +153,22 @@ const Outcome = ({
     }
   }, [id, selected])
 
-  const showToggleButton = !!children.length && level !== 3
-
   return (
     <Styled.OutcomeWrapper dragging={dragging?.id === id}>
       <OutcomeHeader
         id={id}
         level={level}
         dragRef={dragHandleRef}
-        title={`${prefix.join('.')} - ${title}`}
+        title={title}
         selected={selected}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
-        showToggle={showToggleButton}
+        showToggle={!!children.length}
         onClick={onHeaderClick}
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && <OutcomeGroup prefix={prefix} outcomes={children} />}
+      {!state.collapsed && <OutcomeGroup parentId={id} />}
 
       <DropIndicator
         lineGap="8px"

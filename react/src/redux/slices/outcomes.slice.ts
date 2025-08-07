@@ -7,70 +7,36 @@ let dynamicID = 1
 
 export type Outcome = {
   id: number
-  level: number
   title: string
   description?: string
   code?: string
-  children?: Outcome[]
+
+  parent: number | null
+  children?: number[]
+  level: number
 }
 
 export type OutcomesState = {
   dragging: { id: number; level: number } | null
-  groups: Outcome[]
+  outcomeOrder: number[]
+  outcomeData: Record<number, Outcome>
 }
 
 const initialState: OutcomesState = {
   dragging: null,
-  groups: []
-}
-
-// DFS / depth first search
-export function findIndexPath(
-  needleId: number,
-  haystack: Outcome[],
-  path: number[] = []
-): null | number[] {
-  for (let i = 0; i < haystack.length; i++) {
-    const currentPath = [...path, i]
-    const pool = haystack[i]
-    if (pool.id === needleId) {
-      return currentPath
-    }
-
-    if (pool.children) {
-      const found = findIndexPath(needleId, pool.children, currentPath)
-      if (found) {
-        return found
-      }
-    }
-  }
-
-  return null
-}
-
-function findOutcome(path: number[], state: Outcome[]) {
-  if (path.length) {
-    let current: Outcome[] | undefined = state
-    for (let i = 0; i < path.length - 1; i++) {
-      const index = path[i]
-      current = current?.[index].children
-    }
-    const lastIndex = path[path.length - 1]
-    if (current && current[lastIndex]) {
-      return current[lastIndex]
-    }
-  }
+  outcomeOrder: [],
+  outcomeData: {}
 }
 
 // recursively go over the tree of outcomes and update ID to avoid collision
-function cloneOutcomeTree(outcome: Outcome) {
-  return {
-    ...outcome,
-    id: dynamicID++,
-    title: outcome.title + ' (duplicate)',
-    children: outcome.children.map(cloneOutcomeTree)
-  }
-}
+// function cloneOutcomeTree(outcome: Outcome) {
+//   return {
+//     ...outcome,
+//     id: dynamicID++,
+//     title: outcome.title + ' (duplicate)',
+//     children: outcome.children.map(cloneOutcomeTree)
+//   }
+// }
 
 type AddOutcomeType = Pick<Outcome, 'id'> &
   Partial<Outcome> & { order?: 'after' }
@@ -81,73 +47,101 @@ export const outcomesSlice = createSlice({
   reducers: {
     // add new outcome group (at root level)
     addOutcomeGroup: (state, action: PayloadAction<string>) => {
-      state.groups.push({
-        id: dynamicID++,
+      const outcomeId = dynamicID++
+      state.outcomeOrder.push(outcomeId)
+      state.outcomeData[outcomeId] = {
+        id: outcomeId,
         title: action.payload,
-        level: 0,
-        children: []
-      })
+        parent: null,
+        children: [],
+        level: 0
+      }
     },
 
     // add outcome to a specific parent
     addOutcome: (state, action: PayloadAction<AddOutcomeType>) => {
-      const targetId = action.payload.id
-
-      const newOutcomeData = {
-        id: dynamicID++,
-        level: 1,
+      const outcomeId = dynamicID++
+      const newOutcomeData: Outcome = {
+        id: outcomeId,
         title: action.payload.title ?? 'Blank outcome title',
         description: action.payload.description ?? '',
-        children: action.payload.children ?? []
+        code: action.payload.code ?? '',
+        children: action.payload.children ?? [],
+        parent: -1, // added later
+        level: 0 // added later
       }
+
+      let orderAfterId = -1
 
       // if no "order", then we're simply appending to the parent ID
       if (!action.payload.order) {
-        const pathToParent = findIndexPath(targetId, state.groups)
-        const parent = findOutcome(pathToParent, state.groups)
-
-        if (!parent.children) {
-          parent.children = []
-        }
-
-        newOutcomeData.level = pathToParent.length
-        parent.children.push(newOutcomeData)
+        const parent = state.outcomeData[action.payload.id]
+        newOutcomeData.parent = parent.id
+        orderAfterId = parent.id // order after parent
+        parent.children.push(outcomeId)
       } else {
-        // otherwise, we're adding outcome after the target ID's index
-        const pathToParent = findIndexPath(targetId, state.groups)
-        const parent = findOutcome(pathToParent.slice(0, -1), state.groups)
-        const targetIndex = pathToParent.slice(-1)[0]
-        newOutcomeData.level = parent.level + 1
-        parent.children.splice(targetIndex + 1, 0, newOutcomeData)
+        // if order is present, add after the target outcome
+        const target = state.outcomeData[action.payload.id]
+        newOutcomeData.parent = target.parent
+        orderAfterId = target.id // order after target
+
+        // update parent index
+        const parent = state.outcomeData[target.parent]
+        const childIndex = parent.children.indexOf(target.id)
+        if (childIndex !== -1) {
+          parent.children.splice(childIndex + 1, 0, outcomeId)
+        }
       }
+
+      // update the order index
+      const orderIndex = state.outcomeOrder.indexOf(orderAfterId)
+      if (orderIndex !== -1) {
+        state.outcomeOrder.splice(orderIndex + 1, 0, outcomeId)
+      }
+
+      // set the correct level
+      newOutcomeData.level = state.outcomeData[newOutcomeData.parent].level + 1
+
+      // finally add the data itself
+      state.outcomeData[outcomeId] = newOutcomeData
     },
 
     deleteOutcome: (state, action: PayloadAction<number>) => {
-      const pathToOutcome = findIndexPath(action.payload, state.groups)
-      const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
-      const targetIndex = pathToOutcome.slice(-1)[0]
-      targetParent.children.splice(targetIndex, 1)
+      const outcomeId = action.payload
+
+      // delete from order
+      const orderIndex = state.outcomeOrder.indexOf(outcomeId)
+      state.outcomeOrder.splice(orderIndex, 1)
+
+      // delete from parent
+      const parentId = state.outcomeData[outcomeId].parent
+      state.outcomeData[parentId].children.splice(
+        state.outcomeData[parentId].children.indexOf(outcomeId),
+        1
+      )
+
+      // finally, delete data
+      delete state.outcomeData[outcomeId]
     },
 
     // duplicates the outcome below the target
     // cloning the tree structure as well
     duplicateOutcome: (state, action: PayloadAction<number>) => {
-      const pathToOutcome = findIndexPath(action.payload, state.groups)
-      const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
-      const targetIndex = pathToOutcome.slice(-1)[0]
+      console.log('DUPLICATE OUTCOME', action.payload)
+      // const pathToOutcome = findIndexPath(action.payload, state.groups)
+      // const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
+      // const targetIndex = pathToOutcome.slice(-1)[0]
 
-      const clone = cloneOutcomeTree(targetParent.children[targetIndex])
+      // const clone = cloneOutcomeTree(targetParent.children[targetIndex])
 
-      targetParent.children.splice(targetIndex + 1, 0, clone)
+      // targetParent.children.splice(targetIndex + 1, 0, clone)
     },
 
     // edit/update existing outcome with payload data
     updateOutcome: (state, action: PayloadAction<Outcome>) => {
-      const pathToOutcome = findIndexPath(action.payload.id, state.groups)
-      const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
-      const targetIndex = pathToOutcome.slice(-1)[0]
-      targetParent.children[targetIndex] = {
-        ...targetParent.children[targetIndex],
+      const outcome = state.outcomeData[action.payload.id]
+      state.outcomeData[action.payload.id] = {
+        ...outcome,
         ...action.payload
       }
     },
@@ -162,77 +156,77 @@ export const outcomesSlice = createSlice({
         operation?: Instruction['operation']
       }>
     ) => {
-      const { targetId, destinationId, operation } = action.payload
-      const destinationPath = findIndexPath(destinationId, state.groups)
-      const targetPath = findIndexPath(targetId, state.groups)
+      console.log('MOVE OUTCOME ', action.payload)
+      // const { targetId, destinationId, operation } = action.payload
+      // const destinationPath = findIndexPath(destinationId, state.groups)
+      // const targetPath = findIndexPath(targetId, state.groups)
 
-      const targetIndex = targetPath.slice(-1)[0]
-      const destinationIndex = destinationPath.slice(-1)[0]
+      // const targetIndex = targetPath.slice(-1)[0]
+      // const destinationIndex = destinationPath.slice(-1)[0]
 
-      if (destinationPath.length && targetPath.length) {
-        if (operation && operation !== 'combine') {
-          // if the paths match, they belong to the same parent
-          if (
-            targetPath
-              .slice(0, -1)
-              .every((v, i) => v === destinationPath.slice(0, -1)[i])
-          ) {
-            // skip unnecessary reorders when positions wouldn't change
-            if (
-              operation === 'reorder-before' &&
-              targetIndex < destinationIndex
-            ) {
-              return
-            }
+      // if (destinationPath.length && targetPath.length) {
+      //   if (operation && operation !== 'combine') {
+      //     // if the paths match, they belong to the same parent
+      //     if (
+      //       targetPath
+      //         .slice(0, -1)
+      //         .every((v, i) => v === destinationPath.slice(0, -1)[i])
+      //     ) {
+      //       // skip unnecessary reorders when positions wouldn't change
+      //       if (
+      //         operation === 'reorder-before' &&
+      //         targetIndex < destinationIndex
+      //       ) {
+      //         return
+      //       }
 
-            if (
-              operation === 'reorder-after' &&
-              targetIndex > destinationIndex
-            ) {
-              return
-            }
+      //       if (
+      //         operation === 'reorder-after' &&
+      //         targetIndex > destinationIndex
+      //       ) {
+      //         return
+      //       }
 
-            const parent = findOutcome(targetPath.slice(0, -1), state.groups)
-            const oldTarget = parent.children.splice(targetIndex, 1)
-            parent.children.splice(
-              operation === 'reorder-after'
-                ? destinationIndex + 1
-                : destinationIndex,
-              0,
-              oldTarget[0]
-            )
-          } else {
-            const oldParent = findOutcome(targetPath.slice(0, -1), state.groups)
-            const oldIndex = targetPath.slice(-1)[0]
-            const elem = oldParent.children.splice(oldIndex, 1)
-            const newParent = findOutcome(
-              destinationPath.slice(0, -1),
-              state.groups
-            )
+      //       const parent = findOutcome(targetPath.slice(0, -1), state.groups)
+      //       const oldTarget = parent.children.splice(targetIndex, 1)
+      //       parent.children.splice(
+      //         operation === 'reorder-after'
+      //           ? destinationIndex + 1
+      //           : destinationIndex,
+      //         0,
+      //         oldTarget[0]
+      //       )
+      //     } else {
+      //       const oldParent = findOutcome(targetPath.slice(0, -1), state.groups)
+      //       const oldIndex = targetPath.slice(-1)[0]
+      //       const elem = oldParent.children.splice(oldIndex, 1)
+      //       const newParent = findOutcome(
+      //         destinationPath.slice(0, -1),
+      //         state.groups
+      //       )
 
-            newParent.children.splice(
-              operation === 'reorder-after'
-                ? destinationIndex + 1
-                : destinationIndex,
-              0,
-              elem[0]
-            )
-          }
-        } else {
-          // if no operation is provided, we're just "reparenting" outcome
-          // remove from old parent
-          const oldParent = findOutcome(targetPath.slice(0, -1), state.groups)
-          const oldIndex = targetPath.slice(-1)[0]
-          const elem = oldParent.children.splice(oldIndex, 1)
-          const newParent = findOutcome(destinationPath, state.groups)
-          if (!newParent.children.length) {
-            newParent.children = []
-          }
-          newParent.children.push(elem[0])
-        }
-      }
+      //       newParent.children.splice(
+      //         operation === 'reorder-after'
+      //           ? destinationIndex + 1
+      //           : destinationIndex,
+      //         0,
+      //         elem[0]
+      //       )
+      //     }
+      //   } else {
+      //     // if no operation is provided, we're just "reparenting" outcome
+      //     // remove from old parent
+      //     const oldParent = findOutcome(targetPath.slice(0, -1), state.groups)
+      //     const oldIndex = targetPath.slice(-1)[0]
+      //     const elem = oldParent.children.splice(oldIndex, 1)
+      //     const newParent = findOutcome(destinationPath, state.groups)
+      //     if (!newParent.children.length) {
+      //       newParent.children = []
+      //     }
+      //     newParent.children.push(elem[0])
+      //   }
+      // }
     },
-
     // set currently dragged outcome ID to better control pragmatic dropzones
     setDragging: (
       state,

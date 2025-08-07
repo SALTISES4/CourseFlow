@@ -1,25 +1,21 @@
-import { findIndexPath } from '@cfRedux/slices/outcomes.slice'
 import { AppState } from '@cfRedux/types/type'
 import { createSelector } from 'reselect'
 
-const selectOutcomes = (state: AppState) => state.outcomes.groups
+const selectOutcomeData = (state: AppState) => state.outcomes.outcomeData
+const selectOutcomeOrder = (state: AppState) => state.outcomes.outcomeOrder
 
-export const selectOutcomeById = createSelector(
-  [selectOutcomes, (_: AppState, id: number) => id],
-  (outcomes, id) => {
-    const pathToOutcome = findIndexPath(id, outcomes)
-    if (pathToOutcome.length) {
-      let current = outcomes
-      for (let i = 0; i < pathToOutcome.length - 1; i++) {
-        const index = pathToOutcome[i]
-        current = current?.[index].children
-      }
-      const lastIndex = pathToOutcome[pathToOutcome.length - 1]
-      if (current && current[lastIndex]) {
-        return current[lastIndex]
-      }
-    }
+export const selectOutcomeGroups = createSelector(
+  [selectOutcomeOrder, selectOutcomeData],
+  (outcomeOrder, outcomesData) => {
+    return outcomeOrder
+      .map((id) => outcomesData[id])
+      .filter((outcome) => outcome?.parent === null)
+  }
+)
 
-    return null
+export const selectOutcomeChildrenById = createSelector(
+  [selectOutcomeData, (_: AppState, parentId: number) => parentId],
+  (outcomesData, parentId) => {
+    return outcomesData[parentId].children.map((c) => outcomesData[c])
   }
 )

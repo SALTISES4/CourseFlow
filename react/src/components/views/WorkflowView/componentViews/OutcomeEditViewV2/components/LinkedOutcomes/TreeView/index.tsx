@@ -9,7 +9,7 @@ type PropsType = {
 const TreeView = ({ outcomes }: PropsType) =>
   outcomes.map((outcome) => (
     <li key={outcome.id}>
-      <Outcome prefix={[]} {...outcome} />
+      <Outcome {...outcome} />
     </li>
   ))
 

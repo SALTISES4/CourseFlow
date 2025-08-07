@@ -24,9 +24,11 @@ export const OutcomeGroup = styled('ul')(({ theme }) => ({
   }
 }))
 
-export const OutcomeGroupItem = styled('li')(({ theme }) => ({
+export const OutcomeGroupItem = styled('li', {
+  shouldForwardProp: (prop) => prop !== 'level'
+})<{ level: number }>(({ theme, level }) => ({
   position: 'relative',
-  paddingRight: '28px'
+  paddingRight: level === 1 ? '28px' : 0
 }))
 
 export const OutcomeWrapper = styled(Box, {
@@ -69,8 +71,7 @@ export const OutcomeHeader = styled(Box, {
       backgroundColor: 'rgb(245, 249, 255)' // NOTE: Figma says grey[50] but it's not
     }),
     ...(level === 3 && {
-      border: '1px solid',
-      borderColor: 'rgb(238, 242, 253)',
+      border: '1px solid rgb(238, 242, 253)',
       backgroundColor: 'transparent'
     })
   })

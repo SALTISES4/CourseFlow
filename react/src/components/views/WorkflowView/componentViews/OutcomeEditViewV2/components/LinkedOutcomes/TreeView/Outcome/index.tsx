@@ -14,13 +14,7 @@ type OutcomeStateType = {
   collapsed: boolean
 }
 
-const Outcome = ({
-  id,
-  prefix,
-  title,
-  children,
-  level
-}: OutcomeType & { prefix: number[] }) => {
+const Outcome = ({ id, title, children, position }: OutcomeType) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
   const [state, setState] = useState<OutcomeStateType>({
@@ -46,6 +40,7 @@ const Outcome = ({
     [setCollapsed, state.collapsed]
   )
 
+  const level = position.length
   const showToggleButton = !!children.length && level !== 3
 
   return (
@@ -54,16 +49,14 @@ const Outcome = ({
         id={id}
         level={level}
         dragRef={dragHandleRef}
-        title={`${prefix.join('.')} - ${title}`}
+        title={`${position.join('.')} - ${title}`}
         selected={selected}
         collapsed={state.collapsed}
         showToggle={showToggleButton}
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && (
-        <OutcomeGroup prefix={prefix} level={level + 1} outcomes={children} />
-      )}
+      {!state.collapsed && <OutcomeGroup outcomes={children} />}
     </Styled.OutcomeWrapper>
   )
 }

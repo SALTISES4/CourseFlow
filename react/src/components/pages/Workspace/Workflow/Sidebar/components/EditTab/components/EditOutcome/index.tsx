@@ -1,7 +1,6 @@
 import { Outcome, updateOutcome } from '@cf/redux/slices/outcomes.slice'
 import { AppState } from '@cf/redux/types/type'
 import { _t } from '@cf/utility/Utility.class'
-import { selectOutcomeById } from '@cfRedux/selectors/outcomes.selector'
 import { debounce } from '@mui/material'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
@@ -25,9 +24,8 @@ const EditOutcome = () => {
   const firstRender = useRef(true)
 
   const outcomeId = useSelector((state: AppState) => state.sidebar.edit.id)
-  const outcome = useSelector((state: AppState) =>
-    selectOutcomeById(state, outcomeId)
-  )
+  const outcomes = useSelector((state: AppState) => state.outcomes.outcomeData)
+  const outcome = outcomes[outcomeId]
 
   const {
     register,

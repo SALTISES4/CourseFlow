@@ -14,7 +14,7 @@ export const Wrap = styled(Box)(({ theme }) => ({
 
 export const Popover = styled(MuiPopover)(({ theme }) => ({
   '& .MuiPaper-root': {
-    marginLeft: '10px',
+    marginLeft: '-8px',
     padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
     boxShadow: `0 0 0 2px rgba(4, 186, 116, 0.5)`

@@ -4,29 +4,16 @@ import * as Styled from '@cfViews/WorkflowView/componentViews/OutcomeEditViewV2/
 
 import Outcome from '../Outcome'
 
-export const OutcomeGroup = ({
-  outcomes,
-  level,
-  prefix
-}: {
-  outcomes: OutcomeType[]
-  level: number
-  prefix?: number[]
-}) => {
+export const OutcomeGroup = ({ outcomes }: { outcomes: OutcomeType[] }) => {
   if (!outcomes.length) {
     return null
   }
 
-  const pref = []
-  if (prefix) {
-    pref.unshift(...prefix)
-  }
-
   return (
     <Styled.OutcomeGroup>
-      {outcomes.map((outcome, index) => (
+      {outcomes.map((outcome) => (
         <li key={outcome.id}>
-          <Outcome level={level} prefix={[...pref, index + 1]} {...outcome} />
+          <Outcome {...outcome} />
         </li>
       ))}
     </Styled.OutcomeGroup>

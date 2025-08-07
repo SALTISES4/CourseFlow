@@ -1,4 +1,5 @@
 import { OuterContentWrap } from '@cf/mui/helper'
+import { selectOutcomeGroups } from '@cf/redux/selectors/outcomes.selector'
 import { addOutcomeGroup } from '@cf/redux/slices/outcomes.slice'
 import { _t } from '@cf/utility/Utility.class'
 import Alert from '@cfComponents/UIPrimitives/Alert'
@@ -14,7 +15,7 @@ import OutcomeTree from './components/OutcomeTree'
 const OutcomeEditView = () => {
   const dispatch = useDispatch()
   const workflow = useSelector((state: AppState) => state.workflow)
-  const outcomeGroups = useSelector((state: AppState) => state.outcomes.groups)
+  const outcomeGroups = useSelector(selectOutcomeGroups)
 
   const onAddNewGroup = useCallback(() => {
     dispatch(addOutcomeGroup('Outcome group label'))
