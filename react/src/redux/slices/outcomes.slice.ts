@@ -127,13 +127,10 @@ export const outcomesSlice = createSlice({
     // duplicates the outcome below the target
     // cloning the tree structure as well
     duplicateOutcome: (state, action: PayloadAction<number>) => {
-      console.log('DUPLICATE OUTCOME', action.payload)
       // const pathToOutcome = findIndexPath(action.payload, state.groups)
       // const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
       // const targetIndex = pathToOutcome.slice(-1)[0]
-
       // const clone = cloneOutcomeTree(targetParent.children[targetIndex])
-
       // targetParent.children.splice(targetIndex + 1, 0, clone)
     },
 
@@ -156,77 +153,99 @@ export const outcomesSlice = createSlice({
         operation?: Instruction['operation']
       }>
     ) => {
-      console.log('MOVE OUTCOME ', action.payload)
-      // const { targetId, destinationId, operation } = action.payload
-      // const destinationPath = findIndexPath(destinationId, state.groups)
-      // const targetPath = findIndexPath(targetId, state.groups)
+      const { targetId, destinationId, operation } = action.payload
+      const target = state.outcomeData[targetId]
+      const destination = state.outcomeData[destinationId]
 
-      // const targetIndex = targetPath.slice(-1)[0]
-      // const destinationIndex = destinationPath.slice(-1)[0]
+      const targetIndex = state.outcomeOrder.indexOf(targetId)
+      const destinationIndex = state.outcomeOrder.indexOf(destinationId)
+      let orderId = destinationId // the id of the element around which we order
+      let orderAfter = true // order after or before the orderId
 
-      // if (destinationPath.length && targetPath.length) {
-      //   if (operation && operation !== 'combine') {
-      //     // if the paths match, they belong to the same parent
-      //     if (
-      //       targetPath
-      //         .slice(0, -1)
-      //         .every((v, i) => v === destinationPath.slice(0, -1)[i])
-      //     ) {
-      //       // skip unnecessary reorders when positions wouldn't change
-      //       if (
-      //         operation === 'reorder-before' &&
-      //         targetIndex < destinationIndex
-      //       ) {
-      //         return
-      //       }
+      const combineMode = !operation || operation === 'combine'
+      const reorderMode = !combineMode
 
-      //       if (
-      //         operation === 'reorder-after' &&
-      //         targetIndex > destinationIndex
-      //       ) {
-      //         return
-      //       }
+      // combine mode means we're injecting outcome into a different parent
+      if (combineMode) {
+        // remove target from its parent
+        const targetParent = state.outcomeData[target.parent]
+        targetParent.children.splice(targetParent.children.indexOf(targetId), 1)
 
-      //       const parent = findOutcome(targetPath.slice(0, -1), state.groups)
-      //       const oldTarget = parent.children.splice(targetIndex, 1)
-      //       parent.children.splice(
-      //         operation === 'reorder-after'
-      //           ? destinationIndex + 1
-      //           : destinationIndex,
-      //         0,
-      //         oldTarget[0]
-      //       )
-      //     } else {
-      //       const oldParent = findOutcome(targetPath.slice(0, -1), state.groups)
-      //       const oldIndex = targetPath.slice(-1)[0]
-      //       const elem = oldParent.children.splice(oldIndex, 1)
-      //       const newParent = findOutcome(
-      //         destinationPath.slice(0, -1),
-      //         state.groups
-      //       )
+        // we're ordering after the last child of the parent, or parent if no children
+        orderId = destination.children.length
+          ? destination.children[destination.children.length - 1]
+          : destination.id
 
-      //       newParent.children.splice(
-      //         operation === 'reorder-after'
-      //           ? destinationIndex + 1
-      //           : destinationIndex,
-      //         0,
-      //         elem[0]
-      //       )
-      //     }
-      //   } else {
-      //     // if no operation is provided, we're just "reparenting" outcome
-      //     // remove from old parent
-      //     const oldParent = findOutcome(targetPath.slice(0, -1), state.groups)
-      //     const oldIndex = targetPath.slice(-1)[0]
-      //     const elem = oldParent.children.splice(oldIndex, 1)
-      //     const newParent = findOutcome(destinationPath, state.groups)
-      //     if (!newParent.children.length) {
-      //       newParent.children = []
-      //     }
-      //     newParent.children.push(elem[0])
-      //   }
-      // }
+        // finally push target onto the new parent's children
+        destination.children.push(targetId)
+
+        // and update target's parent
+        target.parent = destination.id
+      }
+
+      // reorder mode is when we're moving outcome around adjacent outcomes
+      // or reparenting it and reordering against same level outcomes
+      if (reorderMode) {
+        if (target.parent === destination.parent) {
+          // early exit if the final positions wouldn't change at all
+          if (
+            operation === 'reorder-before' &&
+            targetIndex < destinationIndex
+          ) {
+            return
+          }
+
+          if (operation === 'reorder-after' && targetIndex > destinationIndex) {
+            return
+          }
+
+          // reorder outcomes
+          const parent = state.outcomeData[target.parent]
+          const { children } = parent
+          children.splice(children.indexOf(targetId), 1)
+          const destIndex = children.indexOf(destinationId)
+          children.splice(
+            operation === 'reorder-after' ? destIndex + 1 : destIndex,
+            0,
+            targetId
+          )
+
+          // order after or before the target?
+          orderAfter = operation === 'reorder-after'
+        } else {
+          const oldParent = state.outcomeData[target.parent]
+          const oldIndex = oldParent.children.indexOf(targetId)
+
+          // remove from old parent
+          oldParent.children.splice(oldIndex, 1)
+
+          // add to new parent
+          const newParent = state.outcomeData[destination.parent]
+          const destIndex = newParent.children.indexOf(destinationId)
+          newParent.children.splice(
+            operation === 'reorder-after' ? destIndex + 1 : destIndex,
+            0,
+            targetId
+          )
+
+          // order after or before the target?
+          orderAfter = operation === 'reorder-after'
+
+          // set the correct parent
+          target.parent = newParent.id
+        }
+      }
+
+      // update final order
+      state.outcomeOrder.splice(targetIndex, 1)
+      const orderIndex = state.outcomeOrder.indexOf(orderId)
+      state.outcomeOrder.splice(
+        orderAfter ? orderIndex + 1 : orderIndex,
+        0,
+        targetId
+      )
     },
+
     // set currently dragged outcome ID to better control pragmatic dropzones
     setDragging: (
       state,
