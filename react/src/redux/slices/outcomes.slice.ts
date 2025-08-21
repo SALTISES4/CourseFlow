@@ -28,16 +28,6 @@ const initialState: OutcomesState = {
   outcomeData: {}
 }
 
-// recursively go over the tree of outcomes and update ID to avoid collision
-// function cloneOutcomeTree(outcome: Outcome) {
-//   return {
-//     ...outcome,
-//     id: dynamicID++,
-//     title: outcome.title + ' (duplicate)',
-//     children: outcome.children.map(cloneOutcomeTree)
-//   }
-// }
-
 type AddOutcomeType = Pick<Outcome, 'id'> &
   Partial<Outcome> & { order?: 'after' }
 
@@ -77,7 +67,12 @@ export const outcomesSlice = createSlice({
       if (!action.payload.order) {
         const parent = state.outcomeData[action.payload.id]
         newOutcomeData.parent = parent.id
-        orderAfterId = parent.id // order after parent
+
+        // order after last parent's child, or parent, if none
+        orderAfterId = parent.children.length
+          ? parent.children[parent.children.length - 1]
+          : parent.id
+
         parent.children.push(outcomeId)
       } else {
         // if order is present, add after the target outcome
@@ -127,11 +122,51 @@ export const outcomesSlice = createSlice({
     // duplicates the outcome below the target
     // cloning the tree structure as well
     duplicateOutcome: (state, action: PayloadAction<number>) => {
-      // const pathToOutcome = findIndexPath(action.payload, state.groups)
-      // const targetParent = findOutcome(pathToOutcome.slice(0, -1), state.groups)
-      // const targetIndex = pathToOutcome.slice(-1)[0]
-      // const clone = cloneOutcomeTree(targetParent.children[targetIndex])
-      // targetParent.children.splice(targetIndex + 1, 0, clone)
+      // duplicateOutcomeTree(state, action.payload)
+      const target = state.outcomeData[action.payload]
+
+      // find the last outcome ID to know after which outcome to inject
+      // the cloned outcome tree
+      let lastOutcomeId: number
+      const clonedIds = []
+
+      // recursively go over the tree of outcomes and make updates
+      function cloneOutcome(outcome: Outcome, parentId: number | null = null) {
+        lastOutcomeId = outcome.id
+        const cloneId = dynamicID++
+        clonedIds.push(cloneId)
+
+        const clone = {
+          ...outcome,
+          id: cloneId,
+          title: outcome.title + ' (duplicate)'
+        }
+
+        // set the correct parent
+        // and update the parent to also link to clone
+        if (parentId) {
+          clone.parent = parentId
+          state.outcomeData[parentId].children.push(cloneId)
+        }
+
+        // add the clone data to the state
+        state.outcomeData[cloneId] = clone
+
+        // iterate over children and do the whole dance over again
+        const children = clone.children
+        clone.children = [] // clear because they're being added in cloneOutcome
+        children.map((c) => cloneOutcome(state.outcomeData[c], cloneId))
+      }
+
+      // start from the target/root outcome
+      cloneOutcome(target)
+
+      // insert the clone IDs in the correct spot in order array
+      const lastOutcomeIndex = state.outcomeOrder.indexOf(lastOutcomeId)
+      state.outcomeOrder.splice(lastOutcomeIndex + 1, 0, ...clonedIds)
+
+      // add the root clone to the correct parent
+      state.outcomeData[target.parent].children.push(clonedIds[0])
     },
 
     // edit/update existing outcome with payload data
