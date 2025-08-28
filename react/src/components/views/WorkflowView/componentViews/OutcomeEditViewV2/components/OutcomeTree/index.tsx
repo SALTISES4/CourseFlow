@@ -24,7 +24,7 @@ const OutcomeGroupWrap = ({ id, title, children, level }: OutcomeType) => {
         <Styled.OutcomeGroupTitle variant="body2">
           {title}
         </Styled.OutcomeGroupTitle>
-        <OutcomeGroup parentId={id} />
+        <OutcomeGroup prefix={[]} parentId={id} />
         {!children.length && (
           <Styled.AddNewButton
             variant="text"
@@ -39,7 +39,13 @@ const OutcomeGroupWrap = ({ id, title, children, level }: OutcomeType) => {
   )
 }
 
-export const OutcomeGroup = ({ parentId }: { parentId: number }) => {
+export const OutcomeGroup = ({
+  parentId,
+  prefix
+}: {
+  parentId: number
+  prefix: (number | string)[]
+}) => {
   const childOutcomes = useSelector((state: AppState) =>
     selectOutcomeChildrenById(state, parentId)
   )
@@ -50,9 +56,9 @@ export const OutcomeGroup = ({ parentId }: { parentId: number }) => {
 
   return (
     <Styled.OutcomeGroup>
-      {childOutcomes.map((outcome) => (
+      {childOutcomes.map((outcome, index) => (
         <Styled.OutcomeGroupItem key={outcome.id} level={outcome.level}>
-          <Outcome {...outcome} />
+          <Outcome {...outcome} prefix={[...prefix, index + 1]} />
           {/* {outcome.level === 1 && <LinkedOutcomes outcomes={outcome.children} />} */}
         </Styled.OutcomeGroupItem>
       ))}

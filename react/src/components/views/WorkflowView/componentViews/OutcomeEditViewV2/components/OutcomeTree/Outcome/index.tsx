@@ -10,7 +10,6 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
-import { getPrefixPath } from '@cf/redux/selectors/outcomes.selector'
 import {
   Outcome as OutcomeType,
   moveOutcome
@@ -32,7 +31,16 @@ type OutcomeStateType = {
   operation: null | Instruction['operation']
 }
 
-const Outcome = ({ id, title, children, level }: OutcomeType) => {
+const Outcome = ({
+  id,
+  title,
+  children,
+  level,
+  code,
+  prefix
+}: OutcomeType & {
+  prefix: (number | string)[]
+}) => {
   const dragHandleRef = useRef<HTMLDivElement>(null)
   const dispatch = useDispatch()
   const sidebarData = useSelector((state: AppState) => state.sidebar.edit)
@@ -42,8 +50,6 @@ const Outcome = ({ id, title, children, level }: OutcomeType) => {
     collapsed: true,
     operation: null
   })
-
-  const prefix = useSelector((state: AppState) => getPrefixPath(state, id))
 
   useEffect(() => {
     const el = dragHandleRef.current
@@ -156,13 +162,20 @@ const Outcome = ({ id, title, children, level }: OutcomeType) => {
     }
   }, [id, selected])
 
+  // use the 'code' prefix, which is only supported at level 1 outcomes
+  // otherwise it's all numbers
+  const formattedPrefix =
+    prefix.length === 1 && level === 1 && code
+      ? `${code} - `
+      : `${prefix.join('.')}. `
+
   return (
     <Styled.OutcomeWrapper dragging={dragging?.id === id}>
       <OutcomeHeader
         id={id}
         level={level}
         dragRef={dragHandleRef}
-        title={`${prefix} ${title}`}
+        title={`${formattedPrefix}${title}`}
         selected={selected}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
@@ -171,7 +184,12 @@ const Outcome = ({ id, title, children, level }: OutcomeType) => {
         onToggleClick={onToggleClick}
       />
 
-      {!state.collapsed && <OutcomeGroup parentId={id} />}
+      {!state.collapsed && (
+        <OutcomeGroup
+          prefix={prefix.length === 1 && code ? [code] : prefix}
+          parentId={id}
+        />
+      )}
 
       <DropIndicator
         lineGap="8px"
