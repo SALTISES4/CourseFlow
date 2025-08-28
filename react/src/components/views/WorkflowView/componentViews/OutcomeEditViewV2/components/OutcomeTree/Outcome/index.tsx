@@ -10,6 +10,7 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop-hitbox/list-item'
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/list-item'
 import BetterSelectionManager from '@cf/redux/BetterSelectionManager'
+import { getPrefixPath } from '@cf/redux/selectors/outcomes.selector'
 import {
   Outcome as OutcomeType,
   moveOutcome
@@ -41,6 +42,8 @@ const Outcome = ({ id, title, children, level }: OutcomeType) => {
     collapsed: true,
     operation: null
   })
+
+  const prefix = useSelector((state: AppState) => getPrefixPath(state, id))
 
   useEffect(() => {
     const el = dragHandleRef.current
@@ -159,7 +162,7 @@ const Outcome = ({ id, title, children, level }: OutcomeType) => {
         id={id}
         level={level}
         dragRef={dragHandleRef}
-        title={title}
+        title={`${prefix} ${title}`}
         selected={selected}
         collapsed={state.collapsed}
         setCollapsed={setCollapsed}
